@@ -11,8 +11,8 @@ This report details the analysis of a PE executable (SHA256: 2627682eb7e8180fc4f
 | Attribute | Value |
 |---|---|
 | SHA256 | 2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5 |
-| File Path | /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe |
-| Project Name | Hexorcist 1 - Weeks 1-8 |
+| File Path | /opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe |
+| Project Name | REVAI-LAB-CORPUS-H1 |
 | File Type | PE (Portable Executable) |
 | Architecture | X86 |
 | File Size | 55021 bytes |
@@ -246,8 +246,8 @@ Note: The mapping is based on imported APIs and structural characteristics. Actu
 
 ## 13. Appendix B: Analysis Environment
 
-- **Sample Path**: /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe
-- **Project Name**: Hexorcist 1 - Weeks 1-8
+- **Sample Path**: /opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe
+- **Project Name**: REVAI-LAB-CORPUS-H1
 - **Analysis Tools**: Malcat, YARA, FLOSS, capa, radare2, Speakeasy, Frida, UPX, XOR Search.
 - **Dynamic Analysis**: Speakeasy emulation and Frida probing were performed but yielded no observable behavior.
 - **Static Analysis**: Comprehensive static analysis was conducted using multiple tools to identify packing, imports, strings, and structural anomalies.
@@ -257,8 +257,8 @@ Note: The mapping is based on imported APIs and structural characteristics. Actu
 # Technical Evidence Pack
 
 **sha256:** 2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5  
-**sample_path:** /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe  
-**project_name:** Hexorcist 1 - Weeks 1-8
+**sample_path:** /opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe  
+**project_name:** REVAI-LAB-CORPUS-H1
 
 > Every table below is copied from stage JSON. Technical narrative must cite these rows (engine + address/rule), not invent evidence.
 
@@ -675,7 +675,7 @@ Total matches: 12
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -687,7 +687,7 @@ Total matches: 12
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$ipv4",
@@ -705,7 +705,7 @@ Total matches: 12
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$a",
@@ -717,7 +717,7 @@ Total matches: 12
     },
     {
       "rule": "nSpackV2xLiuXingPing",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$a0",
@@ -729,7 +729,7 @@ Total matches: 12
     },
     {
       "rule": "NsPackV2XLiuXingPing",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$a0",
@@ -741,7 +741,7 @@ Total matches: 12
     },
     {
       "rule": "NsPackv23NorthStar",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$a0",
@@ -759,7 +759,7 @@ Total matches: 12
     },
     {
       "rule": "maldoc_getEIP_method_1",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$a",
@@ -771,27 +771,27 @@ Total matches: 12
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": []
     },
     {
       "rule": "IsWindowsGUI",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": []
     },
     {
       "rule": "HasModified_DOS_Message",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": []
     },
     {
       "rule": "suspicious_packer_section",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": []
     },
     {
       "rule": "win_registry",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$f1",

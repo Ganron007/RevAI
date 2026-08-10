@@ -247,14 +247,14 @@ This section provides a consolidated view of the evidence from each analysis too
 - **Dynamic Analysis**: Speakeasy emulator, Frida probe
 - **Unpacking**: UPX (attempted, failed), custom aPLib unpacker identified
 - **Verdict Engine**: LLM Judge (configured-llm) with deep-dive agentic analysis (langgraph)
-- **Project**: Malware Analyst Professional - Level 2
+- **Project**: REVAI-LAB-CORPUS-L2
 ## Appendix: Full Structured Evidence Pack
 
 # Technical Evidence Pack
 
 **sha256:** 1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a  
-**sample_path:** /opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex  
-**project_name:** Malware Analyst Professional - Level 2
+**sample_path:** /opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex  
+**project_name:** REVAI-LAB-CORPUS-L2
 
 > Every table below is copied from stage JSON. Technical narrative must cite these rows (engine + address/rule), not invent evidence.
 
@@ -661,7 +661,7 @@ Total matches: 11
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": [
         {
           "id": "$domain_regex",
@@ -673,7 +673,7 @@ Total matches: 11
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": [
         {
           "id": "$ipv6",
@@ -685,7 +685,7 @@ Total matches: 11
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": [
         {
           "id": "$a",
@@ -697,7 +697,7 @@ Total matches: 11
     },
     {
       "rule": "url",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": [
         {
           "id": "$url_regex",
@@ -709,7 +709,7 @@ Total matches: 11
     },
     {
       "rule": "maldoc_find_kernel32_base_method_1",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": [
         {
           "id": "$a1",
@@ -721,27 +721,27 @@ Total matches: 11
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": []
     },
     {
       "rule": "IsWindowsGUI",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": []
     },
     {
       "rule": "IsPacked",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": []
     },
     {
       "rule": "HasOverlay",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": []
     },
     {
       "rule": "HasDigitalSignature",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": [
         {
           "id": "$a1",
@@ -753,7 +753,7 @@ Total matches: 11
     },
     {
       "rule": "HasDebugData",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": []
     }
   ],

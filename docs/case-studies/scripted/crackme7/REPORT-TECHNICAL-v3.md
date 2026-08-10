@@ -2,7 +2,7 @@
 
 ## 1. Executive Summary
 
-This report details the analysis of `crackme7.exe` (SHA256: `fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f`), a PE32 Windows GUI application identified as a reverse engineering challenge from the "Hexorcist 1 - Weeks 1-8" CTF series. The binary employs obfuscation via a single-byte XOR decryption stub at its entry point, which decrypts a payload and registers it as a Vectored Exception Handler (VEH) to execute. Static analysis reveals GUI-related imports for dialog box interaction and a serial number prompt, consistent with a crackme. Dynamic analysis via Speakeasy and Frida did not observe any runtime behavior, as the encrypted payload likely requires specific conditions or user interaction to fully execute. No indicators of malicious activity such as command-and-control (C2) communication, persistence mechanisms, data exfiltration, or destructive payloads were identified. The sample's primary purpose appears to be educational or for puzzle-solving, though its use of self-modifying code and obfuscation techniques warrants a "suspicious" classification. The overall threat score is low (30/100).
+This report details the analysis of `crackme7.exe` (SHA256: `fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f`), a PE32 Windows GUI application identified as a reverse engineering challenge from the "REVAI-LAB-CORPUS-H1" CTF series. The binary employs obfuscation via a single-byte XOR decryption stub at its entry point, which decrypts a payload and registers it as a Vectored Exception Handler (VEH) to execute. Static analysis reveals GUI-related imports for dialog box interaction and a serial number prompt, consistent with a crackme. Dynamic analysis via Speakeasy and Frida did not observe any runtime behavior, as the encrypted payload likely requires specific conditions or user interaction to fully execute. No indicators of malicious activity such as command-and-control (C2) communication, persistence mechanisms, data exfiltration, or destructive payloads were identified. The sample's primary purpose appears to be educational or for puzzle-solving, though its use of self-modifying code and obfuscation techniques warrants a "suspicious" classification. The overall threat score is low (30/100).
 
 ## 2. Sample Metadata
 
@@ -12,10 +12,10 @@ This report details the analysis of `crackme7.exe` (SHA256: `fc5a215c0f6d3bdbf5c
 | **File Name** | `crackme7.exe` |
 | **File Size** | 141,824 bytes |
 | **File Type** | PE32 executable (GUI) Intel 80386, for MS Windows |
-| **Project** | Hexorcist 1 - Weeks 1-8 |
+| **Project** | REVAI-LAB-CORPUS-H1 |
 | **Verdict** | Suspicious |
 | **Score** | 30 |
-| **Family Guess** | Hexorcist Crackme 7 |
+| **Family Guess** | CTF Crackme 7 |
 | **Source** | llm_judge |
 
 ## 3. File Layout & Structural Analysis
@@ -146,9 +146,9 @@ Based on all available evidence, the sample's capabilities are limited to:
 **Detection Opportunities:**
 1.  **YARA Rule:** Detect the specific XOR decryption stub pattern.
     ```yara
-    rule Hexorcist_Crackme7_XOR_Stub {
+    rule CTF_Crackme7_XOR_Stub {
         meta:
-            description = "Detects the XOR decryption stub from Hexorcist Crackme 7"
+            description = "Detects the XOR decryption stub from CTF Crackme 7"
             author = "Malware Analyst"
             date = "2023-10-27"
             hash = "fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f"
@@ -161,7 +161,7 @@ Based on all available evidence, the sample's capabilities are limited to:
 2.  **Sigma Rule:** Monitor for processes that call `AddVectoredExceptionHandler` followed immediately by `HLT`. This is an unusual sequence.
 3.  **Behavioral:** Look for processes that decrypt data in memory using a single-byte XOR loop and then register it as a VEH.
 
-**False Positive Considerations:** The detection rules should be tuned to avoid flagging legitimate software that uses VEH for error handling or XOR for simple data obfuscation. The presence of the specific strings (`HEXORCIST`, `SERIAL:`) can be used to increase confidence.
+**False Positive Considerations:** The detection rules should be tuned to avoid flagging legitimate software that uses VEH for error handling or XOR for simple data obfuscation. The presence of the specific strings (`CTF`, `SERIAL:`) can be used to increase confidence.
 
 ## 10. MITRE ATT&CK Mapping
 
@@ -229,18 +229,18 @@ This section documents the key evidence from each analysis tool used.
 # Technical Evidence Pack
 
 **sha256:** fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f  
-**sample_path:** /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe  
-**project_name:** Hexorcist 1 - Weeks 1-8
+**sample_path:** /opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe  
+**project_name:** REVAI-LAB-CORPUS-H1
 
 > Every table below is copied from stage JSON. Technical narrative must cite these rows (engine + address/rule), not invent evidence.
 
 ## Verdict
 - **verdict**: suspicious
 - **score**: 30
-- **family_guess**: Hexorcist Crackme 7
+- **family_guess**: CTF Crackme 7
 - **agreement**: llm_v1_disagree
 - **cross_engine_notes**: Ghidra reported an empty imports table due to a known limitation for mixed-mode PEs, but IDA and Malcat consistently identified 9 imports from KERNEL32 and USER32 modules. String counts vary across tools (Ghidra: 28, IDA: 13, FLOSS: 33), reflecting different extraction methodologies. The sample shows obfuscation via XOR encoding and high entropy, but no behavioral evidence of malicious intent such as C2 communication, persistence, or data destruction.
-- **summary**: The sample is a PE32 binary identified as a crackme application (Hexorcist Crackme 7). It exhibits obfuscation through XOR encoding and high entropy, but analysis across multiple engines reveals no behavioral indicators of malicious activity such as command-and-control, persistence, credential theft, or data exfiltration. The presence of GUI elements, serial number input, and benign API imports supports its classification as suspicious but not definitively malicious, likely serving as a puzzle or educational tool.
+- **summary**: The sample is a PE32 binary identified as a crackme application (CTF Crackme 7). It exhibits obfuscation through XOR encoding and high entropy, but analysis across multiple engines reveals no behavioral indicators of malicious activity such as command-and-control, persistence, credential theft, or data exfiltration. The presence of GUI elements, serial number input, and benign API imports supports its classification as suspicious but not definitively malicious, likely serving as a puzzle or educational tool.
 - **source**: llm_judge
 - **model**: configured-llm
 
@@ -257,7 +257,7 @@ This section documents the key evidence from each analysis tool used.
 ## Deep-Dive Summary Evidence
 - **source**: deep_dive_agentic
 - **confidence**: 90
-- **summary**: PE32 Windows GUI crackme (reverse engineering challenge) from the Hexorcist 1 CTF series. The entry point at 0x401000 is a XOR decryption stub that decrypts 1496 bytes at 0x4012b3 using single-byte key 0x66, then registers the decrypted code as a Vectored Exception Handler via AddVectoredExceptionHandler and executes HLT to trigger it. The binary presents a dialog box asking for a serial number ('SERIAL:'). The .text section is RWX enabling self-modifying code, and the .rsrc section has entropy 85% indicating packed resources. FLOSS decoded 0 stack/tight strings (entire payload is bulk-encrypted). CAPA confirms XOR encoding (T1027/E1027.m02/C0026.002). Only 9 imports (GUI + SEH APIs) and 1 detected function (the stub) due to encrypted payload hiding all real logic. Additional coverage: Persistence: not observed; no evidence of mechanisms like registry keys or scheduled tasks for long-term execution. C2_network: not observed; no network activity or command-and-control communication indicators detected. Exfiltration: not observed; no data collection or exfiltration routines identified. Defense_impairment: observed; self-modifying code is enabled by RWX .text section (evidence: {summary, section properties, .text is RWX, allows dynamic code modification for evasion}) and bulk-encryption of payload impairs analysis (evidence: {FLOSS, string analysis, 0 stack strings decoded, hides malicious functionality from static tools}).
+- **summary**: PE32 Windows GUI crackme (reverse engineering challenge) from the CTF 1 CTF series. The entry point at 0x401000 is a XOR decryption stub that decrypts 1496 bytes at 0x4012b3 using single-byte key 0x66, then registers the decrypted code as a Vectored Exception Handler via AddVectoredExceptionHandler and executes HLT to trigger it. The binary presents a dialog box asking for a serial number ('SERIAL:'). The .text section is RWX enabling self-modifying code, and the .rsrc section has entropy 85% indicating packed resources. FLOSS decoded 0 stack/tight strings (entire payload is bulk-encrypted). CAPA confirms XOR encoding (T1027/E1027.m02/C0026.002). Only 9 imports (GUI + SEH APIs) and 1 detected function (the stub) due to encrypted payload hiding all real logic. Additional coverage: Persistence: not observed; no evidence of mechanisms like registry keys or scheduled tasks for long-term execution. C2_network: not observed; no network activity or command-and-control communication indicators detected. Exfiltration: not observed; no data collection or exfiltration routines identified. Defense_impairment: observed; self-modifying code is enabled by RWX .text section (evidence: {summary, section properties, .text is RWX, allows dynamic code modification for evasion}) and bulk-encryption of payload impairs analysis (evidence: {FLOSS, string analysis, 0 stack strings decoded, hides malicious functionality from static tools}).
 
 ### deep key_evidence
 - `"Entry stub at 0x401000: MOV EAX,0x4012b3; MOV ECX,0x5d8; XOR byte ptr [EAX],0x66; INC EAX; LOOP \u2192 bulk XOR decryption of 1496 bytes with key 0x66"`
@@ -265,7 +265,7 @@ This section documents the key evidence from each analysis tool used.
 - `"CAPA match: 'encode data using XOR' \u2192 MITRE T1027 Defense Evasion, MBC E1027.m02/C0026.002"`
 - `"Malcat anomalies: SectionWX (.text RWX), SuspiciousEntropy (.rsrc 85% > 7.5 threshold), FewStrings (<1%), EntryOutsideSections"`
 - `"FLOSS static strings: 'SERIAL:' (crackme password prompt), 'now this is getting serious', 'HEXORCIST CRACKME 7', 'Copyright SAS HEXORCIST'"`
-- `"VersionInfo: FileDescription='HEXORCIST CRACKME 7', OriginalFilename='hexo7.EXE' \u2014 self-identifies as Hexorcist CTF challenge"`
+- `"VersionInfo: FileDescription='HEXORCIST CRACKME 7', OriginalFilename='hexo7.EXE' \u2014 self-identifies as CTF CTF challenge"`
 - `"GUI imports: DialogBoxParamA, GetDlgItemTextA, MessageBoxA, EndDialog \u2014 typical crackme dialog interaction"`
 - `"Only 1 function detected (entry stub, 30 bytes, 8 instructions) \u2014 all real logic hidden inside XOR-encrypted blob"`
 - `"YARA hits: SEH__vectored (VEH patterns at offset 4238), contains_base64, IP/IPv6 patterns"`
@@ -521,7 +521,7 @@ Total matches: 7
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -533,7 +533,7 @@ Total matches: 7
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
       "strings": [
         {
           "id": "$ipv6",
@@ -545,7 +545,7 @@ Total matches: 7
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
       "strings": [
         {
           "id": "$a",
@@ -557,22 +557,22 @@ Total matches: 7
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
       "strings": []
     },
     {
       "rule": "IsWindowsGUI",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
       "strings": []
     },
     {
       "rule": "FASM",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
       "strings": []
     },
     {
       "rule": "SEH__vectored",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
       "strings": [
         {
           "id": "$",

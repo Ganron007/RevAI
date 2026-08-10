@@ -250,7 +250,7 @@ Total matches: 6
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+      "path": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
       "strings": [
         {
           "id": "$domain_regex",
@@ -262,7 +262,7 @@ Total matches: 6
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+      "path": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
       "strings": [
         {
           "id": "$ipv6",
@@ -274,7 +274,7 @@ Total matches: 6
     },
     {
       "rule": "docx_macro",
-      "path": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+      "path": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
       "strings": [
         {
           "id": "$header",
@@ -292,7 +292,7 @@ Total matches: 6
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+      "path": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
       "strings": [
         {
           "id": "$a",
@@ -304,7 +304,7 @@ Total matches: 6
     },
     {
       "rule": "Contains_VBA_macro_code",
-      "path": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+      "path": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
       "strings": [
         {
           "id": "$zipmagic",
@@ -328,7 +328,7 @@ Total matches: 6
     },
     {
       "rule": "office_document_vba",
-      "path": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+      "path": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
       "strings": [
         {
           "id": "$zipmagic",
@@ -416,7 +416,7 @@ Total strings: 0 · per_category: `{}`
 ## XOR Search
 {
   "xorsearch_ok": false,
-  "sample": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+  "sample": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
   "candidates": [],
   "xorsearch_stdout": "",
   "xorsearch_stderr": "",

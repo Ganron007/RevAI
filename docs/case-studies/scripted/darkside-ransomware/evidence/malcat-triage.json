@@ -1,6 +1,6 @@
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
   "profile": "triage",
   "limits": {
     "strings_max": 100,
@@ -12,7 +12,7 @@
   "file_summary": {
     "analysis_id": 1,
     "file_name": "darkside.ex",
-    "file_path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+    "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
     "file_size": 61784,
     "type": "PE",
     "architecture": "X86",

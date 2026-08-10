@@ -8,7 +8,7 @@
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
-- **Sample:** `/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77`
+- **Sample:** `/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77`
 - **Showcase pack:** `/opt/samples/logs/_showcase_audits/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77`
 
 ## Stage scoreboard
@@ -182,7 +182,7 @@ _No tool retries occurred during this run._
 ```json
 {
   "title": "SUNBURST/Solorigate Backdoor Analysis Report",
-  "markdown": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 21:10:24 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: VMWare_Detection, NETDLLMicrosoft, IsPE32, IsNET_DLL, IsDLL, IsConsole, HasOverlay, HasDebugData). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Sunburst\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n# SUNBURST/Solorigate Backdoor Analysis Report\n\n## Executive Summary\n\nThis report details the analysis of a trojanized SolarWinds Orion component, identified as the SUNBURST (Solorigate) backdoor. The sample, `SolarWinds.Orion.Core.BusinessLayer.dll`, is a malicious .NET DLL that was inserted into the SolarWinds Orion platform as part of a supply chain attack discovered in December 2020. The backdoor masquerades as legitimate SolarWinds telemetry functionality while providing full command-and-control (C2) capabilities, including HTTP-based communication, credential harvesting, system manipulation, and anti-analysis techniques. The verdict is **malicious** with high confidence, based on multiple behavioral indicators and direct evidence of the SUNBURST backdoor class. (source: deep-dive.json)\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|---|---|\n| SHA256 | `32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77` |\n| File Type | PE32 executable (DLL) .NET assembly |\n| Architecture | .NET (CLR) |\n| Original Filename | `SolarWinds.Orion.Core.BusinessLayer.dll` |\n| Assembly Version | 2019.4.5200.9083 |\n| Runtime | v4.0.30319 |\n| Language | VB.NET |\n| Imphash | `dae02f32a21e03ce65412f6e56942daa` |\n| Entropy | 92 |\n| Packed | No (UPX probe negative) |\n| Project | Malware Analyst Professional - Level 2 |\n\nThe file is a .NET DLL with a high entropy score of 92, which is typical for compiled .NET assemblies containing embedded resources and obfuscated strings. The assembly metadata identifies it as a SolarWinds Orion component, a key indicator of the supply chain attack vector. (source: malcat, rule.yara.json)\n\n## 2. Classification\n\n| Field | Value |\n|---|---|\n| Verdict | **Malicious** |\n| Confidence | 90% |\n| Family | SUNBURST / Solorigate |\n| Score | 85 |\n| Triage Agreement | LLM and v1 agree |\n\nThe classification is based on direct evidence of the SUNBURST backdoor class (`OrionImprovementBusinessLayer`), behavioral indicators of privilege escalation and token manipulation, and capabilities for C2 communication and credential harvesting. The sample is not a legitimate SolarWinds DLL; it is a trojanized version containing malicious code. (source: triage verdict.json, deep-dive.json)\n\n## 3. Background & Family Lineage\n\nSUNBURST (also known as Solorigate) is a sophisticated backdoor that was inserted into the SolarWinds Orion IT monitoring platform vi
+  "markdown": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 21:10:24 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: VMWare_Detection, NETDLLMicrosoft, IsPE32, IsNET_DLL, IsDLL, IsConsole, HasOverlay, HasDebugData). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Sunburst\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n# SUNBURST/Solorigate Backdoor Analysis Report\n\n## Executive Summary\n\nThis report details the analysis of a trojanized SolarWinds Orion component, identified as the SUNBURST (Solorigate) backdoor. The sample, `SolarWinds.Orion.Core.BusinessLayer.dll`, is a malicious .NET DLL that was inserted into the SolarWinds Orion platform as part of a supply chain attack discovered in December 2020. The backdoor masquerades as legitimate SolarWinds telemetry functionality while providing full command-and-control (C2) capabilities, including HTTP-based communication, credential harvesting, system manipulation, and anti-analysis techniques. The verdict is **malicious** with high confidence, based on multiple behavioral indicators and direct evidence of the SUNBURST backdoor class. (source: deep-dive.json)\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|---|---|\n| SHA256 | `32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77` |\n| File Type | PE32 executable (DLL) .NET assembly |\n| Architecture | .NET (CLR) |\n| Original Filename | `SolarWinds.Orion.Core.BusinessLayer.dll` |\n| Assembly Version | 2019.4.5200.9083 |\n| Runtime | v4.0.30319 |\n| Language | VB.NET |\n| Imphash | `dae02f32a21e03ce65412f6e56942daa` |\n| Entropy | 92 |\n| Packed | No (UPX probe negative) |\n| Project | REVAI-LAB-CORPUS-L2 |\n\nThe file is a .NET DLL with a high entropy score of 92, which is typical for compiled .NET assemblies containing embedded resources and obfuscated strings. The assembly metadata identifies it as a SolarWinds Orion component, a key indicator of the supply chain attack vector. (source: malcat, rule.yara.json)\n\n## 2. Classification\n\n| Field | Value |\n|---|---|\n| Verdict | **Malicious** |\n| Confidence | 90% |\n| Family | SUNBURST / Solorigate |\n| Score | 85 |\n| Triage Agreement | LLM and v1 agree |\n\nThe classification is based on direct evidence of the SUNBURST backdoor class (`OrionImprovementBusinessLayer`), behavioral indicators of privilege escalation and token manipulation, and capabilities for C2 communication and credential harvesting. The sample is not a legitimate SolarWinds DLL; it is a trojanized version containing malicious code. (source: triage verdict.json, deep-dive.json)\n\n## 3. Background & Family Lineage\n\nSUNBURST (also known as Solorigate) is a sophisticated backdoor that was inserted into the SolarWinds Orion IT monitoring platform vi
 … [16986 more chars]
 ```
 
@@ -231,7 +231,7 @@ This report details the analysis of a trojanized SolarWinds Orion component, ide
 | Imphash | `dae02f32a21e03ce65412f6e56942daa` |
 | Entropy | 92 |
 | Packed | No (UPX probe negative) |
-| Project | Malware Analyst Professional - Level 2 |
+| Project | REVAI-LAB-CORPUS-L2 |
 
 The file is a .NET DLL with a high entropy score of 92, which is typical for compiled .NET assemblies containing embedded resources and obfuscated strings. The assembly metadata identifies it as a SolarWinds Orion component, a k
 … [14898 more chars]
@@ -349,7 +349,7 @@ This section provides the primary identifiers for the analyzed binary, whic
 ```
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
   "profile": "triage",
   "limits": {
     "strings_max": 100,
@@ -361,7 +361,7 @@ This section provides the primary identifiers for the analyzed binary, whic
   "file_summary": {
     "analysis_id": 1,
     "file_name": "32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
-    "file_path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+    "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
     "file_size": 1011032,
     "type": "PE",
     "architecture": "DOT
@@ -555,7 +555,7 @@ This section provides the primary identifiers for the analyzed binary, whic
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
       "strings": [
         {
           "id": "$domain_regex",
@@ -567,7 +567,7 @@ This section provides the primary identifiers for the analyzed binary, whic
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
       "strings": [
         {
           "id": "$ipv4",
@@ -585,7 +585,7 @@ This section provides the primary identifiers for the analyzed binary, whic
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
       "strings": [
         {
           "id": "$a",
@@ -597,7 +597,7 @@ This section provides the primary identifiers for the analyzed binary, whic
     },
     {
       "rule": "VMWare_Detection",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
       "strings": [
         {
           "id": "$a1",
@@ -609,7 +609,7 @@ This section provides the primary identifiers for the analyzed binary, whic
     },
     {
       "rule": "url",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
       "strings": [
         {
           "id": "$url_regex",
@@ -621,7 +621,7 @@ This section provides the primary identifiers for the analyzed binary, whic
     },
     {
       "rule": "NETDLLMicrosoft",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
       "strings": [
         {
           "id": "$a0",
@@ -633,22 +633,22 @@ This section provides the primary identifiers for the analyzed binary, whic
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
       "strings": []
     },
     {
       "rule": "IsNET_DLL",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
       "strings": []
     },
     {
       "rule": "IsDLL",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
       "strings": []
     },
     {
       "rule": "IsConsole",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c
 … [5780 more chars]
 ```
 
@@ -764,7 +764,7 @@ This section provides the primary identifiers for the analyzed binary, whic
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -776,7 +776,7 @@ This section provides the primary identifiers for the analyzed binary, whic
   "file_summary": {
     "analysis_id": 1,
     "file_name": "32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
-    "file_path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+    "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
     "file_size": 1011032,
     "type": "PE",
     "architecture": "DOTNET",
@@ -922,7 +922,7 @@ This section provides the primary identifiers for the analyzed binary, whic
 ```
 # Triage evidence
 sha256: 32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77
-sample_path: /opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77
+sample_path: /opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77
 ghidra_session: ghidra-dotnet-32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77
 ida_session: ida-32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77
 
@@ -1163,7 +1163,7 @@ ida_session: ida-32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c7
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
       "strings": [
         {
           "id": "$domain_regex",
@@ -1175,7 +1175,7 @@ ida_session: ida-32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c7
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
       "strings": [
         {
           "id": "$ipv4",
@@ -1193,7 +1193,7 @@ ida_session: ida-32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c7
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
       "strings": [
         {
           "id": "$a",
@@ -1205,7 +1205,7 @@ ida_session: ida-32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c7
     },
     {
       "rule": "VMWare_Detection",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
       "strings": [
         {
           "id": "$a1",
@@ -1217,7 +1217,7 @@ ida_session: ida-32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c7
     },
     {
       "rule": "url",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
       "strings": [
         {
           "id": "$url_regex",
@@ -1229,7 +1229,7 @@ ida_session: ida-32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c7
     },
     {
       "rule": "NETDLLMicrosoft",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
       "strings": [
         {
           "id": "$a0",
@@ -1241,22 +1241,22 @@ ida_session: ida-32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c7
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
       "strings": []
     },
     {
       "rule": "IsNET_DLL",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
       "strings": []
     },
     {
       "rule": "IsDLL",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
       "strings": []
     },
     {
       "rule": "IsConsole",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c
 … [5758 more chars]
 ```
 
@@ -1472,7 +1472,7 @@ ida_session: ida-32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c7
 ```json
 {
   "r2_ok": true,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
   "disassembly": {
     "0x100f61a6": "\u250c 6: entry0 ();\n\u2514           0x100f61a6      ff2500200010   jmp dword [sym.imp.mscoree.dll__CorDllMain] ; 0x10002000"
   },
@@ -1490,7 +1490,7 @@ ida_session: ida-32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c7
 {
   "upx_ok": false,
   "is_packed": false,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
   "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTested 0 file"
 }
 ```
@@ -1500,7 +1500,7 @@ ida_session: ida-32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c7
 ```json
 {
   "xorsearch_ok": true,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
   "candidates": [
     "Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r"
   ],
@@ -1523,7 +1523,7 @@ ida_session: ida-32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c7
   "frida_available": true,
   "frida_version": "17.16.4",
   "pe_probe": {
-    "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+    "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
     "exists": true,
     "hook_candidates": [
       "mscoree.dll!_CorDllMain"
@@ -1599,7 +1599,7 @@ ida_session: ida-32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c7
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
       "strings": [
         {
           "id": "$domain_regex",
@@ -1614,7 +1614,7 @@ ida_session: ida-32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c7
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -1718,7 +1718,7 @@ ida_session: ida-32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c7
 ```json
 {
   "r2_ok": true,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
   "disassembly": {
     "0x100f61a6": "\u250c 6: entry0 ();\n\u2514           0x100f61a6      ff2500200010   jmp dword [sym.imp.mscoree.dll__CorDllMain] ; 0x10002000"
   },
@@ -1732,7 +1732,7 @@ ida_session: ida-32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c7
 {
   "upx_ok": false,
   "is_packed": false,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
   "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Marku
 … [78 more chars]
 ```
@@ -1742,7 +1742,7 @@ ida_session: ida-32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c7
 ```json
 {
   "xorsearch_ok": true,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
   "candidates": [
     "Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r"
   ],
@@ -1757,7 +1757,7 @@ ida_session: ida-32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c7
   "frida_available": true,
   "frida_version": "17.16.4",
   "pe_probe": {
-    "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+    "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
     "exists": true,
     "hook_candidates": [
       "mscoree.dll!_CorDllMain"

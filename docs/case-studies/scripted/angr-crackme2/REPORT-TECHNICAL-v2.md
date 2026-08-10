@@ -15,12 +15,12 @@
 # Technical Malware Analysis Report v2
 
 **SHA256:** cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4
-**Sample Path:** /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe
-**Project:** Hexorcist 3 - Weeks 20-30
+**Sample Path:** /opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe
+**Project:** REVAI-LAB-CORPUS-H3
 
 ## 1. Executive Summary
 
-This sample is a benign Windows GUI application compiled with the Flat Assembler (FASM), identified as a keygen template for the "Hexorcist" CTF challenge series. The binary implements a simple dialog-based password checker that validates user input against a hardcoded algorithm, displaying "good!" or "bad!" based on the result. The filename `angr_crackme2.exe` explicitly labels it as a crackme designed for symbolic execution practice with the angr framework.
+This sample is a benign Windows GUI application compiled with the Flat Assembler (FASM), identified as a keygen template for the "CTF" CTF challenge series. The binary implements a simple dialog-based password checker that validates user input against a hardcoded algorithm, displaying "good!" or "bad!" based on the result. The filename `angr_crackme2.exe` explicitly labels it as a crackme designed for symbolic execution practice with the angr framework.
 
 The analysis reveals no malicious behavioral intent. The binary contains only 8 GUI-related imports (DialogBoxParamA, GetDlgItemTextA, SetDlgItemTextA, LoadIconA, SendMessageA, EndDialog, GetModuleHandleA, ExitProcess), with zero suspicious API signals (source: malcat, imports table). Capa matched only one benign rule: "terminate process" (ExitProcess) (source: capa, capa rules). YARA matched only FASM compiler artifacts and generic PE indicators, with no malicious family signatures (source: yara, YARA Matches). The decompiled code shows straightforward serial validation logic without any network, persistence, injection, or credential theft capabilities (source: malcat, decompilations).
 
@@ -39,7 +39,7 @@ The analysis reveals no malicious behavioral intent. The binary contains only 8 
 | Original Filename | angr_crackme2.exe | malcat |
 | Compiler | FASM (Flat Assembler) | yara |
 | Import Hash | e471a30244579dd1c29a70e51f0b18dc | rule.yara.json |
-| Family Guess | Hexorcist keygen | llm_judge |
+| Family Guess | CTF keygen | llm_judge |
 | Verdict | Suspicious (score: 20) | llm_judge |
 
 The sample metadata indicates a standard 32-bit Windows executable with moderate entropy (84%), which is within normal range for compiled code. The FASM compiler identification is confirmed by multiple YARA rules matching at the entry point (source: yara, YARA Matches). The import hash is consistent with a minimal GUI application using only Windows dialog APIs.
@@ -265,7 +265,7 @@ The pipeline generated a YARA rule based on 24 strings extracted from the sample
 - `SERIAL:` / `NAME:`
 
 **Detection Recommendations:**
-1. **Signature-Based:** Use the generated YARA rule to identify similar Hexorcist keygen templates.
+1. **Signature-Based:** Use the generated YARA rule to identify similar CTF keygen templates.
 2. **Behavioral:** No behavioral detection needed as the sample exhibits no malicious activity.
 3. **Contextual:** Flag files with `angr_crackme` in the filename for analyst review, as these are typically CTF challenges.
 
@@ -283,7 +283,7 @@ No MITRE ATT&CK techniques were identified in this sample. The binary exhibits n
 ## 11. What We Don't Know
 
 1. **Original Purpose:** While the sample appears to be a CTF crackme, we cannot confirm its exact origin or intended use beyond the embedded strings.
-2. **Author Intent:** The strings suggest it is part of the "Hexorcist" challenge series, but we lack metadata about the creator or distribution context.
+2. **Author Intent:** The strings suggest it is part of the "CTF" challenge series, but we lack metadata about the creator or distribution context.
 3. **Runtime Behavior:** Due to the GUI dependency, full runtime behavior could not be observed in automated analysis. Manual interaction might reveal additional functionality not apparent in static analysis.
 4. **Packing/Obfuscation:** The high entropy in .text (86%) and .rsrc (85%) sections could indicate packing or compression, but no packer signatures were detected. The UPX analysis returned false (source: upx).
 5. **Anti-Analysis Techniques:** The delay_loop function may be intended to hinder automated analysis, but this is a common crackme feature rather than malicious anti-analysis.
@@ -317,7 +317,7 @@ No MITRE ATT&CK techniques were identified in this sample. The binary exhibits n
 
 ## 13. Appendix B: Analysis Environment
 
-**Sample Path:** /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe
+**Sample Path:** /opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe
 
 **Analysis Timestamp:** 2026-08-09T17:29:14.194031+00:00 (source: rule.yara.json)
 
@@ -336,18 +336,18 @@ No MITRE ATT&CK techniques were identified in this sample. The binary exhibits n
 # Technical Evidence Pack
 
 **sha256:** cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4  
-**sample_path:** /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe  
-**project_name:** Hexorcist 3 - Weeks 20-30
+**sample_path:** /opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe  
+**project_name:** REVAI-LAB-CORPUS-H3
 
 > Every table below is copied from stage JSON. Technical narrative must cite these rows (engine + address/rule), not invent evidence.
 
 ## Verdict
 - **verdict**: suspicious
 - **score**: 20
-- **family_guess**: Hexorcist keygen
+- **family_guess**: CTF keygen
 - **agreement**: llm_v1_disagree
 - **cross_engine_notes**: Ghidra reports fewer strings (26) and functions (2) compared to IDA (1 string, 3 functions) and Malcat (36 strings, 3 functions), indicating potential data source gaps. The Ghidra imports table is empty, but IDA lists 8 imports, and Malcat confirms consistent imports. Decompilation is sourced from Malcat as per evidence.
-- **summary**: This sample is a keygen template for 'Hexorcist' based on strings and decompiled code. It performs serial validation in a dialog GUI but shows no malicious behavioral intent (e.g., file destruction, C2, persistence, credential theft). All signals align with benign software protection testing or keygen use, with neutral anomalies like section entropy.
+- **summary**: This sample is a keygen template for 'CTF' based on strings and decompiled code. It performs serial validation in a dialog GUI but shows no malicious behavioral intent (e.g., file destruction, C2, persistence, credential theft). All signals align with benign software protection testing or keygen use, with neutral anomalies like section entropy.
 - **source**: llm_judge
 - **model**: configured-llm
 
@@ -362,11 +362,11 @@ No MITRE ATT&CK techniques were identified in this sample. The binary exhibits n
 ## Deep-Dive Summary Evidence
 - **source**: deep_dive_agentic
 - **confidence**: 90
-- **summary**: This is a benign CTF crackme challenge from the Hexorcist series, compiled with FASM. It implements a simple Windows dialog-based password checker using DialogBoxParamA/GetDlgItemTextA, with a 'good!' success string. Only 8 GUI-related imports (zero suspicious signals), 2-3 functions total, and no malicious capabilities (no network, persistence, injection, or crypto). Capa matched only 'terminate process' (ExitProcess). YARA matched only FASM compiler artifacts. The filename 'angr_crackme2.exe' explicitly identifies it as a crackme for symbolic execution practice.
+- **summary**: This is a benign CTF crackme challenge from the CTF challenge series, compiled with FASM. It implements a simple Windows dialog-based password checker using DialogBoxParamA/GetDlgItemTextA, with a 'good!' success string. Only 8 GUI-related imports (zero suspicious signals), 2-3 functions total, and no malicious capabilities (no network, persistence, injection, or crypto). Capa matched only 'terminate process' (ExitProcess). YARA matched only FASM compiler artifacts. The filename 'angr_crackme2.exe' explicitly identifies it as a crackme for symbolic execution practice.
 
 ### deep key_evidence
 - `"Filename 'angr_crackme2.exe' explicitly labeled as crackme"`
-- `"Copyright strings: 'SAS HEXORCIST', 'HEXORCIST ASM TEMPLATE' (CTF challenge series)"`
+- `"Copyright strings: 'SAS CTF', 'HEXORCIST ASM TEMPLATE' (CTF challenge series)"`
 - `"Only 8 benign GUI imports: DialogBoxParamA, GetDlgItemTextA, SetDlgItemTextA, LoadIconA, SendMessageA, EndDialog, GetModuleHandleA, ExitProcess"`
 - `"pe_import_signals: 0 suspicious signals from 8 imports"`
 - `"capa: 1 rule match \u2014 'terminate process' (C0018) only \u2014 benign"`
@@ -707,7 +707,7 @@ Total matches: 10
 ```json
 {
   "sha256": "cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4",
-  "family": "Hexorcist keygen",
+  "family": "CTF keygen",
   "imphash": "e471a30244579dd1c29a70e51f0b18dc",
   "generated_at": "2026-08-09T17:29:14.194031+00:00",
   "string_count": 24,

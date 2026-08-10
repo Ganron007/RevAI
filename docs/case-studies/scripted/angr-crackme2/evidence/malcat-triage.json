@@ -1,6 +1,6 @@
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
   "profile": "triage",
   "limits": {
     "strings_max": 100,
@@ -12,7 +12,7 @@
   "file_summary": {
     "analysis_id": 1,
     "file_name": "angr_crackme2.exe",
-    "file_path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+    "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
     "file_size": 139264,
     "type": "PE",
     "architecture": "X86",

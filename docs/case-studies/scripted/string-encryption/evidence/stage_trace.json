@@ -22,9 +22,9 @@
       "cmd": [
         "/usr/bin/python3",
         "/opt/scripts/intake_v2.py",
-        "/opt/samples/test-corpus/hexorcist/extracted/Hexorcist 3 - Weeks 20-30/Week 30 - Angr and Deobfuscation Continued/string_encryption.exe",
+        "/opt/samples/test-corpus/CTF/extracted/REVAI-LAB-CORPUS-H3/Week 30 - Angr and Deobfuscation Continued/string_encryption.exe",
         "--project-name",
-        "Hexorcist 3 - Weeks 20-30",
+        "REVAI-LAB-CORPUS-H3",
         "--mode",
         "standard"
       ],

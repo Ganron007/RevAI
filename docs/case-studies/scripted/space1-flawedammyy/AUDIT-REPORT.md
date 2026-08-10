@@ -8,7 +8,7 @@
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
-- **Sample:** `/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex`
+- **Sample:** `/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex`
 - **Showcase pack:** `/opt/samples/logs/_showcase_audits/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da`
 
 ## Stage scoreboard
@@ -218,7 +218,7 @@ _No tool retries occurred during this run._
 ```json
 {
   "title": "Malware Analysis Report: space1.ex (5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da)",
-  "markdown": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 20:22:51 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\n\nThis report details the analysis of a malicious Windows PE executable (`space1.ex`, SHA256: `5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da`). The sample is a dropper/loader with a primary objective of evading security software, establishing persistence, and executing a secondary payload. It is not a known, named malware family but exhibits characteristics of a service-based trojan.\n\nThe malware's execution flow begins with a comprehensive anti-analysis phase. It enumerates running processes to detect 13 specific security products from vendors including 360 Security, Comodo, AhnLab, Dr.Web, and ESET. If any of these processes are found, the malware terminates itself to avoid detection in sandboxed or protected environments (source: r2_disassembly, ghidra_query). It also employs anti-debugging techniques by checking for the presence of a debugger (source: ida_query, capa).\n\nUpon successful evasion, the malware dynamically resolves API functions to hinder static analysis, allocates memory with read-write-execute (RWX) permissions, and decrypts an embedded payload. It then injects this payload into a process using Asynchronous Procedure Calls (APCs) (source: capa, pe_imports). To ensure it runs automatically, it creates a Windows service for persistence (source: pe_imports, yara). The binary contains network-capable imports (WININET, WSOCK32), indicating latent command-and-control (C2) or data exfiltration capabilities, though specific C2 servers or exfiltration methods were not observed in the static analysis (source: deep-dive.json).\n\nThe verdict is **malicious** with high confidence (90%). The behavioral intent is clear: defense evasion, persistence, and code execution are core malicious activities, not neutral protection mechanisms. Recommendations include immediate containment, eradication of the service, and network monitoring for related indicators.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n| :--- | :--- |\n| **File Name** | space1.ex |\n| **SHA256** | 5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da |\n| **MD5** | (Not provided in evidence) |\n| **File Type** | PE32 executable (GUI) Intel 80386, for MS Windows |\n| **Architecture** | x86 (32-bit) |\n| **Compiler/Linker** | Microsoft Visual C++ 2008 (source: malcat) |\n| **File Size** | (Not provided in evidence) |\n| **First Submission** | (Not provided in evidence) |\n| **Project** | Malware Analyst Professional - Level 2 |\n| **Sample Path** | /opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex |\n\nThe sample is a standard 32-bit Windows GUI executable. The import hash (imphash) is `1905143b6a38c11e2b30615cb955fd08` (source: rule.yara.json). Analysis confirms it is not a .NET assembly (source: dotnet_a
+  "markdown": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 20:22:51 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\n\nThis report details the analysis of a malicious Windows PE executable (`space1.ex`, SHA256: `5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da`). The sample is a dropper/loader with a primary objective of evading security software, establishing persistence, and executing a secondary payload. It is not a known, named malware family but exhibits characteristics of a service-based trojan.\n\nThe malware's execution flow begins with a comprehensive anti-analysis phase. It enumerates running processes to detect 13 specific security products from vendors including 360 Security, Comodo, AhnLab, Dr.Web, and ESET. If any of these processes are found, the malware terminates itself to avoid detection in sandboxed or protected environments (source: r2_disassembly, ghidra_query). It also employs anti-debugging techniques by checking for the presence of a debugger (source: ida_query, capa).\n\nUpon successful evasion, the malware dynamically resolves API functions to hinder static analysis, allocates memory with read-write-execute (RWX) permissions, and decrypts an embedded payload. It then injects this payload into a process using Asynchronous Procedure Calls (APCs) (source: capa, pe_imports). To ensure it runs automatically, it creates a Windows service for persistence (source: pe_imports, yara). The binary contains network-capable imports (WININET, WSOCK32), indicating latent command-and-control (C2) or data exfiltration capabilities, though specific C2 servers or exfiltration methods were not observed in the static analysis (source: deep-dive.json).\n\nThe verdict is **malicious** with high confidence (90%). The behavioral intent is clear: defense evasion, persistence, and code execution are core malicious activities, not neutral protection mechanisms. Recommendations include immediate containment, eradication of the service, and network monitoring for related indicators.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n| :--- | :--- |\n| **File Name** | space1.ex |\n| **SHA256** | 5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da |\n| **MD5** | (Not provided in evidence) |\n| **File Type** | PE32 executable (GUI) Intel 80386, for MS Windows |\n| **Architecture** | x86 (32-bit) |\n| **Compiler/Linker** | Microsoft Visual C++ 2008 (source: malcat) |\n| **File Size** | (Not provided in evidence) |\n| **First Submission** | (Not provided in evidence) |\n| **Project** | REVAI-LAB-CORPUS-L2 |\n| **Sample Path** | /opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex |\n\nThe sample is a standard 32-bit Windows GUI executable. The import hash (imphash) is `1905143b6a38c11e2b30615cb955fd08` (source: rule.yara.json). Analysis confirms it is not a .NET assembly (source: dotnet_a
 … [16895 more chars]
 ```
 
@@ -376,7 +376,7 @@ The following table summarizes critical aspects, with evidence cited to support 
 ```
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
   "profile": "triage",
   "limits": {
     "strings_max": 100,
@@ -388,7 +388,7 @@ The following table summarizes critical aspects, with evidence cited to support 
   "file_summary": {
     "analysis_id": 1,
     "file_name": "space1.ex",
-    "file_path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+    "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
     "file_size": 160256,
     "type": "PE",
     "architecture": "X86",
@@ -593,7 +593,7 @@ The following table summarizes critical aspects, with evidence cited to support 
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": [
         {
           "id": "$domain_regex",
@@ -605,7 +605,7 @@ The following table summarizes critical aspects, with evidence cited to support 
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": [
         {
           "id": "$ipv6",
@@ -617,7 +617,7 @@ The following table summarizes critical aspects, with evidence cited to support 
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": [
         {
           "id": "$a",
@@ -629,27 +629,27 @@ The following table summarizes critical aspects, with evidence cited to support 
     },
     {
       "rule": "Antivirus",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": []
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": []
     },
     {
       "rule": "IsWindowsGUI",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": []
     },
     {
       "rule": "IsPacked",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": []
     },
     {
       "rule": "HasRichSignature",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": [
         {
           "id": "$a0",
@@ -661,7 +661,7 @@ The following table summarizes critical aspects, with evidence cited to support 
     },
     {
       "rule": "Microsoft_Visual_Basic_v50",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": [
         {
           "id": "$a",
@@ -673,7 +673,7 @@ The following table summarizes critical aspects, with evidence cited to support 
     },
     {
       "rule": "SEH_Save",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": [
         {
           "id": "$a",
@@ -685,7 +685,7 @@ The following table summarizes critical aspects, with evidence cited to support 
     },
     {
       "rule": "SEH_Init",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": [
         {
           "id": "$a",
@@ -703,7 +703,7 @@ The following table summarizes critical aspects, with evidence cited to support 
     },
     {
       "rule": "anti_dbg",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d56
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d56
 … [3011 more chars]
 ```
 
@@ -819,7 +819,7 @@ The following table summarizes critical aspects, with evidence cited to support 
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -831,7 +831,7 @@ The following table summarizes critical aspects, with evidence cited to support 
   "file_summary": {
     "analysis_id": 1,
     "file_name": "space1.ex",
-    "file_path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+    "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
     "file_size": 160256,
     "type": "PE",
     "architecture": "X86",
@@ -1021,7 +1021,7 @@ The following table summarizes critical aspects, with evidence cited to support 
 ```
 # Triage evidence
 sha256: 5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da
-sample_path: /opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex
+sample_path: /opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex
 ghidra_session: ghidra-pe-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da
 ida_session: ida-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da
 
@@ -1319,7 +1319,7 @@ ida_session: ida-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153d
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": [
         {
           "id": "$domain_regex",
@@ -1331,7 +1331,7 @@ ida_session: ida-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153d
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": [
         {
           "id": "$ipv6",
@@ -1343,7 +1343,7 @@ ida_session: ida-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153d
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": [
         {
           "id": "$a",
@@ -1355,27 +1355,27 @@ ida_session: ida-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153d
     },
     {
       "rule": "Antivirus",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": []
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": []
     },
     {
       "rule": "IsWindowsGUI",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": []
     },
     {
       "rule": "IsPacked",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": []
     },
     {
       "rule": "HasRichSignature",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": [
         {
           "id": "$a0",
@@ -1387,7 +1387,7 @@ ida_session: ida-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153d
     },
     {
       "rule": "Microsoft_Visual_Basic_v50",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": [
         {
           "id": "$a",
@@ -1399,7 +1399,7 @@ ida_session: ida-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153d
     },
     {
       "rule": "SEH_Save",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": [
         {
           "id": "$a",
@@ -1411,7 +1411,7 @@ ida_session: ida-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153d
     },
     {
       "rule": "SEH_Init",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": [
         {
           "id": "$a",
@@ -1429,7 +1429,7 @@ ida_session: ida-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153d
     },
     {
       "rule": "anti_dbg",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d56
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d56
 … [2988 more chars]
 ```
 
@@ -1565,7 +1565,7 @@ ida_session: ida-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153d
 ```json
 {
   "r2_ok": true,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
   "disassembly": {
     "0x00402720": "\u250c 556: entry0 ();\n\u2502           0x00402720      6838314000     push str.QHACTIVEDEFENSE.EXE ; 0x403138 ; u\"QHACTIVEDEFENSE.EXE\"\n\u2502           0x00402725      e816ffffff     call 0x402640\n\u2502           0x0040272a      83c404         add esp, 4\n\u2502           0x0040272d      85c0           test eax, eax\n\u2502       \u250c\u2500< 0x0040272f      0f8513020000   jne 0x402948\n\u2502       \u2502   0x00402735      6860314000     push str.QHSAFETRAY.EXE     ; 0x403160 ; u\"QHSAFETRAY.EXE\"\n\u2502       \u2502   0x0040273a      e801ffffff     call 0x402640\n\u2502       \u2502   0x0040273f      83c404         add esp, 4\n\u2502       \u2502   0x00402742      85c0           test eax, eax\n\u2502      \u250c\u2500\u2500< 0x00402744      0f85fe010000   jne 0x402948\n\u2502      \u2502\u2502   0x0040274a      6880314000     push str.QHWATCHDOG.EXE     ; 0x403180 ; u\"QHWATCHDOG.EXE\"\n\u2502      \u2502\u2502   0x0040274f      e8ecfeffff     call 0x402640\n\u2502      \u2502\u2502   0x00402754      83c404         add esp, 4\n\u2502      \u2502\u2502   0x00402757      85c0           test eax, eax\n\u2502     \u250c\u2500\u2500\u2500< 0x00402759      0f85e9010000   jne 0x402948\n\u2502     \u2502\u2502\u2502   0x0040275f      68a0314000     push str.CMDAGENT.EXE       ; 0x4031a0 ; u\"CMDAGENT.EXE\"\n\u2502     \u2502\u2502\u2502   0x00402764      e8d7feffff     call 0x402640\n\u2502     \u2502\u2502\u2502   0x00402769      83c404         add esp, 4\n\u2502     \u2502\u2502\u2502   0x0040276c      85c0           test eax, eax\n\u2502    \u250c\u2500\u2500\u2500\u2500< 0x0040276e      0f85d4010000   jne 0x402948\n\u2502    \u2502\u2502\u2502\u2502   0x00402774      68bc314000     push str.CIS.EXE            ; 0x4031bc ; u\"CIS.EXE\"\n\u2502    \u2502\u2502\u2502\u2502   0x00402779      e8c2feffff     call 0x402640\n\u2502    \u2502\u2502\u2502\u2502   0x0040277e      83c404         add esp, 4\n\u2502    \u2502\u2502\u2502\u2502   0x00402781      85c0           test eax, eax\n\u2502   \u250c\u2500\u2500\u2500\u2500\u2500< 0x00402783      0f85bf010000   jne 0x402948\n\u2502   \u2502\u2502\u2502\u2502\u2502   0x00402789      68cc314000     push str.V3LITE.EXE         ; 0x4031cc ; u\"V3LITE.EXE\"\n\u2502   \u2502\u2502\u2502\u2502\u2502   0x0040278e      e8adfeffff     call 0x402640\n\u2502   \u2502\u2502\u2502\u2502\u2502   0x00402793      83c404         add esp, 4\n\u2502   \u2502\u2502\u2502\u2502\u2502   0x00402796      85c0           test eax, eax\n\u2502  \u250c\u2500\u2500\u2500\u2500\u2500\u2500< 0x00402798      0f85aa010000   jne 0x402948\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   0x0040279e      68e4314000     push str.V3MAIN.EXE         ; 0x4031e4 ; u\"V3MAIN.EXE\"\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   0x004027a3      e898feffff     call 0x402640\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   0x004027a8      83c404         add esp, 4\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   0x004027ab      85c0           test eax, eax\n\u2502 \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x004027ad      0f8595010000   jne 0x402948\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027b3      68fc314000     push str.V3SP.EXE           ; 0x4031fc ; u\"V3SP.EXE\"\n\u2502 \u2502\u2502\u2502\u2502\u2502\u25
 … [1099 more chars]
@@ -1577,7 +1577,7 @@ ida_session: ida-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153d
 {
   "upx_ok": false,
   "is_packed": false,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
   "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTested 0 file"
 }
 ```
@@ -1587,7 +1587,7 @@ ida_session: ida-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153d
 ```json
 {
   "xorsearch_ok": true,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
   "candidates": [
     "Found XOR 00 position 00000000: 000000E0 ........!..L.!This program cannot be r"
   ],
@@ -1602,7 +1602,7 @@ ida_session: ida-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153d
 ```json
 {
   "speakeasy_ok": true,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
   "module_base": null,
   "entry_point": null,
   "key_events": [],
@@ -1618,7 +1618,7 @@ ida_session: ida-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153d
   "frida_available": true,
   "frida_version": "17.16.4",
   "pe_probe": {
-    "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+    "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
     "exists": true
   }
 }
@@ -1681,7 +1681,7 @@ ida_session: ida-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153d
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": [
         {
           "id": "$domain_regex",
@@ -1701,7 +1701,7 @@ ida_session: ida-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153d
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -1818,7 +1818,7 @@ ida_session: ida-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153d
 ```json
 {
   "r2_ok": true,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
   "disassembly": {
     "0x00402720": "\u250c 556: entry0 ();\n\u2502           0x00402720      6838314000     push str.QHACTIVEDEFENSE.EXE ; 0x403138 ; u\"QHACTIVEDEFENSE.EXE\"\n\u2502           0x00402725      e816ffffff     call 0
 … [4199 more chars]
@@ -1830,7 +1830,7 @@ ida_session: ida-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153d
 {
   "upx_ok": false,
   "is_packed": false,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
   "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 202
 … [23 more chars]
 ```
@@ -1840,7 +1840,7 @@ ida_session: ida-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153d
 ```json
 {
   "xorsearch_ok": true,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
   "candidates": [
     "Found XOR 00 position 00000000: 000000E0 ........!..L.!This program cannot be r"
   ],
@@ -1854,7 +1854,7 @@ ida_session: ida-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153d
 ```json
 {
   "speakeasy_ok": true,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
   "module_base": null,
   "entry_point": null,
   "key_events": [],
@@ -1870,7 +1870,7 @@ ida_session: ida-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153d
   "frida_available": true,
   "frida_version": "17.16.4",
   "pe_probe": {
-    "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+    "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
     "exists": true
   }
 }
@@ -1881,7 +1881,7 @@ ida_session: ida-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153d
 ```json
 {
   "shellcode_ok": true,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
   "sections_analyzed": [
     {
       "name": ".text",
@@ -2440,7 +2440,7 @@ ida_session: ida-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153d
 ```json
 {
   "r2_ok": true,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
   "disassembly": {
     "0x00402720": "\u250c 556: entry0 ();\n\u2502           0x00402720      6838314000     push str.QHACTIVEDEFENSE.EXE ; 0x403138 ; u\"QHACTIVEDEFENSE.EXE\"\n\u2502           0x00402725      e816ffffff     call 0
 … [4199 more chars]

@@ -1,6 +1,6 @@
 {
   "sha256": "1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39",
-  "sample_path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+  "sample_path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
   "model": "mimo-v2.5-pro",
   "generated_at": 1786284744.191834,
   "triage": {

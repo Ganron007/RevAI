@@ -22,9 +22,9 @@
       "cmd": [
         "/usr/bin/python3",
         "/opt/scripts/intake_v2.py",
-        "/opt/samples/test-corpus/maos/extracted/Malware Analyst Professional - Level 2/5 - Dancing with Self-defending Malware/space1.ex",
+        "/opt/samples/test-corpus/maos/extracted/REVAI-LAB-CORPUS-L2/5 - Dancing with Self-defending Malware/space1.ex",
         "--project-name",
-        "Malware Analyst Professional - Level 2",
+        "REVAI-LAB-CORPUS-L2",
         "--mode",
         "standard"
       ],

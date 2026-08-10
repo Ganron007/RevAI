@@ -1,4 +1,4 @@
-{"rule": "domain", "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz", "strings": [{"id": "$domain_regex", "offset": 0, "length": 2, "xor_key": null}]}
-{"rule": "IP", "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz", "strings": [{"id": "$ipv6", "offset": 13421, "length": 2, "xor_key": null}]}
-{"rule": "contains_base64", "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz", "strings": [{"id": "$a", "offset": 1400104, "length": 12, "xor_key": null}]}
-{"rule": "url", "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz", "strings": [{"id": "$url_regex", "offset": 18038703, "length": 20, "xor_key": null}]}
+{"rule": "domain", "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz", "strings": [{"id": "$domain_regex", "offset": 0, "length": 2, "xor_key": null}]}
+{"rule": "IP", "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz", "strings": [{"id": "$ipv6", "offset": 13421, "length": 2, "xor_key": null}]}
+{"rule": "contains_base64", "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz", "strings": [{"id": "$a", "offset": 1400104, "length": 12, "xor_key": null}]}
+{"rule": "url", "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz", "strings": [{"id": "$url_regex", "offset": 18038703, "length": 20, "xor_key": null}]}

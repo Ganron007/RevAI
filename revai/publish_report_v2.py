@@ -818,7 +818,7 @@ def main():
         (ev_dir / "03-technical-evidence.md").write_text(technical_evidence)
         # Standalone filled evidence bundle (V5.16.6)
         (LOGS / args.sha256 / "EVIDENCE-BUNDLE.md").write_text(technical_evidence)
-        # NOTE: no scorecard — RevAI does not use the RevEng run_scorecard /
+        # NOTE: no scorecard — RevAI does not use the legacy run_scorecard /
         # RAG verification harness. Tool I/O truth is enforced by
         # audit_pipeline.py (tools_all_ok, engine_citation_ok, ...).
         tech_evidence_for_prompt = technical_evidence

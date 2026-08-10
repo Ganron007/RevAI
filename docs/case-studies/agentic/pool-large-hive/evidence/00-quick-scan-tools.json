@@ -2047,6 +2047,6 @@
       "VirtualProtect"
     ],
     "elapsed_s": 0.3,
-    "note": "MAoS BEM entropy + Hexorcist packer checklist; heuristic label, unpacking loop still required for non-UPX packers."
+    "note": "MAoS BEM entropy + CTF packer checklist; heuristic label, unpacking loop still required for non-UPX packers."
   }
 }

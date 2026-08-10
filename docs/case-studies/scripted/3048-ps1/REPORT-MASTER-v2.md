@@ -21,7 +21,7 @@ This report details the analysis of a PowerShell script (SHA256: 14a42d6418b3810
 | Attribute | Value |
 |---|---|
 | SHA256 | 14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 |
-| File Path | /opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1 |
+| File Path | /opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1 |
 | Project | day6 |
 | File Type | text/utf8 (PowerShell script) |
 | Size | 2800 bytes |

@@ -23,8 +23,8 @@ The sample metadata is derived from Malcat's analysis and file properties. Key a
 | Attribute | Value |
 |---|---|
 | SHA256 | 36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9 |
-| Sample Path | /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe |
-| Project Name | Hexorcist 1 - Weeks 1-8 |
+| Sample Path | /opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe |
+| Project Name | REVAI-LAB-CORPUS-H1 |
 | File Size | 52224 bytes |
 | File Type | PE (Portable Executable) |
 | Architecture | X86 |
@@ -155,14 +155,14 @@ The audit trail from the evidence pack includes SQL queries and timestamps, all 
 
 ## 13. Appendix B: Analysis Environment
 
-Analysis was conducted in the project 'Hexorcist 1 - Weeks 1-8' with sample path /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe. The environment included Frida version 17.16.4 for dynamic probing (source: Frida Probe). Tools like Malcat, YARA, radare2, IDA, Ghidra, capa, and FLOSS were integrated into the analysis pipeline. The file was analyzed as a PE X86 executable, with all tools configured for standard malware analysis workflows. No sandbox or virtualization details were provided, but the analysis relied on static and partial dynamic methods.
+Analysis was conducted in the project 'REVAI-LAB-CORPUS-H1' with sample path /opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe. The environment included Frida version 17.16.4 for dynamic probing (source: Frida Probe). Tools like Malcat, YARA, radare2, IDA, Ghidra, capa, and FLOSS were integrated into the analysis pipeline. The file was analyzed as a PE X86 executable, with all tools configured for standard malware analysis workflows. No sandbox or virtualization details were provided, but the analysis relied on static and partial dynamic methods.
 ## Appendix: Full Structured Evidence Pack
 
 # Technical Evidence Pack
 
 **sha256:** 36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9  
-**sample_path:** /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe  
-**project_name:** Hexorcist 1 - Weeks 1-8
+**sample_path:** /opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe  
+**project_name:** REVAI-LAB-CORPUS-H1
 
 > Every table below is copied from stage JSON. Technical narrative must cite these rows (engine + address/rule), not invent evidence.
 

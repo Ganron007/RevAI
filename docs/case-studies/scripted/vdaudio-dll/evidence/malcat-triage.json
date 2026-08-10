@@ -1,6 +1,6 @@
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+  "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
   "profile": "triage",
   "limits": {
     "strings_max": 100,
@@ -12,7 +12,7 @@
   "file_summary": {
     "analysis_id": 1,
     "file_name": "vdaudio.dll",
-    "file_path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+    "file_path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
     "file_size": 13312,
     "type": "PE",
     "architecture": "X86",

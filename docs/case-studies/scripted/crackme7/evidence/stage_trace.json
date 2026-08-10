@@ -22,9 +22,9 @@
       "cmd": [
         "/usr/bin/python3",
         "/opt/scripts/intake_v2.py",
-        "/opt/samples/test-corpus/hexorcist/extracted/Hexorcist 1 - Weeks 1-8/Week 7 - Unobfuscation - Crackme7 - 98% Emulated Instructions/crackme7.exe",
+        "/opt/samples/test-corpus/CTF/extracted/REVAI-LAB-CORPUS-H1/Week 7 - Unobfuscation - Crackme7 - 98% Emulated Instructions/crackme7.exe",
         "--project-name",
-        "Hexorcist 1 - Weeks 1-8",
+        "REVAI-LAB-CORPUS-H1",
         "--mode",
         "standard"
       ],

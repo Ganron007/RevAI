@@ -1,6 +1,6 @@
 # Triage evidence
 sha256: 1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a
-sample_path: /opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex
+sample_path: /opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex
 ghidra_session: ghidra-pe-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a
 ida_session: ida-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a
 
@@ -58,7 +58,7 @@ rows: (empty)
 label: IDA database summary
 sql: SELECT * FROM welcome
 columns: summary, idasql_version, processor, is_64bit, min_ea, max_ea, start_ea, entry_name, funcs_count, segments_count, names_count, strings_count, filename, input_file_path, idb_path, md5, sha256
-  metapc 32-bit | entry: start @ 0x40A30F | funcs: 8 | segs: 5 | strings: 320 | 0.0.17 | metapc | 0 | 0x401000 | 0x410000 | 0x40A30F | start | 8 | 5 | 4 | 320 | darkside.ex | /opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex | /opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex.i64 | c4da0137cbb99626fd44da707ae1bca8 | 1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a
+  metapc 32-bit | entry: start @ 0x40A30F | funcs: 8 | segs: 5 | strings: 320 | 0.0.17 | metapc | 0 | 0x401000 | 0x410000 | 0x40A30F | start | 8 | 5 | 4 | 320 | darkside.ex | /opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex | /opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex.i64 | c4da0137cbb99626fd44da707ae1bca8 | 1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a
 
 ### engine: ida
 label: Total function count (IDA)
@@ -355,7 +355,7 @@ EntryPoint {
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": [
         {
           "id": "$domain_regex",
@@ -367,7 +367,7 @@ EntryPoint {
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": [
         {
           "id": "$ipv6",
@@ -379,7 +379,7 @@ EntryPoint {
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": [
         {
           "id": "$a",
@@ -391,7 +391,7 @@ EntryPoint {
     },
     {
       "rule": "url",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": [
         {
           "id": "$url_regex",
@@ -511,7 +511,7 @@ EntryPoint {
 ### malcat deep profile (raw JSON, capped)
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -523,7 +523,7 @@ EntryPoint {
   "file_summary": {
     "analysis_id": 1,
     "file_name": "darkside.ex",
-    "file_path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+    "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
     "file_size": 61784,
     "type": "PE",
     "architecture": "X86",

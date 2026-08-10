@@ -8,7 +8,7 @@
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
-- **Sample:** `/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe`
+- **Sample:** `/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe`
 - **Showcase pack:** `/opt/samples/logs/_showcase_audits/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509`
 
 ## Stage scoreboard
@@ -219,7 +219,7 @@ _No tool retries occurred during this run._
 ```json
 {
   "title": "GuLoader (CloudEyE) Malware Analysis Report",
-  "markdown": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 15:53:54 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | suspicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n# GuLoader (CloudEyE) Malware Analysis Report\n\n## Executive Summary\n\nThis report presents the analysis of a PE32 executable identified as GuLoader (also known as CloudEyE), a well-known Visual Basic 6-based malware dropper/loader. The sample exhibits heavy obfuscation, dynamic API resolution via shellcode, and XOR-encoded strings, which are hallmarks of the GuLoader family. The upstream triage verdict is **suspicious** due to the absence of direct behavioral evidence (e.g., C2, persistence, data exfiltration) in the static analysis phase. However, the deep-dive analysis, corroborated by multiple tools, strongly indicates malicious intent based on the sample's structure, obfuscation techniques, and known malware family characteristics. The sample's primary function is to decrypt and execute an embedded shellcode payload, which would then download and run additional malware. We assess with high confidence that this is a malicious dropper, but the final payload is not present in this sample, limiting the observable impact.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|---|---|\n| SHA256 | c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509 |\n| File Name | guLoader.exe |\n| File Path | /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe |\n| File Size | 49,152 bytes |\n| File Type | PE32 executable (GUI) Intel 80386, for MS Windows |\n| Architecture | x86 (32-bit) |\n| Compilation | Visual Basic 6.0 (source: yara, capa, malcat) |\n| Import Hash (Imphash) | e5dc9f90e63a8223ac7d0f9627dcbb68 (source: rule.yara.json) |\n| Project Name | Hexorcist 3 - Weeks 20-30 |\n\n## 2. Classification\n\n| Field | Value |\n|---|---|\n| Verdict | **Malicious** |\n| Confidence | 90% |\n| Family | GuLoader (CloudEyE) |\n| Type | Dropper / Loader |\n| Upstream Triage Verdict | Suspicious (score: 40) |\n| Upstream Family Guess | Unknown (VisualBasic Loader) |\n\n**Justification:** The upstream triage verdict of \"suspicious\" is based on static indicators (high entropy, anomalies, obfuscated code) without behavioral evidence. Our deep-dive analysis, however, identifies the sample as GuLoader based on its specific structural and behavioral characteristics: a VB6 runtime with no Win32 API imports, dynamic API resolution via shellcode, XOR-encoded strings, and fake version metadata. These are not generic obfuscation signals but are specific to the GuLoader malware family. The sample's sole purpose is to decrypt and execute a payload, which is a malicious action. Therefore, we upgrade the verdict to **malicious** with high confidence. (source: deep-dive.json)\n\n## 3. Background & Family Lineage\n\nGuLoader (also known as CloudEyE) is a commercial-grade malware loader/dropper that has been active since at least 2019. It is primarily used to deliver other malware payloads, such as information stealers (e.
+  "markdown": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 15:53:54 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | suspicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n# GuLoader (CloudEyE) Malware Analysis Report\n\n## Executive Summary\n\nThis report presents the analysis of a PE32 executable identified as GuLoader (also known as CloudEyE), a well-known Visual Basic 6-based malware dropper/loader. The sample exhibits heavy obfuscation, dynamic API resolution via shellcode, and XOR-encoded strings, which are hallmarks of the GuLoader family. The upstream triage verdict is **suspicious** due to the absence of direct behavioral evidence (e.g., C2, persistence, data exfiltration) in the static analysis phase. However, the deep-dive analysis, corroborated by multiple tools, strongly indicates malicious intent based on the sample's structure, obfuscation techniques, and known malware family characteristics. The sample's primary function is to decrypt and execute an embedded shellcode payload, which would then download and run additional malware. We assess with high confidence that this is a malicious dropper, but the final payload is not present in this sample, limiting the observable impact.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|---|---|\n| SHA256 | c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509 |\n| File Name | guLoader.exe |\n| File Path | /opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe |\n| File Size | 49,152 bytes |\n| File Type | PE32 executable (GUI) Intel 80386, for MS Windows |\n| Architecture | x86 (32-bit) |\n| Compilation | Visual Basic 6.0 (source: yara, capa, malcat) |\n| Import Hash (Imphash) | e5dc9f90e63a8223ac7d0f9627dcbb68 (source: rule.yara.json) |\n| Project Name | REVAI-LAB-CORPUS-H3 |\n\n## 2. Classification\n\n| Field | Value |\n|---|---|\n| Verdict | **Malicious** |\n| Confidence | 90% |\n| Family | GuLoader (CloudEyE) |\n| Type | Dropper / Loader |\n| Upstream Triage Verdict | Suspicious (score: 40) |\n| Upstream Family Guess | Unknown (VisualBasic Loader) |\n\n**Justification:** The upstream triage verdict of \"suspicious\" is based on static indicators (high entropy, anomalies, obfuscated code) without behavioral evidence. Our deep-dive analysis, however, identifies the sample as GuLoader based on its specific structural and behavioral characteristics: a VB6 runtime with no Win32 API imports, dynamic API resolution via shellcode, XOR-encoded strings, and fake version metadata. These are not generic obfuscation signals but are specific to the GuLoader malware family. The sample's sole purpose is to decrypt and execute a payload, which is a malicious action. Therefore, we upgrade the verdict to **malicious** with high confidence. (source: deep-dive.json)\n\n## 3. Background & Family Lineage\n\nGuLoader (also known as CloudEyE) is a commercial-grade malware loader/dropper that has been active since at least 2019. It is primarily used to deliver other malware payloads, such as information stealers (e.
 … [14124 more chars]
 ```
 
@@ -254,13 +254,13 @@ This report presents the analysis of a PE32 executable identified as GuLoader (a
 |---|---|
 | SHA256 | c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509 |
 | File Name | guLoader.exe |
-| File Path | /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe |
+| File Path | /opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe |
 | File Size | 49,152 bytes |
 | File Type | PE32 executable (GUI) Intel 80386, for MS Windows |
 | Architecture | x86 (32-bit) |
 | Compilation | Visual Basic 6.0 (source: yara, capa, malcat) |
 | Import Hash (Imphash) | e5dc9f90e63a8223ac7d0f9627dcbb68 (source: rule.yara.json) |
-| Project Name | Hexorcist 3 - Weeks 20-30 |
+| Project Name | REVAI-LAB-CORPUS-H3 |
 
 ## 2. Classification
 
@@ -388,7 +388,7 @@ We assess the sample as likely malici
 ```
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
   "profile": "triage",
   "limits": {
     "strings_max": 100,
@@ -400,7 +400,7 @@ We assess the sample as likely malici
   "file_summary": {
     "analysis_id": 1,
     "file_name": "guLoader.exe",
-    "file_path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+    "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
     "file_size": 49152,
     "type": "PE",
     "architecture": "X86",
@@ -468,7 +468,7 @@ We assess the sample as likely malici
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -480,7 +480,7 @@ We assess the sample as likely malici
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$a",
@@ -492,17 +492,17 @@ We assess the sample as likely malici
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": []
     },
     {
       "rule": "IsWindowsGUI",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": []
     },
     {
       "rule": "HasRichSignature",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$a0",
@@ -514,7 +514,7 @@ We assess the sample as likely malici
     },
     {
       "rule": "Microsoft_Visual_Basic_v50v60",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$a",
@@ -526,7 +526,7 @@ We assess the sample as likely malici
     },
     {
       "rule": "Microsoft_Visual_Basic_v50",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$a",
@@ -544,7 +544,7 @@ We assess the sample as likely malici
     },
     {
       "rule": "Microsoft_Visual_Basic_v50_v60",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$c",
@@ -556,7 +556,7 @@ We assess the sample as likely malici
     },
     {
       "rule": "Microsoft_Visual_Basic_v50_additional",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$a",
@@ -568,7 +568,7 @@ We assess the sample as likely malici
     },
     {
       "rule": "Microsoft_Visual_Basic_v50v60_additional",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$a",
@@ -580,7 +580,7 @@ We assess the sample as likely malici
     },
     {
       "rule": "SEH__vba",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
   
@@ -699,7 +699,7 @@ We assess the sample as likely malici
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -711,7 +711,7 @@ We assess the sample as likely malici
   "file_summary": {
     "analysis_id": 1,
     "file_name": "guLoader.exe",
-    "file_path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+    "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
     "file_size": 49152,
     "type": "PE",
     "architecture": "X86",
@@ -839,7 +839,7 @@ We assess the sample as likely malici
 ```
 # Triage evidence
 sha256: c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509
-sample_path: /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe
+sample_path: /opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe
 ghidra_session: ghidra-pe-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509
 ida_session: ida-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509
 
@@ -949,7 +949,7 @@ ida_session: ida-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe94450
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -961,7 +961,7 @@ ida_session: ida-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe94450
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$a",
@@ -973,17 +973,17 @@ ida_session: ida-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe94450
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": []
     },
     {
       "rule": "IsWindowsGUI",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": []
     },
     {
       "rule": "HasRichSignature",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$a0",
@@ -995,7 +995,7 @@ ida_session: ida-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe94450
     },
     {
       "rule": "Microsoft_Visual_Basic_v50v60",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$a",
@@ -1007,7 +1007,7 @@ ida_session: ida-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe94450
     },
     {
       "rule": "Microsoft_Visual_Basic_v50",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$a",
@@ -1025,7 +1025,7 @@ ida_session: ida-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe94450
     },
     {
       "rule": "Microsoft_Visual_Basic_v50_v60",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$c",
@@ -1037,7 +1037,7 @@ ida_session: ida-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe94450
     },
     {
       "rule": "Microsoft_Visual_Basic_v50_additional",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$a",
@@ -1049,7 +1049,7 @@ ida_session: ida-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe94450
     },
     {
       "rule": "Microsoft_Visual_Basic_v50v60_additional",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$a",
@@ -1061,7 +1061,7 @@ ida_session: ida-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe94450
     },
     {
       "rule": "SEH__vba",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
   
@@ -1200,7 +1200,7 @@ ida_session: ida-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe94450
 ```json
 {
   "r2_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
   "disassembly": {
     "0x00401288": "\u250c 236: entry0 ();\n\u2502           0x00401288      6868134000     push 0x401368               ; 'h\\x13@' ; \"VB5!6&*\"\n\u2502           0x0040128d      e8f0ffffff     call 0x401282\n\u2502           0x00401292      0000           add byte [eax], al\n\u2502           0x00401294      0000           add byte [eax], al\n\u2502           0x00401296      0000           add byte [eax], al\n\u2502           0x00401298      3000           xor byte [eax], al\n\u2502           0x0040129a      0000           add byte [eax], al\n\u2502           0x0040129c      40             inc eax\n\u2502           0x0040129d      0000           add byte [eax], al\n\u2502           0x0040129f      0000           add byte [eax], al\n\u2502           0x004012a1      0000           add byte [eax], al\n\u2502           0x004012a3      003a           add byte [edx], bh\n\u2502           0x004012a5      6a88           push 0xffffffffffffff88\n\u2502           0x004012a7      37             aaa\n\u2502           0x004012a8      a15c9c4082     mov eax, dword [0x82409c5c] ; [0x82409c5c:4]=-1\n\u2502           0x004012ad      05e818098c     add eax, 0x8c0918e8\n\u2502           0x004012b2      3d8c000000     cmp eax, 0x8c               ; 140\n\u2502           0x004012b7      0000           add byte [eax], al\n\u2502           0x004012b9      0001           add byte [ecx], al\n\u2502           0x004012bb      0000           add byte [eax], al\n\u2502           0x004012bd      00426f         add byte [edx + 0x6f], al\n\u2502       \u250c\u2500< 0x004012c0      7264           jb 0x401326\n\u2502      \u250c\u2500\u2500< 0x004012c2      657261         jb 0x401326\n\u2502      \u2502\u2502   0x004012c5      6461           popal\n\u2502      \u2502\u2502   0x004012c7      6d             insd dword es:[edi], dx\n\u2502      \u2502\u2502   0x004012c8      61             popal\n\u2502     \u250c\u2500\u2500\u2500< 0x004012c9      7370           jae 0x40133b\n\u2502    \u250c\u2500\u2500\u2500\u2500< 0x004012cb      7265           jb 0x401332\n\u2502    \u2502\u2502\u2502\u2502   0x004012cd      690043617074   imul eax, dword [eax], 0x74706143\n\u2502    \u2502\u2502\u2502\u2502   0x004012d3      690000000006   imul eax, dword [eax], 0x6000000\n\u2502    \u2502\u2502\u2502\u2502   0x004012d9      0000           add byte [eax], al\n\u2502    \u2502\u2502\u2502\u2502   0x004012db      00ec           add ah, ch\n\u2502    \u2502\u2502\u2502\u2502   0x004012dd      1d40000100     sbb eax, 0x10040\n\u2502    \u2502\u2502\u2502\u2502   0x004012e2      0100           add dword [eax], eax\n\u2502    \u2502\u2502\u2502\u2502   0x004012e4      1c1a           sbb al, 0x1a\n\u2502    \u2502\u2502\u2502\u2502   0x004012e6      40             inc eax\n\u2502    \u2502\u2502\u2502\u2502   0x004012e7      0000           add byte [eax], al\n\u2502    \u2502\u2502\u2502\u2502   0x004012e9      0000           add byte [eax], al\n\u2502    \u2502\u2502\u2502\u2502   0x004012eb      00ff           add bh, bh\n..\n\u2502    \u2502\u2502\u2514\u2514\u2500> 0x00401326      88b94847ed26   mov byte [ecx + 0x26ed4748], bh ; [0x26ed4748:1]=255\n\u2502    \u2502\u2502     0x0040132c      0000           add byte [eax], al\n\u2502    \u2502\u2502     0x0040132e      0000           add byte [eax], al\n\u2502    \u
 … [5502 more chars]
@@ -1212,7 +1212,7 @@ ida_session: ida-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe94450
 {
   "upx_ok": false,
   "is_packed": false,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
   "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTested 0 file"
 }
 ```
@@ -1222,7 +1222,7 @@ ida_session: ida-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe94450
 ```json
 {
   "xorsearch_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
   "candidates": [
     "Found XOR 00 position 00000000: 000000B8 ........!..L.!This program cannot be r"
   ],
@@ -1237,7 +1237,7 @@ ida_session: ida-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe94450
 ```json
 {
   "speakeasy_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
   "module_base": null,
   "entry_point": null,
   "key_events": [],
@@ -1253,7 +1253,7 @@ ida_session: ida-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe94450
   "frida_available": true,
   "frida_version": "17.16.4",
   "pe_probe": {
-    "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+    "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
     "exists": true,
     "hook_candidates": [
       "MSVBVM60.DLL!_CIcos",
@@ -1323,7 +1323,7 @@ ida_session: ida-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe94450
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -1343,7 +1343,7 @@ ida_session: ida-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe94450
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -1442,7 +1442,7 @@ ida_session: ida-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe94450
 ```json
 {
   "r2_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
   "disassembly": {
     "0x00401288": "\u250c 236: entry0 ();\n\u2502           0x00401288      6868134000     push 0x401368               ; 'h\\x13@' ; \"VB5!6&*\"\n\u2502           0x0040128d      e8f0ffffff     call 0x401282\n\u2502        
 … [8602 more chars]
@@ -1454,7 +1454,7 @@ ida_session: ida-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe94450
 {
   "upx_ok": false,
   "is_packed": false,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
   "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTes
 … [13 more chars]
 ```
@@ -1464,7 +1464,7 @@ ida_session: ida-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe94450
 ```json
 {
   "xorsearch_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
   "candidates": [
     "Found XOR 00 position 00000000: 000000B8 ........!..L.!This program cannot be r"
   ],
@@ -1478,7 +1478,7 @@ ida_session: ida-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe94450
 ```json
 {
   "speakeasy_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
   "module_base": null,
   "entry_point": null,
   "key_events": [],
@@ -1494,7 +1494,7 @@ ida_session: ida-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe94450
   "frida_available": true,
   "frida_version": "17.16.4",
   "pe_probe": {
-    "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+    "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
     "exists": true,
     "hook_candidates": [
       "MSVBVM60.DLL!_CIcos",
@@ -1511,7 +1511,7 @@ ida_session: ida-c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe94450
 ```json
 {
   "shellcode_ok": false,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
   "sections_analyzed": [
     {
       "name": ".text",

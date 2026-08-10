@@ -106,7 +106,7 @@
         "matches": [
           {
             "rule": "domain",
-            "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+            "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
             "strings": [
               {
                 "id": "$domain_regex",
@@ -118,7 +118,7 @@
           },
           {
             "rule": "IP",
-            "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+            "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
             "strings": [
               {
                 "id": "$ipv6",
@@ -130,7 +130,7 @@
           },
           {
             "rule": "contains_base64",
-            "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+            "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
             "strings": [
               {
                 "id": "$a",
@@ -142,7 +142,7 @@
           },
           {
             "rule": "url",
-            "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+            "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
             "strings": [
               {
                 "id": "$url_regex",
@@ -182,7 +182,7 @@
       "reason": "Required checklist tool (malcat)",
       "result": {
         "analysis_id": 1,
-        "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+        "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
         "profile": "deep",
         "limits": {
           "strings_max": 300,
@@ -194,7 +194,7 @@
         "file_summary": {
           "analysis_id": 1,
           "file_name": "steel.saz",
-          "file_path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+          "file_path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
           "file_size": 18038723,
           "type": "ZIP",
           "architecture": "NONE",
@@ -2713,7 +2713,7 @@
       "reason": "Required checklist tool (r2_decomp)",
       "result": {
         "r2_ok": true,
-        "sample": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+        "sample": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
         "disassembly": {
           "0x00000000": "\u250c 29: fcn.00000000 ();\n\u2502           0x00000000      50             push rax\n\u2502           0x00000001      4b030414       add rax, qword [r12 + r10]\n\u2502           0x00000005      0000           add byte [rax], al\n\u2502           0x00000007      0000           add byte [rax], al\n\u2502           0x00000009      00d3           add bl, dl\n\u2502       \u250c\u2500< 0x0000000b      7ab5           jp 0xffffffffffffffc2\n\u2502       \u2502   0x0000000d      52             push rdx\n\u2502       \u2502   0x0000000e      0000           add byte [rax], al\n\u2502       \u2502   0x00000010      0000           add byte [rax], al\n\u2502       \u2502   0x00000012      0000           add byte [rax], al\n\u2502       \u2502   0x00000014      0000           add byte [rax], al\n\u2502       \u2502   0x00000016      0000           add byte [rax], al\n\u2502       \u2502   0x00000018      0000           add byte [rax], al\n\u2502       \u2502   0x0000001a      0400           add al, 0\n\u2514       \u2502   0x0000001c      1f             invalid"
         },
@@ -2734,7 +2734,7 @@
       "reason": "Required checklist tool (xor)",
       "result": {
         "xorsearch_ok": false,
-        "sample": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+        "sample": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
         "candidates": [],
         "xorsearch_stdout": "",
         "xorsearch_stderr": "",
@@ -2810,7 +2810,7 @@
       "reason": "langgraph tool call",
       "result": {
         "analysis_id": 1,
-        "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+        "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
         "profile": "deep",
         "limits": {
           "strings_max": 300,
@@ -2822,7 +2822,7 @@
         "file_summary": {
           "analysis_id": 1,
           "file_name": "steel.saz",
-          "file_path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+          "file_path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
           "file_size": 18038723,
           "type": "ZIP",
           "architecture": "NONE",
@@ -5343,7 +5343,7 @@
         "matches": [
           {
             "rule": "domain",
-            "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+            "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
             "strings": [
               {
                 "id": "$domain_regex",
@@ -5355,7 +5355,7 @@
           },
           {
             "rule": "IP",
-            "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+            "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
             "strings": [
               {
                 "id": "$ipv6",
@@ -5367,7 +5367,7 @@
           },
           {
             "rule": "contains_base64",
-            "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+            "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
             "strings": [
               {
                 "id": "$a",
@@ -5379,7 +5379,7 @@
           },
           {
             "rule": "url",
-            "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+            "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
             "strings": [
               {
                 "id": "$url_regex",
@@ -5522,7 +5522,7 @@
       "matches": [
         {
           "rule": "domain",
-          "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+          "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
           "strings": [
             {
               "id": "$domain_regex",
@@ -5534,7 +5534,7 @@
         },
         {
           "rule": "IP",
-          "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+          "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
           "strings": [
             {
               "id": "$ipv6",
@@ -5546,7 +5546,7 @@
         },
         {
           "rule": "contains_base64",
-          "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+          "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
           "strings": [
             {
               "id": "$a",
@@ -5558,7 +5558,7 @@
         },
         {
           "rule": "url",
-          "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+          "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
           "strings": [
             {
               "id": "$url_regex",
@@ -5587,7 +5587,7 @@
     },
     "checklist_malcat_analyze": {
       "analysis_id": 1,
-      "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "profile": "deep",
       "limits": {
         "strings_max": 300,
@@ -5599,7 +5599,7 @@
       "file_summary": {
         "analysis_id": 1,
         "file_name": "steel.saz",
-        "file_path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+        "file_path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
         "file_size": 18038723,
         "type": "ZIP",
         "architecture": "NONE",
@@ -8109,7 +8109,7 @@
     },
     "checklist_r2_decompile": {
       "r2_ok": true,
-      "sample": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "sample": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "disassembly": {
         "0x00000000": "\u250c 29: fcn.00000000 ();\n\u2502           0x00000000      50             push rax\n\u2502           0x00000001      4b030414       add rax, qword [r12 + r10]\n\u2502           0x00000005      0000           add byte [rax], al\n\u2502           0x00000007      0000           add byte [rax], al\n\u2502           0x00000009      00d3           add bl, dl\n\u2502       \u250c\u2500< 0x0000000b      7ab5           jp 0xffffffffffffffc2\n\u2502       \u2502   0x0000000d      52             push rdx\n\u2502       \u2502   0x0000000e      0000           add byte [rax], al\n\u2502       \u2502   0x00000010      0000           add byte [rax], al\n\u2502       \u2502   0x00000012      0000           add byte [rax], al\n\u2502       \u2502   0x00000014      0000           add byte [rax], al\n\u2502       \u2502   0x00000016      0000           add byte [rax], al\n\u2502       \u2502   0x00000018      0000           add byte [rax], al\n\u2502       \u2502   0x0000001a      0400           add al, 0\n\u2514       \u2502   0x0000001c      1f             invalid"
       },
@@ -8121,7 +8121,7 @@
     },
     "checklist_xor_string_search": {
       "xorsearch_ok": false,
-      "sample": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "sample": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "candidates": [],
       "xorsearch_stdout": "",
       "xorsearch_stderr": "",
@@ -8153,7 +8153,7 @@
     },
     "lg_malcat_analyze_9": {
       "analysis_id": 1,
-      "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "profile": "deep",
       "limits": {
         "strings_max": 300,
@@ -8165,7 +8165,7 @@
       "file_summary": {
         "analysis_id": 1,
         "file_name": "steel.saz",
-        "file_path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+        "file_path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
         "file_size": 18038723,
         "type": "ZIP",
         "architecture": "NONE",
@@ -10678,7 +10678,7 @@
       "matches": [
         {
           "rule": "domain",
-          "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+          "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
           "strings": [
             {
               "id": "$domain_regex",
@@ -10690,7 +10690,7 @@
         },
         {
           "rule": "IP",
-          "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+          "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
           "strings": [
             {
               "id": "$ipv6",
@@ -10702,7 +10702,7 @@
         },
         {
           "rule": "contains_base64",
-          "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+          "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
           "strings": [
             {
               "id": "$a",
@@ -10714,7 +10714,7 @@
         },
         {
           "rule": "url",
-          "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+          "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
           "strings": [
             {
               "id": "$url_regex",

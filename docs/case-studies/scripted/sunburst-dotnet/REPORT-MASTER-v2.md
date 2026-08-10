@@ -38,7 +38,7 @@ This report details the analysis of a trojanized SolarWinds Orion component, ide
 | Imphash | `dae02f32a21e03ce65412f6e56942daa` |
 | Entropy | 92 |
 | Packed | No (UPX probe negative) |
-| Project | Malware Analyst Professional - Level 2 |
+| Project | REVAI-LAB-CORPUS-L2 |
 
 The file is a .NET DLL with a high entropy score of 92, which is typical for compiled .NET assemblies containing embedded resources and obfuscated strings. The assembly metadata identifies it as a SolarWinds Orion component, a key indicator of the supply chain attack vector. (source: malcat, rule.yara.json)
 
@@ -273,7 +273,7 @@ The sample is a single .NET DLL with the following key modules/components:
 
 ## 16. Author + Sign-off
 
-**Author:** Malware Analyst Professional - Level 2
+**Author:** REVAI-LAB-CORPUS-L2
 
 **Date:** 2026-08-09
 

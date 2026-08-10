@@ -19,12 +19,12 @@
 ### Publish LLM narrative (unedited)
 
 ## Executive Summary
-This report presents the analysis of a 32-bit Windows executable (SHA256: 2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5) from the project "Hexorcist 1 - Weeks 1-8". The binary is definitively packed with nSpack v2.x, a known executable protector, and masquerades as the legitimate Windows Calculator (calc.exe) through forged version information. Static analysis reveals the packer stub employs aPLib decompression, dynamic API resolution via LoadLibraryA/GetProcAddress, and memory manipulation APIs (VirtualAlloc, VirtualProtect) typical of unpacking routines. Code sections have Read-Write-Execute (RWX) permissions, enabling self-modifying code. While no overt malicious behavior such as C2 communication, persistence, or data destruction was observed in static analysis, the sample's intentional obfuscation and masquerade techniques are concerning. The upstream triage classified this sample as **suspicious** based on packing indicators, a verdict we align with given the absence of observable hostile intent in the static artifact. The true payload remains hidden within the compressed section and is only accessible at runtime.
+This report presents the analysis of a 32-bit Windows executable (SHA256: 2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5) from the project "REVAI-LAB-CORPUS-H1". The binary is definitively packed with nSpack v2.x, a known executable protector, and masquerades as the legitimate Windows Calculator (calc.exe) through forged version information. Static analysis reveals the packer stub employs aPLib decompression, dynamic API resolution via LoadLibraryA/GetProcAddress, and memory manipulation APIs (VirtualAlloc, VirtualProtect) typical of unpacking routines. Code sections have Read-Write-Execute (RWX) permissions, enabling self-modifying code. While no overt malicious behavior such as C2 communication, persistence, or data destruction was observed in static analysis, the sample's intentional obfuscation and masquerade techniques are concerning. The upstream triage classified this sample as **suspicious** based on packing indicators, a verdict we align with given the absence of observable hostile intent in the static artifact. The true payload remains hidden within the compressed section and is only accessible at runtime.
 
 ## 1. Sample Identification
 - **SHA256**: 2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5
-- **File Path**: /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe
-- **Project Name**: Hexorcist 1 - Weeks 1-8
+- **File Path**: /opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe
+- **Project Name**: REVAI-LAB-CORPUS-H1
 - **File Type**: Portable Executable (PE), 32-bit (x86) architecture (source: malcat).
 - **PE Header Info**: Subsystem is Windows GUI (IsWindowsGUI YARA rule), but GuiSubsystemNoWindowApi anomaly noted (source: malcat).
 - **Import Hash (Imphash)**: 4ddd9e53a5be88aaffc4455bfc877c19 (source: rule.yara.json).

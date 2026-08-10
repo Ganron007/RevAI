@@ -31,7 +31,7 @@ This section provides core identifiers for the malware sample, essential for tra
 
 The **SHA256 hash** is `263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca`, which uniquely identifies the sample and is critical for hash-based detection and threat intelligence correlation (source: malcat). This hash is highly reliable for sample referencing.
 
-The **file path** is `/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe`, indicating it was analyzed as part of a corpus, possibly from the "Hexorcist 3" dataset (source: malcat). This path suggests a controlled analysis environment, not necessarily an active infection scenario.
+The **file path** is `/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe`, indicating it was analyzed as part of a corpus, possibly from the "CTF 3" dataset (source: malcat). This path suggests a controlled analysis environment, not necessarily an active infection scenario.
 
 The **file type** is PE (Portable Executable), a standard Windows executable format (source: malcat). This confirms the sample is designed for Windows systems, aligning with the architecture noted below.
 
@@ -44,7 +44,7 @@ These identifiers are summarized in the table below:
 | Identifier | Value | Interpretation and Confidence |
 |------------|-------|-------------------------------|
 | SHA256 | 263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca | Unique cryptographic hash for reliable sample identification; high confidence. (source: malcat) |
-| File Path | /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/.../string_encryption.exe | Location in analysis corpus; possibly indicates storage context, but not indicative of active behavior. (source: malcat) |
+| File Path | /opt/samples/corpus/REVAI-LAB-CORPUS-H3/.../string_encryption.exe | Location in analysis corpus; possibly indicates storage context, but not indicative of active behavior. (source: malcat) |
 | Type | PE | Windows executable format, suggesting target platform; high confidence. (source: malcat) |
 | Architecture | X86 | 32-bit x86 target, likely for older systems; high confidence. (source: malcat) |
 | Entropy | 44 | High entropy may imply obfuscation; moderate confidence, as other factors like packing could contribute. (source: malcat) |

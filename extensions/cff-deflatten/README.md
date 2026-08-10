@@ -1,6 +1,6 @@
 # CFF Deflatten v1.0
 
-CADRE-RevEng v3 deliverable: automated detection and edge-recovery for control-flow flattening (CFF) obfuscation patterns. Built on Ghidra's PyGhidra Python interface.
+RevAI extension: automated detection and edge-recovery for control-flow flattening (CFF) obfuscation patterns. Built on Ghidra's PyGhidra Python interface.
 
 ## What it does
 
@@ -29,7 +29,7 @@ Requires:
 
 ## Algorithm sources
 
-Well-known CFF deflattening lineage: published academic work on dispatcher detection via back-edge density. Implementation here is original to CADRE-RevEng.
+Well-known CFF deflattening lineage: published academic work on dispatcher detection via back-edge density. Implementation here is original to this project.
 
 ## Test fixtures
 

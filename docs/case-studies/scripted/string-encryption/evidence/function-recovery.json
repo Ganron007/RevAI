@@ -1,6 +1,6 @@
 {
   "sha256": "263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca",
-  "sample_path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+  "sample_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
   "model": "mimo-v2.5-pro",
   "generated_at": 1786282147.7233217,
   "triage": {

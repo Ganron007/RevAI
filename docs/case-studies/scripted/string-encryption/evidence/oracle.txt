@@ -164,8 +164,8 @@
           "api_name": "USER32.MessageBoxA",
           "args": [
             "0x0",
-            "Hexorcist rulez",
-            "Hexorcist rulez",
+            "CTF rulez",
+            "CTF rulez",
             "0x0"
           ],
           "ret_val": "0x2"
@@ -186,8 +186,8 @@
           "api_name": "USER32.MessageBoxA",
           "args": [
             "0x0",
-            "https://www.youtube.com/hexorcist",
-            "https://www.youtube.com/hexorcist",
+            "https://www.youtube.com/CTF",
+            "https://www.youtube.com/CTF",
             "0x0"
           ],
           "ret_val": "0x2"

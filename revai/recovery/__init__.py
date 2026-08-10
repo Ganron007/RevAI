@@ -1,5 +1,5 @@
 """
-CADRE-RevEng v4 agentic function-recovery library.
+RevAI v4 agentic function-recovery library.
 
 This package implements the stages described in
 Tools/v4-deploy/v4-agentic-recovery-addendum.md:

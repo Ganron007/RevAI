@@ -1,5 +1,5 @@
-{"rule": "domain", "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1", "strings": [{"id": "$domain_regex", "offset": 0, "length": 2, "xor_key": null}]}
-{"rule": "powershell", "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1", "strings": [{"id": "$a", "offset": 59, "length": 10, "xor_key": null}]}
-{"rule": "IP", "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1", "strings": [{"id": "$ipv6", "offset": 11, "length": 2, "xor_key": null}]}
-{"rule": "contains_base64", "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1", "strings": [{"id": "$a", "offset": 52, "length": 16, "xor_key": null}]}
-{"rule": "Antivirus", "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1", "strings": []}
+{"rule": "domain", "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1", "strings": [{"id": "$domain_regex", "offset": 0, "length": 2, "xor_key": null}]}
+{"rule": "powershell", "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1", "strings": [{"id": "$a", "offset": 59, "length": 10, "xor_key": null}]}
+{"rule": "IP", "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1", "strings": [{"id": "$ipv6", "offset": 11, "length": 2, "xor_key": null}]}
+{"rule": "contains_base64", "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1", "strings": [{"id": "$a", "offset": 52, "length": 16, "xor_key": null}]}
+{"rule": "Antivirus", "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1", "strings": []}

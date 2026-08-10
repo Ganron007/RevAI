@@ -1,13 +1,13 @@
 {
   "_format": "pe",
-  "_sample_path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+  "_sample_path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
   "_source": "deep_dive_agentic_checklist",
   "yara": {
     "rule_count": 28,
     "matches": [
       {
         "rule": "domain",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$domain_regex",
@@ -19,7 +19,7 @@
       },
       {
         "rule": "IP",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$ipv4",
@@ -37,7 +37,7 @@
       },
       {
         "rule": "contains_base64",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$a",
@@ -49,7 +49,7 @@
       },
       {
         "rule": "Misc_Suspicious_Strings",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$a4",
@@ -61,7 +61,7 @@
       },
       {
         "rule": "CRC32_poly_Constant",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$c0",
@@ -73,7 +73,7 @@
       },
       {
         "rule": "CRC32_table",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$c0",
@@ -85,7 +85,7 @@
       },
       {
         "rule": "RijnDael_AES",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$c0",
@@ -97,7 +97,7 @@
       },
       {
         "rule": "RijnDael_AES_CHAR",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$c0",
@@ -109,22 +109,22 @@
       },
       {
         "rule": "IsPE32",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": []
       },
       {
         "rule": "IsWindowsGUI",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": []
       },
       {
         "rule": "IsPacked",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": []
       },
       {
         "rule": "HasRichSignature",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$a0",
@@ -136,7 +136,7 @@
       },
       {
         "rule": "WannaDecryptor",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$id1",
@@ -184,7 +184,7 @@
       },
       {
         "rule": "Wanna_Sample_84c82835a5d21bbcf75a61706d8ab549",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$taskdl",
@@ -202,7 +202,7 @@
       },
       {
         "rule": "ransom_telefonica",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$a",
@@ -244,7 +244,7 @@
       },
       {
         "rule": "Wanna_Cry_Ransomware_Generic",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$s3",
@@ -256,7 +256,7 @@
       },
       {
         "rule": "WannaCry_Ransomware",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$x1",
@@ -292,7 +292,7 @@
       },
       {
         "rule": "WannaCry_Ransomware_Dropper",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$s1",
@@ -322,7 +322,7 @@
       },
       {
         "rule": "wannacry_static_ransom",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$mutex01",
@@ -364,7 +364,7 @@
       },
       {
         "rule": "Microsoft_Visual_Cpp_v60",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$a",
@@ -388,7 +388,7 @@
       },
       {
         "rule": "Microsoft_Visual_Cpp_v50v60_MFC_additional",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$a",
@@ -400,7 +400,7 @@
       },
       {
         "rule": "Microsoft_Visual_Cpp_50",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$a",
@@ -412,7 +412,7 @@
       },
       {
         "rule": "Microsoft_Visual_Cpp_v50v60_MFC",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$a",
@@ -430,7 +430,7 @@
       },
       {
         "rule": "Microsoft_Visual_Cpp",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$b",
@@ -442,7 +442,7 @@
       },
       {
         "rule": "SEH_Init",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$b",
@@ -454,7 +454,7 @@
       },
       {
         "rule": "win_registry",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$f1",
@@ -490,7 +490,7 @@
       },
       {
         "rule": "win_files_operation",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$f1",
@@ -532,7 +532,7 @@
       },
       {
         "rule": "Str_Win32_Winsock2_Library",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$ws2_lib",
@@ -561,7 +561,7 @@
   },
   "malcat": {
     "analysis_id": 1,
-    "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+    "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
     "profile": "deep",
     "limits": {
       "strings_max": 300,
@@ -573,7 +573,7 @@
     "file_summary": {
       "analysis_id": 1,
       "file_name": "tasksche.exe",
-      "file_path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "file_path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "file_size": 3514368,
       "type": "PE",
       "architecture": "X86",
@@ -4276,7 +4276,7 @@
   },
   "r2_decomp": {
     "r2_ok": true,
-    "sample": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+    "sample": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
     "disassembly": {
       "0x004077ba": "\u250c 338: entry0 ();\n\u2502           ; var int32_t var_4h @ ebp-0x4\n\u2502           ; var int32_t var_14h @ ebp-0x14\n\u2502           ; var int32_t var_18h @ ebp-0x18\n\u2502           ; var int32_t var_2ch @ ebp-0x2c\n\u2502           ; var int32_t var_30h @ ebp-0x30\n\u2502           ; var int32_t var_5ch @ ebp-0x5c\n\u2502           ; var int32_t var_60h @ ebp-0x60\n\u2502           ; var int32_t var_64h @ ebp-0x64\n\u2502           ; var int32_t var_68h @ ebp-0x68\n\u2502           ; var int32_t var_6ch @ ebp-0x6c\n\u2502           ; var int32_t var_70h @ ebp-0x70\n\u2502           ; var int32_t var_74h @ ebp-0x74\n\u2502           ; var int32_t var_78h @ ebp-0x78\n\u2502           0x004077ba      55             push ebp\n\u2502           0x004077bb      8bec           mov ebp, esp\n\u2502           0x004077bd      6aff           push 0xffffffffffffffff\n\u2502           0x004077bf      6888d44000     push 0x40d488\n\u2502           0x004077c4      68f4764000     push 0x4076f4\n\u2502           0x004077c9      64a100000000   mov eax, dword fs:[0]\n\u2502           0x004077cf      50             push eax\n\u2502           0x004077d0      6489250000..   mov dword fs:[0], esp\n\u2502           0x004077d7      83ec68         sub esp, 0x68\n\u2502           0x004077da      53             push ebx\n\u2502           0x004077db      56             push esi\n\u2502           0x004077dc      57             push edi\n\u2502           0x004077dd      8965e8         mov dword [var_18h], esp\n\u2502           0x004077e0      33db           xor ebx, ebx\n\u2502           0x004077e2      895dfc         mov dword [var_4h], ebx\n\u2502           0x004077e5      6a02           push 2                      ; 2\n\u2502           0x004077e7      ff15c4814000   call dword [sym.imp.MSVCRT.dll___set_app_type] ; 0x4081c4 ; \"2\\xdf\"\n\u2502           0x004077ed      59             pop ecx\n\u2502           0x004077ee      830d4cf940..   or dword [0x40f94c], 0xffffffff ; [0x40f94c:4]=0\n\u2502           0x004077f5      830d50f940..   or dword [0x40f950], 0xffffffff ; [0x40f950:4]=0\n\u2502           0x004077fc      ff15c0814000   call dword [sym.imp.MSVCRT.dll___p__fmode] ; 0x4081c0 ; \"$\\xdf\"\n\u2502           0x00407802      8b0d48f94000   mov ecx, dword [0x40f948]   ; [0x40f948:4]=0\n\u2502           0x00407808      8908           mov dword [eax], ecx\n\u2502           0x0040780a      ff15bc814000   call dword [sym.imp.MSVCRT.dll___p__commode] ; 0x4081bc\n\u2502           0x00407810      8b0d44f94000   mov ecx, dword [0x40f944]   ; [0x40f944:4]=0\n\u2502           0x00407816      8908           mov dword [eax], ecx\n\u2502           0x00407818      a1b8814000     mov eax, dword [sym.imp.MSVCRT.dll__adjust_fdiv] ; [0x4081b8:4]=0xdf04 reloc.MSVCRT.dll__adjust_fdiv\n\u2502           0x0040781d      8b00           mov eax, dword [eax]\n\u2502           0x0040781f      a354f94000     mov dword [0x40f954], eax   ; [0x40f954:4]=0\n\u2502           0x00407824      e816010000     call 0x40793f\n\u2502           0x00407829      391d70f84000   cmp dword [0x40f870], ebx   ; [0x40f870:4]=1\n\u2502       \u250c\u2500< 0x0040782f      750c           jne 0x40783d\n\u2502       \u2502   0x00407831      683c794000     push 0x40793c               ; '<y@' ; \"3\\xc0\\xc3\\xc3\\",
       "0x00401fe7": "; CALL XREF from entry0 @ 0x4078e9(x)\n\u250c 391: int main (int argc, char **argv, char **envp);\n\u2502           ; var int32_t var_4h @ ebp-0x4\n\u2502           ; var int32_t var_20bh @ ebp-0x20b\n\u2502           ; var int32_t var_20ch @ ebp-0x20c\n\u2502           ; var int32_t var_6e4h @ ebp-0x6e4\n\u2502           0x00401fe7      55             push ebp\n\u2502           0x00401fe8      8bec           mov ebp, esp\n\u2502           0x00401fea      81ece4060000   sub esp, 0x6e4\n\u2502           0x00401ff0      a010f94000     mov al, byte [0x40f910]     ; [0x40f910:1]=0\n\u2502           0x00401ff5      53             push ebx\n\u2502           0x00401ff6      56             push esi\n\u2502           0x00401ff7      57             push edi\n\u2502           0x00401ff8      8885f4fdffff   mov byte [var_20ch], al\n\u2502           0x00401ffe      b981000000     mov ecx, 0x81               ; 129\n\u2502           0x00402003      33c0           xor eax, eax\n\u2502           0x00402005      8dbdf5fdffff   lea edi, [var_20bh]\n\u2502           0x0040200b      f3ab           rep stosd dword es:[edi], eax\n\u2502           0x0040200d      66ab           stosw word es:[edi], ax\n\u2502           0x0040200f      aa             stosb byte es:[edi], al\n\u2502           0x00402010      8d85f4fdffff   lea eax, [var_20ch]\n\u2502           0x00402016      6808020000     push 0x208                  ; 520\n\u2502           0x0040201b      33db           xor ebx, ebx\n\u2502           0x0040201d      50             push eax\n\u2502           0x0040201e      53             push ebx\n\u2502           0x0040201f      ff158c804000   call dword [sym.imp.KERNEL32.dll_GetModuleFileNameA] ; 0x40808c ; DWORD GetModuleFileNameA(HMODULE hModule, LPSTR lpFilename, DWORD nSize)\n\u2502           0x00402025      68acf84000     push 0x40f8ac\n\u2502           0x0040202a      e8f6f1ffff     call 0x401225\n\u2502           0x0040202f      59             pop ecx\n\u2502           0x00402030      ff156c814000   call dword [sym.imp.MSVCRT.dll___p___argc] ; 0x40816c\n\u2502           0x00402036      833802         cmp dword [eax], 2\n\u2502       \u250c\u2500< 0x00402039      7553           jne 0x40208e\n\u2502       \u2502   0x0040203b      6838f54000     push 0x40f538               ; \"/i\"\n\u2502       \u2502   0x00402040      ff1568814000   call dword [sym.imp.MSVCRT.dll___p___argv] ; 0x408168\n\u2502       \u2502   0x00402046      8b00           mov eax, dword [eax]\n\u2502       \u2502   0x00402048      ff7004         push dword [eax + 4]\n\u2502       \u2502   0x0040204b      e8f0560000     call 0x407740\n\u2502       \u2502   0x00402050      59             pop ecx\n\u2502       \u2502   0x00402051      85c0           test eax, eax\n\u2502       \u2502   0x00402053      59             pop ecx\n\u2502      \u250c\u2500\u2500< 0x00402054      7538           jne 0x40208e\n\u2502      \u2502\u2502   0x00402056      53             push ebx\n\u2502      \u2502\u2502   0x00402057      e803fbffff     call 0x401b5f\n\u2502      \u2502\u2502   0x0040205c      85c0           test eax, eax\n\u2502      \u2502\u2502   0x0040205e      59             pop ecx\n\u2502     \u250c\u2500\u2500\u2500< 0x0040205f      742d           je 0x40208e\n\u2502     \u2502\u2502\u2502   0x00402061      bed8f44000     mov esi, str.tasksche.exe   ; 0x40f4d8 ; \"tasksche.exe\"\n\u2502     \u2502\u2502\u2502   0x00402066      53      "
@@ -4291,12 +4291,12 @@
   "upx": {
     "upx_ok": false,
     "is_packed": false,
-    "sample": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+    "sample": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
     "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTested 0 file"
   },
   "xor": {
     "xorsearch_ok": true,
-    "sample": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+    "sample": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
     "candidates": [
       "Found XOR 00 position 00000000: 000000F8 ........!..L.!This program cannot be r"
     ],
@@ -4306,7 +4306,7 @@
   },
   "speakeasy": {
     "speakeasy_ok": true,
-    "sample": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+    "sample": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
     "module_base": null,
     "entry_point": null,
     "key_events": [],
@@ -4317,7 +4317,7 @@
     "frida_available": true,
     "frida_version": "17.16.4",
     "pe_probe": {
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "exists": true,
       "hook_candidates": [
         "KERNEL32.dll!GetFileAttributesW",
@@ -4341,7 +4341,7 @@
   },
   "shellcode": {
     "shellcode_ok": false,
-    "sample": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+    "sample": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
     "sections_analyzed": [
       {
         "name": ".text",

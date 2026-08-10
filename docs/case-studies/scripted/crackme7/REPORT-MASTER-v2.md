@@ -12,19 +12,19 @@
 
 - **Locked over publish LLM:** no
 
-# Hexorcist Crackme 7 Analysis Report
+# CTF Crackme 7 Analysis Report
 
 ## Executive Summary
 
-This report presents the analysis of a PE32 Windows GUI binary identified as "Hexorcist Crackme 7" (SHA256: fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f). The sample is a reverse engineering challenge from the "Hexorcist 1 - Weeks 1-8" CTF series, not a malicious payload. The binary employs XOR-based obfuscation and self-modifying code techniques to hide its core logic, which is typical for crackme applications designed to test reverse engineering skills. Static analysis reveals a minimal entry stub that decrypts a payload and registers it as a Vectored Exception Handler (VEH) to execute the main challenge logic. The binary presents a dialog box prompting for a serial number, confirming its purpose as a puzzle. No indicators of malicious behavior such as command-and-control communication, persistence mechanisms, credential theft, or data exfiltration were observed. The verdict is **suspicious** due to the obfuscation techniques, but the evidence strongly supports its classification as a benign crackme application.
+This report presents the analysis of a PE32 Windows GUI binary identified as "CTF Crackme 7" (SHA256: fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f). The sample is a reverse engineering challenge from the "REVAI-LAB-CORPUS-H1" CTF series, not a malicious payload. The binary employs XOR-based obfuscation and self-modifying code techniques to hide its core logic, which is typical for crackme applications designed to test reverse engineering skills. Static analysis reveals a minimal entry stub that decrypts a payload and registers it as a Vectored Exception Handler (VEH) to execute the main challenge logic. The binary presents a dialog box prompting for a serial number, confirming its purpose as a puzzle. No indicators of malicious behavior such as command-and-control communication, persistence mechanisms, credential theft, or data exfiltration were observed. The verdict is **suspicious** due to the obfuscation techniques, but the evidence strongly supports its classification as a benign crackme application.
 
 ## 1. Sample Identification
 
 | Attribute | Value |
 |-----------|-------|
 | SHA256 | fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f |
-| File Path | /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe |
-| Project | Hexorcist 1 - Weeks 1-8 |
+| File Path | /opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe |
+| Project | REVAI-LAB-CORPUS-H1 |
 | File Type | PE32 executable (GUI) Intel 80386, for MS Windows |
 | Architecture | x86 (32-bit) |
 | Compiler | FASM (Flat Assembler) |
@@ -41,7 +41,7 @@ The sample self-identifies as "HEXORCIST CRACKME 7" in its version information, 
 |-------|-------|
 | Verdict | **suspicious** |
 | Confidence | 90% |
-| Family | Hexorcist Crackme 7 |
+| Family | CTF Crackme 7 |
 | Threat Type | Crackme / Reverse Engineering Challenge |
 | Malicious Intent | Not observed |
 
@@ -56,9 +56,9 @@ The sample does not meet the threshold for **malicious** classification as it la
 
 ## 3. Background & Family Lineage
 
-The "Hexorcist" series appears to be a collection of reverse engineering challenges (crackmes) designed for educational purposes. The naming convention "Hexorcist 1 - Weeks 1-8" suggests a structured learning curriculum. Crackmes are legitimate tools used by security researchers and enthusiasts to practice reverse engineering skills. They are not inherently malicious but may use techniques (like obfuscation) that are also employed by malware.
+The "CTF" series appears to be a collection of reverse engineering challenges (crackmes) designed for educational purposes. The naming convention "REVAI-LAB-CORPUS-H1" suggests a structured learning curriculum. Crackmes are legitimate tools used by security researchers and enthusiasts to practice reverse engineering skills. They are not inherently malicious but may use techniques (like obfuscation) that are also employed by malware.
 
-This specific sample, "Hexorcist Crackme 7", is part of a series where each challenge likely introduces progressively more complex obfuscation or protection schemes. The use of XOR encryption and VEH-based execution is a common technique in both crackmes and malware to hinder static analysis. However, the presence of clear crackme strings and the absence of any malicious payload strongly indicate this is a benign educational tool.
+This specific sample, "CTF Crackme 7", is part of a series where each challenge likely introduces progressively more complex obfuscation or protection schemes. The use of XOR encryption and VEH-based execution is a common technique in both crackmes and malware to hinder static analysis. However, the presence of clear crackme strings and the absence of any malicious payload strongly indicate this is a benign educational tool.
 
 ## 4. Static Analysis
 
@@ -137,7 +137,7 @@ The only observed capabilities are obfuscation and GUI interaction, which are co
 
 ## 8. Attribution
 
-The binary is attributed to the "Hexorcist" series, likely created by an individual or group for educational purposes. The copyright string "Copyright SAS HEXORCIST" suggests a specific author or group (source: floss, strings). There is no evidence linking this sample to known threat actors or malware campaigns. The techniques used (XOR, VEH) are generic and not indicative of a specific threat group.
+The binary is attributed to the "CTF" series, likely created by an individual or group for educational purposes. The copyright string "Copyright SAS HEXORCIST" suggests a specific author or group (source: floss, strings). There is no evidence linking this sample to known threat actors or malware campaigns. The techniques used (XOR, VEH) are generic and not indicative of a specific threat group.
 
 ## 9. Indicators of Compromise
 
@@ -193,7 +193,7 @@ As this sample is assessed as a benign crackme, containment and eradication are 
 ## 13. Recommendations
 
 1. **For Analysts**: This sample is a valuable learning tool for practicing reverse engineering techniques, particularly XOR decryption and VEH-based execution.
-2. **For Defenders**: The IOCs provided can be used to identify other samples from the Hexorcist series. However, these IOCs are not indicative of malware and should not be used for blocking without context.
+2. **For Defenders**: The IOCs provided can be used to identify other samples from the CTF challenge series. However, these IOCs are not indicative of malware and should not be used for blocking without context.
 3. **For Organizations**: If this file is found on corporate systems, it is likely an employee practicing reverse engineering. Consider establishing a policy for authorized use of such tools in a controlled environment.
 
 ## 14. Appendix A: Evidence Trail
@@ -228,4 +228,4 @@ No additional modules or libraries are statically linked.
 
 **Date**: 2026-08-09
 
-**Sign-off**: This report was generated based on static analysis of the sample. The verdict is **suspicious** (crackme) with 90% confidence. No malicious behavior was observed. The sample is a reverse engineering challenge from the Hexorcist series.
+**Sign-off**: This report was generated based on static analysis of the sample. The verdict is **suspicious** (crackme) with 90% confidence. No malicious behavior was observed. The sample is a reverse engineering challenge from the CTF challenge series.

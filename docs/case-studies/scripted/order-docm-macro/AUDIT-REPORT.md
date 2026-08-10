@@ -460,7 +460,7 @@ The family classification as generic macro malware suggests that this sample exp
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+      "path": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
       "strings": [
         {
           "id": "$domain_regex",
@@ -472,7 +472,7 @@ The family classification as generic macro malware suggests that this sample exp
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+      "path": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
       "strings": [
         {
           "id": "$ipv6",
@@ -484,7 +484,7 @@ The family classification as generic macro malware suggests that this sample exp
     },
     {
       "rule": "docx_macro",
-      "path": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+      "path": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
       "strings": [
         {
           "id": "$header",
@@ -502,7 +502,7 @@ The family classification as generic macro malware suggests that this sample exp
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+      "path": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
       "strings": [
         {
           "id": "$a",
@@ -514,7 +514,7 @@ The family classification as generic macro malware suggests that this sample exp
     },
     {
       "rule": "Contains_VBA_macro_code",
-      "path": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+      "path": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
       "strings": [
         {
           "id": "$zipmagic",
@@ -538,7 +538,7 @@ The family classification as generic macro malware suggests that this sample exp
     },
     {
       "rule": "office_document_vba",
-      "path": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+      "path": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
       "strings": [
         {
           "id": "$zipmagic",
@@ -589,7 +589,7 @@ The family classification as generic macro malware suggests that this sample exp
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+  "path": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -601,7 +601,7 @@ The family classification as generic macro malware suggests that this sample exp
   "file_summary": {
     "analysis_id": 1,
     "file_name": "order.docm",
-    "file_path": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+    "file_path": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
     "file_size": 22771,
     "type": "ZIP",
     "architecture": "NONE",
@@ -812,7 +812,7 @@ The family classification as generic macro malware suggests that this sample exp
 ```
 # Triage evidence
 sha256: 385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73
-sample_path: /opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm
+sample_path: /opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm
 ghidra_session: doc-ooxml-385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73
 ida_session: (not loaded)
 
@@ -923,7 +923,7 @@ error: session doc-ooxml-385966f3d6be7b234a790e2d
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+      "path": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
       "strings": [
         {
           "id": "$domain_regex",
@@ -935,7 +935,7 @@ error: session doc-ooxml-385966f3d6be7b234a790e2d
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+      "path": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
       "strings": [
         {
           "id": "$ipv6",
@@ -947,7 +947,7 @@ error: session doc-ooxml-385966f3d6be7b234a790e2d
     },
     {
       "rule": "docx_macro",
-      "path": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+      "path": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
       "strings": [
         {
           "id": "$header",
@@ -965,7 +965,7 @@ error: session doc-ooxml-385966f3d6be7b234a790e2d
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+      "path": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
       "strings": [
         {
           "id": "$a",
@@ -977,7 +977,7 @@ error: session doc-ooxml-385966f3d6be7b234a790e2d
     },
     {
       "rule": "Contains_VBA_macro_code",
-      "path": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+      "path": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
       "strings": [
         {
           "id": "$zipmagic",
@@ -1001,7 +1001,7 @@ error: session doc-ooxml-385966f3d6be7b234a790e2d
     },
     {
       "rule": "office_document_vba",
-      "path": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+      "path": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
       "strings": [
         {
           "id": "$zipmagic",
@@ -1051,7 +1051,7 @@ error: session doc-ooxml-385966f3d6be7b234a790e2d
 ```json
 {
   "r2_ok": true,
-  "sample": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+  "sample": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
   "disassembly": {
     "0x00000000": "\u250c 94: fcn.00000000 (int64_t arg1, int64_t arg4);\n\u2502           ; arg int64_t arg1 @ rdi\n\u2502           ; arg int64_t arg4 @ rcx\n\u2502           0x00000000      50             push rax\n\u2502           0x00000001      4b030414       add rax, qword [r12 + r10]\n\u2502           0x00000005      0000           add byte [rax], al\n\u2502           0x00000007      0008           add byte [rax], cl\n\u2502           0x00000009      0000           add byte [rax], al\n\u2502           0x0000000b      0021           add byte [rcx], ah          ; arg4\n\u2502           0x0000000d      005bc3         add byte [rbx - 0x3d], bl\n\u2502           0x00000010      0c0c           or al, 0xc\n\u2502           0x00000012      8801           mov byte [rcx], al          ; arg4\n\u2502       \u254e   0x00000014      0000           add byte [rax], al\n\u2502      \u250c\u2500\u2500< 0x00000016      e105           loope 0x1d\n\u2502      \u2502\u254e   0x00000018      0000           add byte [rax], al\n\u2502      \u2502\u254e   0x0000001a      1300           adc eax, dword [rax]\n\u2502      \u2502\u254e   0x0000001c  ~   0000           add byte [rax], al\n\u2502      \u2514\u2500\u2500> 0x0000001d      005b43         add byte [rbx + 0x43], bl\n\u2502       \u254e   0x00000020      6f             outsd dx, dword [rsi]\n\u2502       \u254e   0x00000021      6e             outsb dx, byte [rsi]\n\u2502      \u250c\u2500\u2500< 0x00000022      7465           je 0x89\n\u2502      \u2502\u254e   0x00000024      6e             outsb dx, byte [rsi]\n\u2502     \u250c\u2500\u2500\u2500< 0x00000025      745f           je 0x86\n\u2502     \u2502\u2502\u254e   0x00000027      54             push rsp\n\u2502    \u250c\u2500\u2500\u2500\u2500< 0x00000028      7970           jns 0x9a\n\u2502   \u250c\u2500\u2500\u2500\u2500\u2500< 0x0000002a      65735d         jae 0x8a\n\u2502 \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x0000002d      2e786d         js 0x9d\n\u2502 \u2502\u254e\u2502\u2502\u2502\u2502\u254e   0x00000030      6c             insb byte [rdi], dx\n\u2502 \u2502\u254e\u2502\u2502\u2502\u2502\u254e   0x00000031      b554           mov ch, 0x54                ; 'T'\n\u2502 \u2502\u254e\u2502\u2502\u2502\u2502\u254e   0x00000033      4b4fc3         ret\n..\n  \u2502\u254e\u2502\u2502\u2502\u2502\u254e   ; DATA XREF from fcn.00000000 @ 0x31(r)\n\u2502 \u2502\u2502\u2502\u2502\u2514\u2500\u2500\u2500> 0x00000086      c5             invalid\n..\n\u2502 \u2502\u2502\u2502\u2502 \u2514\u2500\u2500> 0x00000089  ~   b8181d1e0c     mov eax, 0xc1e1d18          ; '\\x18\\x1d\\x1e\\f'\n\u2502 \u2502\u2502\u2514\u2500\u2500\u2500\u2500\u2500> 0x0000008a      181d1e0c272b   sbb byte [0x2b270cae], bl\n\u2502 \u2502\u2502 \u2502      0x00000090      8f             invalid\n..\n\u2502 \u2502\u2502 \u2514\u2500\u2500\u2500\u2500> 0x0000009a  ~   29a39aa38158   sub dword [rbx + 0x5881a39a], esp ; [0x5881a39a:4]=-1\n\u2502 \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500> 0x0000009d      a38158388f..   movabs dword [0xbb52b968f385881], eax ; [0xbb52b968f385881:4]=-1\n\u2514       \u2502   0x000000a6      06             invalid"
   },
@@ -1074,7 +1074,7 @@ error: session doc-ooxml-385966f3d6be7b234a790e2d
 ```json
 {
   "xorsearch_ok": false,
-  "sample": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+  "sample": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
   "candidates": [],
   "xorsearch_stdout": "",
   "xorsearch_stderr": "",
@@ -1151,7 +1151,7 @@ error: session doc-ooxml-385966f3d6be7b234a790e2d
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+      "path": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
       "strings": [
         {
           "id": "$domain_regex",
@@ -1172,7 +1172,7 @@ error: session doc-ooxml-385966f3d6be7b234a790e2d
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+  "path": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -1193,7 +1193,7 @@ error: session doc-ooxml-385966f3d6be7b234a790e2d
 ```json
 {
   "r2_ok": true,
-  "sample": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+  "sample": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
   "disassembly": {
     "0x00000000": "\u250c 94: fcn.00000000 (int64_t arg1, int64_t arg4);\n\u2502           ; arg int64_t arg1 @ rdi\n\u2502           ; arg int64_t arg4 @ rcx\n\u2502           0x00000000      50             push rax\n\u2502           0x00000001  
 … [3034 more chars]
@@ -1204,7 +1204,7 @@ error: session doc-ooxml-385966f3d6be7b234a790e2d
 ```json
 {
   "xorsearch_ok": false,
-  "sample": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+  "sample": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
   "candidates": [],
   "xorsearch_stdout": "",
   "xorsearch_stderr": "",
@@ -1266,7 +1266,7 @@ error: session doc-ooxml-385966f3d6be7b234a790e2d
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+  "path": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -1299,7 +1299,7 @@ error: session doc-ooxml-385966f3d6be7b234a790e2d
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+      "path": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
       "strings": [
         {
           "id": "$domain_regex",

@@ -23,7 +23,7 @@ The sample is a 32-bit Windows DLL with a high entropy `.text` section, suggesti
 | Attribute | Value | Source |
 |---|---|---|
 | SHA256 | 1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39 | malcat |
-| File Path | /opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll | malcat |
+| File Path | /opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll | malcat |
 | File Type | PE (DLL) | malcat |
 | Architecture | X86 | malcat |
 | Entry Point EA | 10006 | malcat |
@@ -356,7 +356,7 @@ The sample was analyzed in a sandboxed environment to prevent any potential harm
 # Technical Evidence Pack
 
 **sha256:** 1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39  
-**sample_path:** /opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll  
+**sample_path:** /opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll  
 **project_name:** 610
 
 > Every table below is copied from stage JSON. Technical narrative must cite these rows (engine + address/rule), not invent evidence.

@@ -48,7 +48,7 @@ The primary identifiers are summarized in the table below, with interpretations 
 | **Entropy** | 73 | Entropy measures the randomness of the file's data. A value of 73 is moderately high, which could indicate packing, encryption, or obfuscation. This may be an evasion technique to hinder analysis. (source: malcat, query_or_table: static_properties, row_or_rule: entropy_value, why: helps assess obfuscation levels and potential malicious intent) |
 
 ### Additional Context
-- **File Path**: The sample was located at `/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe`, which includes 'guLoader' in the filename, possibly hinting at its loader functionality. (source: analysis_report, query_or_table: file_metadata, row_or_rule: path, why: provides contextual information about the sample's origin and naming conventions)
+- **File Path**: The sample was located at `/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe`, which includes 'guLoader' in the filename, possibly hinting at its loader functionality. (source: analysis_report, query_or_table: file_metadata, row_or_rule: path, why: provides contextual information about the sample's origin and naming conventions)
 - **File Size**: Not explicitly provided in the filtered evidence; however, based on the PE format and architecture, it is likely a standard-sized executable, but this cannot be confirmed without additional data.
 
 ### Confidence and Limitations

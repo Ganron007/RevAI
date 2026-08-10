@@ -483,8 +483,8 @@ The analysis was performed in a controlled environment with the following tools 
 # Technical Evidence Pack
 
 **sha256:** 1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a  
-**sample_path:** /opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex  
-**project_name:** Malware Analyst Professional - Level 2
+**sample_path:** /opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex  
+**project_name:** REVAI-LAB-CORPUS-L2
 
 > Every table below is copied from stage JSON. Technical narrative must cite these rows (engine + address/rule), not invent evidence.
 

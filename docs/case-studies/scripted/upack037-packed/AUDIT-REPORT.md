@@ -8,7 +8,7 @@
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
-- **Sample:** `/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe`
+- **Sample:** `/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe`
 - **Showcase pack:** `/opt/samples/logs/_showcase_audits/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9`
 
 ## Stage scoreboard
@@ -194,7 +194,7 @@ _No tool retries occurred during this run._
 ```json
 {
   "title": "Malware Analysis Report: Upack 037 Packed Executable",
-  "markdown": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 23:47:54 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | suspicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: WinUpackv039finalByDwingc2005h1, Upackv039finalDwing, UpackV037Dwing, IsPE32, IsWindowsGUI, HasOverlay, HasModified_DOS_Message, WinUpack_v039_final_By_Dwing_c2005_additional). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Upack\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n# Malware Analysis Report: Upack 037 Packed Executable\n\n## Executive Summary\n\nThis report details the analysis of a suspicious executable (SHA256: 36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9) identified as a packed PE file using the Upack v0.37 packer. The sample exhibits significant obfuscation and anti-analysis characteristics, including a corrupted PE header, minimal static imports, and all memory segments marked as executable. While no direct malicious behavior (e.g., C2 communication, data exfiltration, or persistence mechanisms) was observed in the available static analysis, the combination of packer usage, masquerade as a legitimate Windows Calculator application, and embedded network indicators strongly suggests malicious intent. The verdict is **suspicious** based on the current evidence, with high confidence that the true payload is hidden and would execute dynamically at runtime. Further dynamic analysis is required to confirm the exact malicious capabilities.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|---|---|\n| SHA256 | 36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9 |\n| File Path | /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe |\n| Project | Hexorcist 1 - Weeks 1-8 |\n| File Type | PE32 Executable (GUI) Intel 80386, for MS Windows |\n| Architecture | x86 |\n| Packer | Upack v0.37 (confirmed by YARA) |\n| Original Filename | CALC.EXE (masquerade) |\n| Version Info | Microsoft Corporation, Windows Calculator, v5.1.2600.0 |\n| Entropy | High (156) |\n| Size | 36,864 bytes (approx.) |\n\nThe sample is a 32-bit Windows executable that has been packed with Upack, a known packer often used to obfuscate malware. The version information masquerades as the legitimate Windows Calculator application from Microsoft, a common social engineering tactic. (source: malcat, yara)\n\n## 2. Classification\n\n**Verdict: Suspicious**\n\n**Confidence: 90%**\n\n**Family: Upack (Packer)**\n\nThe classification is based on the following key evidence:\n1.  **Packer Identification:** 21 YARA rules definitively match signatures for the Upack packer (v0.37 and v0.39 variants). (source: yara)\n2.  **Obfuscation Indicators:** The PE header is intentionally corrupted, preventing standard analysis tool
+  "markdown": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 23:47:54 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | suspicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: WinUpackv039finalByDwingc2005h1, Upackv039finalDwing, UpackV037Dwing, IsPE32, IsWindowsGUI, HasOverlay, HasModified_DOS_Message, WinUpack_v039_final_By_Dwing_c2005_additional). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Upack\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n# Malware Analysis Report: Upack 037 Packed Executable\n\n## Executive Summary\n\nThis report details the analysis of a suspicious executable (SHA256: 36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9) identified as a packed PE file using the Upack v0.37 packer. The sample exhibits significant obfuscation and anti-analysis characteristics, including a corrupted PE header, minimal static imports, and all memory segments marked as executable. While no direct malicious behavior (e.g., C2 communication, data exfiltration, or persistence mechanisms) was observed in the available static analysis, the combination of packer usage, masquerade as a legitimate Windows Calculator application, and embedded network indicators strongly suggests malicious intent. The verdict is **suspicious** based on the current evidence, with high confidence that the true payload is hidden and would execute dynamically at runtime. Further dynamic analysis is required to confirm the exact malicious capabilities.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|---|---|\n| SHA256 | 36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9 |\n| File Path | /opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe |\n| Project | REVAI-LAB-CORPUS-H1 |\n| File Type | PE32 Executable (GUI) Intel 80386, for MS Windows |\n| Architecture | x86 |\n| Packer | Upack v0.37 (confirmed by YARA) |\n| Original Filename | CALC.EXE (masquerade) |\n| Version Info | Microsoft Corporation, Windows Calculator, v5.1.2600.0 |\n| Entropy | High (156) |\n| Size | 36,864 bytes (approx.) |\n\nThe sample is a 32-bit Windows executable that has been packed with Upack, a known packer often used to obfuscate malware. The version information masquerades as the legitimate Windows Calculator application from Microsoft, a common social engineering tactic. (source: malcat, yara)\n\n## 2. Classification\n\n**Verdict: Suspicious**\n\n**Confidence: 90%**\n\n**Family: Upack (Packer)**\n\nThe classification is based on the following key evidence:\n1.  **Packer Identification:** 21 YARA rules definitively match signatures for the Upack packer (v0.37 and v0.39 variants). (source: yara)\n2.  **Obfuscation Indicators:** The PE header is intentionally corrupted, preventing standard analysis tool
 … [17010 more chars]
 ```
 
@@ -234,8 +234,8 @@ This report details the analysis of a suspicious executable (SHA256: 36137a22c97
 | Attribute | Value |
 |---|---|
 | SHA256 | 36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9 |
-| File Path | /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe |
-| Project | Hexorcist 1 - Weeks 1-8 |
+| File Path | /opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe |
+| Project | REVAI-LAB-CORPUS-H1 |
 | File Type | PE32 Executable (GUI) Intel 80386, for MS Windows |
 | Architecture | x86 |
 | Packer | Upack v0.37 (confirmed by YARA) |
@@ -353,7 +353,7 @@ The 21 YARA matches indicate common malware patt
 ```
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
   "profile": "triage",
   "limits": {
     "strings_max": 100,
@@ -365,7 +365,7 @@ The 21 YARA matches indicate common malware patt
   "file_summary": {
     "analysis_id": 1,
     "file_name": "Upack037.exe",
-    "file_path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+    "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
     "file_size": 52224,
     "type": "PE",
     "architecture": "X86",
@@ -412,7 +412,7 @@ The 21 YARA matches indicate common malware patt
 ```json
 {
   "error": "capa rc=13",
-  "stderr": "ERROR    capa: Input file '/opt/samples/corpus/Hexorcist 1 - Weeks   main.py:563\n         1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f            \n         10ad013c9/Upack037.exe' is not a valid PE file: \"data at               \n         RVA can't be fetched. Corrupt header?\"                                 \n",
+  "stderr": "ERROR    capa: Input file '/opt/samples/corpus/CTF 1 - Weeks   main.py:563\n         1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f            \n         10ad013c9/Upack037.exe' is not a valid PE file: \"data at               \n         RVA can't be fetched. Corrupt header?\"                                 \n",
   "timeout_s": 300,
   "sample_size": 52224,
   "duration_s": 1.47,
@@ -428,7 +428,7 @@ The 21 YARA matches indicate common malware patt
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -440,7 +440,7 @@ The 21 YARA matches indicate common malware patt
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": [
         {
           "id": "$ipv4",
@@ -458,7 +458,7 @@ The 21 YARA matches indicate common malware patt
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": [
         {
           "id": "$a",
@@ -470,7 +470,7 @@ The 21 YARA matches indicate common malware patt
     },
     {
       "rule": "WinUpackv039finalByDwingc2005h1",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": [
         {
           "id": "$a0",
@@ -482,7 +482,7 @@ The 21 YARA matches indicate common malware patt
     },
     {
       "rule": "Upackv039finalDwing",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": [
         {
           "id": "$a0",
@@ -500,7 +500,7 @@ The 21 YARA matches indicate common malware patt
     },
     {
       "rule": "UpackV037Dwing",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": [
         {
           "id": "$a0",
@@ -518,27 +518,27 @@ The 21 YARA matches indicate common malware patt
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": []
     },
     {
       "rule": "IsWindowsGUI",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": []
     },
     {
       "rule": "HasOverlay",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": []
     },
     {
       "rule": "HasModified_DOS_Message",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": []
     },
     {
       "rule": "WinUpack_v039_final_By_Dwing_c2005_additional",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": [
         {
           "id": "$a",
@@ -633,7 +633,7 @@ TypeError: a bytes-like object is required, not 'NoneType'
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -645,7 +645,7 @@ TypeError: a bytes-like object is required, not 'NoneType'
   "file_summary": {
     "analysis_id": 1,
     "file_name": "Upack037.exe",
-    "file_path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+    "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
     "file_size": 52224,
     "type": "PE",
     "architecture": "X86",
@@ -835,7 +835,7 @@ TypeError: a bytes-like object is required, not 'NoneType'
 ```
 # Triage evidence
 sha256: 36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9
-sample_path: /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe
+sample_path: /opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe
 ghidra_session: ghidra-dotnet-36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9
 ida_session: ida-36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9
 
@@ -920,7 +920,7 @@ ida_session: ida-36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c
 ```json
 {
   "error": "capa rc=13",
-  "stderr": "ERROR    capa: Input file '/opt/samples/corpus/Hexorcist 1 - Weeks   main.py:563\n         1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f            \n         10ad013c9/Upack037.exe' is not a valid PE file: \"data at               \n         RVA can't be fetched. Corrupt header?\"                                 \n",
+  "stderr": "ERROR    capa: Input file '/opt/samples/corpus/CTF 1 - Weeks   main.py:563\n         1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f            \n         10ad013c9/Upack037.exe' is not a valid PE file: \"data at               \n         RVA can't be fetched. Corrupt header?\"                                 \n",
   "timeout_s": 900,
   "sample_size": 52224,
   "duration_s": 0.22,
@@ -950,7 +950,7 @@ ida_session: ida-36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -962,7 +962,7 @@ ida_session: ida-36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": [
         {
           "id": "$ipv4",
@@ -980,7 +980,7 @@ ida_session: ida-36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": [
         {
           "id": "$a",
@@ -992,7 +992,7 @@ ida_session: ida-36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c
     },
     {
       "rule": "WinUpackv039finalByDwingc2005h1",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": [
         {
           "id": "$a0",
@@ -1004,7 +1004,7 @@ ida_session: ida-36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c
     },
     {
       "rule": "Upackv039finalDwing",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": [
         {
           "id": "$a0",
@@ -1022,7 +1022,7 @@ ida_session: ida-36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c
     },
     {
       "rule": "UpackV037Dwing",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": [
         {
           "id": "$a0",
@@ -1040,27 +1040,27 @@ ida_session: ida-36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": []
     },
     {
       "rule": "IsWindowsGUI",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": []
     },
     {
       "rule": "HasOverlay",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": []
     },
     {
       "rule": "HasModified_DOS_Message",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": []
     },
     {
       "rule": "WinUpack_v039_final_By_Dwing_c2005_additional",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": [
         {
           "id": "$a",
@@ -1176,7 +1176,7 @@ TypeError: a bytes-like object is required, not 'NoneType'
 ```json
 {
   "r2_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
   "disassembly": {
     "0x01001018": "\u250c 64: entry0 ();\n\u2502           0x01001018      beb0110001     mov esi, 0x10011b0\n\u2502           0x0100101d      ad             lodsd eax, dword [esi]\n\u2502           0x0100101e      50             push eax\n\u2502           0x0100101f      ff7634         push dword [esi + 0x34]\n\u2502       \u250c\u2500< 0x01001022      eb7c           jmp 0x10010a0\n..\n\u2502       \u2502   ; CODE XREF from entry0 @ 0x1001022(x)\n\u2502       \u2514\u2500> 0x010010a0      ff7638         push dword [esi + 0x38]\n\u2502       \u2502   0x010010a3      ad             lodsd eax, dword [esi]\n\u2502       \u2502   0x010010a4      50             push eax\n\u2502       \u2502   0x010010a5      8b3e           mov edi, dword [esi]\n\u2502       \u2502   0x010010a7      bef0400301     mov esi, 0x10340f0\n\u2502       \u2502   0x010010ac      6a27           push 0x27                   ; '\\'' ; 39\n\u2502       \u2502   0x010010ae      59             pop ecx\n\u2502       \u2502   0x010010af      f3a5           rep movsd dword es:[edi], dword [esi]\n\u2502       \u2502   0x010010b1      ff7604         push dword [esi + 4]\n\u2502       \u2502   0x010010b4      83c8ff         or eax, 0xffffffff          ; -1\n\u2502       \u2502   0x010010b7      8bdf           mov ebx, edi\n\u2502       \u2502   0x010010b9      ab             stosd dword es:[edi], eax\n\u2502      \u250c\u2500\u2500< 0x010010ba      eb1c           jmp 0x10010d8\n..\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   ; CODE XREF from entry0 @ 0x10010ba(x)\n\u2502  \u2502\u2502\u2502\u2502\u2514\u2500\u2500> 0x010010d8      40             inc eax\n\u2502  \u2502\u2502\u2502\u2502 \u2502   0x010010d9      ab             stosd dword es:[edi], eax\n\u2502  \u2502\u2502\u2502\u2502 \u2502   0x010010da      40             inc eax\n\u2502  \u2502\u2502\u2502\u2502 \u2514\u2500> 0x010010db      b104           mov cl, 4\n\u2502  \u2502\u2502\u2502\u2502     0x010010dd      f3ab           rep stosd dword es:[edi], eax\n\u2502  \u2502\u2502\u2502\u2502     0x010010df      c1e00a         shl eax, 0xa\n\u2502  \u2502\u2502\u2502\u2502     0x010010e2      b51c           mov ch, 0x1c                ; 28\n\u2502  \u2502\u2502\u2502\u2502     0x010010e4      f3ab           rep stosd dword es:[edi], eax\n\u2502  \u2502\u2502\u2502\u2502     0x010010e6      8b7e0c         mov edi, dword [esi + 0xc]\n\u2502  \u2502\u2502\u2502\u2502     0x010010e9      57             push edi\n\u2502  \u2502\u2502\u2502\u2502     0x010010ea      51             push ecx\n\u2514  \u2502\u2502\u2502\u2502 \u250c\u2500< 0x010010eb      e9fbb70200     jmp loc.0102c8eb",
     "0x0102c8eb": "; CODE XREF from entry0 @ 0x10010eb(x)\n\u251c 30521: loc.0102c8eb ();\n\u2502 0x0102c8eb      58             pop eax\n\u2502 0x0102c8ec      8d548358       lea edx, [ebx + eax*4 + 0x58]\n\u2502 0x0102c8f0      ff16           call dword [esi]\n\u2502 0x0102c8f2      724f           jb 0x102c943\n\u2502 0x0102c8f4      04fd           add al, 0xfd                          ; 253\n\u2502 0x0102c8f6      1ad2           sbb dl, dl\n\u2502 0x0102c8f8      22c2           and al, dl\n\u2502 0x0102c8fa      3c07           cmp al, 7                             ; 7\n\u2502 0x0102c8fc      73f6           jae 0x102c8f4\n\u2502 0x0102c8fe      50             push eax\n\
@@ -1189,7 +1189,7 @@ TypeError: a bytes-like object is required, not 'NoneType'
 {
   "upx_ok": false,
   "is_packed": false,
-  "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
   "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTested 0 file"
 }
 ```
@@ -1199,7 +1199,7 @@ TypeError: a bytes-like object is required, not 'NoneType'
 ```json
 {
   "xorsearch_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
   "candidates": [
     "Found XOR 00 position 00000000: 00000010 .@....................9..........P...."
   ],
@@ -1222,7 +1222,7 @@ TypeError: a bytes-like object is required, not 'NoneType'
   "frida_available": true,
   "frida_version": "17.16.4",
   "pe_probe": {
-    "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+    "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
     "exists": true,
     "hook_candidates": []
   }
@@ -1288,7 +1288,7 @@ TypeError: a bytes-like object is required, not 'NoneType'
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -1309,7 +1309,7 @@ TypeError: a bytes-like object is required, not 'NoneType'
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -1330,7 +1330,7 @@ TypeError: a bytes-like object is required, not 'NoneType'
 ```json
 {
   "error": "capa rc=13",
-  "stderr": "ERROR    capa: Input file '/opt/samples/corpus/Hexorcist 1 - Weeks   main.py:563\n         1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f            \n         10ad013c9/Upack037.exe' is not a valid PE file: \"data at               \n         RVA can't be fetched. Corrupt header?\"                                 \n",
+  "stderr": "ERROR    capa: Input file '/opt/samples/corpus/CTF 1 - Weeks   main.py:563\n         1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f            \n         10ad013c9/Upack037.exe' is not a valid PE file: \"data at               \n         RVA can't be fetched. Corrupt header?\"                                 \n",
   "timeout_s": 900,
   "samp
 … [59 more chars]
@@ -1396,7 +1396,7 @@ TypeError: a bytes-like object is required, not 'NoneType'
 ```json
 {
   "r2_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
   "disassembly": {
     "0x01001018": "\u250c 64: entry0 ();\n\u2502           0x01001018      beb0110001     mov esi, 0x10011b0\n\u2502           0x0100101d      ad             lodsd eax, dword [esi]\n\u2502           0x0100101e      50        
 … [11520 more chars]
@@ -1408,7 +1408,7 @@ TypeError: a bytes-like object is required, not 'NoneType'
 {
   "upx_ok": false,
   "is_packed": false,
-  "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
   "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTeste
 … [11 more chars]
 ```
@@ -1418,7 +1418,7 @@ TypeError: a bytes-like object is required, not 'NoneType'
 ```json
 {
   "xorsearch_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
   "candidates": [
     "Found XOR 00 position 00000000: 00000010 .@....................9..........P...."
   ],
@@ -1434,7 +1434,7 @@ TypeError: a bytes-like object is required, not 'NoneType'
   "frida_available": true,
   "frida_version": "17.16.4",
   "pe_probe": {
-    "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+    "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
     "exists": true,
     "hook_candidates": []
   }
@@ -1693,7 +1693,7 @@ TypeError: a bytes-like object is required, not 'NoneType'
 ```json
 {
   "error": "capa rc=13",
-  "stderr": "ERROR    capa: Input file '/opt/samples/corpus/Hexorcist 1 - Weeks   main.py:563\n         1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f            \n         10ad013c9/Upack037.exe' is not a valid PE file: \"data at               \n         RVA can't be fetched. Corrupt header?\"                                 \n",
+  "stderr": "ERROR    capa: Input file '/opt/samples/corpus/CTF 1 - Weeks   main.py:563\n         1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f            \n         10ad013c9/Upack037.exe' is not a valid PE file: \"data at               \n         RVA can't be fetched. Corrupt header?\"                                 \n",
   "timeout_s": 900,
   "samp
 … [59 more chars]

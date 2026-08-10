@@ -14,7 +14,7 @@
 
 ## Executive Summary
 
-This report presents the analysis of a 2048-byte PE32 executable (SHA256: 263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca) from the "Hexorcist 3 - Weeks 20-30" reverse engineering course corpus. The sample is classified as **suspicious** with a confidence score of 90/100, based on the presence of XOR-based string encryption obfuscation but the absence of any behavioral-intent evidence such as C2 communication, persistence mechanisms, credential theft, or data exfiltration (source: deep-dive.json).
+This report presents the analysis of a 2048-byte PE32 executable (SHA256: 263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca) from the "REVAI-LAB-CORPUS-H3" reverse engineering course corpus. The sample is classified as **suspicious** with a confidence score of 90/100, based on the presence of XOR-based string encryption obfuscation but the absence of any behavioral-intent evidence such as C2 communication, persistence mechanisms, credential theft, or data exfiltration (source: deep-dive.json).
 
 The binary is a minimal educational demonstration compiled with FASM (source: yara), containing only two functions and two Windows API imports (MessageBoxA and ExitProcess) (source: ghidra_query). The entry point calls a XOR decryption function four times with different keys (0x90, 0xEB, 0xFE, 0xED) to decode strings in the .data section, then displays them via MessageBoxA before terminating (source: r2 disassembly). No network, file, registry, or injection capabilities were identified (source: capa, pe_imports).
 
@@ -25,8 +25,8 @@ The sample's obfuscation is a neutral signal common in both benign and malicious
 | Attribute | Value |
 |-----------|-------|
 | SHA256 | 263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca |
-| File Path | /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe |
-| Project | Hexorcist 3 - Weeks 20-30 |
+| File Path | /opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe |
+| Project | REVAI-LAB-CORPUS-H3 |
 | File Type | PE32 executable (GUI) Intel 80386 (source: malcat) |
 | Architecture | x86 (32-bit) (source: malcat) |
 | File Size | 2048 bytes (source: deep-dive.json) |
@@ -36,7 +36,7 @@ The sample's obfuscation is a neutral signal common in both benign and malicious
 | .NET Assembly | No (source: dotnet_analyze) |
 | Import Hash | 98c88d882f01a3f6ac1e5f7dfd761624 (source: rule.yara.json) |
 
-The sample is a small, unpacked PE32 GUI executable with low entropy, indicating no significant packing or encryption beyond the observed XOR loops (source: malcat). The filename "string_encryption.exe" and project name "Hexorcist 3 - Weeks 20-30" strongly suggest this is an educational sample from a reverse engineering course (source: deep-dive.json).
+The sample is a small, unpacked PE32 GUI executable with low entropy, indicating no significant packing or encryption beyond the observed XOR loops (source: malcat). The filename "string_encryption.exe" and project name "REVAI-LAB-CORPUS-H3" strongly suggest this is an educational sample from a reverse engineering course (source: deep-dive.json).
 
 ## 2. Classification
 
@@ -60,7 +60,7 @@ The obfuscation alone is insufficient to classify as malicious, as XOR encryptio
 
 No malware family classification was identified for this sample. The Malcat kesakode_verdict field is empty, and no YARA rules matched known malware families (source: deep-dive.json, rule.yara.json).
 
-The sample originates from the "Hexorcist 3 - Weeks 20-30" reverse engineering course corpus, which appears to be an educational project focused on binary analysis techniques. The filename "string_encryption.exe" suggests this is a demonstration of string obfuscation methods commonly taught in malware analysis courses (source: deep-dive.json).
+The sample originates from the "REVAI-LAB-CORPUS-H3" reverse engineering course corpus, which appears to be an educational project focused on binary analysis techniques. The filename "string_encryption.exe" suggests this is a demonstration of string obfuscation methods commonly taught in malware analysis courses (source: deep-dive.json).
 
 No threat intelligence or historical context is available for this specific hash. The sample's characteristics (minimal size, educational naming, simple functionality) are consistent with training materials rather than operational malware.
 
@@ -148,7 +148,7 @@ The only capability present is string obfuscation via XOR encryption, which is a
 
 No attribution is possible for this sample. No threat actor indicators, campaign identifiers, or infrastructure patterns were identified (source: deep-dive.json).
 
-The sample appears to be an educational tool from a reverse engineering course rather than operational malware. The project name "Hexorcist 3 - Weeks 20-30" suggests it is part of a structured training curriculum (source: deep-dive.json).
+The sample appears to be an educational tool from a reverse engineering course rather than operational malware. The project name "REVAI-LAB-CORPUS-H3" suggests it is part of a structured training curriculum (source: deep-dive.json).
 
 ## 9. Indicators of Compromise
 
@@ -244,7 +244,7 @@ No recovery actions are necessary. The sample does not modify system state or us
 1. **XOR Decryption Loop**: Malcat anomaly XorInLoop at EA 0x4010AE (source: malcat)
 2. **capa Rule**: "encode data using XOR" for defense evasion (source: capa)
 3. **Minimal Imports**: Only KERNEL32.ExitProcess and USER32.MessageBoxA (source: ghidra_query)
-4. **Educational Context**: Sample from "Hexorcist 3" RE course, filename string_encryption.exe (source: deep-dive.json)
+4. **Educational Context**: Sample from "CTF 3" RE course, filename string_encryption.exe (source: deep-dive.json)
 5. **No Malware Classification**: Malcat kesakode_verdict empty (source: deep-dive.json)
 
 ### 14.3 Audit Trail

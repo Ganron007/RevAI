@@ -1,7 +1,7 @@
 {
   "verdict": "suspicious",
   "score": 20,
-  "family_guess": "Hexorcist keygen",
+  "family_guess": "CTF keygen",
   "cross_engine_notes": "Ghidra reports fewer strings (26) and functions (2) compared to IDA (1 string, 3 functions) and Malcat (36 strings, 3 functions), indicating potential data source gaps. The Ghidra imports table is empty, but IDA lists 8 imports, and Malcat confirms consistent imports. Decompilation is sourced from Malcat as per evidence.",
   "key_evidence": [
     {
@@ -29,7 +29,7 @@
       "why": "Only behavioral rule found is benign process termination, confirming no malicious intent such as data destruction or persistence."
     }
   ],
-  "summary": "This sample is a keygen template for 'Hexorcist' based on strings and decompiled code. It performs serial validation in a dialog GUI but shows no malicious behavioral intent (e.g., file destruction, C2, persistence, credential theft). All signals align with benign software protection testing or keygen use, with neutral anomalies like section entropy.",
+  "summary": "This sample is a keygen template for 'CTF' based on strings and decompiled code. It performs serial validation in a dialog GUI but shows no malicious behavioral intent (e.g., file destruction, C2, persistence, credential theft). All signals align with benign software protection testing or keygen use, with neutral anomalies like section entropy.",
   "source": "llm_judge",
   "model": "mimo-v2.5-pro",
   "agreement": "llm_v1_disagree",

@@ -1,13 +1,13 @@
 {
   "_format": "pe",
-  "_sample_path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+  "_sample_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
   "_source": "deep_dive_agentic_checklist",
   "yara": {
     "rule_count": 12,
     "matches": [
       {
         "rule": "domain",
-        "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
         "strings": [
           {
             "id": "$domain_regex",
@@ -19,7 +19,7 @@
       },
       {
         "rule": "contains_base64",
-        "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
         "strings": [
           {
             "id": "$a",
@@ -31,17 +31,17 @@
       },
       {
         "rule": "IsPE32",
-        "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
         "strings": []
       },
       {
         "rule": "IsWindowsGUI",
-        "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
         "strings": []
       },
       {
         "rule": "HasRichSignature",
-        "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
         "strings": [
           {
             "id": "$a0",
@@ -53,7 +53,7 @@
       },
       {
         "rule": "Microsoft_Visual_Basic_v50v60",
-        "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
         "strings": [
           {
             "id": "$a",
@@ -65,7 +65,7 @@
       },
       {
         "rule": "Microsoft_Visual_Basic_v50",
-        "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
         "strings": [
           {
             "id": "$a",
@@ -83,7 +83,7 @@
       },
       {
         "rule": "Microsoft_Visual_Basic_v50_v60",
-        "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
         "strings": [
           {
             "id": "$c",
@@ -95,7 +95,7 @@
       },
       {
         "rule": "Microsoft_Visual_Basic_v50_additional",
-        "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
         "strings": [
           {
             "id": "$a",
@@ -107,7 +107,7 @@
       },
       {
         "rule": "Microsoft_Visual_Basic_v50v60_additional",
-        "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
         "strings": [
           {
             "id": "$a",
@@ -119,7 +119,7 @@
       },
       {
         "rule": "SEH__vba",
-        "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
         "strings": [
           {
             "id": "$",
@@ -131,7 +131,7 @@
       },
       {
         "rule": "SEH_Init",
-        "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
         "strings": [
           {
             "id": "$b",
@@ -160,7 +160,7 @@
   },
   "malcat": {
     "analysis_id": 1,
-    "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+    "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
     "profile": "deep",
     "limits": {
       "strings_max": 300,
@@ -172,7 +172,7 @@
     "file_summary": {
       "analysis_id": 1,
       "file_name": "guLoader.exe",
-      "file_path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "file_size": 49152,
       "type": "PE",
       "architecture": "X86",
@@ -2847,7 +2847,7 @@
   },
   "r2_decomp": {
     "r2_ok": true,
-    "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+    "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
     "disassembly": {
       "0x00401288": "\u250c 236: entry0 ();\n\u2502           0x00401288      6868134000     push 0x401368               ; 'h\\x13@' ; \"VB5!6&*\"\n\u2502           0x0040128d      e8f0ffffff     call 0x401282\n\u2502           0x00401292      0000           add byte [eax], al\n\u2502           0x00401294      0000           add byte [eax], al\n\u2502           0x00401296      0000           add byte [eax], al\n\u2502           0x00401298      3000           xor byte [eax], al\n\u2502           0x0040129a      0000           add byte [eax], al\n\u2502           0x0040129c      40             inc eax\n\u2502           0x0040129d      0000           add byte [eax], al\n\u2502           0x0040129f      0000           add byte [eax], al\n\u2502           0x004012a1      0000           add byte [eax], al\n\u2502           0x004012a3      003a           add byte [edx], bh\n\u2502           0x004012a5      6a88           push 0xffffffffffffff88\n\u2502           0x004012a7      37             aaa\n\u2502           0x004012a8      a15c9c4082     mov eax, dword [0x82409c5c] ; [0x82409c5c:4]=-1\n\u2502           0x004012ad      05e818098c     add eax, 0x8c0918e8\n\u2502           0x004012b2      3d8c000000     cmp eax, 0x8c               ; 140\n\u2502           0x004012b7      0000           add byte [eax], al\n\u2502           0x004012b9      0001           add byte [ecx], al\n\u2502           0x004012bb      0000           add byte [eax], al\n\u2502           0x004012bd      00426f         add byte [edx + 0x6f], al\n\u2502       \u250c\u2500< 0x004012c0      7264           jb 0x401326\n\u2502      \u250c\u2500\u2500< 0x004012c2      657261         jb 0x401326\n\u2502      \u2502\u2502   0x004012c5      6461           popal\n\u2502      \u2502\u2502   0x004012c7      6d             insd dword es:[edi], dx\n\u2502      \u2502\u2502   0x004012c8      61             popal\n\u2502     \u250c\u2500\u2500\u2500< 0x004012c9      7370           jae 0x40133b\n\u2502    \u250c\u2500\u2500\u2500\u2500< 0x004012cb      7265           jb 0x401332\n\u2502    \u2502\u2502\u2502\u2502   0x004012cd      690043617074   imul eax, dword [eax], 0x74706143\n\u2502    \u2502\u2502\u2502\u2502   0x004012d3      690000000006   imul eax, dword [eax], 0x6000000\n\u2502    \u2502\u2502\u2502\u2502   0x004012d9      0000           add byte [eax], al\n\u2502    \u2502\u2502\u2502\u2502   0x004012db      00ec           add ah, ch\n\u2502    \u2502\u2502\u2502\u2502   0x004012dd      1d40000100     sbb eax, 0x10040\n\u2502    \u2502\u2502\u2502\u2502   0x004012e2      0100           add dword [eax], eax\n\u2502    \u2502\u2502\u2502\u2502   0x004012e4      1c1a           sbb al, 0x1a\n\u2502    \u2502\u2502\u2502\u2502   0x004012e6      40             inc eax\n\u2502    \u2502\u2502\u2502\u2502   0x004012e7      0000           add byte [eax], al\n\u2502    \u2502\u2502\u2502\u2502   0x004012e9      0000           add byte [eax], al\n\u2502    \u2502\u2502\u2502\u2502   0x004012eb      00ff           add bh, bh\n..\n\u2502    \u2502\u2502\u2514\u2514\u2500> 0x00401326      88b94847ed26   mov byte [ecx + 0x26ed4748], bh ; [0x26ed4748:1]=255\n\u2502    \u2502\u2502     0x0040132c      0000           add byte [eax], al\n\u2502    \u2502\u2502     0x0040132e      0000           add byte [eax], al\n\u2502    \u2502\u2502     0x00401330      0000           add byte [eax], al\n\u2502    \u2514\u2500\u2500\u2500\u2500> 0x00401332      0000           add byte [eax], al\n\u2502     \u2502     0x00401334      0000           add byte [eax], al\n\u2502     \u2502     0x00401336      0000           add byte [eax], al\n\u2502     \u2502     0x00401338      0000           add byte [eax], al\n\u2502     \u2502     0x0040133a  ~",
       "0x00401000": "\u254e\u254e\u254e\u254e   ;-- section..text:\n\u2502    \u254e\u254e\u254e\u254e   ;-- (0x00401004) _adj_fptan:\n\u250c 473: sym.imp.MSVBVM60.DLL__CIcos ();\n\u2502    \u254e\u254e\u254e\u254e   0x00401000  ~   8693a372f909   xchg byte [ebx + 0x9f972a3], dl ; [00] -r-x section size 36864 named .text\n\u2502    \u254e\u254e\u254e\u254e   0x00401006  ~   a372ee6aa4     mov dword [0xa46aee72], eax ; [0xa46aee72:4]=-1\n\u2502    \u254e\u254e\u254e\u254e   ;-- __vbaVarMove:\n\u2502   \u250c\u2500\u2500\u2500\u2500\u2500> 0x00401008      ee             out dx, al\n\u2502   \u254e\u254e\u254e\u254e\u254e   0x00401009      6aa4           push 0xffffffffffffffa4\n\u2502   \u254e\u254e\u254e\u254e\u254e   ;-- (0x0040100c) __vbaFreeVar:\n\u2502  \u250c\u2500\u2500\u2500\u2500\u2500\u2500< 0x0040100b  ~   7231           jb 0x40103e\n\u2502  \u2502\u254e\u254e\u254e\u254e\u254e   0x0040100d  ~   68a4722919     push 0x192972a4\n\u2502 \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500> 0x0040100e      a4             movsb byte es:[edi], byte [esi]\n\u2502 \u254e\u2502\u254e\u254e\u254e\u254e\u254e   0x0040100f  ~   7229           jb 0x40103a\n\u2502 \u254e\u2502\u254e\u254e\u254e\u254e\u254e   ;-- __vbaStrVarMove:\n..\n\u2502 \u254e\u2502\u254e\u254e\u254e\u254e\u254e   ;-- (0x00401014) __vbaFreeVarList:\n\u2502 \u254e\u2502\u254e\u254e\u254e\u254e\u254e   0x00401011  ~   19a2726272a4   sbb dword [edx - 0x5b8d9d8e], esp\n\u2502 \u254e\u2502\u254e\u254e\u254e\u2502\u254e   ;-- (0x00401018) _adj_fdiv_m64:\n\u2502 \u254e\u2502\u254e\u254e\u254e\u2514\u2500\u2500< 0x00401017  ~   72ba           jb 0x400fd3\n\u2502 \u254e\u2502\u254e\u254e\u254e \u254e   ;-- (0x0040101c) rtcVarBstrFromChar:\n\u2502 \u254e\u2502\u254e\u254e\u254e \u254e   0x00401019  ~   02a372c20fa2   add ah, byte [ebx - 0x5df03d8e]\n\u2502 \u254e\u2502\u254e\u254e\u254e \u254e   ;-- (0x00401020) _adj_fprem1:\n\u2502 \u254e\u2502\u254e\u254e\u254e\u250c\u2500\u2500> 0x0040101e  ~   a2724109a3     mov byte [0xa3094172], al   ; [0xa3094172:1]=255\n\u2502 \u254e\u2502\u254e\u254e\u254e\u254e\u254e   ;-- (0x00401024) rtcLowerCaseVar:\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500> 0x00401021  ~   09a372a075a2   or dword [ebx - 0x5d8a5f8e], esp\n\u2502 \u254e\u2502\u254e\u254e\u254e\u254e\u254e   0x00401025      75a2           jne 0x400fc9\n\u2502 \u254e\u2502\u254e\u254e\u254e\u254e\u254e   ;-- (0x00401028) rtcTrimBstr:\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x00401027  ~   7201           jb 0x40102a\n\u2502 \u254e\u2502\u254e\u254e\u254e\u254e\u2514\u2500< 0x00401029  ~   76a2           jbe 0x400fcd\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500> 0x0040102a  ~   a27274a2a1     mov byte [0xa1a27472], al   ; [0xa1a27472:1]=255\n\u2502 \u254e\u2502\u254e\u254e\u254e\u254e    ;-- (0x0040102c) __vbaHresultCheckObj:\n\u2502 \u254e\u2502\u254e\u254e\u254e\u254e\u250c\u2500< 0x0040102b  ~   7274           jb 0x4010a1\n\u2502 \u254e\u2502\u254e\u254e\u254e\u254e\u2502   0x0040102d  ~   a2a172b1c8     mov byte [0xc8b172a1], al   ; [0xc8b172a1:1]=255\n\u2502 \u254e\u2502\u254e\u254e\u254e\u254e\u2502   ;-- (0x00401030) rtcIsDate:\n\u2502 \u254e\u2502\u254e\u254e\u254e\u254e\u2502   0x0040102e  ~   a172b1c8a1     mov eax, dword [0xa1c8b172] ; [0xa1c8b172:4]=-1\n\u2502 \u254e\u2502\u254e\u254e\u254e\u254e\u2502   ;-- (0x00401034) _adj_fdiv_m32:\n\u2502 \u254e\u2502\u254e\u254e\u254e\u254e\u2502   0x00401031  ~   c8a1726e       enter 0x72a1, 0x6e\n\u2502 \u254e\u2502\u254e\u254e\u254e\u254e\u2502   0x00401035  ~   02a372fec1a1   add ah, byte [ebx - 0x5e3e018e]\n\u2502 \u254e\u2502\u254e\u254e\u254e\u254e\u2502   ;-- (0x00401038) __vbaAryDestruct:\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500> 0x00401037  ~   72fe           jb 0x401037\n\u2502 \u254e\u2502\u254e\u254e\u254e\u254e\u2502   0x00401039  ~   c1a172f19f..   shl dword [ecx - 0x5e600e8e], 0x72\n\u2502 \u254e\u2502\u254e\u254e\u254e\u254e\u2502   ;-- (0x0040103c) __vbaObjSet:\n\u2502 \u254e\u2502\u254e\u254e\u254e\u254e\u2502   0x0040103a  ~   a172f19fa1     mov eax, dword [0xa19ff172] ; [0xa19ff172:4]=-1\n\u2502 \u254e\u2502\u254e\u254e\u254e\u254e\u2502   0x0040103d      9f             lahf\n\u2502 \u254e\u2514\u2500\u2500\u2500\u2500\u2500\u2500> 0x0040103e  ~   a1720603a3     mov eax, dword [0xa3030672] ; [0xa3030672:4]=-1\n\u2502 \u254e \u254e\u254e\u254e\u254e\u2502   ;-- (0x00401040) _adj_fdiv_m16i:\n\u2502 \u254e\u250c\u2500\u2500\u2500\u2500\u2500\u2500> 0x0040103f  ~   7206           jb 0x401047\n\u2502 \u254e\u254e\u254e\u254e\u254e\u254e\u2502   0x00401041  ~   03a372a264a3   add esp, dword [ebx - 0x5c9b5d8e]\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500> 0x00401043  ~   72a2           jb 0x400fe7\n\u2502 \u254e\u254e\u254e\u254e\u254e\u254e\u2502   ;-- rtcFormatNumber:\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500> 0x00401044  ~   a264a37206     mov byte [0x672a364], al    ; [0x672a"
@@ -2862,12 +2862,12 @@
   "upx": {
     "upx_ok": false,
     "is_packed": false,
-    "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+    "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
     "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTested 0 file"
   },
   "xor": {
     "xorsearch_ok": true,
-    "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+    "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
     "candidates": [
       "Found XOR 00 position 00000000: 000000B8 ........!..L.!This program cannot be r"
     ],
@@ -2877,7 +2877,7 @@
   },
   "speakeasy": {
     "speakeasy_ok": true,
-    "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+    "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
     "module_base": null,
     "entry_point": null,
     "key_events": [],
@@ -2888,7 +2888,7 @@
     "frida_available": true,
     "frida_version": "17.16.4",
     "pe_probe": {
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "exists": true,
       "hook_candidates": [
         "MSVBVM60.DLL!_CIcos",
@@ -2901,7 +2901,7 @@
   },
   "shellcode": {
     "shellcode_ok": false,
-    "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+    "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
     "sections_analyzed": [
       {
         "name": ".text",

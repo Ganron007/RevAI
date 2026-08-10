@@ -1,18 +1,18 @@
 # Technical Evidence Pack
 
 **sha256:** cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4  
-**sample_path:** /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe  
-**project_name:** Hexorcist 3 - Weeks 20-30
+**sample_path:** /opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe  
+**project_name:** REVAI-LAB-CORPUS-H3
 
 > Every table below is copied from stage JSON. Technical narrative must cite these rows (engine + address/rule), not invent evidence.
 
 ## Verdict
 - **verdict**: suspicious
 - **score**: 20
-- **family_guess**: Hexorcist keygen
+- **family_guess**: CTF keygen
 - **agreement**: llm_v1_disagree
 - **cross_engine_notes**: Ghidra reports fewer strings (26) and functions (2) compared to IDA (1 string, 3 functions) and Malcat (36 strings, 3 functions), indicating potential data source gaps. The Ghidra imports table is empty, but IDA lists 8 imports, and Malcat confirms consistent imports. Decompilation is sourced from Malcat as per evidence.
-- **summary**: This sample is a keygen template for 'Hexorcist' based on strings and decompiled code. It performs serial validation in a dialog GUI but shows no malicious behavioral intent (e.g., file destruction, C2, persistence, credential theft). All signals align with benign software protection testing or keygen use, with neutral anomalies like section entropy.
+- **summary**: This sample is a keygen template for 'CTF' based on strings and decompiled code. It performs serial validation in a dialog GUI but shows no malicious behavioral intent (e.g., file destruction, C2, persistence, credential theft). All signals align with benign software protection testing or keygen use, with neutral anomalies like section entropy.
 - **source**: llm_judge
 - **model**: configured-llm
 
@@ -27,11 +27,11 @@
 ## Deep-Dive Summary Evidence
 - **source**: deep_dive_agentic
 - **confidence**: 90
-- **summary**: This is a benign CTF crackme challenge from the Hexorcist series, compiled with FASM. It implements a simple Windows dialog-based password checker using DialogBoxParamA/GetDlgItemTextA, with a 'good!' success string. Only 8 GUI-related imports (zero suspicious signals), 2-3 functions total, and no malicious capabilities (no network, persistence, injection, or crypto). Capa matched only 'terminate process' (ExitProcess). YARA matched only FASM compiler artifacts. The filename 'angr_crackme2.exe' explicitly identifies it as a crackme for symbolic execution practice.
+- **summary**: This is a benign CTF crackme challenge from the CTF challenge series, compiled with FASM. It implements a simple Windows dialog-based password checker using DialogBoxParamA/GetDlgItemTextA, with a 'good!' success string. Only 8 GUI-related imports (zero suspicious signals), 2-3 functions total, and no malicious capabilities (no network, persistence, injection, or crypto). Capa matched only 'terminate process' (ExitProcess). YARA matched only FASM compiler artifacts. The filename 'angr_crackme2.exe' explicitly identifies it as a crackme for symbolic execution practice.
 
 ### deep key_evidence
 - `"Filename 'angr_crackme2.exe' explicitly labeled as crackme"`
-- `"Copyright strings: 'SAS HEXORCIST', 'HEXORCIST ASM TEMPLATE' (CTF challenge series)"`
+- `"Copyright strings: 'SAS CTF', 'HEXORCIST ASM TEMPLATE' (CTF challenge series)"`
 - `"Only 8 benign GUI imports: DialogBoxParamA, GetDlgItemTextA, SetDlgItemTextA, LoadIconA, SendMessageA, EndDialog, GetModuleHandleA, ExitProcess"`
 - `"pe_import_signals: 0 suspicious signals from 8 imports"`
 - `"capa: 1 rule match \u2014 'terminate process' (C0018) only \u2014 benign"`
@@ -375,7 +375,7 @@ Total matches: 10
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -387,7 +387,7 @@ Total matches: 10
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": [
         {
           "id": "$ipv6",
@@ -399,7 +399,7 @@ Total matches: 10
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": [
         {
           "id": "$a",
@@ -411,22 +411,22 @@ Total matches: 10
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": []
     },
     {
       "rule": "IsWindowsGUI",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": []
     },
     {
       "rule": "FASM",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": []
     },
     {
       "rule": "FASM_15x",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": [
         {
           "id": "$a",
@@ -438,7 +438,7 @@ Total matches: 10
     },
     {
       "rule": "FASM_v13x_additional",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": [
         {
           "id": "$a",
@@ -450,7 +450,7 @@ Total matches: 10
     },
     {
       "rule": "FASM_v15x",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": [
         {
           "id": "$b",
@@ -462,7 +462,7 @@ Total matches: 10
     },
     {
       "rule": "FASM_v13x",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": [
         {
           "id": "$b",

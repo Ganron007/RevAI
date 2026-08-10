@@ -29,7 +29,7 @@ In summary, this sample is likely a Fiddler trace archive that exhibits suspicio
 
 This section identifies the malware sample using key identifiers extracted from analysis tools. The primary evidence comes from static analysis artifacts, specifically from MalCat (source: malcat).
 
-The sample's SHA256 hash is `58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b`, which serves as a unique fingerprint for correlation across systems (source: malcat, query_or_table: hash, row_or_rule: sha256, why: critical for sample identification and tracking). The file is named `steel.saz` and located at `/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz` (source: malcat, query_or_table: path, row_or_rule: filename, why: provides context on sample origin and naming conventions).
+The sample's SHA256 hash is `58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b`, which serves as a unique fingerprint for correlation across systems (source: malcat, query_or_table: hash, row_or_rule: sha256, why: critical for sample identification and tracking). The file is named `steel.saz` and located at `/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz` (source: malcat, query_or_table: path, row_or_rule: filename, why: provides context on sample origin and naming conventions).
 
 **Table 1: Sample Identifiers**
 

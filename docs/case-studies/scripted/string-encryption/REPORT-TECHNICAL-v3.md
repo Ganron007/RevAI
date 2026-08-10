@@ -2,15 +2,15 @@
 
 ## 1. Executive Summary
 
-This report analyzes a 2048-byte PE32 executable (`string_encryption.exe`) from the "Hexorcist 3 - Weeks 20-30" reverse engineering course corpus. The sample's primary behavior is the decryption and display of four text strings using a simple XOR-in-loop algorithm, followed by process termination. The binary imports only two standard Windows APIs (`ExitProcess` and `MessageBoxA`) and contains no evidence of network communication, persistence mechanisms, credential theft, or data exfiltration. The presence of XOR-based obfuscation (Malcat anomaly `XorInLoop`, capa rule `encode data using XOR`) is the sole technical indicator of potential malicious intent, but this technique is equally common in benign software protection and educational demonstrations. The sample's minimal complexity, benign API surface, and origin from a known reverse engineering course strongly suggest it is an educational tool for demonstrating string encryption obfuscation, not active malware. The verdict is **suspicious** with a low confidence score of 25/100.
+This report analyzes a 2048-byte PE32 executable (`string_encryption.exe`) from the "REVAI-LAB-CORPUS-H3" reverse engineering course corpus. The sample's primary behavior is the decryption and display of four text strings using a simple XOR-in-loop algorithm, followed by process termination. The binary imports only two standard Windows APIs (`ExitProcess` and `MessageBoxA`) and contains no evidence of network communication, persistence mechanisms, credential theft, or data exfiltration. The presence of XOR-based obfuscation (Malcat anomaly `XorInLoop`, capa rule `encode data using XOR`) is the sole technical indicator of potential malicious intent, but this technique is equally common in benign software protection and educational demonstrations. The sample's minimal complexity, benign API surface, and origin from a known reverse engineering course strongly suggest it is an educational tool for demonstrating string encryption obfuscation, not active malware. The verdict is **suspicious** with a low confidence score of 25/100.
 
 ## 2. Sample Metadata
 
 | Attribute | Value |
 |---|---|
 | **SHA256** | `263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca` |
-| **File Path** | `/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe` |
-| **Project** | Hexorcist 3 - Weeks 20-30 |
+| **File Path** | `/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe` |
+| **Project** | REVAI-LAB-CORPUS-H3 |
 | **File Type** | PE32 Executable (GUI) |
 | **Architecture** | x86 (32-bit) |
 | **File Size** | 2048 bytes |
@@ -216,7 +216,7 @@ No network-based IOCs exist.
 ```yara
 rule XOR_String_Encryption_Demo {
     meta:
-        description = "Detects the XOR string encryption demo from Hexorcist 3 course"
+        description = "Detects the XOR string encryption demo from CTF 3 course"
         author = "Malware Analyst"
         date = "2024-01-01"
         hash = "263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca"
@@ -273,7 +273,7 @@ Only one technique is present. The sample does not map to any other ATT&CK tacti
 
 | Component | Details |
 |---|---|
-| **Sample Source** | Hexorcist 3 - Weeks 20-30 reverse engineering course corpus |
+| **Sample Source** | REVAI-LAB-CORPUS-H3 reverse engineering course corpus |
 | **Analysis Date** | 2024 (inferred from course context) |
 | **Primary Tools** | Malcat, capa, YARA, FLOSS, radare2, Speakeasy, Frida |
 | **OS** | Windows (target), Linux (analysis host) |
@@ -285,8 +285,8 @@ Only one technique is present. The sample does not map to any other ATT&CK tacti
 # Technical Evidence Pack
 
 **sha256:** 263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca  
-**sample_path:** /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe  
-**project_name:** Hexorcist 3 - Weeks 20-30
+**sample_path:** /opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe  
+**project_name:** REVAI-LAB-CORPUS-H3
 
 > Every table below is copied from stage JSON. Technical narrative must cite these rows (engine + address/rule), not invent evidence.
 
@@ -313,7 +313,7 @@ Only one technique is present. The sample does not map to any other ATT&CK tacti
 ## Deep-Dive Summary Evidence
 - **source**: deep_dive_agentic
 - **confidence**: 90
-- **summary**: Educational demonstration of XOR string encryption obfuscation. The 2048-byte PE (compiled with FASM) contains a simple XOR decryption loop at 0x4010a8 that is called 4 times from the entry point with different keys (0x90, 0xEB, 0xFE, 0xED) and buffer addresses in .data. Decrypted strings are displayed via MessageBoxA, then the program calls ExitProcess. Only two imports (MessageBoxA, ExitProcess) with no persistence, network, file, registry, or injection capabilities. From the 'Hexorcist 3 - Weeks 20-30' reverse engineering course corpus, filename 'string_encryption.exe'.
+- **summary**: Educational demonstration of XOR string encryption obfuscation. The 2048-byte PE (compiled with FASM) contains a simple XOR decryption loop at 0x4010a8 that is called 4 times from the entry point with different keys (0x90, 0xEB, 0xFE, 0xED) and buffer addresses in .data. Decrypted strings are displayed via MessageBoxA, then the program calls ExitProcess. Only two imports (MessageBoxA, ExitProcess) with no persistence, network, file, registry, or injection capabilities. From the 'REVAI-LAB-CORPUS-H3' reverse engineering course corpus, filename 'string_encryption.exe'.
 
 ### deep key_evidence
 - `"Ghidra imports: only KERNEL32.ExitProcess and USER32.MessageBoxA \u2014 no suspicious API surface"`
@@ -321,7 +321,7 @@ Only one technique is present. The sample does not map to any other ATT&CK tacti
 - `"Ghidra instructions at 0x4010a8-0x4010b5: LODSB / XOR AL,BL / STOSB / DEC ECX / JNZ \u2014 classic XOR-in-loop decryption"`
 - `"Malcat anomaly XorInLoop at EA 0x4010AE confirms the XOR decryption pattern"`
 - `"FLOSS: 0 decoded/stack/tight strings \u2014 decryption only produces benign display text, not malicious payloads"`
-- `"Sample from 'Hexorcist 3' RE course, filename string_encryption.exe \u2014 educational obfuscation demo, not malware"`
+- `"Sample from 'CTF 3' RE course, filename string_encryption.exe \u2014 educational obfuscation demo, not malware"`
 - `"Malcat kesakode_verdict: empty \u2014 no malware family classification"`
 
 ## Malcat Structured Analysis
@@ -492,7 +492,7 @@ Total matches: 4
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -504,17 +504,17 @@ Total matches: 4
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
       "strings": []
     },
     {
       "rule": "IsWindowsGUI",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
       "strings": []
     },
     {
       "rule": "FASM",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
       "strings": []
     }
   ],

@@ -1,6 +1,6 @@
 # Triage evidence
 sha256: 58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b
-sample_path: /opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz
+sample_path: /opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz
 ghidra_session: doc-ooxml-58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b
 ida_session: (not loaded)
 
@@ -74,7 +74,7 @@ error: session doc-ooxml-58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "strings": [
         {
           "id": "$domain_regex",
@@ -86,7 +86,7 @@ error: session doc-ooxml-58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "strings": [
         {
           "id": "$ipv6",
@@ -98,7 +98,7 @@ error: session doc-ooxml-58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "strings": [
         {
           "id": "$a",
@@ -110,7 +110,7 @@ error: session doc-ooxml-58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5
     },
     {
       "rule": "url",
-      "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "strings": [
         {
           "id": "$url_regex",
@@ -145,7 +145,7 @@ error: session doc-ooxml-58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5
 ### malcat deep profile (raw JSON, capped)
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+  "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -157,7 +157,7 @@ error: session doc-ooxml-58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5
   "file_summary": {
     "analysis_id": 1,
     "file_name": "steel.saz",
-    "file_path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+    "file_path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
     "file_size": 18038723,
     "type": "ZIP",
     "architecture": "NONE",

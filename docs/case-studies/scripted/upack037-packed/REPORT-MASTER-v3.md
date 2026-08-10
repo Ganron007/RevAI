@@ -36,7 +36,7 @@ This section details the fundamental identifiers of the analyzed malware sample,
 |-----------------|-------|-----------------|----------------|
 | SHA256 Hash     | 36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9 | (source: malcat) | Unique cryptographic fingerprint for precise identification, essential for detection and threat intelligence correlation. |
 | File Name       | Upack037.exe | (source: malcat) | Suggests association with the Upack packer family, which is commonly used to obfuscate malware payloads, complicating analysis (source: cross-section:Executive Summary). |
-| File Path       | /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe | (source: malcat) | Indicates the sample is part of a curated analysis corpus, though this does not inherently denote malicious intent. |
+| File Path       | /opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe | (source: malcat) | Indicates the sample is part of a curated analysis corpus, though this does not inherently denote malicious intent. |
 | Type            | PE (Portable Executable) | (source: malcat) | Confirms a Windows executable format, which is typical for malware targeting Windows systems. |
 | Architecture    | X86 | (source: malcat) | Targets 32-bit systems, a prevalent architecture that increases potential victim reach. |
 | Entropy         | 156 | (source: malcat) | High entropy value (likely on a scale where higher indicates more randomness) suggests the code is packed or encrypted, a common evasion technique to avoid signature-based detection (source: cross-section:4. Static Analysis). |

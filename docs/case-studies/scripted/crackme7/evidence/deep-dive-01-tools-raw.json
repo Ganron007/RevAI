@@ -1,13 +1,13 @@
 {
   "_format": "pe",
-  "_sample_path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+  "_sample_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
   "_source": "deep_dive_agentic_checklist",
   "yara": {
     "rule_count": 7,
     "matches": [
       {
         "rule": "domain",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
         "strings": [
           {
             "id": "$domain_regex",
@@ -19,7 +19,7 @@
       },
       {
         "rule": "IP",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
         "strings": [
           {
             "id": "$ipv6",
@@ -31,7 +31,7 @@
       },
       {
         "rule": "contains_base64",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
         "strings": [
           {
             "id": "$a",
@@ -43,22 +43,22 @@
       },
       {
         "rule": "IsPE32",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
         "strings": []
       },
       {
         "rule": "IsWindowsGUI",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
         "strings": []
       },
       {
         "rule": "FASM",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
         "strings": []
       },
       {
         "rule": "SEH__vectored",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
         "strings": [
           {
             "id": "$",
@@ -87,7 +87,7 @@
   },
   "malcat": {
     "analysis_id": 1,
-    "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+    "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
     "profile": "deep",
     "limits": {
       "strings_max": 300,
@@ -99,7 +99,7 @@
     "file_summary": {
       "analysis_id": 1,
       "file_name": "crackme7.exe",
-      "file_path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+      "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
       "file_size": 141824,
       "type": "PE",
       "architecture": "X86",
@@ -1387,7 +1387,7 @@
   },
   "r2_decomp": {
     "r2_ok": true,
-    "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+    "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
     "disassembly": {
       "0x00401000": ";-- section..text:\n\u250c 30: entry0 ();\n\u2502           0x00401000      b8b3124000     mov eax, 0x4012b3           ; [00] -rwx section size 4096 named .text\n\u2502           0x00401005      b9d8050000     mov ecx, 0x5d8              ; 1496\n\u2502       \u250c\u2500> 0x0040100a      803066         xor byte [eax], 0x66        ; [0x66:1]=255 ; 102\n\u2502       \u254e   0x0040100d      40             inc eax\n\u2502       \u2514\u2500< 0x0040100e      e2fa           loop 0x40100a\n\u2502           0x00401010      68b3124000     push 0x4012b3\n\u2502           0x00401015      6a01           push 1                      ; 1\n\u2502           0x00401017      ff156c304000   call dword [sym.imp.KERNEL32.DLL_AddVectoredExceptionHandler] ; 0x40306c ; PVOID AddVectoredExceptionHandler(ULONG First, PVECTORED_EXCEPTION_HANDLER Handler)\n\u2514           0x0040101d      f4             hlt"
     },
@@ -1400,12 +1400,12 @@
   "upx": {
     "upx_ok": false,
     "is_packed": false,
-    "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+    "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
     "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTested 0 file"
   },
   "xor": {
     "xorsearch_ok": true,
-    "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+    "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
     "candidates": [
       "Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r"
     ],
@@ -1415,7 +1415,7 @@
   },
   "speakeasy": {
     "speakeasy_ok": true,
-    "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+    "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
     "module_base": null,
     "entry_point": null,
     "key_events": [],
@@ -1426,7 +1426,7 @@
     "frida_available": true,
     "frida_version": "17.16.4",
     "pe_probe": {
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
       "exists": true,
       "hook_candidates": [
         "KERNEL32.DLL!GetModuleHandleA",
@@ -1442,7 +1442,7 @@
   },
   "shellcode": {
     "shellcode_ok": false,
-    "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+    "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
     "sections_analyzed": [
       {
         "name": ".text",

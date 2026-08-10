@@ -1,6 +1,6 @@
 {
   "sha256": "ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda",
-  "sample_path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+  "sample_path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
   "model": "mimo-v2.5-pro",
   "generated_at": 1786300013.7302747,
   "triage": {

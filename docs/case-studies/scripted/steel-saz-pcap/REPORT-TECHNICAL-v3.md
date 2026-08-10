@@ -6,7 +6,7 @@ This report presents a technical analysis of the file `steel.saz` (SHA256: 58c04
 ## 2. Sample Metadata
 The sample metadata is extracted from the structured evidence:
 - **SHA256:** 58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b
-- **Sample Path:** /opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz
+- **Sample Path:** /opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz
 - **Project Name:** 610
 - **File Size:** 18,038,723 bytes (source: malcat, file_summary, size=18038723)
 - **File Type:** ZIP archive (source: malcat, file_summary, type=ZIP)
@@ -135,7 +135,7 @@ This appendix summarizes the tools used and their outcomes, based on structured 
 
 ## 13. Appendix B: Analysis Environment
 The analysis environment is not fully specified in the evidence, but based on tool outputs:
-- **Sample Path:** /opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz
+- **Sample Path:** /opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz
 - **Tools Used:** MalCat, YARA (yara-x with 454 rules compiled), Radare2, CAPA, FLOSS (skipped), Ghidra and IDA (failed), Speakeasy and Frida (not applicable), XOR search tool, and LLM judge models (configured-llm).
 - **Operating System:** Likely a Linux-based analysis VM, given the file path structure.
 - **Configuration:** YARA rules from `/opt/samples/rules/flat/` with some compile errors (e.g., missing `androguard` module) (source: generated YARA meta, compile_errors).
@@ -145,7 +145,7 @@ The analysis environment is not fully specified in the evidence, but based on to
 # Technical Evidence Pack
 
 **sha256:** 58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b  
-**sample_path:** /opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz  
+**sample_path:** /opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz  
 **project_name:** 610
 
 > Every table below is copied from stage JSON. Technical narrative must cite these rows (engine + address/rule), not invent evidence.
@@ -413,7 +413,7 @@ Total matches: 4
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "strings": [
         {
           "id": "$domain_regex",
@@ -425,7 +425,7 @@ Total matches: 4
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "strings": [
         {
           "id": "$ipv6",
@@ -437,7 +437,7 @@ Total matches: 4
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "strings": [
         {
           "id": "$a",
@@ -449,7 +449,7 @@ Total matches: 4
     },
     {
       "rule": "url",
-      "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "strings": [
         {
           "id": "$url_regex",
@@ -507,7 +507,7 @@ Total strings: 0 · per_category: `{}`
 ## XOR Search
 {
   "xorsearch_ok": false,
-  "sample": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+  "sample": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
   "candidates": [],
   "xorsearch_stdout": "",
   "xorsearch_stderr": "",

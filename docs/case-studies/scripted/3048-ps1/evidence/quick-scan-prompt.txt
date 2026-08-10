@@ -1,6 +1,6 @@
 # Triage evidence
 sha256: 14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2
-sample_path: /opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1
+sample_path: /opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1
 ghidra_session: ghidra-pe-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2
 ida_session: ida-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2
 
@@ -88,7 +88,7 @@ Ghidra exited before becoming ready (exit code 1)
 label: IDA database summary
 sql: SELECT * FROM welcome
 columns: summary, idasql_version, processor, is_64bit, min_ea, max_ea, start_ea, entry_name, funcs_count, segments_count, names_count, strings_count, filename, input_file_path, idb_path, md5, sha256
-  metapc 64-bit | start: 0xFFFFFFFFFFFFFFFF | funcs: 0 | segs: 1 | strings: 1 | 0.0.17 | metapc | 1 | 0x0 | 0xAF0 | 0xFFFFFFFFFFFFFFFF |  | 0 | 1 | 0 | 1 | 3048.ps1 | /opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1 | /opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1.i64 | d6b8e6f867196c141e3d30e0d8945824 | 14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2
+  metapc 64-bit | start: 0xFFFFFFFFFFFFFFFF | funcs: 0 | segs: 1 | strings: 1 | 0.0.17 | metapc | 1 | 0x0 | 0xAF0 | 0xFFFFFFFFFFFFFFFF |  | 0 | 1 | 0 | 1 | 3048.ps1 | /opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1 | /opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1.i64 | d6b8e6f867196c141e3d30e0d8945824 | 14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2
 
 ### engine: ida
 label: Total function count (IDA)
@@ -160,7 +160,7 @@ rows: (empty)
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "strings": [
         {
           "id": "$domain_regex",
@@ -172,7 +172,7 @@ rows: (empty)
     },
     {
       "rule": "powershell",
-      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "strings": [
         {
           "id": "$a",
@@ -184,7 +184,7 @@ rows: (empty)
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "strings": [
         {
           "id": "$ipv6",
@@ -196,7 +196,7 @@ rows: (empty)
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "strings": [
         {
           "id": "$a",
@@ -208,7 +208,7 @@ rows: (empty)
     },
     {
       "rule": "Antivirus",
-      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "strings": []
     }
   ],
@@ -236,7 +236,7 @@ rows: (empty)
 ### malcat deep profile (raw JSON, capped)
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+  "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -248,7 +248,7 @@ rows: (empty)
   "file_summary": {
     "analysis_id": 1,
     "file_name": "3048.ps1",
-    "file_path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+    "file_path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
     "file_size": 2800,
     "type": "text/utf8",
     "architecture": "NONE",

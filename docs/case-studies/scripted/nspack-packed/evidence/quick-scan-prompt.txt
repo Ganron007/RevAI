@@ -1,6 +1,6 @@
 # Triage evidence
 sha256: 2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5
-sample_path: /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe
+sample_path: /opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe
 ghidra_session: ghidra-pe-2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5
 ida_session: ida-2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5
 
@@ -62,7 +62,7 @@ rows: (empty)
 label: IDA database summary
 sql: SELECT * FROM welcome
 columns: summary, idasql_version, processor, is_64bit, min_ea, max_ea, start_ea, entry_name, funcs_count, segments_count, names_count, strings_count, filename, input_file_path, idb_path, md5, sha256
-  metapc 32-bit | entry: start @ 0x100101B | funcs: 7 | segs: 4 | strings: 304 | 0.0.17 | metapc | 0 | 0x1001000 | 0x102F000 | 0x100101B | start | 7 | 4 | 24 | 304 | nspack.exe | /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe | /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe.i64 | 8fcd7104ec1bbc2e657ceca8e926badb | 2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5
+  metapc 32-bit | entry: start @ 0x100101B | funcs: 7 | segs: 4 | strings: 304 | 0.0.17 | metapc | 0 | 0x1001000 | 0x102F000 | 0x100101B | start | 7 | 4 | 24 | 304 | nspack.exe | /opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe | /opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe.i64 | 8fcd7104ec1bbc2e657ceca8e926badb | 2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5
 
 ### engine: ida
 label: Total function count (IDA)
@@ -323,7 +323,7 @@ void sub_1025d7f(uint8_t *param_1,uint8_t *param_2)
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -335,7 +335,7 @@ void sub_1025d7f(uint8_t *param_1,uint8_t *param_2)
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$ipv4",
@@ -353,7 +353,7 @@ void sub_1025d7f(uint8_t *param_1,uint8_t *param_2)
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$a",
@@ -365,7 +365,7 @@ void sub_1025d7f(uint8_t *param_1,uint8_t *param_2)
     },
     {
       "rule": "nSpackV2xLiuXingPing",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$a0",
@@ -488,7 +488,7 @@ void sub_1025d7f(uint8_t *param_1,uint8_t *param_2)
 ### malcat deep profile (raw JSON, capped)
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -500,7 +500,7 @@ void sub_1025d7f(uint8_t *param_1,uint8_t *param_2)
   "file_summary": {
     "analysis_id": 1,
     "file_name": "nspack.exe",
-    "file_path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+    "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
     "file_size": 55021,
     "type": "PE",
     "architecture": "X86",

@@ -1,6 +1,6 @@
 """section_publisher.py — Map-Reduce report generation.
 
-Industry pattern (Anthropic / LangChain / MS Research):
+Section-based Map-Reduce pattern:
   - MAP:    each section gets a focused LLM call with filtered evidence + targeted RAG
   - REDUCE: local Python concatenates section outputs into the final REPORT-MASTER
 
@@ -291,7 +291,7 @@ def _build_signoff(tools_results: dict, sha: str) -> str:
         f"- **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)",
         "- **analyst**: (your name)",
         "",
-        "_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). "
+        "_This report was generated via section-based Map-Reduce pattern. "
         "Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._",
     ]
     return "\n".join(lines)
@@ -492,7 +492,7 @@ def run_technical_publish(sha: str, tools_results: dict) -> dict:
     (LOGS_DIR / sha / "EVIDENCE-BUNDLE.md").write_text(technical_evidence)
 
     sections = "\n".join(f"- {s}" for s in TECHNICAL_REPORT_SECTIONS)
-    # NOTE: no scorecard — RevAI does not use the RevEng run_scorecard /
+    # NOTE: no scorecard — RevAI does not use the legacy run_scorecard /
     # RAG verification harness. Tool I/O truth is enforced by
     # audit_pipeline.py (tools_all_ok, engine_citation_ok, ...).
     prompt = f"""# Technical Malware Analysis Report v3
@@ -531,7 +531,7 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
 {OUTPUT_FORMAT_CONTRACT}
 """
 
-    # Bounded retry on incomplete/truncated output (mimo provider finding
+    # Bounded retry on incomplete/truncated output (provider finding
     # 2026-08-08): the single-giant-call technical assembly occasionally
     # truncates (only section 1 written, rest missing/stub). Retry ONCE with a
     # short completion nudge before falling back.

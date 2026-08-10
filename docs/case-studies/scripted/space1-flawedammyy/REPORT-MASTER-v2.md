@@ -34,8 +34,8 @@ The verdict is **malicious** with high confidence (90%). The behavioral intent i
 | **Compiler/Linker** | Microsoft Visual C++ 2008 (source: malcat) |
 | **File Size** | (Not provided in evidence) |
 | **First Submission** | (Not provided in evidence) |
-| **Project** | Malware Analyst Professional - Level 2 |
-| **Sample Path** | /opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex |
+| **Project** | REVAI-LAB-CORPUS-L2 |
+| **Sample Path** | /opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex |
 
 The sample is a standard 32-bit Windows GUI executable. The import hash (imphash) is `1905143b6a38c11e2b30615cb955fd08` (source: rule.yara.json). Analysis confirms it is not a .NET assembly (source: dotnet_analyze) and is not packed with UPX (source: UPX unpack).
 

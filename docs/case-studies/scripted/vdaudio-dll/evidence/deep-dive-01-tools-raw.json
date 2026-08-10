@@ -1,13 +1,13 @@
 {
   "_format": "pe",
-  "_sample_path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+  "_sample_path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
   "_source": "deep_dive_agentic_checklist",
   "yara": {
     "rule_count": 19,
     "matches": [
       {
         "rule": "domain",
-        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
         "strings": [
           {
             "id": "$domain_regex",
@@ -19,7 +19,7 @@
       },
       {
         "rule": "IP",
-        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
         "strings": [
           {
             "id": "$ipv6",
@@ -31,7 +31,7 @@
       },
       {
         "rule": "contains_base64",
-        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
         "strings": [
           {
             "id": "$a",
@@ -43,7 +43,7 @@
       },
       {
         "rule": "maldoc_find_kernel32_base_method_1",
-        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
         "strings": [
           {
             "id": "$a1",
@@ -55,22 +55,22 @@
       },
       {
         "rule": "IsPE32",
-        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
         "strings": []
       },
       {
         "rule": "IsDLL",
-        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
         "strings": []
       },
       {
         "rule": "IsWindowsGUI",
-        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
         "strings": []
       },
       {
         "rule": "Borland_Delphi_40_additional",
-        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
         "strings": [
           {
             "id": "$a",
@@ -82,7 +82,7 @@
       },
       {
         "rule": "Microsoft_Visual_Cpp_v50v60_MFC",
-        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
         "strings": [
           {
             "id": "$a",
@@ -94,7 +94,7 @@
       },
       {
         "rule": "Borland_Delphi_30_additional",
-        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
         "strings": [
           {
             "id": "$a",
@@ -106,7 +106,7 @@
       },
       {
         "rule": "Borland_Delphi_30_",
-        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
         "strings": [
           {
             "id": "$a",
@@ -118,7 +118,7 @@
       },
       {
         "rule": "Borland_Delphi_Setup_Module",
-        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
         "strings": [
           {
             "id": "$a",
@@ -130,7 +130,7 @@
       },
       {
         "rule": "Borland_Delphi_40",
-        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
         "strings": [
           {
             "id": "$a",
@@ -142,7 +142,7 @@
       },
       {
         "rule": "Borland_Delphi_v40_v50",
-        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
         "strings": [
           {
             "id": "$a",
@@ -154,7 +154,7 @@
       },
       {
         "rule": "Borland_Delphi_v30",
-        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
         "strings": [
           {
             "id": "$a",
@@ -166,7 +166,7 @@
       },
       {
         "rule": "Borland_Delphi_DLL",
-        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
         "strings": [
           {
             "id": "$a",
@@ -178,7 +178,7 @@
       },
       {
         "rule": "SEH_Save",
-        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
         "strings": [
           {
             "id": "$a",
@@ -190,7 +190,7 @@
       },
       {
         "rule": "SEH_Init",
-        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
         "strings": [
           {
             "id": "$a",
@@ -208,7 +208,7 @@
       },
       {
         "rule": "Str_Win32_Winsock2_Library",
-        "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+        "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
         "strings": [
           {
             "id": "$ws2_lib",
@@ -237,7 +237,7 @@
   },
   "malcat": {
     "analysis_id": 1,
-    "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+    "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
     "profile": "deep",
     "limits": {
       "strings_max": 300,
@@ -249,7 +249,7 @@
     "file_summary": {
       "analysis_id": 1,
       "file_name": "vdaudio.dll",
-      "file_path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+      "file_path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
       "file_size": 13312,
       "type": "PE",
       "architecture": "X86",
@@ -1731,7 +1731,7 @@
   },
   "r2_decomp": {
     "r2_ok": true,
-    "sample": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+    "sample": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
     "disassembly": {
       "0x10003316": "\u250c 15: entry0 ();\n\u2502           0x10003316      55             push ebp\n\u2502           0x10003317      8bec           mov ebp, esp\n\u2502           0x10003319      83c4e8         add esp, 0xffffffe8\n\u2502           0x1000331c      a115500010     mov eax, dword [0x10005015] ; [0x10005015:4]=1\n\u2502           0x10003321      c9             leave\n\u2514           0x10003322      c20c00         ret 0xc",
       "0x10002ca8": "\u250c 19: sym.vdaudio.dll_gewayX ();\n\u2502           0x10002ca8      6a00           push 0\n\u2502           0x10002caa      6a10           push 0x10                   ; 16\n\u2502           0x10002cac      6857b90010     push 0x1000b957\n\u2502           0x10002cb1      50             push eax\n\u2502           0x10002cb2      51             push ecx\n\u2502           0x10002cb3      e8dc070000     call 0x10003494\n\u2502           0x10002cb8      48             dec eax\n\u2514           0x10002cb9      ffe1           jmp ecx",
@@ -1750,12 +1750,12 @@
   "upx": {
     "upx_ok": false,
     "is_packed": false,
-    "sample": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+    "sample": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
     "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTested 0 file"
   },
   "xor": {
     "xorsearch_ok": true,
-    "sample": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+    "sample": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
     "candidates": [
       "Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r"
     ],
@@ -1765,7 +1765,7 @@
   },
   "speakeasy": {
     "speakeasy_ok": true,
-    "sample": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+    "sample": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
     "module_base": null,
     "entry_point": null,
     "key_events": [],
@@ -1776,7 +1776,7 @@
     "frida_available": true,
     "frida_version": "17.16.4",
     "pe_probe": {
-      "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+      "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
       "exists": true,
       "hook_candidates": [
         "USER32.dll!ReplyMessage",
@@ -1808,7 +1808,7 @@
   },
   "shellcode": {
     "shellcode_ok": false,
-    "sample": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+    "sample": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
     "sections_analyzed": [
       {
         "name": ".text",

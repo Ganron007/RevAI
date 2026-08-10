@@ -1,6 +1,6 @@
 # Triage evidence
 sha256: 1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39
-sample_path: /opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll
+sample_path: /opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll
 ghidra_session: ghidra-pe-1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39
 ida_session: ida-1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39
 
@@ -62,7 +62,7 @@ rows: (empty)
 label: IDA database summary
 sql: SELECT * FROM welcome
 columns: summary, idasql_version, processor, is_64bit, min_ea, max_ea, start_ea, entry_name, funcs_count, segments_count, names_count, strings_count, filename, input_file_path, idb_path, md5, sha256
-  metapc 32-bit | entry: gewayX @ 0x10003316 | funcs: 64 | segs: 4 | strings: 60 | 0.0.17 | metapc | 0 | 0x10001000 | 0x10013000 | 0x10003316 | gewayX | 64 | 4 | 77 | 60 | vdaudio.dll | /opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll | /opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll.i64 | b0f2328750d22b52025015e9ada820a2 | 1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39
+  metapc 32-bit | entry: gewayX @ 0x10003316 | funcs: 64 | segs: 4 | strings: 60 | 0.0.17 | metapc | 0 | 0x10001000 | 0x10013000 | 0x10003316 | gewayX | 64 | 4 | 77 | 60 | vdaudio.dll | /opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll | /opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll.i64 | b0f2328750d22b52025015e9ada820a2 | 1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39
 
 ### engine: ida
 label: Total function count (IDA)
@@ -460,7 +460,7 @@ undefined8 __fastcall sub_10001431(undefined4 param_1,undefined4 param_2)
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+      "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
       "strings": [
         {
           "id": "$domain_regex",
@@ -472,7 +472,7 @@ undefined8 __fastcall sub_10001431(undefined4 param_1,undefined4 param_2)
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+      "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
       "strings": [
         {
           "id": "$ipv6",
@@ -484,7 +484,7 @@ undefined8 __fastcall sub_10001431(undefined4 param_1,undefined4 param_2)
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+      "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
       "strings": [
         {
           "id": "$a",
@@ -496,7 +496,7 @@ undefined8 __fastcall sub_10001431(undefined4 param_1,undefined4 param_2)
     },
     {
       "rule": "maldoc_find_kernel32_base_method_1",
-      "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+      "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
       "strings": [
         {
           "id": "$a1",
@@ -508,7 +508,7 @@ undefined8 __fastcall sub_10001431(undefined4 param_1,undefined4 param_2)
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+      "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
       "strings": []
     },
     {
@@ -615,7 +615,7 @@ undefined8 __fastcall sub_10001431(undefined4 param_1,undefined4 param_2)
 ### malcat deep profile (raw JSON, capped)
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+  "path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -627,7 +627,7 @@ undefined8 __fastcall sub_10001431(undefined4 param_1,undefined4 param_2)
   "file_summary": {
     "analysis_id": 1,
     "file_name": "vdaudio.dll",
-    "file_path": "/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
+    "file_path": "/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll",
     "file_size": 13312,
     "type": "PE",
     "architecture": "X86",

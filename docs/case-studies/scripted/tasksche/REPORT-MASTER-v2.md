@@ -23,7 +23,7 @@ This report details the analysis of a 32-bit Windows executable (`tasksche.exe`)
 | Attribute | Value |
 |-----------|-------|
 | SHA256 | ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda |
-| File Path | /opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe |
+| File Path | /opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe |
 | File Type | PE32 executable (GUI) Intel 80386, for MS Windows |
 | Architecture | x86 (32-bit) |
 | Compiler | Microsoft Visual C++ 6.0 |

@@ -1,6 +1,6 @@
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
   "profile": "triage",
   "limits": {
     "strings_max": 100,
@@ -12,7 +12,7 @@
   "file_summary": {
     "analysis_id": 1,
     "file_name": "32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
-    "file_path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+    "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
     "file_size": 1011032,
     "type": "PE",
     "architecture": "DOTNET",

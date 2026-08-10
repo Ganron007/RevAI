@@ -1,7 +1,7 @@
 # Agent-Loop Discipline
 
 The agentic deep dive enforces four loop-discipline behaviors. They were inspired by
-the AgentRE-Bench evaluation methodology — the same ideas about agentic tool use,
+the benchmark evaluation methodology — the same ideas about agentic tool use,
 applied to our own pipeline so the analysis converges, stays evidence-grounded, and
 never wastes budget.
 

@@ -8,7 +8,7 @@
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
-- **Sample:** `/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe`
+- **Sample:** `/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe`
 - **Showcase pack:** `/opt/samples/logs/_showcase_audits/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda`
 
 ## Stage scoreboard
@@ -189,7 +189,7 @@ _No tool retries occurred during this run._
 ```json
 {
   "title": "WannaCry Ransomware Analysis Report",
-  "markdown": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 18:29:21 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n# WannaCry Ransomware Analysis Report\n\n## Executive Summary\n\nThis report details the analysis of a 32-bit Windows executable (`tasksche.exe`) identified as a component of the WannaCry ransomware family. The sample exhibits core ransomware behaviors including AES-based file encryption, service-based persistence, and registry manipulation for configuration storage. Analysis confirms the presence of WannaCry-specific artifacts such as the 'WanaCrypt0r' mutex, 'WNcry@2ol7' contact email, and multiple Bitcoin wallet addresses for ransom payment. The malware leverages Microsoft's cryptographic APIs for file encryption and uses command-line execution for payload delivery. No anti-analysis or evasion techniques were observed beyond basic obfuscation. The sample is definitively malicious and poses a high risk of data loss through file encryption.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|-----------|-------|\n| SHA256 | ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda |\n| File Path | /opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe |\n| File Type | PE32 executable (GUI) Intel 80386, for MS Windows |\n| Architecture | x86 (32-bit) |\n| Compiler | Microsoft Visual C++ 6.0 |\n| Packed | No (UPX probe negative) |\n| .NET | Not a .NET assembly |\n| Project | 710 |\n\nThe sample is a native Win32 executable compiled with Visual C++ 6.0, consistent with WannaCry's known build environment. The filename 'tasksche.exe' aligns with WannaCry's task scheduler component naming convention (source: deep-dive.json).\n\n## 2. Classification\n\n| Field | Value |\n|-------|-------|\n| Verdict | **Malicious** |\n| Confidence | 100% |\n| Family | WannaCry / WanaCrypt0r / WCry |\n| Type | Ransomware |\n| Threat Level | Critical |\n\nThe classification is based on multiple converging evidence streams. The upstream triage verdict is 'malicious' with a score of 100 (source: verdict.json). YARA rules matched WannaCry-specific indicators including 'Wanna_Cry_Ransomware_Generic', 'WannaCry_Ransomware', and 'WannaCry_Ransomware_Dropper' (source: yara). The deep-dive analysis identified the 'WANACRY!' magic marker, 'WanaCrypt0r' mutex, and ransom contact email 'WNcry@2ol7' (source: deep-dive.json). CAPA confirmed encryption capabilities via AES and service creation for persistence (source: capa).\n\n## 3. Background & Family Lineage\n\nWannaCry (also known as WannaCrypt, WCry, or WanaCrypt0r) is a ransomware worm that emerged in May 2017, causing a global pandemic affecting over 200,000 systems across 150 countries. It exploited the EternalBlue vulnerability (MS17-010) in Windows SMBv1 for propagation. The malware encrypts user files using AES-128-CBC and demands ransom payment in Bitcoin.\n\nThis sample exhibits characteristics consistent with the early WannaCry variants:\n- **Mutex**: 'WanaCrypt0r' used for single-instance enforcem
+  "markdown": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 18:29:21 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n# WannaCry Ransomware Analysis Report\n\n## Executive Summary\n\nThis report details the analysis of a 32-bit Windows executable (`tasksche.exe`) identified as a component of the WannaCry ransomware family. The sample exhibits core ransomware behaviors including AES-based file encryption, service-based persistence, and registry manipulation for configuration storage. Analysis confirms the presence of WannaCry-specific artifacts such as the 'WanaCrypt0r' mutex, 'WNcry@2ol7' contact email, and multiple Bitcoin wallet addresses for ransom payment. The malware leverages Microsoft's cryptographic APIs for file encryption and uses command-line execution for payload delivery. No anti-analysis or evasion techniques were observed beyond basic obfuscation. The sample is definitively malicious and poses a high risk of data loss through file encryption.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|-----------|-------|\n| SHA256 | ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda |\n| File Path | /opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe |\n| File Type | PE32 executable (GUI) Intel 80386, for MS Windows |\n| Architecture | x86 (32-bit) |\n| Compiler | Microsoft Visual C++ 6.0 |\n| Packed | No (UPX probe negative) |\n| .NET | Not a .NET assembly |\n| Project | 710 |\n\nThe sample is a native Win32 executable compiled with Visual C++ 6.0, consistent with WannaCry's known build environment. The filename 'tasksche.exe' aligns with WannaCry's task scheduler component naming convention (source: deep-dive.json).\n\n## 2. Classification\n\n| Field | Value |\n|-------|-------|\n| Verdict | **Malicious** |\n| Confidence | 100% |\n| Family | WannaCry / WanaCrypt0r / WCry |\n| Type | Ransomware |\n| Threat Level | Critical |\n\nThe classification is based on multiple converging evidence streams. The upstream triage verdict is 'malicious' with a score of 100 (source: verdict.json). YARA rules matched WannaCry-specific indicators including 'Wanna_Cry_Ransomware_Generic', 'WannaCry_Ransomware', and 'WannaCry_Ransomware_Dropper' (source: yara). The deep-dive analysis identified the 'WANACRY!' magic marker, 'WanaCrypt0r' mutex, and ransom contact email 'WNcry@2ol7' (source: deep-dive.json). CAPA confirmed encryption capabilities via AES and service creation for persistence (source: capa).\n\n## 3. Background & Family Lineage\n\nWannaCry (also known as WannaCrypt, WCry, or WanaCrypt0r) is a ransomware worm that emerged in May 2017, causing a global pandemic affecting over 200,000 systems across 150 countries. It exploited the EternalBlue vulnerability (MS17-010) in Windows SMBv1 for propagation. The malware encrypts user files using AES-128-CBC and demands ransom payment in Bitcoin.\n\nThis sample exhibits characteristics consistent with the early WannaCry variants:\n- **Mutex**: 'WanaCrypt0r' used for single-instance enforcem
 … [15752 more chars]
 ```
 
@@ -223,7 +223,7 @@ This report details the analysis of a 32-bit Windows executable (`tasksche.exe`)
 | Attribute | Value |
 |-----------|-------|
 | SHA256 | ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda |
-| File Path | /opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe |
+| File Path | /opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe |
 | File Type | PE32 executable (GUI) Intel 80386, for MS Windows |
 | Architecture | x86 (32-bit) |
 | Compiler | Microsoft Visual C++ 6.0 |
@@ -362,7 +362,7 @@ The malicious verdict and WannaCry family classification are supported by consen
 ```
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+  "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
   "profile": "triage",
   "limits": {
     "strings_max": 100,
@@ -374,7 +374,7 @@ The malicious verdict and WannaCry family classification are supported by consen
   "file_summary": {
     "analysis_id": 1,
     "file_name": "tasksche.exe",
-    "file_path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+    "file_path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
     "file_size": 3514368,
     "type": "PE",
     "architecture": "X86",
@@ -565,7 +565,7 @@ The malicious verdict and WannaCry family classification are supported by consen
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -577,7 +577,7 @@ The malicious verdict and WannaCry family classification are supported by consen
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": [
         {
           "id": "$ipv4",
@@ -595,7 +595,7 @@ The malicious verdict and WannaCry family classification are supported by consen
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": [
         {
           "id": "$a",
@@ -607,7 +607,7 @@ The malicious verdict and WannaCry family classification are supported by consen
     },
     {
       "rule": "Misc_Suspicious_Strings",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": [
         {
           "id": "$a4",
@@ -619,7 +619,7 @@ The malicious verdict and WannaCry family classification are supported by consen
     },
     {
       "rule": "CRC32_poly_Constant",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": [
         {
           "id": "$c0",
@@ -631,7 +631,7 @@ The malicious verdict and WannaCry family classification are supported by consen
     },
     {
       "rule": "CRC32_table",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": [
         {
           "id": "$c0",
@@ -643,7 +643,7 @@ The malicious verdict and WannaCry family classification are supported by consen
     },
     {
       "rule": "RijnDael_AES",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": [
         {
           "id": "$c0",
@@ -655,7 +655,7 @@ The malicious verdict and WannaCry family classification are supported by consen
     },
     {
       "rule": "RijnDael_AES_CHAR",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": [
         {
           "id": "$c0",
@@ -667,22 +667,22 @@ The malicious verdict and WannaCry family classification are supported by consen
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": []
     },
     {
       "rule": "IsWindowsGUI",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": []
     },
     {
       "rule": "IsPacked",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": []
     },
     {
       "rule": "HasRichSignature",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": [
         {
           "id": "$a0",
@@ -809,7 +809,7 @@ The malicious verdict and WannaCry family classification are supported by consen
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+  "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -821,7 +821,7 @@ The malicious verdict and WannaCry family classification are supported by consen
   "file_summary": {
     "analysis_id": 1,
     "file_name": "tasksche.exe",
-    "file_path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+    "file_path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
     "file_size": 3514368,
     "type": "PE",
     "architecture": "X86",
@@ -1038,7 +1038,7 @@ The malicious verdict and WannaCry family classification are supported by consen
 ```
 # Triage evidence
 sha256: ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda
-sample_path: /opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe
+sample_path: /opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe
 ghidra_session: ghidra-pe-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda
 ida_session: ida-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda
 
@@ -1331,7 +1331,7 @@ ida_session: ida-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cd
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -1343,7 +1343,7 @@ ida_session: ida-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cd
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": [
         {
           "id": "$ipv4",
@@ -1361,7 +1361,7 @@ ida_session: ida-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cd
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": [
         {
           "id": "$a",
@@ -1373,7 +1373,7 @@ ida_session: ida-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cd
     },
     {
       "rule": "Misc_Suspicious_Strings",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": [
         {
           "id": "$a4",
@@ -1385,7 +1385,7 @@ ida_session: ida-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cd
     },
     {
       "rule": "CRC32_poly_Constant",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": [
         {
           "id": "$c0",
@@ -1397,7 +1397,7 @@ ida_session: ida-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cd
     },
     {
       "rule": "CRC32_table",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": [
         {
           "id": "$c0",
@@ -1409,7 +1409,7 @@ ida_session: ida-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cd
     },
     {
       "rule": "RijnDael_AES",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": [
         {
           "id": "$c0",
@@ -1421,7 +1421,7 @@ ida_session: ida-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cd
     },
     {
       "rule": "RijnDael_AES_CHAR",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": [
         {
           "id": "$c0",
@@ -1433,22 +1433,22 @@ ida_session: ida-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cd
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": []
     },
     {
       "rule": "IsWindowsGUI",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": []
     },
     {
       "rule": "IsPacked",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": []
     },
     {
       "rule": "HasRichSignature",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": [
         {
           "id": "$a0",
@@ -1595,7 +1595,7 @@ ida_session: ida-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cd
 ```json
 {
   "r2_ok": true,
-  "sample": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+  "sample": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
   "disassembly": {
     "0x004077ba": "\u250c 338: entry0 ();\n\u2502           ; var int32_t var_4h @ ebp-0x4\n\u2502           ; var int32_t var_14h @ ebp-0x14\n\u2502           ; var int32_t var_18h @ ebp-0x18\n\u2502           ; var int32_t var_2ch @ ebp-0x2c\n\u2502           ; var int32_t var_30h @ ebp-0x30\n\u2502           ; var int32_t var_5ch @ ebp-0x5c\n\u2502           ; var int32_t var_60h @ ebp-0x60\n\u2502           ; var int32_t var_64h @ ebp-0x64\n\u2502           ; var int32_t var_68h @ ebp-0x68\n\u2502           ; var int32_t var_6ch @ ebp-0x6c\n\u2502           ; var int32_t var_70h @ ebp-0x70\n\u2502           ; var int32_t var_74h @ ebp-0x74\n\u2502           ; var int32_t var_78h @ ebp-0x78\n\u2502           0x004077ba      55             push ebp\n\u2502           0x004077bb      8bec           mov ebp, esp\n\u2502           0x004077bd      6aff           push 0xffffffffffffffff\n\u2502           0x004077bf      6888d44000     push 0x40d488\n\u2502           0x004077c4      68f4764000     push 0x4076f4\n\u2502           0x004077c9      64a100000000   mov eax, dword fs:[0]\n\u2502           0x004077cf      50             push eax\n\u2502           0x004077d0      6489250000..   mov dword fs:[0], esp\n\u2502           0x004077d7      83ec68         sub esp, 0x68\n\u2502           0x004077da      53             push ebx\n\u2502           0x004077db      56             push esi\n\u2502           0x004077dc      57             push edi\n\u2502           0x004077dd      8965e8         mov dword [var_18h], esp\n\u2502           0x004077e0      33db           xor ebx, ebx\n\u2502           0x004077e2      895dfc         mov dword [var_4h], ebx\n\u2502           0x004077e5      6a02           push 2                      ; 2\n\u2502           0x004077e7      ff15c4814000   call dword [sym.imp.MSVCRT.dll___set_app_type] ; 0x4081c4 ; \"2\\xdf\"\n\u2502           0x004077ed      59             pop ecx\n\u2502           0x004077ee      830d4cf940..   or dword [0x40f94c], 0xffffffff ; [0x40f94c:4]=0\n\u2502           0x004077f5      830d50f940..   or dword [0x40f950], 0xffffffff ; [0x40f950:4]=0\n\u2502           0x004077fc      ff15c0814000   call dword [sym.imp.MSVCRT.dll___p__fmode] ; 0x4081c0 ; \"$\\xdf\"\n\u2502           0x00407802      8b0d48f94000   mov ecx, dword [0x40f948]   ; [0x40f948:4]=0\n\u2502           0x00407808      8908           mov dword [eax], ecx\n\u2502           0x0040780a      ff15bc814000   call dword [sym.imp.MSVCRT.dll___p__commode] ; 0x4081bc\n\u2502           0x00407810      8b0d44f94000   mov ecx, dword [0x40f944]   ; [0x40f944:4]=0\n\u2502           0x00407816      8908           mov dword [eax], ecx\n\u2502           0x00407818      a1b8814000     mov eax, dword [sym.imp.MSVCRT.dll__adjust_fdiv] ; [0x4081b8:4]=0xdf04 reloc.MSVCRT.dll__adjust_fdiv\n\u2502           0x0040781d      8b00           mov eax, dword [eax]\n\u2502           0x0040781f      a354f94000     mov dword [0x40f954], eax   ; [0x40f954:4]=0\n\u2502           0x00407824      e816010000     call 0x40793f\n\u2502           0x00407829      391d70f84000   cmp dword [0x40f870], ebx   ; [0x40f870:4]=1\n\u2502       \u250c\u2500< 0x0040782f      750c           jne 0x40783d\n\u2502       \u2502   0x00407831      683c794000     push 0x40793c               ; '<y@' ; \"3\\xc0\\xc3\\xc3\\",
     "0x00401fe7"
@@ -1608,7 +1608,7 @@ ida_session: ida-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cd
 {
   "upx_ok": false,
   "is_packed": false,
-  "sample": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+  "sample": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
   "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTested 0 file"
 }
 ```
@@ -1618,7 +1618,7 @@ ida_session: ida-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cd
 ```json
 {
   "xorsearch_ok": true,
-  "sample": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+  "sample": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
   "candidates": [
     "Found XOR 00 position 00000000: 000000F8 ........!..L.!This program cannot be r"
   ],
@@ -1633,7 +1633,7 @@ ida_session: ida-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cd
 ```json
 {
   "speakeasy_ok": true,
-  "sample": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+  "sample": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
   "module_base": null,
   "entry_point": null,
   "key_events": [],
@@ -1649,7 +1649,7 @@ ida_session: ida-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cd
   "frida_available": true,
   "frida_version": "17.16.4",
   "pe_probe": {
-    "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+    "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
     "exists": true,
     "hook_candidates": [
       "KERNEL32.dll!GetFileAttributesW",
@@ -1741,7 +1741,7 @@ ida_session: ida-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cd
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -1762,7 +1762,7 @@ ida_session: ida-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cd
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+  "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -1883,7 +1883,7 @@ ida_session: ida-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cd
 ```json
 {
   "r2_ok": true,
-  "sample": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+  "sample": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
   "disassembly": {
     "0x004077ba": "\u250c 338: entry0 ();\n\u2502           ; var int32_t var_4h @ ebp-0x4\n\u2502           ; var int32_t var_14h @ ebp-0x14\n\u2502           ; var int32_t var_18h @ ebp-0x18\n\u2502           ; var int32_t var_2ch @ ebp-0x2c\n
 … [6666 more chars]
@@ -1895,7 +1895,7 @@ ida_session: ida-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cd
 {
   "upx_ok": false,
   "is_packed": false,
-  "sample": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+  "sample": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
   "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTested 0 file"
 }
 ```
@@ -1905,7 +1905,7 @@ ida_session: ida-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cd
 ```json
 {
   "xorsearch_ok": true,
-  "sample": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+  "sample": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
   "candidates": [
     "Found XOR 00 position 00000000: 000000F8 ........!..L.!This program cannot be r"
   ],
@@ -1920,7 +1920,7 @@ ida_session: ida-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cd
 ```json
 {
   "speakeasy_ok": true,
-  "sample": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+  "sample": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
   "module_base": null,
   "entry_point": null,
   "key_events": [],
@@ -1936,7 +1936,7 @@ ida_session: ida-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cd
   "frida_available": true,
   "frida_version": "17.16.4",
   "pe_probe": {
-    "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+    "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
     "exists": true,
     "hook_candidates": [
       "KERNEL32.dll!GetFileAttributesW",
@@ -1952,7 +1952,7 @@ ida_session: ida-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cd
 ```json
 {
   "shellcode_ok": false,
-  "sample": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+  "sample": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
   "sections_analyzed": [
     {
       "name": ".text",

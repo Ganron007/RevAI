@@ -36,7 +36,7 @@ The following table summarizes key metadata extracted from the sample, with inte
 | Attribute | Value | Interpretation and Confidence |
 |-----------|-------|-------------------------------|
 | SHA256 | `14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2` | The cryptographic hash ensures uniqueness and integrity for tracking in threat intelligence databases. Confidence: high, as it is a standard identifier. (source: malcat) |
-| Type | text/utf8 | Indicates the file is a text file encoded in UTF-8, suggesting it contains human-readable code. Given the path `/opt/samples/corpus/day6/.../3048.ps1`, it is likely a PowerShell script, which aligns with other sections classifying it as PowerShell-based malware. Confidence: high. (source: malcat) |
+| Type | text/utf8 | Indicates the file is a text file encoded in UTF-8, suggesting it contains human-readable code. Given the path `/opt/samples/corpus/revai-lab-610/day6/.../3048.ps1`, it is likely a PowerShell script, which aligns with other sections classifying it as PowerShell-based malware. Confidence: high. (source: malcat) |
 | Architecture | NONE | The sample is not tied to a specific CPU architecture, consistent with its nature as a script that executes via an interpreter rather than native machine code. Confidence: high. (source: malcat) |
 | Entropy | 148 | Entropy measures randomness in file content. A value of 148 (likely a normalized score or bits per byte metric) suggests relatively high randomness. For a text file, this may indicate obfuscation, encoding, or embedded payloads, which are common evasion techniques in malware. Confidence: medium, as entropy alone is not definitive but supportive of suspicious behavior. (source: malcat) |
 

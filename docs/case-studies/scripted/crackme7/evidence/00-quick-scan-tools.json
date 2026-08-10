@@ -62,7 +62,7 @@
     "matches": [
       {
         "rule": "domain",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
         "strings": [
           {
             "id": "$domain_regex",
@@ -74,7 +74,7 @@
       },
       {
         "rule": "IP",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
         "strings": [
           {
             "id": "$ipv6",
@@ -86,7 +86,7 @@
       },
       {
         "rule": "contains_base64",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
         "strings": [
           {
             "id": "$a",
@@ -98,22 +98,22 @@
       },
       {
         "rule": "IsPE32",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
         "strings": []
       },
       {
         "rule": "IsWindowsGUI",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
         "strings": []
       },
       {
         "rule": "FASM",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
         "strings": []
       },
       {
         "rule": "SEH__vectored",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
         "strings": [
           {
             "id": "$",
@@ -197,7 +197,7 @@
   },
   "malcat": {
     "analysis_id": 1,
-    "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+    "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
     "profile": "deep",
     "limits": {
       "strings_max": 300,
@@ -209,7 +209,7 @@
     "file_summary": {
       "analysis_id": 1,
       "file_name": "crackme7.exe",
-      "file_path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+      "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
       "file_size": 141824,
       "type": "PE",
       "architecture": "X86",

@@ -15,7 +15,7 @@
 # Technical Malware Analysis Report v2
 
 **SHA256:** c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509
-**Project:** Hexorcist 3 - Weeks 20-30
+**Project:** REVAI-LAB-CORPUS-H3
 **Analyst Date:** 2026-08-09
 
 ---
@@ -643,7 +643,7 @@ A Sigma rule was generated (source: rule.yara.json, sigma_path) but content not 
 
 | Component | Version/Details |
 |---|---|
-| Project | Hexorcist 3 - Weeks 20-30 |
+| Project | REVAI-LAB-CORPUS-H3 |
 | Analysis Date | 2026-08-09 |
 | Ghidra | SQL-based query interface |
 | IDA | SQL-based query interface |
@@ -672,8 +672,8 @@ A Sigma rule was generated (source: rule.yara.json, sigma_path) but content not 
 # Technical Evidence Pack
 
 **sha256:** c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509  
-**sample_path:** /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe  
-**project_name:** Hexorcist 3 - Weeks 20-30
+**sample_path:** /opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe  
+**project_name:** REVAI-LAB-CORPUS-H3
 
 > Every table below is copied from stage JSON. Technical narrative must cite these rows (engine + address/rule), not invent evidence.
 

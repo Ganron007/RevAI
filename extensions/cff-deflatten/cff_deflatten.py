@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """CFF Deflatten v1.0 — global dispatcher-pattern detector.
 
-CADRE-RevEng / Tools/v3-tools/cff-deflatten/cff_deflatten.py
+RevAI / tools/cff-deflatten/cff_deflatten.py
 
 Detects control-flow flattening (CFF) in a binary by scanning every
 basic block, not relying on Ghidra's function ID. Works for binaries
@@ -30,7 +30,7 @@ KNOWN LIMITATIONS (v1):
   - Tested against synthetic CFF fixtures; not yet validated on
     real-world CFF-protected samples (VMProtect, Themida, etc.).
 
-Developed under CADRE-RevEng v3-tools/ — see ../README.md for context.
+RevAI extension — see ../README.md for context.
 """
 import argparse
 import json

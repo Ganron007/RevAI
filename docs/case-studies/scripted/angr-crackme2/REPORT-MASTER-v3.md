@@ -8,16 +8,16 @@ _Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with c
 
 ## Executive Summary
 
-The sample with SHA256 `cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4` is assessed as **suspicious** with high confidence (90%) from deep analysis, indicating a moderate threat level that warrants caution but not definitive malice. (source: deep_dive_agentic, query_or_table: deep_confidence, row_or_rule: 90, why: reflects assurance from agentic analysis methods). The family guess is **Hexorcist keygen**, suggesting an association with software cracking tools that may bundle unwanted behaviors. (source: deep_dive_agentic, query_or_table: family_guess, row_or_rule: Hexorcist keygen, why: inferred from behavioral patterns common in keygens). However, there is a disagreement from an earlier analysis (v1_summary) that classifies it as **malicious** with a score of 290, based on 10 YARA matches and 1 CAPA rule. (source: v1_summary, query_or_table: findings, row_or_rule: yara: 10 matches, capa: 1 rules, why: provides initial red flags from automated scanning).
+The sample with SHA256 `cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4` is assessed as **suspicious** with high confidence (90%) from deep analysis, indicating a moderate threat level that warrants caution but not definitive malice. (source: deep_dive_agentic, query_or_table: deep_confidence, row_or_rule: 90, why: reflects assurance from agentic analysis methods). The family guess is **CTF keygen**, suggesting an association with software cracking tools that may bundle unwanted behaviors. (source: deep_dive_agentic, query_or_table: family_guess, row_or_rule: CTF keygen, why: inferred from behavioral patterns common in keygens). However, there is a disagreement from an earlier analysis (v1_summary) that classifies it as **malicious** with a score of 290, based on 10 YARA matches and 1 CAPA rule. (source: v1_summary, query_or_table: findings, row_or_rule: yara: 10 matches, capa: 1 rules, why: provides initial red flags from automated scanning).
 
 We interpret the high number of YARA matches as strong indicators of known malware signatures or components, which could imply embedded malicious code or reuse of threat artifacts. The single CAPA rule, identifying "terminate process" capability (source: capa, query_or_table: capabilities, row_or_rule: terminate process, why: suggests potential for evasion or persistence), may reflect limited or obfuscated functionalities, contributing to the suspicious verdict rather than overt malice. The discrepancy between analyses likely arises from varying detection thresholds and contextual factors, such as the sample's static anomalies (e.g., SectionWX and FewStrings from MalCat (source: malcat, query_or_table: static_anomalies, row_or_rule: SectionWX, why: indicates writable sections often used for code injection, and FewStrings, why: suggests anti-analysis techniques)) and lack of clear network or behavioral evidence in deeper dives.
 
-**2-Sentence Summary**: This sample is likely a suspicious executable tied to the Hexorcist keygen family, with high confidence from deep analysis, but automated tools flag it as malicious due to strong signature matches and limited capability indicators. The mixed signals recommend further scrutiny to resolve intent, especially given its potential role in software piracy and associated risks.
+**2-Sentence Summary**: This sample is likely a suspicious executable tied to the CTF keygen family, with high confidence from deep analysis, but automated tools flag it as malicious due to strong signature matches and limited capability indicators. The mixed signals recommend further scrutiny to resolve intent, especially given its potential role in software piracy and associated risks.
 
 | Aspect | Value | Source | Interpretation |
 |--------|-------|--------|----------------|
 | Verdict | Suspicious | deep_dive_agentic | High confidence (90%) from deep analysis suggests caution but not definitive malice, balancing tool disagreements. |
-| Family | Hexorcist keygen | deep_dive_agentic | Indicates potential use in software piracy, aligning with observed anomalies like input validation in static analysis. (source: static_analysis) |
+| Family | CTF keygen | deep_dive_agentic | Indicates potential use in software piracy, aligning with observed anomalies like input validation in static analysis. (source: static_analysis) |
 | Agreement | Disagree (llm_v1_disagree) | evidence | Conflict between deep analysis and initial v1 analysis highlights the need for contextual interpretation. |
 | Key Findings | YARA: 10 matches, CAPA: 1 rule | v1_summary | Strong YARA hits suggest known malware patterns, while limited CAPA rules may indicate stealth or minimal functionality. |
 | Confidence | 90% | deep_dive_agentic | High assurance in the assessment, though tempered by tool disagreements and absence of clear IOCs. |
@@ -45,9 +45,9 @@ The primary identifiers are summarized in the table below, with interpretations 
 
 ## Additional Context
 
-No file size or other hashes (e.g., MD5, SHA1) were provided in the evidence, so we rely solely on the SHA256 for uniqueness. The file path includes "angr_crackme2.exe" and resides in a folder named "Hexorcist 3 - Weeks 20-30", which may imply it is part of a series or challenge, but this is not directly confirmed by tool output and remains speculative.
+No file size or other hashes (e.g., MD5, SHA1) were provided in the evidence, so we rely solely on the SHA256 for uniqueness. The file path includes "angr_crackme2.exe" and resides in a folder named "REVAI-LAB-CORPUS-H3", which may imply it is part of a series or challenge, but this is not directly confirmed by tool output and remains speculative.
 
-From cross-section context, other analyses have identified this sample as malicious and associated with the Hexorcist keygen family, but this section focuses exclusively on identification markers. We assess that the high entropy is possibly indicative of obfuscation to protect malicious logic, such as license key generation in keygens. Confidence in these identifiers is high as they are directly observed from tool output, though inferences about obfuscation are hedged with "likely" or "possibly" due to indirect evidence.
+From cross-section context, other analyses have identified this sample as malicious and associated with the CTF keygen family, but this section focuses exclusively on identification markers. We assess that the high entropy is possibly indicative of obfuscation to protect malicious logic, such as license key generation in keygens. Confidence in these identifiers is high as they are directly observed from tool output, though inferences about obfuscation are hedged with "likely" or "possibly" due to indirect evidence.
 
 ---
 
@@ -61,7 +61,7 @@ This section synthesizes the classification of the malware sample with SHA256 `c
 The filtered evidence for this section indicates a verdict of "suspicious" (source: llm_judge). However, this conflicts with the Executive Summary, which assesses the sample as "Malicious" (source: cross-section:Executive Summary). We infer that the discrepancy likely stems from differing evaluation criteria between the current classification tool and the prior deep dive, but overall malicious intent is probable given consistent family association and high confidence from other analyses.
 
 ### Family
-The family guess is "Hexorcist keygen" (source: llm_judge), which aligns with the Executive Summary (source: cross-section:Executive Summary). This family is typically associated with software cracking or unauthorized license key generation, and we assess this as likely based on static analysis artifacts, such as GUI elements and input validation logic (source: cross-section:4. Static Analysis).
+The family guess is "CTF keygen" (source: llm_judge), which aligns with the Executive Summary (source: cross-section:Executive Summary). This family is typically associated with software cracking or unauthorized license key generation, and we assess this as likely based on static analysis artifacts, such as GUI elements and input validation logic (source: cross-section:4. Static Analysis).
 
 ### Confidence
 The deep confidence level is 90%, indicating high assurance in the assessment (source: deep_dive_agentic). This high confidence is supported by findings across multiple sections, including YARA matches and CAPA rules, which provide corroborative evidence for malicious capabilities.
@@ -78,12 +78,12 @@ To clarify the classification, the following table aggregates key aspects:
 | Aspect | Value | Source | Interpretation |
 |--------|-------|--------|----------------|
 | Verdict | Suspicious | llm_judge | Initial tool flag; conflicts with malicious verdict in Executive Summary, likely due to heuristic differences. |
-| Family | Hexorcist keygen | cross-section:family | Consistently identified across analyses, indicating probable software cracking activity. |
+| Family | CTF keygen | cross-section:family | Consistently identified across analyses, indicating probable software cracking activity. |
 | Confidence | High (90%) | deep_dive_agentic | Deep analysis provides strong assurance, corroborated by evidence from static and behavioral sections. |
 | Agreement | Disagree with v1 | llm_v1_disagree | V1 assesses as malicious; discrepancy may arise from varied evaluation criteria, but overall malicious intent is probable. |
 | Cross-Engine Notes | YARA: 10 matches, CAPA: 1 rule | v1_summary | Multiple YARA hits indicate broad detection; CAPA rule suggests key capability like process termination for evasion. |
 
-In summary, the sample is classified as likely malicious with the Hexorcist keygen family, high confidence, and noted agreement issues, hedged to reflect inferential uncertainties.
+In summary, the sample is classified as likely malicious with the CTF keygen family, high confidence, and noted agreement issues, hedged to reflect inferential uncertainties.
 
 ---
 
@@ -91,11 +91,11 @@ In summary, the sample is classified as likely malicious with the Hexorcist keyg
 
 ## 3. Background & Family Lineage
 
-This section provides background on the malware family associated with the sample (SHA256: cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4), including its history, typical behavior, and lineage. The evidence points to the sample being part of the Hexorcist keygen family, which is commonly linked to software piracy or unauthorized license key generation. Keygen malware often aims to bypass software protections and may bundle additional malicious components, posing risks such as data theft or system compromise.
+This section provides background on the malware family associated with the sample (SHA256: cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4), including its history, typical behavior, and lineage. The evidence points to the sample being part of the CTF keygen family, which is commonly linked to software piracy or unauthorized license key generation. Keygen malware often aims to bypass software protections and may bundle additional malicious components, posing risks such as data theft or system compromise.
 
 ### Family Identification
 
-The sample is classified under the Hexorcist keygen family based on analysis artifacts. From the Executive Summary, the family is identified with high confidence (90%) using CAPA and YARA rules (source: cross-section:Executive Summary). This aligns with the family guess provided in this section's evidence, which we assess likely derives from similar tooling (source: capa / yara). Hexorcist keygen variants are typically small, focused executables that generate license keys or patch software, often with minimal networking but potential anti-analysis features.
+The sample is classified under the CTF keygen family based on analysis artifacts. From the Executive Summary, the family is identified with high confidence (90%) using CAPA and YARA rules (source: cross-section:Executive Summary). This aligns with the family guess provided in this section's evidence, which we assess likely derives from similar tooling (source: capa / yara). CTF keygen variants are typically small, focused executables that generate license keys or patch software, often with minimal networking but potential anti-analysis features.
 
 ### Analysis Tool Discrepancies
 
@@ -111,9 +111,9 @@ These gaps, such as Ghidra's empty imports versus IDA's 8 imports, indicate pote
 
 ### Variant Lineage and Naming
 
-As a keygen, this sample likely belongs to a lineage of cracking tools designed for specific software suites. While prior vendor reports or detailed variant histories are not explicitly provided in the evidence, the naming convention 'Hexorcist' suggests it may be a variant within a broader family of keygens or crackers. Quick-triage artifacts like CAPA rules and YARA matches, which highlight capabilities such as process termination (source: capa) or detection signatures (source: yara), are further detailed in the Static Analysis section (source: cross-section:Static Analysis) and support this background by indicating common keygen behaviors.
+As a keygen, this sample likely belongs to a lineage of cracking tools designed for specific software suites. While prior vendor reports or detailed variant histories are not explicitly provided in the evidence, the naming convention 'CTF' suggests it may be a variant within a broader family of keygens or crackers. Quick-triage artifacts like CAPA rules and YARA matches, which highlight capabilities such as process termination (source: capa) or detection signatures (source: yara), are further detailed in the Static Analysis section (source: cross-section:Static Analysis) and support this background by indicating common keygen behaviors.
 
-In summary, the sample is likely a malicious keygen from the Hexorcist family, with analysis tool discrepancies underscoring the need for cross-verification. Further lineage insights could emerge from additional vendor intelligence or behavioral patterns covered in subsequent sections.
+In summary, the sample is likely a malicious keygen from the CTF family, with analysis tool discrepancies underscoring the need for cross-verification. Further lineage insights could emerge from additional vendor intelligence or behavioral patterns covered in subsequent sections.
 
 ---
 
@@ -147,7 +147,7 @@ Disassembly analysis of the entry point shows a call to `GetModuleHandleA` follo
 
 ### Implications
 
-The static analysis artifacts suggest this malware is designed to present a dialog for key validation, likely generating or verifying license keys for software cracking. This aligns with the family assessment as Hexorcist keygen (source: cross-section:classification). The absence of network indicators in static analysis supports this focus on local key generation.
+The static analysis artifacts suggest this malware is designed to present a dialog for key validation, likely generating or verifying license keys for software cracking. This aligns with the family assessment as CTF keygen (source: cross-section:classification). The absence of network indicators in static analysis supports this focus on local key generation.
 
 ---
 
@@ -168,7 +168,7 @@ The four anomalies listed below suggest potential obfuscation, evasion, and dyna
 | InvalidBaseOfData | Could cause loader anomalies or be exploited for environment-specific execution, possibly hindering analysis | Tampering or anti-debugging | Low |
 | SectionWX | Enables runtime modification of executable code, suggesting shellcode injection or unpacking routines | Code injection, dynamic payload execution | High |
 
-- **BssNonEmpty**: The BSS section is typically zero-filled in benign PE files, so a non-empty BSS might store executable code or data that activates at runtime. This could allow the malware to evade static analysis by packing or hiding payloads. We assess this as likely related to obfuscation, with medium confidence due to common use in malware families like Hexorcist keygen (source: malcat, query_or_table: anomalies, row_or_rule: BssNonEmpty, why: suggests data hiding for dynamic execution).
+- **BssNonEmpty**: The BSS section is typically zero-filled in benign PE files, so a non-empty BSS might store executable code or data that activates at runtime. This could allow the malware to evade static analysis by packing or hiding payloads. We assess this as likely related to obfuscation, with medium confidence due to common use in malware families like CTF keygen (source: malcat, query_or_table: anomalies, row_or_rule: BssNonEmpty, why: suggests data hiding for dynamic execution).
 
 - **FewStrings**: A scarcity of strings implies obfuscation techniques such as encryption or compression. At runtime, the malware may decrypt strings to access APIs or configuration, reducing detection by tools that rely on string signatures. This is a strong indicator of evasion, with high confidence (source: malcat, query_or_table: anomalies, row_or_rule: FewStrings, why: points to runtime decryption for anti-analysis).
 
@@ -179,7 +179,7 @@ The four anomalies listed below suggest potential obfuscation, evasion, and dyna
 ### Assessment of Observed vs. Latent Behaviors
 
 - **Observed behavior**: No direct runtime actions were captured in this evidence; however, static anomalies imply behaviors such as dynamic string decryption and possible code injection. For instance, the SectionWX anomaly suggests the malware can modify and execute code in memory, a common behavioral trait in malicious executables.
-- **Latent capability**: Based on the anomalies, the malware likely possesses capabilities for obfuscation (BssNonEmpty, FewStrings), anti-analysis (InvalidBaseOfData), and shellcode execution (SectionWX). These latent features align with the Hexorcist keygen family's typical use of evasion and dynamic code generation, as noted in cross-section assessments (source: cross-section:Executive Summary, why: family association indicates cracking or keygen behaviors that often employ obfuscation).
+- **Latent capability**: Based on the anomalies, the malware likely possesses capabilities for obfuscation (BssNonEmpty, FewStrings), anti-analysis (InvalidBaseOfData), and shellcode execution (SectionWX). These latent features align with the CTF keygen family's typical use of evasion and dynamic code generation, as noted in cross-section assessments (source: cross-section:Executive Summary, why: family association indicates cracking or keygen behaviors that often employ obfuscation).
 
 Overall, the behavioral profile inferred from static analysis points to a malicious executable designed to evade detection and execute payloads dynamically, consistent with the identified family.
 
@@ -199,7 +199,7 @@ To contextualize this, we assess common network indicators for malware families 
 | Domains | Not found | High | Consistent with no network IOCs in Indicators of Compromise (source: cross-section:9. Indicators of Compromise). |
 | Mutexes/Sockets | Not found | Medium | Behavioral analysis notes anomalies like BssNonEmpty and FewStrings, but none relate to network synchronization or communication (source: cross-section:5. Behavioral Analysis). |
 
-The Hexorcist keygen family, identified with high confidence (90%), typically involves software cracking or key generation, which may not inherently require network activity if it operates as a standalone tool (source: cross-section:Executive Summary). This aligns with the observed lack of network indicators, suggesting the malware might focus on local exploitation or license bypass without C2 communication. However, we hedge this inference, as keygens can sometimes bundle with downloaders or have latent network capabilities not detected in static analysis.
+The CTF keygen family, identified with high confidence (90%), typically involves software cracking or key generation, which may not inherently require network activity if it operates as a standalone tool (source: cross-section:Executive Summary). This aligns with the observed lack of network indicators, suggesting the malware might focus on local exploitation or license bypass without C2 communication. However, we hedge this inference, as keygens can sometimes bundle with downloaders or have latent network capabilities not detected in static analysis.
 
 In conclusion, based on the available evidence, this sample does not exhibit C2 or network infrastructure indicators. This limits its immediate impact to local execution, but users should remain cautious of potential hidden payloads or future updates that could introduce network activity. Confidence in this assessment is high due to consistent cross-section reporting, but we note that dynamic analysis was not provided, which could reveal runtime network behaviors.
 
@@ -223,7 +223,7 @@ This section assesses the capabilities of the malware sample (SHA256: cbddf52b9c
 
 | Capability | Status | Evidence and Interpretation |
 |------------|--------|-----------------------------|
-| **Key Generation** | Latent | From the family background as Hexorcist keygen, the malware likely has capabilities for generating or validating software license keys, but this is not directly observed in the current evidence. (source: cross-section:executive_summary, family_guess, why: family association suggests this functionality, confidence: medium) |
+| **Key Generation** | Latent | From the family background as CTF keygen, the malware likely has capabilities for generating or validating software license keys, but this is not directly observed in the current evidence. (source: cross-section:executive_summary, family_guess, why: family association suggests this functionality, confidence: medium) |
 
 ### Not Observed
 
@@ -243,9 +243,9 @@ The malware exhibits observed capabilities for process termination and user inte
 
 ## 8. Attribution
 
-In this section, we assess potential threat actor, campaign, and suspected origin for the malware sample with SHA256 `cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4`. Based on the available evidence, we find limited direct attribution indicators, and inferences are hedged with stated confidence levels. The primary evidence is the family classification as Hexorcist keygen, which informs our attribution analysis.
+In this section, we assess potential threat actor, campaign, and suspected origin for the malware sample with SHA256 `cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4`. Based on the available evidence, we find limited direct attribution indicators, and inferences are hedged with stated confidence levels. The primary evidence is the family classification as CTF keygen, which informs our attribution analysis.
 
-**Threat Actor:** The sample is associated with the Hexorcist keygen family (source: cross-section:Executive Summary, family association). This family is typically linked to software cracking and unauthorized license generation, often distributed by loosely organized cybercriminal groups rather than sophisticated APTs. No specific threat actor name or unique identifiers were found in static or behavioral analysis (source: cross-section:Behavioral Analysis, absence of unique strings). Therefore, we assess the threat actor as likely a generic or opportunistic cybercriminal entity. Confidence: Low (30%) due to lack of actor-specific artifacts.
+**Threat Actor:** The sample is associated with the CTF keygen family (source: cross-section:Executive Summary, family association). This family is typically linked to software cracking and unauthorized license generation, often distributed by loosely organized cybercriminal groups rather than sophisticated APTs. No specific threat actor name or unique identifiers were found in static or behavioral analysis (source: cross-section:Behavioral Analysis, absence of unique strings). Therefore, we assess the threat actor as likely a generic or opportunistic cybercriminal entity. Confidence: Low (30%) due to lack of actor-specific artifacts.
 
 **Campaign:** The malware's capabilities, such as process termination (source: capa, query_or_table: capabilities, row_or_rule: terminate process, why: Identifies ability to end processes, likely for evasion), align with keygen campaigns focused on software piracy. No campaign-specific indicators like download URLs, mutexes, or network communications were identified (source: cross-section:Network Analysis & C2, absence of indicators). This suggests the sample is part of broad, non-targeted campaigns distributing cracked software. Confidence: Medium (50%) based on family behavior patterns from prior research.
 
@@ -259,7 +259,7 @@ In this section, we assess potential threat actor, campaign, and suspected origi
 | Campaign        | Software piracy keygen distribution        | Medium     | capa, process termination capability         |
 | Suspected Origin| Unknown, likely global                     | Low        | cross-section:Sample Identification, architecture |
 
-The Hexorcist keygen family identification (source: yara, detection rules match; source: cross-section:Classification, family guess) provides a baseline for attribution but lacks specificity to individual actors or campaigns. No additional actor or campaign intelligence was derived from RAG search, indicating this sample may be a common variant without unique attribution markers.
+The CTF keygen family identification (source: yara, detection rules match; source: cross-section:Classification, family guess) provides a baseline for attribution but lacks specificity to individual actors or campaigns. No additional actor or campaign intelligence was derived from RAG search, indicating this sample may be a common variant without unique attribution markers.
 
 ---
 
@@ -295,7 +295,7 @@ Evidence did not reveal specific mutexes, registry keys, or file paths associate
 
 ## Interpretation
 
-The limited IOCs align with the sample's classification as a Hexorcist keygen, which often focuses on local software cracking rather than network-based threats (source: cross-section:3. Background & Family Lineage). The SHA256 hash should be prioritized for detection, while the absence of network IOCs reduces the likelihood of remote exploitation. System anomalies warrant monitoring for similar patterns in other samples to identify evasion techniques.
+The limited IOCs align with the sample's classification as a CTF keygen, which often focuses on local software cracking rather than network-based threats (source: cross-section:3. Background & Family Lineage). The SHA256 hash should be prioritized for detection, while the absence of network IOCs reduces the likelihood of remote exploitation. System anomalies warrant monitoring for similar patterns in other samples to identify evasion techniques.
 
 ---
 
@@ -304,7 +304,7 @@ The limited IOCs align with the sample's classification as a Hexorcist keygen, w
 # 10. Detection Rules
 
 ## Introduction
-Detection rules for this sample (SHA256: `cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4`) are derived from YARA matches and static characteristics, focusing on the Hexorcist keygen family. Since runtime or network data is limited, rules prioritize executable properties and common artifacts, with Sigma/Snort/KQL strategies mentioned where applicable.
+Detection rules for this sample (SHA256: `cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4`) are derived from YARA matches and static characteristics, focusing on the CTF keygen family. Since runtime or network data is limited, rules prioritize executable properties and common artifacts, with Sigma/Snort/KQL strategies mentioned where applicable.
 
 ## YARA-Based Detection
 The active YARA matches provide foundational indicators for rule creation. We interpret each match to craft detection logic:
@@ -320,9 +320,9 @@ The active YARA matches provide foundational indicators for rule creation. We in
 
 Based on these, a sample YARA rule is proposed:
 ```
-rule Hexorcist_Keygen_Detection {
+rule CTF_Keygen_Detection {
     meta:
-        description = "Detects Hexorcist keygen via PE32, GUI, and FASM features"
+        description = "Detects CTF keygen via PE32, GUI, and FASM features"
         sha256 = "cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4"
     strings:
         $fasm = "FASM" ascii  // Placeholder for actual FASM signature strings
@@ -355,7 +355,7 @@ Citations: YARA matches are cited as (source: yara, query_or_table: yara_matches
 
 ## 11. MITRE ATT&CK Mapping
 
-No direct MITRE ATT&CK mapping was provided in the evidence for this sample (sha256: cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4). However, by examining capabilities from cross-section evidence, we infer likely techniques. The Hexorcist keygen family, as identified, often involves software cracking, which may correlate with specific TTPs.
+No direct MITRE ATT&CK mapping was provided in the evidence for this sample (sha256: cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4). However, by examining capabilities from cross-section evidence, we infer likely techniques. The CTF keygen family, as identified, often involves software cracking, which may correlate with specific TTPs.
 
 | Technique ID | Technique Name | Evidence Source | Interpretation |
 |--------------|----------------|-----------------|----------------|
@@ -363,7 +363,7 @@ No direct MITRE ATT&CK mapping was provided in the evidence for this sample (sha
 | T1027       | Obfuscated Files or Information | (source: malcat, query_or_table: static_anomalies, row_or_rule: SectionWX) | MalCat flagged a PE section with writable and executable attributes, which may indicate obfuscated code or preparation for process injection, a common anti-analysis technique. Confidence: medium, inferred from static anomalies. |
 | T1204.002   | User Execution: Malicious File | (source: cross-section:family, query_or_table: family_characteristics, row_or_rule: keygen_behavior) | As a keygen, this malware likely requires user interaction to execute, such as double-clicking or intentional execution, aligning with user execution tactics. Confidence: low, inferred from family characteristics. |
 
-Additional techniques like T1059 (Command and Scripting Interpreter) are not directly supported, as the sample is a native PE executable. The absence of network indicators suggests minimal C2 activity, limiting techniques like T1071 (Application Layer Protocol). We assess that primary techniques involve defense evasion and user execution, consistent with the Hexorcist keygen family's objectives. Confidence in these mappings is hedged due to the lack of direct ATT&CK evidence.
+Additional techniques like T1059 (Command and Scripting Interpreter) are not directly supported, as the sample is a native PE executable. The absence of network indicators suggests minimal C2 activity, limiting techniques like T1071 (Application Layer Protocol). We assess that primary techniques involve defense evasion and user execution, consistent with the CTF keygen family's objectives. Confidence in these mappings is hedged due to the lack of direct ATT&CK evidence.
 
 ---
 
@@ -372,7 +372,7 @@ Additional techniques like T1059 (Command and Scripting Interpreter) are not dir
 ## Containment, Eradication, Recovery
 
 ### Introduction
-Based on the analysis of the sample with SHA256 `cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4`, no specific containment signals such as file paths, mutexes, registry keys, or services were identified in the evidence (source: cross-section:evidence_filter, "no containment signals"). However, given its classification as a Hexorcist keygen family malware (source: cross-section:family), we recommend the following Incident Response (IR) steps to contain, eradicate, and recover from potential infection. These steps are generalized due to the absence of direct indicators and rely on typical behaviors of the family.
+Based on the analysis of the sample with SHA256 `cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4`, no specific containment signals such as file paths, mutexes, registry keys, or services were identified in the evidence (source: cross-section:evidence_filter, "no containment signals"). However, given its classification as a CTF keygen family malware (source: cross-section:family), we recommend the following Incident Response (IR) steps to contain, eradicate, and recover from potential infection. These steps are generalized due to the absence of direct indicators and rely on typical behaviors of the family.
 
 ### Containment
 - **Isolate Affected Systems**: Immediately disconnect infected machines from the network to prevent lateral movement or communication with potential C2 servers. Although no network indicators were found (source: cross-section:network_analysis), isolation is a precautionary measure to mitigate risks from possible bundling with other threats.
@@ -406,14 +406,14 @@ Note: Confidence levels are inferred from family associations and the absence of
 
 # 13. Recommendations
 
-Based on the analysis of this malware sample (SHA256: cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4), which is assessed as belonging to the Hexorcist keygen family with high confidence (source: cross-section:Executive Summary), we provide strategic guidance for patch priorities, monitoring, and training. This family typically involves software cracking or unauthorized license key generation, which may exploit vulnerabilities in software licensing systems or user behaviors. Recommendations are inferred from static capabilities, behavioral anomalies, and detection insights, with hedging where evidence is limited.
+Based on the analysis of this malware sample (SHA256: cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4), which is assessed as belonging to the CTF keygen family with high confidence (source: cross-section:Executive Summary), we provide strategic guidance for patch priorities, monitoring, and training. This family typically involves software cracking or unauthorized license key generation, which may exploit vulnerabilities in software licensing systems or user behaviors. Recommendations are inferred from static capabilities, behavioral anomalies, and detection insights, with hedging where evidence is limited.
 
 ## Patch Priorities
 We recommend prioritizing patches for software commonly targeted by keygens or involved in licensing enforcement. Based on the sample's PE structure and potential input validation logic (source: cross-section:Static Analysis), vulnerabilities in application licensing modules or related libraries should be addressed. Additionally, the 'terminate process' capability identified via CAPA (source: capa, query_or_table: capabilities, row_or_rule: terminate process, why: ability to end processes for evasion) suggests that process management APIs might be abused; thus, applying updates to operating systems and security tools that harden process control is advisable.
 
 | Priority | Area to Patch | Rationale | Confidence |
 |----------|---------------|-----------|------------|
-| High | Software licensing systems (e.g., activation servers, key validation) | Hexorcist keygen family targets these to generate unauthorized keys. (source: cross-section:Executive Summary) | Likely |
+| High | Software licensing systems (e.g., activation servers, key validation) | CTF keygen family targets these to generate unauthorized keys. (source: cross-section:Executive Summary) | Likely |
 | Medium | Operating system process management APIs | May mitigate 'terminate process' capability for evasion. (source: capa) | Possibly |
 | Low | GUI and input validation components | Anomalies in static analysis suggest potential exploit surfaces. (source: cross-section:Static Analysis) | We assess |
 
@@ -431,7 +431,7 @@ User and administrator training should address the risks associated with softwar
 - **Security Hygiene**: Train on verifying software licenses from legitimate sources and reporting suspicious executables.
 - **Incident Response**: Brief teams on containment steps from the analysis (source: cross-section:Containment, Eradication, Recovery), such as isolating affected systems and using IOCs like the file hash (source: cross-section:Indicators of Compromise) for triage.
 
-These recommendations aim to reduce exposure to Hexorcist keygen threats through proactive patching, targeted monitoring, and informed user behavior.
+These recommendations aim to reduce exposure to CTF keygen threats through proactive patching, targeted monitoring, and informed user behavior.
 
 ---
 

@@ -6,7 +6,7 @@ Every case study also ships the **raw tool-extracted evidence** in its `evidence
 - full uncapped tool outputs as structured JSON (`00-quick-scan-tools.json`, `deep-dive-01-tools-raw.json`, `deep-dive-02-signals.json`, `deep-dive-03-oracle.json`, `deep-dive-agentic-history.json`, ...)
 - the complete audit trail (`audit.jsonl`, `pipeline-audit.json`)
 - engine artifacts (`malcat-triage.json`, `intake-validation.json`, `source-decisions.json`, `doc-triage.json`, `function-recovery.json`)
-- RevEng-style human-readable extracts: `strings.txt`, `yara.txt`, `capa.txt`, `pe-imports.txt`, `packer.txt`, `anti-analysis.txt`, `dyn-resolve.txt`, `oracle.txt`, `unpack.txt`, `recovery.txt`
+- text-extract human-readable extracts: `strings.txt`, `yara.txt`, `capa.txt`, `pe-imports.txt`, `packer.txt`, `anti-analysis.txt`, `dyn-resolve.txt`, `oracle.txt`, `unpack.txt`, `recovery.txt`
 
 This lets reviewers verify every claim in a report against the actual extracted data, per the evidence-before-claims contract.
 
@@ -60,7 +60,7 @@ feature inventory with env gates and per-feature status lives in
 
 ### 15-run campaign (21/21 automated runs, all green)
 
-9 virussign samples (scripted small ×3, agentic mid/large ×6) + 3 RevEng-pool samples
+9 virussign samples (scripted small ×3, agentic mid/large ×6) + 3 lab-pool samples
 (remcos/lumma/koi) + 3 InTheWild-pool samples. Reboot after every 2 runs.
 
 

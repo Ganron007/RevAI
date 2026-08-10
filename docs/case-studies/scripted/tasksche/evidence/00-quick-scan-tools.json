@@ -498,7 +498,7 @@
     "matches": [
       {
         "rule": "domain",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$domain_regex",
@@ -510,7 +510,7 @@
       },
       {
         "rule": "IP",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$ipv4",
@@ -528,7 +528,7 @@
       },
       {
         "rule": "contains_base64",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$a",
@@ -540,7 +540,7 @@
       },
       {
         "rule": "Misc_Suspicious_Strings",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$a4",
@@ -552,7 +552,7 @@
       },
       {
         "rule": "CRC32_poly_Constant",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$c0",
@@ -564,7 +564,7 @@
       },
       {
         "rule": "CRC32_table",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$c0",
@@ -576,7 +576,7 @@
       },
       {
         "rule": "RijnDael_AES",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$c0",
@@ -588,7 +588,7 @@
       },
       {
         "rule": "RijnDael_AES_CHAR",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$c0",
@@ -600,22 +600,22 @@
       },
       {
         "rule": "IsPE32",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": []
       },
       {
         "rule": "IsWindowsGUI",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": []
       },
       {
         "rule": "IsPacked",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": []
       },
       {
         "rule": "HasRichSignature",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$a0",
@@ -627,7 +627,7 @@
       },
       {
         "rule": "WannaDecryptor",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$id1",
@@ -675,7 +675,7 @@
       },
       {
         "rule": "Wanna_Sample_84c82835a5d21bbcf75a61706d8ab549",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$taskdl",
@@ -693,7 +693,7 @@
       },
       {
         "rule": "ransom_telefonica",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$a",
@@ -735,7 +735,7 @@
       },
       {
         "rule": "Wanna_Cry_Ransomware_Generic",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$s3",
@@ -747,7 +747,7 @@
       },
       {
         "rule": "WannaCry_Ransomware",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$x1",
@@ -783,7 +783,7 @@
       },
       {
         "rule": "WannaCry_Ransomware_Dropper",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$s1",
@@ -813,7 +813,7 @@
       },
       {
         "rule": "wannacry_static_ransom",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$mutex01",
@@ -855,7 +855,7 @@
       },
       {
         "rule": "Microsoft_Visual_Cpp_v60",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$a",
@@ -879,7 +879,7 @@
       },
       {
         "rule": "Microsoft_Visual_Cpp_v50v60_MFC_additional",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$a",
@@ -891,7 +891,7 @@
       },
       {
         "rule": "Microsoft_Visual_Cpp_50",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$a",
@@ -903,7 +903,7 @@
       },
       {
         "rule": "Microsoft_Visual_Cpp_v50v60_MFC",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$a",
@@ -921,7 +921,7 @@
       },
       {
         "rule": "Microsoft_Visual_Cpp",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$b",
@@ -933,7 +933,7 @@
       },
       {
         "rule": "SEH_Init",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$b",
@@ -945,7 +945,7 @@
       },
       {
         "rule": "win_registry",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$f1",
@@ -981,7 +981,7 @@
       },
       {
         "rule": "win_files_operation",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$f1",
@@ -1023,7 +1023,7 @@
       },
       {
         "rule": "Str_Win32_Winsock2_Library",
-        "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+        "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
         "strings": [
           {
             "id": "$ws2_lib",
@@ -1155,7 +1155,7 @@
   },
   "malcat": {
     "analysis_id": 1,
-    "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+    "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
     "profile": "deep",
     "limits": {
       "strings_max": 300,
@@ -1167,7 +1167,7 @@
     "file_summary": {
       "analysis_id": 1,
       "file_name": "tasksche.exe",
-      "file_path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "file_path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "file_size": 3514368,
       "type": "PE",
       "architecture": "X86",

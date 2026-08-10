@@ -34,7 +34,7 @@ The convergence of YARA and CAPA findings, alongside behavioral analysis, points
 
 ## 1. Sample Identification
 
-This section details the fundamental identifiers for the malware sample under analysis, which is assessed as malicious in prior sections (source: cross-section:Executive Summary). The primary identifier is the SHA256 hash: `5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da`. This unique cryptographic hash is critical for tracking, detection, and intelligence sharing, with high confidence as it is a direct observation (source: malcat). The sample file is located at `/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex`, indicating it is part of a curated malware corpus for analysis (source: malcat).
+This section details the fundamental identifiers for the malware sample under analysis, which is assessed as malicious in prior sections (source: cross-section:Executive Summary). The primary identifier is the SHA256 hash: `5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da`. This unique cryptographic hash is critical for tracking, detection, and intelligence sharing, with high confidence as it is a direct observation (source: malcat). The sample file is located at `/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex`, indicating it is part of a curated malware corpus for analysis (source: malcat).
 
 | Attribute | Value | Interpretation | Confidence | Source |
 |-----------|-------|----------------|------------|--------|

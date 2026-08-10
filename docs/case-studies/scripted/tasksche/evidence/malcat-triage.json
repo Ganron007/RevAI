@@ -1,6 +1,6 @@
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+  "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
   "profile": "triage",
   "limits": {
     "strings_max": 100,
@@ -12,7 +12,7 @@
   "file_summary": {
     "analysis_id": 1,
     "file_name": "tasksche.exe",
-    "file_path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+    "file_path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
     "file_size": 3514368,
     "type": "PE",
     "architecture": "X86",

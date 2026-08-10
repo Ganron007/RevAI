@@ -16,7 +16,7 @@ The sample `guLoader.exe` (SHA256: `c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c05
 | Entry Point EA | 4744 (0x1288) |
 | Entropy | 73 (overall); 93 (`.text` section) |
 | Compiler | Visual Basic 6 (MSVC 6 linker) |
-| Project | Hexorcist 3 - Weeks 20-30 |
+| Project | REVAI-LAB-CORPUS-H3 |
 | Verdict | Suspicious (score: 40) / Malicious (deep-dive: 90% confidence) |
 | Family Guess | GuLoader (CloudEyE) |
 
@@ -454,8 +454,8 @@ The primary ATT&CK techniques are related to defense evasion, as GuLoader's main
 
 | Parameter | Value |
 |---|---|
-| Sample Path | `/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe` |
-| Project Name | Hexorcist 3 - Weeks 20-30 |
+| Sample Path | `/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe` |
+| Project Name | REVAI-LAB-CORPUS-H3 |
 | Analysis Date | (from pipeline) |
 | Verdict Source | llm_judge (configured-llm) |
 | Deep-Dive Source | deep_dive_agentic (langgraph) |
@@ -472,8 +472,8 @@ The LLM judge (configured-llm) assessed the sample as **suspicious** (score: 40)
 # Technical Evidence Pack
 
 **sha256:** c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509  
-**sample_path:** /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe  
-**project_name:** Hexorcist 3 - Weeks 20-30
+**sample_path:** /opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe  
+**project_name:** REVAI-LAB-CORPUS-H3
 
 > Every table below is copied from stage JSON. Technical narrative must cite these rows (engine + address/rule), not invent evidence.
 
@@ -974,7 +974,7 @@ Total matches: 12
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -986,7 +986,7 @@ Total matches: 12
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$a",
@@ -998,17 +998,17 @@ Total matches: 12
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": []
     },
     {
       "rule": "IsWindowsGUI",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": []
     },
     {
       "rule": "HasRichSignature",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$a0",
@@ -1020,7 +1020,7 @@ Total matches: 12
     },
     {
       "rule": "Microsoft_Visual_Basic_v50v60",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$a",
@@ -1032,7 +1032,7 @@ Total matches: 12
     },
     {
       "rule": "Microsoft_Visual_Basic_v50",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$a",
@@ -1050,7 +1050,7 @@ Total matches: 12
     },
     {
       "rule": "Microsoft_Visual_Basic_v50_v60",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$c",
@@ -1062,7 +1062,7 @@ Total matches: 12
     },
     {
       "rule": "Microsoft_Visual_Basic_v50_additional",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$a",
@@ -1074,7 +1074,7 @@ Total matches: 12
     },
     {
       "rule": "Microsoft_Visual_Basic_v50v60_additional",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$a",
@@ -1086,7 +1086,7 @@ Total matches: 12
     },
     {
       "rule": "SEH__vba",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$",
@@ -1098,7 +1098,7 @@ Total matches: 12
     },
     {
       "rule": "SEH_Init",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
       "strings": [
         {
           "id": "$b",

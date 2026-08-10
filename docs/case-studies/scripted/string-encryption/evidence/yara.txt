@@ -1,4 +1,4 @@
-{"rule": "domain", "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe", "strings": [{"id": "$domain_regex", "offset": 0, "length": 2, "xor_key": null}]}
-{"rule": "IsPE32", "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe", "strings": []}
-{"rule": "IsWindowsGUI", "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe", "strings": []}
-{"rule": "FASM", "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe", "strings": []}
+{"rule": "domain", "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe", "strings": [{"id": "$domain_regex", "offset": 0, "length": 2, "xor_key": null}]}
+{"rule": "IsPE32", "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe", "strings": []}
+{"rule": "IsWindowsGUI", "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe", "strings": []}
+{"rule": "FASM", "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe", "strings": []}

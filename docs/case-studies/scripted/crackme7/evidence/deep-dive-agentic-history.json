@@ -1,14 +1,14 @@
 {
   "verdict": "crackme",
   "confidence": 90,
-  "summary": "PE32 Windows GUI crackme (reverse engineering challenge) from the Hexorcist 1 CTF series. The entry point at 0x401000 is a XOR decryption stub that decrypts 1496 bytes at 0x4012b3 using single-byte key 0x66, then registers the decrypted code as a Vectored Exception Handler via AddVectoredExceptionHandler and executes HLT to trigger it. The binary presents a dialog box asking for a serial number ('SERIAL:'). The .text section is RWX enabling self-modifying code, and the .rsrc section has entropy 85% indicating packed resources. FLOSS decoded 0 stack/tight strings (entire payload is bulk-encrypted). CAPA confirms XOR encoding (T1027/E1027.m02/C0026.002). Only 9 imports (GUI + SEH APIs) and 1 detected function (the stub) due to encrypted payload hiding all real logic. Additional coverage: Persistence: not observed; no evidence of mechanisms like registry keys or scheduled tasks for long-term execution. C2_network: not observed; no network activity or command-and-control communication indicators detected. Exfiltration: not observed; no data collection or exfiltration routines identified. Defense_impairment: observed; self-modifying code is enabled by RWX .text section (evidence: {summary, section properties, .text is RWX, allows dynamic code modification for evasion}) and bulk-encryption of payload impairs analysis (evidence: {FLOSS, string analysis, 0 stack strings decoded, hides malicious functionality from static tools}).",
+  "summary": "PE32 Windows GUI crackme (reverse engineering challenge) from the CTF 1 CTF series. The entry point at 0x401000 is a XOR decryption stub that decrypts 1496 bytes at 0x4012b3 using single-byte key 0x66, then registers the decrypted code as a Vectored Exception Handler via AddVectoredExceptionHandler and executes HLT to trigger it. The binary presents a dialog box asking for a serial number ('SERIAL:'). The .text section is RWX enabling self-modifying code, and the .rsrc section has entropy 85% indicating packed resources. FLOSS decoded 0 stack/tight strings (entire payload is bulk-encrypted). CAPA confirms XOR encoding (T1027/E1027.m02/C0026.002). Only 9 imports (GUI + SEH APIs) and 1 detected function (the stub) due to encrypted payload hiding all real logic. Additional coverage: Persistence: not observed; no evidence of mechanisms like registry keys or scheduled tasks for long-term execution. C2_network: not observed; no network activity or command-and-control communication indicators detected. Exfiltration: not observed; no data collection or exfiltration routines identified. Defense_impairment: observed; self-modifying code is enabled by RWX .text section (evidence: {summary, section properties, .text is RWX, allows dynamic code modification for evasion}) and bulk-encryption of payload impairs analysis (evidence: {FLOSS, string analysis, 0 stack strings decoded, hides malicious functionality from static tools}).",
   "key_evidence": [
     "Entry stub at 0x401000: MOV EAX,0x4012b3; MOV ECX,0x5d8; XOR byte ptr [EAX],0x66; INC EAX; LOOP \u2192 bulk XOR decryption of 1496 bytes with key 0x66",
     "PUSH 0x4012b3 + PUSH 0x1 + CALL AddVectoredExceptionHandler \u2192 registers decrypted payload as first-chance VEH, then HLT triggers exception",
     "CAPA match: 'encode data using XOR' \u2192 MITRE T1027 Defense Evasion, MBC E1027.m02/C0026.002",
     "Malcat anomalies: SectionWX (.text RWX), SuspiciousEntropy (.rsrc 85% > 7.5 threshold), FewStrings (<1%), EntryOutsideSections",
     "FLOSS static strings: 'SERIAL:' (crackme password prompt), 'now this is getting serious', 'HEXORCIST CRACKME 7', 'Copyright SAS HEXORCIST'",
-    "VersionInfo: FileDescription='HEXORCIST CRACKME 7', OriginalFilename='hexo7.EXE' \u2014 self-identifies as Hexorcist CTF challenge",
+    "VersionInfo: FileDescription='HEXORCIST CRACKME 7', OriginalFilename='hexo7.EXE' \u2014 self-identifies as CTF CTF challenge",
     "GUI imports: DialogBoxParamA, GetDlgItemTextA, MessageBoxA, EndDialog \u2014 typical crackme dialog interaction",
     "Only 1 function detected (entry stub, 30 bytes, 8 instructions) \u2014 all real logic hidden inside XOR-encrypted blob",
     "YARA hits: SEH__vectored (VEH patterns at offset 4238), contains_base64, IP/IPv6 patterns"
@@ -114,7 +114,7 @@
         "matches": [
           {
             "rule": "domain",
-            "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+            "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
             "strings": [
               {
                 "id": "$domain_regex",
@@ -126,7 +126,7 @@
           },
           {
             "rule": "IP",
-            "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+            "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
             "strings": [
               {
                 "id": "$ipv6",
@@ -138,7 +138,7 @@
           },
           {
             "rule": "contains_base64",
-            "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+            "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
             "strings": [
               {
                 "id": "$a",
@@ -150,22 +150,22 @@
           },
           {
             "rule": "IsPE32",
-            "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+            "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
             "strings": []
           },
           {
             "rule": "IsWindowsGUI",
-            "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+            "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
             "strings": []
           },
           {
             "rule": "FASM",
-            "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+            "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
             "strings": []
           },
           {
             "rule": "SEH__vectored",
-            "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+            "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
             "strings": [
               {
                 "id": "$",
@@ -205,7 +205,7 @@
       "reason": "Required checklist tool (malcat)",
       "result": {
         "analysis_id": 1,
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
         "profile": "deep",
         "limits": {
           "strings_max": 300,
@@ -217,7 +217,7 @@
         "file_summary": {
           "analysis_id": 1,
           "file_name": "crackme7.exe",
-          "file_path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+          "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
           "file_size": 141824,
           "type": "PE",
           "architecture": "X86",
@@ -1550,7 +1550,7 @@
       "reason": "Required checklist tool (r2_decomp)",
       "result": {
         "r2_ok": true,
-        "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
         "disassembly": {
           "0x00401000": ";-- section..text:\n\u250c 30: entry0 ();\n\u2502           0x00401000      b8b3124000     mov eax, 0x4012b3           ; [00] -rwx section size 4096 named .text\n\u2502           0x00401005      b9d8050000     mov ecx, 0x5d8              ; 1496\n\u2502       \u250c\u2500> 0x0040100a      803066         xor byte [eax], 0x66        ; [0x66:1]=255 ; 102\n\u2502       \u254e   0x0040100d      40             inc eax\n\u2502       \u2514\u2500< 0x0040100e      e2fa           loop 0x40100a\n\u2502           0x00401010      68b3124000     push 0x4012b3\n\u2502           0x00401015      6a01           push 1                      ; 1\n\u2502           0x00401017      ff156c304000   call dword [sym.imp.KERNEL32.DLL_AddVectoredExceptionHandler] ; 0x40306c ; PVOID AddVectoredExceptionHandler(ULONG First, PVECTORED_EXCEPTION_HANDLER Handler)\n\u2514           0x0040101d      f4             hlt"
         },
@@ -1572,7 +1572,7 @@
       "result": {
         "upx_ok": false,
         "is_packed": false,
-        "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
         "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTested 0 file"
       },
       "error": null,
@@ -1586,7 +1586,7 @@
       "reason": "Required checklist tool (xor)",
       "result": {
         "xorsearch_ok": true,
-        "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
         "candidates": [
           "Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r"
         ],
@@ -1605,7 +1605,7 @@
       "reason": "Required checklist tool (speakeasy)",
       "result": {
         "speakeasy_ok": true,
-        "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
         "module_base": null,
         "entry_point": null,
         "key_events": [],
@@ -1625,7 +1625,7 @@
         "frida_available": true,
         "frida_version": "17.16.4",
         "pe_probe": {
-          "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+          "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
           "exists": true,
           "hook_candidates": [
             "KERNEL32.DLL!GetModuleHandleA",
@@ -1650,7 +1650,7 @@
       "reason": "Required checklist tool (shellcode)",
       "result": {
         "shellcode_ok": false,
-        "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
         "sections_analyzed": [
           {
             "name": ".text",
@@ -3848,7 +3848,7 @@
       "reason": "langgraph tool call",
       "result": {
         "analysis_id": 1,
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
         "profile": "deep",
         "limits": {
           "strings_max": 300,
@@ -3860,7 +3860,7 @@
         "file_summary": {
           "analysis_id": 1,
           "file_name": "crackme7.exe",
-          "file_path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+          "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
           "file_size": 141824,
           "type": "PE",
           "architecture": "X86",
@@ -5223,7 +5223,7 @@
       "matches": [
         {
           "rule": "domain",
-          "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+          "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
           "strings": [
             {
               "id": "$domain_regex",
@@ -5235,7 +5235,7 @@
         },
         {
           "rule": "IP",
-          "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+          "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
           "strings": [
             {
               "id": "$ipv6",
@@ -5247,7 +5247,7 @@
         },
         {
           "rule": "contains_base64",
-          "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+          "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
           "strings": [
             {
               "id": "$a",
@@ -5259,22 +5259,22 @@
         },
         {
           "rule": "IsPE32",
-          "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+          "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
           "strings": []
         },
         {
           "rule": "IsWindowsGUI",
-          "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+          "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
           "strings": []
         },
         {
           "rule": "FASM",
-          "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+          "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
           "strings": []
         },
         {
           "rule": "SEH__vectored",
-          "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+          "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
           "strings": [
             {
               "id": "$",
@@ -5303,7 +5303,7 @@
     },
     "checklist_malcat_analyze": {
       "analysis_id": 1,
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
       "profile": "deep",
       "limits": {
         "strings_max": 300,
@@ -5315,7 +5315,7 @@
       "file_summary": {
         "analysis_id": 1,
         "file_name": "crackme7.exe",
-        "file_path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
         "file_size": 141824,
         "type": "PE",
         "architecture": "X86",
@@ -6603,7 +6603,7 @@
     },
     "checklist_r2_decompile": {
       "r2_ok": true,
-      "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+      "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
       "disassembly": {
         "0x00401000": ";-- section..text:\n\u250c 30: entry0 ();\n\u2502           0x00401000      b8b3124000     mov eax, 0x4012b3           ; [00] -rwx section size 4096 named .text\n\u2502           0x00401005      b9d8050000     mov ecx, 0x5d8              ; 1496\n\u2502       \u250c\u2500> 0x0040100a      803066         xor byte [eax], 0x66        ; [0x66:1]=255 ; 102\n\u2502       \u254e   0x0040100d      40             inc eax\n\u2502       \u2514\u2500< 0x0040100e      e2fa           loop 0x40100a\n\u2502           0x00401010      68b3124000     push 0x4012b3\n\u2502           0x00401015      6a01           push 1                      ; 1\n\u2502           0x00401017      ff156c304000   call dword [sym.imp.KERNEL32.DLL_AddVectoredExceptionHandler] ; 0x40306c ; PVOID AddVectoredExceptionHandler(ULONG First, PVECTORED_EXCEPTION_HANDLER Handler)\n\u2514           0x0040101d      f4             hlt"
       },
@@ -6616,12 +6616,12 @@
     "checklist_upx_unpack": {
       "upx_ok": false,
       "is_packed": false,
-      "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+      "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
       "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTested 0 file"
     },
     "checklist_xor_string_search": {
       "xorsearch_ok": true,
-      "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+      "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
       "candidates": [
         "Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r"
       ],
@@ -6631,7 +6631,7 @@
     },
     "checklist_speakeasy_emulate": {
       "speakeasy_ok": true,
-      "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+      "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
       "module_base": null,
       "entry_point": null,
       "key_events": [],
@@ -6642,7 +6642,7 @@
       "frida_available": true,
       "frida_version": "17.16.4",
       "pe_probe": {
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
         "exists": true,
         "hook_candidates": [
           "KERNEL32.DLL!GetModuleHandleA",
@@ -6658,7 +6658,7 @@
     },
     "checklist_shellcode_extract": {
       "shellcode_ok": false,
-      "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+      "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
       "sections_analyzed": [
         {
           "name": ".text",
@@ -8787,7 +8787,7 @@
     },
     "lg_malcat_analyze_27": {
       "analysis_id": 1,
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
       "profile": "deep",
       "limits": {
         "strings_max": 300,
@@ -8799,7 +8799,7 @@
       "file_summary": {
         "analysis_id": 1,
         "file_name": "crackme7.exe",
-        "file_path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
+        "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/fc5a215c0f6d3bdbf5c1e0dca72161871a37d833fdcfd62bb984c7892004365f/crackme7.exe",
         "file_size": 141824,
         "type": "PE",
         "architecture": "X86",

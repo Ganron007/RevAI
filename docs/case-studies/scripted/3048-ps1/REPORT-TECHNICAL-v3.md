@@ -9,7 +9,7 @@ This report details the analysis of a PowerShell script (SHA256: 14a42d6418b3810
 | Field | Value |
 |---|---|
 | SHA256 | 14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 |
-| File Path | /opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1 |
+| File Path | /opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1 |
 | Project Name | day6 |
 | File Size | 2800 bytes |
 | File Type | text/utf8 |
@@ -153,7 +153,7 @@ The analysis was conducted in a controlled environment with the following tools:
 # Technical Evidence Pack
 
 **sha256:** 14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2  
-**sample_path:** /opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1  
+**sample_path:** /opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1  
 **project_name:** day6
 
 > Every table below is copied from stage JSON. Technical narrative must cite these rows (engine + address/rule), not invent evidence.
@@ -336,7 +336,7 @@ Total matches: 5
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "strings": [
         {
           "id": "$domain_regex",
@@ -348,7 +348,7 @@ Total matches: 5
     },
     {
       "rule": "powershell",
-      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "strings": [
         {
           "id": "$a",
@@ -360,7 +360,7 @@ Total matches: 5
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "strings": [
         {
           "id": "$ipv6",
@@ -372,7 +372,7 @@ Total matches: 5
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "strings": [
         {
           "id": "$a",
@@ -384,7 +384,7 @@ Total matches: 5
     },
     {
       "rule": "Antivirus",
-      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "strings": []
     }
   ],
@@ -471,7 +471,7 @@ Total strings: 0 · per_category: `{}`
 ## XOR Search
 {
   "xorsearch_ok": false,
-  "sample": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+  "sample": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
   "candidates": [],
   "xorsearch_stdout": "",
   "xorsearch_stderr": "",

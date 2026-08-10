@@ -1,6 +1,6 @@
 # Triage evidence
 sha256: ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda
-sample_path: /opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe
+sample_path: /opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe
 ghidra_session: ghidra-pe-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda
 ida_session: ida-ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda
 
@@ -81,7 +81,7 @@ rows: (empty)
 label: IDA database summary
 sql: SELECT * FROM welcome
 columns: summary, idasql_version, processor, is_64bit, min_ea, max_ea, start_ea, entry_name, funcs_count, segments_count, names_count, strings_count, filename, input_file_path, idb_path, md5, sha256
-  metapc 32-bit | entry: start @ 0x4077BA | funcs: 138 | segs: 4 | strings: 333 | 0.0.17 | metapc | 0 | 0x401000 | 0x410000 | 0x4077BA | start | 138 | 4 | 240 | 333 | tasksche.exe | /opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe | /opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe.i64 | fff0d45da9aa15f48b1cfc0cd1a2d53a | ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda
+  metapc 32-bit | entry: start @ 0x4077BA | funcs: 138 | segs: 4 | strings: 333 | 0.0.17 | metapc | 0 | 0x401000 | 0x410000 | 0x4077BA | start | 138 | 4 | 240 | 333 | tasksche.exe | /opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe | /opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe.i64 | fff0d45da9aa15f48b1cfc0cd1a2d53a | ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda
 
 ### engine: ida
 label: Total function count (IDA)
@@ -514,7 +514,7 @@ uint32_t sub_40541f(uint32_t param_1,uint8_t *param_2,uint32_t param_3)
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -526,7 +526,7 @@ uint32_t sub_40541f(uint32_t param_1,uint8_t *param_2,uint32_t param_3)
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": [
         {
           "id": "$ipv4",
@@ -544,7 +544,7 @@ uint32_t sub_40541f(uint32_t param_1,uint8_t *param_2,uint32_t param_3)
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": [
         {
           "id": "$a",
@@ -556,7 +556,7 @@ uint32_t sub_40541f(uint32_t param_1,uint8_t *param_2,uint32_t param_3)
     },
     {
       "rule": "Misc_Suspicious_Strings",
-      "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
       "strings": [
         {
           "id": "$a4",
@@ -568,7 +568,7 @@ uint32_t sub_40541f(uint32_t param_1,uint8_t *param_2,uint32_t param_3)
     },
     {
       "rule": "CRC32_poly_Constant",
-      "path": "/opt/samples/corpus/710/ec3fd41b22989549469
+      "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b22989549469
 ### floss (raw JSON, capped)
 {
   "floss_ok": true,
@@ -715,7 +715,7 @@ uint32_t sub_40541f(uint32_t param_1,uint8_t *param_2,uint32_t param_3)
 ### malcat deep profile (raw JSON, capped)
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+  "path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -727,7 +727,7 @@ uint32_t sub_40541f(uint32_t param_1,uint8_t *param_2,uint32_t param_3)
   "file_summary": {
     "analysis_id": 1,
     "file_name": "tasksche.exe",
-    "file_path": "/opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
+    "file_path": "/opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe",
     "file_size": 3514368,
     "type": "PE",
     "architecture": "X86",

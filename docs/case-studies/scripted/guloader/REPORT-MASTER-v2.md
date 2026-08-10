@@ -24,13 +24,13 @@ This report presents the analysis of a PE32 executable identified as GuLoader (a
 |---|---|
 | SHA256 | c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509 |
 | File Name | guLoader.exe |
-| File Path | /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe |
+| File Path | /opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe |
 | File Size | 49,152 bytes |
 | File Type | PE32 executable (GUI) Intel 80386, for MS Windows |
 | Architecture | x86 (32-bit) |
 | Compilation | Visual Basic 6.0 (source: yara, capa, malcat) |
 | Import Hash (Imphash) | e5dc9f90e63a8223ac7d0f9627dcbb68 (source: rule.yara.json) |
-| Project Name | Hexorcist 3 - Weeks 20-30 |
+| Project Name | REVAI-LAB-CORPUS-H3 |
 
 ## 2. Classification
 

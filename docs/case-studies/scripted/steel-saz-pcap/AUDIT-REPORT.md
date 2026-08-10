@@ -8,7 +8,7 @@
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
-- **Sample:** `/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz`
+- **Sample:** `/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz`
 - **Showcase pack:** `/opt/samples/logs/_showcase_audits/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b`
 
 ## Stage scoreboard
@@ -224,7 +224,7 @@ _No tool retries occurred during this run._
 ```json
 {
   "title": "Fiddler Trace Archive Analysis - steel.saz",
-  "markdown": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 20:42:12 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | suspicious |\n| Quick scan | suspicious |\n| Deep dive | suspicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\nThe sample is a Fiddler session archive (.saz) containing network traffic data. Triage identified it as suspicious due to ZIP structural anomalies and generic YARA rule matches for network strings. Deep analysis confirms it is not executable malware, but the anomalies warrant caution as they could indicate manipulation. The upstream verdict is suspicious with a score of 25, and we assess the sample as suspicious with moderate confidence (source: triage_verdict.json, deep-dive.json). No malicious behavior or executable code was observed, but the contained traffic may reference malicious infrastructure.\n\n## 1. Sample Identification\nSHA256: 58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b, sample_path: /opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz, project: 610. The file is a ZIP archive with architecture NONE, size 18,038,723 bytes, consistent with a multi-session network capture (source: malcat). No executable code is present, and the file is not a .NET assembly (source: dotnet_analyze).\n\n## 2. Classification\nVerdict: Suspicious. Score: 25. Family guess: Fiddler trace archive (source: triage_verdict.json). The classification is based on ZIP anomalies and generic YARA matches, but no executable malware behavior was detected. Deep analysis yields a suspicious verdict with 70% confidence due to potential manipulation of the archive structure (source: deep-dive.json). The sample is not benign because the anomalies could be exploited to hide malicious content, though direct evidence of malware is lacking.\n\n## 3. Background & Family Lineage\nFiddler trace archives (.saz) are standard containers for web debugging sessions, typically benign and used to capture HTTP/HTTPS traffic for analysis (source: deep-dive.json). No specific malware family is associated with this sample; it appears to be a generic network capture. However, such archives can be abused in malware campaigns to exfiltrate data or contain references to malicious infrastructure, which is why they are considered dual-use. No lineage to known malware families was identified from YARA or other tools (source: yara).\n\n## 4. Static Analysis\nMalCat identified the file as a ZIP archive with no executable architecture, indicating it contains only data files (source: malcat). Entropy is 224 (normalized), suggesting no packing or encryption of archive contents (source: malcat). YARA matched four generic content-pattern rules: domain, IP, contains_base64, and url (source: yara). These matches are expected in web traffic captures and do not indicate malware-specific patterns; for instance, domain strings could be part of legitimate HTTP requests. ZIP anomalies include 144 instances where local file headers differ from central directory entries (source: malcat), which we interpret as possible corruption or manipulation, but this a
+  "markdown": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 20:42:12 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | suspicious |\n| Quick scan | suspicious |\n| Deep dive | suspicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\nThe sample is a Fiddler session archive (.saz) containing network traffic data. Triage identified it as suspicious due to ZIP structural anomalies and generic YARA rule matches for network strings. Deep analysis confirms it is not executable malware, but the anomalies warrant caution as they could indicate manipulation. The upstream verdict is suspicious with a score of 25, and we assess the sample as suspicious with moderate confidence (source: triage_verdict.json, deep-dive.json). No malicious behavior or executable code was observed, but the contained traffic may reference malicious infrastructure.\n\n## 1. Sample Identification\nSHA256: 58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b, sample_path: /opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz, project: 610. The file is a ZIP archive with architecture NONE, size 18,038,723 bytes, consistent with a multi-session network capture (source: malcat). No executable code is present, and the file is not a .NET assembly (source: dotnet_analyze).\n\n## 2. Classification\nVerdict: Suspicious. Score: 25. Family guess: Fiddler trace archive (source: triage_verdict.json). The classification is based on ZIP anomalies and generic YARA matches, but no executable malware behavior was detected. Deep analysis yields a suspicious verdict with 70% confidence due to potential manipulation of the archive structure (source: deep-dive.json). The sample is not benign because the anomalies could be exploited to hide malicious content, though direct evidence of malware is lacking.\n\n## 3. Background & Family Lineage\nFiddler trace archives (.saz) are standard containers for web debugging sessions, typically benign and used to capture HTTP/HTTPS traffic for analysis (source: deep-dive.json). No specific malware family is associated with this sample; it appears to be a generic network capture. However, such archives can be abused in malware campaigns to exfiltrate data or contain references to malicious infrastructure, which is why they are considered dual-use. No lineage to known malware families was identified from YARA or other tools (source: yara).\n\n## 4. Static Analysis\nMalCat identified the file as a ZIP archive with no executable architecture, indicating it contains only data files (source: malcat). Entropy is 224 (normalized), suggesting no packing or encryption of archive contents (source: malcat). YARA matched four generic content-pattern rules: domain, IP, contains_base64, and url (source: yara). These matches are expected in web traffic captures and do not indicate malware-specific patterns; for instance, domain strings could be part of legitimate HTTP requests. ZIP anomalies include 144 instances where local file headers differ from central directory entries (source: malcat), which we interpret as possible corruption or manipulation, but this a
 … [8735 more chars]
 ```
 
@@ -251,7 +251,7 @@ _No tool retries occurred during this run._
 The sample is a Fiddler session archive (.saz) containing network traffic data. Triage identified it as suspicious due to ZIP structural anomalies and generic YARA rule matches for network strings. Deep analysis confirms it is not executable malware, but the anomalies warrant caution as they could indicate manipulation. The upstream verdict is suspicious with a score of 25, and we assess the sample as suspicious with moderate confidence (source: triage_verdict.json, deep-dive.json). No malicious behavior or executable code was observed, but the contained traffic may reference malicious infrastructure.
 
 ## 1. Sample Identification
-SHA256: 58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b, sample_path: /opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz, project: 610. The file is a ZIP archive with architecture NONE, size 18,038,723 bytes, consistent with a multi-session network capture (source: malcat). No executable code is present, and the file is not a .NET assembly (source: dotnet_analyze).
+SHA256: 58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b, sample_path: /opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz, project: 610. The file is a ZIP archive with architecture NONE, size 18,038,723 bytes, consistent with a multi-session network capture (source: malcat). No executable code is present, and the file is not a .NET assembly (source: dotnet_analyze).
 
 ## 2. Classification
 Verdict: Suspicious. Score: 25. Family guess: Fiddler trace archive (source: triage_verdict.json). The classification is based on ZIP anomalies and generic YARA matches, but no executable malware behavior was detected. Deep analysis yields a suspicious verdict with 70% confidence due to potential manipulation of the archive structure (source: deep-dive.json). The sample is not benign because the anomalies could be exploited to hide malicious content, though direct evidence of malware is lacking.
@@ -422,7 +422,7 @@ In summary, this sample is likely a Fiddler trace archive that exhibits suspicio
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "strings": [
         {
           "id": "$domain_regex",
@@ -434,7 +434,7 @@ In summary, this sample is likely a Fiddler trace archive that exhibits suspicio
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "strings": [
         {
           "id": "$ipv6",
@@ -446,7 +446,7 @@ In summary, this sample is likely a Fiddler trace archive that exhibits suspicio
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "strings": [
         {
           "id": "$a",
@@ -458,7 +458,7 @@ In summary, this sample is likely a Fiddler trace archive that exhibits suspicio
     },
     {
       "rule": "url",
-      "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "strings": [
         {
           "id": "$url_regex",
@@ -502,7 +502,7 @@ In summary, this sample is likely a Fiddler trace archive that exhibits suspicio
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+  "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -514,7 +514,7 @@ In summary, this sample is likely a Fiddler trace archive that exhibits suspicio
   "file_summary": {
     "analysis_id": 1,
     "file_name": "steel.saz",
-    "file_path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+    "file_path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
     "file_size": 18038723,
     "type": "ZIP",
     "architecture": "NONE",
@@ -708,7 +708,7 @@ In summary, this sample is likely a Fiddler trace archive that exhibits suspicio
 ```
 # Triage evidence
 sha256: 58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b
-sample_path: /opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz
+sample_path: /opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz
 ghidra_session: doc-ooxml-58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b
 ida_session: (not loaded)
 
@@ -816,7 +816,7 @@ error: session doc-ooxml-58c043e134dc09b27e86973d3
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "strings": [
         {
           "id": "$domain_regex",
@@ -828,7 +828,7 @@ error: session doc-ooxml-58c043e134dc09b27e86973d3
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "strings": [
         {
           "id": "$ipv6",
@@ -840,7 +840,7 @@ error: session doc-ooxml-58c043e134dc09b27e86973d3
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "strings": [
         {
           "id": "$a",
@@ -852,7 +852,7 @@ error: session doc-ooxml-58c043e134dc09b27e86973d3
     },
     {
       "rule": "url",
-      "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "strings": [
         {
           "id": "$url_regex",
@@ -895,7 +895,7 @@ error: session doc-ooxml-58c043e134dc09b27e86973d3
 ```json
 {
   "r2_ok": true,
-  "sample": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+  "sample": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
   "disassembly": {
     "0x00000000": "\u250c 29: fcn.00000000 ();\n\u2502           0x00000000      50             push rax\n\u2502           0x00000001      4b030414       add rax, qword [r12 + r10]\n\u2502           0x00000005      0000           add byte [rax], al\n\u2502           0x00000007      0000           add byte [rax], al\n\u2502           0x00000009      00d3           add bl, dl\n\u2502       \u250c\u2500< 0x0000000b      7ab5           jp 0xffffffffffffffc2\n\u2502       \u2502   0x0000000d      52             push rdx\n\u2502       \u2502   0x0000000e      0000           add byte [rax], al\n\u2502       \u2502   0x00000010      0000           add byte [rax], al\n\u2502       \u2502   0x00000012      0000           add byte [rax], al\n\u2502       \u2502   0x00000014      0000           add byte [rax], al\n\u2502       \u2502   0x00000016      0000           add byte [rax], al\n\u2502       \u2502   0x00000018      0000           add byte [rax], al\n\u2502       \u2502   0x0000001a      0400           add al, 0\n\u2514       \u2502   0x0000001c      1f             invalid"
   },
@@ -918,7 +918,7 @@ error: session doc-ooxml-58c043e134dc09b27e86973d3
 ```json
 {
   "xorsearch_ok": false,
-  "sample": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+  "sample": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
   "candidates": [],
   "xorsearch_stdout": "",
   "xorsearch_stderr": "",
@@ -995,7 +995,7 @@ error: session doc-ooxml-58c043e134dc09b27e86973d3
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "strings": [
         {
           "id": "$domain_regex",
@@ -1016,7 +1016,7 @@ error: session doc-ooxml-58c043e134dc09b27e86973d3
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+  "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -1037,7 +1037,7 @@ error: session doc-ooxml-58c043e134dc09b27e86973d3
 ```json
 {
   "r2_ok": true,
-  "sample": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+  "sample": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
   "disassembly": {
     "0x00000000": "\u250c 29: fcn.00000000 ();\n\u2502           0x00000000      50             push rax\n\u2502           0x00000001      4b030414       add rax, qword [r12 + r10]\n\u2502           0x00000005      0000           add byte [rax], al
 … [940 more chars]
@@ -1048,7 +1048,7 @@ error: session doc-ooxml-58c043e134dc09b27e86973d3
 ```json
 {
   "xorsearch_ok": false,
-  "sample": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+  "sample": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
   "candidates": [],
   "xorsearch_stdout": "",
   "xorsearch_stderr": "",
@@ -1102,7 +1102,7 @@ error: session doc-ooxml-58c043e134dc09b27e86973d3
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+  "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -1126,7 +1126,7 @@ error: session doc-ooxml-58c043e134dc09b27e86973d3
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "strings": [
         {
           "id": "$domain_regex",

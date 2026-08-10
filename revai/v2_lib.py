@@ -2271,7 +2271,7 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3) -> di
                 llm_usage_journal(model=effective_model, response=data,
                                   note=f"attempt={attempt}")
                 if _finish_reason(data) == "abort" and attempt < max_retries:
-                    # Provider aborted mid-reasoning (e.g. mimo on long
+                    # Provider aborted mid-reasoning (e.g. on long
                     # prompts): downgrade reasoning effort one notch and
                     # retry. Never silently return truncated content.
                     nxt = _next_lower_effort(current_reasoning)
@@ -2299,7 +2299,7 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3) -> di
                 break
 
     # Final fallback: provider aborts even at reasoning=low. One last attempt
-    # with thinking fully disabled (mimo completes long report prompts only
+    # with thinking fully disabled (completes long report prompts only
     # without thinking). Truncated content is never returned if avoidable.
     if last_aborted is not None and (current_reasoning or "").lower() != "disabled":
         print(

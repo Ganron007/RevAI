@@ -8,7 +8,7 @@
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
-- **Sample:** `/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe`
+- **Sample:** `/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe`
 - **Showcase pack:** `/opt/samples/logs/_showcase_audits/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca`
 
 ## Stage scoreboard
@@ -152,14 +152,14 @@ _No tool retries occurred during this run._
   "engine": "langgraph",
   "verdict": "suspicious",
   "confidence": 90,
-  "summary": "Educational demonstration of XOR string encryption obfuscation. The 2048-byte PE (compiled with FASM) contains a simple XOR decryption loop at 0x4010a8 that is called 4 times from the entry point with different keys (0x90, 0xEB, 0xFE, 0xED) and buffer addresses in .data. Decrypted strings are displayed via MessageBoxA, then the program calls ExitProcess. Only two imports (MessageBoxA, ExitProcess) with no persistence, network, file, registry, or injection capabilities. From the 'Hexorcist 3 - Weeks 20-30' reverse engineering course corpus, filename 'string_encryption.exe'.",
+  "summary": "Educational demonstration of XOR string encryption obfuscation. The 2048-byte PE (compiled with FASM) contains a simple XOR decryption loop at 0x4010a8 that is called 4 times from the entry point with different keys (0x90, 0xEB, 0xFE, 0xED) and buffer addresses in .data. Decrypted strings are displayed via MessageBoxA, then the program calls ExitProcess. Only two imports (MessageBoxA, ExitProcess) with no persistence, network, file, registry, or injection capabilities. From the 'REVAI-LAB-CORPUS-H3' reverse engineering course corpus, filename 'string_encryption.exe'.",
   "key_evidence": [
     "Ghidra imports: only KERNEL32.ExitProcess and USER32.MessageBoxA \u2014 no suspicious API surface",
     "Ghidra callgraph: entry calls FUN_004010a8 (XOR decrypt) 4 times then MessageBoxA, ending with ExitProcess",
     "Ghidra instructions at 0x4010a8-0x4010b5: LODSB / XOR AL,BL / STOSB / DEC ECX / JNZ \u2014 classic XOR-in-loop decryption",
     "Malcat anomaly XorInLoop at EA 0x4010AE confirms the XOR decryption pattern",
     "FLOSS: 0 decoded/stack/tight strings \u2014 decryption only produces benign display text, not malicious payloads",
-    "Sample from 'Hexorcist 3' RE course, filename string_encryption.exe \u2014 educational obfuscation demo, not malware",
+    "Sample from 'CTF 3' RE course, filename string_encryption.exe \u2014 educational obfuscation demo, not malware",
     "Malcat kesakode_verdict: empty \u2014 no malware family classification"
   ],
   "incomplete_tooling": false,
@@ -242,7 +242,7 @@ _No tool retries occurred during this run._
 ```json
 {
   "title": "Malware Analysis Report: 263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca",
-  "markdown": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 20:58:18 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | suspicious |\n| Quick scan | suspicious |\n| Deep dive | suspicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\n\nThis report presents the analysis of a 2048-byte PE32 executable (SHA256: 263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca) from the \"Hexorcist 3 - Weeks 20-30\" reverse engineering course corpus. The sample is classified as **suspicious** with a confidence score of 90/100, based on the presence of XOR-based string encryption obfuscation but the absence of any behavioral-intent evidence such as C2 communication, persistence mechanisms, credential theft, or data exfiltration (source: deep-dive.json).\n\nThe binary is a minimal educational demonstration compiled with FASM (source: yara), containing only two functions and two Windows API imports (MessageBoxA and ExitProcess) (source: ghidra_query). The entry point calls a XOR decryption function four times with different keys (0x90, 0xEB, 0xFE, 0xED) to decode strings in the .data section, then displays them via MessageBoxA before terminating (source: r2 disassembly). No network, file, registry, or injection capabilities were identified (source: capa, pe_imports).\n\nThe sample's obfuscation is a neutral signal common in both benign and malicious software (source: malcat). Without behavioral evidence of hostile intent, this binary appears to be an educational tool demonstrating string encryption techniques rather than active malware. All analysis tools agree on low complexity with minimal functionality (source: triage verdict).\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|-----------|-------|\n| SHA256 | 263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca |\n| File Path | /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe |\n| Project | Hexorcist 3 - Weeks 20-30 |\n| File Type | PE32 executable (GUI) Intel 80386 (source: malcat) |\n| Architecture | x86 (32-bit) (source: malcat) |\n| File Size | 2048 bytes (source: deep-dive.json) |\n| Entropy | 44 (source: malcat) |\n| Compiler | FASM (source: yara) |\n| Packed | No (source: UPX) |\n| .NET Assembly | No (source: dotnet_analyze) |\n| Import Hash | 98c88d882f01a3f6ac1e5f7dfd761624 (source: rule.yara.json) |\n\nThe sample is a small, unpacked PE32 GUI executable with low entropy, indicating no significant packing or encryption beyond the observed XOR loops (source: malcat). The filename \"string_encryption.exe\" and project name \"Hexorcist 3 - Weeks 20-30\" strongly suggest this is an educational sample from a reverse engineering course (source: deep-dive.json).\n\n## 2. Classification\n\n| Attribute | Value |\n|-----------|-------|\n| Verdict | Suspicious |\n| Confidence | 90% |\n| Family | Unknown |\n| Score | 25/100 |\n| Summary | Educational demonstration of XOR string encryption obfuscation with no malicious behavioral evidence (source: deep-dive.json) |\n\nThe classification is b
+  "markdown": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 20:58:18 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | suspicious |\n| Quick scan | suspicious |\n| Deep dive | suspicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\n\nThis report presents the analysis of a 2048-byte PE32 executable (SHA256: 263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca) from the \"REVAI-LAB-CORPUS-H3\" reverse engineering course corpus. The sample is classified as **suspicious** with a confidence score of 90/100, based on the presence of XOR-based string encryption obfuscation but the absence of any behavioral-intent evidence such as C2 communication, persistence mechanisms, credential theft, or data exfiltration (source: deep-dive.json).\n\nThe binary is a minimal educational demonstration compiled with FASM (source: yara), containing only two functions and two Windows API imports (MessageBoxA and ExitProcess) (source: ghidra_query). The entry point calls a XOR decryption function four times with different keys (0x90, 0xEB, 0xFE, 0xED) to decode strings in the .data section, then displays them via MessageBoxA before terminating (source: r2 disassembly). No network, file, registry, or injection capabilities were identified (source: capa, pe_imports).\n\nThe sample's obfuscation is a neutral signal common in both benign and malicious software (source: malcat). Without behavioral evidence of hostile intent, this binary appears to be an educational tool demonstrating string encryption techniques rather than active malware. All analysis tools agree on low complexity with minimal functionality (source: triage verdict).\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|-----------|-------|\n| SHA256 | 263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca |\n| File Path | /opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe |\n| Project | REVAI-LAB-CORPUS-H3 |\n| File Type | PE32 executable (GUI) Intel 80386 (source: malcat) |\n| Architecture | x86 (32-bit) (source: malcat) |\n| File Size | 2048 bytes (source: deep-dive.json) |\n| Entropy | 44 (source: malcat) |\n| Compiler | FASM (source: yara) |\n| Packed | No (source: UPX) |\n| .NET Assembly | No (source: dotnet_analyze) |\n| Import Hash | 98c88d882f01a3f6ac1e5f7dfd761624 (source: rule.yara.json) |\n\nThe sample is a small, unpacked PE32 GUI executable with low entropy, indicating no significant packing or encryption beyond the observed XOR loops (source: malcat). The filename \"string_encryption.exe\" and project name \"REVAI-LAB-CORPUS-H3\" strongly suggest this is an educational sample from a reverse engineering course (source: deep-dive.json).\n\n## 2. Classification\n\n| Attribute | Value |\n|-----------|-------|\n| Verdict | Suspicious |\n| Confidence | 90% |\n| Family | Unknown |\n| Score | 25/100 |\n| Summary | Educational demonstration of XOR string encryption obfuscation with no malicious behavioral evidence (source: deep-dive.json) |\n\nThe classification is b
 … [14631 more chars]
 ```
 
@@ -267,7 +267,7 @@ _No tool retries occurred during this run._
 
 ## Executive Summary
 
-This report presents the analysis of a 2048-byte PE32 executable (SHA256: 263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca) from the "Hexorcist 3 - Weeks 20-30" reverse engineering course corpus. The sample is classified as **suspicious** with a confidence score of 90/100, based on the presence of XOR-based string encryption obfuscation but the absence of any behavioral-intent evidence such as C2 communication, persistence mechanisms, credential theft, or data exfiltration (source: deep-dive.json).
+This report presents the analysis of a 2048-byte PE32 executable (SHA256: 263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca) from the "REVAI-LAB-CORPUS-H3" reverse engineering course corpus. The sample is classified as **suspicious** with a confidence score of 90/100, based on the presence of XOR-based string encryption obfuscation but the absence of any behavioral-intent evidence such as C2 communication, persistence mechanisms, credential theft, or data exfiltration (source: deep-dive.json).
 
 The binary is a minimal educational demonstration compiled with FASM (source: yara), containing only two functions and two Windows API imports (MessageBoxA and ExitProcess) (source: ghidra_query). The entry point calls a XOR decryption function four times with different keys (0x90, 0xEB, 0xFE, 0xED) to decode strings in the .data section, then displays them via MessageBoxA before terminating (source: r2 disassembly). No network, file, registry, or injection capabilities were identified (source: capa, pe_imports).
 
@@ -278,8 +278,8 @@ The sample's obfuscation is a neutral signal common in both benign and malicious
 | Attribute | Value |
 |-----------|-------|
 | SHA256 | 263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca |
-| File Path | /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe |
-| Project | Hexorcist 3 - Weeks 20-30 |
+| File Path | /opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe |
+| Project | REVAI-LAB-CORPUS-H3 |
 | File Type | PE32 executable (GUI) Intel 80386 (source: malcat) |
 | Architecture | x86 (32-bit) (source: malcat) |
 | File Size | 2048 bytes (source: deep-dive.json) |
@@ -400,7 +400,7 @@ The analysis of the sample with SHA256 `263db990612712d732763838e245002d526705f6
 ```
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
   "profile": "triage",
   "limits": {
     "strings_max": 100,
@@ -412,7 +412,7 @@ The analysis of the sample with SHA256 `263db990612712d732763838e245002d526705f6
   "file_summary": {
     "analysis_id": 1,
     "file_name": "string_encryption.exe",
-    "file_path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+    "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
     "file_size": 2048,
     "type": "PE",
     "architecture": "X86",
@@ -530,7 +530,7 @@ The analysis of the sample with SHA256 `263db990612712d732763838e245002d526705f6
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -542,17 +542,17 @@ The analysis of the sample with SHA256 `263db990612712d732763838e245002d526705f6
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
       "strings": []
     },
     {
       "rule": "IsWindowsGUI",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
       "strings": []
     },
     {
       "rule": "FASM",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
       "strings": []
     }
   ],
@@ -610,7 +610,7 @@ The analysis of the sample with SHA256 `263db990612712d732763838e245002d526705f6
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -622,7 +622,7 @@ The analysis of the sample with SHA256 `263db990612712d732763838e245002d526705f6
   "file_summary": {
     "analysis_id": 1,
     "file_name": "string_encryption.exe",
-    "file_path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+    "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
     "file_size": 2048,
     "type": "PE",
     "architecture": "X86",
@@ -852,7 +852,7 @@ The analysis of the sample with SHA256 `263db990612712d732763838e245002d526705f6
 ```
 # Triage evidence
 sha256: 263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca
-sample_path: /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe
+sample_path: /opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe
 ghidra_session: ghidra-pe-263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca
 ida_session: ida-263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca
 
@@ -1023,7 +1023,7 @@ ida_session: ida-263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3c
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -1035,17 +1035,17 @@ ida_session: ida-263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3c
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
       "strings": []
     },
     {
       "rule": "IsWindowsGUI",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
       "strings": []
     },
     {
       "rule": "FASM",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
       "strings": []
     }
   ],
@@ -1123,7 +1123,7 @@ ida_session: ida-263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3c
 ```json
 {
   "r2_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
   "disassembly": {
     "0x00401000": ";-- section..text:\n\u250c 168: entry0 ();\n\u2502           0x00401000      bb90000000     mov ebx, 0x90               ; 144 ; [00] -r-x section size 4096 named .text\n\u2502           0x00401005      b800304000     mov eax, section..data      ; 0x403000\n\u2502           0x0040100a      b912000000     mov ecx, 0x12               ; 18\n\u2502           0x0040100f      e894000000     call fcn.004010a8\n\u2502           0x00401014      6a00           push 0\n\u2502           0x00401016      6800304000     push section..data          ; 0x403000\n\u2502           0x0040101b      6800304000     push section..data          ; 0x403000\n\u2502           0x00401020      6a00           push 0\n\u2502           0x00401022      ff1580204000   call dword [sym.imp.USER32.DLL_MessageBoxA] ; 0x402080 ; int MessageBoxA(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)\n\u2502           0x00401028      bbeb000000     mov ebx, 0xeb               ; 235\n\u2502           0x0040102d      b813304000     mov eax, 0x403013           ; '\\x130@'\n\u2502           0x00401032      b90f000000     mov ecx, 0xf                ; 15\n\u2502           0x00401037      e86c000000     call fcn.004010a8\n\u2502           0x0040103c      6a00           push 0\n\u2502           0x0040103e      6813304000     push 0x403013               ; '\\x130@'\n\u2502           0x00401043      6813304000     push 0x403013               ; '\\x130@'\n\u2502           0x00401048      6a00           push 0\n\u2502           0x0040104a      ff1580204000   call dword [sym.imp.USER32.DLL_MessageBoxA] ; 0x402080 ; int MessageBoxA(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)\n\u2502           0x00401050      bbfe000000     mov ebx, 0xfe               ; 254\n\u2502           0x00401055      b823304000     mov eax, 0x403023           ; '#0@'\n\u2502           0x0040105a      b959000000     mov ecx, 0x59               ; 'Y' ; 89\n\u2502           0x0040105f      e844000000     call fcn.004010a8\n\u2502           0x00401064      6a00           push 0\n\u2502           0x00401066      6823304000     push 0x403023               ; '#0@'\n\u2502           0x0040106b      6823304000     push 0x403023               ; '#0@'\n\u2502           0x00401070      6a00           push 0\n\u2502           0x00401072      ff1580204000   call dword [sym.imp.USER32.DLL_MessageBoxA] ; 0x402080 ; int MessageBoxA(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)\n\u2502           0x00401078      bbc3000000     mov ebx, 0xc3               ; 195\n\u2502           0x0040107d      b87d304000     mov eax, 0x40307d           ; '}0@'\n\u2502           0x00401082      b921000000     mov ecx, 0x21               ; '!' ; 33\n\u2502           0x00401087      e81c000000     call fcn.004010a8\n\u2502           0x0040108c      6a00           push 0\n\u2502           0x0040108e      687d304000     push 0x40307d               ; '}0@'\n\u2502           0x00401093      687d304000     push 0x40307d               ; '}0@'\n\u2502           0x00401098      6a00           push 0\n\u2502           0x0040109a      ff1580204000   call dword [sym.imp.USER32.DLL_MessageBoxA] ; 0x402080 ; int MessageBoxA(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)",
     "0x004010a8": "; CALL XREFS from entry0 @ 0x40100f(x), 0x401037
@@ -1136,7 +1136,7 @@ ida_session: ida-263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3c
 {
   "upx_ok": false,
   "is_packed": false,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
   "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTested 0 file"
 }
 ```
@@ -1146,7 +1146,7 @@ ida_session: ida-263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3c
 ```json
 {
   "xorsearch_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
   "candidates": [
     "Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r"
   ],
@@ -1161,7 +1161,7 @@ ida_session: ida-263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3c
 ```json
 {
   "speakeasy_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
   "module_base": null,
   "entry_point": null,
   "key_events": [],
@@ -1177,7 +1177,7 @@ ida_session: ida-263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3c
   "frida_available": true,
   "frida_version": "17.16.4",
   "pe_probe": {
-    "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+    "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
     "exists": true,
     "hook_candidates": [
       "KERNEL32.DLL!ExitProcess",
@@ -1225,7 +1225,7 @@ ida_session: ida-263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3c
     "Ghidra instructions at 0x4010a8-0x4010b5: LODSB / XOR AL,BL / STOSB / DEC ECX / JNZ \u2014 classic XOR-in-loop decryption",
     "Malcat anomaly XorInLoop at EA 0x4010AE confirms the XOR decryption pattern",
     "FLOSS: 0 decoded/stack/tight strings \u2014 decryption only produces benign display text, not malicious payloads",
-    "Sample from 'Hexorcist 3' RE course, filename string_encryption.exe \u2014 educational obfuscation demo, not malware",
+    "Sample from 'CTF 3' RE course, filename string_encryption.exe \u2014 educational obfuscation demo, not malware",
     "Malcat kesakode_verdict: empty \u2014 no malware family classification"
   ],
   "model": null,
@@ -1243,7 +1243,7 @@ ida_session: ida-263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3c
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -1263,7 +1263,7 @@ ida_session: ida-263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3c
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -1366,7 +1366,7 @@ ida_session: ida-263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3c
 ```json
 {
   "r2_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
   "disassembly": {
     "0x00401000": ";-- section..text:\n\u250c 168: entry0 ();\n\u2502           0x00401000      bb90000000     mov ebx, 0x90               ; 144 ; [00] -r-x section size 4096 named .text\n\u2502           0x0040100
 … [3876 more chars]
@@ -1378,7 +1378,7 @@ ida_session: ida-263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3c
 {
   "upx_ok": false,
   "is_packed": false,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
   "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026
 … [22 more chars]
 ```
@@ -1388,7 +1388,7 @@ ida_session: ida-263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3c
 ```json
 {
   "xorsearch_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
   "candidates": [
     "Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r"
   ],
@@ -1402,7 +1402,7 @@ ida_session: ida-263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3c
 ```json
 {
   "speakeasy_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
   "module_base": null,
   "entry_point": null,
   "key_events": [],
@@ -1418,7 +1418,7 @@ ida_session: ida-263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3c
   "frida_available": true,
   "frida_version": "17.16.4",
   "pe_probe": {
-    "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+    "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
     "exists": true,
     "hook_candidates": [
       "KERNEL32.DLL!ExitProcess",
@@ -1433,7 +1433,7 @@ ida_session: ida-263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3c
 ```json
 {
   "shellcode_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
   "sections_analyzed": [
     {
       "name": ".text",
@@ -1820,7 +1820,7 @@ ida_session: ida-263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3c
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -1867,7 +1867,7 @@ ida_session: ida-263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3c
   "engine": "langgraph",
   "verdict": "suspicious",
   "confidence": 90,
-  "summary": "Educational demonstration of XOR string encryption obfuscation. The 2048-byte PE (compiled with FASM) contains a simple XOR decryption loop at 0x4010a8 that is called 4 times from the entry point with different keys (0x90, 0xEB, 0xFE, 0xED) and buffer addresses in .data. Decrypted strings are displayed via MessageBoxA, then the program calls ExitProcess. Only two imports (MessageBoxA, ExitProcess) with no persistence, network, file, registry, or injection capabilities. From the 'Hexorcist 3 - Weeks 20-30' reverse engineering course corpus, filename 'string_encryption.exe'.",
+  "summary": "Educational demonstration of XOR string encryption obfuscation. The 2048-byte PE (compiled with FASM) contains a simple XOR decryption loop at 0x4010a8 that is called 4 times from the entry point with different keys (0x90, 0xEB, 0xFE, 0xED) and buffer addresses in .data. Decrypted strings are displayed via MessageBoxA, then the program calls ExitProcess. Only two imports (MessageBoxA, ExitProcess) with no persistence, network, file, registry, or injection capabilities. From the 'REVAI-LAB-CORPUS-H3' reverse engineering course corpus, filename 'string_encryption.exe'.",
   "key_evidence": [
     "Ghidra imports: only KERNEL32.ExitProcess and USER32.MessageBoxA \u2014 
 … [1917 more chars]
@@ -1994,7 +1994,7 @@ rule CADRE_v2_unknown_263db9906127 {
 
 ## Executive Summary
 
-This report presents the analysis of a 2048-byte PE32 executable (SHA256: 263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca) from the "Hexorcist 3 - Weeks 20-30" reverse engineering course corpus. The sample is classified as **suspicious** with a confidence score of 90/100, based on the presence of XOR-based string encryption obfuscation but the absence of any behavioral-intent evidence such as C2 
+This report presents the analysis of a 2048-byte PE32 executable (SHA256: 263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca) from the "REVAI-LAB-CORPUS-H3" reverse engineering course corpus. The sample is classified as **suspicious** with a confidence score of 90/100, based on the presence of XOR-based string encryption obfuscation but the absence of any behavioral-intent evidence such as C2 
 … [14539 more chars]
 ```
 

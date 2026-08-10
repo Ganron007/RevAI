@@ -11,7 +11,7 @@
 | Publish LLM (claimed) | benign |
 
 - **Lock reason:** publish LLM claimed `benign` but upstream triage is `suspicious` (YARA / tool-backed: IsPE32, IsWindowsGUI, FASM, FASM_15x, FASM_v13x_additional, FASM_v15x, FASM_v13x). Final verdict follows triage; dual-use branding does not clear the sample.
-- **Family (triage):** Hexorcist keygen
+- **Family (triage):** CTF keygen
 - **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.
 
 ---
@@ -20,9 +20,9 @@
 
 ## Executive Summary
 
-This report details the analysis of the sample `angr_crackme2.exe` (SHA256: `cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4`), collected under the project "Hexorcist 3 - Weeks 20-30". The binary is a minimal Windows GUI application written in FASM (Flat Assembler) that functions as a password checker or "crackme" challenge. It presents a dialog box, accepts user input for a serial number, and validates it against a simple checksum algorithm, displaying "good!" or "bad!" based on the result.
+This report details the analysis of the sample `angr_crackme2.exe` (SHA256: `cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4`), collected under the project "REVAI-LAB-CORPUS-H3". The binary is a minimal Windows GUI application written in FASM (Flat Assembler) that functions as a password checker or "crackme" challenge. It presents a dialog box, accepts user input for a serial number, and validates it against a simple checksum algorithm, displaying "good!" or "bad!" based on the result.
 
-The sample exhibits no malicious behavioral intent. It contains no network communication, persistence mechanisms, credential theft, file manipulation, or anti-analysis techniques. All identified capabilities are benign GUI operations. The filename `angr_crackme2.exe` explicitly identifies it as a challenge for symbolic execution tools like angr. The verdict from upstream triage is **suspicious** (family: Hexorcist keygen), which we maintain due to the presence of a keygen template string and the lack of any hostile behavior, placing it in the category of a benign software protection testing artifact.
+The sample exhibits no malicious behavioral intent. It contains no network communication, persistence mechanisms, credential theft, file manipulation, or anti-analysis techniques. All identified capabilities are benign GUI operations. The filename `angr_crackme2.exe` explicitly identifies it as a challenge for symbolic execution tools like angr. The verdict from upstream triage is **suspicious** (family: CTF keygen), which we maintain due to the presence of a keygen template string and the lack of any hostile behavior, placing it in the category of a benign software protection testing artifact.
 
 ## 1. Sample Identification
 
@@ -35,8 +35,8 @@ The sample exhibits no malicious behavioral intent. It contains no network commu
 | **Architecture** | x86 (32-bit) |
 | **Compiler** | FASM (Flat Assembler) |
 | **Packer** | None detected (UPX probe negative) (source: upx_unpack) |
-| **Project** | Hexorcist 3 - Weeks 20-30 |
-| **Sample Path** | `/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe` |
+| **Project** | REVAI-LAB-CORPUS-H3 |
+| **Sample Path** | `/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe` |
 
 The file is a standard PE32 executable with a `.text` section marked as executable and writable (`SectionWX` anomaly noted by MalCat), which is common for hand-written assembly programs (source: malcat). The import hash (`imphash`) is `e471a30244579dd1c29a70e51f0b18dc` (source: rule.yara.json).
 
@@ -46,14 +46,14 @@ The file is a standard PE32 executable with a `.text` section marked as executab
 |---|---|
 | **Verdict** | Suspicious |
 | **Confidence** | 90% |
-| **Family** | Hexorcist keygen |
+| **Family** | CTF keygen |
 | **Score** | 20 (low) |
 
 **Rationale:** The upstream triage verdict is **suspicious** with a low score of 20 (source: triage_verdict). This classification is based on the presence of the string "HEXORCIST KEYGEN TEMPLATE" and the decompiled code showing serial validation logic, which aligns with benign software protection testing or keygen use (source: floss, malcat). The sample lacks any behavioral indicators of malice such as C2 communication, persistence, or data exfiltration. The only behavioral rule matched by capa is "terminate process" (ExitProcess), which is benign (source: capa). The verdict is calibrated to reflect that while the sample is not overtly malicious, its nature as a keygen template warrants a suspicious rating rather than clean.
 
 ## 3. Background & Family Lineage
 
-The sample is part of the "Hexorcist" series, which appears to be a collection of CTF (Capture The Flag) challenges and crackmes. The strings "SAS HEXORCIST" and "HEXORCIST ASM TEMPLATE" in the version information indicate it is a template for creating assembly-language challenges (source: rule.yara.json). The filename `angr_crackme2.exe` explicitly references the angr symbolic execution framework, suggesting it is designed for binary analysis practice. This lineage places it in the category of educational or testing software, not malware.
+The sample is part of the "CTF" series, which appears to be a collection of CTF (Capture The Flag) challenges and crackmes. The strings "SAS CTF" and "HEXORCIST ASM TEMPLATE" in the version information indicate it is a template for creating assembly-language challenges (source: rule.yara.json). The filename `angr_crackme2.exe` explicitly references the angr symbolic execution framework, suggesting it is designed for binary analysis practice. This lineage places it in the category of educational or testing software, not malware.
 
 ## 4. Static Analysis
 
@@ -93,7 +93,7 @@ The sample's capabilities are limited to benign GUI operations. The delay loop (
 
 ## 8. Attribution
 
-No attribution to a specific threat actor is possible. The sample is a generic crackme template from the "Hexorcist" educational series. The copyright string "Copyright SAS HEXORCIST" suggests a single author or group focused on creating CTF challenges (source: rule.yara.json).
+No attribution to a specific threat actor is possible. The sample is a generic crackme template from the "CTF" educational series. The copyright string "Copyright SAS HEXORCIST" suggests a single author or group focused on creating CTF challenges (source: rule.yara.json).
 
 ## 9. Indicators of Compromise
 
@@ -139,7 +139,7 @@ Given the benign nature of this sample, no containment, eradication, or recovery
 
 | Source | Query/Tool | Key Finding |
 |---|---|---|
-| `triage_verdict` | verdict.json | Verdict: suspicious, score 20, family: Hexorcist keygen |
+| `triage_verdict` | verdict.json | Verdict: suspicious, score 20, family: CTF keygen |
 | `deep_dive` | deep-dive.json | Verdict: suspicious, confidence 90, benign crackme |
 | `floss` | floss strings | String: "HEXORCIST KEYGEN TEMPLATE" |
 | `malcat` | decompilations | DialogFunc shows serial validation with "good!"/"bad!" output |

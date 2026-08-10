@@ -24,8 +24,8 @@ This report details the analysis of a 61KB Windows PE executable (`darkside.ex`)
 |---|---|
 | **SHA256** | `1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a` |
 | **File Name** | `darkside.ex` |
-| **File Path** | `/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex` |
-| **Project** | Malware Analyst Professional - Level 2 |
+| **File Path** | `/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex` |
+| **Project** | REVAI-LAB-CORPUS-L2 |
 | **File Type** | PE32 executable (GUI) Intel 80386, for MS Windows |
 | **File Size** | 61,440 bytes (60 KB) |
 | **Architecture** | x86 (32-bit) |

@@ -39,7 +39,7 @@ The primary identifier is the SHA256 hash, which uniquely fingerprints the file.
 | Attribute       | Value                                                                 | Evidence (source: malcat)                              |
 |-----------------|-----------------------------------------------------------------------|-------------------------------------------------------|
 | SHA256          | 2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5        | Directly provided in sample metadata.                 |
-| File Path       | /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/.../nspack.exe           | Indicates the sample name is "nspack.exe", which we infer is associated with nSpack packing (source: malcat, query: path, why: File naming often hints at packer use).
+| File Path       | /opt/samples/corpus/REVAI-LAB-CORPUS-H1/.../nspack.exe           | Indicates the sample name is "nspack.exe", which we infer is associated with nSpack packing (source: malcat, query: path, why: File naming often hints at packer use).
 | Type            | PE (Portable Executable)                                              | Confirms it is a Windows executable format (source: malcat, query: type, why: Essential for understanding runtime environment).
 | Architecture    | X86                                                                   | Specifies 32-bit x86 architecture, common for targeted malware (source: malcat, query: architecture, why: Determines execution context).
 | Entropy         | 52                                                                    | High entropy score (source: malcat, query: entropy, why: Values above 6-7 are normal for uncompressed code; 52 suggests heavy obfuscation or packing, consistent with nSpack behavior).

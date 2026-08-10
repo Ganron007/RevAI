@@ -8,7 +8,7 @@
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
-- **Sample:** `/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex`
+- **Sample:** `/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex`
 - **Showcase pack:** `/opt/samples/logs/_showcase_audits/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a`
 
 ## Stage scoreboard
@@ -224,7 +224,7 @@ _No tool retries occurred during this run._
 ```json
 {
   "title": "Malware Analysis Report: DarkSide Ransomware Dropper/Packer",
-  "markdown": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 15:26:57 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | suspicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n# Malware Analysis Report: DarkSide Ransomware Dropper/Packer\n\n## Executive Summary\n\nThis report details the analysis of a 61KB Windows PE executable (`darkside.ex`) identified as a likely dropper or packer component associated with the DarkSide ransomware family. The sample exhibits multiple indicators of malicious intent, including a filename explicitly referencing DarkSide, extreme import minimalism (only `ExitProcess`), a high-entropy `.text` section with Read-Write-Execute (RWX) permissions, and the presence of a forged digital signature. Static analysis reveals a heavily obfuscated packer stub that uses XOR encoding and aPLib decompression to unpack its payload at runtime. The code signing certificate, issued to \"OASIS COURT LIMITED\" with a validity period ending in December 2021, is assessed as likely forged or stolen, as it does not provide evidence of legitimacy. The debug timestamp of February 16, 2021, aligns with the known operational timeline of the DarkSide ransomware group, which was active prior to the high-profile Colonial Pipeline attack in May 2021. While the packed nature of the sample prevents full behavioral analysis in a static environment, the combination of the explicit filename, the packer's anti-analysis techniques (PEB access, XOR obfuscation), and the historical context strongly indicates this is a malicious component of the DarkSide ransomware toolkit. The upstream triage verdict of \"suspicious\" is supported, but the deep-dive analysis elevates the confidence to \"malicious\" based on the totality of the evidence.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|---|---|\n| **SHA256** | `1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a` |\n| **File Name** | `darkside.ex` |\n| **File Path** | `/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex` |\n| **Project** | Malware Analyst Professional - Level 2 |\n| **File Type** | PE32 executable (GUI) Intel 80386, for MS Windows |\n| **File Size** | 61,440 bytes (60 KB) |\n| **Architecture** | x86 (32-bit) |\n| **Compilation Timestamp** | 2021-02-16 (Debug Directory) |\n| **Import Hash (Imphash)** | `f9ade0aa18f660a34a4fa23392e21838` |\n| **Digital Signature** | Present, issued to OASIS COURT LIMITED, valid 2020-12-21 to 2021-12-16 |\n\nThe sample's filename, `darkside.ex`, is a direct and explicit reference to the DarkSide ransomware, which is a significant indicator of its intended purpose. The file is a standard 32-bit Windows GUI executable. The compilation timestamp from the debug directory places its creation in February 2021, a period when the DarkSide ransomware-as-a-service (RaaS) operation was actively targeting organizations. The import hash is minimal, consistent with a packed or protected binary. (source: malcat)\n\n## 2. Classification\n\n| Field | Value |\n
+  "markdown": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 15:26:57 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | suspicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n# Malware Analysis Report: DarkSide Ransomware Dropper/Packer\n\n## Executive Summary\n\nThis report details the analysis of a 61KB Windows PE executable (`darkside.ex`) identified as a likely dropper or packer component associated with the DarkSide ransomware family. The sample exhibits multiple indicators of malicious intent, including a filename explicitly referencing DarkSide, extreme import minimalism (only `ExitProcess`), a high-entropy `.text` section with Read-Write-Execute (RWX) permissions, and the presence of a forged digital signature. Static analysis reveals a heavily obfuscated packer stub that uses XOR encoding and aPLib decompression to unpack its payload at runtime. The code signing certificate, issued to \"OASIS COURT LIMITED\" with a validity period ending in December 2021, is assessed as likely forged or stolen, as it does not provide evidence of legitimacy. The debug timestamp of February 16, 2021, aligns with the known operational timeline of the DarkSide ransomware group, which was active prior to the high-profile Colonial Pipeline attack in May 2021. While the packed nature of the sample prevents full behavioral analysis in a static environment, the combination of the explicit filename, the packer's anti-analysis techniques (PEB access, XOR obfuscation), and the historical context strongly indicates this is a malicious component of the DarkSide ransomware toolkit. The upstream triage verdict of \"suspicious\" is supported, but the deep-dive analysis elevates the confidence to \"malicious\" based on the totality of the evidence.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|---|---|\n| **SHA256** | `1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a` |\n| **File Name** | `darkside.ex` |\n| **File Path** | `/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex` |\n| **Project** | REVAI-LAB-CORPUS-L2 |\n| **File Type** | PE32 executable (GUI) Intel 80386, for MS Windows |\n| **File Size** | 61,440 bytes (60 KB) |\n| **Architecture** | x86 (32-bit) |\n| **Compilation Timestamp** | 2021-02-16 (Debug Directory) |\n| **Import Hash (Imphash)** | `f9ade0aa18f660a34a4fa23392e21838` |\n| **Digital Signature** | Present, issued to OASIS COURT LIMITED, valid 2020-12-21 to 2021-12-16 |\n\nThe sample's filename, `darkside.ex`, is a direct and explicit reference to the DarkSide ransomware, which is a significant indicator of its intended purpose. The file is a standard 32-bit Windows GUI executable. The compilation timestamp from the debug directory places its creation in February 2021, a period when the DarkSide ransomware-as-a-service (RaaS) operation was actively targeting organizations. The import hash is minimal, consistent with a packed or protected binary. (source: malcat)\n\n## 2. Classification\n\n| Field | Value |\n
 … [17727 more chars]
 ```
 
@@ -259,8 +259,8 @@ This report details the analysis of a 61KB Windows PE executable (`darkside.ex`)
 |---|---|
 | **SHA256** | `1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a` |
 | **File Name** | `darkside.ex` |
-| **File Path** | `/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex` |
-| **Project** | Malware Analyst Professional - Level 2 |
+| **File Path** | `/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex` |
+| **Project** | REVAI-LAB-CORPUS-L2 |
 | **File Type** | PE32 executable (GUI) Intel 80386, for MS Windows |
 | **Fil
 … [16111 more chars]
@@ -370,7 +370,7 @@ This verdict is supported by conflicting initial analyses: the v1_summary classi
 ```
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
   "profile": "triage",
   "limits": {
     "strings_max": 100,
@@ -382,7 +382,7 @@ This verdict is supported by conflicting initial analyses: the v1_summary classi
   "file_summary": {
     "analysis_id": 1,
     "file_name": "darkside.ex",
-    "file_path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+    "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
     "file_size": 61784,
     "type": "PE",
     "architecture": "X86",
@@ -516,7 +516,7 @@ This verdict is supported by conflicting initial analyses: the v1_summary classi
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": [
         {
           "id": "$domain_regex",
@@ -528,7 +528,7 @@ This verdict is supported by conflicting initial analyses: the v1_summary classi
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": [
         {
           "id": "$ipv6",
@@ -540,7 +540,7 @@ This verdict is supported by conflicting initial analyses: the v1_summary classi
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": [
         {
           "id": "$a",
@@ -552,7 +552,7 @@ This verdict is supported by conflicting initial analyses: the v1_summary classi
     },
     {
       "rule": "url",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": [
         {
           "id": "$url_regex",
@@ -564,7 +564,7 @@ This verdict is supported by conflicting initial analyses: the v1_summary classi
     },
     {
       "rule": "maldoc_find_kernel32_base_method_1",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": [
         {
           "id": "$a1",
@@ -576,27 +576,27 @@ This verdict is supported by conflicting initial analyses: the v1_summary classi
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": []
     },
     {
       "rule": "IsWindowsGUI",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": []
     },
     {
       "rule": "IsPacked",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": []
     },
     {
       "rule": "HasOverlay",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": []
     },
     {
       "rule": "HasDigitalSignature",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": [
         {
           "id": "$a1",
@@ -608,7 +608,7 @@ This verdict is supported by conflicting initial analyses: the v1_summary classi
     },
     {
       "rule": "HasDebugData",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": []
     }
   ],
@@ -731,7 +731,7 @@ This verdict is supported by conflicting initial analyses: the v1_summary classi
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -743,7 +743,7 @@ This verdict is supported by conflicting initial analyses: the v1_summary classi
   "file_summary": {
     "analysis_id": 1,
     "file_name": "darkside.ex",
-    "file_path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+    "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
     "file_size": 61784,
     "type": "PE",
     "architecture": "X86",
@@ -913,7 +913,7 @@ This verdict is supported by conflicting initial analyses: the v1_summary classi
 ```
 # Triage evidence
 sha256: 1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a
-sample_path: /opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex
+sample_path: /opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex
 ghidra_session: ghidra-pe-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a
 ida_session: ida-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a
 
@@ -1095,7 +1095,7 @@ ida_session: ida-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": [
         {
           "id": "$domain_regex",
@@ -1107,7 +1107,7 @@ ida_session: ida-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": [
         {
           "id": "$ipv6",
@@ -1119,7 +1119,7 @@ ida_session: ida-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": [
         {
           "id": "$a",
@@ -1131,7 +1131,7 @@ ida_session: ida-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2
     },
     {
       "rule": "url",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": [
         {
           "id": "$url_regex",
@@ -1143,7 +1143,7 @@ ida_session: ida-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2
     },
     {
       "rule": "maldoc_find_kernel32_base_method_1",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": [
         {
           "id": "$a1",
@@ -1155,27 +1155,27 @@ ida_session: ida-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": []
     },
     {
       "rule": "IsWindowsGUI",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": []
     },
     {
       "rule": "IsPacked",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": []
     },
     {
       "rule": "HasOverlay",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": []
     },
     {
       "rule": "HasDigitalSignature",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": [
         {
           "id": "$a1",
@@ -1187,7 +1187,7 @@ ida_session: ida-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2
     },
     {
       "rule": "HasDebugData",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": []
     }
   ],
@@ -1330,7 +1330,7 @@ ida_session: ida-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2
 ```json
 {
   "r2_ok": true,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
   "disassembly": {
     "0x0040a30f": "\u250c 45: entry0 ();\n\u2502           0x0040a30f      6a10           push 0x10                   ; 16\n\u2502           0x0040a311      6820004100     push 0x410020               ; ' '\n\u2502           0x0040a316      6810004100     push 0x410010               ; '\\x10'\n\u2502           0x0040a31b      e827fdffff     call fcn.0040a047\n\u2502           0x0040a320      e863ffffff     call fcn.0040a288\n\u2502           0x0040a325      e88bffffff     call fcn.0040a2b5\n\u2502           0x0040a32a      e8afffffff     call fcn.0040a2de\n\u2502           0x0040a32f      e8e9edffff     call fcn.0040911d\n\u2502           0x0040a334      6a00           push 0\n\u2514           0x0040a336      ff1500b04000   call dword [sym.imp.KERNEL32.dll_ExitProcess] ; 0x40b000 ; \"<\\xb1\" ; VOID ExitProcess(UINT uExitCode)",
     "0x0040a047": "; CALL XREF from entry0 @ 0x40a31b(x)\n\u250c 142: fcn.0040a047 (int32_t arg_8h, int32_t arg_ch, int32_t arg_10h);\n\u2502           ; arg int32_t arg_8h @ ebp+0x8\n\u2502           ; arg int32_t arg_ch @ ebp+0xc\n\u2502           ; arg int32_t arg_10h @ ebp+0x10\n\u2502           0x0040a047      55             push ebp\n\u2502           0x0040a048      8bec           mov ebp, esp\n\u2502           0x0040a04a      53             push ebx\n\u2502           0x0040a04b      51             push ecx\n\u2502           0x0040a04c      52             push edx\n\u2502           0x0040a04d      56             push esi\n\u2502           0x0040a04e      57             push edi\n\u2502           0x0040a04f      b9f0000000     mov ecx, 0xf0               ; 240\n\u2502           0x0040a054      be70f24000     mov esi, 0x40f270\n\u2502           0x0040a059      8b4508         mov eax, dword [arg_8h]\n\u2502           0x0040a05c      8b10           mov edx, dword [eax]\n\u2502           0x0040a05e      8b5804         mov ebx, dword [eax + 4]\n\u2502           0x0040a061      8b7808         mov edi, dword [eax + 8]\n\u2502           0x0040a064      8b400c         mov eax, dword [eax + 0xc]\n\u2502       \u250c\u2500> 0x0040a067      89540e0c       mov dword [esi + ecx + 0xc], edx\n\u2502       \u254e   0x0040a06b      89440e08       mov dword [esi + ecx + 8], eax\n\u2502       \u254e   0x0040a06f      895c0e04       mov dword [esi + ecx + 4], ebx\n\u2502       \u254e   0x0040a073      893c0e         mov dword [esi + ecx], edi\n\u2502       \u254e   0x0040a076      81ea10101010   sub edx, 0x10101010\n\u2502       \u254e   0x0040a07c      2d10101010     sub eax, 0x10101010\n\u2502       \u254e   0x0040a081      81eb10101010   sub ebx, 0x10101010\n\u2502       \u254e   0x0040a087      81ef10101010   sub edi, 0x10101010\n\u2502       \u254e   0x0040a08d      83e910         sub ecx, 0x10               ; 16\n\u2502       \u2514\u2500< 0x0040a090      79d5           jns 0x40a067\n\u2502           0x0040a092      33d2           xor edx, edx\n\u2502           0x0040a094      33c9           xor ecx, ecx\n\u2502           0x0040a096      8b750c         mov esi, dword [arg_ch]\n\u2502           0x0040a099      33db           xor ebx, ebx\n\u2502           0x0040a09b      8b7d10         mov edi, dword [arg_10h]\n\u2502      \u250c\u250c\u2500> 0x0040a09e      8a8170f24000   mov al, byte [ecx + 0x40f270]\n\u2502      \u254e\u254e   0x0040a0
@@ -1343,7 +1343,7 @@ ida_session: ida-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2
 {
   "upx_ok": false,
   "is_packed": false,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
   "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTested 0 file"
 }
 ```
@@ -1353,7 +1353,7 @@ ida_session: ida-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2
 ```json
 {
   "xorsearch_ok": true,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
   "candidates": [
     "Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r"
   ],
@@ -1368,7 +1368,7 @@ ida_session: ida-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2
 ```json
 {
   "speakeasy_ok": true,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
   "module_base": null,
   "entry_point": null,
   "key_events": [],
@@ -1384,7 +1384,7 @@ ida_session: ida-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2
   "frida_available": true,
   "frida_version": "17.16.4",
   "pe_probe": {
-    "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+    "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
     "exists": true
   }
 }
@@ -1456,7 +1456,7 @@ ida_session: ida-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
       "strings": [
         {
           "id": "$domain_regex",
@@ -1476,7 +1476,7 @@ ida_session: ida-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -1585,7 +1585,7 @@ ida_session: ida-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2
 ```json
 {
   "r2_ok": true,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
   "disassembly": {
     "0x0040a30f": "\u250c 45: entry0 ();\n\u2502           0x0040a30f      6a10           push 0x10                   ; 16\n\u2502           0x0040a311      6820004100     push 0x410020               ; ' '\n\u25
 … [9302 more chars]
@@ -1597,7 +1597,7 @@ ida_session: ida-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2
 {
   "upx_ok": false,
   "is_packed": false,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
   "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2
 … [25 more chars]
 ```
@@ -1607,7 +1607,7 @@ ida_session: ida-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2
 ```json
 {
   "xorsearch_ok": true,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
   "candidates": [
     "Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r"
   ],
@@ -1621,7 +1621,7 @@ ida_session: ida-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2
 ```json
 {
   "speakeasy_ok": true,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
   "module_base": null,
   "entry_point": null,
   "key_events": [],
@@ -1637,7 +1637,7 @@ ida_session: ida-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2
   "frida_available": true,
   "frida_version": "17.16.4",
   "pe_probe": {
-    "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+    "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
     "exists": true
   }
 }
@@ -1648,7 +1648,7 @@ ida_session: ida-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2
 ```json
 {
   "shellcode_ok": false,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
   "sections_analyzed": [
     {
       "name": ".text",
@@ -1882,7 +1882,7 @@ ida_session: ida-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -1947,7 +1947,7 @@ ida_session: ida-1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2
 ```json
 {
   "speakeasy_ok": true,
-  "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a/darkside.ex",
   "module_base": null,
   "entry_point": null,
   "key_events": [],

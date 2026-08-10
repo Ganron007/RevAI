@@ -1,8 +1,8 @@
 # Technical Evidence Pack
 
 **sha256:** 263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca  
-**sample_path:** /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe  
-**project_name:** Hexorcist 3 - Weeks 20-30
+**sample_path:** /opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe  
+**project_name:** REVAI-LAB-CORPUS-H3
 
 > Every table below is copied from stage JSON. Technical narrative must cite these rows (engine + address/rule), not invent evidence.
 
@@ -29,7 +29,7 @@
 ## Deep-Dive Summary Evidence
 - **source**: deep_dive_agentic
 - **confidence**: 90
-- **summary**: Educational demonstration of XOR string encryption obfuscation. The 2048-byte PE (compiled with FASM) contains a simple XOR decryption loop at 0x4010a8 that is called 4 times from the entry point with different keys (0x90, 0xEB, 0xFE, 0xED) and buffer addresses in .data. Decrypted strings are displayed via MessageBoxA, then the program calls ExitProcess. Only two imports (MessageBoxA, ExitProcess) with no persistence, network, file, registry, or injection capabilities. From the 'Hexorcist 3 - Weeks 20-30' reverse engineering course corpus, filename 'string_encryption.exe'.
+- **summary**: Educational demonstration of XOR string encryption obfuscation. The 2048-byte PE (compiled with FASM) contains a simple XOR decryption loop at 0x4010a8 that is called 4 times from the entry point with different keys (0x90, 0xEB, 0xFE, 0xED) and buffer addresses in .data. Decrypted strings are displayed via MessageBoxA, then the program calls ExitProcess. Only two imports (MessageBoxA, ExitProcess) with no persistence, network, file, registry, or injection capabilities. From the 'REVAI-LAB-CORPUS-H3' reverse engineering course corpus, filename 'string_encryption.exe'.
 
 ### deep key_evidence
 - `"Ghidra imports: only KERNEL32.ExitProcess and USER32.MessageBoxA \u2014 no suspicious API surface"`
@@ -37,7 +37,7 @@
 - `"Ghidra instructions at 0x4010a8-0x4010b5: LODSB / XOR AL,BL / STOSB / DEC ECX / JNZ \u2014 classic XOR-in-loop decryption"`
 - `"Malcat anomaly XorInLoop at EA 0x4010AE confirms the XOR decryption pattern"`
 - `"FLOSS: 0 decoded/stack/tight strings \u2014 decryption only produces benign display text, not malicious payloads"`
-- `"Sample from 'Hexorcist 3' RE course, filename string_encryption.exe \u2014 educational obfuscation demo, not malware"`
+- `"Sample from 'CTF 3' RE course, filename string_encryption.exe \u2014 educational obfuscation demo, not malware"`
 - `"Malcat kesakode_verdict: empty \u2014 no malware family classification"`
 
 ## Malcat Structured Analysis
@@ -208,7 +208,7 @@ Total matches: 4
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -220,17 +220,17 @@ Total matches: 4
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
       "strings": []
     },
     {
       "rule": "IsWindowsGUI",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
       "strings": []
     },
     {
       "rule": "FASM",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
       "strings": []
     }
   ],

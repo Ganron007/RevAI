@@ -15,7 +15,7 @@
 # Technical Malware Analysis Report v2
 
 **SHA256:** 2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5
-**Project:** Hexorcist 1 - Weeks 1-8
+**Project:** REVAI-LAB-CORPUS-H1
 **Analyst Date:** 2026-08-09
 
 ---
@@ -503,8 +503,8 @@ The following Ghidra and IDA queries were executed during analysis (source: audi
 
 | Component | Details |
 |---|---|
-| Sample Path | `/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe` |
-| Project | Hexorcist 1 - Weeks 1-8 |
+| Sample Path | `/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe` |
+| Project | REVAI-LAB-CORPUS-H1 |
 | Analysis Framework | RevAI (langgraph engine) |
 | LLM Model | configured-llm |
 | Frida Version | 17.16.4 |
@@ -529,8 +529,8 @@ The Suspicious verdict is more conservative and appropriate given the VERDICT CA
 # Technical Evidence Pack
 
 **sha256:** 2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5  
-**sample_path:** /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe  
-**project_name:** Hexorcist 1 - Weeks 1-8
+**sample_path:** /opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe  
+**project_name:** REVAI-LAB-CORPUS-H1
 
 > Every table below is copied from stage JSON. Technical narrative must cite these rows (engine + address/rule), not invent evidence.
 

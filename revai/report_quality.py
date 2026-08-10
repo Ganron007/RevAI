@@ -259,7 +259,7 @@ def evaluate_report_markdown(
                 break
         style["byline_ok"] = "revai provenance" in (style_md or "").lower()
         # Citation marker: the system prompt instructs "{source: engine}" but
-        # some models emit "(source: engine)". Count BOTH (mimo provider
+        # some models emit "(source: engine)". Count BOTH (the provider
         # finding 2026-08-08 — curly-brace citations were uncounted and a
         # fully-cited report failed low_citations).
         style["citation_count"] = (style_md or "").lower().count("(source:") + (

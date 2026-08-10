@@ -1,6 +1,6 @@
 # Triage evidence
 sha256: 36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9
-sample_path: /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe
+sample_path: /opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe
 ghidra_session: ghidra-dotnet-36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9
 ida_session: ida-36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9
 
@@ -56,7 +56,7 @@ rows: (empty)
 label: IDA database summary
 sql: SELECT * FROM welcome
 columns: summary, idasql_version, processor, is_64bit, min_ea, max_ea, start_ea, entry_name, funcs_count, segments_count, names_count, strings_count, filename, input_file_path, idb_path, md5, sha256
-  metapc 32-bit | entry: start @ 0x1001018 | funcs: 1 | segs: 5 | strings: 229 | 0.0.17 | metapc | 0 | 0x1001000 | 0x1035000 | 0x1001018 | start | 1 | 5 | 4 | 229 | Upack037.exe | /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe | /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe.i64 | 6777ab0413e233ad305e195ea0bd8b5d | 36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9
+  metapc 32-bit | entry: start @ 0x1001018 | funcs: 1 | segs: 5 | strings: 229 | 0.0.17 | metapc | 0 | 0x1001000 | 0x1035000 | 0x1001018 | start | 1 | 5 | 4 | 229 | Upack037.exe | /opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe | /opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe.i64 | 6777ab0413e233ad305e195ea0bd8b5d | 36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9
 
 ### engine: ida
 label: Total function count (IDA)
@@ -177,7 +177,7 @@ columns: name, address, size
 ### capa (raw JSON, capped)
 {
   "error": "capa rc=13",
-  "stderr": "ERROR    capa: Input file '/opt/samples/corpus/Hexorcist 1 - Weeks   main.py:563\n         1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f            \n         10ad013c9/Upack037.exe' is not a valid PE file: \"data at               \n         RVA can't be fetched. Corrupt header?\"                                 \n",
+  "stderr": "ERROR    capa: Input file '/opt/samples/corpus/CTF 1 - Weeks   main.py:563\n         1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f            \n         10ad013c9/Upack037.exe' is not a valid PE file: \"data at               \n         RVA can't be fetched. Corrupt header?\"                                 \n",
   "timeout_s": 300,
   "sample_size": 52224,
   "duration_s": 1.47,
@@ -189,7 +189,7 @@ columns: name, address, size
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -201,7 +201,7 @@ columns: name, address, size
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": [
         {
           "id": "$ipv4",
@@ -219,7 +219,7 @@ columns: name, address, size
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": [
         {
           "id": "$a",
@@ -231,7 +231,7 @@ columns: name, address, size
     },
     {
       "rule": "WinUpackv039finalByDwingc2005h1",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "strings": [
         {
           "id": "$a0",
@@ -266,7 +266,7 @@ columns: name, address, size
 ### malcat deep profile (raw JSON, capped)
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -278,7 +278,7 @@ columns: name, address, size
   "file_summary": {
     "analysis_id": 1,
     "file_name": "Upack037.exe",
-    "file_path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+    "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
     "file_size": 52224,
     "type": "PE",
     "architecture": "X86",

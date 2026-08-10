@@ -15,7 +15,7 @@
  * import step; this loader processes the outer PE image that Ghidra actually
  * maps into memory.
  */
-package cadre.reveng.ghidra;
+package cadre.revai.ghidra;
 
 import java.io.IOException;
 import java.util.ArrayList;

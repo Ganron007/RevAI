@@ -222,13 +222,13 @@ The analysis was conducted in a controlled environment with the following tools 
 - **Dynamic Analysis**: Speakeasy (for emulation), Frida Probe v17.16.4 (for API hooking).
 - **Detection Tools**: YARA (with pipeline matches), capa rules (malcat-capa engine).
 - **File Metadata**: PE header analysis via Malcat.
-- **Environment Details**: The sample was located at `/opt/samples/corpus/710/...`, suggesting a Linux-based analysis host. No network emulation was configured, which explains the lack of C2 activity. The analysis focused on static indicators due to the sample's inert state in the dynamic environment.
+- **Environment Details**: The sample was located at `/opt/samples/corpus/revai-lab-710/...`, suggesting a Linux-based analysis host. No network emulation was configured, which explains the lack of C2 activity. The analysis focused on static indicators due to the sample's inert state in the dynamic environment.
 ## Appendix: Full Structured Evidence Pack
 
 # Technical Evidence Pack
 
 **sha256:** ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda  
-**sample_path:** /opt/samples/corpus/710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe  
+**sample_path:** /opt/samples/corpus/revai-lab-710/ec3fd41b2298954946999dcb3145cbdc927a5ca9a150a8c57741da5fe3198cda/tasksche.exe  
 **project_name:** 710
 
 > Every table below is copied from stage JSON. Technical narrative must cite these rows (engine + address/rule), not invent evidence.

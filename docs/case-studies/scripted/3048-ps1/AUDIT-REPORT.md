@@ -8,7 +8,7 @@
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
-- **Sample:** `/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1`
+- **Sample:** `/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1`
 - **Showcase pack:** `/opt/samples/logs/_showcase_audits/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2`
 
 ## Stage scoreboard
@@ -232,7 +232,7 @@ _No tool retries occurred during this run._
 ```json
 {
   "title": "Malware Analysis Report: PowerShell Dropper/Loader (SHA256: 14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2)",
-  "markdown": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 19:22:26 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\n\nThis report details the analysis of a PowerShell script (SHA256: 14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2) identified as malicious. The script functions as a dropper/loader, employing architecture-aware execution, hidden window launch, and a double-encoded (Base64 + GZip) payload delivered via dynamic code execution. The payload is consistent with techniques used by PowerShell Empire, Cobalt Strike stagers, and document-embedded macro payloads. Key behavioral indicators include YARA rule matches for shell execution, PowerShell abuse, Base64 obfuscation, and process control APIs. The script's high entropy and obfuscation are neutral signals, but the combination of hidden execution, dynamic code creation, and process manipulation constitutes clear behavioral intent for malicious activity, likely for lateral movement, payload delivery, or command-and-control operations. The sample is classified as malicious with high confidence.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|---|---|\n| SHA256 | 14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 |\n| File Path | /opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1 |\n| Project | day6 |\n| File Type | text/utf8 (PowerShell script) |\n| Size | 2800 bytes |\n| Entropy | 148 (high for a text file, indicating encoded/obfuscated content) |\n| Architecture | NONE (script, not a native binary) |\n| .NET Analysis | Not a .NET assembly |\n\nThe sample is a UTF-8 encoded PowerShell script. The high entropy value of 148 for a 2800-byte text file is a strong indicator of encoded or obfuscated content, which is a common evasion technique in malicious scripts (source: malcat, file_summary.entropy).\n\n## 2. Classification\n\n| Field | Value |\n|---|---|\n| Verdict | Malicious |\n| Confidence | 90 |\n| Family | PowerShell-based malware |\n| Score | 40.0 (Triage) / 90 (Deep-dive) |\n| Key Behavioral Signals | Hidden execution, dynamic code creation, process control APIs, Base64/GZip encoding |\n\nThe classification is based on behavioral intent evidence, not obfuscation alone. The script exhibits multiple hostile behaviors: it launches a hidden PowerShell window (`-nop -w hidden`), performs architecture checks for 32/64-bit compatibility, and dynamically creates and executes a double-encoded payload using `[scriptblock]::create()` (source: deep-dive.json). These are classic techniques for evading detection and executing arbitrary code, which are hallmarks of malicious droppers and loaders. The upstream triage verdict of \"malicious\" is confirmed and calibrated with high confidence.\n\n## 3. Background & Family Lineage\n\nThe script's techniques are consistent with several well-known PowerShell-based attack frameworks:\n\n- **PowerShell Empire**: 
+  "markdown": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 19:22:26 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\n\nThis report details the analysis of a PowerShell script (SHA256: 14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2) identified as malicious. The script functions as a dropper/loader, employing architecture-aware execution, hidden window launch, and a double-encoded (Base64 + GZip) payload delivered via dynamic code execution. The payload is consistent with techniques used by PowerShell Empire, Cobalt Strike stagers, and document-embedded macro payloads. Key behavioral indicators include YARA rule matches for shell execution, PowerShell abuse, Base64 obfuscation, and process control APIs. The script's high entropy and obfuscation are neutral signals, but the combination of hidden execution, dynamic code creation, and process manipulation constitutes clear behavioral intent for malicious activity, likely for lateral movement, payload delivery, or command-and-control operations. The sample is classified as malicious with high confidence.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|---|---|\n| SHA256 | 14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 |\n| File Path | /opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1 |\n| Project | day6 |\n| File Type | text/utf8 (PowerShell script) |\n| Size | 2800 bytes |\n| Entropy | 148 (high for a text file, indicating encoded/obfuscated content) |\n| Architecture | NONE (script, not a native binary) |\n| .NET Analysis | Not a .NET assembly |\n\nThe sample is a UTF-8 encoded PowerShell script. The high entropy value of 148 for a 2800-byte text file is a strong indicator of encoded or obfuscated content, which is a common evasion technique in malicious scripts (source: malcat, file_summary.entropy).\n\n## 2. Classification\n\n| Field | Value |\n|---|---|\n| Verdict | Malicious |\n| Confidence | 90 |\n| Family | PowerShell-based malware |\n| Score | 40.0 (Triage) / 90 (Deep-dive) |\n| Key Behavioral Signals | Hidden execution, dynamic code creation, process control APIs, Base64/GZip encoding |\n\nThe classification is based on behavioral intent evidence, not obfuscation alone. The script exhibits multiple hostile behaviors: it launches a hidden PowerShell window (`-nop -w hidden`), performs architecture checks for 32/64-bit compatibility, and dynamically creates and executes a double-encoded payload using `[scriptblock]::create()` (source: deep-dive.json). These are classic techniques for evading detection and executing arbitrary code, which are hallmarks of malicious droppers and loaders. The upstream triage verdict of \"malicious\" is confirmed and calibrated with high confidence.\n\n## 3. Background & Family Lineage\n\nThe script's techniques are consistent with several well-known PowerShell-based attack frameworks:\n\n- **PowerShell Empire**: 
 … [17360 more chars]
 ```
 
@@ -264,7 +264,7 @@ This report details the analysis of a PowerShell script (SHA256: 14a42d6418b3810
 | Attribute | Value |
 |---|---|
 | SHA256 | 14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2 |
-| File Path | /opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1 |
+| File Path | /opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1 |
 | Project | day6 |
 | File Type | text/utf8 (PowerShell script) |
 | Size | 2800 bytes |
@@ -392,7 +392,7 @@ In summary, this sample is highly likely to be malicious PowerShell malware, wit
 ```
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+  "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
   "profile": "triage",
   "limits": {
     "strings_max": 100,
@@ -404,7 +404,7 @@ In summary, this sample is highly likely to be malicious PowerShell malware, wit
   "file_summary": {
     "analysis_id": 1,
     "file_name": "3048.ps1",
-    "file_path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+    "file_path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
     "file_size": 2800,
     "type": "text/utf8",
     "architecture": "NONE",
@@ -470,7 +470,7 @@ In summary, this sample is highly likely to be malicious PowerShell malware, wit
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "strings": [
         {
           "id": "$domain_regex",
@@ -482,7 +482,7 @@ In summary, this sample is highly likely to be malicious PowerShell malware, wit
     },
     {
       "rule": "powershell",
-      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "strings": [
         {
           "id": "$a",
@@ -494,7 +494,7 @@ In summary, this sample is highly likely to be malicious PowerShell malware, wit
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "strings": [
         {
           "id": "$ipv6",
@@ -506,7 +506,7 @@ In summary, this sample is highly likely to be malicious PowerShell malware, wit
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "strings": [
         {
           "id": "$a",
@@ -518,7 +518,7 @@ In summary, this sample is highly likely to be malicious PowerShell malware, wit
     },
     {
       "rule": "Antivirus",
-      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "strings": []
     }
   ],
@@ -554,7 +554,7 @@ In summary, this sample is highly likely to be malicious PowerShell malware, wit
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+  "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -566,7 +566,7 @@ In summary, this sample is highly likely to be malicious PowerShell malware, wit
   "file_summary": {
     "analysis_id": 1,
     "file_name": "3048.ps1",
-    "file_path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+    "file_path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
     "file_size": 2800,
     "type": "text/utf8",
     "architecture": "NONE",
@@ -785,7 +785,7 @@ In summary, this sample is highly likely to be malicious PowerShell malware, wit
 ```
 # Triage evidence
 sha256: 14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2
-sample_path: /opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1
+sample_path: /opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1
 ghidra_session: ghidra-pe-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2
 ida_session: ida-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2
 
@@ -885,7 +885,7 @@ ida_session: ida-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "strings": [
         {
           "id": "$domain_regex",
@@ -897,7 +897,7 @@ ida_session: ida-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c
     },
     {
       "rule": "powershell",
-      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "strings": [
         {
           "id": "$a",
@@ -909,7 +909,7 @@ ida_session: ida-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "strings": [
         {
           "id": "$ipv6",
@@ -921,7 +921,7 @@ ida_session: ida-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "strings": [
         {
           "id": "$a",
@@ -933,7 +933,7 @@ ida_session: ida-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c
     },
     {
       "rule": "Antivirus",
-      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "strings": []
     }
   ],
@@ -968,7 +968,7 @@ ida_session: ida-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c
 ```json
 {
   "r2_ok": true,
-  "sample": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+  "sample": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
   "disassembly": {
     "0x00000000": "\u250c 1906: fcn.00000000 (int64_t arg1, int64_t arg2, int64_t arg3, int64_t arg4, int64_t arg5, int64_t arg6, int64_t arg_31h, int64_t arg_32h, int64_t arg_36h, int64_t arg_41h, int64_t arg_49h, int64_t arg_4ah, int64_t arg_56h, int64_t arg_63h, int64_t arg_6ah, int64_t arg_79h);\n\u2502           ; arg int64_t arg1 @ rdi\n\u2502           ; arg int64_t arg2 @ rsi\n\u2502           ; arg int64_t arg3 @ rdx\n\u2502           ; arg int64_t arg4 @ rcx\n\u2502           ; arg int64_t arg5 @ r8\n\u2502           ; arg int64_t arg6 @ r9\n\u2502           ; arg int64_t arg_31h @ rbp+0x31\n\u2502           ; arg int64_t arg_32h @ rbp+0x32\n\u2502           ; arg int64_t arg_36h @ rbp+0x36\n\u2502           ; arg int64_t arg_41h @ rbp+0x41\n\u2502           ; arg int64_t arg_49h @ rbp+0x49\n\u2502           ; arg int64_t arg_4ah @ rbp+0x4a\n\u2502           ; arg int64_t arg_56h @ rbp+0x56\n\u2502           ; arg int64_t arg_63h @ rbp+0x63\n\u2502           ; arg int64_t arg_6ah @ rbp+0x6a\n\u2502           ; arg int64_t arg_79h @ rbp+0x79\n\u2502           0x00000000      6966285b49..   imul esp, dword [rsi + 0x28], 0x746e495b\n\u2502           0x00000007      50             push rax\n\u2502       \u250c\u2500< 0x00000008      7472           je 0x7c\n\u2502       \u2502   0x0000000a      5d             pop rbp\n\u2502       \u2502   0x0000000b      3a3a           cmp bh, byte [arg_49h]      ; arg3\n\u2502       \u2502   0x0000000d      53             push rbx\n\u2502       \u2502   0x0000000e      697a65202d..   imul edi, dword [rdx + 0x65], 0x71652d20\n\u2502       \u2502   0x00000015      203429         and byte [rcx + rbp], dh    ; arg4\n\u2502      \u250c\u2500\u2500< 0x00000018      7b24           jnp 0x3e\n\u2502      \u2502\u2502   0x0000001a      62             invalid\n..\n    \u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x1a0(w)\n\u2502  \u2502\u2502\u2502\u2502\u2514\u2500\u2500> 0x0000003e      657253         jb 0x94\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x70e(w)\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   0x00000041      68656c6c5c     push 0x5c6c6c65             ; 'ell\\\\'\n\u2502 \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x00000046      7631           jbe 0x79\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x00000048      2e305c706f     xor byte cs:[rax + rsi*2 + 0x6f], bl\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x6aa(r)\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x0000004d      7765           ja 0xb4\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x0000004f      7273           jb 0xc4\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x00000051      68656c6c2e     push 0x2e6c6c65             ; 'ell.'\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x00000056      657865         js 0xbe\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x00000059      27             invalid\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREFS from fcn.00000000 @ 0x72c(r), 0x7b7(r)\n..\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0xb3(r)\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x3e4(w)\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502  
 … [986 more chars]
@@ -985,7 +985,7 @@ ida_session: ida-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c
 ```json
 {
   "xorsearch_ok": false,
-  "sample": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+  "sample": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
   "candidates": [],
   "xorsearch_stdout": "",
   "xorsearch_stderr": "",
@@ -1063,7 +1063,7 @@ ida_session: ida-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "strings": [
         {
           "id": "$domain_regex",
@@ -1084,7 +1084,7 @@ ida_session: ida-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+  "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -1105,7 +1105,7 @@ ida_session: ida-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c
 ```json
 {
   "r2_ok": true,
-  "sample": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+  "sample": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
   "disassembly": {
     "0x00000000": "\u250c 1906: fcn.00000000 (int64_t arg1, int64_t arg2, int64_t arg3, int64_t arg4, int64_t arg5, int64_t arg6, int64_t arg_31h, int64_t arg_32h, int64_t arg_36h, int64_t arg_41h, int64_t arg_49h, int64_t arg_4ah, int64_t arg_56h,
 … [4086 more chars]
@@ -1116,7 +1116,7 @@ ida_session: ida-14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c
 ```json
 {
   "xorsearch_ok": false,
-  "sample": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+  "sample": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
   "candidates": [],
   "xorsearch_stdout": "",
   "xorsearch_stderr": "",
@@ -1190,7 +1190,7 @@ Ghidra exited before becoming ready (exit code 1)
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+  "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -1262,7 +1262,7 @@ Ghidra exited before becoming ready (exit code 1)
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "strings": [
         {
           "id": "$domain_regex",

@@ -25,7 +25,7 @@ done < <(find "$GHIDRA_HOME" -name "*.jar" -print0)
 
 mkdir -p "$BUILD_DIR/classes"
 
-javac -cp "$CP" -d "$BUILD_DIR/classes" "$SRC_DIR/cadre/reveng/ghidra/CADREPeLoader.java"
+javac -cp "$CP" -d "$BUILD_DIR/classes" "$SRC_DIR/cadre/revai/ghidra/CADREPeLoader.java"
 
 mkdir -p "$EXT_DIR/lib"
 jar cf "$EXT_DIR/lib/CADRE.jar" -C "$BUILD_DIR/classes" .

@@ -107,7 +107,7 @@
         "matches": [
           {
             "rule": "domain",
-            "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+            "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
             "strings": [
               {
                 "id": "$domain_regex",
@@ -119,7 +119,7 @@
           },
           {
             "rule": "powershell",
-            "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+            "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
             "strings": [
               {
                 "id": "$a",
@@ -131,7 +131,7 @@
           },
           {
             "rule": "IP",
-            "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+            "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
             "strings": [
               {
                 "id": "$ipv6",
@@ -143,7 +143,7 @@
           },
           {
             "rule": "contains_base64",
-            "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+            "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
             "strings": [
               {
                 "id": "$a",
@@ -155,7 +155,7 @@
           },
           {
             "rule": "Antivirus",
-            "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+            "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
             "strings": []
           }
         ],
@@ -188,7 +188,7 @@
       "reason": "Required checklist tool (malcat)",
       "result": {
         "analysis_id": 1,
-        "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+        "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
         "profile": "deep",
         "limits": {
           "strings_max": 300,
@@ -200,7 +200,7 @@
         "file_summary": {
           "analysis_id": 1,
           "file_name": "3048.ps1",
-          "file_path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+          "file_path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
           "file_size": 2800,
           "type": "text/utf8",
           "architecture": "NONE",
@@ -728,7 +728,7 @@
       "reason": "Required checklist tool (r2_decomp)",
       "result": {
         "r2_ok": true,
-        "sample": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+        "sample": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
         "disassembly": {
           "0x00000000": "\u250c 1906: fcn.00000000 (int64_t arg1, int64_t arg2, int64_t arg3, int64_t arg4, int64_t arg5, int64_t arg6, int64_t arg_31h, int64_t arg_32h, int64_t arg_36h, int64_t arg_41h, int64_t arg_49h, int64_t arg_4ah, int64_t arg_56h, int64_t arg_63h, int64_t arg_6ah, int64_t arg_79h);\n\u2502           ; arg int64_t arg1 @ rdi\n\u2502           ; arg int64_t arg2 @ rsi\n\u2502           ; arg int64_t arg3 @ rdx\n\u2502           ; arg int64_t arg4 @ rcx\n\u2502           ; arg int64_t arg5 @ r8\n\u2502           ; arg int64_t arg6 @ r9\n\u2502           ; arg int64_t arg_31h @ rbp+0x31\n\u2502           ; arg int64_t arg_32h @ rbp+0x32\n\u2502           ; arg int64_t arg_36h @ rbp+0x36\n\u2502           ; arg int64_t arg_41h @ rbp+0x41\n\u2502           ; arg int64_t arg_49h @ rbp+0x49\n\u2502           ; arg int64_t arg_4ah @ rbp+0x4a\n\u2502           ; arg int64_t arg_56h @ rbp+0x56\n\u2502           ; arg int64_t arg_63h @ rbp+0x63\n\u2502           ; arg int64_t arg_6ah @ rbp+0x6a\n\u2502           ; arg int64_t arg_79h @ rbp+0x79\n\u2502           0x00000000      6966285b49..   imul esp, dword [rsi + 0x28], 0x746e495b\n\u2502           0x00000007      50             push rax\n\u2502       \u250c\u2500< 0x00000008      7472           je 0x7c\n\u2502       \u2502   0x0000000a      5d             pop rbp\n\u2502       \u2502   0x0000000b      3a3a           cmp bh, byte [arg_49h]      ; arg3\n\u2502       \u2502   0x0000000d      53             push rbx\n\u2502       \u2502   0x0000000e      697a65202d..   imul edi, dword [rdx + 0x65], 0x71652d20\n\u2502       \u2502   0x00000015      203429         and byte [rcx + rbp], dh    ; arg4\n\u2502      \u250c\u2500\u2500< 0x00000018      7b24           jnp 0x3e\n\u2502      \u2502\u2502   0x0000001a      62             invalid\n..\n    \u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x1a0(w)\n\u2502  \u2502\u2502\u2502\u2502\u2514\u2500\u2500> 0x0000003e      657253         jb 0x94\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x70e(w)\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   0x00000041      68656c6c5c     push 0x5c6c6c65             ; 'ell\\\\'\n\u2502 \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x00000046      7631           jbe 0x79\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x00000048      2e305c706f     xor byte cs:[rax + rsi*2 + 0x6f], bl\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x6aa(r)\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x0000004d      7765           ja 0xb4\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x0000004f      7273           jb 0xc4\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x00000051      68656c6c2e     push 0x2e6c6c65             ; 'ell.'\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x00000056      657865         js 0xbe\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x00000059      27             invalid\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREFS from fcn.00000000 @ 0x72c(r), 0x7b7(r)\n..\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0xb3(r)\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x3e4(w)\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x805(w)\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREFS from fcn.00000000 @ 0x606(r), 0xa5a(r)\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREFS from fcn.00000000 @ 0x5a1(w), 0x9fb(w)\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREFS from fcn.00000000 @ 0x43e(r), 0x440(w)\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x954(w)\n\u2502 \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500> 0x00000079      65772d         ja 0xa9\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2514\u2500> 0x0000007c      4f             invalid\n..\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2514\u2500\u2500> 0x00000094      732e           jae 0xc4\n\u2502 \u2502\u2502\u2502\u2502\u2502 \u2502   0x00000096      50             push rax\n\u2502 \u2502\u2502\u2502\u2502\u2502 \u2502   0x00000097      726"
         },
@@ -749,7 +749,7 @@
       "reason": "Required checklist tool (xor)",
       "result": {
         "xorsearch_ok": false,
-        "sample": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+        "sample": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
         "candidates": [],
         "xorsearch_stdout": "",
         "xorsearch_stderr": "",
@@ -816,7 +816,7 @@
       "reason": "langgraph tool call",
       "result": {
         "analysis_id": 1,
-        "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+        "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
         "profile": "deep",
         "limits": {
           "strings_max": 300,
@@ -828,7 +828,7 @@
         "file_summary": {
           "analysis_id": 1,
           "file_name": "3048.ps1",
-          "file_path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+          "file_path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
           "file_size": 2800,
           "type": "text/utf8",
           "architecture": "NONE",
@@ -1428,7 +1428,7 @@
         "matches": [
           {
             "rule": "domain",
-            "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+            "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
             "strings": [
               {
                 "id": "$domain_regex",
@@ -1440,7 +1440,7 @@
           },
           {
             "rule": "powershell",
-            "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+            "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
             "strings": [
               {
                 "id": "$a",
@@ -1452,7 +1452,7 @@
           },
           {
             "rule": "IP",
-            "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+            "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
             "strings": [
               {
                 "id": "$ipv6",
@@ -1464,7 +1464,7 @@
           },
           {
             "rule": "contains_base64",
-            "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+            "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
             "strings": [
               {
                 "id": "$a",
@@ -1476,7 +1476,7 @@
           },
           {
             "rule": "Antivirus",
-            "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+            "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
             "strings": []
           }
         ],
@@ -1555,7 +1555,7 @@
       "matches": [
         {
           "rule": "domain",
-          "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+          "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
           "strings": [
             {
               "id": "$domain_regex",
@@ -1567,7 +1567,7 @@
         },
         {
           "rule": "powershell",
-          "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+          "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
           "strings": [
             {
               "id": "$a",
@@ -1579,7 +1579,7 @@
         },
         {
           "rule": "IP",
-          "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+          "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
           "strings": [
             {
               "id": "$ipv6",
@@ -1591,7 +1591,7 @@
         },
         {
           "rule": "contains_base64",
-          "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+          "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
           "strings": [
             {
               "id": "$a",
@@ -1603,7 +1603,7 @@
         },
         {
           "rule": "Antivirus",
-          "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+          "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
           "strings": []
         }
       ],
@@ -1625,7 +1625,7 @@
     },
     "checklist_malcat_analyze": {
       "analysis_id": 1,
-      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "profile": "deep",
       "limits": {
         "strings_max": 300,
@@ -1637,7 +1637,7 @@
       "file_summary": {
         "analysis_id": 1,
         "file_name": "3048.ps1",
-        "file_path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+        "file_path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
         "file_size": 2800,
         "type": "text/utf8",
         "architecture": "NONE",
@@ -2156,7 +2156,7 @@
     },
     "checklist_r2_decompile": {
       "r2_ok": true,
-      "sample": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "sample": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "disassembly": {
         "0x00000000": "\u250c 1906: fcn.00000000 (int64_t arg1, int64_t arg2, int64_t arg3, int64_t arg4, int64_t arg5, int64_t arg6, int64_t arg_31h, int64_t arg_32h, int64_t arg_36h, int64_t arg_41h, int64_t arg_49h, int64_t arg_4ah, int64_t arg_56h, int64_t arg_63h, int64_t arg_6ah, int64_t arg_79h);\n\u2502           ; arg int64_t arg1 @ rdi\n\u2502           ; arg int64_t arg2 @ rsi\n\u2502           ; arg int64_t arg3 @ rdx\n\u2502           ; arg int64_t arg4 @ rcx\n\u2502           ; arg int64_t arg5 @ r8\n\u2502           ; arg int64_t arg6 @ r9\n\u2502           ; arg int64_t arg_31h @ rbp+0x31\n\u2502           ; arg int64_t arg_32h @ rbp+0x32\n\u2502           ; arg int64_t arg_36h @ rbp+0x36\n\u2502           ; arg int64_t arg_41h @ rbp+0x41\n\u2502           ; arg int64_t arg_49h @ rbp+0x49\n\u2502           ; arg int64_t arg_4ah @ rbp+0x4a\n\u2502           ; arg int64_t arg_56h @ rbp+0x56\n\u2502           ; arg int64_t arg_63h @ rbp+0x63\n\u2502           ; arg int64_t arg_6ah @ rbp+0x6a\n\u2502           ; arg int64_t arg_79h @ rbp+0x79\n\u2502           0x00000000      6966285b49..   imul esp, dword [rsi + 0x28], 0x746e495b\n\u2502           0x00000007      50             push rax\n\u2502       \u250c\u2500< 0x00000008      7472           je 0x7c\n\u2502       \u2502   0x0000000a      5d             pop rbp\n\u2502       \u2502   0x0000000b      3a3a           cmp bh, byte [arg_49h]      ; arg3\n\u2502       \u2502   0x0000000d      53             push rbx\n\u2502       \u2502   0x0000000e      697a65202d..   imul edi, dword [rdx + 0x65], 0x71652d20\n\u2502       \u2502   0x00000015      203429         and byte [rcx + rbp], dh    ; arg4\n\u2502      \u250c\u2500\u2500< 0x00000018      7b24           jnp 0x3e\n\u2502      \u2502\u2502   0x0000001a      62             invalid\n..\n    \u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x1a0(w)\n\u2502  \u2502\u2502\u2502\u2502\u2514\u2500\u2500> 0x0000003e      657253         jb 0x94\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x70e(w)\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   0x00000041      68656c6c5c     push 0x5c6c6c65             ; 'ell\\\\'\n\u2502 \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x00000046      7631           jbe 0x79\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x00000048      2e305c706f     xor byte cs:[rax + rsi*2 + 0x6f], bl\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x6aa(r)\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x0000004d      7765           ja 0xb4\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x0000004f      7273           jb 0xc4\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x00000051      68656c6c2e     push 0x2e6c6c65             ; 'ell.'\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x00000056      657865         js 0xbe\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x00000059      27             invalid\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREFS from fcn.00000000 @ 0x72c(r), 0x7b7(r)\n..\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0xb3(r)\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x3e4(w)\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x805(w)\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREFS from fcn.00000000 @ 0x606(r), 0xa5a(r)\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREFS from fcn.00000000 @ 0x5a1(w), 0x9fb(w)\n  \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREFS from fcn.00000000 @ 0x43e(r), 0x440(w)\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   ; DATA XREF from fcn.00000000 @ 0x954(w)\n\u2502 \u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500> 0x00000079      65772d         ja 0xa9\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2514\u2500> 0x0000007c      4f             invalid\n..\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2514\u2500\u2500> 0x00000094      732e           jae 0xc4\n\u2502 \u2502\u2502\u2502\u2502\u2502 \u2502   0x00000096      50             push rax\n\u2502 \u2502\u2502\u2502\u2502\u2502 \u2502   0x00000097      726"
       },
@@ -2168,7 +2168,7 @@
     },
     "checklist_xor_string_search": {
       "xorsearch_ok": false,
-      "sample": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "sample": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "candidates": [],
       "xorsearch_stdout": "",
       "xorsearch_stderr": "",
@@ -2204,7 +2204,7 @@
     },
     "lg_malcat_analyze_8": {
       "analysis_id": 1,
-      "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+      "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
       "profile": "deep",
       "limits": {
         "strings_max": 300,
@@ -2216,7 +2216,7 @@
       "file_summary": {
         "analysis_id": 1,
         "file_name": "3048.ps1",
-        "file_path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+        "file_path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
         "file_size": 2800,
         "type": "text/utf8",
         "architecture": "NONE",
@@ -2777,7 +2777,7 @@
       "matches": [
         {
           "rule": "domain",
-          "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+          "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
           "strings": [
             {
               "id": "$domain_regex",
@@ -2789,7 +2789,7 @@
         },
         {
           "rule": "powershell",
-          "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+          "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
           "strings": [
             {
               "id": "$a",
@@ -2801,7 +2801,7 @@
         },
         {
           "rule": "IP",
-          "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+          "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
           "strings": [
             {
               "id": "$ipv6",
@@ -2813,7 +2813,7 @@
         },
         {
           "rule": "contains_base64",
-          "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+          "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
           "strings": [
             {
               "id": "$a",
@@ -2825,7 +2825,7 @@
         },
         {
           "rule": "Antivirus",
-          "path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+          "path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
           "strings": []
         }
       ],

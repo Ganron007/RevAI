@@ -959,7 +959,7 @@ def _history_has_sql_deep(history: list) -> bool:
     return False
 
 
-# ── Agent-loop discipline (AgentRE-Bench-inspired; env-gated, default ON) ──
+# ── Agent-loop discipline (benchmark-inspired; env-gated, default ON) ──
 # 1. budget warnings   REVAI_BUDGET_WARNINGS
 # 2. redundant nudges  REVAI_REDUNDANT_NUDGE
 # 3. hallucination chk REVAI_HALLUCINATION_CHECK
@@ -971,7 +971,7 @@ def _loop_flag(name: str) -> bool:
 
 
 def _budget_warning(step: int, max_steps: int) -> str | None:
-    """Convergence nudge at half-budget and near-end (AgentRE-Bench pattern)."""
+    """Convergence nudge at half-budget and near-end (benchmark pattern)."""
     if not _loop_flag("REVAI_BUDGET_WARNINGS"):
         return None
     half = max(1, max_steps // 2)
@@ -1078,7 +1078,7 @@ def _unsupported_claims(candidate: dict, history: list, findings: dict) -> list:
 
 def _classify_failures(history: list, final_answer: dict, *,
                        checklist_ok: bool, sql_ok: bool, fa_ok: bool) -> dict:
-    """Post-run failure taxonomy (AgentRE-Bench 6 buckets)."""
+    """Post-run failure taxonomy (benchmark 6 buckets)."""
     if not _loop_flag("REVAI_FAILURE_TAXONOMY"):
         return {}
     buckets = {
@@ -1201,7 +1201,7 @@ def _custom_loop_body(sha: str, max_steps: int = MAX_STEPS) -> dict:
             session, step, max_steps, history, findings, source_decisions, tool_list, file_type,
             checklist_ok=checklist_ok, sql_ok=sql_ok,
         )
-        # Feature 1: budget convergence warning (AgentRE-Bench pattern)
+        # Feature 1: budget convergence warning (benchmark pattern)
         _bw = _budget_warning(step, max_steps)
         if _bw:
             messages[1]["content"] += "\n\n" + _bw
@@ -1303,7 +1303,7 @@ def _custom_loop_body(sha: str, max_steps: int = MAX_STEPS) -> dict:
 
             print(f"[deep_dive_agentic] step {step}: {tool_name} -> {reason}", flush=True)
 
-            # Feature 2: redundant-call detection (AgentRE-Bench pattern)
+            # Feature 2: redundant-call detection (benchmark pattern)
             _sig = _call_signature(tool_name, tool_args)
             if _loop_flag("REVAI_REDUNDANT_NUDGE") and _sig in seen_signatures:
                 redundant_calls += 1
@@ -1462,7 +1462,7 @@ def _finalize_agentic_result(
     final_answer["history"] = history
     final_answer["findings"] = findings
     final_answer["intake_validation"] = intake_validation
-    # Feature 2/4: loop-discipline metrics (AgentRE-Bench-inspired)
+    # Feature 2/4: loop-discipline metrics (benchmark-inspired)
     final_answer["redundant_calls"] = redundant_calls
     final_answer["failure_taxonomy"] = _classify_failures(
         history, final_answer,
@@ -1471,7 +1471,7 @@ def _finalize_agentic_result(
 
     # --- Post-analysis deobfuscation pass (conditional) ---
     # If ENABLE_DEOBFUSCATION_PASS=1, scan LLM analysis for CFF/MBA claims
-    # and verify them via Z3/angr. Same pattern as RevEng deep_dive_v2.py.
+    # and verify them via Z3/angr. Same pattern as the legacy deterministic deep dive.
     if os.environ.get("ENABLE_DEOBFUSCATION_PASS", "0") == "1" and not incomplete:
         try:
             import re as _re

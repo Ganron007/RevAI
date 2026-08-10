@@ -8,7 +8,7 @@
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
-- **Sample:** `/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe`
+- **Sample:** `/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe`
 - **Showcase pack:** `/opt/samples/logs/_showcase_audits/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5`
 
 ## Stage scoreboard
@@ -208,7 +208,7 @@ _No tool retries occurred during this run._
 ```json
 {
   "title": "Malware Analysis Report: nSpack Packed Executable (SHA256: 2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5)",
-  "markdown": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 14:44:35 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | suspicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: nSpackV2xLiuXingPing, NsPackV2XLiuXingPing, NsPackv23NorthStar, maldoc_getEIP_method_1, IsPE32, IsWindowsGUI, HasModified_DOS_Message, suspicious_packer_section). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** nSpack\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n## Executive Summary\nThis report presents the analysis of a 32-bit Windows executable (SHA256: 2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5) from the project \"Hexorcist 1 - Weeks 1-8\". The binary is definitively packed with nSpack v2.x, a known executable protector, and masquerades as the legitimate Windows Calculator (calc.exe) through forged version information. Static analysis reveals the packer stub employs aPLib decompression, dynamic API resolution via LoadLibraryA/GetProcAddress, and memory manipulation APIs (VirtualAlloc, VirtualProtect) typical of unpacking routines. Code sections have Read-Write-Execute (RWX) permissions, enabling self-modifying code. While no overt malicious behavior such as C2 communication, persistence, or data destruction was observed in static analysis, the sample's intentional obfuscation and masquerade techniques are concerning. The upstream triage classified this sample as **suspicious** based on packing indicators, a verdict we align with given the absence of observable hostile intent in the static artifact. The true payload remains hidden within the compressed section and is only accessible at runtime.\n\n## 1. Sample Identification\n- **SHA256**: 2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5\n- **File Path**: /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe\n- **Project Name**: Hexorcist 1 - Weeks 1-8\n- **File Type**: Portable Executable (PE), 32-bit (x86) architecture (source: malcat).\n- **PE Header Info**: Subsystem is Windows GUI (IsWindowsGUI YARA rule), but GuiSubsystemNoWindowApi anomaly noted (source: malcat).\n- **Import Hash (Imphash)**: 4ddd9e53a5be88aaffc4455bfc877c19 (source: rule.yara.json).\n\n## 2. Classification\n- **Verdict**: SUSPICIOUS.\n- **Confidence**: Medium.\n- **Family**: nSpack (Packer).\n- **Triage Score**: 50/100 (source: triage verdict.json).\n- **Rationale**: The sample exhibits high-confidence packing indicators (YARA rules, packer section names, high entropy, RWX sections) but no behavioral evidence of hostile intent such as C2 beaconing, credential theft, or data destruction was observed in the available static analysis. The classification aligns with the upstream triage ve
+  "markdown": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 14:44:35 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | suspicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: nSpackV2xLiuXingPing, NsPackV2XLiuXingPing, NsPackv23NorthStar, maldoc_getEIP_method_1, IsPE32, IsWindowsGUI, HasModified_DOS_Message, suspicious_packer_section). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** nSpack\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n## Executive Summary\nThis report presents the analysis of a 32-bit Windows executable (SHA256: 2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5) from the project \"REVAI-LAB-CORPUS-H1\". The binary is definitively packed with nSpack v2.x, a known executable protector, and masquerades as the legitimate Windows Calculator (calc.exe) through forged version information. Static analysis reveals the packer stub employs aPLib decompression, dynamic API resolution via LoadLibraryA/GetProcAddress, and memory manipulation APIs (VirtualAlloc, VirtualProtect) typical of unpacking routines. Code sections have Read-Write-Execute (RWX) permissions, enabling self-modifying code. While no overt malicious behavior such as C2 communication, persistence, or data destruction was observed in static analysis, the sample's intentional obfuscation and masquerade techniques are concerning. The upstream triage classified this sample as **suspicious** based on packing indicators, a verdict we align with given the absence of observable hostile intent in the static artifact. The true payload remains hidden within the compressed section and is only accessible at runtime.\n\n## 1. Sample Identification\n- **SHA256**: 2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5\n- **File Path**: /opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe\n- **Project Name**: REVAI-LAB-CORPUS-H1\n- **File Type**: Portable Executable (PE), 32-bit (x86) architecture (source: malcat).\n- **PE Header Info**: Subsystem is Windows GUI (IsWindowsGUI YARA rule), but GuiSubsystemNoWindowApi anomaly noted (source: malcat).\n- **Import Hash (Imphash)**: 4ddd9e53a5be88aaffc4455bfc877c19 (source: rule.yara.json).\n\n## 2. Classification\n- **Verdict**: SUSPICIOUS.\n- **Confidence**: Medium.\n- **Family**: nSpack (Packer).\n- **Triage Score**: 50/100 (source: triage verdict.json).\n- **Rationale**: The sample exhibits high-confidence packing indicators (YARA rules, packer section names, high entropy, RWX sections) but no behavioral evidence of hostile intent such as C2 beaconing, credential theft, or data destruction was observed in the available static analysis. The classification aligns with the upstream triage ve
 … [13686 more chars]
 ```
 
@@ -238,12 +238,12 @@ _No tool retries occurred during this run._
 ### Publish LLM narrative (unedited)
 
 ## Executive Summary
-This report presents the analysis of a 32-bit Windows executable (SHA256: 2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5) from the project "Hexorcist 1 - Weeks 1-8". The binary is definitively packed with nSpack v2.x, a known executable protector, and masquerades as the legitimate Windows Calculator (calc.exe) through forged version information. Static analysis reveals the packer stub employs aPLib decompression, dynamic API resolution via LoadLibraryA/GetProcAddress, and memory manipulation APIs (VirtualAlloc, VirtualProtect) typical of unpacking routines. Code sections have Read-Write-Execute (RWX) permissions, enabling self-modifying code. While no overt malicious behavior such as C2 communication, persistence, or data destruction was observed in static analysis, the sample's intentional obfuscation and masquerade techniques are concerning. The upstream triage classified this sample as **suspicious** based on packing indicators, a verdict we align with given the absence of observable hostile intent in the static artifact. The true payload remains hidden within the compressed section and is only accessible at runtime.
+This report presents the analysis of a 32-bit Windows executable (SHA256: 2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5) from the project "REVAI-LAB-CORPUS-H1". The binary is definitively packed with nSpack v2.x, a known executable protector, and masquerades as the legitimate Windows Calculator (calc.exe) through forged version information. Static analysis reveals the packer stub employs aPLib decompression, dynamic API resolution via LoadLibraryA/GetProcAddress, and memory manipulation APIs (VirtualAlloc, VirtualProtect) typical of unpacking routines. Code sections have Read-Write-Execute (RWX) permissions, enabling self-modifying code. While no overt malicious behavior such as C2 communication, persistence, or data destruction was observed in static analysis, the sample's intentional obfuscation and masquerade techniques are concerning. The upstream triage classified this sample as **suspicious** based on packing indicators, a verdict we align with given the absence of observable hostile intent in the static artifact. The true payload remains hidden within the compressed section and is only accessible at runtime.
 
 ## 1. Sample Identification
 - **SHA256**: 2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5
-- **File Path**: /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe
-- **Project Name**: Hexorcist 1 - Weeks 1-8
+- **File Path**: /opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe
+- **Project Name**: REVAI-LAB-CORPUS-H1
 - **File Type**: Portable Executable
 … [11642 more chars]
 ```
@@ -357,7 +357,7 @@ The v1_summary from initial LLM analysis suggested a malicious verdict with a sc
 ```
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
   "profile": "triage",
   "limits": {
     "strings_max": 100,
@@ -369,7 +369,7 @@ The v1_summary from initial LLM analysis suggested a malicious verdict with a sc
   "file_summary": {
     "analysis_id": 1,
     "file_name": "nspack.exe",
-    "file_path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+    "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
     "file_size": 55021,
     "type": "PE",
     "architecture": "X86",
@@ -449,7 +449,7 @@ The v1_summary from initial LLM analysis suggested a malicious verdict with a sc
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -461,7 +461,7 @@ The v1_summary from initial LLM analysis suggested a malicious verdict with a sc
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$ipv4",
@@ -479,7 +479,7 @@ The v1_summary from initial LLM analysis suggested a malicious verdict with a sc
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$a",
@@ -491,7 +491,7 @@ The v1_summary from initial LLM analysis suggested a malicious verdict with a sc
     },
     {
       "rule": "nSpackV2xLiuXingPing",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$a0",
@@ -503,7 +503,7 @@ The v1_summary from initial LLM analysis suggested a malicious verdict with a sc
     },
     {
       "rule": "NsPackV2XLiuXingPing",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$a0",
@@ -515,7 +515,7 @@ The v1_summary from initial LLM analysis suggested a malicious verdict with a sc
     },
     {
       "rule": "NsPackv23NorthStar",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$a0",
@@ -533,7 +533,7 @@ The v1_summary from initial LLM analysis suggested a malicious verdict with a sc
     },
     {
       "rule": "maldoc_getEIP_method_1",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$a",
@@ -545,27 +545,27 @@ The v1_summary from initial LLM analysis suggested a malicious verdict with a sc
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": []
     },
     {
       "rule": "IsWindowsGUI",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": []
     },
     {
       "rule": "HasModified_DOS_Message",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": []
     },
     {
       "rule": "suspicious_packer_section",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": []
     },
     {
       "rule": "win_registry",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/26
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/26
 … [3033 more chars]
 ```
 
@@ -681,7 +681,7 @@ The v1_summary from initial LLM analysis suggested a malicious verdict with a sc
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -693,7 +693,7 @@ The v1_summary from initial LLM analysis suggested a malicious verdict with a sc
   "file_summary": {
     "analysis_id": 1,
     "file_name": "nspack.exe",
-    "file_path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+    "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
     "file_size": 55021,
     "type": "PE",
     "architecture": "X86",
@@ -863,7 +863,7 @@ The v1_summary from initial LLM analysis suggested a malicious verdict with a sc
 ```
 # Triage evidence
 sha256: 2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5
-sample_path: /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe
+sample_path: /opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe
 ghidra_session: ghidra-pe-2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5
 ida_session: ida-2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5
 
@@ -1022,7 +1022,7 @@ ida_session: ida-2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -1034,7 +1034,7 @@ ida_session: ida-2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$ipv4",
@@ -1052,7 +1052,7 @@ ida_session: ida-2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$a",
@@ -1064,7 +1064,7 @@ ida_session: ida-2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f
     },
     {
       "rule": "nSpackV2xLiuXingPing",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$a0",
@@ -1076,7 +1076,7 @@ ida_session: ida-2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f
     },
     {
       "rule": "NsPackV2XLiuXingPing",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$a0",
@@ -1088,7 +1088,7 @@ ida_session: ida-2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f
     },
     {
       "rule": "NsPackv23NorthStar",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$a0",
@@ -1106,7 +1106,7 @@ ida_session: ida-2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f
     },
     {
       "rule": "maldoc_getEIP_method_1",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$a",
@@ -1118,27 +1118,27 @@ ida_session: ida-2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": []
     },
     {
       "rule": "IsWindowsGUI",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": []
     },
     {
       "rule": "HasModified_DOS_Message",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": []
     },
     {
       "rule": "suspicious_packer_section",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": []
     },
     {
       "rule": "win_registry",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/26
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/26
 … [3011 more chars]
 ```
 
@@ -1274,7 +1274,7 @@ ida_session: ida-2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f
 ```json
 {
   "r2_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
   "disassembly": {
     "0x0100101b": "\u250c 5: entry0 ();\n\u2514       \u250c\u2500< 0x0100101b      e9364a0200     jmp fcn.01025a56",
     "0x01025a56": "\u254e   ; CODE XREF from entry0 @ 0x100101b(x)\n\u251c 648: fcn.01025a56 ();\n\u2502       \u254e   ; var int32_t var_1beh @ ebp-0x1be\n\u2502       \u254e   ; var int32_t var_1c2h @ ebp-0x1c2\n\u2502       \u254e   ; var int32_t var_1c6h @ ebp-0x1c6\n\u2502       \u254e   ; var int32_t var_1cah @ ebp-0x1ca\n\u2502       \u254e   ; var int32_t var_1fah @ ebp-0x1fa\n\u2502       \u254e   ; var int32_t var_202h @ ebp-0x202\n\u2502       \u254e   ; var int32_t var_212h @ ebp-0x212\n\u2502       \u254e   ; var int32_t var_22ah @ ebp-0x22a\n\u2502       \u254e   ; var int32_t var_23eh @ ebp-0x23e\n\u2502       \u254e   ; var int32_t var_246h @ ebp-0x246\n\u2502       \u254e   ; var int32_t var_26eh @ ebp-0x26e\n\u2502       \u254e   ; var int32_t var_27eh @ ebp-0x27e\n\u2502       \u254e   0x01025a56      9c             pushfd\n\u2502       \u254e   0x01025a57      60             pushal\n\u2502       \u254e   0x01025a58      e800000000     call 0x1025a5d\n\u2502       \u254e   ; CALL XREF from fcn.01025a56 @ 0x1025a58(x)\n\u2502       \u254e   0x01025a5d      5d             pop ebp\n\u2502       \u254e   0x01025a5e      b807000000     mov eax, 7\n\u2502       \u254e   0x01025a63      2be8           sub ebp, eax\n\u2502       \u254e   0x01025a65      8db5d6fdffff   lea esi, [var_22ah]\n\u2502       \u254e   0x01025a6b      8b06           mov eax, dword [esi]\n\u2502       \u254e   0x01025a6d      83f800         cmp eax, 0\n\u2502      \u250c\u2500\u2500< 0x01025a70      7411           je 0x1025a83\n\u2502      \u2502\u254e   0x01025a72  ~   8db5fefdffff   lea esi, [var_202h]\n..\n\u2502      \u2502\u254e   0x01025a78      8b06           mov eax, dword [esi]\n\u2502      \u2502\u254e   0x01025a7a      83f801         cmp eax, 1                  ; 1\n\u2502     \u250c\u2500\u2500\u2500< 0x01025a7d      0f844b020000   je 0x1025cce\n\u2502     \u2502\u2514\u2500\u2500> 0x01025a83  ~   c70601000000   mov dword [esi], 1\n..\n\u2502     \u2502 \u254e   0x01025a89      8bd5           mov edx, ebp\n\u2502     \u2502 \u254e   0x01025a8b      8b8592fdffff   mov eax, dword [var_26eh]\n\u2502     \u2502 \u254e   0x01025a91      2bd0           sub edx, eax\n\u2502     \u2502 \u254e   0x01025a93      899592fdffff   mov dword [var_26eh], edx\n\u2502     \u2502 \u254e   0x01025a99      0195c2fdffff   add dword [var_23eh], edx\n\u2502     \u2502 \u254e   0x01025a9f      8db506feffff   lea esi, [var_1fah]\n\u2502     \u2502 \u254e   0x01025aa5      0116           add dword [esi], edx\n\u2502     \u2502 \u254e   0x01025aa7      8b36           mov esi, dword [esi]\n\u2502     \u2502 \u254e   0x01025aa9      8bfd           mov edi, ebp\n\u2502     \u2502 \u254e   0x01025aab      60             pushal\n\u2502     \u2502 \u254e   0x01025aac      6a40           push 0x40                   ; pe_nt_image_headers32\n\u2502     \u2502 \u254e   0x01025aae      6800100000     push 0x1000\n\u2502     \u2502 \u254e   0x01025ab3      6800100000     push 0x1000\n\u2502     \u2502 \u254e   0x01025ab8      6a00           push 0\n\u2502     \u2502 \u254e   0x01025aba      ff953afeffff   call dword [var_1c6h]\n\u2502     \u2502 \u254e   0x01025ac0      85c0           test eax,
@@ -1287,7 +1287,7 @@ ida_session: ida-2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f
 {
   "upx_ok": false,
   "is_packed": false,
-  "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
   "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTested 0 file"
 }
 ```
@@ -1297,7 +1297,7 @@ ida_session: ida-2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f
 ```json
 {
   "xorsearch_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
   "candidates": [
     "Found XOR 00 position 00000000: 00000040 PE..L.....};.........................."
   ],
@@ -1312,7 +1312,7 @@ ida_session: ida-2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f
 ```json
 {
   "speakeasy_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
   "module_base": null,
   "entry_point": null,
   "key_events": [],
@@ -1328,7 +1328,7 @@ ida_session: ida-2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f
   "frida_available": true,
   "frida_version": "17.16.4",
   "pe_probe": {
-    "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+    "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
     "exists": true,
     "hook_candidates": [
       "KERNEL32.DLL!LoadLibraryA",
@@ -1403,7 +1403,7 @@ ida_session: ida-2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -1424,7 +1424,7 @@ ida_session: ida-2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -1541,7 +1541,7 @@ ida_session: ida-2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f
 ```json
 {
   "r2_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
   "disassembly": {
     "0x0100101b": "\u250c 5: entry0 ();\n\u2514       \u250c\u2500< 0x0100101b      e9364a0200     jmp fcn.01025a56",
     "0x01025a56": "\u254e   ; CODE XREF from entry0 @ 0x100101b(x)\n\u251c 648: fcn.01025a56 ();\n\u2502     
@@ -1554,7 +1554,7 @@ ida_session: ida-2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f
 {
   "upx_ok": false,
   "is_packed": false,
-  "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
   "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTested 
 … [9 more chars]
 ```
@@ -1564,7 +1564,7 @@ ida_session: ida-2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f
 ```json
 {
   "xorsearch_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
   "candidates": [
     "Found XOR 00 position 00000000: 00000040 PE..L.....};.........................."
   ],
@@ -1578,7 +1578,7 @@ ida_session: ida-2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f
 ```json
 {
   "speakeasy_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
   "module_base": null,
   "entry_point": null,
   "key_events": [],
@@ -1594,7 +1594,7 @@ ida_session: ida-2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f
   "frida_available": true,
   "frida_version": "17.16.4",
   "pe_probe": {
-    "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+    "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
     "exists": true,
     "hook_candidates": [
       "KERNEL32.DLL!LoadLibraryA",
@@ -1610,7 +1610,7 @@ ida_session: ida-2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f
 ```json
 {
   "shellcode_ok": false,
-  "sample": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/2627682eb7e8180fc4f71017da6cde7d261668689a9dd377c69084bc826b27f5/nspack.exe",
   "sections_analyzed": [
     {
       "name": "nsp0",

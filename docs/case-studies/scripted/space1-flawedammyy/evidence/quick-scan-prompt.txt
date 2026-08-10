@@ -1,6 +1,6 @@
 # Triage evidence
 sha256: 5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da
-sample_path: /opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex
+sample_path: /opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex
 ghidra_session: ghidra-pe-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da
 ida_session: ida-5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da
 
@@ -66,7 +66,7 @@ rows: (empty)
 label: IDA database summary
 sql: SELECT * FROM welcome
 columns: summary, idasql_version, processor, is_64bit, min_ea, max_ea, start_ea, entry_name, funcs_count, segments_count, names_count, strings_count, filename, input_file_path, idb_path, md5, sha256
-  metapc 32-bit | entry: start @ 0x402720 | funcs: 34 | segs: 5 | strings: 91 | 0.0.17 | metapc | 0 | 0x401000 | 0x405000 | 0x402720 | start | 34 | 5 | 104 | 91 | space1.ex | /opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex | /opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex.i64 | 656b4c539718da26553dc0d2b29c6701 | 5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da
+  metapc 32-bit | entry: start @ 0x402720 | funcs: 34 | segs: 5 | strings: 91 | 0.0.17 | metapc | 0 | 0x401000 | 0x405000 | 0x402720 | start | 34 | 5 | 104 | 91 | space1.ex | /opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex | /opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex.i64 | 656b4c539718da26553dc0d2b29c6701 | 5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da
 
 ### engine: ida
 label: Total function count (IDA)
@@ -507,7 +507,7 @@ void sub_401141(int32_t *param_1,undefined4 param_2)
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": [
         {
           "id": "$domain_regex",
@@ -519,7 +519,7 @@ void sub_401141(int32_t *param_1,undefined4 param_2)
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": [
         {
           "id": "$ipv6",
@@ -531,7 +531,7 @@ void sub_401141(int32_t *param_1,undefined4 param_2)
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": [
         {
           "id": "$a",
@@ -543,12 +543,12 @@ void sub_401141(int32_t *param_1,undefined4 param_2)
     },
     {
       "rule": "Antivirus",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": []
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "strings": []
     },
     {
@@ -678,7 +678,7 @@ void sub_401141(int32_t *param_1,undefined4 param_2)
 ### malcat deep profile (raw JSON, capped)
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -690,7 +690,7 @@ void sub_401141(int32_t *param_1,undefined4 param_2)
   "file_summary": {
     "analysis_id": 1,
     "file_name": "space1.ex",
-    "file_path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+    "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
     "file_size": 160256,
     "type": "PE",
     "architecture": "X86",

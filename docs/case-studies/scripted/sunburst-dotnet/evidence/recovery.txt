@@ -1,6 +1,6 @@
 {
   "sha256": "32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
-  "sample_path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
+  "sample_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77",
   "model": "mimo-v2.5-pro",
   "generated_at": 1786297760.4732978,
   "triage": {

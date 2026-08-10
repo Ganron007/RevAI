@@ -202,7 +202,7 @@ detection:
 # Technical Evidence Pack
 
 **sha256:** 14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2  
-**sample_path:** /opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1  
+**sample_path:** /opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1  
 **project_name:** day6
 
 > Every table below is copied from stage JSON. Technical narrative must cite these rows (engine + address/rule), not invent evidence.
@@ -482,7 +482,7 @@ Total matches: 5
 ## XOR Search
 {
   "xorsearch_ok": false,
-  "sample": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+  "sample": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
   "candidates": [],
   "xorsearch_stdout": "",
   "xorsearch_stderr": "",

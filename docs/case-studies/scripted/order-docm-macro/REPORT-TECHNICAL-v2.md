@@ -611,7 +611,7 @@ Total matches: 6
 ## XOR Search
 {
   "xorsearch_ok": false,
-  "sample": "/opt/samples/corpus/610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
+  "sample": "/opt/samples/corpus/revai-lab-610/385966f3d6be7b234a790e2dfa2573f1ab1bc72e78bce73bb479a11a54784c73/order.docm",
   "candidates": [],
   "xorsearch_stdout": "",
   "xorsearch_stderr": "",

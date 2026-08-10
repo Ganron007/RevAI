@@ -8,7 +8,7 @@
 - **all_green:** `True`
 - **Strict standard:** `False`
 - **Session mode:** `single`
-- **Sample:** `/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe`
+- **Sample:** `/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe`
 - **Showcase pack:** `/opt/samples/logs/_showcase_audits/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4`
 
 ## Stage scoreboard
@@ -38,7 +38,7 @@ _No tool retries occurred during this run._
 {
   "verdict": "suspicious",
   "score": 20,
-  "family_guess": "Hexorcist keygen",
+  "family_guess": "CTF keygen",
   "cross_engine_notes": "Ghidra reports fewer strings (26) and functions (2) compared to IDA (1 string, 3 functions) and Malcat (36 strings, 3 functions), indicating potential data source gaps. The Ghidra imports table is empty, but IDA lists 8 imports, and Malcat confirms consistent imports. Decompilation is sourced from Malcat as per evidence.",
   "key_evidence": [
     {
@@ -66,7 +66,7 @@ _No tool retries occurred during this run._
       "why": "Only behavioral rule found is benign process termination, confirming no malicious intent such as data destruction or persistence."
     }
   ],
-  "summary": "This sample is a keygen template for 'Hexorcist' based on strings and decompiled code. It performs serial validation in a dialog GUI but shows no malicious behavioral intent (e.g., file destruction, C2, persistence, credential theft). All signals align with benign software protection testing or keygen use, with neutral anomalies like section entropy.",
+  "summary": "This sample is a keygen template for 'CTF' based on strings and decompiled code. It performs serial validation in a dialog GUI but shows no malicious behavioral intent (e.g., file destruction, C2, persistence, credential theft). All signals align with benign software protection testing or keygen use, with neutral anomalies like section entropy.",
   "source": "llm_judge",
   "model": "configured-llm",
   "agreement": "llm_v1_disagree",
@@ -157,10 +157,10 @@ _No tool retries occurred during this run._
   "engine": "langgraph",
   "verdict": "suspicious",
   "confidence": 90,
-  "summary": "This is a benign CTF crackme challenge from the Hexorcist series, compiled with FASM. It implements a simple Windows dialog-based password checker using DialogBoxParamA/GetDlgItemTextA, with a 'good!' success string. Only 8 GUI-related imports (zero suspicious signals), 2-3 functions total, and no malicious capabilities (no network, persistence, injection, or crypto). Capa matched only 'terminate process' (ExitProcess). YARA matched only FASM compiler artifacts. The filename 'angr_crackme2.exe' explicitly identifies it as a crackme for symbolic execution practice.",
+  "summary": "This is a benign CTF crackme challenge from the CTF challenge series, compiled with FASM. It implements a simple Windows dialog-based password checker using DialogBoxParamA/GetDlgItemTextA, with a 'good!' success string. Only 8 GUI-related imports (zero suspicious signals), 2-3 functions total, and no malicious capabilities (no network, persistence, injection, or crypto). Capa matched only 'terminate process' (ExitProcess). YARA matched only FASM compiler artifacts. The filename 'angr_crackme2.exe' explicitly identifies it as a crackme for symbolic execution practice.",
   "key_evidence": [
     "Filename 'angr_crackme2.exe' explicitly labeled as crackme",
-    "Copyright strings: 'SAS HEXORCIST', 'HEXORCIST ASM TEMPLATE' (CTF challenge series)",
+    "Copyright strings: 'SAS CTF', 'HEXORCIST ASM TEMPLATE' (CTF challenge series)",
     "Only 8 benign GUI imports: DialogBoxParamA, GetDlgItemTextA, SetDlgItemTextA, LoadIconA, SendMessageA, EndDialog, GetModuleHandleA, ExitProcess",
     "pe_import_signals: 0 suspicious signals from 8 imports",
     "capa: 1 rule match \u2014 'terminate process' (C0018) only \u2014 benign",
@@ -248,8 +248,8 @@ _No tool retries occurred during this run._
 
 ```json
 {
-  "title": "Hexorcist 3 - Weeks 20-30: angr_crackme2.exe Analysis Report",
-  "markdown": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 19:35:37 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **suspicious** |\n| Triage upstream (quick \u222a deep) | suspicious |\n| Quick scan | suspicious |\n| Deep dive | suspicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `suspicious` (YARA / tool-backed: IsPE32, IsWindowsGUI, FASM, FASM_15x, FASM_v13x_additional, FASM_v15x, FASM_v13x). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** Hexorcist keygen\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n## Executive Summary\n\nThis report details the analysis of the sample `angr_crackme2.exe` (SHA256: `cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4`), collected under the project \"Hexorcist 3 - Weeks 20-30\". The binary is a minimal Windows GUI application written in FASM (Flat Assembler) that functions as a password checker or \"crackme\" challenge. It presents a dialog box, accepts user input for a serial number, and validates it against a simple checksum algorithm, displaying \"good!\" or \"bad!\" based on the result.\n\nThe sample exhibits no malicious behavioral intent. It contains no network communication, persistence mechanisms, credential theft, file manipulation, or anti-analysis techniques. All identified capabilities are benign GUI operations. The filename `angr_crackme2.exe` explicitly identifies it as a challenge for symbolic execution tools like angr. The verdict from upstream triage is **suspicious** (family: Hexorcist keygen), which we maintain due to the presence of a keygen template string and the lack of any hostile behavior, placing it in the category of a benign software protection testing artifact.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|---|---|\n| **SHA256** | `cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4` |\n| **MD5** | (not provided) |\n| **File Name** | `angr_crackme2.exe` |\n| **File Type** | PE32 executable (GUI) Intel 80386, for MS Windows |\n| **Architecture** | x86 (32-bit) |\n| **Compiler** | FASM (Flat Assembler) |\n| **Packer** | None detected (UPX probe negative) (source: upx_unpack) |\n| **Project** | Hexorcist 3 - Weeks 20-30 |\n| **Sample Path** | `/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe` |\n\nThe file is a standard PE32 executable with a `.text` section marked as executable and writable (`SectionWX` anomaly noted by MalCat), which is common for hand-written assembly programs (source: malcat). The import hash (`imphash`) is `e471a30244579dd1c29a70e51f0b18dc` (source: rule.yara.json).\n\n## 2. Classification\n\n| Field | Value |\n|---|---|\n| **Verdict** | Suspicious |\n| **Confidence** | 90% |\n| **Family** | Hexorcist keygen |\n| **Score** | 20 (low) |\n\n**Rationale:** The upstream triage verdict is **suspicious** with a low score of 20 (source: triage_verdict). This classification is based on the pr
+  "title": "REVAI-LAB-CORPUS-H3: angr_crackme2.exe Analysis Report",
+  "markdown": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-09 19:35:37 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **suspicious** |\n| Triage upstream (quick \u222a deep) | suspicious |\n| Quick scan | suspicious |\n| Deep dive | suspicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `suspicious` (YARA / tool-backed: IsPE32, IsWindowsGUI, FASM, FASM_15x, FASM_v13x_additional, FASM_v15x, FASM_v13x). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** CTF keygen\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n## Executive Summary\n\nThis report details the analysis of the sample `angr_crackme2.exe` (SHA256: `cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4`), collected under the project \"REVAI-LAB-CORPUS-H3\". The binary is a minimal Windows GUI application written in FASM (Flat Assembler) that functions as a password checker or \"crackme\" challenge. It presents a dialog box, accepts user input for a serial number, and validates it against a simple checksum algorithm, displaying \"good!\" or \"bad!\" based on the result.\n\nThe sample exhibits no malicious behavioral intent. It contains no network communication, persistence mechanisms, credential theft, file manipulation, or anti-analysis techniques. All identified capabilities are benign GUI operations. The filename `angr_crackme2.exe` explicitly identifies it as a challenge for symbolic execution tools like angr. The verdict from upstream triage is **suspicious** (family: CTF keygen), which we maintain due to the presence of a keygen template string and the lack of any hostile behavior, placing it in the category of a benign software protection testing artifact.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|---|---|\n| **SHA256** | `cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4` |\n| **MD5** | (not provided) |\n| **File Name** | `angr_crackme2.exe` |\n| **File Type** | PE32 executable (GUI) Intel 80386, for MS Windows |\n| **Architecture** | x86 (32-bit) |\n| **Compiler** | FASM (Flat Assembler) |\n| **Packer** | None detected (UPX probe negative) (source: upx_unpack) |\n| **Project** | REVAI-LAB-CORPUS-H3 |\n| **Sample Path** | `/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe` |\n\nThe file is a standard PE32 executable with a `.text` section marked as executable and writable (`SectionWX` anomaly noted by MalCat), which is common for hand-written assembly programs (source: malcat). The import hash (`imphash`) is `e471a30244579dd1c29a70e51f0b18dc` (source: rule.yara.json).\n\n## 2. Classification\n\n| Field | Value |\n|---|---|\n| **Verdict** | Suspicious |\n| **Confidence** | 90% |\n| **Family** | CTF keygen |\n| **Score** | 20 (low) |\n\n**Rationale:** The upstream triage verdict is **suspicious** with a low score of 20 (source: triage_verdict). This classification is based on the pr
 … [11692 more chars]
 ```
 
@@ -271,7 +271,7 @@ _No tool retries occurred during this run._
 | Publish LLM (claimed) | benign |
 
 - **Lock reason:** publish LLM claimed `benign` but upstream triage is `suspicious` (YARA / tool-backed: IsPE32, IsWindowsGUI, FASM, FASM_15x, FASM_v13x_additional, FASM_v15x, FASM_v13x). Final verdict follows triage; dual-use branding does not clear the sample.
-- **Family (triage):** Hexorcist keygen
+- **Family (triage):** CTF keygen
 - **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.
 
 ---
@@ -280,9 +280,9 @@ _No tool retries occurred during this run._
 
 ## Executive Summary
 
-This report details the analysis of the sample `angr_crackme2.exe` (SHA256: `cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4`), collected under the project "Hexorcist 3 - Weeks 20-30". The binary is a minimal Windows GUI application written in FASM (Flat Assembler) that functions as a password checker or "crackme" challenge. It presents a dialog box, accepts user input for a serial number, and validates it against a simple checksum algorithm, displaying "good!" or "bad!" based on the result.
+This report details the analysis of the sample `angr_crackme2.exe` (SHA256: `cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4`), collected under the project "REVAI-LAB-CORPUS-H3". The binary is a minimal Windows GUI application written in FASM (Flat Assembler) that functions as a password checker or "crackme" challenge. It presents a dialog box, accepts user input for a serial number, and validates it against a simple checksum algorithm, displaying "good!" or "bad!" based on the result.
 
-The sample exhibits no malicious behavioral intent. It contains no network communication, persistence mechanisms, credential theft, file manipulation, or anti-analysis techniques. All identified capabilities are benign GUI operations. The filename `angr_crackme2.exe` explicitly identifies it as a challenge for symbolic execution tools like angr. The verdict from upstream triage is **suspicious** (family: Hexorcist keygen), which we maintain due to the presence of a keygen template string and the lack of any hostile behavior, placing it in the category of a benign software protection testing artifact.
+The sample exhibits no malicious behavioral intent. It contains no network communication, persistence mechanisms, credential theft, file manipulation, or anti-analysis techniques. All identified capabilities are benign GUI operations. The filename `angr_crackme2.exe` explicitly identifies it as a challenge for symbolic execution tools like angr. The verdict from upstream triage is **suspicious** (family: CTF keygen), which we maintain due to the presence of a keygen template string and the lack of any hostile behavior, placing it in the category of a benign software protection testing artifact.
 
 ## 1. Sample Identification
 
@@ -311,7 +311,7 @@ _Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with c
 
 ## Executive Summary
 
-The sample with SHA256 `cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4` is assessed as **suspicious** with high confidence (90%) from deep analysis, indicating a moderate threat level that warrants caution but not definitive malice. (source: deep_dive_agentic, query_or_table: deep_confidence, row_or_rule: 90, why: reflects assurance from agentic analysis methods). The family guess is **Hexorcist keygen**, suggesting an association with software cracking tools that may bundle unwanted behaviors. (source: deep_dive_agentic, query_or_table: family_guess, row_or_rule: Hexorcist keygen, why: inferred from behavioral patterns common in keygens). However, there is a disagreement from an earlier analysis (v1_summary) that classifies it as **malicious** with a score of 290, based on 10 YARA matches and 1 CAPA rule. (source: v1_summary, query_or_table: findings, row_or_rule: yara: 10 matches, capa: 1 rules, why: provides initial red flags from automated scanning).
+The sample with SHA256 `cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4` is assessed as **suspicious** with high confidence (90%) from deep analysis, indicating a moderate threat level that warrants caution but not definitive malice. (source: deep_dive_agentic, query_or_table: deep_confidence, row_or_rule: 90, why: reflects assurance from agentic analysis methods). The family guess is **CTF keygen**, suggesting an association with software cracking tools that may bundle unwanted behaviors. (source: deep_dive_agentic, query_or_table: family_guess, row_or_rule: CTF keygen, why: inferred from behavioral patterns common in keygens). However, there is a disagreement from an earlier analysis (v1_summary) that classifies it as **malicious** with a score of 290, based on 10 YARA matches and 1 CAPA rule. (source: v1_summary, query_or_table: findings, row_or_rule: yara: 10 matches, capa: 1 rules, why: provides initial red flags from automated scanning).
 
 We interpret the high number of YARA matches as strong indicators of known malware signatures or components, which could imply embedded malicious code or reuse of threat artifacts. The single CAPA rule, identifying "terminate process" capability (source: capa, query_or_table: capabilities, row_or_rule: terminate process, why: suggests potential for evasion or persistence), may reflect limited or obfuscated functionalities, contributing to the suspicious verdict rather than overt malice. The discrepancy between analyses likely arises from varying detection thresholds and contextual factors, such as the sample's static anomalies (e.g., SectionWX and FewStrings from MalCat (source: malcat, query_or_table: static_anomalies, row_or_rule: SectionWX, why: indicates writable sections often used for code injection, and FewStrings, why: suggests anti-analysis techniques)) and lack of clear network or behavioral evidence in deeper dives.
 
@@ -400,7 +400,7 @@ We interpret the high number of YARA matches as strong indicators of known malwa
 ```
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
   "profile": "triage",
   "limits": {
     "strings_max": 100,
@@ -412,7 +412,7 @@ We interpret the high number of YARA matches as strong indicators of known malwa
   "file_summary": {
     "analysis_id": 1,
     "file_name": "angr_crackme2.exe",
-    "file_path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+    "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
     "file_size": 139264,
     "type": "PE",
     "architecture": "X86",
@@ -490,7 +490,7 @@ We interpret the high number of YARA matches as strong indicators of known malwa
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -502,7 +502,7 @@ We interpret the high number of YARA matches as strong indicators of known malwa
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": [
         {
           "id": "$ipv6",
@@ -514,7 +514,7 @@ We interpret the high number of YARA matches as strong indicators of known malwa
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": [
         {
           "id": "$a",
@@ -526,22 +526,22 @@ We interpret the high number of YARA matches as strong indicators of known malwa
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": []
     },
     {
       "rule": "IsWindowsGUI",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": []
     },
     {
       "rule": "FASM",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": []
     },
     {
       "rule": "FASM_15x",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": [
         {
           "id": "$a",
@@ -553,7 +553,7 @@ We interpret the high number of YARA matches as strong indicators of known malwa
     },
     {
       "rule": "FASM_v13x_additional",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": [
         {
           "id": "$a",
@@ -565,7 +565,7 @@ We interpret the high number of YARA matches as strong indicators of known malwa
     },
     {
       "rule": "FASM_v15x",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": [
         {
           "id": "$b",
@@ -577,7 +577,7 @@ We interpret the high number of YARA matches as strong indicators of known malwa
     },
     {
       "rule": "FASM_v13x",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": [
         {
           "id": "$b",
@@ -658,7 +658,7 @@ We interpret the high number of YARA matches as strong indicators of known malwa
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -670,7 +670,7 @@ We interpret the high number of YARA matches as strong indicators of known malwa
   "file_summary": {
     "analysis_id": 1,
     "file_name": "angr_crackme2.exe",
-    "file_path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+    "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
     "file_size": 139264,
     "type": "PE",
     "architecture": "X86",
@@ -815,7 +815,7 @@ We interpret the high number of YARA matches as strong indicators of known malwa
 ```json
 {
   "verdict": "suspicious",
-  "family": "Hexorcist keygen",
+  "family": "CTF keygen",
   "score": 20,
   "agreement": "llm_v1_disagree",
   "source": "llm_judge",
@@ -846,7 +846,7 @@ We interpret the high number of YARA matches as strong indicators of known malwa
       "why": "Only behavioral rule found is benign process termination, confirming no malicious intent such as data destruction or persistence."
     }
   ],
-  "summary": "This sample is a keygen template for 'Hexorcist' based on strings and decompiled code. It performs serial validation in a dialog GUI but shows no malicious behavioral intent (e.g., file destruction, C2, persistence, credential theft). All signals align with benign software protection testing or keygen use, with neutral anomalies like section entropy."
+  "summary": "This sample is a keygen template for 'CTF' based on strings and decompiled code. It performs serial validation in a dialog GUI but shows no malicious behavioral intent (e.g., file destruction, C2, persistence, credential theft). All signals align with benign software protection testing or keygen use, with neutral anomalies like section entropy."
 }
 ```
 
@@ -862,7 +862,7 @@ We interpret the high number of YARA matches as strong indicators of known malwa
 ```
 # Triage evidence
 sha256: cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4
-sample_path: /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe
+sample_path: /opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe
 ghidra_session: ghidra-pe-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4
 ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4
 
@@ -881,7 +881,7 @@ ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f
 {
   "verdict": "suspicious",
   "score": 20,
-  "family_guess": "Hexorcist keygen",
+  "family_guess": "CTF keygen",
   "cross_engine_notes": "Ghidra reports fewer strings (26) and functions (2) compared to IDA (1 string, 3 functions) and Malcat (36 strings, 3 functions), indicating potential data source gaps. The Ghidra imports table is empty, but IDA lists 8 imports, and Malcat confirms consistent imports. Decompilation is sourced from Malcat as per evidence.",
   "key_evidence": [
     {
@@ -994,7 +994,7 @@ ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -1006,7 +1006,7 @@ ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": [
         {
           "id": "$ipv6",
@@ -1018,7 +1018,7 @@ ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": [
         {
           "id": "$a",
@@ -1030,22 +1030,22 @@ ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": []
     },
     {
       "rule": "IsWindowsGUI",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": []
     },
     {
       "rule": "FASM",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": []
     },
     {
       "rule": "FASM_15x",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": [
         {
           "id": "$a",
@@ -1057,7 +1057,7 @@ ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f
     },
     {
       "rule": "FASM_v13x_additional",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": [
         {
           "id": "$a",
@@ -1069,7 +1069,7 @@ ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f
     },
     {
       "rule": "FASM_v15x",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": [
         {
           "id": "$b",
@@ -1081,7 +1081,7 @@ ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f
     },
     {
       "rule": "FASM_v13x",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": [
         {
           "id": "$b",
@@ -1182,7 +1182,7 @@ ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f
 ```json
 {
   "r2_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
   "disassembly": {
     "0x00401000": ";-- section..text:\n\u250c 43: entry0 ();\n\u2502           0x00401000      6a00           push 0                      ; [00] -rwx section size 4096 named .text\n\u2502           0x00401002      ff1564304000   call dword [sym.imp.KERNEL32.DLL_GetModuleHandleA] ; 0x403064 ; \"p0\" ; HMODULE GetModuleHandleA(LPCSTR lpModuleName)\n\u2502           0x00401008      a388214000     mov dword [0x402188], eax   ; [0x402188:4]=0\n\u2502           0x0040100d      6a00           push 0\n\u2502           0x0040100f      682b104000     push 0x40102b               ; '+\\x10@'\n\u2502           0x00401014      6a00           push 0\n\u2502           0x00401016      6a25           push 0x25                   ; '%' ; 37\n\u2502           0x00401018      50             push eax\n\u2502           0x00401019      ff15b0304000   call dword [sym.imp.USER32.DLL_DialogBoxParamA] ; 0x4030b0 ; INT_PTR DialogBoxParamA(HINSTANCE hInstance, LPCSTR lpTemplateName, HWND hWndParent, DLGPROC lpDialogFunc, LPARAM dwInitParam)\n\u2502           0x0040101f      09c0           or eax, eax\n\u2502       \u250c\u2500< 0x00401021      7400           je 0x401023\n\u2502       \u2514\u2500> 0x00401023      6a00           push 0\n\u2514           0x00401025      ff1568304000   call dword [sym.imp.KERNEL32.DLL_ExitProcess] ; 0x403068 ; VOID ExitProcess(UINT uExitCode)"
   },
@@ -1200,7 +1200,7 @@ ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f
 {
   "upx_ok": false,
   "is_packed": false,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
   "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTested 0 file"
 }
 ```
@@ -1210,7 +1210,7 @@ ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f
 ```json
 {
   "xorsearch_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
   "candidates": [
     "Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r"
   ],
@@ -1225,7 +1225,7 @@ ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f
 ```json
 {
   "speakeasy_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
   "module_base": null,
   "entry_point": null,
   "key_events": [],
@@ -1241,7 +1241,7 @@ ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f
   "frida_available": true,
   "frida_version": "17.16.4",
   "pe_probe": {
-    "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+    "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
     "exists": true,
     "hook_candidates": [
       "KERNEL32.DLL!GetModuleHandleA",
@@ -1274,7 +1274,7 @@ ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f
   ],
   "hit_examples": [
     "Filename 'angr_crackme2.exe' explicitly labeled as crackme",
-    "Copyright strings: 'SAS HEXORCIST', 'HEXORCIST ASM TEMPLATE' (CTF challenge series)",
+    "Copyright strings: 'SAS CTF', 'HEXORCIST ASM TEMPLATE' (CTF challenge series)",
     "Only 8 benign GUI imports: DialogBoxParamA, GetDlgItemTextA, SetDlgItemTextA, LoadIconA, SendMessageA, EndDialog, GetMod",
     "pe_import_signals: 0 suspicious signals from 8 imports",
     "capa: 1 rule match \u2014 'terminate process' (C0018) only \u2014 benign"
@@ -1289,10 +1289,10 @@ ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f
 {
   "source": "deep_dive_agentic",
   "confidence": 90,
-  "summary": "This is a benign CTF crackme challenge from the Hexorcist series, compiled with FASM. It implements a simple Windows dialog-based password checker using DialogBoxParamA/GetDlgItemTextA, with a 'good!' success string. Only 8 GUI-related imports (zero suspicious signals), 2-3 functions total, and no m",
+  "summary": "This is a benign CTF crackme challenge from the CTF challenge series, compiled with FASM. It implements a simple Windows dialog-based password checker using DialogBoxParamA/GetDlgItemTextA, with a 'good!' success string. Only 8 GUI-related imports (zero suspicious signals), 2-3 functions total, and no m",
   "key_evidence": [
     "Filename 'angr_crackme2.exe' explicitly labeled as crackme",
-    "Copyright strings: 'SAS HEXORCIST', 'HEXORCIST ASM TEMPLATE' (CTF challenge series)",
+    "Copyright strings: 'SAS CTF', 'HEXORCIST ASM TEMPLATE' (CTF challenge series)",
     "Only 8 benign GUI imports: DialogBoxParamA, GetDlgItemTextA, SetDlgItemTextA, LoadIconA, SendMessageA, EndDialog, GetModuleHandleA, ExitProcess",
     "pe_import_signals: 0 suspicious signals from 8 imports",
     "capa: 1 rule match \u2014 'terminate process' (C0018) only \u2014 benign",
@@ -1316,7 +1316,7 @@ ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -1337,7 +1337,7 @@ ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f
 ```json
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -1445,7 +1445,7 @@ ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f
 ```json
 {
   "r2_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
   "disassembly": {
     "0x00401000": ";-- section..text:\n\u250c 43: entry0 ();\n\u2502           0x00401000      6a00           push 0                      ; [00] -rwx section size 4096 named .text\n\u2502           0x00401002      ff15
 … [1250 more chars]
@@ -1457,7 +1457,7 @@ ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f
 {
   "upx_ok": false,
   "is_packed": false,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
   "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n
 … [18 more chars]
 ```
@@ -1467,7 +1467,7 @@ ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f
 ```json
 {
   "xorsearch_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
   "candidates": [
     "Found XOR 00 position 00000000: 00000080 ........!..L.!This program cannot be r"
   ],
@@ -1481,7 +1481,7 @@ ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f
 ```json
 {
   "speakeasy_ok": true,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
   "module_base": null,
   "entry_point": null,
   "key_events": [],
@@ -1497,7 +1497,7 @@ ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f
   "frida_available": true,
   "frida_version": "17.16.4",
   "pe_probe": {
-    "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+    "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
     "exists": true,
     "hook_candidates": [
       "KERNEL32.DLL!GetModuleHandleA",
@@ -1513,7 +1513,7 @@ ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f
 ```json
 {
   "shellcode_ok": false,
-  "sample": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
+  "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
   "sections_analyzed": [
     {
       "name": ".text",
@@ -1981,7 +1981,7 @@ ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f
   "engine": "langgraph",
   "verdict": "suspicious",
   "confidence": 90,
-  "summary": "This is a benign CTF crackme challenge from the Hexorcist series, compiled with FASM. It implements a simple Windows dialog-based password checker using DialogBoxParamA/GetDlgItemTextA, with a 'good!' success string. Only 8 GUI-related imports (zero suspicious signals), 2-3 functions total, and no malicious capabilities (no network, persistence, injection, or crypto). Capa matched only 'terminate process' (ExitProcess). YARA matched only FASM compiler artifacts. The filename 'angr_crackme2.exe' explicitly identifies it as a crackme for symbolic execution practice.",
+  "summary": "This is a benign CTF crackme challenge from the CTF challenge series, compiled with FASM. It implements a simple Windows dialog-based password checker using DialogBoxParamA/GetDlgItemTextA, with a 'good!' success string. Only 8 GUI-related imports (zero suspicious signals), 2-3 functions total, and no malicious capabilities (no network, persistence, injection, or crypto). Capa matched only 'terminate process' (ExitProcess). YARA matched only FASM compiler artifacts. The filename 'angr_crackme2.exe' explicitly identifies it as a crackme for symbolic execution practice.",
   "key_evidence": [
     "Filename 'angr_crackme2.exe' explicitly labeled as crackme",
     "Copyright strin
@@ -2018,11 +2018,11 @@ ida_session: ida-cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f
 ```
 // yara_gen_v2.py — 2026-08-09T17:29:14.188048+00:00
 import "pe"
-rule CADRE_v2_hexorcist_keygen_cbddf52b9cc0 {
+rule CADRE_v2_CTF_keygen_cbddf52b9cc0 {
     meta:
-        description = "RevAI v2 auto rule for Hexorcist keygen"
+        description = "RevAI v2 auto rule for CTF keygen"
         sha256 = "cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4"
-        family = "hexorcist_keygen"
+        family = "CTF_keygen"
         revai = true
         revai_commit = "unknown"
         revai_engine = "langgraph"
@@ -2106,7 +2106,7 @@ rule CADRE_v2_hexorcist_keygen_cbddf52b9cc0 {
 | Publish LLM (claimed) | benign |
 
 - **Lock reason:** publish LLM claimed `benign` but upstream triage is `suspicious` (YARA / tool-backed: IsPE32, IsWindowsGUI, FASM, FASM_15x, FASM_v13x_additional, FASM_v15x, FASM_v13x). Final verdict follows triage; dual-use branding does not clear the sample.
-- **Family (triage):** Hexorcist keygen
+- **Family (triage):** CTF keygen
 - **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.
 
 ---

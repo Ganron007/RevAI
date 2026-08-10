@@ -29,8 +29,8 @@ This report details the analysis of a suspicious executable (SHA256: 36137a22c97
 | Attribute | Value |
 |---|---|
 | SHA256 | 36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9 |
-| File Path | /opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe |
-| Project | Hexorcist 1 - Weeks 1-8 |
+| File Path | /opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe |
+| Project | REVAI-LAB-CORPUS-H1 |
 | File Type | PE32 Executable (GUI) Intel 80386, for MS Windows |
 | Architecture | x86 |
 | Packer | Upack v0.37 (confirmed by YARA) |

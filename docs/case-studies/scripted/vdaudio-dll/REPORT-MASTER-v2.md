@@ -32,7 +32,7 @@ This report details the analysis of a 32-bit Windows DLL (`vdaudio.dll`) identif
 | **Architecture** | x86 (32-bit) |
 | **Compiler** | Borland Delphi (v3.0/v4.0) |
 | **Project** | 610 |
-| **Sample Path** | `/opt/samples/corpus/610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll` |
+| **Sample Path** | `/opt/samples/corpus/revai-lab-610/1e9f21f514ee4793cfae7baa21549be0d9b432c59513d2efed860c2b1501da39/vdaudio.dll` |
 
 The sample is a standard PE DLL. The filename `vdaudio.dll` is a deliberate attempt to blend in with legitimate audio software. (source: malcat, yara)
 

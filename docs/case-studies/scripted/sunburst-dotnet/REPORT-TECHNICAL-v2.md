@@ -438,8 +438,8 @@ The analysis was performed in a controlled environment with the following specif
 
 - **Operating System:** Linux (analysis workstation)
 - **Analysis Tools:** Ghidra, IDA, MalCat, capa, YARA, FLOSS, radare2, Frida
-- **Sample Location:** `/opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/`
-- **Project Name:** Malware Analyst Professional - Level 2
+- **Sample Location:** `/opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/`
+- **Project Name:** REVAI-LAB-CORPUS-L2
 - **Analysis Date:** 2026-08-09
 - **Analyst:** Automated Analysis Pipeline
 
@@ -449,8 +449,8 @@ The environment was configured to prevent accidental execution of the sample and
 # Technical Evidence Pack
 
 **sha256:** 32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77  
-**sample_path:** /opt/samples/corpus/Malware Analyst Professional - Level 2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77  
-**project_name:** Malware Analyst Professional - Level 2
+**sample_path:** /opt/samples/corpus/REVAI-LAB-CORPUS-L2/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77/32519b85c0b422e4656de6e6c41878e95fd95026267daab4215ee59c107d6c77  
+**project_name:** REVAI-LAB-CORPUS-L2
 
 > Every table below is copied from stage JSON. Technical narrative must cite these rows (engine + address/rule), not invent evidence.
 

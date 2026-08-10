@@ -1,6 +1,6 @@
 # Triage evidence
 sha256: 263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca
-sample_path: /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe
+sample_path: /opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe
 ghidra_session: ghidra-pe-263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca
 ida_session: ida-263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca
 
@@ -58,7 +58,7 @@ rows: (empty)
 label: IDA database summary
 sql: SELECT * FROM welcome
 columns: summary, idasql_version, processor, is_64bit, min_ea, max_ea, start_ea, entry_name, funcs_count, segments_count, names_count, strings_count, filename, input_file_path, idb_path, md5, sha256
-  metapc 32-bit | entry: start @ 0x401000 | funcs: 2 | segs: 3 | strings: 0 | 0.0.17 | metapc | 0 | 0x401000 | 0x404000 | 0x401000 | start | 2 | 3 | 5 | 0 | string_encryption.exe | /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe | /opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe.i64 | 04180102143fbb55820bccdfd2c2f581 | 263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca
+  metapc 32-bit | entry: start @ 0x401000 | funcs: 2 | segs: 3 | strings: 0 | 0.0.17 | metapc | 0 | 0x401000 | 0x404000 | 0x401000 | start | 2 | 3 | 5 | 0 | string_encryption.exe | /opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe | /opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe.i64 | 04180102143fbb55820bccdfd2c2f581 | 263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca
 
 ### engine: ida
 label: Total function count (IDA)
@@ -303,7 +303,7 @@ void EntryPoint(void)
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
       "strings": [
         {
           "id": "$domain_regex",
@@ -315,17 +315,17 @@ void EntryPoint(void)
     },
     {
       "rule": "IsPE32",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
       "strings": []
     },
     {
       "rule": "IsWindowsGUI",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
       "strings": []
     },
     {
       "rule": "FASM",
-      "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
       "strings": []
     }
   ],
@@ -376,7 +376,7 @@ void EntryPoint(void)
 ### malcat deep profile (raw JSON, capped)
 {
   "analysis_id": 1,
-  "path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+  "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
   "profile": "deep",
   "limits": {
     "strings_max": 300,
@@ -388,7 +388,7 @@ void EntryPoint(void)
   "file_summary": {
     "analysis_id": 1,
     "file_name": "string_encryption.exe",
-    "file_path": "/opt/samples/corpus/Hexorcist 3 - Weeks 20-30/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
+    "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/263db990612712d732763838e245002d526705f6aece1b6508a46d2a3ed6d3ca/string_encryption.exe",
     "file_size": 2048,
     "type": "PE",
     "architecture": "X86",

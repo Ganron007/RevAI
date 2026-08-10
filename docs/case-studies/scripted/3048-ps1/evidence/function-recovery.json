@@ -1,6 +1,6 @@
 {
   "sha256": "14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2",
-  "sample_path": "/opt/samples/corpus/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
+  "sample_path": "/opt/samples/corpus/revai-lab-610/day6/14a42d6418b38103a7fdccc5b1d37e4fb0efcad2f847c9996465c5fdc78632c2/3048.ps1",
   "ok": true,
   "not_applicable": true,
   "reason": "no ghidra program (import failed for this format) \u2014 nothing to recover",

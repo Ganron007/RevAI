@@ -113,7 +113,7 @@
         "matches": [
           {
             "rule": "domain",
-            "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+            "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
             "strings": [
               {
                 "id": "$domain_regex",
@@ -125,7 +125,7 @@
           },
           {
             "rule": "IP",
-            "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+            "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
             "strings": [
               {
                 "id": "$ipv6",
@@ -137,7 +137,7 @@
           },
           {
             "rule": "contains_base64",
-            "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+            "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
             "strings": [
               {
                 "id": "$a",
@@ -149,27 +149,27 @@
           },
           {
             "rule": "Antivirus",
-            "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+            "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
             "strings": []
           },
           {
             "rule": "IsPE32",
-            "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+            "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
             "strings": []
           },
           {
             "rule": "IsWindowsGUI",
-            "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+            "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
             "strings": []
           },
           {
             "rule": "IsPacked",
-            "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+            "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
             "strings": []
           },
           {
             "rule": "HasRichSignature",
-            "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+            "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
             "strings": [
               {
                 "id": "$a0",
@@ -181,7 +181,7 @@
           },
           {
             "rule": "Microsoft_Visual_Basic_v50",
-            "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+            "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
             "strings": [
               {
                 "id": "$a",
@@ -193,7 +193,7 @@
           },
           {
             "rule": "SEH_Save",
-            "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+            "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
             "strings": [
               {
                 "id": "$a",
@@ -205,7 +205,7 @@
           },
           {
             "rule": "SEH_Init",
-            "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+            "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
             "strings": [
               {
                 "id": "$a",
@@ -223,7 +223,7 @@
           },
           {
             "rule": "anti_dbg",
-            "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+            "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
             "strings": [
               {
                 "id": "$d1",
@@ -269,7 +269,7 @@
       "reason": "Required checklist tool (malcat)",
       "result": {
         "analysis_id": 1,
-        "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
         "profile": "deep",
         "limits": {
           "strings_max": 300,
@@ -281,7 +281,7 @@
         "file_summary": {
           "analysis_id": 1,
           "file_name": "space1.ex",
-          "file_path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+          "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
           "file_size": 160256,
           "type": "PE",
           "architecture": "X86",
@@ -4180,7 +4180,7 @@
       "reason": "Required checklist tool (r2_decomp)",
       "result": {
         "r2_ok": true,
-        "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+        "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
         "disassembly": {
           "0x00402720": "\u250c 556: entry0 ();\n\u2502           0x00402720      6838314000     push str.QHACTIVEDEFENSE.EXE ; 0x403138 ; u\"QHACTIVEDEFENSE.EXE\"\n\u2502           0x00402725      e816ffffff     call 0x402640\n\u2502           0x0040272a      83c404         add esp, 4\n\u2502           0x0040272d      85c0           test eax, eax\n\u2502       \u250c\u2500< 0x0040272f      0f8513020000   jne 0x402948\n\u2502       \u2502   0x00402735      6860314000     push str.QHSAFETRAY.EXE     ; 0x403160 ; u\"QHSAFETRAY.EXE\"\n\u2502       \u2502   0x0040273a      e801ffffff     call 0x402640\n\u2502       \u2502   0x0040273f      83c404         add esp, 4\n\u2502       \u2502   0x00402742      85c0           test eax, eax\n\u2502      \u250c\u2500\u2500< 0x00402744      0f85fe010000   jne 0x402948\n\u2502      \u2502\u2502   0x0040274a      6880314000     push str.QHWATCHDOG.EXE     ; 0x403180 ; u\"QHWATCHDOG.EXE\"\n\u2502      \u2502\u2502   0x0040274f      e8ecfeffff     call 0x402640\n\u2502      \u2502\u2502   0x00402754      83c404         add esp, 4\n\u2502      \u2502\u2502   0x00402757      85c0           test eax, eax\n\u2502     \u250c\u2500\u2500\u2500< 0x00402759      0f85e9010000   jne 0x402948\n\u2502     \u2502\u2502\u2502   0x0040275f      68a0314000     push str.CMDAGENT.EXE       ; 0x4031a0 ; u\"CMDAGENT.EXE\"\n\u2502     \u2502\u2502\u2502   0x00402764      e8d7feffff     call 0x402640\n\u2502     \u2502\u2502\u2502   0x00402769      83c404         add esp, 4\n\u2502     \u2502\u2502\u2502   0x0040276c      85c0           test eax, eax\n\u2502    \u250c\u2500\u2500\u2500\u2500< 0x0040276e      0f85d4010000   jne 0x402948\n\u2502    \u2502\u2502\u2502\u2502   0x00402774      68bc314000     push str.CIS.EXE            ; 0x4031bc ; u\"CIS.EXE\"\n\u2502    \u2502\u2502\u2502\u2502   0x00402779      e8c2feffff     call 0x402640\n\u2502    \u2502\u2502\u2502\u2502   0x0040277e      83c404         add esp, 4\n\u2502    \u2502\u2502\u2502\u2502   0x00402781      85c0           test eax, eax\n\u2502   \u250c\u2500\u2500\u2500\u2500\u2500< 0x00402783      0f85bf010000   jne 0x402948\n\u2502   \u2502\u2502\u2502\u2502\u2502   0x00402789      68cc314000     push str.V3LITE.EXE         ; 0x4031cc ; u\"V3LITE.EXE\"\n\u2502   \u2502\u2502\u2502\u2502\u2502   0x0040278e      e8adfeffff     call 0x402640\n\u2502   \u2502\u2502\u2502\u2502\u2502   0x00402793      83c404         add esp, 4\n\u2502   \u2502\u2502\u2502\u2502\u2502   0x00402796      85c0           test eax, eax\n\u2502  \u250c\u2500\u2500\u2500\u2500\u2500\u2500< 0x00402798      0f85aa010000   jne 0x402948\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   0x0040279e      68e4314000     push str.V3MAIN.EXE         ; 0x4031e4 ; u\"V3MAIN.EXE\"\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   0x004027a3      e898feffff     call 0x402640\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   0x004027a8      83c404         add esp, 4\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   0x004027ab      85c0           test eax, eax\n\u2502 \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x004027ad      0f8595010000   jne 0x402948\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027b3      68fc314000     push str.V3SP.EXE           ; 0x4031fc ; u\"V3SP.EXE\"\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027b8      e883feffff     call 0x402640\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027bd      83c404         add esp, 4\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027c0      85c0           test eax, eax\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x004027c2      0f8580010000   jne 0x402948\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027c8      6810324000     push str.SPIDERAGENT.EXE    ; 0x403210 ; u\"SPIDERAGENT.EXE\"\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027cd      e86efeffff     call 0x402640\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027d2      83c404         add esp, 4\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027d5      85c0           test eax, eax\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x004027d7      0f856b010000   jne 0x402948\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027dd      6830324000     push str.DWENGINE.EXE"
         },
@@ -4202,7 +4202,7 @@
       "result": {
         "upx_ok": false,
         "is_packed": false,
-        "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+        "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
         "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTested 0 file"
       },
       "error": null,
@@ -4216,7 +4216,7 @@
       "reason": "Required checklist tool (xor)",
       "result": {
         "xorsearch_ok": true,
-        "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+        "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
         "candidates": [
           "Found XOR 00 position 00000000: 000000E0 ........!..L.!This program cannot be r"
         ],
@@ -4235,7 +4235,7 @@
       "reason": "Required checklist tool (speakeasy)",
       "result": {
         "speakeasy_ok": true,
-        "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+        "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
         "module_base": null,
         "entry_point": null,
         "key_events": [],
@@ -4255,7 +4255,7 @@
         "frida_available": true,
         "frida_version": "17.16.4",
         "pe_probe": {
-          "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+          "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
           "exists": true
         }
       },
@@ -4270,7 +4270,7 @@
       "reason": "Required checklist tool (shellcode)",
       "result": {
         "shellcode_ok": true,
-        "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+        "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
         "sections_analyzed": [
           {
             "name": ".text",
@@ -7575,7 +7575,7 @@
       "reason": "langgraph tool call",
       "result": {
         "r2_ok": true,
-        "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+        "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
         "disassembly": {
           "0x00402720": "\u250c 556: entry0 ();\n\u2502           0x00402720      6838314000     push str.QHACTIVEDEFENSE.EXE ; 0x403138 ; u\"QHACTIVEDEFENSE.EXE\"\n\u2502           0x00402725      e816ffffff     call 0x402640\n\u2502           0x0040272a      83c404         add esp, 4\n\u2502           0x0040272d      85c0           test eax, eax\n\u2502       \u250c\u2500< 0x0040272f      0f8513020000   jne 0x402948\n\u2502       \u2502   0x00402735      6860314000     push str.QHSAFETRAY.EXE     ; 0x403160 ; u\"QHSAFETRAY.EXE\"\n\u2502       \u2502   0x0040273a      e801ffffff     call 0x402640\n\u2502       \u2502   0x0040273f      83c404         add esp, 4\n\u2502       \u2502   0x00402742      85c0           test eax, eax\n\u2502      \u250c\u2500\u2500< 0x00402744      0f85fe010000   jne 0x402948\n\u2502      \u2502\u2502   0x0040274a      6880314000     push str.QHWATCHDOG.EXE     ; 0x403180 ; u\"QHWATCHDOG.EXE\"\n\u2502      \u2502\u2502   0x0040274f      e8ecfeffff     call 0x402640\n\u2502      \u2502\u2502   0x00402754      83c404         add esp, 4\n\u2502      \u2502\u2502   0x00402757      85c0           test eax, eax\n\u2502     \u250c\u2500\u2500\u2500< 0x00402759      0f85e9010000   jne 0x402948\n\u2502     \u2502\u2502\u2502   0x0040275f      68a0314000     push str.CMDAGENT.EXE       ; 0x4031a0 ; u\"CMDAGENT.EXE\"\n\u2502     \u2502\u2502\u2502   0x00402764      e8d7feffff     call 0x402640\n\u2502     \u2502\u2502\u2502   0x00402769      83c404         add esp, 4\n\u2502     \u2502\u2502\u2502   0x0040276c      85c0           test eax, eax\n\u2502    \u250c\u2500\u2500\u2500\u2500< 0x0040276e      0f85d4010000   jne 0x402948\n\u2502    \u2502\u2502\u2502\u2502   0x00402774      68bc314000     push str.CIS.EXE            ; 0x4031bc ; u\"CIS.EXE\"\n\u2502    \u2502\u2502\u2502\u2502   0x00402779      e8c2feffff     call 0x402640\n\u2502    \u2502\u2502\u2502\u2502   0x0040277e      83c404         add esp, 4\n\u2502    \u2502\u2502\u2502\u2502   0x00402781      85c0           test eax, eax\n\u2502   \u250c\u2500\u2500\u2500\u2500\u2500< 0x00402783      0f85bf010000   jne 0x402948\n\u2502   \u2502\u2502\u2502\u2502\u2502   0x00402789      68cc314000     push str.V3LITE.EXE         ; 0x4031cc ; u\"V3LITE.EXE\"\n\u2502   \u2502\u2502\u2502\u2502\u2502   0x0040278e      e8adfeffff     call 0x402640\n\u2502   \u2502\u2502\u2502\u2502\u2502   0x00402793      83c404         add esp, 4\n\u2502   \u2502\u2502\u2502\u2502\u2502   0x00402796      85c0           test eax, eax\n\u2502  \u250c\u2500\u2500\u2500\u2500\u2500\u2500< 0x00402798      0f85aa010000   jne 0x402948\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   0x0040279e      68e4314000     push str.V3MAIN.EXE         ; 0x4031e4 ; u\"V3MAIN.EXE\"\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   0x004027a3      e898feffff     call 0x402640\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   0x004027a8      83c404         add esp, 4\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   0x004027ab      85c0           test eax, eax\n\u2502 \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x004027ad      0f8595010000   jne 0x402948\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027b3      68fc314000     push str.V3SP.EXE           ; 0x4031fc ; u\"V3SP.EXE\"\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027b8      e883feffff     call 0x402640\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027bd      83c404         add esp, 4\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027c0      85c0           test eax, eax\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x004027c2      0f8580010000   jne 0x402948\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027c8      6810324000     push str.SPIDERAGENT.EXE    ; 0x403210 ; u\"SPIDERAGENT.EXE\"\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027cd      e86efeffff     call 0x402640\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027d2      83c404         add esp, 4\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027d5      85c0           test eax, eax\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x004027d7      0f856b010000   jne 0x402948\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027dd      6830324000     push str.DWENGINE.EXE"
         },
@@ -7935,7 +7935,7 @@
       "matches": [
         {
           "rule": "domain",
-          "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+          "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
           "strings": [
             {
               "id": "$domain_regex",
@@ -7947,7 +7947,7 @@
         },
         {
           "rule": "IP",
-          "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+          "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
           "strings": [
             {
               "id": "$ipv6",
@@ -7959,7 +7959,7 @@
         },
         {
           "rule": "contains_base64",
-          "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+          "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
           "strings": [
             {
               "id": "$a",
@@ -7971,27 +7971,27 @@
         },
         {
           "rule": "Antivirus",
-          "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+          "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
           "strings": []
         },
         {
           "rule": "IsPE32",
-          "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+          "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
           "strings": []
         },
         {
           "rule": "IsWindowsGUI",
-          "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+          "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
           "strings": []
         },
         {
           "rule": "IsPacked",
-          "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+          "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
           "strings": []
         },
         {
           "rule": "HasRichSignature",
-          "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+          "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
           "strings": [
             {
               "id": "$a0",
@@ -8003,7 +8003,7 @@
         },
         {
           "rule": "Microsoft_Visual_Basic_v50",
-          "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+          "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
           "strings": [
             {
               "id": "$a",
@@ -8015,7 +8015,7 @@
         },
         {
           "rule": "SEH_Save",
-          "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+          "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
           "strings": [
             {
               "id": "$a",
@@ -8027,7 +8027,7 @@
         },
         {
           "rule": "SEH_Init",
-          "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+          "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
           "strings": [
             {
               "id": "$a",
@@ -8045,7 +8045,7 @@
         },
         {
           "rule": "anti_dbg",
-          "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+          "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
           "strings": [
             {
               "id": "$d1",
@@ -8080,7 +8080,7 @@
     },
     "checklist_malcat_analyze": {
       "analysis_id": 1,
-      "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "profile": "deep",
       "limits": {
         "strings_max": 300,
@@ -8092,7 +8092,7 @@
       "file_summary": {
         "analysis_id": 1,
         "file_name": "space1.ex",
-        "file_path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+        "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
         "file_size": 160256,
         "type": "PE",
         "architecture": "X86",
@@ -11946,7 +11946,7 @@
     },
     "checklist_r2_decompile": {
       "r2_ok": true,
-      "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "disassembly": {
         "0x00402720": "\u250c 556: entry0 ();\n\u2502           0x00402720      6838314000     push str.QHACTIVEDEFENSE.EXE ; 0x403138 ; u\"QHACTIVEDEFENSE.EXE\"\n\u2502           0x00402725      e816ffffff     call 0x402640\n\u2502           0x0040272a      83c404         add esp, 4\n\u2502           0x0040272d      85c0           test eax, eax\n\u2502       \u250c\u2500< 0x0040272f      0f8513020000   jne 0x402948\n\u2502       \u2502   0x00402735      6860314000     push str.QHSAFETRAY.EXE     ; 0x403160 ; u\"QHSAFETRAY.EXE\"\n\u2502       \u2502   0x0040273a      e801ffffff     call 0x402640\n\u2502       \u2502   0x0040273f      83c404         add esp, 4\n\u2502       \u2502   0x00402742      85c0           test eax, eax\n\u2502      \u250c\u2500\u2500< 0x00402744      0f85fe010000   jne 0x402948\n\u2502      \u2502\u2502   0x0040274a      6880314000     push str.QHWATCHDOG.EXE     ; 0x403180 ; u\"QHWATCHDOG.EXE\"\n\u2502      \u2502\u2502   0x0040274f      e8ecfeffff     call 0x402640\n\u2502      \u2502\u2502   0x00402754      83c404         add esp, 4\n\u2502      \u2502\u2502   0x00402757      85c0           test eax, eax\n\u2502     \u250c\u2500\u2500\u2500< 0x00402759      0f85e9010000   jne 0x402948\n\u2502     \u2502\u2502\u2502   0x0040275f      68a0314000     push str.CMDAGENT.EXE       ; 0x4031a0 ; u\"CMDAGENT.EXE\"\n\u2502     \u2502\u2502\u2502   0x00402764      e8d7feffff     call 0x402640\n\u2502     \u2502\u2502\u2502   0x00402769      83c404         add esp, 4\n\u2502     \u2502\u2502\u2502   0x0040276c      85c0           test eax, eax\n\u2502    \u250c\u2500\u2500\u2500\u2500< 0x0040276e      0f85d4010000   jne 0x402948\n\u2502    \u2502\u2502\u2502\u2502   0x00402774      68bc314000     push str.CIS.EXE            ; 0x4031bc ; u\"CIS.EXE\"\n\u2502    \u2502\u2502\u2502\u2502   0x00402779      e8c2feffff     call 0x402640\n\u2502    \u2502\u2502\u2502\u2502   0x0040277e      83c404         add esp, 4\n\u2502    \u2502\u2502\u2502\u2502   0x00402781      85c0           test eax, eax\n\u2502   \u250c\u2500\u2500\u2500\u2500\u2500< 0x00402783      0f85bf010000   jne 0x402948\n\u2502   \u2502\u2502\u2502\u2502\u2502   0x00402789      68cc314000     push str.V3LITE.EXE         ; 0x4031cc ; u\"V3LITE.EXE\"\n\u2502   \u2502\u2502\u2502\u2502\u2502   0x0040278e      e8adfeffff     call 0x402640\n\u2502   \u2502\u2502\u2502\u2502\u2502   0x00402793      83c404         add esp, 4\n\u2502   \u2502\u2502\u2502\u2502\u2502   0x00402796      85c0           test eax, eax\n\u2502  \u250c\u2500\u2500\u2500\u2500\u2500\u2500< 0x00402798      0f85aa010000   jne 0x402948\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   0x0040279e      68e4314000     push str.V3MAIN.EXE         ; 0x4031e4 ; u\"V3MAIN.EXE\"\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   0x004027a3      e898feffff     call 0x402640\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   0x004027a8      83c404         add esp, 4\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   0x004027ab      85c0           test eax, eax\n\u2502 \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x004027ad      0f8595010000   jne 0x402948\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027b3      68fc314000     push str.V3SP.EXE           ; 0x4031fc ; u\"V3SP.EXE\"\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027b8      e883feffff     call 0x402640\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027bd      83c404         add esp, 4\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027c0      85c0           test eax, eax\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x004027c2      0f8580010000   jne 0x402948\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027c8      6810324000     push str.SPIDERAGENT.EXE    ; 0x403210 ; u\"SPIDERAGENT.EXE\"\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027cd      e86efeffff     call 0x402640\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027d2      83c404         add esp, 4\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027d5      85c0           test eax, eax\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x004027d7      0f856b010000   jne 0x402948\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027dd      6830324000     push str.DWENGINE.EXE"
       },
@@ -11959,12 +11959,12 @@
     "checklist_upx_unpack": {
       "upx_ok": false,
       "is_packed": false,
-      "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTested 0 file"
     },
     "checklist_xor_string_search": {
       "xorsearch_ok": true,
-      "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "candidates": [
         "Found XOR 00 position 00000000: 000000E0 ........!..L.!This program cannot be r"
       ],
@@ -11974,7 +11974,7 @@
     },
     "checklist_speakeasy_emulate": {
       "speakeasy_ok": true,
-      "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "module_base": null,
       "entry_point": null,
       "key_events": [],
@@ -11985,13 +11985,13 @@
       "frida_available": true,
       "frida_version": "17.16.4",
       "pe_probe": {
-        "path": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
         "exists": true
       }
     },
     "checklist_shellcode_extract": {
       "shellcode_ok": true,
-      "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "sections_analyzed": [
         {
           "name": ".text",
@@ -15168,7 +15168,7 @@
     },
     "lg_r2_decompile_36": {
       "r2_ok": true,
-      "sample": "/opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
+      "sample": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
       "disassembly": {
         "0x00402720": "\u250c 556: entry0 ();\n\u2502           0x00402720      6838314000     push str.QHACTIVEDEFENSE.EXE ; 0x403138 ; u\"QHACTIVEDEFENSE.EXE\"\n\u2502           0x00402725      e816ffffff     call 0x402640\n\u2502           0x0040272a      83c404         add esp, 4\n\u2502           0x0040272d      85c0           test eax, eax\n\u2502       \u250c\u2500< 0x0040272f      0f8513020000   jne 0x402948\n\u2502       \u2502   0x00402735      6860314000     push str.QHSAFETRAY.EXE     ; 0x403160 ; u\"QHSAFETRAY.EXE\"\n\u2502       \u2502   0x0040273a      e801ffffff     call 0x402640\n\u2502       \u2502   0x0040273f      83c404         add esp, 4\n\u2502       \u2502   0x00402742      85c0           test eax, eax\n\u2502      \u250c\u2500\u2500< 0x00402744      0f85fe010000   jne 0x402948\n\u2502      \u2502\u2502   0x0040274a      6880314000     push str.QHWATCHDOG.EXE     ; 0x403180 ; u\"QHWATCHDOG.EXE\"\n\u2502      \u2502\u2502   0x0040274f      e8ecfeffff     call 0x402640\n\u2502      \u2502\u2502   0x00402754      83c404         add esp, 4\n\u2502      \u2502\u2502   0x00402757      85c0           test eax, eax\n\u2502     \u250c\u2500\u2500\u2500< 0x00402759      0f85e9010000   jne 0x402948\n\u2502     \u2502\u2502\u2502   0x0040275f      68a0314000     push str.CMDAGENT.EXE       ; 0x4031a0 ; u\"CMDAGENT.EXE\"\n\u2502     \u2502\u2502\u2502   0x00402764      e8d7feffff     call 0x402640\n\u2502     \u2502\u2502\u2502   0x00402769      83c404         add esp, 4\n\u2502     \u2502\u2502\u2502   0x0040276c      85c0           test eax, eax\n\u2502    \u250c\u2500\u2500\u2500\u2500< 0x0040276e      0f85d4010000   jne 0x402948\n\u2502    \u2502\u2502\u2502\u2502   0x00402774      68bc314000     push str.CIS.EXE            ; 0x4031bc ; u\"CIS.EXE\"\n\u2502    \u2502\u2502\u2502\u2502   0x00402779      e8c2feffff     call 0x402640\n\u2502    \u2502\u2502\u2502\u2502   0x0040277e      83c404         add esp, 4\n\u2502    \u2502\u2502\u2502\u2502   0x00402781      85c0           test eax, eax\n\u2502   \u250c\u2500\u2500\u2500\u2500\u2500< 0x00402783      0f85bf010000   jne 0x402948\n\u2502   \u2502\u2502\u2502\u2502\u2502   0x00402789      68cc314000     push str.V3LITE.EXE         ; 0x4031cc ; u\"V3LITE.EXE\"\n\u2502   \u2502\u2502\u2502\u2502\u2502   0x0040278e      e8adfeffff     call 0x402640\n\u2502   \u2502\u2502\u2502\u2502\u2502   0x00402793      83c404         add esp, 4\n\u2502   \u2502\u2502\u2502\u2502\u2502   0x00402796      85c0           test eax, eax\n\u2502  \u250c\u2500\u2500\u2500\u2500\u2500\u2500< 0x00402798      0f85aa010000   jne 0x402948\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   0x0040279e      68e4314000     push str.V3MAIN.EXE         ; 0x4031e4 ; u\"V3MAIN.EXE\"\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   0x004027a3      e898feffff     call 0x402640\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   0x004027a8      83c404         add esp, 4\n\u2502  \u2502\u2502\u2502\u2502\u2502\u2502   0x004027ab      85c0           test eax, eax\n\u2502 \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x004027ad      0f8595010000   jne 0x402948\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027b3      68fc314000     push str.V3SP.EXE           ; 0x4031fc ; u\"V3SP.EXE\"\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027b8      e883feffff     call 0x402640\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027bd      83c404         add esp, 4\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027c0      85c0           test eax, eax\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x004027c2      0f8580010000   jne 0x402948\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027c8      6810324000     push str.SPIDERAGENT.EXE    ; 0x403210 ; u\"SPIDERAGENT.EXE\"\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027cd      e86efeffff     call 0x402640\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027d2      83c404         add esp, 4\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027d5      85c0           test eax, eax\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x004027d7      0f856b010000   jne 0x402948\n\u2502 \u2502\u2502\u2502\u2502\u2502\u2502\u2502   0x004027dd      6830324000     push str.DWENGINE.EXE"
       },

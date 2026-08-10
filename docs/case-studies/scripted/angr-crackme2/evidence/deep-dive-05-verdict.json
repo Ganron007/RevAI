@@ -3,10 +3,10 @@
   "engine": "langgraph",
   "verdict": "suspicious",
   "confidence": 90,
-  "summary": "This is a benign CTF crackme challenge from the Hexorcist series, compiled with FASM. It implements a simple Windows dialog-based password checker using DialogBoxParamA/GetDlgItemTextA, with a 'good!' success string. Only 8 GUI-related imports (zero suspicious signals), 2-3 functions total, and no malicious capabilities (no network, persistence, injection, or crypto). Capa matched only 'terminate process' (ExitProcess). YARA matched only FASM compiler artifacts. The filename 'angr_crackme2.exe' explicitly identifies it as a crackme for symbolic execution practice.",
+  "summary": "This is a benign CTF crackme challenge from the CTF challenge series, compiled with FASM. It implements a simple Windows dialog-based password checker using DialogBoxParamA/GetDlgItemTextA, with a 'good!' success string. Only 8 GUI-related imports (zero suspicious signals), 2-3 functions total, and no malicious capabilities (no network, persistence, injection, or crypto). Capa matched only 'terminate process' (ExitProcess). YARA matched only FASM compiler artifacts. The filename 'angr_crackme2.exe' explicitly identifies it as a crackme for symbolic execution practice.",
   "key_evidence": [
     "Filename 'angr_crackme2.exe' explicitly labeled as crackme",
-    "Copyright strings: 'SAS HEXORCIST', 'HEXORCIST ASM TEMPLATE' (CTF challenge series)",
+    "Copyright strings: 'SAS CTF', 'HEXORCIST ASM TEMPLATE' (CTF challenge series)",
     "Only 8 benign GUI imports: DialogBoxParamA, GetDlgItemTextA, SetDlgItemTextA, LoadIconA, SendMessageA, EndDialog, GetModuleHandleA, ExitProcess",
     "pe_import_signals: 0 suspicious signals from 8 imports",
     "capa: 1 rule match \u2014 'terminate process' (C0018) only \u2014 benign",

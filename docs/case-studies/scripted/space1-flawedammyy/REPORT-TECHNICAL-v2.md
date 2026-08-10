@@ -392,8 +392,8 @@ A Sigma rule file was generated at `/opt/samples/logs/5f251ed33fb1b6960b4d5641b4
 # Technical Evidence Pack
 
 **sha256:** 5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da  
-**sample_path:** /opt/samples/corpus/Malware Analyst Professional - Level 2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex  
-**project_name:** Malware Analyst Professional - Level 2
+**sample_path:** /opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex  
+**project_name:** REVAI-LAB-CORPUS-L2
 
 > Every table below is copied from stage JSON. Technical narrative must cite these rows (engine + address/rule), not invent evidence.
 

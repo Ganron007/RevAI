@@ -1,7 +1,7 @@
 # Technical Evidence Pack
 
 **sha256:** 58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b  
-**sample_path:** /opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz  
+**sample_path:** /opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz  
 **project_name:** 610
 
 > Every table below is copied from stage JSON. Technical narrative must cite these rows (engine + address/rule), not invent evidence.
@@ -269,7 +269,7 @@ Total matches: 4
   "matches": [
     {
       "rule": "domain",
-      "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "strings": [
         {
           "id": "$domain_regex",
@@ -281,7 +281,7 @@ Total matches: 4
     },
     {
       "rule": "IP",
-      "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "strings": [
         {
           "id": "$ipv6",
@@ -293,7 +293,7 @@ Total matches: 4
     },
     {
       "rule": "contains_base64",
-      "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "strings": [
         {
           "id": "$a",
@@ -305,7 +305,7 @@ Total matches: 4
     },
     {
       "rule": "url",
-      "path": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+      "path": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
       "strings": [
         {
           "id": "$url_regex",
@@ -363,7 +363,7 @@ Total strings: 0 · per_category: `{}`
 ## XOR Search
 {
   "xorsearch_ok": false,
-  "sample": "/opt/samples/corpus/610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
+  "sample": "/opt/samples/corpus/revai-lab-610/58c043e134dc09b27e86973d327ab252745662f12231695f6eeb5c5deb9b691b/steel.saz",
   "candidates": [],
   "xorsearch_stdout": "",
   "xorsearch_stderr": "",

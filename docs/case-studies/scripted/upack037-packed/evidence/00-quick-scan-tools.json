@@ -1,7 +1,7 @@
 {
   "capa": {
     "error": "capa rc=13",
-    "stderr": "ERROR    capa: Input file '/opt/samples/corpus/Hexorcist 1 - Weeks   main.py:563\n         1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f            \n         10ad013c9/Upack037.exe' is not a valid PE file: \"data at               \n         RVA can't be fetched. Corrupt header?\"                                 \n",
+    "stderr": "ERROR    capa: Input file '/opt/samples/corpus/CTF 1 - Weeks   main.py:563\n         1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f            \n         10ad013c9/Upack037.exe' is not a valid PE file: \"data at               \n         RVA can't be fetched. Corrupt header?\"                                 \n",
     "timeout_s": 300,
     "sample_size": 52224,
     "duration_s": 1.47,
@@ -21,7 +21,7 @@
     "matches": [
       {
         "rule": "domain",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
         "strings": [
           {
             "id": "$domain_regex",
@@ -33,7 +33,7 @@
       },
       {
         "rule": "IP",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
         "strings": [
           {
             "id": "$ipv4",
@@ -51,7 +51,7 @@
       },
       {
         "rule": "contains_base64",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
         "strings": [
           {
             "id": "$a",
@@ -63,7 +63,7 @@
       },
       {
         "rule": "WinUpackv039finalByDwingc2005h1",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
         "strings": [
           {
             "id": "$a0",
@@ -75,7 +75,7 @@
       },
       {
         "rule": "Upackv039finalDwing",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
         "strings": [
           {
             "id": "$a0",
@@ -93,7 +93,7 @@
       },
       {
         "rule": "UpackV037Dwing",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
         "strings": [
           {
             "id": "$a0",
@@ -111,27 +111,27 @@
       },
       {
         "rule": "IsPE32",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
         "strings": []
       },
       {
         "rule": "IsWindowsGUI",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
         "strings": []
       },
       {
         "rule": "HasOverlay",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
         "strings": []
       },
       {
         "rule": "HasModified_DOS_Message",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
         "strings": []
       },
       {
         "rule": "WinUpack_v039_final_By_Dwing_c2005_additional",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
         "strings": [
           {
             "id": "$a",
@@ -143,7 +143,7 @@
       },
       {
         "rule": "Upack_v0399_Dwing_additional",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
         "strings": [
           {
             "id": "$a",
@@ -155,7 +155,7 @@
       },
       {
         "rule": "Upack_V037_V039_Dwing",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
         "strings": [
           {
             "id": "$b",
@@ -167,7 +167,7 @@
       },
       {
         "rule": "Upack_v039_final",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
         "strings": [
           {
             "id": "$a",
@@ -179,7 +179,7 @@
       },
       {
         "rule": "Upack_v039_final_Sign_by_hot_UNP_additional",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
         "strings": [
           {
             "id": "$a",
@@ -191,7 +191,7 @@
       },
       {
         "rule": "WinUpack_v039_final_By_Dwing_c2005_h1",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
         "strings": [
           {
             "id": "$a",
@@ -215,7 +215,7 @@
       },
       {
         "rule": "Upack_v039_final_Dwing_h",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
         "strings": [
           {
             "id": "$a",
@@ -227,7 +227,7 @@
       },
       {
         "rule": "Upack_v039_final_Sign_by_hot_UNP",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
         "strings": [
           {
             "id": "$a",
@@ -245,7 +245,7 @@
       },
       {
         "rule": "Upack_V037_Dwing",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
         "strings": [
           {
             "id": "$a",
@@ -263,7 +263,7 @@
       },
       {
         "rule": "WinUpack_v039_final_By_Dwing_c2005_h1_additional",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
         "strings": [
           {
             "id": "$a",
@@ -275,7 +275,7 @@
       },
       {
         "rule": "WinUpack_v039_final_By_Dwing_c2005",
-        "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+        "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
         "strings": [
           {
             "id": "$a",
@@ -434,7 +434,7 @@
   },
   "malcat": {
     "analysis_id": 1,
-    "path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+    "path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
     "profile": "deep",
     "limits": {
       "strings_max": 300,
@@ -446,7 +446,7 @@
     "file_summary": {
       "analysis_id": 1,
       "file_name": "Upack037.exe",
-      "file_path": "/opt/samples/corpus/Hexorcist 1 - Weeks 1-8/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
+      "file_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H1/36137a22c973fdb6a5029319d8f69014a964f4dc998e4249d9b845f10ad013c9/Upack037.exe",
       "file_size": 52224,
       "type": "PE",
       "architecture": "X86",
