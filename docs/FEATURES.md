@@ -11,7 +11,7 @@ controls it, where it runs, what artifact it produces, and its status in the
 | G1 | **Emulation oracle** | Bounded Speakeasy emulation; records executed instructions, dynamically resolved imports, executed→function mapping | `REVAI_ENABLE_EMULATION_ORACLE=1` | deep_dive seeds | `deep_dive/03-oracle.json` |
 | G2 | **Anti-analysis signals** | Deterministic scan for debugger/VM/timing/TLS anti-analysis patterns | always on (PE/unknown) | quick_scan + deep_dive seeds | `deep_dive/02-signals.json` (`anti_analysis`) |
 | G3 | **Unpack pass** | Emulation-assisted unpack/carve when packer checklist flags packed/suspicious | `REVAI_ENABLE_UNPACK_PASS=1` | deep_dive seeds | `deep_dive/02-signals.json` (`unpack`) + `logs/<sha>/unpack/` |
-| G4 | **Dynamic-resolve detector** | Finds API-resolve sites (GetProcAddress/LdrGetProcedureAddress patterns) | always on | quick_scan + deep_dive seeds | `deep_dive/02-signals.json` (`dynamic_resolve`) |
+| G4 | **Dynamic-resolve detector** | Finds API-resolve sites (callgraph + runtime-resolved imports from the emulation oracle on packed code) | always on | quick_scan + deep_dive seeds | `deep_dive/02-signals.json` (`dynamic_resolve`, `runtime_resolved_imports`) |
 | G5 | **Shellcode/scdbg path** | scdbg emulation of raw shellcode; shellcode checklist tool | always on | deep_dive checklist + agent | agent history `deep-dive-agentic-history.json` |
 | G6 | **String extraction** | FLOSS (PE) + Malcat strings with ref counts | always on (format-gated) | quick_scan | `quick_scan/00-tools-raw.json` (`floss`/`malcat`) + `evidence/strings.txt` |
 | G7 | **YARA rule gen (imphash)** | Auto rule from strings/imphash/hex sigs; validation + goodware FP scan | always on | yara_gen | `rule.yar`, `rule.yara.json`, `rule.yml` |
@@ -53,8 +53,6 @@ controls it, where it runs, what artifact it produces, and its status in the
 
 ## Run status (2026-08-09, 16 samples, all features on)
 
-15/16 `all_green`. G1 9/16 · G2 2/16 · G3 7/16 · G4 0/16 (extractor runs clean —
-follow-up: heuristic review vs packed Ghidra data) · G5 9/16 · G6 11/16 ·
+15/16 `all_green`. G1 9/16 · G2 2/16 · G3 7/16 · G4 2/16 · G5 9/16 · G6 11/16 ·
 G7/G9/G10 16/16 · G8 11/16 · angr/z3 2/16 · recovery: named functions on 9/16
-(tasksche 23, vdaudio 14, darkside 8). `fgg_js` excluded: documented LLM
-report-quality failure (all tools correct).
+(tasksche 23, vdaudio 14, darkside 8).

@@ -7,7 +7,7 @@
       "categories": {},
       "total_signals": 0,
       "functions_with_signals": 0,
-      "elapsed_s": 7.95,
+      "elapsed_s": 7.5,
       "note": "Deterministic; TLS callbacks are pre-entry-point candidates."
     }
   },
@@ -19,7 +19,7 @@
       "peb_module_walkers": 0,
       "ordinal_imports": 4,
       "min_resolve_calls": 2,
-      "elapsed_s": 0.27,
+      "elapsed_s": 0.29,
       "note": "Resolve sites are core logic of packed/stripped samples (static import dir empty)."
     },
     "resolver_funcs": [],
@@ -43,5 +43,50 @@
         "module": "WS2_32.DLL"
       }
     ]
+  },
+  "emulation_oracle": {
+    "ok": false,
+    "error": "oracle subprocess timed out after 65s"
+  },
+  "unpack": {
+    "engine": "unpack_oracle",
+    "ok": true,
+    "sections": [
+      {
+        "name": ".text",
+        "rva": 4096,
+        "virtual_size": 9382,
+        "raw_size": 9728,
+        "exec": true,
+        "writable": false
+      },
+      {
+        "name": ".rdata",
+        "rva": 16384,
+        "virtual_size": 968,
+        "raw_size": 1024,
+        "exec": false,
+        "writable": false
+      },
+      {
+        "name": ".data",
+        "rva": 20480,
+        "virtual_size": 54980,
+        "raw_size": 512,
+        "exec": false,
+        "writable": true
+      },
+      {
+        "name": ".reloc",
+        "rva": 77824,
+        "virtual_size": 838,
+        "raw_size": 1024,
+        "exec": false,
+        "writable": false
+      }
+    ],
+    "memory_only_exec_sections": [],
+    "unpacked": false,
+    "reason": "no memory-only executable sections (packer signature absent)"
   }
 }

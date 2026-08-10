@@ -7,7 +7,7 @@
       "categories": {},
       "total_signals": 0,
       "functions_with_signals": 0,
-      "elapsed_s": 0.21,
+      "elapsed_s": 7.16,
       "note": "Deterministic; TLS callbacks are pre-entry-point candidates."
     }
   },
@@ -19,7 +19,7 @@
       "peb_module_walkers": 0,
       "ordinal_imports": 14,
       "min_resolve_calls": 2,
-      "elapsed_s": 0.1,
+      "elapsed_s": 0.15,
       "note": "Resolve sites are core logic of packed/stripped samples (static import dir empty)."
     },
     "resolver_funcs": [],
@@ -88,7 +88,7 @@
     "engine": "emulation_oracle",
     "ok": true,
     "sample": "guLoader.exe",
-    "wall_s": 0.12,
+    "wall_s": 0.14,
     "instructions_executed": 3,
     "executed_addresses": [
       4199042,
@@ -176,7 +176,7 @@
       }
     ],
     "memory_region_count": 15,
-    "emu_runtime": 0.043,
+    "emu_runtime": 0.054,
     "entry_points": [
       {
         "ep_type": "module_entry",

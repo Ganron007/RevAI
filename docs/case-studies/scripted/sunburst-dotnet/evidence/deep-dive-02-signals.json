@@ -7,7 +7,7 @@
       "categories": {},
       "total_signals": 0,
       "functions_with_signals": 0,
-      "elapsed_s": 0.91,
+      "elapsed_s": 9.32,
       "note": "Deterministic; TLS callbacks are pre-entry-point candidates."
     }
   },
@@ -19,7 +19,7 @@
       "peb_module_walkers": 0,
       "ordinal_imports": 0,
       "min_resolve_calls": 2,
-      "elapsed_s": 0.22,
+      "elapsed_s": 0.3,
       "note": "Resolve sites are core logic of packed/stripped samples (static import dir empty)."
     },
     "resolver_funcs": [],

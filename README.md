@@ -28,6 +28,13 @@ Part of the [CADRE](https://github.com/Ganron007/CADRE) platform — LLM-assiste
 - **Honest quality gate** — `report_quality.py` computes `truly_green = all_green (audit) + quality_green (no deterministic fallbacks / narrative stubs) + zero failed tools`. Every report carries a `source` (`llm_judge` vs `deterministic_fallback`), so a stubbed report can never look green.
 
 > **Reality check.** RevAI is an analyst assistant, not a finished autonomous product. A green stage means the tooling and quality gate passed — it is **not** a guarantee that the analysis is malware-analyst-accurate. Always review the evidence and the report.
+>
+> **LLM-based analysis is inherently probabilistic.** This project is built on large language models, and no LLM-based approach is or will ever be fully error-free:
+> - Outputs can vary between runs of the same sample — even with identical tooling, a report can differ from one run to the next.
+> - A "green" pipeline means every deterministic gate passed (tools ran, evidence exists, citations ground to real tool output, reports are complete). It does **not** mean the conclusion is objectively correct — the verdict itself is an LLM judgment over the evidence.
+> - Models can misread evidence, overstate or understate findings, or omit relevant context. The quality gates catch many failure modes (missing evidence, fabricated citations, truncated reports) but cannot catch every reasoning error.
+> - Tool output is only as good as the tools themselves: packed, obfuscated, or novel samples may yield incomplete static analysis, and emulation has inherent limits.
+> - Always treat the report as a **starting point for analyst review**, verify key claims against the raw evidence shipped with each case study, and never rely on the pipeline's verdict alone for operational decisions.
 
 ---
 

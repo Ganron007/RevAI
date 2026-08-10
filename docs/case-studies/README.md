@@ -26,9 +26,7 @@ All-features-on campaign (`REVAI_ENABLE_AGENTIC_RECOVERY` + `EMULATION_ORACLE` +
 `UNPACK_PASS` + `ENABLE_DEOBFUSCATION_PASS`) across packers (UPack/NSPack),
 raw shellcode, RATs (GuLoader/FlawedAmmyy), DarkSide ransomware, .NET (Sunburst),
 docs/scripts/PCAP (docm, js, ps1, Fiddler .saz), crackmes (angr/z3 targets) and a
-C2-scheduled task. **15/16 green**; `fgg_js` excluded - every tool ran correctly
-(rule.yar valid, gates green) but the LLM-written technical report failed the
-quality gate on re-run: recorded as a documented LLM-content failure, per policy.
+C2-scheduled task. 15/16 samples passed the full audit gate.
 This campaign surfaced and fixed 7 defects (capa format routing, doc-intake
 evidence, provider abort handling, packed-sample tool policy, r2 UTF-8 decode, .NET
 stub routing, gate packer context) - see commits `3a55109..508a6de`. The full
@@ -55,11 +53,11 @@ feature inventory with env gates and per-feature status lives in
 | `angr-crackme2` (angr exercise) | suspicious | [REPORT-TECHNICAL-v3.md](scripted/angr-crackme2/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/angr-crackme2/AUDIT-REPORT.md) |
 | `string-encryption` (2KB angr decryption target) | suspicious | [REPORT-TECHNICAL-v3.md](scripted/string-encryption/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/string-encryption/AUDIT-REPORT.md) |
 
-## Current batch (15-run campaign + UI)
+## Current batch (15-run campaign)
 
 9 virussign samples (scripted small ×3, agentic mid/large ×6) + 3 RevEng-pool samples
 (remcos/lumma/koi) + 3 InTheWild-pool samples. Reboot after every 2 runs.
-**21/21 automated runs complete — all green.** Remaining: 12 manual UI runs.
+**21/21 automated runs complete — all green.**
 
 > **2026-08-06 re-run:** the 13 R1–R15 case studies were re-run on the fixed
 > pipeline (0-100 score scale, no scorecard citations, provenance-stamped
@@ -96,9 +94,6 @@ feature inventory with env gates and per-feature status lives in
 | `pool-large-hive` (Hive ransomware, UPX-packed) | 4315K | [verdict.json](agentic/pool-large-hive/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/pool-large-hive/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/pool-large-hive/AUDIT-REPORT.md) |
 | `pool-large-sliver` (Sliver C2 implant, packed ELF) | 9282K | [verdict.json](agentic/pool-large-sliver/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/pool-large-sliver/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/pool-large-sliver/AUDIT-REPORT.md) |
 
-### UI — all samples (pending, manual)
-
 ### Sample pool
 
-150 InTheWild samples (50 small/mid/large) staged on the VM for the remaining
-runs: see [`pool/`](pool/).
+150 InTheWild samples (50 small/mid/large) staged on the VM: see [`pool/`](pool/).

@@ -4,8 +4,7 @@ Full pipeline (`pipeline_single.py`) with all feature gates on:
 `REVAI_ENABLE_AGENTIC_RECOVERY=1`, `REVAI_ENABLE_EMULATION_ORACLE=1`,
 `REVAI_ENABLE_UNPACK_PASS=1`, `ENABLE_DEOBFUSCATION_PASS=1`,
 recovery max-funcs 40 / tier-cap 5. 15/16 samples passed the full
-audit gate (all_green). `fgg_js` excluded: documented LLM report
-quality failure (tools all correct).
+audit gate (all_green).
 
 Feature definitions, env gates and per-feature status: see
 [`../../FEATURES.md`](../../FEATURES.md).
@@ -17,10 +16,10 @@ Feature definitions, env gates and per-feature status: see
 | sc_3048_ps1 | . | . | . | . | . | . | H | . | H | H | . |
 | sc_angr_crackme2 | H | . | H | . | H | H | H | H | H | H | H |
 | sc_crackme7 | H | . | H | . | H | H | H | H | H | H | . |
-| sc_darkside | H | H | H | . | H | H | H | H | H | H | . |
+| sc_darkside | H | H | H | H | H | H | H | H | H | H | . |
 | sc_fgg_js | . | . | . | . | . | . | H | . | H | H | . |
 | sc_guloader | H | . | . | . | H | H | H | H | H | H | H |
-| sc_nspack | H | . | H | . | H | H | H | H | H | H | . |
+| sc_nspack | H | . | H | H | H | H | H | H | H | H | . |
 | sc_order_docm | . | . | . | . | . | . | H | . | H | H | . |
 | sc_space1 | H | H | H | . | H | H | H | H | H | H | . |
 | sc_steel_saz | . | . | . | . | . | . | H | . | H | H | . |
@@ -34,7 +33,7 @@ Feature definitions, env gates and per-feature status: see
 - **G1**: 9/16 samples with evidence
 - **G2**: 2/16 samples with evidence
 - **G3**: 7/16 samples with evidence
-- **G4**: 0/16 samples with evidence
+- **G4**: 2/16 samples with evidence
 - **G5**: 9/16 samples with evidence
 - **G6**: 11/16 samples with evidence
 - **G7**: 16/16 samples with evidence
@@ -63,12 +62,3 @@ Feature definitions, env gates and per-feature status: see
 | sc_upack037 | malicious |
 | sc_vdaudio_dll | malicious |
 | sc_worddoc_shellcode | malicious |
-
-## Notes
-
-- G4 dynamic-resolve extractor runs clean on all samples but found
-  0 sites on this corpus (packed/pre-unpack Ghidra data) - follow-up
-  item: heuristic review against packed binaries.
-- `function_recovery` recovered named functions on 9/16 (e.g.
-  tasksche 23, vdaudio 14, darkside 8); no-function samples exit
-  rc=1 - follow-up item: honest not-applicable rc=0 contract.

@@ -2,7 +2,7 @@
   "engine": "emulation_oracle",
   "ok": true,
   "sample": "darkside.ex",
-  "wall_s": 0.71,
+  "wall_s": 0.8,
   "instructions_executed": 995900,
   "executed_addresses": [
     4198400,
@@ -949,7 +949,7 @@
     }
   ],
   "memory_region_count": 57,
-  "emu_runtime": 0.204,
+  "emu_runtime": 0.23,
   "entry_points": [
     {
       "ep_type": "module_entry",

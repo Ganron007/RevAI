@@ -20,6 +20,7 @@ import sys
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -522,6 +523,35 @@ def main():
 
     model = get_llm_model()
     system_template, user_template = load_prompt_templates()
+
+    # Honest not-applicable contract: formats without a Ghidra project
+    # (doc/script/raw) have no functions to recover — write an explicit
+    # not_applicable result and exit 0, never a crash rc.
+    if not session.get("gpr_path") or session.get("skip_ghidra"):
+        recovery = {
+            "sha256": sha,
+            "sample_path": sample_path,
+            "ok": True,
+            "not_applicable": True,
+            "reason": "no ghidra project (doc/script/raw format) — nothing to recover",
+            "triage": {"total_functions": 0, "analyzed_in_pipeline": 0,
+                       "signature_matches": 0, "llm_candidates": 0},
+            "function_results": {},
+            "model": model,
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+        }
+        recovery_path = LOGS_DIR / sha / "function_recovery.json"
+        recovery_path.write_text(json.dumps(recovery, indent=2, default=str))
+        (ev_dir / "06-function_recovery.json").write_text(json.dumps(recovery, indent=2, default=str))
+        audit_write(sha, {
+            "source": "agentic_recover_v4",
+            "phase": "complete",
+            "function_recovery_path": str(recovery_path),
+            "not_applicable": True,
+            "llm_calls": 0,
+        })
+        print(f"[agentic_recover_v4] not_applicable (no ghidra project) -> {recovery_path}")
+        return
 
     client = McpGhidraClient()
     try:

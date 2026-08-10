@@ -724,6 +724,30 @@ def _seed_signal_extractors(history: list, findings: dict, session: dict, sha: s
                         k: v for k, v in unpack.items() if k != "payload_b64"
                     }
 
+            # G4 runtime-resolution evidence: on packed/stripped samples Ghidra
+            # decodes no callgraph edges, so the callgraph-based resolver scan
+            # legitimately finds 0 sites. The emulation oracle's resolved
+            # imports ARE the dynamic-resolution evidence — surface them.
+            if oracle and oracle.get("ok"):
+                dyn = oracle.get("dyn_imports") or []
+                def _imp_name(d):
+                    if isinstance(d, dict):
+                        return str(d.get("name") or d.get("api") or d)
+                    return str(d)
+                names = sorted({_imp_name(d) for d in dyn if d})
+                if names:
+                    payload["runtime_resolved_imports"] = {
+                        "count": len(names),
+                        "imports": names[:200],
+                        "source": "emulation_oracle",
+                        "note": "runtime-observed dynamic resolution (Ghidra "
+                                "callgraph undecodable on packed/stripped code)",
+                    }
+                    findings["dynamic_resolve_sites"] = findings.get(
+                        "dynamic_resolve_sites", {}
+                    )
+                    findings["dynamic_resolve_sites"]["runtime_resolved"] = len(names)
+
             (ev_dir / "02-signals.json").write_text(
                 json.dumps(payload, indent=2, default=str)
             )

@@ -7,7 +7,7 @@
       "categories": {},
       "total_signals": 0,
       "functions_with_signals": 0,
-      "elapsed_s": 0.09,
+      "elapsed_s": 6.86,
       "note": "Deterministic; TLS callbacks are pre-entry-point candidates."
     }
   },
@@ -19,7 +19,7 @@
       "peb_module_walkers": 0,
       "ordinal_imports": 0,
       "min_resolve_calls": 2,
-      "elapsed_s": 0.05,
+      "elapsed_s": 0.06,
       "note": "Resolve sites are core logic of packed/stripped samples (static import dir empty)."
     },
     "resolver_funcs": [],
@@ -31,7 +31,7 @@
     "engine": "emulation_oracle",
     "ok": true,
     "sample": "angr_crackme2.exe",
-    "wall_s": 0.13,
+    "wall_s": 0.15,
     "instructions_executed": 9,
     "executed_addresses": [
       4198400,
@@ -125,7 +125,7 @@
       }
     ],
     "memory_region_count": 15,
-    "emu_runtime": 0.046,
+    "emu_runtime": 0.053,
     "entry_points": [
       {
         "ep_type": "module_entry",
