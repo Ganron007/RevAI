@@ -19,6 +19,23 @@
 
 **Malcat** is not auto-downloaded (vendor license). Place it at `/opt/malcat` so `/opt/malcat/bin/malcat.mcp.py` exists before audited runs. The pipeline runs without Malcat (`--skip-malcat`); only audited runs require it.
 
+## Optional: revai-tools
+
+The `revai_tools_*` wrappers invoke the sibling **revai-tools** package (stdlib-only:
+PE/ELF parsers, mitigations-with-consequence, sink-site + provenance audit, wallet/IOC
+extraction). It is **not** required — every wrapper is fail-open (missing package /
+error / timeout / format-mismatch is recorded and never gates a stage).
+
+```bash
+# From the sibling revai-tools repo: copy the package to the default location
+sudo mkdir -p /opt/revai-tools
+sudo cp -a revai-tools/revai_tools/. /opt/revai-tools/
+# ...or point the wrappers elsewhere:
+# export REVAI_TOOLS_DIR=/opt/revai-tools   (default; set to override)
+```
+
+See [`PREREQUISITES.md`](PREREQUISITES.md) for the full contract.
+
 ## Run the setup script
 
 ```bash

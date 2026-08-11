@@ -59,7 +59,7 @@ All modes run the same 7 stages (+1 optional function-recovery stage), the same 
 
 All three modes share the same tool stack, the same LLM backend, and the same stage spine — sequencing and failure handling are the only differences (table above). The full tool list:
 
-- **Static analysis** — Ghidra (SQL-first, required), IDA Pro (SQL, optional), Malcat (optional), radare2, capa, YARA, FLOSS
+- **Static analysis** — Ghidra (SQL-first, required), IDA Pro (SQL, optional), Malcat (optional), radare2, capa, YARA, FLOSS, revai-tools (mitigations-with-consequence, sink-site + provenance audit, wallet/IOC extraction)
 - **Dynamic / emulation** — Speakeasy, scdbg
 - **Deobfuscation / symbolic** — z3, angr
 - **Format-specific** — LIEF, diec, GoReSym, FindCrypt, ilspycmd, RIFT, pycdc
@@ -100,7 +100,8 @@ React Console / CLI
    ├─ 1. intake_v2.py            session + Ghidra (optional IDA) → SQLite
    ├─ 2. quick_scan_v2.py        triage tools → evidence-pack → LLM verdict
    ├─ 3. deep_dive_agentic.py    AGENTIC LangGraph ReAct deep dive
-   │        (planner agent drives Ghidra/IDA SQL, capa, Malcat, FLOSS, YARA, r2)
+   │        (planner agent drives Ghidra/IDA SQL, capa, Malcat, FLOSS, YARA, r2,
+   │         revai-tools sec/sinks/audit)
    ├─ 3.5 function_recovery*  OPT-IN agentic function-name recovery
    │        (call-graph tiers → LLM naming → ghidrasql writeback, conf ≥ 0.7)
    ├─ 4. yara_gen_v2.py          YARA + Sigma generation
@@ -130,7 +131,7 @@ Distinctive capabilities — the things that set RevAI apart. For the full featu
 | **Honest `truly_green` gate** | Green requires audit (`all_green`) **and** report quality (`quality_green`) **and** zero failed tools — plus engine-citation verification and a cross-stage verdict lock. A stubbed or mis-attributed report can never look green |
 | **Depth gate (capability coverage)** | Deterministic gate: before green, the deep-dive summary must address **every** capability domain (persistence, C2, evasion, exfiltration, defense impairment, credential access, encryption, entry point, imports, strings) — as evidence or explicit "not observed". A verdict over a thin pass can never go green — see [`docs/architecture.md`](docs/architecture.md#10-quality-verification-gate-truly_green) |
 | **Agentic function recovery** | Opt-in stage (`agentic_recover_v4.py`): relevance-based triage (call-hub + string + high-value-import score, hybrid guaranteed slots for API callers/large logic) → call-graph bottom-up tiers → LLM naming (`FUN_…` → `parse_http_header`) → SQL writeback (ghidrasql/idasql, conf ≥ 0.7, never deletes) → names cited in reports |
-| **Tool Stack (24 tools)** | 24 format-aware manifest tools + 19 agent-callable tools — see [`docs/tool-stack.md`](docs/tool-stack.md) · [`docs/OPERATE.md`](docs/OPERATE.md) |
+| **Tool Stack (28 tools)** | 28 format-aware manifest tools + 23 agent-callable tools (incl. revai-tools mitigations-with-consequence, sink-site audit, and wallet/IOC extraction — fail-open, never gates) — see [`docs/tool-stack.md`](docs/tool-stack.md) · [`docs/OPERATE.md`](docs/OPERATE.md) |
 
 ---
 

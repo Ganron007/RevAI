@@ -18,6 +18,10 @@ controls it, where it runs, what artifact it produces, and its status in the
 | G8 | **Packer checklist** | Deterministic packer_intake scoring (entropy/sections/imports) | always on | quick_scan + deep_dive | `packer.txt`, gate context for packed policy |
 | G9 | **Signals → agent prompt** | Seeds G1–G4 findings into the agent's evidence so it cites them | always on | deep_dive seeds | findings + agent history |
 | G10 | **IOC export** | Structured pack: hashes/domains/ips/urls/files/registry/mutexes | always on | yara_gen | `iocs.json` |
+| G11 | **revai-tools mitigations** (`revai_tools_sec`) | Mitigations-with-consequence: PE claim-vs-fact (ASLR/DEP/CFG/GS/SEH per section flags) + ELF header-fact findings, each with an exploitation consequence note | always on (PE/ELF, fail-open) | quick_scan phase-A + deep-dive checklist + agent | `quick_scan/00-tools-raw.json`, agent history |
+| G12 | **revai-tools sink sites** (`revai_tools_sinks`) | Dangerous-API call sites located inside named functions (radare2-backed); honest 0-site results recorded | always on (PE/ELF/dotnet, fail-open) | quick_scan phase-A + deep-dive checklist + agent | `quick_scan/00-tools-raw.json`, agent history |
+| G13 | **revai-tools sink audit** (`revai_tools_audit`) | Sink sites with exploitable argument provenance (constant vs subtraction/register-source) + entry-reachability | always on (PE/ELF/dotnet, fail-open) | deep-dive checklist + agent | deep-dive evidence pack, agent history |
+| G14 | **revai-tools IOC extension** (`revai_tools_iocs`) | Crypto wallets (BTC/ETH) + defanged IOC merge into the structured pack | always on (fail-open) | yara_gen | `iocs.json` (`revai_tools` provenance block) |
 | — | **angr / z3 probes** | Symbolic execution + SMT solving via `extensions/deobfuscation` | `ENABLE_DEOBFUSCATION_PASS=1` | deep_dive checklist (`z3_solve`, `angr_analyze`) | agent history + deep verdict |
 
 ## Analysis stages
@@ -25,8 +29,8 @@ controls it, where it runs, what artifact it produces, and its status in the
 | Feature | What it does | Gate | Artifact |
 |---------|-------------|------|----------|
 | Intake (PE/doc/script) | hashing, staging, Ghidra/IDA import (doc formats: doc_triage/olevba/peepdf), engine validation + source decisions | — | `intake-validation.json`, `source-decisions.json`, `doc-triage.json` |
-| quick_scan | capa (malcat→capa-rs→Mandiant chain), yara, floss, malcat deep, pe_imports, packer; LLM verdict + v1 fallback + calibration + citation grounding | — | `verdict.json`, `00-tools-raw.json`, `prompt.txt` |
-| deep_dive (agentic) | LangGraph ReAct agent; checklist tools + SQL deep (Ghidra/IDA) + signal seeds | `REVAI_AGENTIC_ENGINE=langgraph` | `05-deep-dive.json`, `agentic_deep_dive.json`, `evidence-pack.md` |
+| quick_scan | capa (malcat→capa-rs→Mandiant chain), yara, floss, malcat deep, pe_imports, packer, revai-tools sec/sinks; LLM verdict + v1 fallback + calibration + citation grounding | — | `verdict.json`, `00-tools-raw.json`, `prompt.txt` |
+| deep_dive (agentic) | LangGraph ReAct agent; checklist tools + SQL deep (Ghidra/IDA) + signal seeds + revai-tools sec/sinks/audit | `REVAI_AGENTIC_ENGINE=langgraph` | `05-deep-dive.json`, `agentic_deep_dive.json`, `evidence-pack.md` |
 | Function recovery | Hybrid oracle/resolve-assisted naming, tiered (max-funcs/tier-cap) | `REVAI_ENABLE_AGENTIC_RECOVERY=1`, `REVAI_AGENTIC_RECOVERY_MAX_FUNCS=40`, `REVAI_AGENTIC_RECOVERY_TIER_CAP=5` | `function-recovery.json` |
 | Publish v2 | Master + technical LLM reports with quality gate | — | `REPORT-v2.md`, `REPORT-MASTER-v2.md`, `REPORT-TECHNICAL-v2.md` |
 | Publish v3 (sections) | Section-by-section reports with cross-section context | — | `REPORT-MASTER-v3.md`, `REPORT-TECHNICAL-v3.md`, `section-results-v3.json` |
@@ -43,6 +47,8 @@ controls it, where it runs, what artifact it produces, and its status in the
 | Doc-intake evidence | doc formats now write intake-validation + source-decisions stubs (was failing audit forever) | Live |
 | Deep-dive packer context | checklist adds deterministic packer scan so gates share the packed policy | Live |
 | Goodware fingerprint | known-good SHA short-circuit → clean verdict, skips LLM | always on |
+| revai-tools wrappers | fail-open subprocess integration (`revai_tools.cli` via `$REVAI_TOOLS_DIR`); error/timeout/format-mismatch recorded — never gates (was: external analysis completely absent) | Live |
+| malcat_analyze body split (v2_lib) | wrapper insertion split `malcat_analyze` (stub → always None); relocated wrappers after the function; verified via `inspect.getsource` | Fixed + deployed |
 
 ## External integrations
 
@@ -56,3 +62,11 @@ controls it, where it runs, what artifact it produces, and its status in the
 15/16 `all_green`. G1 9/16 · G2 2/16 · G3 7/16 · G4 2/16 · G5 9/16 · G6 11/16 ·
 G7/G9/G10 16/16 · G8 11/16 · angr/z3 2/16 · recovery: named functions on 9/16
 (tasksche 23, vdaudio 14, darkside 8).
+
+## Run status (2026-08-11, revai-tools integration, VM-validated)
+
+Full pipeline on guLoader.exe (REMnux VM 192.168.77.43): `v2_validate.py --smoke-only`
+V2_SMOKE_OK · revai-tools tests 10/10 · quick_scan green (sec: real ASLR/DEP-missing
+findings; sinks: honest 0 sites; malcat verified fixed) · deep-dive checklist 15/15
+tools incl. all three revai_tools (`gate_ok=True hard_failures=[]`) · yara_gen
+`iocs.json` carries the `revai_tools` provenance block.

@@ -1435,6 +1435,35 @@ TOOL_MANIFEST = {
         "applies_to": ["pe"],
         "timeout": 180,
     },
+    # revai-tools — our internal static-analysis toolchain (Integrations/revai-tools).
+    # Evidence-only: fail-open, never required, never gate. sec = mitigations
+    # (the pipeline has no other mitigations extractor); sinks = dangerous-API
+    # call sites in named functions; audit = sink sites with exploitable
+    # provenance; iocs = wallets/defanged extension for the IOC pack.
+    "revai_tools_sec": {
+        "fn": "revai_tools_sec",
+        "kwargs": {},
+        "applies_to": ["pe", "elf", "macho"],
+        "timeout": 120,
+    },
+    "revai_tools_sinks": {
+        "fn": "revai_tools_sinks",
+        "kwargs": {},
+        "applies_to": ["pe", "elf", "macho"],
+        "timeout": 300,
+    },
+    "revai_tools_audit": {
+        "fn": "revai_tools_audit",
+        "kwargs": {},
+        "applies_to": ["pe", "elf", "macho"],
+        "timeout": 600,
+    },
+    "revai_tools_iocs": {
+        "fn": "revai_tools_iocs",
+        "kwargs": {},
+        "applies_to": ["pe", "elf", "macho"],
+        "timeout": 60,
+    },
     # Frida static probe — IAT / availability (works on PE containers incl. .NET)
     "frida_probe": {
         "fn": "frida_static_probe",
@@ -3686,6 +3715,8 @@ def malcat_analyze(sample_path: str, views: list[str] | None = None,
     registry), anomalies (with locations), carved_files, virtual_files,
     structures, decompilations, script_decompile, unpack_result, errors.
     """
+
+
     # MCP handshake can race (server prints PERSONAL-use WARNING then
     # closes before initialize). Retry once before failing the stage.
     last: dict | None = None
@@ -3699,6 +3730,58 @@ def malcat_analyze(sample_path: str, views: list[str] | None = None,
             flush=True,
         )
     return last or {"error": "malcat_analyze failed with no result"}
+
+_REVAI_TOOLS_DIR = os.environ.get("REVAI_TOOLS_DIR", "/opt/revai-tools")
+
+
+def _revai_tools_run(subcmd: str, sample_path: str, timeout: int) -> dict:
+    """Run a revai-tools subcommand; fail-open (recorded, never gates)."""
+    env = {**os.environ, "PYTHONPATH": _REVAI_TOOLS_DIR}
+    try:
+        proc = subprocess.run(
+            [sys.executable, "-m", "revai_tools.cli", subcmd, str(sample_path), "--json"],
+            capture_output=True, text=True, timeout=timeout, env=env,
+        )
+    except subprocess.TimeoutExpired:
+        return {"error": f"revai_tools_{subcmd}: timeout", "fail_open": True,
+                "skipped": True, "reason": "not_applicable:timeout"}
+    except Exception as e:
+        return {"error": f"revai_tools_{subcmd}: {type(e).__name__}: {e}",
+                "fail_open": True, "skipped": True,
+                "reason": "not_applicable:error"}
+    if proc.returncode != 0 or not (proc.stdout or "").strip():
+        return {"error": f"revai_tools_{subcmd}: rc={proc.returncode} {proc.stderr[:200]}",
+                "fail_open": True, "skipped": True,
+                "reason": "not_applicable:error"}
+    try:
+        data = json.loads(proc.stdout)
+    except Exception as e:
+        return {"error": f"revai_tools_{subcmd}: invalid json {e}",
+                "fail_open": True, "skipped": True,
+                "reason": "not_applicable:error"}
+    data.setdefault("engine", f"revai_tools_{subcmd}")
+    data.setdefault("source", "revai_tools")
+    return data
+
+
+def revai_tools_sec(sample_path: str, timeout: int | None = None) -> dict:
+    """Mitigations with consequence (PE claim-vs-fact, ELF header-fact)."""
+    return _revai_tools_run("sec", sample_path, timeout or 120)
+
+
+def revai_tools_sinks(sample_path: str, timeout: int | None = None) -> dict:
+    """Dangerous-API call sites in named functions (r2-backed)."""
+    return _revai_tools_run("sinks", sample_path, timeout or 300)
+
+
+def revai_tools_audit(sample_path: str, timeout: int | None = None) -> dict:
+    """Sink sites with exploitable argument provenance (r2-backed)."""
+    return _revai_tools_run("audit", sample_path, timeout or 600)
+
+
+def revai_tools_iocs(sample_path: str, timeout: int | None = None) -> dict:
+    """IOC extraction extension: wallets + defanged output."""
+    return _revai_tools_run("iocs", sample_path, timeout or 60)
 
 
 def _malcat_analyze_once(sample_path: str, views: list[str] | None = None,

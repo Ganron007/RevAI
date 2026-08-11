@@ -39,6 +39,17 @@ are **vendor / licensed** and must be placed manually.
 
 `install/setup-remnux.sh` includes an **optional Malcat step** that performs steps 2–4 automatically if the archive is present at `internal/malcat.zip`; it soft-fails (warns and continues) if the archive is missing or the install errors.
 
+## revai-tools (sibling package)
+
+| Component | Expected path | How to get it |
+|-----------|---------------|---------------|
+| **revai-tools** | `$REVAI_TOOLS_DIR` (default `/opt/revai-tools`) | The `revai_tools` package (stdlib-only Python: PE/ELF parsers, mitigations-with-consequence, sink-site + provenance audit, wallet/IOC extraction). Copy it from the sibling revai-tools repo to the default path, or point `REVAI_TOOLS_DIR` at an existing checkout |
+
+**Fail-open contract:** the `revai_tools_*` wrappers in `v2_lib.py` run the package as a
+subprocess (`revai_tools.cli … --json`). A missing package, error, timeout, or format
+mismatch is recorded (`error` / `skipped` + `reason:not_applicable:<fmt>`) and never
+gates a stage — the pipeline remains fully functional without it.
+
 ### Why Malcat's capa engine
 
 Measured 10-sample benchmark on real malware (Malcat 0.9.15 native vs Mandiant capa 9.4.0 vs capa-rs):

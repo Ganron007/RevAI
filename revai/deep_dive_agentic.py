@@ -50,6 +50,9 @@ from v2_lib import (  # noqa: E402
     speakeasy_emulate,
     tool_applies_to_format,
     tool_result_ok,
+    revai_tools_sec,
+    revai_tools_sinks,
+    revai_tools_audit,
     upx_unpack,
     run_post_upx_second_pass,
     xor_string_search,
@@ -76,6 +79,10 @@ CHECKLIST_PE = [
     ("speakeasy_emulate", "speakeasy", {}),
     ("frida_static_probe", "frida_probe", {}),
     ("shellcode_extract", "shellcode", {}),
+    # revai-tools evidence (fail-open, never gates): mitigations, sinks, audit.
+    ("revai_tools_sec", "revai_tools_sec", {}),
+    ("revai_tools_sinks", "revai_tools_sinks", {}),
+    ("revai_tools_audit", "revai_tools_audit", {}),
 ]
 SQL_DEEP_TOOLS = {"ghidra_query", "ida_query", "ghidra_decompile"}
 
@@ -478,7 +485,19 @@ class ToolRegistry:
             "angr_analyze": self._angr_analyze,
             "signature_match": self._signature_match,
             "shellcode_extract": self._shellcode_extract,
+            "revai_tools_sec": self._revai_tools_sec,
+            "revai_tools_sinks": self._revai_tools_sinks,
+            "revai_tools_audit": self._revai_tools_audit,
         }
+
+    def _revai_tools_sec(self, args, session):
+        return revai_tools_sec(session["sample_path"])
+
+    def _revai_tools_sinks(self, args, session):
+        return revai_tools_sinks(session["sample_path"])
+
+    def _revai_tools_audit(self, args, session):
+        return revai_tools_audit(session["sample_path"])
 
     def _shellcode_extract(self, args, session):
         # Extract shellcode sections + scdbg emulation.

@@ -46,7 +46,7 @@ RevAI Console (Flask + React) ────────► LLM Judge & Agentic Pl
 ┌──────▼─────────────────────────────────────│──────────▼────────────────┐
 │ REMnux Malware Analysis Pipeline           │                           │
 │ 1. Intake ──► 2. Triage ──► 3. Deep Dive ──┤                           │
-│  (Ghidra/IDA)  (24 tools)   (LangGraph)    │                           │
+│  (Ghidra/IDA)  (28 tools)   (LangGraph)    │                           │
 │       │            │              │        │                           │
 │       └────────────┼──────────────┘        │                           │
 │                    ▼                       │                           │
@@ -70,7 +70,7 @@ RevAI contains exactly **two LangGraph ReAct loops** (same `create_react_agent` 
 
 | Loop | Tools it orchestrates | Decides |
 |---|---|---|
-| **Deep-dive agent** (`agentic_langgraph.py`) | 12 RE tools: `ghidra_query`, `ida_query`, `ghidra_decompile`, `capa_analyze`, `malcat_analyze`, `yara_scan`, `floss_extract`, `pe_import_signals`, `xor_string_search`, `speakeasy_emulate`, `frida_static_probe`, `signature_match` | which tool to call next, with what arguments, based on previous results |
+| **Deep-dive agent** (`deep_dive_agentic.py`) | 23 RE tools: `ghidra_query`, `ida_query`, `ghidra_decompile`, `capa_analyze`, `malcat_analyze`, `yara_scan`, `floss_extract`, `pe_import_signals`, `xor_string_search`, `speakeasy_emulate`, `frida_static_probe`, `signature_match`, `r2_decompile`, `upx_unpack`, `shellcode_extract`, `olevba_analyze`, `peepdf_analyze`, `z3_solve`, `angr_analyze`, `dotnet_analyze`, `revai_tools_sec`, `revai_tools_sinks`, `revai_tools_audit` | which tool to call next, with what arguments, based on previous results |
 | **Stage planner** (`stage_orchestrator.py`) | 11 stage tools: `run_intake`, `run_quick_scan`, `run_deep_dive_agentic`, `run_function_recovery`, `run_yara_gen`, `run_publish`, `run_section_publish`, `run_audit`, `check_quality`, `read_verdicts`, `read_evidence` | which stage to execute next, within a policy-pinned order (never skips mandatory stages) |
 
 `run_function_recovery` is an **optional** planner tool — it skips itself when
@@ -83,10 +83,10 @@ RevAI contains exactly **two LangGraph ReAct loops** (same `create_react_agent` 
 | Stage | Script | Role & Functionality |
 | :--- | :--- | :--- |
 | **1. Intake** | `intake_v2.py` | Normalizes sample, initializes session, runs Ghidra headless and (optional, licensed) IDA Pro to populate `ghidrasql` / `idasql` databases. IDA absence is a documented soft-fail, not an error. |
-| **2. Triage** | `quick_scan_v2.py` | Executes 24 tools in parallel (capa, Malcat, YARA, FLOSS, radare2, etc.). Packages findings into the Evidence Pack; one LLM judge call writes the quick verdict. |
+| **2. Triage** | `quick_scan_v2.py` | Executes 28 tools in parallel (capa, Malcat, YARA, FLOSS, radare2, revai-tools sec/sinks, etc.). Packages findings into the Evidence Pack; one LLM judge call writes the quick verdict. |
 | **3. Deep Dive** | `deep_dive_agentic.py` | LangGraph ReAct agent over the RE tool registry — SQL-first evidence, adaptive tool selection, agent-loop discipline (see §7). |
 | **3.5. Function Recovery** *(optional)* | `agentic_recover_v4.py` (+ `recovery/` package + `anti_analysis_signals.py` + `dynamic_resolve_detect.py`) | Opt-in agentic function-name recovery: relevance-based triage (score = call-in × 2 + string refs + high-value imports × 3 + anti-analysis signals; matched by prefix) → hybrid pool with guaranteed slots for API callers, largest functions, and dynamic-import-resolve sites → call-graph bottom-up tiers → per-function LLM naming with typed signatures → SQL writeback (`ghidra_sql_client`/idasql, confidence ≥ 0.7, never deletes). Gated by `REVAI_ENABLE_AGENTIC_RECOVERY=1` (legacy `ENABLE_AGENTIC_RECOVERY` honored). Produces `function_recovery.json`; recovered names are fed into publish prompts and cited in reports. |
-| **4. Rule Gen** | `yara_gen_v2.py` | Generates YARA + Sigma rules from evidence, provenance-stamped, validated in-process. |
+| **4. Rule Gen** | `yara_gen_v2.py` | Generates YARA + Sigma rules from evidence, provenance-stamped, validated in-process; `iocs.json` extended with revai-tools wallets + defanged IOC merge. |
 | **5. Publish** | `publish_report_v2.py` | LLM Judge authors `REPORT-MASTER-v2.md` (17 sections) and `REPORT-TECHNICAL-v2.md` (13 sections) with the evidence pack appended. |
 | **6. Correlate** | `section_publisher.py` | Section map-reduce: per-section LLM passes with cross-section context → `REPORT-MASTER-v3.md` / `REPORT-TECHNICAL-v3.md`. |
 | **7. Audit** | `audit_pipeline.py` & `report_quality.py` | Per-stage audit (`all_green`), engine-citation honesty, verdict lock, style gates, depth gate, `truly_green`. |
@@ -202,7 +202,7 @@ truly_green = all_green (per-stage audit) AND quality_green (no fallback stubs)
 
 * [`OPERATE.md`](OPERATE.md) — Daily pipeline operation, staging samples, running CLI / Console.
 * [`PREREQUISITES.md`](PREREQUISITES.md) — System requirements, Ghidra, ghidrasql, Malcat, IDA Pro (optional), LLM setup.
-* [`tool-stack.md`](tool-stack.md) — 24 format-aware manifest tools + 19 agent-callable tools.
+* [`tool-stack.md`](tool-stack.md) — 28 format-aware manifest tools + 23 agent-callable tools (incl. revai-tools).
 * [`agent-loop-discipline.md`](agent-loop-discipline.md) — Loop discipline, budget warnings, hallucination checks, failure taxonomy.
 * [`cadre-pe-loader.md`](cadre-pe-loader.md) — Custom Ghidra PE loader for packed/binder samples.
 * [`malcat-capa-engine.md`](malcat-capa-engine.md) — Malcat-native capa engine integration.

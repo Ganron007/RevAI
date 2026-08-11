@@ -25,6 +25,7 @@ from v2_lib import (  # noqa: E402
     ida_query_remote,
     load_session,
     revai_provenance,
+    revai_tools_iocs,
     yara_rule_validate,
 )
 
@@ -345,6 +346,29 @@ def main():
 
     # Gap #10: structured IOC pack (hashes/domains/ips/urls/files/registry/mutexes).
     iocs = extract_iocs(args.sha256, sample_path, verdict, strings)
+    # revai-tools IOC extension (fail-open): wallets + defanged output.
+    try:
+        rt = revai_tools_iocs(sample_path)
+        if rt.get("ok") or rt.get("source") == "revai_tools":
+            iocs["wallets_btc"] = list(dict.fromkeys(iocs.get("wallets_btc", []) +
+                                                      (rt.get("wallets_btc") or [])))
+            iocs["wallets_eth"] = list(dict.fromkeys(iocs.get("wallets_eth", []) +
+                                                      (rt.get("wallets_eth") or [])))
+            for k in ("urls", "ips", "domains", "emails", "registry_keys"):
+                rt_v = rt.get(k) or []
+                merged = list(dict.fromkeys(iocs.get(k, []) + rt_v))
+                if rt_v:
+                    iocs[k] = merged
+            iocs["revai_tools"] = {
+                "count": sum(len(rt.get(k) or []) for k in
+                             ("wallets_btc", "wallets_eth", "urls", "ips",
+                              "domains", "emails", "registry_keys")),
+                "source": "revai_tools_iocs",
+            }
+        else:
+            iocs["revai_tools"] = {"error": str(rt.get("error")), "source": "revai_tools_iocs"}
+    except Exception as e:
+        iocs["revai_tools"] = {"error": str(e), "source": "revai_tools_iocs"}
     ioc_path.write_text(json.dumps(iocs, indent=2))
 
     valid, vmsg = yara_rule_validate(yar_path)

@@ -53,8 +53,8 @@ The run writes `orchestrator_trace.json` and `quality-gate.json` under `/opt/sam
 ## Pipeline stages 
 
 1. **intake** — session + Ghidra (optional IDA)  
-2. **quick_scan** — triage tools → `evidence-pack.md` → LLM verdict  
-3. **deep_dive** — agentic LangGraph ReAct deep dive (`deep_dive_agentic`; `deep_dive_v2` for standard mode)  
+2. **quick_scan** — triage tools (capa, yara, floss, malcat, pe_imports, packer, **revai-tools sec/sinks**) → `evidence-pack.md` → LLM verdict  
+3. **deep_dive** — agentic LangGraph ReAct deep dive (`deep_dive_agentic`; `deep_dive_v2` for standard mode) — checklist + agent callable include **revai-tools sec/sinks/audit**  
 3.5. **function_recovery** — *(optional)* agentic function-name recovery (see below)  
 4. **yara_gen** — YARA + Sigma  
 5. **publish** — REPORT-MASTER (LLM-authored, source-tagged)  

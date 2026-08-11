@@ -1,6 +1,6 @@
-# Tool Stack (24 tools)
+# Tool Stack (28 tools)
 
-The pipeline runs **24 tools automatically** via `TOOL_MANIFEST`, plus **agent-callable
+The pipeline runs **28 tools automatically** via `TOOL_MANIFEST`, plus **agent-callable
 tools** in the deep-dive `ToolRegistry`. All tools are format-aware — each runs only
 when it applies to the sample's file type.
 
@@ -22,6 +22,10 @@ when it applies to the sample's file type.
 | **pefile / LIEF** | PE structure, entropy, imports, overlay, TLS |
 | **z3** | MBA / opaque-predicate verification |
 | **angr** | CFF-deflatten / symbolic execution (pipx venv; enabled via `ENABLE_DEOBFUSCATION_PASS=1`) |
+| **revai-tools** (`revai_tools_sec`) | PE / ELF | Mitigations-with-consequence: PE claim-vs-fact (ASLR/DEP/CFG/GS per section flags) and ELF header-fact findings, each with an exploitation consequence note. Runs in quick_scan phase-A and the deep-dive checklist; fail-open — evidence only, never gates |
+| **revai-tools** (`revai_tools_sinks`) | PE / ELF / dotnet | Dangerous-API call sites (memcpy, recv, system, …) located inside named functions via radare2 (r2); honest 0-site results recorded. Runs in quick_scan phase-A and the deep-dive checklist; fail-open |
+| **revai-tools** (`revai_tools_audit`) | PE / ELF / dotnet | Sink sites with exploitable argument provenance: constant-length vs subtraction/register-source patterns, sink reachability from entry. Deep-dive checklist + agent-callable; fail-open |
+| **revai-tools** (`revai_tools_iocs`) | PE / ELF / dotnet / scripts | IOC-export extension: cryptocurrency wallets (BTC/ETH) + defanged IOC merge into `iocs.json` (yara_gen) |
 
 ## Extended tools
 
@@ -47,7 +51,8 @@ when it applies to the sample's file type.
 ghidra_query · ida_query · ghidra_decompile · signature_match · z3_solve · angr_analyze
 · malcat_analyze · capa_analyze · pe_import_signals · yara_scan · floss_extract ·
 dotnet_analyze · speakeasy_emulate · frida_static_probe · r2_decompile · upx_unpack ·
-xor_string_search · olevba_analyze · peepdf_analyze
+xor_string_search · olevba_analyze · peepdf_analyze · revai_tools_sec ·
+revai_tools_sinks · revai_tools_audit
 
 ## Format-aware routing
 
@@ -55,6 +60,16 @@ xor_string_search · olevba_analyze · peepdf_analyze
 The runner only executes tools that apply to the detected file type — Speakeasy is
 never required for .NET, FLOSS is never run on ELF, etc. — and each tool's timeout is
 enforced so a hung scanner cannot stall the pipeline.
+
+## revai-tools integration
+
+`revai_tools_*` wrappers (in `v2_lib.py`) invoke the sibling
+`revai-tools` package (`revai_tools.cli` subprocess) located at
+`$REVAI_TOOLS_DIR` (default `/opt/revai-tools`). All four are **fail-open**: an error,
+timeout, or format mismatch is recorded (`error`/`skipped` +
+`reason:not_applicable:<fmt>`) and never gates a stage. Results persist in
+`quick_scan/00-tools-raw.json` (`revai_tools_sec` / `revai_tools_sinks`), the
+deep-dive evidence pack, and `iocs.json` (`revai_tools` provenance block).
 
 ## Related
 

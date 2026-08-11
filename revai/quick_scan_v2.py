@@ -47,6 +47,8 @@ from v2_lib import (  # noqa: E402
     is_transient_failure,
     normalize_llm_json,
     normalize_verdict_score,
+    revai_tools_sec,
+    revai_tools_sinks,
     run_profile,
 )
 from report_quality import VERDICT_CALIBRATION_CONTRACT  # noqa: E402
@@ -505,6 +507,25 @@ def main():
             if not args.skip_malcat
             else None
         )
+        # revai-tools evidence (fail-open, never gates): mitigations + sinks.
+        _sec_manifest_to = (TOOL_MANIFEST.get("revai_tools_sec") or {}).get("timeout")
+        _sinks_manifest_to = (TOOL_MANIFEST.get("revai_tools_sinks") or {}).get("timeout")
+        frt_sec = (
+            pool.submit(
+                _timed_retry, revai_tools_sec, sample,
+                int((_sec_manifest_to or 120) * _to_scale),
+            )
+            if tool_applies_to_format("revai_tools_sec", fmt)
+            else None
+        )
+        frt_sinks = (
+            pool.submit(
+                _timed_retry, revai_tools_sinks, sample,
+                int((_sinks_manifest_to or 300) * _to_scale),
+            )
+            if tool_applies_to_format("revai_tools_sinks", fmt)
+            else None
+        )
         if fc:
             capa, capa_dt = fc.result()
         else:
@@ -544,6 +565,22 @@ def main():
         else:
             malcat, malcat_dt = {"skipped": True}, 0.0
         packer, packer_dt = fpk.result()
+        if frt_sec:
+            rts_sec, rts_sec_dt = frt_sec.result()
+        else:
+            rts_sec, rts_sec_dt = {
+                "skipped": True,
+                "reason": f"not_applicable:{fmt}",
+                "engine": "revai_tools_sec",
+            }, 0.0
+        if frt_sinks:
+            rts_sinks, rts_sinks_dt = frt_sinks.result()
+        else:
+            rts_sinks, rts_sinks_dt = {
+                "skipped": True,
+                "reason": f"not_applicable:{fmt}",
+                "engine": "revai_tools_sinks",
+            }, 0.0
 
     print("[quick_scan_v2] phase_B ghidra/ida after triage tools", flush=True)
     with ThreadPoolExecutor(max_workers=2) as pool:
@@ -562,6 +599,8 @@ def main():
         "floss": floss,
         "malcat": malcat,
         "packer": packer,
+        "revai_tools_sec": rts_sec,
+        "revai_tools_sinks": rts_sinks,
         "_format": fmt,
         "_timings": {
             "capa": capa_dt,
@@ -570,6 +609,8 @@ def main():
             "floss": floss_dt,
             "malcat": malcat_dt,
             "packer": packer_dt,
+            "revai_tools_sec": rts_sec_dt,
+            "revai_tools_sinks": rts_sinks_dt,
         },
         "_stage": "quick_scan",
     }
