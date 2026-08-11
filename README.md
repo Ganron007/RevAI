@@ -36,7 +36,7 @@ Part of the [CADRE](https://github.com/Ganron007/CADRE) platform — LLM-assiste
 > [!NOTE]
 > **Why LLM interpretation and not RAG?**
 >
-> A retrieval-augmented generation configuration was built and empirically evaluated as part of this project. The study found that retrieval contamination degrades malware triage accuracy in RAG-assisted workflows; the published empirical evaluation and evidence-grounded baseline are available here:
+> A retrieval-augmented generation configuration was built and empirically evaluated as part of the parent research project (RevEng) from which RevAI is derived. The study found that retrieval contamination degrades malware triage accuracy in RAG-assisted workflows; the published empirical evaluation and evidence-grounded baseline are available here:
 >
 > **Retrieval Contamination in LLM-Assisted Malware Triage: An Empirical Evaluation and an Evidence-Grounded Baseline** (2026)
 > Zenodo · DOI [10.5281/zenodo.21613150](https://doi.org/10.5281/zenodo.21613150) · [zenodo.org/records/21613150](https://zenodo.org/records/21613150)
