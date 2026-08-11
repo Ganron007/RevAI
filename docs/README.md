@@ -9,7 +9,7 @@
 - [`OPERATE.md`](OPERATE.md) — daily use: staging samples, running stages, optional function-recovery stage + env, depth gate, tests.
 - [`cadre-pe-loader.md`](cadre-pe-loader.md) — custom Ghidra PE loader extension (import fixup for packed/binder PEs).
 - [`agent-loop-discipline.md`](agent-loop-discipline.md) — budget warnings, redundant-call detection, hallucination check, failure taxonomy.
-- [`tool-stack.md`](tool-stack.md) — the 24-tool manifest + agent-callable ToolRegistry.
+- [`tool-stack.md`](tool-stack.md) — the 28-tool manifest + agent-callable ToolRegistry (incl. revai-tools sec/sinks/audit).
 - [`malcat-capa-engine.md`](malcat-capa-engine.md) — why Malcat's native capa engine is primary (measured benchmark).
 - [`case-studies/`](case-studies/) — real analysis reports produced by the pipeline against live malware samples (published after each verified batch run).
 
