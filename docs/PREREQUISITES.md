@@ -39,11 +39,11 @@ are **vendor / licensed** and must be placed manually.
 
 `install/setup-remnux.sh` includes an **optional Malcat step** that performs steps 2–4 automatically if the archive is present at `internal/malcat.zip`; it soft-fails (warns and continues) if the archive is missing or the install errors.
 
-## revai-tools (sibling package)
+## revai-tools (in-repo package)
 
 | Component | Expected path | How to get it |
 |-----------|---------------|---------------|
-| **revai-tools** | `$REVAI_TOOLS_DIR` (default `/opt/revai-tools`) | The `revai_tools` package (stdlib-only Python: PE/ELF parsers, mitigations-with-consequence, sink-site + provenance audit, wallet/IOC extraction). Copy it from the sibling revai-tools repo to the default path, or point `REVAI_TOOLS_DIR` at an existing checkout |
+| **revai-tools** | `/opt/scripts/revai_tools` (deployed from `revai/revai_tools/` in this repo) | Ships in the repo — deployed automatically with the pipeline. Override resolution with `REVAI_TOOLS_DIR` (PYTHONPATH entry for the wrapper subprocess) |
 
 **Fail-open contract:** the `revai_tools_*` wrappers in `v2_lib.py` run the package as a
 subprocess (`revai_tools.cli … --json`). A missing package, error, timeout, or format

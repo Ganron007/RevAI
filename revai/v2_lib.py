@@ -1435,7 +1435,8 @@ TOOL_MANIFEST = {
         "applies_to": ["pe"],
         "timeout": 180,
     },
-    # revai-tools — our internal static-analysis toolchain (Integrations/revai-tools).
+    # revai-tools — our internal static-analysis toolchain (ships in this repo
+    # at revai_tools/).
     # Evidence-only: fail-open, never required, never gate. sec = mitigations
     # (the pipeline has no other mitigations extractor); sinks = dangerous-API
     # call sites in named functions; audit = sink sites with exploitable
@@ -3731,7 +3732,12 @@ def malcat_analyze(sample_path: str, views: list[str] | None = None,
         )
     return last or {"error": "malcat_analyze failed with no result"}
 
-_REVAI_TOOLS_DIR = os.environ.get("REVAI_TOOLS_DIR", "/opt/revai-tools")
+# Vendored package: revai_tools/ ships next to v2_lib.py in the repo
+# (deployed to /opt/scripts/revai_tools). REVAI_TOOLS_DIR overrides the
+# PYTHONPATH entry for the subprocess.
+_REVAI_TOOLS_DIR = os.environ.get(
+    "REVAI_TOOLS_DIR", str(Path(__file__).resolve().parent)
+)
 
 
 def _revai_tools_run(subcmd: str, sample_path: str, timeout: int) -> dict:

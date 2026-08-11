@@ -63,9 +63,9 @@ enforced so a hung scanner cannot stall the pipeline.
 
 ## revai-tools integration
 
-`revai_tools_*` wrappers (in `v2_lib.py`) invoke the sibling
-`revai-tools` package (`revai_tools.cli` subprocess) located at
-`$REVAI_TOOLS_DIR` (default `/opt/revai-tools`). All four are **fail-open**: an error,
+`revai_tools_*` wrappers (in `v2_lib.py`) invoke the **revai-tools** package
+(`revai_tools.cli` subprocess), which ships in this repo at `revai/revai_tools/`
+(deployed to `/opt/scripts/revai_tools`). All four are **fail-open**: an error,
 timeout, or format mismatch is recorded (`error`/`skipped` +
 `reason:not_applicable:<fmt>`) and never gates a stage. Results persist in
 `quick_scan/00-tools-raw.json` (`revai_tools_sec` / `revai_tools_sinks`), the
