@@ -206,7 +206,8 @@ def load_intake_validation(sha: str) -> dict:
 
 def build_prompt(session, ghidra_ev, ida_ev, capa, yara, floss, malcat,
                  intake_validation: dict | None = None, pe_imports=None,
-                 ti_enrich: dict | None = None, packer: dict | None = None) -> str:
+                 ti_enrich: dict | None = None, packer: dict | None = None,
+                 revai_sec=None, revai_sinks=None) -> str:
     intake_validation = intake_validation or {}
     source_decisions = intake_validation.get("source_decisions", {})
 
@@ -255,6 +256,8 @@ def build_prompt(session, ghidra_ev, ida_ev, capa, yara, floss, malcat,
             "yara": yara,
             "floss": floss,
             "packer": packer,
+            "revai_tools_sec": revai_sec,
+            "revai_tools_sinks": revai_sinks,
         },
         budget_chars=28000,
         sha=sha,
@@ -705,6 +708,8 @@ def main():
         pe_imports=pe_imports,
         ti_enrich=ti_enrich,
         packer=packer,
+        revai_sec=rts_sec,
+        revai_sinks=rts_sinks,
     )
     log_dir = audit_path.parent
     (log_dir / "prompt.txt").write_text(prompt)

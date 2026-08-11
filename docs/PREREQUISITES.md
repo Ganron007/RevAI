@@ -39,16 +39,18 @@ are **vendor / licensed** and must be placed manually.
 
 `install/setup-remnux.sh` includes an **optional Malcat step** that performs steps 2–4 automatically if the archive is present at `internal/malcat.zip`; it soft-fails (warns and continues) if the archive is missing or the install errors.
 
-## revai-tools (in-repo package)
+## revai-tools (in-repo, flat)
 
 | Component | Expected path | How to get it |
 |-----------|---------------|---------------|
-| **revai-tools** | `/opt/scripts/revai_tools` (deployed from `revai/revai_tools/` in this repo) | Ships in the repo — deployed automatically with the pipeline. Override resolution with `REVAI_TOOLS_DIR` (PYTHONPATH entry for the wrapper subprocess) |
+| **revai-tools** | `/opt/scripts/cli.py` + `/opt/scripts/{pe,elf,mitigations,sinkcat,…}.py` | Ships in this repo flat among the pipeline scripts (`revai/`) — deployed automatically with the pipeline, no extra install |
+| **radare2** (sink/audit backends) | `r2` on `PATH` | Standard REMnux package (also installed by `install/setup-remnux.sh`) |
 
-**Fail-open contract:** the `revai_tools_*` wrappers in `v2_lib.py` run the package as a
-subprocess (`revai_tools.cli … --json`). A missing package, error, timeout, or format
-mismatch is recorded (`error` / `skipped` + `reason:not_applicable:<fmt>`) and never
-gates a stage — the pipeline remains fully functional without it.
+**Fail-open contract:** the `revai_tools_*` wrappers in `v2_lib.py` run
+`cli.py <subcmd> <sample> --json` as a subprocess from the scripts directory. A
+missing radare2, error, timeout, or format mismatch is recorded (`error` / `skipped`
++ `reason:not_applicable:<fmt>`) and never gates a stage — the pipeline remains fully
+functional without it.
 
 ### Why Malcat's capa engine
 

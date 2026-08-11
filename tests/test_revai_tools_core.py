@@ -2,13 +2,17 @@
 
 import hashlib
 import struct
+import sys
+from pathlib import Path
 
 import pytest
 
-from revai_tools.analysis import hashes as hashes_mod
-from revai_tools.analysis import iocs as iocs_mod
-from revai_tools.analysis import strings as strings_mod
-from revai_tools.formats import pe as pe_mod
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "revai"))
+
+import hashes as hashes_mod  # noqa: E402
+import iocs as iocs_mod  # noqa: E402
+import strings as strings_mod  # noqa: E402
+import pe as pe_mod  # noqa: E402
 
 
 def _minimal_pe() -> bytes:

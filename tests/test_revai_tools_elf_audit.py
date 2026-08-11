@@ -2,12 +2,15 @@
 
 import struct
 import sys
+from pathlib import Path
 
 import pytest
 
-from revai_tools.analysis import sinkcat
-from revai_tools.disasm.backend import DisasmBackend, Function, Instruction
-from revai_tools.formats import elf as elf_mod
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "revai"))
+
+import sinkcat  # noqa: E402
+import elf as elf_mod  # noqa: E402
+from backend import DisasmBackend, Function, Instruction  # noqa: E402
 
 
 def _minimal_elf64() -> bytes:

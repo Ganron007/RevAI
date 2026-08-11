@@ -19,16 +19,17 @@
 
 **Malcat** is not auto-downloaded (vendor license). Place it at `/opt/malcat` so `/opt/malcat/bin/malcat.mcp.py` exists before audited runs. The pipeline runs without Malcat (`--skip-malcat`); only audited runs require it.
 
-## revai-tools (in-repo package)
+## revai-tools (in-repo, flat)
 
-The `revai_tools_*` wrappers invoke the **revai-tools** package (stdlib-only:
-PE/ELF parsers, mitigations-with-consequence, sink-site + provenance audit, wallet/IOC
-extraction), which **ships inside this repo** at `revai/revai_tools/` and deploys to
-`/opt/scripts/revai_tools` with the rest of the pipeline. No external download — the
-wrappers resolve it automatically (override with `REVAI_TOOLS_DIR`).
+The `revai_tools_*` wrappers invoke the **revai-tools** CLI (`cli.py` — stdlib-only
+PE/ELF parsers, mitigations-with-consequence, sink-site + provenance audit,
+wallet/IOC extraction), which **ships in this repo** flat among the pipeline scripts
+(`revai/cli.py`, `revai/mitigations.py`, `revai/sinkcat.py`, …) and deploys to
+`/opt/scripts/` with the rest of the pipeline. No external download, no extra
+install — the wrappers run `cli.py` from the scripts directory automatically.
 
-Every wrapper is **fail-open**: missing package / error / timeout / format-mismatch is
-recorded and never gates a stage.
+Every wrapper is **fail-open**: missing radare2 (sink/audit backends), error,
+timeout, or format-mismatch is recorded and never gates a stage.
 
 See [`PREREQUISITES.md`](PREREQUISITES.md) for the full contract.
 

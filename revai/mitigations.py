@@ -12,8 +12,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..formats import elf as elf_mod
-from ..formats import pe as pe_mod
+import elf as elf_mod
+import pe as pe_mod
 
 _MITIGATIONS: list[tuple[str, int, str, str]] = [
     ("aslr", pe_mod.IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE,

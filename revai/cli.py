@@ -11,19 +11,19 @@ import argparse
 import sys
 from pathlib import Path
 
-from .analysis import hashes as hashes_mod
-from .analysis import iocs as iocs_mod
-from .analysis import map as map_mod
-from .analysis import mitigations
-from .analysis import scan as scan_mod
-from .analysis import sections as sections_mod
-from .analysis import sinkcat
-from .analysis import strings as strings_mod
-from .disasm import r2backend
-from .formats import elf as elf_mod
-from .formats import elf_macho
-from .formats import pe as pe_mod
-from .output import render
+import hashes as hashes_mod
+import iocs as iocs_mod
+import map as map_mod
+import mitigations
+import scan as scan_mod
+import sections as sections_mod
+import sinkcat
+import strings as strings_mod
+import r2backend
+import elf as elf_mod
+import elf_macho
+import pe as pe_mod
+from output import render
 
 PLANNED = ("paths", "xrefs", "funcs", "dis")
 

@@ -15,7 +15,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from ..disasm.backend import DisasmBackend, Function, Instruction
+from backend import DisasmBackend, Function, Instruction
 
 # x86-32: args on stack [esp+N] pushed before call; fastcall uses ecx/edx.
 # x64: rcx, rdx, r8, r9.

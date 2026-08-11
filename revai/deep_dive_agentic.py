@@ -958,6 +958,9 @@ def _run_standard_checklist(registry: "ToolRegistry", session: dict, sha: str) -
         "pe_imports": tools_raw.get("pe_imports"),
         "speakeasy": tools_raw.get("speakeasy"),
         "frida_probe": tools_raw.get("frida_probe"),
+        "revai_tools_sec": tools_raw.get("revai_tools_sec"),
+        "revai_tools_sinks": tools_raw.get("revai_tools_sinks"),
+        "revai_tools_audit": tools_raw.get("revai_tools_audit"),
     }
     pack = package_stage_evidence(
         "deep_dive", tools_for_pack, budget_chars=60000, sha=sha, persist=True,

@@ -91,7 +91,7 @@
   <g filter="url(#sh)"><rect x="520" y="480" width="320" height="130" rx="16" fill="url(#node)" stroke="#5f7163" stroke-width="2"/><rect x="530" y="490" width="300" height="26" rx="12" fill="url(#sheen)"/></g>
   <circle cx="552" cy="518" r="15" fill="#34d399"/><text x="552" y="523" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="800" fill="#06281a">2</text>
   <text x="580" y="524" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700" fill="#ffffff">Quick Scan (Triage)</text>
-  <text x="550" y="575" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#b9c7bd">24 tools · capa · Malcat · YARA</text>
+  <text x="550" y="575" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#b9c7bd">28 tools · capa · Malcat · YARA · revai-tools</text>
 
   <!-- 3 Deep Dive -->
   <g filter="url(#sh)"><rect x="920" y="480" width="320" height="130" rx="16" fill="url(#node)" stroke="#5f7163" stroke-width="2"/><rect x="930" y="490" width="300" height="26" rx="12" fill="url(#sheen)"/></g>

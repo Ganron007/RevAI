@@ -47,7 +47,7 @@ controls it, where it runs, what artifact it produces, and its status in the
 | Doc-intake evidence | doc formats now write intake-validation + source-decisions stubs (was failing audit forever) | Live |
 | Deep-dive packer context | checklist adds deterministic packer scan so gates share the packed policy | Live |
 | Goodware fingerprint | known-good SHA short-circuit → clean verdict, skips LLM | always on |
-| revai-tools wrappers | fail-open subprocess integration (`revai_tools.cli` via `$REVAI_TOOLS_DIR`); error/timeout/format-mismatch recorded — never gates (was: external analysis completely absent) | Live |
+| revai-tools wrappers | fail-open subprocess integration (`cli.py` runs from the scripts directory); error/timeout/format-mismatch recorded — never gates (was: external analysis completely absent) | Live |
 | malcat_analyze body split (v2_lib) | wrapper insertion split `malcat_analyze` (stub → always None); relocated wrappers after the function; verified via `inspect.getsource` | Fixed + deployed |
 
 ## External integrations

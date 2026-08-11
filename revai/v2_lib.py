@@ -1435,8 +1435,8 @@ TOOL_MANIFEST = {
         "applies_to": ["pe"],
         "timeout": 180,
     },
-    # revai-tools — our internal static-analysis toolchain (ships in this repo
-    # at revai_tools/).
+    # revai-tools — our internal static-analysis toolchain (ships flat in this
+    # repo alongside the pipeline scripts).
     # Evidence-only: fail-open, never required, never gate. sec = mitigations
     # (the pipeline has no other mitigations extractor); sinks = dangerous-API
     # call sites in named functions; audit = sink sites with exploitable
@@ -3732,21 +3732,15 @@ def malcat_analyze(sample_path: str, views: list[str] | None = None,
         )
     return last or {"error": "malcat_analyze failed with no result"}
 
-# Vendored package: revai_tools/ ships next to v2_lib.py in the repo
-# (deployed to /opt/scripts/revai_tools). REVAI_TOOLS_DIR overrides the
-# PYTHONPATH entry for the subprocess.
-_REVAI_TOOLS_DIR = os.environ.get(
-    "REVAI_TOOLS_DIR", str(Path(__file__).resolve().parent)
-)
-
-
 def _revai_tools_run(subcmd: str, sample_path: str, timeout: int) -> dict:
-    """Run a revai-tools subcommand; fail-open (recorded, never gates)."""
-    env = {**os.environ, "PYTHONPATH": _REVAI_TOOLS_DIR}
+    """Run the revai-tools CLI (ships in this repo next to v2_lib.py);
+    fail-open (recorded, never gates)."""
+    cli = Path(__file__).resolve().parent / "cli.py"
     try:
         proc = subprocess.run(
-            [sys.executable, "-m", "revai_tools.cli", subcmd, str(sample_path), "--json"],
-            capture_output=True, text=True, timeout=timeout, env=env,
+            [sys.executable, str(cli), subcmd, str(sample_path), "--json"],
+            capture_output=True, text=True, timeout=timeout,
+            cwd=str(Path(__file__).resolve().parent),
         )
     except subprocess.TimeoutExpired:
         return {"error": f"revai_tools_{subcmd}: timeout", "fail_open": True,
@@ -7649,8 +7643,40 @@ def _malcat_to_card(result: dict) -> str:
     return "\n".join(lines)
 
 
+def _revai_tools_to_card(tool_name: str):
+    """Factory: card formatter for revai_tools_sec / revai_tools_sinks results."""
+    def to_card(result) -> str:
+        if not isinstance(result, dict):
+            return f"## {tool_name}\n  error: {result}\n"
+        if result.get("error"):
+            return f"## {tool_name}\n  error: {result.get('error')}\n"
+        if result.get("skipped"):
+            return f"## {tool_name}\n  skipped: {result.get('reason') or result.get('skipped')}\n"
+        lines = [f"## {tool_name} ({result.get('format') or '?'}, {result.get('engine') or 'revai_tools'})"]
+        if tool_name == "revai_tools_sec":
+            findings = result.get("findings") or []
+            for f in findings[:12]:
+                if not isinstance(f, dict):
+                    lines.append(f"  {f}")
+                    continue
+                state = "present" if f.get("present") else "missing"
+                note = f.get("note") or ""
+                lines.append(f"  {f.get('name') or '?'}: {state} — {note}")
+            if not findings:
+                lines.append("  (no mitigations findings)")
+        elif tool_name == "revai_tools_sinks":
+            sinks = result.get("sinks") or []
+            lines.append(f"  sink_count: {result.get('sink_count') or 0}")
+            for s in sinks[:15]:
+                if isinstance(s, dict):
+                    lines.append(f"  {s.get('api') or '?'} @ {s.get('address') or '?'} ({s.get('function') or '?'})")
+                else:
+                    lines.append(f"  {s}")
+        return "\n".join(lines)
+    return to_card
+
+
 def _pe_imports_to_card(result) -> str:
-    """Convert pe_imports tool → compact card (not capa)."""
     if not isinstance(result, dict):
         return f"## pe_imports\n  error: {result}\n"
     if result.get("error"):
@@ -7974,12 +8000,16 @@ class EvidenceAssembler:
         "peepdf": _peepdf_to_card,
         "dotnet": _dotnet_to_card,
         "r2": _r2_to_card,
+        "revai_tools_sec": _revai_tools_to_card("revai_tools_sec"),
+        "revai_tools_sinks": _revai_tools_to_card("revai_tools_sinks"),
+        "revai_tools_audit": _revai_tools_to_card("revai_tools_audit"),
     }
 
     # Priority order: high-signal first, RAG last (it gets remaining budget)
     PRIORITY = (
         "malcat", "capa", "pe_imports", "yara", "floss", "dotnet",
-        "r2", "upx", "xor", "olevba", "peepdf",
+        "r2", "upx", "xor", "olevba", "peepdf", "revai_tools_sec",
+        "revai_tools_sinks", "revai_tools_audit",
     )
 
     def __init__(self, budget_chars: int = 50000):

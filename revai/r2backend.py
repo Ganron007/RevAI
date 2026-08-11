@@ -12,7 +12,7 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
-from .backend import DisasmBackend, Function, Instruction
+from backend import DisasmBackend, Function, Instruction
 
 M1 = "REVAI_MARK_FUNCS"
 M2 = "REVAI_MARK_IMPORTS"

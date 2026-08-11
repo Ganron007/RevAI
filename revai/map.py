@@ -5,7 +5,7 @@ from __future__ import annotations
 import math
 from typing import Any
 
-from .sections import shannon_entropy
+from sections import shannon_entropy
 
 BLOCK = 4096
 
