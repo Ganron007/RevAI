@@ -121,7 +121,7 @@ def extract_anti_analysis(client, session_id: str) -> dict:
     }
     try:
         funcs = client.ghidra_query(
-            session_id, "SELECT address, name, size FROM funcs", max_rows=100000
+            session_id, "SELECT addr AS address, name, size FROM funcs", max_rows=100000
         ).get("rows", [])
         func_ranges = sorted(
             (int(f.get("address") or 0), int(f.get("address") or 0) + int(f.get("size") or 0), f)
@@ -154,46 +154,74 @@ def extract_anti_analysis(client, session_id: str) -> dict:
         # ---- 1) TLS callbacks: code xrefs into .tls memory block ----
         tls_blocks = [
             b for b in client.ghidra_query(
-                session_id, "SELECT start_ea, end_ea, name FROM memory_blocks", max_rows=5000
+                session_id, "SELECT start_addr, end_addr, name FROM memory_blocks", max_rows=5000
             ).get("rows", [])
             if "tls" in str(b.get("name") or "").lower()
         ]
         for block in tls_blocks:
-            s, e = int(block.get("start_ea") or 0), int(block.get("end_ea") or 0)
+            s, e = int(block.get("start_addr") or 0), int(block.get("end_addr") or 0)
             refs = client.ghidra_query(
                 session_id,
-                f"SELECT from_ea, to_ea, is_code FROM xrefs WHERE to_ea >= {s} AND to_ea < {e} "
+                f"SELECT from_addr, to_addr, is_code FROM xrefs WHERE to_addr >= {s} AND to_addr < {e} "
                 f"AND is_code = 1 LIMIT 50",
                 max_rows=50,
             ).get("rows", [])
             for r in refs:
-                f = _containing_func(int(r.get("from_ea") or 0), func_ranges)
+                f = _containing_func(int(r.get("from_addr") or 0), func_ranges)
                 _emit("tls_callback", f,
-                      f"code xref {r.get('from_ea')} -> {block.get('name')} at {r.get('to_ea')}",
+                      f"code xref {r.get('from_addr')} -> {block.get('name')} at {r.get('to_addr')}",
                       "TLS callback candidate (runs before entry point)")
 
         # ---- 2) PEB access via segment-offset instructions ----
         inst_rows = client.ghidra_query(
             session_id,
-            "SELECT address, mnemonic, operands FROM instructions "
+            "SELECT addr, mnemonic, operands FROM instructions "
             "WHERE operands LIKE '%FS:%' OR operands LIKE '%GS:%'",
             max_rows=20000,
         ).get("rows", [])
         for r in inst_rows:
             ops = str(r.get("operands") or "")
-            addr = int(r.get("address") or 0)
+            addr = int(r.get("addr") or 0)
             f = _containing_func(addr, func_ranges)
             if _FS_PEB_RE.search(ops):
                 _emit("peb_access", f, f"{r.get('mnemonic')} {ops} @ {addr}",
                       "PEB read via FS:[0x30]/GS:[0x60] (BeingDebugged/ProcessHeap)")
 
-        # ---- 3) API-based signals via callgraph_edges (prefix LIKE -> A/W/Ex) ----
+        # ---- 3) API-based signals via callgraph ----
+        # ghidrasql v0.0.4: the callgraph_edges VIEW materializes per-row
+        # through COALESCE joins (100s+ hangs on full scans; LIKE cannot push
+        # down). Rebuild the view in Python from the fast underlying tables:
+        # call_edges + names (+ funcs already loaded above).
+        names_map: dict[str, str] = {}
+        for r in client.ghidra_query(
+            session_id, "SELECT addr, name FROM names", max_rows=200000
+        ).get("rows", []):
+            names_map[_addr_key(r.get("addr"))] = str(r.get("name") or "")
+        edge_rows = client.ghidra_query(
+            session_id, "SELECT src_func_addr, dst_func_addr FROM call_edges",
+            max_rows=200000,
+        ).get("rows", [])
+
+        def _dst_name(dst: Any) -> str:
+            dk = _addr_key(dst)
+            f = func_meta.get(dk)
+            if f and f.get("name"):
+                return str(f["name"])
+            nm = names_map.get(dk)
+            return nm or f"sub_{int(dst or 0):X}"
+
         def _api_callers(apis: tuple[str, ...]) -> list[dict]:
-            where = " OR ".join(f"dst_func_name LIKE '{a}%'" for a in apis)
-            return client.ghidra_query(
-                session_id, f"SELECT src_func_addr, src_func_name, dst_func_name "
-                f"FROM callgraph_edges WHERE {where}", max_rows=50000
-            ).get("rows", [])
+            out = []
+            for e in edge_rows:
+                dn = _dst_name(e.get("dst_func_addr"))
+                if any(dn.startswith(a) for a in apis):
+                    src_f = func_meta.get(_addr_key(e.get("src_func_addr"))) or {}
+                    out.append({
+                        "src_func_addr": e.get("src_func_addr"),
+                        "src_func_name": str(src_f.get("name") or ""),
+                        "dst_func_name": dn,
+                    })
+            return out
 
         for cat, apis, note in (
             ("debugger_api", DEBUGGER_APIS, "debugger-detection API"),
@@ -219,13 +247,13 @@ def extract_anti_analysis(client, session_id: str) -> dict:
 
         # ---- 4) VM / debugger artifact strings referenced by functions ----
         str_rows = client.ghidra_query(
-            session_id, "SELECT address, content FROM strings WHERE length < 300",
+            session_id, "SELECT addr, content FROM strings WHERE length < 300",
             max_rows=100000,
         ).get("rows", [])
         matched_addrs: dict[int, list[tuple[str, str]]] = {}  # addr -> [(token, kind)]
         for r in str_rows:
             content = str(r.get("content") or "")
-            addr = int(r.get("address") or 0)
+            addr = int(r.get("addr") or 0)
             lower = content.lower()
             for token in VM_ARTIFACT_SUBSTR:
                 if token in lower:

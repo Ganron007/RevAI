@@ -141,9 +141,15 @@ Distinctive capabilities — the things that set RevAI apart. For the full featu
 * **OS**: REMnux (Ubuntu 24.04-based) or equivalent isolated Linux analysis VM  
 * **Resources**: 8 GB RAM minimum (16 GB recommended); ≥100 GB disk  
 * **LLM**: Any OpenAI-compatible chat API (`config/llm.env.template` → `/opt/revai/config/llm.env`)  
-* **Ghidra + ghidrasql** (required) · **Malcat** (optional — pipeline soft-fails without it): see [`docs/PREREQUISITES.md`](docs/PREREQUISITES.md)  
+* **Ghidra + ghidrasql** (required) · **Malcat** (optional — pipeline soft-fails without it): see [`docs/PREREQUISITES.md`](docs/PREREQUISITES.md). ghidrasql is by Elias Bachaalany (github.com/0xeb/ghidrasql), used under the Human-Origin Source License v1.0  
 * **Optional**: IDA Pro 9.x at `/opt/ida` (otherwise Ghidra-only)  
 * **Node.js ≥ 18**: to build the React Console UI (`scripts/deploy.sh` builds it via npm)  
+
+---
+
+## Acknowledgements
+
+* **ghidrasql** — SQL interface for Ghidra program databases, by [Elias Bachaalany](https://github.com/0xeb/ghidrasql), used under the Human-Origin Source License v1.0.
 
 ---
 

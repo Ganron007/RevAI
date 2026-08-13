@@ -62,7 +62,7 @@ GHIDRA_EVIDENCE = [
     (
         "imports",
         "Imports (Ghidra) from data_items",
-        "SELECT name, address FROM data_items WHERE name LIKE 'PTR_%' LIMIT 50",
+        "SELECT name, addr FROM data_items WHERE name LIKE 'PTR_%' LIMIT 50",
     ),
     (
         "imports_resolved",
@@ -72,7 +72,7 @@ GHIDRA_EVIDENCE = [
     (
         "crypto_strings",
         "Suspicious strings (Ghidra)",
-        "SELECT address, substr(content, 1, 100) AS s FROM strings "
+        "SELECT addr, substr(content, 1, 100) AS s FROM strings "
         "WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' "
         "LIMIT 30",
     ),

@@ -356,7 +356,7 @@ class GhidraSqlClient:
             "--ghidra", GHIDRA_HOME,
             "--project", str(Path(gpr).parent),
             "--project-name", Path(gpr).stem,
-            "--initial-program",
+            "--program",
                 session.get("program_name", Path(gpr).stem),
             "--http",
             "--port", str(port),
@@ -623,7 +623,7 @@ class GhidraSqlClient:
             addr = int(r["address"])
             new_name = str(r["new_name"]).replace("'", "''")
             sql_statements.append(
-                f"UPDATE funcs SET name = '{new_name}' WHERE address = {addr}"
+                f"UPDATE funcs SET name = '{new_name}' WHERE addr = {addr}"
             )
         for b in bookmarks:
             addr = int(b["address"])
@@ -631,7 +631,7 @@ class GhidraSqlClient:
             category = str(b.get("category", "Note")).replace("'", "''")
             btype = str(b.get("type", "Analysis")).replace("'", "''")
             sql_statements.append(
-                f"INSERT INTO bookmarks(address, type, category, comment) "
+                f"INSERT INTO bookmarks(addr, type, category, comment) "
                 f"VALUES ({addr}, '{btype}', '{category}', '{comment}')"
             )
 

@@ -280,7 +280,7 @@ def run_langgraph_deep_dive(sha: str, max_steps: int = 10, helpers: dict | None 
         if ghidra_sid:
             print("[agentic_langgraph] SQL seed: ghidra_query", flush=True)
             args = {
-                "sql": "SELECT name, address, size FROM funcs ORDER BY size DESC LIMIT 25",
+                "sql": "SELECT name, addr, size FROM funcs ORDER BY size DESC LIMIT 25",
                 "max_rows": 25,
             }
             result = registry.call("ghidra_query", args, session)

@@ -68,7 +68,7 @@ def extract_dynamic_resolve(client, session_id: str) -> dict:
     out: dict[str, Any] = {"engine": "dynamic_resolve_detect", "summary": {}}
     try:
         funcs = client.ghidra_query(
-            session_id, "SELECT address, name, size FROM funcs", max_rows=100000
+            session_id, "SELECT addr AS address, name, size FROM funcs", max_rows=100000
         ).get("rows", [])
         func_ranges = sorted(
             (int(f.get("address") or 0), int(f.get("address") or 0) + int(f.get("size") or 0), f)
@@ -77,16 +77,43 @@ def extract_dynamic_resolve(client, session_id: str) -> dict:
         )
         func_meta = {_addr_key(f.get("address")): f for f in funcs}
 
-        def _like(apis: tuple[str, ...]) -> str:
-            return " OR ".join(f"dst_func_name LIKE '{a}%'" for a in apis)
+        # ghidrasql v0.0.4: the callgraph_edges VIEW materializes per-row
+        # through COALESCE joins (100s+ hangs on full scans; LIKE cannot push
+        # down). Rebuild the view in Python from the fast underlying tables:
+        # call_edges + names (+ funcs already loaded above).
+        names_map: dict[str, str] = {}
+        for r in client.ghidra_query(
+            session_id, "SELECT addr, name FROM names", max_rows=200000
+        ).get("rows", []):
+            names_map[_addr_key(r.get("addr"))] = str(r.get("name") or "")
+        edge_rows = client.ghidra_query(
+            session_id, "SELECT src_func_addr, dst_func_addr FROM call_edges",
+            max_rows=200000,
+        ).get("rows", [])
+
+        def _dst_name(dst: Any) -> str:
+            dk = _addr_key(dst)
+            f = func_meta.get(dk)
+            if f and f.get("name"):
+                return str(f["name"])
+            nm = names_map.get(dk)
+            return nm or f"sub_{int(dst or 0):X}"
+
+        def _api_callers(apis: tuple[str, ...]) -> list[dict]:
+            out = []
+            for e in edge_rows:
+                dn = _dst_name(e.get("dst_func_addr"))
+                if any(dn.startswith(a) for a in apis):
+                    src_f = func_meta.get(_addr_key(e.get("src_func_addr"))) or {}
+                    out.append({
+                        "src_func_addr": e.get("src_func_addr"),
+                        "src_func_name": str(src_f.get("name") or ""),
+                        "dst_func_name": dn,
+                    })
+            return out
 
         # ---- 1) resolver functions (direct GetProcAddress callers) ----
-        gpa_rows = client.ghidra_query(
-            session_id,
-            f"SELECT src_func_addr, src_func_name, dst_func_name FROM callgraph_edges "
-            f"WHERE {_like(RESOLVER_APIS)}",
-            max_rows=50000,
-        ).get("rows", [])
+        gpa_rows = _api_callers(RESOLVER_APIS)
         gpa_counts: dict[str, int] = {}
         for r in gpa_rows:
             src = _addr_key(r.get("src_func_addr"))
@@ -117,11 +144,7 @@ def extract_dynamic_resolve(client, session_id: str) -> dict:
         for a, n in gpa_counts.items():
             resolve_calls[a] = resolve_calls.get(a, 0) + n
 
-        load_rows = client.ghidra_query(
-            session_id,
-            f"SELECT src_func_addr FROM callgraph_edges WHERE {_like(LOADER_APIS)}",
-            max_rows=50000,
-        ).get("rows", [])
+        load_rows = _api_callers(LOADER_APIS)
         for r in load_rows:
             src = _addr_key(r.get("src_func_addr"))
             if src:
@@ -145,18 +168,18 @@ def extract_dynamic_resolve(client, session_id: str) -> dict:
         # ---- 3) PEB module walk (export walkers / shellcode loaders) ----
         inst_rows = client.ghidra_query(
             session_id,
-            "SELECT address, mnemonic, operands FROM instructions "
+            "SELECT addr, mnemonic, operands FROM instructions "
             "WHERE operands LIKE '%FS:%' OR operands LIKE '%GS:%'",
             max_rows=20000,
         ).get("rows", [])
         peb_funcs: dict[str, dict] = {}
         for r in inst_rows:
-            addr = int(r.get("address") or 0)
+            addr = int(r.get("addr") or 0)
             ops = str(r.get("operands") or "")
             f = _containing_func(addr, func_ranges)
             if not f:
                 continue
-            fa = _addr_key(f.get("address"))
+            fa = _addr_key(f.get("addr"))
             rec = peb_funcs.setdefault(fa, {"func": f, "peb": False, "walk": False})
             if _FS_PEB_RE.search(ops):
                 rec["peb"] = True

@@ -61,7 +61,7 @@ class GhidraWriteback:
 
     def _rename(self, addr: str, name: str) -> None:
         safe_name = name.replace("'", "''")[:255]
-        sql = f"UPDATE funcs SET name = '{safe_name}' WHERE address = '{addr}'"
+        sql = f"UPDATE funcs SET name = '{safe_name}' WHERE addr = '{addr}'"
         self.client.ghidra_query(self.session_id, sql, max_rows=1)
 
     def _comment(self, addr: str, text: str) -> None:

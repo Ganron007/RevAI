@@ -15,7 +15,7 @@ from v2_lib import McpGhidraClient, SESSIONS_DIR  # noqa
 
 # Step 1: get functions (top 50 by size, since CFF targets are usually big)
 SQL_FUNCS = """
-SELECT name, start_ea, size
+SELECT name, addr AS start_ea, size
 FROM funcs
 WHERE size > 1024
 ORDER BY size DESC
@@ -92,9 +92,9 @@ try:
     # 1. Pull cfg_edges bounded by a reasonable limit. Large samples can have
     # hundreds of thousands of edges; scanning them all in Python is too slow.
     edges = c.ghidra_query(SID, """
-        SELECT src_start_ea, dst_start_ea
+        SELECT from_addr, to_addr
         FROM cfg_edges
-        WHERE src_start_ea > 0 AND dst_start_ea > 0
+        WHERE from_addr > 0 AND to_addr > 0
     """, max_rows=50000)
     edge_list = edges.get("rows", []) if isinstance(edges, dict) else []
     print(f"cff_detect: got {len(edge_list)} cfg edges (limited to 50000)")
@@ -102,8 +102,8 @@ try:
     # 2. Build a map: source-addr -> set of dest-addr (only for branches)
     src_to_dsts = collections.defaultdict(set)
     for e in edge_list:
-        src = e.get("src_start_ea")
-        dst = e.get("dst_start_ea")
+        src = e.get("from_addr")
+        dst = e.get("to_addr")
         if src is None or dst is None:
             continue
         if src == dst:

@@ -94,14 +94,14 @@ def _like_patterns(col: str, patterns: list[str]) -> str:
 
 
 SUSPICIOUS_IMPORT_SQL_GHIDRA = f"""
-SELECT i.name, i.module, i.address
+SELECT i.name, i.module, i.addr AS address
 FROM imports i
 WHERE {_like_patterns('i.name', SUSPICIOUS_IMPORT_PATTERNS)}
 LIMIT 50
 """
 
 SUSPICIOUS_IMPORT_DATA_ITEMS_GHIDRA = f"""
-SELECT d.address, d.name AS api_name, d.data_type, d.size
+SELECT d.addr AS address, d.name AS api_name, d.data_type, d.size
 FROM data_items d
 WHERE d.name LIKE 'PTR_%'
   AND ({_like_patterns('d.name', [f'PTR_%{p}%' for p in SUSPICIOUS_IMPORT_PATTERNS])})
@@ -140,10 +140,10 @@ LIMIT 20
 """
 
 CRYPTO_NET_XREFS_GHIDRA = f"""
-SELECT f.name, f.address, d.name AS api_name, x.to_ea
+SELECT f.name, f.addr AS address, d.name AS api_name, x.to_addr AS to_ea
 FROM data_items d
-JOIN xrefs x ON x.to_ea = d.address
-JOIN funcs f ON f.address = x.from_ea
+JOIN xrefs x ON x.to_addr = d.addr
+JOIN funcs f ON f.addr = x.from_addr
 WHERE d.name LIKE 'PTR_%'
   AND ({_like_patterns('d.name', [f'PTR_%{p}%' for p in SUSPICIOUS_IMPORT_PATTERNS])})
 LIMIT 50
@@ -160,7 +160,7 @@ LIMIT 50
 """
 
 IOC_STRINGS_GHIDRA = f"""
-SELECT s.content, s.address, s.length
+SELECT s.content, s.addr AS address, s.length
 FROM strings s
 WHERE {_like_patterns('s.content', IOC_STRING_PATTERNS)}
 LIMIT 100
@@ -174,7 +174,7 @@ LIMIT 100
 """
 
 ALL_IMPORTS_GHIDRA = """
-SELECT i.name, i.module, i.address FROM imports i
+SELECT i.name, i.module, i.addr AS address FROM imports i
 LIMIT 100
 """
 
@@ -184,14 +184,14 @@ LIMIT 100
 """
 
 ALL_IMPORTS_FALLBACK_GHIDRA = """
-SELECT d.address, d.name, d.data_type, d.size
+SELECT d.addr AS address, d.name, d.data_type, d.size
 FROM data_items d
 WHERE d.name LIKE 'PTR_%'
 LIMIT 100
 """
 
 ALL_STRINGS_GHIDRA = """
-SELECT s.content, s.address, s.length FROM strings s
+SELECT s.content, s.addr AS address, s.length FROM strings s
 LIMIT 100
 """
 
@@ -213,9 +213,9 @@ LIMIT 100
 """
 
 MEMORY_BLOCKS_GHIDRA = """
-SELECT start_ea, end_ea, name, class, size, is_read, is_write, is_exec
+SELECT start_addr, end_addr, name, class, size, is_read, is_write, is_exec
 FROM memory_blocks
-ORDER BY start_ea
+ORDER BY start_addr
 """
 
 SEGMENTS_IDA = """
@@ -225,7 +225,7 @@ ORDER BY start_ea
 """
 
 EXPORTS_GHIDRA = """
-SELECT name, address, module FROM exports
+SELECT name, addr AS address, module FROM exports
 ORDER BY name
 LIMIT 50
 """
@@ -236,7 +236,7 @@ ORDER BY ordinal
 LIMIT 50
 """
 
-DB_INFO_GHIDRA = "SELECT * FROM db_info;"
+DB_INFO_GHIDRA = "SELECT * FROM sql_capabilities LIMIT 20;"
 DB_INFO_IDA = "SELECT key, value FROM db_info;"
 
 

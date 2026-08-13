@@ -15,9 +15,9 @@ are **vendor / licensed** and must be placed manually.
 
 | Component | Expected path | How to get it |
 |-----------|---------------|---------------|
-| **Ghidra** | `/opt/ghidra` (with `support/analyzeHeadless`) | Official NSA/Ghidra build or REMnux package; symlink to `/opt/ghidra` if needed |
+| **Ghidra** | `/opt/ghidra` (with `support/analyzeHeadless`) | Official NSA/Ghidra build or REMnux package; symlink to `/opt/ghidra` if needed. **Ghidra 12.1+** required for ghidrasql v0.0.4 |
 | **CADRE PE Loader** | `/opt/ghidra/Ghidra/Extensions/CADRE/` | Custom Ghidra PE loader extension — ensures import references are created for packed/binder PEs. Pre-installed on the deployment VM; source in `extensions/cadre-pe-loader/`. |
-| **ghidrasql** | `/usr/local/bin/ghidrasql` | Built by `install/install-ghidrasql.sh` (clones [0xeb/libghidra](https://github.com/0xeb/libghidra) + [0xeb/ghidrasql](https://github.com/0xeb/ghidrasql); uses Ghidra's bundled Gradle wrapper) |
+| **ghidrasql** | `/usr/local/bin/ghidrasql` | Built by `install/install-ghidrasql.sh` (clones [0xeb/libghidra](https://github.com/0xeb/libghidra) + [0xeb/ghidrasql](https://github.com/0xeb/ghidrasql); uses Ghidra's bundled Gradle wrapper). ghidrasql is by Elias Bachaalany, used under the Human-Origin Source License v1.0 |
 | **LLM API** | `/opt/revai/config/llm.env` | Copy `config/llm.env.template` and fill model / URL / key |
 | **JDK 21 + CMake** | on `PATH` | Used to build LibGhidraHost + ghidrasql (setup installs via apt when missing); Gradle is provided by Ghidra's bundled wrapper |
 

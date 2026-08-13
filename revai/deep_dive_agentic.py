@@ -266,19 +266,18 @@ def _normalize_actions(data: dict) -> list:
     return out
 
 # SQL schema hints for the LLM
-GHIDRA_SCHEMA = """Ghidra SQL tables:
-- funcs: name, address, size
-- strings: content, address, length
-- imports: name, module, address
-- data_items: name, address, data_type, size
-- function_metrics: func_name, func_addr, size, instruction_count, block_count, cyclomatic_complexity, call_in_count, call_out_count, string_ref_count
-- callgraph_edges: from_func_addr, from_func_name, dst_func_addr, dst_func_name
-- xrefs: from_ea, to_ea, kind, is_code, is_data (map to funcs via funcs.address range)
-- memory_blocks: start_ea, end_ea, name, class, size, is_read, is_write, is_exec
-- exports: name, address, module
-- db_info: key, value
+GHIDRA_SCHEMA = """Ghidra SQL tables (ghidrasql v0.0.4):
+- funcs: addr, name, size, end_ea, flags, namespace_name, signature, param_count
+- strings: addr, content, length, type, encoding
+- imports: addr, name, module
+- data_items: addr, name, data_type, size, value_repr, segment_name
+- function_metrics: func_addr, func_name, size, instruction_count, block_count, edge_count, cyclomatic_complexity, call_in_count, call_out_count, string_ref_count, token_count
+- callgraph_edges: src_func_addr, src_func_name, dst_func_addr, dst_func_name, call_site
+- xrefs: from_addr, to_addr, kind, is_code, is_data
+- memory_blocks: start_addr, end_addr, name, class, perm, bitness, size, is_read, is_write, is_exec
+- pseudocode: func_addr, func_name, text, is_stale
 - string_refs: func_addr, func_name, ref_addr, string_value, string_addr, string_length
-- instructions: address, mnemonic, operands, disasm, size, bytes (map to funcs via range)"""
+- instructions: addr, mnemonic, operands, disasm, size, bytes, func_addr"""
 
 IDA_SCHEMA = """IDA SQL tables:
 - funcs: name, address, size
@@ -694,7 +693,7 @@ def _seed_signal_extractors(history: list, findings: dict, session: dict, sha: s
                 payload["emulation_oracle"] = oracle
                 if oracle.get("ok"):
                     funcs = client.ghidra_query(
-                        ghidra_sid, "SELECT address, name, size FROM funcs", max_rows=100000
+                        ghidra_sid, "SELECT addr AS address, name, size FROM funcs", max_rows=100000
                     ).get("rows", [])
                     ranges = sorted(
                         (int(f.get("address") or 0),
@@ -1172,7 +1171,7 @@ def _custom_loop_body(sha: str, max_steps: int = MAX_STEPS) -> dict:
             seeds.append((
                 "ghidra_query",
                 {
-                    "sql": "SELECT name, address, size FROM funcs ORDER BY size DESC LIMIT 25",
+                    "sql": "SELECT name, addr, size FROM funcs ORDER BY size DESC LIMIT 25",
                     "max_rows": 25,
                 },
             ))

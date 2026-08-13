@@ -215,7 +215,7 @@ def enumerate_functions(client, session_id: str, max_funcs: int) -> list[dict]:
     """
     rows = client.ghidra_query(
         session_id,
-        "SELECT address, name, size FROM funcs "
+        "SELECT addr AS address, name, size FROM funcs "
         "WHERE name LIKE 'FUN_%' OR name LIKE 'func_%' OR name = ''",
         max_rows=100000,
     ).get("rows", [])

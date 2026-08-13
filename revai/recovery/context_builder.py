@@ -79,8 +79,8 @@ class ContextBuilder:
             f"""
             SELECT DISTINCT s.content
             FROM xrefs x
-            JOIN strings s ON x.to_ea = s.address
-            WHERE x.from_ea >= '{start}' AND x.from_ea <= '{end}'
+            JOIN strings s ON x.to_addr = s.addr
+            WHERE x.from_addr >= '{start}' AND x.from_addr <= '{end}'
               AND s.length > 2
             ORDER BY s.length DESC
             LIMIT 20
@@ -96,9 +96,9 @@ class ContextBuilder:
         end = start + size
         rows = self._query(
             f"""
-            SELECT DISTINCT x.from_ea, x.to_ea, x.kind
+            SELECT DISTINCT x.from_addr, x.to_addr, x.kind
             FROM xrefs x
-            WHERE x.from_ea >= '{start}' AND x.from_ea <= '{end}'
+            WHERE x.from_addr >= '{start}' AND x.from_addr <= '{end}'
               AND x.kind IN ('data_ref', 'string_ref', 'read', 'write')
             LIMIT 30
             """,
@@ -109,9 +109,9 @@ class ContextBuilder:
     def _callee_records(self, addr: str) -> list[dict]:
         rows = self._query(
             f"""
-            SELECT DISTINCT f.address, f.name, f.size
+            SELECT DISTINCT f.addr AS address, f.name, f.size
             FROM call_edges c
-            JOIN funcs f ON f.address = c.dst_func_addr
+            JOIN funcs f ON f.addr = c.dst_func_addr
             WHERE c.src_func_addr = '{addr}' AND c.dst_func_addr != '0'
             LIMIT {self.max_context_funcs + 5}
             """,
@@ -122,9 +122,9 @@ class ContextBuilder:
     def _caller_records(self, addr: str) -> list[dict]:
         rows = self._query(
             f"""
-            SELECT DISTINCT f.address, f.name, f.size
+            SELECT DISTINCT f.addr AS address, f.name, f.size
             FROM call_edges c
-            JOIN funcs f ON f.address = c.src_func_addr
+            JOIN funcs f ON f.addr = c.src_func_addr
             WHERE c.dst_func_addr = '{addr}' AND c.src_func_addr != '0'
             LIMIT {self.max_context_funcs + 5}
             """,
@@ -135,9 +135,9 @@ class ContextBuilder:
     def _neighbors(self, addr: str) -> list[dict]:
         rows = self._query(
             f"""
-            SELECT address, name, size FROM funcs
-            WHERE address >= '{int(addr) - 0x2000}' AND address <= '{int(addr) + 0x2000}'
-            ORDER BY ABS(CAST(address AS INTEGER) - {int(addr)}) ASC
+            SELECT addr AS address, name, size FROM funcs
+            WHERE addr >= '{int(addr) - 0x2000}' AND addr <= '{int(addr) + 0x2000}'
+            ORDER BY ABS(CAST(addr AS INTEGER) - {int(addr)}) ASC
             LIMIT 7
             """,
             max_rows=7,
