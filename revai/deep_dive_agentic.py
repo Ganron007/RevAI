@@ -1557,17 +1557,44 @@ def _finalize_agentic_result(
             "already in the summary. Return the SAME flat JSON shape with the "
             "full summary field (original text + your additions)."
         )
+        _orig_sum = str(final_answer.get("summary") or "")
         try:
-            _resp = llm_judge(
-                _cov_msg
-                + "\n\nCurrent summary:\n"
-                + str(final_answer.get("summary") or "")[:2000],
-                model=verdict_model,
-            )
-            _raw = _extract_json_object(_resp["choices"][0]["message"]["content"])
-            _fixed = _coerce_final_answer(_raw) or _raw
-            _new_sum = str(_fixed.get("summary") or _fixed.get("fixed_summary") or "")
-            _orig_sum = str(final_answer.get("summary") or "")
+            # Bounded protocol repair (2026-08-12, svchost-class): the ONE
+            # correction turn can return nothing usable (provider abort) or an
+            # empty rewrite. Fixed small re-attempt cap, UNGATED — this is the
+            # same family as the hallucination-check correction turn and the
+            # publish completeness nudges: a quality-gate repair inside the
+            # finalize protocol, NOT part of the REVAI_STAGE_RETRIES /
+            # REVAI_TOOL_RETRIES retry contract (which covers stage re-runs and
+            # tool executions; this turn re-executes neither).
+            _max_attempts = 3
+            _new_sum = ""
+            _tries = 0
+            for _tries in range(1, _max_attempts + 1):
+                try:
+                    _resp = llm_judge(
+                        _cov_msg
+                        + "\n\nCurrent summary:\n"
+                        + _orig_sum[:2000],
+                        model=verdict_model,
+                    )
+                    _raw = _extract_json_object(_resp["choices"][0]["message"]["content"])
+                    _fixed = _coerce_final_answer(_raw) or _raw
+                    _cand = str(_fixed.get("summary") or _fixed.get("fixed_summary") or "")
+                    if _cand.strip():
+                        _new_sum = _cand
+                        break
+                    print(
+                        f"[deep_dive_agentic] depth correction attempt {_tries} "
+                        f"returned empty; retrying",
+                        flush=True,
+                    )
+                except Exception as _cov_try_err:
+                    print(
+                        f"[deep_dive_agentic] depth correction attempt {_tries} "
+                        f"error: {_cov_try_err}",
+                        flush=True,
+                    )
             # MERGE, don't replace (full-campaign finding 2026-08-08): the LLM
             # "rewrite" often DROPS domains the original summary already
             # covered (mespinoza_mid: imports coverage lost in correction).
@@ -1597,6 +1624,7 @@ def _finalize_agentic_result(
                         _merged = _orig_sum + "\n" + _new_sum[:1500]
             final_answer["summary"] = _merged.strip()
             final_answer["depth_coverage_missing_before"] = _cov["missing"]
+            final_answer["depth_coverage_correction_attempts"] = _tries or _max_attempts
             # Honest flag: corrected=True ONLY when the summary actually
             # changed (vs_780d28e3 finding 2026-08-08: a correction turn that
             # returns nothing usable was previously marked corrected=True with
@@ -1606,8 +1634,9 @@ def _finalize_agentic_result(
             if not _changed:
                 final_answer["depth_coverage_correction_empty"] = True
                 print(
-                    f"[deep_dive_agentic] DEPTH PROTOCOL correction turn produced "
-                    f"no usable change; keeping original summary (honest fail)",
+                    f"[deep_dive_agentic] DEPTH PROTOCOL correction produced "
+                    f"no usable change after {_tries or _max_attempts} attempt(s); keeping "
+                    f"original summary (honest fail)",
                     flush=True,
                 )
             print(

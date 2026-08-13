@@ -34,7 +34,7 @@ controls it, where it runs, what artifact it produces, and its status in the
 | Function recovery | Hybrid oracle/resolve-assisted naming, tiered (max-funcs/tier-cap) | `REVAI_ENABLE_AGENTIC_RECOVERY=1`, `REVAI_AGENTIC_RECOVERY_MAX_FUNCS=40`, `REVAI_AGENTIC_RECOVERY_TIER_CAP=5` | `function-recovery.json` |
 | Publish v2 | Master + technical LLM reports with quality gate | — | `REPORT-v2.md`, `REPORT-MASTER-v2.md`, `REPORT-TECHNICAL-v2.md` |
 | Publish v3 (sections) | Section-by-section reports with cross-section context | — | `REPORT-MASTER-v3.md`, `REPORT-TECHNICAL-v3.md`, `section-results-v3.json` |
-| Audit | Independent re-check: tools_all_ok, citations grounded, engine citations, report completeness, depth coverage, verdict lock | — | `pipeline-audit.json`, `AUDIT-REPORT.md`, showcase packs |
+| Audit | Independent re-check: tools_all_ok, citations grounded, engine citations, report completeness, depth coverage, verdict lock, cross-report consistency + entropy sanity | — | `pipeline-audit.json`, `AUDIT-REPORT.md`, showcase packs |
 
 ## Reliability & policy features (added in the 2026-08-09 run)
 
@@ -49,6 +49,9 @@ controls it, where it runs, what artifact it produces, and its status in the
 | Goodware fingerprint | known-good SHA short-circuit → clean verdict, skips LLM | always on |
 | revai-tools wrappers | fail-open subprocess integration (`cli.py` runs from the scripts directory); error/timeout/format-mismatch recorded — never gates (was: external analysis completely absent) | Live |
 | malcat_analyze body split (v2_lib) | wrapper insertion split `malcat_analyze` (stub → always None); relocated wrappers after the function; verified via `inspect.getsource` | Fixed + deployed |
+| Cross-report consistency gates | deterministic master-vs-technical checks: master claiming "no dynamic analysis was performed" while the technical report carries Speakeasy/Frida execution evidence; master/technical verdict-panel mismatch — gate-failing (2026-08-12, #2 campaign) | Live |
+| Entropy ground truth + sanity | Malcat's `entropy` field is not whole-file entropy — `malcat_analyze` now annotates computed whole-file Shannon bits/byte (`entropy_malcat_raw` preserves the original); report entropy citations audited against the file's measured entropy (section-scoped and appendix citations exempt) | Live |
+| Report protocol repairs | bounded ungated finalize repairs (quality-repair family, not the retry contract): depth-correction re-attempts (up to 3) on empty/aborted output; master completeness nudge (1 retry, strictly-better only); deterministic dynamic-analysis negation repair in publish (only when the tools demonstrably ran; original text preserved in the report JSON) | Live |
 
 ## External integrations
 

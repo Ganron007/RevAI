@@ -103,6 +103,13 @@ def _section_prompt(section_name: str, description: str, evidence: str,
         "evidence bare. Hedge inferences ('likely', 'possibly', 'we assess'). "
         "A reader with no context must follow the section without asking the "
         "model for clarification.\n"
+        "DYNAMIC-ANALYSIS HONESTY: if Speakeasy/Frida tools RAN — even with "
+        "zero recorded events — state that they ran and what they recorded; "
+        "never write 'no dynamic analysis was performed' when the tools "
+        "executed.\n"
+        "ENTROPY UNITS: whole-file Shannon entropy in bits/byte (0-8); "
+        "per-section values must name the section; never present an unlabeled "
+        "tool metric as the file's entropy.\n"
         'Return JSON: {"title": "...", "markdown": "<section content>", "source": "llm_judge"}'
     )
     return "\n".join(parts)

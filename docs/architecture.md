@@ -188,12 +188,14 @@ truly_green = all_green (per-stage audit) AND quality_green (no fallback stubs)
               AND (failed_tools == 0) AND engine-citation honesty
               AND verdict lock AND confidence sanity AND report style gates
               AND depth gate (capability coverage)
+              AND publication-quality gates (cross-report consistency, entropy sanity)
 ```
 
 * **Audit Verification (`all_green`)**: every stage completes rc=0 with valid artifacts.
 * **Quality Gate (`quality_green`)**: no deterministic fallbacks, stubs, or mis-attributed engine citations; SQL-deep honesty (documented infrastructure failures are recorded, not gated); no 0-confidence verdicts on complete dives.
 * **Depth Gate (`depth_coverage`, plan #7)**: deterministic completeness gate on the deep-dive summary. Every capability domain — persistence, C2/network, evasion/anti-analysis, exfiltration, defense impairment, credential access, encryption/obfuscation, plus entry point, imports, strings — must be *addressed*: either evidenced or explicitly stated "not observed". An entirely unmentioned domain fails the gate. Implemented by `v2_lib.evaluate_deep_coverage()` in `audit_deep_standard` / `audit_deep_large`. The deep-dive prompts carry the DEPTH PROTOCOL ("a verdict does not end the analysis") so agents know the requirement before final_answer. Pairs with the optional function-recovery stage (#6), which supplies systematic call-graph coverage.
 * **Style gates**: provenance byline present, citation coverage in narrative, no dump-style code blocks without interpretation, no orphaned tables, healthy prose ratio. Evaluated on the narrative body only (raw evidence appendices are exempt).
+* **Publication-quality gates (`cross_report_consistency`, 2026-08-12)**: deterministic fact checks over the published report pair — the master must not claim "no dynamic analysis was performed" when the technical report carries Speakeasy/Frida execution evidence; master and technical verdict panels must agree; entropy citations are checked against the file's measured whole-file Shannon entropy (section-scoped citations and raw evidence appendices are exempt). Added after the #2 campaign: the structural gates passed 15 report pairs that these checks caught carrying factual defects.
 * **Source Tagging**: every report carries explicit provenance (`source: llm_judge` vs `source: deterministic_fallback`), preventing stubbed or partial runs from appearing green.
 
 ---

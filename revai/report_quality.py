@@ -9,6 +9,7 @@ rc==0 alone is NEVER sufficient.
 from __future__ import annotations
 
 import json
+import math
 import os
 import re
 import unicodedata
@@ -177,6 +178,15 @@ REPORT_STYLE_CONTRACT = """REPORT STYLE CONTRACT (mandatory — expert-report co
    each with an explanation paragraph, not a wall of evidence.
 8. READER TEST: a reader with no prior context must be able to follow the
    analysis from verdict to evidence without asking the model for clarification.
+9. DYNAMIC-ANALYSIS HONESTY (2026-08-12): if Speakeasy/Frida tools RAN — even
+   with zero recorded events — say that they ran and what they recorded.
+   NEVER write "no dynamic analysis was performed" when the tools executed;
+   the honest phrasing is "dynamic analysis ran and observed no runtime
+   events" (zero calls is a finding about anti-analysis, not a non-attempt).
+10. ENTROPY UNITS (2026-08-12): entropy figures must be whole-file Shannon
+    entropy in bits/byte (0-8); per-section values must name the section.
+    Never present an unlabeled tool metric (e.g. Malcat's raw entropy field)
+    as the file's entropy — it is a different measurement.
 """
 
 VERDICT_CALIBRATION_CONTRACT = """VERDICT CALIBRATION (mandatory — keygenme false-positive fix, 2026-08-07):
@@ -364,6 +374,190 @@ def evaluate_report_markdown(
     }
 
 
+_DYN_NEGATION_RE = re.compile(
+    r"(?:no dynamic analysis.{0,60}?(?:was|were).{0,15}?(?:performed|conducted|run))"
+    r"|(?:dynamic analysis (?:was|were)\s+not (?:performed|conducted|run))"
+    r"|(?:dynamic analysis was not performed)",
+    re.IGNORECASE,
+)
+
+_TECH_DYN_EVIDENCE_RE = re.compile(
+    r"speakeasy_ok:\s*True|emulation completed|hook candidates"
+    r"|identified the following hook",
+    re.IGNORECASE,
+)
+
+_VERDICT_PANEL_RE = re.compile(
+    r"\|\s*\*\*Final\*\*\s*\|\s*\*+([^*|]+?)\*+\s*\|",
+    re.IGNORECASE,
+)
+
+_ENTROPY_MENTION_RE = re.compile(
+    r"(?<![A-Za-z])entropy\b[^0-9\n]{0,40}(\d{1,2}(?:\.\d+)?)",
+    re.IGNORECASE,
+)
+
+_ENTROPY_SECTION_SCOPE_RE = re.compile(
+    r"\.(?:text|data|rdata|rsrc|reloc|idata|edata|pdata|tls)\b"
+    r"|\bsection\b|\boverlay\b|\bsegment\b|\bupx\d\b",
+    re.IGNORECASE,
+)
+
+
+def _file_shannon_entropy(path: Path | None) -> float | None:
+    """Whole-file Shannon entropy (bits/byte), stdlib-only. None if unreadable."""
+    if not path or not path.is_file():
+        return None
+    try:
+        data = path.read_bytes()
+    except OSError:
+        return None
+    if not data:
+        return 0.0
+    freq = [0] * 256
+    for b in data:
+        freq[b] += 1
+    n = len(data)
+    e = -sum((c / n) * math.log2(c / n) for c in freq if c)
+    return e if e else 0.0
+
+
+def _sample_path_for(root: Path, sha: str) -> Path | None:
+    """Resolve the sample file from the session record (best-effort).
+
+    `root` = /opt/samples/logs/<sha>; sessions live at /opt/samples/sessions.
+    """
+    sp = root.parent.parent / "sessions" / f"{sha}.json"
+    if not sp.is_file():
+        return None
+    try:
+        d = json.loads(sp.read_text(encoding="utf-8", errors="replace"))
+    except Exception:
+        return None
+    p = d.get("sample_path")
+    return Path(p) if p else None
+
+
+_APPENDIX_MARKERS = (
+    "## Appendix",
+    "# Appendix",
+    "## Structured Evidence",
+    "# Structured Evidence",
+    "Evidence Pack",
+)
+
+
+def _narrative_portion(md: str) -> str:
+    """Cut a report at the first appendix/evidence-dump marker.
+
+    Style and fact checks run on the narrative only; appendices are verbatim
+    tool evidence and are not judged as report prose.
+    """
+    text = md or ""
+    cut = len(text)
+    low = text.lower()
+    for marker in _APPENDIX_MARKERS:
+        i = low.find(marker.lower())
+        if i != -1:
+            cut = min(cut, i)
+    return text[:cut]
+
+
+def _entropy_claim_violations(md: str, file_entropy: float) -> list[str]:
+    """Flag entropy citations that contradict the file's measured entropy.
+
+    Ground truth = whole-file Shannon entropy computed from the sample bytes
+    (malcat's `entropy` field is not whole-file entropy — verified 2026-08-12:
+    getdown 5.54 bits/byte vs malcat 104). Section-scoped citations (.text,
+    overlay, ...) and anomaly-table category cells are skipped.
+    """
+    out: list[str] = []
+    seen: set[str] = set()
+    narrative = _narrative_portion(md)
+    for m in _ENTROPY_MENTION_RE.finditer(narrative):
+        line_start = narrative.rfind("\n", 0, m.start()) + 1
+        pipes_before = narrative[line_start:m.start()].count("|")
+        if pipes_before >= 2:
+            continue
+        ctx = narrative[max(0, m.start() - 120):m.end() + 120]
+        if _ENTROPY_SECTION_SCOPE_RE.search(ctx):
+            continue
+        try:
+            quoted = float(m.group(1))
+        except ValueError:
+            continue
+        if 8.0 < quoted <= 800.0:
+            quoted = quoted / 100.0
+        elif quoted > 8.0:
+            continue
+        key = f"{quoted:.2f}"
+        if key in seen:
+            continue
+        seen.add(key)
+        if abs(quoted - file_entropy) > 0.5:
+            out.append(
+                f"entropy_quoted_vs_file_mismatch(quoted={quoted}, file={file_entropy:.2f})"
+            )
+        low = ctx.lower()
+        if any(w in low for w in ("normal", "typical", "expected")) and not (
+            3.5 <= file_entropy <= 8.0
+        ):
+            out.append(
+                f"entropy_normal_claim_contradicts_file(quoted={quoted}, file={file_entropy:.2f})"
+            )
+    return out
+
+
+def _panel_final_verdict(md: str) -> str:
+    m = _VERDICT_PANEL_RE.search(md or "")
+    return (m.group(1) or "").strip().lower() if m else ""
+
+
+def _cross_report_consistency(
+    master_md: str,
+    tech2_md: str,
+    tech3_md: str,
+    file_entropy: float | None,
+) -> dict[str, Any]:
+    """Deterministic cross-report + fact-vs-file consistency checks.
+
+    Gate-failing violations (night-run #2 publication defects, 2026-08-12):
+    - master claims no dynamic analysis ran while the technical report carries
+      real Speakeasy/Frida execution evidence;
+    - master and technical verdict panels state different final verdicts;
+    - entropy citations contradict the file's measured whole-file entropy.
+    """
+    violations: list[str] = []
+    master_neg = bool(_DYN_NEGATION_RE.search(master_md or ""))
+    tech_dyn_ev = bool(_TECH_DYN_EVIDENCE_RE.search((tech2_md or "") + "\n" + (tech3_md or "")))
+    checks = {
+        "master_dyn_negation": master_neg,
+        "tech_dyn_evidence": tech_dyn_ev,
+        "file_entropy": file_entropy,
+    }
+    if master_neg and tech_dyn_ev:
+        violations.append(
+            "cross_report:master_claims_no_dynamic_analysis_but_technical_has_dynamic_findings"
+        )
+    mv = _panel_final_verdict(master_md)
+    tv = _panel_final_verdict(tech2_md) or _panel_final_verdict(tech3_md)
+    checks["master_verdict"] = mv
+    checks["tech_verdict"] = tv
+    if mv and tv and mv != tv:
+        violations.append(
+            f"cross_report:master_tech_verdict_mismatch(master={mv}, technical={tv})"
+        )
+    if file_entropy is not None:
+        for md, label in (
+            (master_md, "master"),
+            (tech2_md, "technical_v2"),
+            (tech3_md, "technical_v3"),
+        ):
+            for v in _entropy_claim_violations(md, file_entropy):
+                violations.append(f"cross_report:{label}:{v}")
+    return {"ok": not violations, "violations": violations, "checks": checks}
+
+
 def evaluate_sha_publish_quality(logs_dir: Path, sha: str) -> dict[str, Any]:
     """Disk-level quality gate used by audit + orchestrator."""
     root = Path(logs_dir) / sha
@@ -459,6 +653,15 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str) -> dict[str, Any]:
     checks["technical_v3"] = r_tech3
     checks["master_v3_present"] = len(master_v3) >= 1500
     checks["tech3_file_present"] = bool(tech3_md)
+
+    # Cross-report consistency + factual-number sanity (2026-08-12, #2 night-run
+    # publication gate): structural green is not enough — catch master-vs-tech
+    # contradictions and claims that contradict the file's measured entropy.
+    _entropy = _file_shannon_entropy(_sample_path_for(root, sha))
+    consistency = _cross_report_consistency(master_md, tech2_md, tech3_md, _entropy)
+    checks["cross_report_consistency"] = consistency
+    for _viol in consistency.get("violations") or []:
+        issues.append(_viol)
 
     # Deep agentic gates
     ag = _load(root / "deep_dive" / "agentic_deep_dive.json")

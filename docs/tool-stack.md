@@ -10,7 +10,7 @@ when it applies to the sample's file type.
 | :--- | :--- |
 | **Ghidra** (SQL-first) | Static analysis via ghidrasql — functions, imports, strings, decompile |
 | **IDA Pro** (optional) | Same SQL-first analysis via idasql when installed |
-| **Malcat** | Native capa engine + full MCP analysis (triage views, constants, anomalies, decompile) |
+| **Malcat** | Native capa engine + full MCP analysis (triage views, constants, anomalies, decompile). Note: its `entropy` field is not whole-file entropy — `malcat_analyze` replaces it with computed whole-file Shannon bits/byte and preserves the original as `entropy_malcat_raw` |
 | **capa** | Capability detection (Mandiant fallback when Malcat absent) |
 | **FLOSS** | Obfuscated/decoded/stack strings |
 | **YARA** | Signature scanning (in-process yara-x engine) |

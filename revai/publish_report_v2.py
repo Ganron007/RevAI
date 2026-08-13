@@ -13,6 +13,7 @@ LLM model / API key / API URL / reasoning are read from environment:
 import argparse
 import json
 import os
+import re
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -343,6 +344,57 @@ def verify_sections(md: str) -> list[str]:
 
 def verify_technical_sections(md: str) -> list[str]:
     return missing_sections(md, TECHNICAL_REPORT_SECTIONS)
+
+
+_DYN_NEGATION_RE = re.compile(
+    r"no dynamic analysis.{0,60}?(?:was|were).{0,15}?(?:performed|conducted|run)"
+    r"|dynamic analysis (?:was|were)\s+not (?:performed|conducted|run)"
+    r"|dynamic analysis was not performed",
+    re.IGNORECASE,
+)
+
+_DYN_HONEST_SENTENCE = (
+    "Dynamic analysis was performed in this triage (Speakeasy emulation and "
+    "Frida probing ran); both tools recorded zero runtime events"
+)
+
+
+def _dynamic_analysis_ran(tools_results: dict) -> tuple[bool, str]:
+    """Did Speakeasy/Frida actually run? Evidence-driven, deterministic."""
+    speakeasy = tools_results.get("speakeasy")
+    if isinstance(speakeasy, dict):
+        if speakeasy.get("speakeasy_ok") is True or str(speakeasy.get("speakeasy_ok") or "").lower() == "true":
+            return True, "speakeasy_ok=True"
+        if "emulation completed" in str(speakeasy.get("report") or ""):
+            return True, "speakeasy_report_emulation_completed"
+    frida = tools_results.get("frida_probe")
+    if isinstance(frida, dict):
+        if (frida.get("hook_candidates") or frida.get("candidates") or
+                frida.get("probe_ran")) and not frida.get("error"):
+            return True, "frida_hook_candidates"
+        if "hook candidates" in str(frida.get("summary") or ""):
+            return True, "frida_summary_hook_candidates"
+    return False, ""
+
+
+def _repair_dyn_negation(md: str) -> tuple[str, int, list[str]]:
+    """Replace 'no dynamic analysis was performed' with the honest phrasing.
+
+    Only called when the evidence proves the tools ran. Returns
+    (repaired_md, replace_count, original_snippets).
+    """
+    original: list[str] = []
+    count = 0
+
+    def _sub(m) -> str:
+        nonlocal count
+        count += 1
+        original.append(m.group(0))
+        return _DYN_HONEST_SENTENCE
+
+    repaired = _DYN_NEGATION_RE.sub(_sub, md)
+    return repaired, count, original
+
 
 
 def _extract_report_json(content: str) -> dict:
@@ -697,7 +749,48 @@ def main():
                 )
                 report["markdown"] = md
                 report["source"] = "deterministic_fallback_after_incomplete_llm"
-            else:
+            elif missing:
+                # Completeness retry (2026-08-12, brbbot-class): the single-call
+                # master stopped early (finish_reason=stop at ~1.8K chars) with
+                # most sections unwritten. ONE bounded retry with a
+                # completeness nudge; accept only a strictly-better draft.
+                try:
+                    _nudge = (
+                        "Your previous draft is INCOMPLETE — these required "
+                        "sections are missing or empty: "
+                        + ", ".join(missing[:8])
+                        + ". Produce the COMPLETE report with ALL required "
+                        "sections, preserving every section you already wrote "
+                        "verbatim. Return the same JSON shape with the full "
+                        "markdown."
+                    )
+                    _resp2 = llm_judge(prompt + "\n\n" + _nudge)
+                    (ev_dir / "01b-llm-retry-raw.json").write_text(
+                        json.dumps(_resp2, indent=2, default=str)
+                    )
+                    _r2 = _extract_report_json(
+                        _resp2["choices"][0]["message"]["content"]
+                    )
+                    _md2 = str(_r2.get("markdown") or "") if isinstance(_r2, dict) else ""
+                    _miss2 = verify_sections(_md2) if _md2 else missing
+                    if _md2 and len(_miss2) < len(missing):
+                        md = _md2
+                        report["markdown"] = md
+                        report["master_completeness_retried"] = True
+                        print(
+                            f"[publish_report_v2] master completeness retry "
+                            f"improved: missing {len(missing)} -> {len(_miss2)}",
+                            flush=True,
+                        )
+                    missing = verify_sections(md)
+                    stubs = stub_sections(md, REPORT_MASTER_SECTIONS)
+                except Exception as _retry_err:
+                    print(
+                        f"[publish_report_v2] master completeness retry error: "
+                        f"{_retry_err}",
+                        flush=True,
+                    )
+            if missing or stubs:
                 report["source"] = "llm_incomplete"
                 report["quality_fail"] = {"missing": missing, "stubs": stubs}
             missing = verify_sections(md)
@@ -705,6 +798,27 @@ def main():
         report["sections_missing"] = missing
         report["sections_stub"] = stubs
         report["sections_complete"] = len(REPORT_MASTER_SECTIONS) - len(missing)
+
+    # Deterministic dynamic-analysis honesty repair (2026-08-12, getdown-class):
+    # when Speakeasy/Frida demonstrably RAN (speakeasy_ok True / frida probes
+    # present in the evidence), a master claiming "no dynamic analysis was
+    # performed" is factually wrong. The LLM produces this phrasing despite the
+    # style contract, so repair it deterministically — honest wording, original
+    # text preserved in the report JSON for provenance.
+    _dyn_ran, _dyn_why = _dynamic_analysis_ran(tools_results)
+    if _dyn_ran and md:
+        md, _dyn_repaired, _dyn_orig = _repair_dyn_negation(md)
+        report["dynamic_analysis_ran"] = True
+        report["dynamic_analysis_ran_why"] = _dyn_why
+        report["dynamic_analysis_negation_repaired"] = _dyn_repaired
+        if _dyn_orig:
+            report["dynamic_analysis_negation_original"] = _dyn_orig[:400]
+        if _dyn_repaired:
+            print(
+                "[publish_report_v2] repaired dynamic-analysis negation in master "
+                "(tools ran, text claimed not-performed)",
+                flush=True,
+            )
 
     # V5.12.7 / V5.12.13 — cross-stage verdict lock (honest multi-source surface)
     quick_v = (verdict or {}).get("verdict") if isinstance(verdict, dict) else None

@@ -3698,6 +3698,65 @@ MALCAT_DEEP_LIMITS = {
 }
 
 
+def _whole_file_shannon_bits(path: Path) -> float | None:
+    """Whole-file Shannon entropy (bits/byte), streaming. None if unreadable.
+
+    Malcat's `entropy` field is NOT whole-file entropy (verified 2026-08-12:
+    getdown 5.54 bits/byte vs malcat 104) — reports that cite it unlabeled
+    publish factually wrong numbers. This is the ground-truth value we
+    annotate onto the malcat result.
+    """
+    if not path.is_file():
+        return None
+    freq = [0] * 256
+    total = 0
+    try:
+        with path.open("rb") as f:
+            while True:
+                chunk = f.read(1 << 20)
+                if not chunk:
+                    break
+                for b in chunk:
+                    freq[b] += 1
+                total += len(chunk)
+    except OSError:
+        return None
+    if not total:
+        return 0.0
+    import math
+    e = -sum((c / total) * math.log2(c / total) for c in freq if c)
+    return e if e else 0.0
+
+
+def _annotate_malcat_entropy(res: dict | None, sample_path: str) -> dict | None:
+    """Replace malcat's misleading `entropy` field with ground truth.
+
+    Keeps the raw value as `entropy_malcat_raw`; the plain `entropy` key
+    carries whole-file Shannon bits/byte so every downstream consumer
+    (prompts, evidence tables, reports) sees the correct number.
+    """
+    if not isinstance(res, dict):
+        return res
+    if "file_summary" not in res or res.get("error"):
+        return res
+    try:
+        bits = _whole_file_shannon_bits(Path(sample_path))
+    except Exception as e:
+        res["entropy_note"] = f"entropy annotation failed: {e}"
+        return res
+    if bits is None:
+        return res
+    fs = res["file_summary"]
+    if isinstance(fs, dict):
+        raw = fs.get("entropy")
+        fs["entropy_malcat_raw"] = raw
+        fs["entropy"] = round(bits, 2)
+        fs["entropy_source"] = "whole_file_shannon_revai"
+    res["entropy_bits"] = round(bits, 2)
+    res["entropy_malcat_raw"] = fs.get("entropy_malcat_raw") if isinstance(fs, dict) else None
+    return res
+
+
 def malcat_analyze(sample_path: str, views: list[str] | None = None,
                    profile: str = "deep", limits: dict | None = None) -> dict:
     """Comprehensive MalCat analysis — uses the full MCP toolset.
@@ -3725,12 +3784,12 @@ def malcat_analyze(sample_path: str, views: list[str] | None = None,
         last = _malcat_analyze_once(sample_path, views=views, profile=profile, limits=limits)
         err = str((last or {}).get("error") or "")
         if not err.startswith("malcat_analyze top-level: MCP malcat closed"):
-            return last
+            return _annotate_malcat_entropy(last, sample_path)
         print(
             f"[malcat_analyze] MCP closed on attempt {attempt}/2 — retrying",
             flush=True,
         )
-    return last or {"error": "malcat_analyze failed with no result"}
+    return _annotate_malcat_entropy(last, sample_path) or {"error": "malcat_analyze failed with no result"}
 
 def _revai_tools_run(subcmd: str, sample_path: str, timeout: int) -> dict:
     """Run the revai-tools CLI (ships in this repo next to v2_lib.py);
