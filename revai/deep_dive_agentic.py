@@ -279,15 +279,18 @@ GHIDRA_SCHEMA = """Ghidra SQL tables (ghidrasql v0.0.4):
 - string_refs: func_addr, func_name, ref_addr, string_value, string_addr, string_length
 - instructions: addr, mnemonic, operands, disasm, size, bytes, func_addr"""
 
-IDA_SCHEMA = """IDA SQL tables:
-- funcs: name, address, size
-- strings: content, address, length
-- imports: module, name, address
-- segments: start_ea, end_ea, name, class, perm
-- entries: ordinal, address, name
-- xrefs: from_ea, from_func_addr, to_ea, to_func_addr, is_code
+IDA_SCHEMA = """IDA SQL tables (idasql v0.0.18.1):
+- funcs: addr, name, prototype, size, end_addr, flags
+- strings: addr, content, length, type, type_name, width
+- imports: addr, name, ordinal, module, module_idx
+- segments: start_addr, end_addr, name, class, perm
+- entries: ordinal, addr, name
+- xrefs: from_addr, to_addr, from_func, type, is_code
+- instructions: addr, itype, mnemonic, size, operand0, operand1, operand2
+- comments: addr, comment, rpt_comment
+- bookmarks: slot, addr, description
 - db_info: key, value
-- string_refs: func_name, func_addr, string_value, string_addr, string_length"""
+- string_refs: string_addr, string_value, string_length, ref_addr, func_addr, func_name"""
 
 TOOL_DESCRIPTIONS = {
     "malcat_analyze": "Run Malcat static profile. Args: sample_path, profile='triage'|'deep', views=['anomalies','strings','imports','yara_hits','capa_summary','functions','constants','carved','virtual_files','structures','decompile','unpack_donut']",
@@ -1183,7 +1186,7 @@ def _custom_loop_body(sha: str, max_steps: int = MAX_STEPS) -> dict:
             seeds.append((
                 "ida_query",
                 {
-                    "sql": "SELECT name, start_ea, size FROM functions ORDER BY size DESC LIMIT 25",
+                    "sql": "SELECT name, addr, size FROM funcs ORDER BY size DESC LIMIT 25",
                     "max_rows": 25,
                 },
             ))

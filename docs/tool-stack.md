@@ -9,7 +9,7 @@ when it applies to the sample's file type.
 | Tool | What it does |
 | :--- | :--- |
 | **Ghidra** (SQL-first) | Static analysis via ghidrasql v0.0.4 — functions, imports, strings, decompile. ghidrasql is by Elias Bachaalany (github.com/0xeb/ghidrasql), used under the Human-Origin Source License v1.0 |
-| **IDA Pro** (optional) | Same SQL-first analysis via idasql when installed |
+| **IDA Pro** (optional) | Same SQL-first analysis via idasql v0.0.18.1 (IDA 9.3 build) when installed. idasql is by Elias Bachaalany (github.com/allthingsida/idasql), used under the Human-Origin Source License v1.0 |
 | **Malcat** | Native capa engine + full MCP analysis (triage views, constants, anomalies, decompile). Note: its `entropy` field is not whole-file entropy — `malcat_analyze` replaces it with computed whole-file Shannon bits/byte and preserves the original as `entropy_malcat_raw` |
 | **capa** | Capability detection (Mandiant fallback when Malcat absent) |
 | **FLOSS** | Obfuscated/decoded/stack strings |

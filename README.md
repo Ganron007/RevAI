@@ -147,12 +147,6 @@ Distinctive capabilities — the things that set RevAI apart. For the full featu
 
 ---
 
-## Acknowledgements
-
-* **ghidrasql** — SQL interface for Ghidra program databases, by [Elias Bachaalany](https://github.com/0xeb/ghidrasql), used under the Human-Origin Source License v1.0.
-
----
-
 ## Quickstart
 
 ### 1. Clone & install
@@ -210,3 +204,10 @@ Full ops: [`docs/OPERATE.md`](docs/OPERATE.md) · Install: [`docs/INSTALL.md`](d
 MIT — see [LICENSE](LICENSE).
 
 > Copyright (c) 2026 CADRE RE Team.
+
+---
+
+## Acknowledgements
+
+* **ghidrasql** — SQL interface for Ghidra program databases, by [Elias Bachaalany](https://github.com/0xeb/ghidrasql), used under the Human-Origin Source License v1.0.
+* **idasql** — SQL interface for IDA Pro databases, by [Elias Bachaalany](https://github.com/allthingsida/idasql), used under the Human-Origin Source License v1.0.

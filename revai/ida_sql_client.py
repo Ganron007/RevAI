@@ -559,13 +559,13 @@ class IdaSqlClient:
             addr = int(r["address"])
             new_name = str(r["new_name"]).replace("'", "''")
             sql_statements.append(
-                f"UPDATE funcs SET name = '{new_name}' WHERE address = {addr}"
+                f"UPDATE funcs SET name = '{new_name}' WHERE addr = {addr}"
             )
         for b in bookmarks:
             addr = int(b["address"])
             desc = str(b.get("comment") or b.get("description", "")).replace("'", "''")
             sql_statements.append(
-                f"INSERT INTO bookmarks(address, description) VALUES ({addr}, '{desc}')"
+                f"INSERT INTO bookmarks(addr, description) VALUES ({addr}, '{desc}')"
             )
         # Comments (separate table from bookmarks)
         for c_dict in bookmarks:
@@ -575,7 +575,7 @@ class IdaSqlClient:
             addr = int(c_dict["address"])
             cmt = cmt.replace("'", "''")
             sql_statements.append(
-                f"INSERT INTO comments(address, comment) VALUES ({addr}, '{cmt}')"
+                f"INSERT INTO comments(addr, comment) VALUES ({addr}, '{cmt}')"
             )
 
         if dry_run:

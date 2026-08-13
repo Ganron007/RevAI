@@ -109,7 +109,7 @@ LIMIT 50
 """
 
 SUSPICIOUS_IMPORT_SQL_IDA = f"""
-SELECT module, name, address FROM imports
+SELECT module, name, addr FROM imports
 WHERE {_like_patterns('name', SUSPICIOUS_IMPORT_PATTERNS)}
 LIMIT 50
 """
@@ -122,7 +122,7 @@ LIMIT 20
 """
 
 TOP_FUNCS_IDA = """
-SELECT name, address, size FROM funcs LIMIT 20
+SELECT name, addr, size FROM funcs LIMIT 20
 """
 
 FUNCTION_METRICS_GHIDRA = """
@@ -150,10 +150,10 @@ LIMIT 50
 """
 
 CRYPTO_NET_XREFS_IDA = f"""
-SELECT f.name, f.address, i.name, i.module
+SELECT f.name, f.addr, i.name, i.module
 FROM imports i
-JOIN xrefs x ON x.to_ea = i.address
-JOIN funcs f ON f.address = x.from_ea
+JOIN xrefs x ON x.to_addr = i.addr
+JOIN funcs f ON f.addr = x.from_addr
 WHERE {_like_patterns('i.name', SUSPICIOUS_IMPORT_PATTERNS)}
   AND x.is_code = 1
 LIMIT 50
@@ -167,7 +167,7 @@ LIMIT 100
 """
 
 IOC_STRINGS_IDA = f"""
-SELECT s.content, s.address, s.length
+SELECT s.content, s.addr, s.length
 FROM strings s
 WHERE {_like_patterns('s.content', IOC_STRING_PATTERNS)}
 LIMIT 100
@@ -179,7 +179,7 @@ LIMIT 100
 """
 
 ALL_IMPORTS_IDA = """
-SELECT name, module, address FROM imports
+SELECT name, module, addr FROM imports
 LIMIT 100
 """
 
@@ -196,7 +196,7 @@ LIMIT 100
 """
 
 ALL_STRINGS_IDA = """
-SELECT content, address, length FROM strings
+SELECT content, addr, length FROM strings
 LIMIT 100
 """
 
@@ -219,9 +219,9 @@ ORDER BY start_addr
 """
 
 SEGMENTS_IDA = """
-SELECT start_ea, end_ea, name, class, perm
+SELECT start_addr, end_addr, name, class, perm
 FROM segments
-ORDER BY start_ea
+ORDER BY start_addr
 """
 
 EXPORTS_GHIDRA = """
@@ -231,7 +231,7 @@ LIMIT 50
 """
 
 ENTRIES_IDA = """
-SELECT ordinal, address, name FROM entries
+SELECT ordinal, addr, name FROM entries
 ORDER BY ordinal
 LIMIT 50
 """

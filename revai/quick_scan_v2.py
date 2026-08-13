@@ -86,14 +86,14 @@ IDA_EVIDENCE = [
     (
         "crypto_strings",
         "Suspicious strings (IDA)",
-        "SELECT content, printf('0x%X', address) AS addr FROM strings "
+        "SELECT content, printf('0x%X', addr) AS addr FROM strings "
         "WHERE content LIKE '%crypt%' OR content LIKE '%.dll' OR content LIKE '%http%' "
         "LIMIT 30",
     ),
     (
         "top_funcs_by_size",
         "Largest functions (IDA)",
-        "SELECT name, address, size FROM funcs LIMIT 15",
+        "SELECT name, addr, size FROM funcs LIMIT 15",
     ),
 ]
 

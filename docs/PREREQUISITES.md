@@ -94,7 +94,7 @@ These tools are wired into `TOOL_MANIFEST` and run automatically per file format
 
 | Component | Notes |
 |-----------|--------|
-| **IDA Pro 9.x** | `/opt/ida` + `idasql` on PATH — used alongside Ghidra when present |
+| **IDA Pro 9.x** | `/opt/ida` + `idasql` on PATH — used alongside Ghidra when present. idasql v0.0.18.1 (IDA 9.3 build) by Elias Bachaalany, used under the Human-Origin Source License v1.0 |
 | **Ghidra Function ID** | FIDB files ship with Ghidra (`Ghidra/Features/FunctionID/data/`); applied automatically during analysis |
 
 ## Verify
