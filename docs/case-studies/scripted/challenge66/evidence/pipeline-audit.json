@@ -1,0 +1,1178 @@
+{
+  "sha": "9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6",
+  "mode": "single",
+  "mode_effective": "large",
+  "strict_standard": false,
+  "audited_at": "2026-08-14T04:54:06.971319+00:00",
+  "session_pipeline_mode": "single",
+  "sample_path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+  "stages": {
+    "intake": {
+      "ok": true,
+      "checks": {
+        "intake_validation": true,
+        "has_source_decisions": true,
+        "ghidra_mentioned": true
+      },
+      "evidence": {
+        "intake_validation": {
+          "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/intake-validation.json",
+          "exists": true,
+          "bytes": 2134,
+          "mtime_iso": "2026-08-12T23:49:17.612954+00:00",
+          "sha256": "dd84b9527e5bd81c51fa81dfc82fd4b131b91332613ce24b42daee888159bf54"
+        },
+        "malcat_triage": {
+          "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/malcat-triage.json",
+          "exists": true,
+          "bytes": 24477,
+          "mtime_iso": "2026-08-13T15:45:35.101450+00:00",
+          "sha256": "ef359245e74a18b0e27cb12fe798a37174db18ebac81f1cb89fbfbc6f2ae8193"
+        },
+        "source_decisions": {
+          "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/source-decisions.json",
+          "exists": true,
+          "bytes": 1298,
+          "mtime_iso": "2026-08-12T23:49:17.612954+00:00",
+          "sha256": "6303498b27beae8b99d7207872054ebce873e7bb4eda266ca3faa2dce4001fe0"
+        },
+        "ghidra_import_log": {
+          "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/intake-analyzeHeadless.log",
+          "exists": true,
+          "bytes": 6473,
+          "mtime_iso": "2026-08-12T23:48:29.416946+00:00",
+          "sha256": "6ddc4c3d98476b8ff9fbda023590459806e5b7baa3e9b50d8afec5f8e5ec85d8"
+        },
+        "ida_bootstrap_log": {
+          "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/intake-idasql.log",
+          "exists": true,
+          "bytes": 219,
+          "mtime_iso": "2026-08-12T23:48:30.820946+00:00",
+          "sha256": "4bb5c7a6029b8a0f715c8758905596fa726c6c6fcd4cc6043a809e5f43baf731"
+        },
+        "source_decisions_excerpt": "{\n  \"sha256\": \"9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6\",\n  \"imports\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"medium\",\n    \"reason\": \"IDA reports 0 imports; Ghidra reports 6 imports, while Malcat reports 7. Ghidra is chosen for detailed import analysis.\"\n  },\n  \"functions\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"medium\",\n    \"reason\": \"IDA reports 0 functions; Ghidra reports 2 functions, while Malcat reports 1. Ghidra provides more functional data.\"\n  },\n  \"strings\": {\n    \"source\": \"both\",\n    \"confidence\": \"high\",\n    \"reason\": \"IDA reports 853 strings, Malcat reports 100, and Ghidra reports 34. Using both engines ensures comprehensive string coverage.\"\n  },\n  \"decompilation\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"medium\",\n    \"reason\": \"Default\n\u2026 [521 more chars]",
+        "malcat_triage_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n  \"profile\": \"triage\",\n  \"limits\": {\n    \"strings_max\": 100,\n    \"imports_max\": 100,\n    \"functions_max\": 10,\n    \"anomaly_locations_max\": 5,\n    \"decompile_top_n\": 1\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"challenge66.exe\",\n    \"file_path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n    \"file_size\": 169998,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 7.57,\n    \"sha256\": \"9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6\",\n    \"metadata\": {\n      \"VersionInfo::Comments\": \"Modernize Hayalet\",\n      \"VersionInfo::CompanyName\"\n\u2026 [23677 more chars]"
+      }
+    },
+    "quick_scan": {
+      "ok": true,
+      "checks": {
+        "prompt": true,
+        "verdict": true,
+        "has_capa_section": true,
+        "has_yara_section": true,
+        "has_malcat_section": true,
+        "has_floss_section": true,
+        "verdict_has_family": true,
+        "llm_source": true,
+        "tools_all_ok": true,
+        "citations_grounded": true,
+        "capa_salvage_used": false,
+        "evidence_pack_present": true,
+        "benign_blocked_if_incomplete": true,
+        "yara_family_not_cleared": true
+      },
+      "tools": {
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 1,\n  \"top_rules\": [\n    {\n      \"name\": \"packed with generic packer\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Software Packing\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"Software Packing\",\n          \"id\": \"T1027.002\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Software Packing\",\n            \"Standard Compression\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Software Packing\",\n          \"method\": \"Standard Compression\",\n          \"id\": \"F0001.002\"\n        }\n      ]\n    }\n  ],\n  \"timeout_s\": 300,\n  \"sample_size\": 169998,\n  \"duration_s\": 1.83,\n  \"engine\": \"malcat-capa\",\n  \"capa_bin\": \"/opt/malcat/bin/malcat.capa.py\"\n}",
+          "present": true
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 20,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 37486,\n          \"length\": 3,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 5676,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"UPXv20MarkusLaszloReiser\",\n      \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 104367,\n          \"length\": 85,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"UPXV200V290MarkusOberhumerLaszloMolnarJohnReiser\",\n      \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 104414,\n          \"length\": 39,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"UPX290LZMAMarkusOberhumerLaszloMolnarJohnReiser\",\n      \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a1\",\n          \"offset\": 104016,\n          \"length\": 63,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"upx_3\",\n      \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$str1\",\n          \"offset\": 104016,\n          \"length\": 45,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE32\",\n      \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsWindowsGUI\",\n      \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsPacked\",\n      \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasOverlay\",\n      \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasRichSignature\",\n      \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 168,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"PackerUPX_CompresorGratuito_wwwupxsourceforgenet\",\n      \"path\": \"/opt/samples/corpu\n\u2026 [5407 more chars]",
+          "present": true
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 470,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \"QV8yN.[\",\n    \"1^2e2.3C9\",\n    \"<V|@d{W\",\n    \"=Icti>\",\n    \"WhXoXaZ\",\n    \"#g_6~=~\",\n    \"Sk8OF6.v\",\n    \"Jz+,S8\",\n    \"+H?nfx\",\n    \"i/Cr`;\",\n    \"|zm/GH$\",\n    \"LN40m/\",\n    \"8!7(+6l%\",\n    \"Oc2->a\\\"6\",\n    \"winsck.ocx@SW\",\n    \"+dColor\",\n    \"Enable\",\n    \"TextRTF\",\n    \"J;\\\"dfn\",\n    \"e6rFRICHTX32.OCX\",\n    \"DrderSty\",\n    \"BAFM~omctlJ\",\n    \"stView\",\n    \"c)6@_M\",\n    \"{o R^_\",\n    \"-3H(K^\",\n    \"^;RS_<M_\",\n    \"L.X7hoy\",\n    \"rm1.Insertar_Objeto2\",\n    \"GraficAudio~Calc_Pictu\",\n    \"re3Slide_\",\n    \"g4OPEN$IL\",\n    \"Notify_IcoI\",\n    \"Class.\",\n    \"LabelProg\\\\paLB\",\n    \"WuC:\\\\WINDOWS\\\\sys\",\n    \"soft Visu@ StY\\\\VB`V\",\n    \"s\\\\Soo.\",\n    \"ect 0.1U\",\n    \"OIpf4li\",\n    \"4oN2 #\",\n    \"CHE_Dtw\",\n    \"ET_PICTURE6\",\n    \"<Web m>s\",\n    \"y<Hw(v\",\n    \"?Fromfqfkipislqsqvhnqrvjgt\",\n    \"kmgjmti@\",\n    \"Ap\\\"ogoobcgqi\",\n    \"sllguss\",\n    \"hmsksmnct\",\n    \"vijnrpfmugBhv@n7\",\n    \"F]JGZc\",\n    \"9Asg y$\",\n    \"gkkjlvgh\",\n    \"\\\"Rt+v[\",\n    \"ID?CLS\",\n    \"jO#zuNiR#5\",\n    \"kOCk.=Mas\",\n    \"mkS7[0S\",\n    \"EO7cf5zRIp47v39\",\n    \"pB0g1LhIH\",\n    \"Dte'O^\",\n    \"gionD #o\",\n    \"IsURLA\",\n    \"'pB/\\\\F\",\n    \"r?iTw0\",\n    \"|_o..H\",\n    \"_JsaEx]\",\n    \"LayereCt\",\n    \"[f7on{f\",\n    \"/C:RKK\",\n    \"ve_kmW@J|#so?\",\n    \"w0wlbh\",\n    \"G>Dn\\\\=6\",\n    \"|\\\\~.a^_\",\n    \"b*~vba6Ans\",\n    \"iToUni'\",\n    \"er,*l'J\",\n    \"CaDupW\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 0,\n    \"stack_strings\": 0,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 470\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 4.19,\n  \"size_bytes\": 169998,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}",
+          "present": true
+        },
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"challenge66.exe\",\n    \"file_path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n    \"file_size\": 169998,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 7.57,\n    \"sha256\": \"9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6\",\n    \"metadata\": {\n      \"VersionInfo::Comments\": \"Modernize Hayalet\",\n      \"VersionInfo::CompanyName\": \"www.hidden-sabotage.com\",\n      \"VersionInfo::FileDescription\": \"Modernize Hayalet\",\n      \"VersionInfo::LegalCopyright\": \"Modernize Hayalet\",\n      \"VersionInfo::LegalTrademarks\": \"www.hidden-sabotage.com\",\n      \"VersionInfo::ProductName\": \"Modernize Hayalet\",\n      \"VersionInfo::FileVersion\": \"1.00\",\n      \"VersionInfo::ProductVersion\": \"1.00\",\n      \"VersionInfo::InternalName\": \"Ghost \\u015eifreleyici Modernize Hayalet\",\n      \"VersionInfo::OriginalFilename\": \"Ghost \\u015eifreleyici Modernize Hayalet.exe\"\n    },\n    \"entrypoint_ea\": 104016,\n    \"layout\": [\n      {\n        \"name\": \"header\",\n        \"effective_address\": 0,\n        \"physical_size\": 1024,\n        \"virtual_size\": 0,\n        \"rights\": \"\",\n        \"entropy\": 39\n      },\n      {\n        \"name\": \"\",\n        \"effective_address\": 1024,\n        \"physical_size\": 103936,\n        \"virtual_size\": 106496,\n        \"rights\": \"RWX\",\n        \"entropy\": 205\n      },\n      {\n        \"name\": \".rsrc\",\n        \"effective_address\": 107520,\n        \"physical_size\": 15872,\n        \"virtual_size\": 16384,\n        \"rights\": \"RW\",\n        \"entropy\": 121\n      },\n      {\n        \"name\": \"overlay\",\n        \"effective_address\": 123904,\n        \"physical_size\": 49166,\n        \"virtual_size\": 0,\n        \"rights\": \"\",\n        \"entropy\": 115\n      },\n      {\n        \"name\": \"\",\n        \"effective_address\": 173070,\n        \"physical_size\": 0,\n        \"virtual_size\": 241664,\n        \"rights\": \"RWX\",\n        \"entropy\": 0\n      }\n    ],\n    \"kesakode_verdict\": [],\n    \"entropy_malcat_raw\": 171,\n    \"entropy_source\": \"whole_file_shannon_revai\"\n  },\n  \"views\": {\n    \"anomalies\": [\n      {\n        \"name\": \"BigBufferNoXrefMediumToHighEntropy\",\n        \"desc\": \"a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run\",\n        \"category\": \"entropy\",\n        \"level\": 3,\n        \"num_hits\": 3\n      },\n      {\n        \"name\": \"CrossSectionJump\",\n        \"desc\": \"Control flow jumps across section, could be a packed file, a patched file or a file infector\",\n        \"category\": \"code\",\n        \"level\": 4,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"DataBetweenHeaderAndFirstSection\",\n        \"desc\": \"There is non-zero data between the PE header and the first section\",\n        \"category\": \"headers\",\n        \"level\": 3,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"DuplicatedSectionName\",\n        \"desc\": \"section name has already been used before in section table\",\n        \"category\": \"sections\",\n        \"level\": 2,\n        \"num_hits\": 1\n      },\n      {\n        \"\n\u2026 [40284 more chars]",
+          "present": true
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 6,
+        "hits": 5,
+        "misses": [
+          "malicious=60, threat_class: trojan.llac/babar VirusTotal High detection rate and specific malware family identification "
+        ],
+        "hit_examples": [
+          "Packed\u00d76, PatchedUPXHeader anomalies Indicates software packing with UPX, a common obfuscation technique in malware. mal",
+          "UPXv20MarkusLaszloReiser, UPX_290_LZMA YARA matches Confirms presence of UPX packer signatures, supporting packing evide",
+          "packed with generic packer top_rules ATT&CK technique T1027.002 for software packing, a defense evasion method. capa   ",
+          "load_library, get_proc_address, change_memory_protection, allocate_memory signals APIs for dynamic code loading and memo",
+          "VersionInfo::InternalName: Ghost \u015eifreleyici Modernize Hayalet file_summary Suggests the file is an 'encryptor', which c"
+        ],
+        "reason": ""
+      },
+      "format": "pe",
+      "required_tools": [
+        "capa",
+        "yara",
+        "floss"
+      ],
+      "verdict_preview": {
+        "verdict": "malicious",
+        "family": "llac",
+        "score": 85,
+        "agreement": "llm_and_v1_agree",
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "key_evidence": [
+          {
+            "source": "malcat",
+            "query_or_table": "anomalies",
+            "row_or_rule": "Packed\u00d76, PatchedUPXHeader",
+            "why": "Indicates software packing with UPX, a common obfuscation technique in malware."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "YARA matches",
+            "row_or_rule": "UPXv20MarkusLaszloReiser, UPX_290_LZMA",
+            "why": "Confirms presence of UPX packer signatures, supporting packing evidence."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "packed with generic packer",
+            "why": "ATT&CK technique T1027.002 for software packing, a defense evasion method."
+          },
+          {
+            "source": "pe_imports",
+            "query_or_table": "signals",
+            "row_or_rule": "load_library, get_proc_address, change_memory_protection, allocate_memory",
+            "why": "APIs for dynamic code loading and memory manipulation, typical in packers and malware for evasion."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "file_summary",
+            "row_or_rule": "VersionInfo::InternalName: Ghost \u015eifreleyici Modernize Hayalet",
+            "why": "Suggests the file is an 'encryptor', which could imply malicious use like ransomware or keygen, though static analysis alone is insufficient for behavioral confirmation."
+          },
+          {
+            "source": "external TI",
+            "query_or_table": "VirusTotal",
+            "row_or_rule": "malicious=60, threat_class: trojan.llac/babar",
+            "why": "High detection rate and specific malware family identification indicate malicious intent, overriding neutral obfuscation signals."
+          }
+        ],
+        "summary": "The sample is a PE executable packed with UPX, showing high entropy, minimal imports for dynamic API resolution, and version info indicating 'Ghost Encryptor'. While static analysis highlights obfuscation without clear behavioral signals, VirusTotal detections classify it as a trojan with 60 malicious reports, supporting a malicious verdict."
+      },
+      "evidence": {
+        "prompt": {
+          "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/prompt.txt",
+          "exists": true,
+          "bytes": 21454,
+          "mtime_iso": "2026-08-14T04:36:57.637760+00:00",
+          "sha256": "8fc4d1fccf43b5f728498959aff0109a8b9b46db766946ec728f4824ae47b7c4"
+        },
+        "verdict": {
+          "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/verdict.json",
+          "exists": true,
+          "bytes": 6323,
+          "mtime_iso": "2026-08-14T04:38:40.946841+00:00",
+          "sha256": "afd2225214b60ae764543ed6a65a08efda6d7be271fde68994c7b8288c5e02ee"
+        },
+        "prompt_excerpt": "# Triage evidence\nsha256: 9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6\nsample_path: /opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\nghidra_session: ghidra-pe-9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6\nida_session: ida-9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6\n\n## Source decisions (from intake validation)\n- imports: ghidra (confidence=medium) \u2014 IDA reports 0 imports; Ghidra reports 6 imports, while Malcat reports 7. Ghidra is chosen for detailed import analysis.\n- functions: ghidra (confidence=medium) \u2014 IDA reports 0 functions; Ghidra reports 2 functions, while Malcat reports 1. Ghidra provides more functional data.\n- strings: both (confidence=high) \u2014 IDA reports 853 strings, Malcat reports 100, and Ghidra reports 34. Using both engines ensures comprehensive string coverage.\n- decompilation: ghidra (confidence=medium) \u2014 Default to Ghidra for decompilation; IDA s\n\u2026 [20399 more chars]",
+        "verdict_excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 85,\n  \"family_guess\": \"llac\",\n  \"cross_engine_notes\": \"Multiple engines confirm UPX packing and dynamic API resolution via minimal imports. MalCat and YARA detect packing anomalies, capa identifies software packing, and pe_imports shows APIs for dynamic loading. VirusTotal reports high malicious detections with trojan.llac/babar family, indicating malicious intent despite static analysis showing primarily obfuscation.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"anomalies\",\n      \"row_or_rule\": \"Packed\\u00d76, PatchedUPXHeader\",\n      \"why\": \"Indicates software packing with UPX, a common obfuscation technique in malware.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"YARA matches\",\n      \"row_or_rule\": \"UPXv20MarkusLaszloReiser, UPX_290_LZMA\",\n      \"why\": \"Confirms presence of UPX packer signatures, supporting packing evidence.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"top_rul\n\u2026 [5323 more chars]"
+      }
+    },
+    "deep_dive": {
+      "ok": true,
+      "checks": {
+        "01_tools_raw": true,
+        "00_sql_evidence": false,
+        "03_prompt": false,
+        "04_llm": false,
+        "05_deep": true,
+        "tools_all_ok": true,
+        "llm_source": false,
+        "citations_grounded": true,
+        "engine_citation_ok": true,
+        "upx_second_pass_ok": true,
+        "no_incomplete_tooling": true,
+        "confidence_sane": true,
+        "evidence_pack_present": true,
+        "depth_coverage": true,
+        "agentic_json": true,
+        "sql_deep_re": true,
+        "complete_verdict": true,
+        "not_incomplete": true,
+        "checklist_ok_flag": true,
+        "agentic_confidence_sane": true
+      },
+      "tools": {
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        },
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 1,\n  \"top_rules\": [\n    {\n      \"name\": \"packed with generic packer\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Software Packing\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"Software Packing\",\n          \"id\": \"T1027.002\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Software Packing\",\n            \"Standard Compression\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Software Packing\",\n          \"method\": \"Standard Compression\",\n          \"id\": \"F0001.002\"\n        }\n      ]\n    }\n  ],\n  \"timeout_s\": 60,\n  \"sample_size\": 169998,\n  \"duration_s\": 1.08,\n  \"engine\": \"malcat-capa\",\n  \"capa_bin\": \"/opt/malcat/bin/malcat.capa.py\"\n}"
+        },
+        "pe_imports": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 169998,\n  \"duration_s\": 0.04,\n  \"import_count\": 6,\n  \"signal_count\": 4,\n  \"signals\": [\n    {\n      \"label\": \"load_library\",\n      \"api_match\": \"LoadLibrary\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \"get_proc_address\",\n      \"api_match\": \"GetProcAddress\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \"change_memory_protection\",\n      \"api_match\": \"VirtualProtect\",\n      \"attack\": [\n        \"T1055\"\n      ]\n    },\n    {\n      \"label\": \"allocate_memory\",\n      \"api_match\": \"VirtualAlloc\",\n      \"attack\": [\n        \"T1055\"\n      ]\n    }\n  ],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 20,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 37486,\n          \"length\": 3,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 5676,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"UPXv20MarkusLaszloReiser\",\n      \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 104367,\n          \"length\": 85,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"UPXV200V290MarkusOberhumerLaszloMolnarJohnReiser\",\n      \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 104414,\n          \"length\": 39,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"UPX290LZMAMarkusOberhumerLaszloMolnarJohnReiser\",\n      \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a1\",\n          \"offset\": 104016,\n          \"length\": 63,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"upx_3\",\n      \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$str1\",\n          \"offset\": 104016,\n          \"length\": 45,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE32\",\n      \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsWindowsGUI\",\n      \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsPacked\",\n      \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasOverlay\",\n      \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasRichSignature\",\n      \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 168,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"PackerUPX_CompresorGratuito_wwwupxsourceforgenet\",\n      \"path\": \"/opt/samples/corpu\n\u2026 [5385 more chars]"
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 470,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \"QV8yN.[\",\n    \"1^2e2.3C9\",\n    \"<V|@d{W\",\n    \"=Icti>\",\n    \"WhXoXaZ\",\n    \"#g_6~=~\",\n    \"Sk8OF6.v\",\n    \"Jz+,S8\",\n    \"+H?nfx\",\n    \"i/Cr`;\",\n    \"|zm/GH$\",\n    \"LN40m/\",\n    \"8!7(+6l%\",\n    \"Oc2->a\\\"6\",\n    \"winsck.ocx@SW\",\n    \"+dColor\",\n    \"Enable\",\n    \"TextRTF\",\n    \"J;\\\"dfn\",\n    \"e6rFRICHTX32.OCX\",\n    \"DrderSty\",\n    \"BAFM~omctlJ\",\n    \"stView\",\n    \"c)6@_M\",\n    \"{o R^_\",\n    \"-3H(K^\",\n    \"^;RS_<M_\",\n    \"L.X7hoy\",\n    \"rm1.Insertar_Objeto2\",\n    \"GraficAudio~Calc_Pictu\",\n    \"re3Slide_\",\n    \"g4OPEN$IL\",\n    \"Notify_IcoI\",\n    \"Class.\",\n    \"LabelProg\\\\paLB\",\n    \"WuC:\\\\WINDOWS\\\\sys\",\n    \"soft Visu@ StY\\\\VB`V\",\n    \"s\\\\Soo.\",\n    \"ect 0.1U\",\n    \"OIpf4li\",\n    \"4oN2 #\",\n    \"CHE_Dtw\",\n    \"ET_PICTURE6\",\n    \"<Web m>s\",\n    \"y<Hw(v\",\n    \"?Fromfqfkipislqsqvhnqrvjgt\",\n    \"kmgjmti@\",\n    \"Ap\\\"ogoobcgqi\",\n    \"sllguss\",\n    \"hmsksmnct\",\n    \"vijnrpfmugBhv@n7\",\n    \"F]JGZc\",\n    \"9Asg y$\",\n    \"gkkjlvgh\",\n    \"\\\"Rt+v[\",\n    \"ID?CLS\",\n    \"jO#zuNiR#5\",\n    \"kOCk.=Mas\",\n    \"mkS7[0S\",\n    \"EO7cf5zRIp47v39\",\n    \"pB0g1LhIH\",\n    \"Dte'O^\",\n    \"gionD #o\",\n    \"IsURLA\",\n    \"'pB/\\\\F\",\n    \"r?iTw0\",\n    \"|_o..H\",\n    \"_JsaEx]\",\n    \"LayereCt\",\n    \"[f7on{f\",\n    \"/C:RKK\",\n    \"ve_kmW@J|#so?\",\n    \"w0wlbh\",\n    \"G>Dn\\\\=6\",\n    \"|\\\\~.a^_\",\n    \"b*~vba6Ans\",\n    \"iToUni'\",\n    \"er,*l'J\",\n    \"CaDupW\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 0,\n    \"stack_strings\": 0,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 470\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 3.82,\n  \"size_bytes\": 169998,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}"
+        },
+        "dotnet": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        "r2_decomp": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n  \"disassembly\": {\n    \"0x00455250\": \"\\u250c 439: entry0 ();\\n\\u2502       \\u254e   0x00455250      60             pushal\\n\\u2502       \\u254e   0x00455251      be00c04300     mov esi, section.sect_1     ; 0x43c000\\n\\u2502       \\u254e   0x00455256      8dbe0050fcff   lea edi, [esi - 0x3b000]\\n\\u2502       \\u254e   0x0045525c      57             push edi\\n\\u2502       \\u254e   0x0045525d      83cdff         or ebp, 0xffffffff          ; -1\\n\\u2502      \\u250c\\u2500\\u2500< 0x00455260      eb10           jmp 0x455272\\n..\\n\\u2502     \\u250c\\u2500\\u2500\\u2500> 0x00455268      8a06           mov al, byte [esi]\\n\\u2502     \\u254e\\u2502\\u254e   0x0045526a      46             inc esi\\n\\u2502     \\u254e\\u2502\\u254e   0x0045526b      8807           mov byte [edi], al\\n\\u2502     \\u254e\\u2502\\u254e   0x0045526d      47             inc edi\\n\\u2502     \\u254e\\u2502\\u254e   ; CODE XREFS from entry0 @ 0x455327(x), 0x45533d(x)\\n\\u2502   \\u250c\\u250c\\u2500\\u2500\\u2500\\u2500> 0x0045526e      01db           add ebx, ebx\\n\\u2502  \\u250c\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500< 0x00455270      7507           jne 0x455279\\n\\u2502  \\u2502\\u254e\\u254e\\u254e\\u2502\\u254e   ; CODE XREF from entry0 @ 0x455260(x)\\n\\u2502  \\u2502\\u254e\\u254e\\u254e\\u2514\\u2500\\u2500> 0x00455272      8b1e           mov ebx, dword [esi]\\n\\u2502  \\u2502\\u254e\\u254e\\u254e \\u254e   0x00455274      83eefc         sub esi, 0xfffffffc\\n\\u2502  \\u2502\\u254e\\u254e\\u254e \\u254e   0x00455277      11db           adc ebx, ebx\\n\\u2502  \\u2514\\u2500\\u2500\\u2514\\u2500\\u2500\\u2500< 0x00455279      72ed           jb 0x455268\\n\\u2502   \\u254e\\u254e  \\u254e   0x0045527b      b801000000     mov eax, 1\\n\\u2502   \\u254e\\u254e  \\u254e   ; CODE XREF from entry0 @ 0x4552aa(x)\\n\\u2502   \\u254e\\u254e \\u250c\\u2500\\u2500> 0x00455280      01db           add ebx, ebx\\n\\u2502   \\u254e\\u254e\\u250c\\u2500\\u2500\\u2500< 0x00455282      7507           jne 0x45528b\\n\\u2502   \\u254e\\u254e\\u2502\\u254e\\u254e   0x00455284      8b1e           mov ebx, dword [esi]\\n\\u2502   \\u254e\\u254e\\u2502\\u254e\\u254e   0x00455286      83eefc         sub esi, 0xfffffffc\\n\\u2502   \\u254e\\u254e\\u2502\\u254e\\u254e   0x00455289      11db           adc ebx, ebx\\n\\u2502   \\u254e\\u254e\\u2514\\u2500\\u2500\\u2500> 0x0045528b      11c0           adc eax, eax\\n\\u2502   \\u254e\\u254e \\u254e\\u254e   0x0045528d      01db           add ebx, ebx\\n\\u2502   \\u254e\\u254e\\u250c\\u2500\\u2500\\u2500< 0x0045528f      730b           jae 0x45529c\\n\\u2502  \\u250c\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500< 0x00455291      7528           jne 0x4552bb\\n\\u2502  \\u2502\\u254e\\u254e\\u2502\\u254e\\u254e   0x00455293      8b1e           mov ebx, dword [esi]\\n\\u2502  \\u2502\\u254e\\u254e\\u2502\\u254e\\u254e   0x00455295      83eefc         sub esi, 0xfffffffc\\n\\u2502  \\u2502\\u254e\\u254e\\u2502\\u254e\\u254e   0x00455298      11db           adc ebx, ebx\\n\\u2502 \\u250c\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500\\u2500< 0x0045529a      721f           jb 0x4552bb\\n\\u2502 \\u2502\\u2502\\u254e\\u254e\\u2514\\u2500\\u2500\\u2500> 0x0045529c      48             dec eax\\n\\u2502 \\u2502\\u2502\\u254e\\u254e \\u254e\\u254e   0x0045529d      01db           add ebx, ebx\\n\\u2502 \\u2502\\u2502\\u254e\\u254e\\u250c\\u2500\\u2500\\u2500< 0x0045529f      7507           jne 0x4552a8\\n\\u2502 \\u2502\\u2502\\u254e\\u254e\\u2502\\u254e\\u254e   0x004552a1      8b1e           mov ebx, dword [esi]\\n\\u2502 \\u2502\\u2502\\u\n\u2026 [1529 more chars]"
+        },
+        "upx": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTested 0 file\"\n}"
+        },
+        "xor": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 000000C0 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 000000C0 ........!..L.!This program cannot be r\\n\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 0\n}"
+        },
+        "speakeasy": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        "frida_probe": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n    \"exists\": true,\n    \"hook_candidates\": [\n      \"KERNEL32.DLL!LoadLibraryA\",\n      \"KERNEL32.DLL!GetProcAddress\",\n      \"KERNEL32.DLL!VirtualProtect\",\n      \"KERNEL32.DLL!VirtualAlloc\",\n      \"KERNEL32.DLL!VirtualFree\"\n    ]\n  }\n}"
+        },
+        "frida_trace": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 10,
+        "hits": 10,
+        "misses": [],
+        "hit_examples": [
+          "YARA: 7+ UPX packer rules matched (UPXv20MarkusLaszloReiser, UPXV200V290, UPX290LZMA, upx_3, PackerUPX_CompresorGratuito",
+          "CAPA: 'packed with generic packer' \u2014 MITRE T1027.002 (Software Packing), MBC F0001.002",
+          "Entry point 0x454310: classic UPX decompression stub (PUSHAD; MOV ESI,0x43c000; LEA EDI,[ESI+0xfffc5000]; byte-copy loop",
+          "Ghidra imports (6 total, all KERNEL32): LoadLibraryA, GetProcAddress, VirtualProtect, VirtualAlloc, VirtualFree, ExitPro",
+          "pe_import_signals: dynamic API resolution (T1129) via LoadLibrary+GetProcAddress; memory protection changes (T1055) via "
+        ],
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "upx_second_pass": {
+        "applicable": false,
+        "ok": true,
+        "reason": "upx_not_unpacked"
+      },
+      "depth_coverage": {
+        "ok": true,
+        "missing": [],
+        "covered": {
+          "persistence": true,
+          "c2_network": true,
+          "evasion_anti_analysis": true,
+          "exfiltration": true,
+          "defense_impairment": true,
+          "credential_access": true,
+          "encryption_obfuscation": true,
+          "entry_point": true,
+          "imports": true,
+          "strings": true
+        },
+        "domain_count": 10
+      },
+      "format_routing": "pe",
+      "required_tools": [
+        "capa",
+        "pe_imports",
+        "yara",
+        "floss",
+        "dotnet",
+        "r2_decomp",
+        "upx",
+        "xor",
+        "speakeasy",
+        "frida_probe"
+      ],
+      "deep_preview": {
+        "source": "deep_dive_agentic",
+        "confidence": 90,
+        "summary": "UPX-packed VB6 crypter dropper ('Ghost \u015eifreleyici Modernize Hayalet' \u2014 Turkish 'Ghost Encryptor Modernized Ghost') communicating with www.hidden-sabotage.com. The outer layer is a UPX stub with only 6 KERNEL32 memory-management imports (LoadLibraryA, GetProcAddress, VirtualProtect, VirtualAlloc, Vi",
+        "key_evidence": [
+          "YARA: 7+ UPX packer rules matched (UPXv20MarkusLaszloReiser, UPXV200V290, UPX290LZMA, upx_3, PackerUPX_CompresorGratuito, UPX_wwwupxsourceforgenet_additional)",
+          "CAPA: 'packed with generic packer' \u2014 MITRE T1027.002 (Software Packing), MBC F0001.002",
+          "Entry point 0x454310: classic UPX decompression stub (PUSHAD; MOV ESI,0x43c000; LEA EDI,[ESI+0xfffc5000]; byte-copy loop with bit-shift)",
+          "Ghidra imports (6 total, all KERNEL32): LoadLibraryA, GetProcAddress, VirtualProtect, VirtualAlloc, VirtualFree, ExitProcess",
+          "pe_import_signals: dynamic API resolution (T1129) via LoadLibrary+GetProcAddress; memory protection changes (T1055) via VirtualProtect+VirtualAlloc",
+          "String 'www.hidden-sabotage.com' at Ghidra addresses 0x4561040 and 0x4561276 (resource section, VS_VERSION_INFO area)",
+          "String 'Ghost \u015eifreleyici Modernize Hayalet' (Ghost Encryptor Modernized Ghost) \u2014 Turkish crypter tool name in VS_VERSION_INFO at 0x4561516",
+          "FLOSS extracted 470 strings including VB6 artifacts: winsck.ocx (Winsock/network), FRICHTX32.OCX (RichText), rm1.Insertar_Objeto2, GraficAudio, ET_PICTURE6, TextRTF",
+          "PE memory layout: 2 executable RWX sections (SECTION.0: 241KB, SECTION.1: 106KB) \u2014 typical of packer with self-modifying unpacking code",
+          "YARA rule 'IsPacked' matched; 'HasOverlay' and 'HasRichSignature' also matched"
+        ],
+        "model": null,
+        "llm_audit": null
+      },
+      "evidence": {
+        "tools_raw": {
+          "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/deep_dive/01-tools-raw.json",
+          "exists": true,
+          "bytes": 73663,
+          "mtime_iso": "2026-08-13T15:45:35.105450+00:00",
+          "sha256": "a4b0e9778d914a22a2175dddfc21db4afb285f97cc068b1d9d17e351356c804a"
+        },
+        "sql_evidence": {
+          "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/deep_dive/00-sql-evidence.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "prompt": {
+          "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/deep_dive/03-prompt.txt",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "llm_raw": {
+          "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/deep_dive/04-llm-raw.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "deep05": {
+          "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/deep_dive/05-deep-dive.json",
+          "exists": true,
+          "bytes": 3938,
+          "mtime_iso": "2026-08-12T23:53:18.629706+00:00",
+          "sha256": "97a53e55d984f972bfb01e8e9dd73ff6b3d6ef2eece65698ebfc305ac7198395"
+        },
+        "prompt_excerpt": "",
+        "llm_raw_excerpt": "{}",
+        "deep05_excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"UPX-packed VB6 crypter dropper ('Ghost \\u015eifreleyici Modernize Hayalet' \\u2014 Turkish 'Ghost Encryptor Modernized Ghost') communicating with www.hidden-sabotage.com. The outer layer is a UPX stub with only 6 KERNEL32 memory-management imports (LoadLibraryA, GetProcAddress, VirtualProtect, VirtualAlloc, VirtualFree, ExitProcess). The packed payload is a Visual Basic 6 application with Winsock networking (winsck.ocx), RTF GUI controls, and embedded C2 domain references. YARA rules matched 7+ UPX packer signatures. CAPA confirms software packing (T1027.002). The crypter theme, suspicious domain, and packing obfuscation classify this as malicious tooling. Persistence mech\n\u2026 [3138 more chars]",
+        "agentic": {
+          "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/deep_dive/agentic_deep_dive.json",
+          "exists": true,
+          "bytes": 217944,
+          "mtime_iso": "2026-08-12T23:53:18.629706+00:00",
+          "sha256": "cc64bafdb693d2d19eddb536f3090b8152f3d08d273a2056c1efbacf82803609"
+        }
+      },
+      "tools_ok_history": [
+        "yara_scan",
+        "malcat_analyze",
+        "capa_analyze",
+        "pe_import_signals",
+        "floss_extract",
+        "dotnet_analyze",
+        "r2_decompile",
+        "upx_unpack",
+        "xor_string_search",
+        "speakeasy_emulate",
+        "frida_static_probe",
+        "shellcode_extract",
+        "revai_tools_sec",
+        "revai_tools_sinks",
+        "revai_tools_audit",
+        "signal_extractors",
+        "packer_scan",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "capa_analyze",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "floss_extract",
+        "pe_import_signals",
+        "ghidra_query"
+      ],
+      "history_evidence": [
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (yara)",
+          "result_excerpt": "{\n  \"rule_count\": 20,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/s\n\u2026 [8485 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (malcat)",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"challenge66.exe\",\n    \"f\n\u2026 [43227 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (capa)",
+          "result_excerpt": "{\n  \"rule_count\": 1,\n  \"top_rules\": [\n    {\n      \"name\": \"packed with generic packer\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Software Packing\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"Software Packing\"\n\u2026 [542 more chars]"
+        },
+        {
+          "tool": "pe_import_signals",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (pe_imports)",
+          "result_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 169998,\n  \"duration_s\": 0.04,\n  \"import_count\": 6,\n  \"signal_count\": 4,\n  \"signals\": [\n    {\n      \"label\": \"load_library\",\n      \"api_match\": \"LoadLibrary\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \"get_proc_address\",\n      \"api_match\": \"GetProcAddress\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \n\u2026 [301 more chars]"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (floss)",
+          "result_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 470,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \"QV8yN.[\",\n    \"1^2e2.3C9\",\n    \"<V|@d{W\",\n    \"=Icti>\",\n    \"WhXoXaZ\",\n    \"#g_6~=~\",\n    \"Sk8OF6.v\",\n    \"Jz+,S8\",\n    \"+H?nfx\",\n    \"i/Cr`;\",\n    \"|zm/GH$\",\n    \"LN40m/\",\n    \"8!7(+6l%\",\n    \"Oc2->a\\\"6\",\n    \"winsck.ocx@SW\",\n    \"+dColor\",\n    \"Enable\",\n    \"T\n\u2026 [1444 more chars]"
+        },
+        {
+          "tool": "dotnet_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (dotnet)",
+          "result_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        {
+          "tool": "r2_decompile",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (r2_decomp)",
+          "result_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n  \"disassembly\": {\n    \"0x00455250\": \"\\u250c 439: entry0 ();\\n\\u2502       \\u254e   0x00455250      60             pushal\\n\\u2502       \\u254e   0x00455251      be00c04300     mov esi, section.sect_1     ; 0x43c000\\n\\u2502       \\u254e   0x00455256      8d\n\u2026 [4629 more chars]"
+        },
+        {
+          "tool": "upx_unpack",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (upx)",
+          "result_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTested 0 file\"\n}"
+        },
+        {
+          "tool": "xor_string_search",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (xor)",
+          "result_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 000000C0 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 000000C0 ........!..L.!This program cannot be r\\n\",\n  \"xorsearch_stderr\": \"\",\n  \"xors\n\u2026 [22 more chars]"
+        },
+        {
+          "tool": "speakeasy_emulate",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (speakeasy)",
+          "result_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        {
+          "tool": "frida_static_probe",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (frida_probe)",
+          "result_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n    \"exists\": true,\n    \"hook_candidates\": [\n      \"KERNEL32.DLL!LoadLibraryA\",\n      \"KERNEL32.DLL!GetProcAddress\",\n      \"KERNEL32.DLL!VirtualProtect\",\n      \"KERNEL32.DLL!VirtualAlloc\",\n      \"KERN\n\u2026 [33 more chars]"
+        },
+        {
+          "tool": "shellcode_extract",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (shellcode)",
+          "result_excerpt": "{\n  \"shellcode_ok\": false,\n  \"sample\": \"/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe\",\n  \"sections_analyzed\": [\n    {\n      \"name\": \"\",\n      \"size\": 103936,\n      \"entropy\": 7.8648,\n      \"executable\": true,\n      \"writable\": true\n    },\n    {\n      \"name\": \".rsrc\",\n      \"size\": 15872,\n      \"entropy\": 6.0292,\n      \"executable\": f\n\u2026 [601 more chars]"
+        },
+        {
+          "tool": "revai_tools_sec",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (revai_tools_sec)",
+          "result_excerpt": "{\n  \"format\": \"pe\",\n  \"findings\": [\n    {\n      \"name\": \"Address Space Layout Randomization\",\n      \"present\": false,\n      \"claimed\": false,\n      \"note\": \"no DYNAMIC_BASE flag\",\n      \"consequence\": \"Without ASLR the image loads at a fixed base \\u2014 a predictable address for ret2libc-style exploitation and ROP gadget pivots.\"\n    },\n    {\n      \"name\": \"64-bit high-entropy ASLR\",\n      \"presen\n\u2026 [1768 more chars]"
+        },
+        {
+          "tool": "revai_tools_sinks",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (revai_tools_sinks)",
+          "result_excerpt": "{\n  \"format\": \"pe\",\n  \"entry_point\": \"0x3c000\",\n  \"sink_count\": 0,\n  \"sinks\": [],\n  \"engine\": \"revai_tools_sinks\",\n  \"source\": \"revai_tools\"\n}"
+        },
+        {
+          "tool": "revai_tools_audit",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (revai_tools_audit)",
+          "result_excerpt": "{\n  \"format\": \"pe\",\n  \"findings\": [],\n  \"engine\": \"revai_tools_audit\",\n  \"source\": \"revai_tools\"\n}"
+        },
+        {
+          "tool": "signal_extractors",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Deterministic anti-analysis + dynamic-import-resolve signals",
+          "result_excerpt": "{\n  \"anti_analysis_summary\": {\n    \"categories\": {},\n    \"total_signals\": 0,\n    \"functions_with_signals\": 0,\n    \"elapsed_s\": 0.08,\n    \"note\": \"Deterministic; TLS callbacks are pre-entry-point candidates.\"\n  },\n  \"dynamic_resolve_summary\": {\n    \"resolver_funcs\": 0,\n    \"resolve_sites\": 0,\n    \"peb_module_walkers\": 0,\n    \"ordinal_imports\": 0,\n    \"min_resolve_calls\": 2,\n    \"elapsed_s\": 0.03,\n \n\u2026 [101 more chars]"
+        },
+        {
+          "tool": "packer_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Deterministic packer checklist (packed-context for gate)",
+          "result_excerpt": "{\n  \"label\": \"packed\",\n  \"name\": null,\n  \"score\": 9\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "Auto SQL seed for large-mode deep RE gate",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"entry\",\n      \"address\": \"4543056\",\n      \"size\": \"435\"\n    },\n    {\n      \"name\": \"FUN_0044bfe8\",\n      \"address\": \"4505576\",\n      \"size\": \"18\"\n    }\n  ],\n  \"row_count\": 2,\n  \"total_row_count\": 2,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-9451a7c4f32eb94a89a021009de3cba\n\u2026 [150 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_0044bfe8\",\n      \"address\": \"4505576\",\n      \"size\": \"18\"\n    },\n    {\n      \"name\": \"entry\",\n      \"address\": \"4543056\",\n      \"size\": \"435\"\n    }\n  ],\n  \"row_count\": 2,\n  \"total_row_count\": 2,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-9451a7c4f32eb94a89a021009de3cba\n\u2026 [150 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"module\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"LoadLibraryA\",\n      \"module\": \"KERNEL32.DLL\",\n      \"address\": \"1\"\n    },\n    {\n      \"name\": \"GetProcAddress\",\n      \"module\": \"KERNEL32.DLL\",\n      \"address\": \"2\"\n    },\n    {\n      \"name\": \"VirtualProtect\",\n      \"module\": \"KERNEL32.DLL\",\n      \"address\": \"3\"\n    },\n    {\n      \"name\": \"VirtualAlloc\"\n\u2026 [556 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"Ghost \\u015eifreleyici Modernize Hayalet.exe\",\n      \"address\": \"4561628\",\n      \"length\": \"80\"\n    },\n    {\n      \"content\": \"Ghost \\u015eifreleyici Modernize Hayalet\",\n      \"address\": \"4561516\",\n      \"length\": \"72\"\n    },\n    {\n      \"content\": \"www.hidden-sabotage.com\",\n      \"address\": \"45610\n\u2026 [2943 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"rule_count\": 1,\n  \"top_rules\": [\n    {\n      \"name\": \"packed with generic packer\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Software Packing\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"Software Packing\"\n\u2026 [542 more chars]"
+        },
+        {
+          "tool": "ghidra_decompile",
+          "ok": false,
+          "error": "session registry not found: /opt/samples/sessions/pe-9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6.json",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"session registry not found: /opt/samples/sessions/pe-9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6.json\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"func_name\",\n    \"ref_addr\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6\",\n  \"audit_path\": \"/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"tool_name\",\n    \"program_name\",\n    \"program_path\",\n    \"language_id\",\n    \"compiler_spec\",\n    \"analysis_id\",\n    \"md5\",\n    \"sha256\",\n    \"image_base\",\n    \"is_headless\",\n    \"revision\"\n  ],\n  \"rows\": [\n    {\n      \"tool_name\": \"libghidra-host\",\n      \"program_name\": \"challenge66.exe\",\n      \"program_path\": \"/challenge66.exe\",\n      \"language_id\": \"x86:LE:32:default\",\n     \n\u2026 [595 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"start_ea\",\n    \"end_ea\",\n    \"name\",\n    \"class\",\n    \"perm\",\n    \"bitness\",\n    \"size\",\n    \"is_read\",\n    \"is_write\",\n    \"is_exec\"\n  ],\n  \"rows\": [\n    {\n      \"start_ea\": \"4194304\",\n      \"end_ea\": \"4198399\",\n      \"name\": \"Headers\",\n      \"class\": \"DATA\",\n      \"perm\": \"4\",\n      \"bitness\": \"32\",\n      \"size\": \"4096\",\n      \"is_read\": \"1\",\n      \"is_write\": \"0\",\n      \"i\n\u2026 [1072 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"address\",\n    \"mnemonic\",\n    \"operands\",\n    \"disasm\"\n  ],\n  \"rows\": [\n    {\n      \"address\": \"4543056\",\n      \"mnemonic\": \"PUSHAD\",\n      \"operands\": \"\",\n      \"disasm\": \"PUSHAD\"\n    },\n    {\n      \"address\": \"4543057\",\n      \"mnemonic\": \"MOV\",\n      \"operands\": \"ESI, 0x43c000\",\n      \"disasm\": \"MOV ESI,0x43c000\"\n    },\n    {\n      \"address\": \"4543062\",\n      \"mnemonic\": \"L\n\u2026 [2238 more chars]"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 470,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"!This program cannot be run in DOS mode.\",\n    \"QV8yN.[\",\n    \"1^2e2.3C9\",\n    \"<V|@d{W\",\n    \"=Icti>\",\n    \"WhXoXaZ\",\n    \"#g_6~=~\",\n    \"Sk8OF6.v\",\n    \"Jz+,S8\",\n    \"+H?nfx\",\n    \"i/Cr`;\",\n    \"|zm/GH$\",\n    \"LN40m/\",\n    \"8!7(+6l%\",\n    \"Oc2->a\\\"6\",\n    \"winsck.ocx@SW\",\n    \"+dColor\",\n    \"Enable\",\n    \"T\n\u2026 [1444 more chars]"
+        },
+        {
+          "tool": "pe_import_signals",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 169998,\n  \"duration_s\": 0.06,\n  \"import_count\": 6,\n  \"signal_count\": 4,\n  \"signals\": [\n    {\n      \"label\": \"load_library\",\n      \"api_match\": \"LoadLibrary\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \"get_proc_address\",\n      \"api_match\": \"GetProcAddress\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \n\u2026 [301 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"Ghost \\u015eifreleyici Modernize Hayalet.exe\",\n      \"address\": \"4561628\"\n    },\n    {\n      \"content\": \"KERNEL32.DLL\",\n      \"address\": \"4561872\"\n    }\n  ],\n  \"row_count\": 2,\n  \"total_row_count\": 2,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-9451a7c4f32eb94a89a021009de3cba93350\n\u2026 [145 more chars]"
+        }
+      ],
+      "agentic_preview": {
+        "verdict": "malicious",
+        "confidence": 90,
+        "summary": "UPX-packed VB6 crypter dropper ('Ghost \u015eifreleyici Modernize Hayalet' \u2014 Turkish 'Ghost Encryptor Modernized Ghost') communicating with www.hidden-sabotage.com. The outer layer is a UPX stub with only 6 KERNEL32 memory-management imports (LoadLibraryA, GetProcAddress, VirtualProtect, VirtualAlloc, Vi",
+        "checklist_ok": true,
+        "sql_deep_ok": true,
+        "successful_tool_calls": 29
+      }
+    },
+    "yara_gen": {
+      "ok": true,
+      "checks": {
+        "rule_yar": true,
+        "non_empty": true,
+        "has_rule_block": true,
+        "rule_compiles": true,
+        "rule_check": "ok",
+        "meta_yara_valid": true
+      },
+      "evidence": {
+        "rule_yar": {
+          "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/rule.yar",
+          "exists": true,
+          "bytes": 1279,
+          "mtime_iso": "2026-08-12T23:53:21.583715+00:00",
+          "sha256": "f52922216bf19e739ef0a249c015f68d8b1243ddb1ac548239a3dccb5d51770a"
+        },
+        "other_rules": [
+          "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/rule.yara.json",
+          "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/rule.yar",
+          "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/rule.yar"
+        ],
+        "excerpt": "// yara_gen_v2.py \u2014 2026-08-12T23:53:21.584228+00:00\nimport \"pe\"\nrule CADRE_v2_ghost_sifreleyici_modernize_hayalet_likely_a_rat_9451a7c4f32e {\n    meta:\n        description = \"RevAI v2 auto rule for Ghost \u015eifreleyici Modernize Hayalet (likely a RAT/trojan, possibly related to llac/babar based on VT)\"\n        sha256 = \"9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6\"\n        family = \"ghost_sifreleyici_modernize_hayalet_likely_a_rat\"\n        revai = true\n        revai_commit = \"unknown\"\n        revai_engine = \"langgraph\"\n        severity = \"high\"\n        confidence = \"medium\"\n    strings:\n        $s0 = \"!This program cannot be run in DOS mode.\" ascii wide\n        $s1 = \"1^2e2.3C9\" ascii wide\n        $s2 = \"Sk8OF6.v\" ascii wide\n        $s3 = \"8!7(+6l%\" ascii wide\n        $s4\n\u2026 [476 more chars]"
+      }
+    },
+    "publish": {
+      "ok": true,
+      "checks": {
+        "REPORT_MASTER_v2": true,
+        "REPORT_MASTER_v3": true,
+        "REPORT_v2": true,
+        "REPORT_TECHNICAL_v2": true,
+        "REPORT_TECHNICAL_v3": true,
+        "v2_min_chars": true,
+        "v3_min_chars": true,
+        "v2_heads": true,
+        "v3_heads": true,
+        "v2_fresh_vs_deep": true,
+        "v3_fresh_vs_deep": true,
+        "not_llm_env_failure_v2": true,
+        "not_llm_env_failure_v3": true,
+        "v2_no_missing_sections": true,
+        "verdict_lock_ok": true,
+        "quality_pack_ok": true,
+        "master_source_llm": true,
+        "tech2_source_llm": true,
+        "tech3_source_ok": true,
+        "tech2_no_stubs": true,
+        "no_tech2_fallback": true,
+        "quality_issues": [],
+        "engine_citation_ok": true
+      },
+      "heads_v2": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "heads_v3": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "report_json_source": "llm_judge",
+      "sections_missing": [],
+      "quality_pack": {
+        "ok": true,
+        "quality_green": true,
+        "sha256": "9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6",
+        "issues": [],
+        "checks": {
+          "master_v2": {
+            "ok": true,
+            "label": "master_v2",
+            "source": "llm_judge",
+            "chars": 14645,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 37,
+              "prose_ratio": 0.3,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 3,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v2": {
+            "ok": true,
+            "label": "technical_v2",
+            "source": "llm_judge",
+            "chars": 44842,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 16,
+              "prose_ratio": 0.35,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v3": {
+            "ok": true,
+            "label": "technical_v3",
+            "source": "llm_judge",
+            "chars": 38880,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 21,
+              "prose_ratio": 0.41,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "master_v3_present": true,
+          "tech3_file_present": true,
+          "cross_report_consistency": {
+            "ok": true,
+            "violations": [],
+            "checks": {
+              "master_dyn_negation": false,
+              "tech_dyn_evidence": true,
+              "file_entropy": 7.569684731726901,
+              "master_verdict": "malicious",
+              "tech_verdict": "malicious"
+            }
+          },
+          "deep_checklist_ok": true,
+          "deep_sql_deep_ok": true,
+          "pipeline_audit_all_green": false
+        },
+        "models": {
+          "master": "mimo-v2.5-pro",
+          "technical_v2": "mimo-v2.5-pro",
+          "technical_v3": "mimo-v2.5-pro",
+          "planner_hint": "configured via env",
+          "judgment_hint": "configured via env"
+        }
+      },
+      "verdict_lock": {
+        "ok": true,
+        "conflict": false,
+        "upstream": "malicious",
+        "publish": "malicious",
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "mtimes": {
+        "v2": 1786682441.7877471,
+        "v3": 1786683118.6366293,
+        "deep_ref": 1786578798.6297057,
+        "v2_chars": 14645,
+        "v3_chars": 45344,
+        "v2_iso": "2026-08-14T04:40:41.787747+00:00",
+        "v3_iso": "2026-08-14T04:51:58.636629+00:00"
+      },
+      "evidence": {
+        "REPORT_MASTER_v2": {
+          "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/REPORT-MASTER-v2.md",
+          "exists": true,
+          "bytes": 14664,
+          "mtime_iso": "2026-08-14T04:40:41.787747+00:00",
+          "sha256": "22a36f66ca1f7d8ef1d43d5c6a04206866927c273e362a4652eaf18684e4b6f9"
+        },
+        "REPORT_MASTER_v3": {
+          "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/REPORT-MASTER-v3.md",
+          "exists": true,
+          "bytes": 45373,
+          "mtime_iso": "2026-08-14T04:51:58.636629+00:00",
+          "sha256": "a56ec79ed7075bcfabf30299ad8756cff5e7de486a9722ebb89122088885c96a"
+        },
+        "REPORT_v2": {
+          "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/REPORT-v2.md",
+          "exists": true,
+          "bytes": 14664,
+          "mtime_iso": "2026-08-14T04:40:41.787747+00:00",
+          "sha256": "22a36f66ca1f7d8ef1d43d5c6a04206866927c273e362a4652eaf18684e4b6f9"
+        },
+        "REPORT_TECHNICAL_v2": {
+          "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/REPORT-TECHNICAL-v2.md",
+          "exists": true,
+          "bytes": 45558,
+          "mtime_iso": "2026-08-14T04:42:52.355831+00:00",
+          "sha256": "13ce7eadabd1ad2699925dd66529aa271dc6e76af709167dd13d06b4362c0cfd"
+        },
+        "REPORT_TECHNICAL_v3": {
+          "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/REPORT-TECHNICAL-v3.md",
+          "exists": true,
+          "bytes": 39590,
+          "mtime_iso": "2026-08-14T04:54:06.921835+00:00",
+          "sha256": "d18c6b7645f5fa9a7a75f9ad0996f810a5beb4c1d6683439db7ef61e5be8ec93"
+        },
+        "report_v2_json": {
+          "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/report-v2.json",
+          "exists": true,
+          "bytes": 17500,
+          "mtime_iso": "2026-08-14T04:42:52.359831+00:00",
+          "sha256": "8136d750ffdad950f35df967c3d2b528c286aa79f1b046ffe2adad071da66216"
+        },
+        "v2_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-14 04:40:41 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\n\nThis report details the analysis of a UPX-packed Visual Basic 6 (VB6) crypter dropper, identified as \"Ghost Encryptor\" (Turkish: \"Ghost \u015eifreleyici Modernize Hayalet\"). The sample is a malicious executable designed to obfuscate and deliver a payload, communicating with the domain `www.hidden-sabotage.com`. Static analysis reveals a classic UPX packing stub with minimal imports for dynamic API resolution, a hallmark \n\u2026 [13745 more chars]",
+        "v3_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-14 04:51:58 UTC\n\n# RE Report \u2014 9451a7c4f32e\n_Generated 2026-08-14T04:51:58.634517+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=230c | cross_refs=True | llm_ok=True | runtime=60.51s -->\n\n# Executive Summary\n\nThis section provides a top-line assessment of the malware sample with SHA256 `9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6`, consolidating the verdict, family association, confidence, and key evidence to guide stakeholders.\n\n**Assessment Overview:**\n- **Verdict:** Malicious  \n- **Family:** llac (also known as Babar)  \n- **Confidence:** High (90%)  \n- **Summary:** The s\n\u2026 [44444 more chars]"
+      }
+    }
+  },
+  "policy": {
+    "v3_required": true,
+    "no_optional_stages": true,
+    "tool_fail_is_fail": false,
+    "capa_salvage": "malcat capa_summary + LLM citation"
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-14 04:54:06 UTC"
+  },
+  "cross_cutting": {
+    "sample_path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+    "pipeline_mode": "single",
+    "llm": {
+      "triage": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "verdict": "malicious",
+        "family": "llac",
+        "confidence": 85,
+        "agreement": "llm_and_v1_agree",
+        "key_evidence": [
+          {
+            "source": "malcat",
+            "query_or_table": "anomalies",
+            "row_or_rule": "Packed\u00d76, PatchedUPXHeader",
+            "why": "Indicates software packing with UPX, a common obfuscation technique in malware."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "YARA matches",
+            "row_or_rule": "UPXv20MarkusLaszloReiser, UPX_290_LZMA",
+            "why": "Confirms presence of UPX packer signatures, supporting packing evidence."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "top_rules",
+            "row_or_rule": "packed with generic packer",
+            "why": "ATT&CK technique T1027.002 for software packing, a defense evasion method."
+          },
+          {
+            "source": "pe_imports",
+            "query_or_table": "signals",
+            "row_or_rule": "load_library, get_proc_address, change_memory_protection, allocate_memory",
+            "why": "APIs for dynamic code loading and memory manipulation, typical in packers and malware for evasion."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "file_summary",
+            "row_or_rule": "VersionInfo::InternalName: Ghost \u015eifreleyici Modernize Hayalet",
+            "why": "Suggests the file is an 'encryptor', which could imply malicious use like ransomware or keygen, though static analysis alone is insufficient for behavioral confirmation."
+          },
+          {
+            "source": "external TI",
+            "query_or_table": "VirusTotal",
+            "row_or_rule": "malicious=60, threat_class: trojan.llac/babar",
+            "why": "High detection rate and specific malware family identification indicate malicious intent, overriding neutral obfuscation signals."
+          }
+        ],
+        "incomplete_tooling": null,
+        "excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 85,\n  \"family_guess\": \"llac\",\n  \"cross_engine_notes\": \"Multiple engines confirm UPX packing and dynamic API resolution via minimal imports. MalCat and YARA detect packing anomalies, capa identifies software packing, and pe_imports shows APIs for dynamic loading. VirusTotal reports high malicious detections with trojan.llac/babar family, indicating malicious intent despite static analysis showing primarily obfuscation.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"anomalies\",\n      \"row_or_rule\": \"Packed\\u00d76, PatchedUPXHeader\",\n      \"why\": \"Indicates software packing with UPX, a common obfuscation technique in malware.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"YARA matches\",\n      \"row_or_rule\": \"UPXv20MarkusLaszloReiser, UPX_290_LZMA\",\n      \"why\": \"Confirms presence of UPX packer signatures, supporting packing evidence.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"top_rules\",\n      \"row_or_rule\": \"packed with generic packer\",\n      \"why\": \"ATT&CK technique T1027.002 for software packing, a defense evasion method.\"\n    },\n    {\n      \"source\": \"pe_imports\",\n      \"query_or_table\": \"signals\",\n      \"row_or_rule\": \"load_library, get_proc_address, change_memory_protection, allocate_memory\",\n      \"why\": \"APIs for dynamic code loading and memory manipulation, typical in packers and malware for evasion.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"file_summary\",\n      \"row_or_rule\": \"VersionInfo::InternalName: Ghost \\u015eifreleyici Modernize Hayalet\",\n      \"why\": \"Suggests the file is an 'encryptor', which could imply malicious use like ransomware or keygen, though static analysis alone is insufficient for behavioral confirmation.\"\n    },\n    {\n      \"source\": \"external TI\",\n      \"query_or_table\": \"VirusTotal\",\n      \"row_or_rule\": \"malicious=60, threat_class: trojan.llac/babar\",\n      \"why\": \"High detection rate and specific malware family identification indicate malicious intent, overriding neutral obfuscation signals.\"\n    }\n  ],\n  \"summary\": \"The sample is a PE executable packed with UPX, showing high entropy, minimal imports for dynamic API resolution, and version info indicating 'Ghost Encryptor'. While static analysis highlights obfuscation without clear behavioral signals, VirusTotal detections classify it as a trojan with 60 malicious reports, supporting a malicious verdict.\",\n  \"source\": \"llm_judge\",\n  \"model\": \"mimo-v2.5-pro\",\n  \"agreement\": \"llm_and_v1_agree\",\n  \"v1_summary\": {\n    \"verdict\": \"malicious\",\n    \"score\": 290,\n    \"findings\": [\n      \"yara: 20 matches\",\n      \"capa: 1 rules\"\n    ]\n  },\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"pe\",\n    \"required\": [\n      \"capa\",\n      \"yara\",\n      \"malcat\",\n      \"floss\",\n      \"pe_imports\"\n    ],\n    \"tools\": {\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"floss\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"pe_imports\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      }\n    },\n    \"hard_failures\": [],\n    \"soft_failures\": [],\n    \"missing\": [],\n    \"not_applicable\": [],\n    \"large_sample\": false\n  },\n  \"ti_enrich\": {\n    \"ok\": true,\n    \"providers\": {\n      \"virustotal\": {\n        \"ok\": true,\n        \"malicious\": 60,\n        \"suspicious\": 0,\n        \"harmless\": 0,\n        \"undetected\": 12,\n        \"reputation\": 0,\n        \"popular_threat\n\u2026 [2823 more chars]"
+      },
+      "deep_dive": {
+        "source": "deep_dive_agentic",
+        "model": null,
+        "verdict": "malicious",
+        "confidence": 90,
+        "key_evidence": [
+          "YARA: 7+ UPX packer rules matched (UPXv20MarkusLaszloReiser, UPXV200V290, UPX290LZMA, upx_3, PackerUPX_CompresorGratuito, UPX_wwwupxsourceforgenet_additional)",
+          "CAPA: 'packed with generic packer' \u2014 MITRE T1027.002 (Software Packing), MBC F0001.002",
+          "Entry point 0x454310: classic UPX decompression stub (PUSHAD; MOV ESI,0x43c000; LEA EDI,[ESI+0xfffc5000]; byte-copy loop with bit-shift)",
+          "Ghidra imports (6 total, all KERNEL32): LoadLibraryA, GetProcAddress, VirtualProtect, VirtualAlloc, VirtualFree, ExitProcess",
+          "pe_import_signals: dynamic API resolution (T1129) via LoadLibrary+GetProcAddress; memory protection changes (T1055) via VirtualProtect+VirtualAlloc",
+          "String 'www.hidden-sabotage.com' at Ghidra addresses 0x4561040 and 0x4561276 (resource section, VS_VERSION_INFO area)",
+          "String 'Ghost \u015eifreleyici Modernize Hayalet' (Ghost Encryptor Modernized Ghost) \u2014 Turkish crypter tool name in VS_VERSION_INFO at 0x4561516",
+          "FLOSS extracted 470 strings including VB6 artifacts: winsck.ocx (Winsock/network), FRICHTX32.OCX (RichText), rm1.Insertar_Objeto2, GraficAudio, ET_PICTURE6, TextRTF",
+          "PE memory layout: 2 executable RWX sections (SECTION.0: 241KB, SECTION.1: 106KB) \u2014 typical of packer with self-modifying unpacking code",
+          "YARA rule 'IsPacked' matched; 'HasOverlay' and 'HasRichSignature' also matched"
+        ],
+        "incomplete_tooling": false,
+        "excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"UPX-packed VB6 crypter dropper ('Ghost \\u015eifreleyici Modernize Hayalet' \\u2014 Turkish 'Ghost Encryptor Modernized Ghost') communicating with www.hidden-sabotage.com. The outer layer is a UPX stub with only 6 KERNEL32 memory-management imports (LoadLibraryA, GetProcAddress, VirtualProtect, VirtualAlloc, VirtualFree, ExitProcess). The packed payload is a Visual Basic 6 application with Winsock networking (winsck.ocx), RTF GUI controls, and embedded C2 domain references. YARA rules matched 7+ UPX packer signatures. CAPA confirms software packing (T1027.002). The crypter theme, suspicious domain, and packing obfuscation classify this as malicious tooling. Persistence mechanisms were not observed in the analyzed components, with no evidence from tools like YARA or CAPA indicating registry, startup, or scheduled task modifications. Exfiltration data or tools were not identified; while Winsock networking suggests communication, no specific data exfiltration methods or payloads were detected in static analysis. Credential access techniques were not observed; no memory scraping, keylogging, or credential theft modules were found in the unpacked VB6 payload.\",\n  \"key_evidence\": [\n    \"YARA: 7+ UPX packer rules matched (UPXv20MarkusLaszloReiser, UPXV200V290, UPX290LZMA, upx_3, PackerUPX_CompresorGratuito, UPX_wwwupxsourceforgenet_additional)\",\n    \"CAPA: 'packed with generic packer' \\u2014 MITRE T1027.002 (Software Packing), MBC F0001.002\",\n    \"Entry point 0x454310: classic UPX decompression stub (PUSHAD; MOV ESI,0x43c000; LEA EDI,[ESI+0xfffc5000]; byte-copy loop with bit-shift)\",\n    \"Ghidra imports (6 total, all KERNEL32): LoadLibraryA, GetProcAddress, VirtualProtect, VirtualAlloc, VirtualFree, ExitProcess\",\n    \"pe_import_signals: dynamic API resolution (T1129) via LoadLibrary+GetProcAddress; memory protection changes (T1055) via VirtualProtect+VirtualAlloc\",\n    \"String 'www.hidden-sabotage.com' at Ghidra addresses 0x4561040 and 0x4561276 (resource section, VS_VERSION_INFO area)\",\n    \"String 'Ghost \\u015eifreleyici Modernize Hayalet' (Ghost Encryptor Modernized Ghost) \\u2014 Turkish crypter tool name in VS_VERSION_INFO at 0x4561516\",\n    \"FLOSS extracted 470 strings including VB6 artifacts: winsck.ocx (Winsock/network), FRICHTX32.OCX (RichText), rm1.Insertar_Objeto2, GraficAudio, ET_PICTURE6, TextRTF\",\n    \"PE memory layout: 2 executable RWX sections (SECTION.0: 241KB, SECTION.1: 106KB) \\u2014 typical of packer with self-modifying unpacking code\",\n    \"YARA rule 'IsPacked' matched; 'HasOverlay' and 'HasRichSignature' also matched\"\n  ],\n  \"incomplete_tooling\": false,\n  \"successful_tool_calls\": 29,\n  \"successful_non_bootstrap_tools\": 14,\n  \"checklist_ok\": true,\n  \"sql_deep_ok\": true,\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"pe\",\n    \"required\": [\n      \"capa\",\n      \"pe_imports\",\n      \"yara\",\n      \"floss\",\n      \"dotnet\",\n      \"r2_decomp\",\n      \"upx\",\n      \"xor\",\n      \"speakeasy\",\n      \"frida_probe\"\n    ],\n    \"tools\": {\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"pe_imports\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"floss\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"dotnet\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"r2_decomp\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n\u2026 [438 more chars]"
+      },
+      "publish": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "excerpt": "{\n  \"title\": \"Malware Analysis Report: UPX-Packed VB6 Crypter Dropper (Ghost Encryptor)\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `unknown` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-14 04:40:41 UTC\\n\\n# Verdict sources (multi-source)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | malicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | malicious |\\n\\n- **Locked over publish LLM:** no\\n\\n## Executive Summary\\n\\nThis report details the analysis of a UPX-packed Visual Basic 6 (VB6) crypter dropper, identified as \\\"Ghost Encryptor\\\" (Turkish: \\\"Ghost \\u015eifreleyici Modernize Hayalet\\\"). The sample is a malicious executable designed to obfuscate and deliver a payload, communicating with the domain `www.hidden-sabotage.com`. Static analysis reveals a classic UPX packing stub with minimal imports for dynamic API resolution, a hallmark of evasion. The packed payload contains VB6 artifacts, including Winsock networking components, indicating potential command-and-control (C2) functionality. VirusTotal reports a high detection rate (60 malicious) and classifies it as a trojan of the `llac/babar` family. While Dynamic analysis was performed in this triage (Speakeasy emulation and Frida probing ran); both tools recorded zero runtime events, the combination of packing, suspicious C2 domain, and crypter tooling provides strong evidence of malicious intent. The sample's primary capability is defense evasion via software packing (MITRE T1027.002). No persistence, credential theft, or data exfiltration mechanisms were observed in the static analysis. The verdict is **malicious** with high confidence.\\n\\n## 1. Sample Identification\\n\\n| Attribute | Value |\\n|---|---|\\n| SHA256 | `9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6` |\\n| File Path | `/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe` |\\n| File Type | PE32 Executable (GUI subsystem) |\\n| Architecture | x86 |\\n| Entropy | 7.57 bits/byte (whole file) |\\n| Packer | UPX (multiple signatures matched) |\\n| Version Info | InternalName: \\\"Ghost \\u015eifreleyici Modernize Hayalet\\\" |\\n| Imphash | `b4e06d942b341e012040239c1cca0b7d` |\\n\\nThe sample is a 32-bit Windows executable with high entropy (7.57 bits/byte), consistent with packing or encryption (source: malcat). The version information string, \\\"Ghost \\u015eifreleyici Modernize Hayalet,\\\" translates from Turkish to \\\"Ghost Encryptor Modernized Ghost,\\\" suggesting the tool's purpose is encryption or obfuscation (source: malcat).\\n\\n## 2. Classification\\n\\n| Field | Value |\\n|---|---|\\n| Verdict | **Malicious** |\\n| Confidence | High (90%) |\\n| Family | `llac/babar` (per VirusTotal) |\\n| Threat Class | Trojan / Crypter Dropper |\\n| Primary Tactic | Defense Evasion |\\n\\nThe classification is based on multiple converging lines of evidence. The upstream triage verdict is malicious with a score of 85 (source: triage verdict.json). VirusTotal reports 60 malicious detections, specifically identifying the family as `llac/babar` (source: external TI). The sample's characteristics\\u2014a crypter dropper with a suspicious C2 domain\\u2014align with known malicious tooling. While packing alone is a neutral signal, the combination with a known malicious domain and high AV det\n\u2026 [14000 more chars]"
+      }
+    },
+    "artifact_inventory": {
+      "verdict.json": {
+        "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/verdict.json",
+        "exists": true,
+        "bytes": 6323,
+        "mtime_iso": "2026-08-14T04:38:40.946841+00:00",
+        "sha256": "afd2225214b60ae764543ed6a65a08efda6d7be271fde68994c7b8288c5e02ee"
+      },
+      "prompt.txt": {
+        "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/prompt.txt",
+        "exists": true,
+        "bytes": 21454,
+        "mtime_iso": "2026-08-14T04:36:57.637760+00:00",
+        "sha256": "8fc4d1fccf43b5f728498959aff0109a8b9b46db766946ec728f4824ae47b7c4"
+      },
+      "pipeline-audit.json": {
+        "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/pipeline-audit.json",
+        "exists": true,
+        "bytes": 104932,
+        "mtime_iso": "2026-08-14T01:16:25.118294+00:00",
+        "sha256": "1dfb993ec149822272a2a8bfa5f386487ccaaa5ed1cc22c74e03bb00d3ba0324"
+      },
+      "AUDIT-REPORT.md": {
+        "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/AUDIT-REPORT.md",
+        "exists": true,
+        "bytes": 77158,
+        "mtime_iso": "2026-08-14T01:16:25.119294+00:00",
+        "sha256": "ddf45db3405a67aada6000e8ba99de4f270443c4fbedf713540fc23eb191f692"
+      },
+      "REPORT-MASTER-v2.md": {
+        "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/REPORT-MASTER-v2.md",
+        "exists": true,
+        "bytes": 14664,
+        "mtime_iso": "2026-08-14T04:40:41.787747+00:00",
+        "sha256": "22a36f66ca1f7d8ef1d43d5c6a04206866927c273e362a4652eaf18684e4b6f9"
+      },
+      "REPORT-MASTER-v3.md": {
+        "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/REPORT-MASTER-v3.md",
+        "exists": true,
+        "bytes": 45373,
+        "mtime_iso": "2026-08-14T04:51:58.636629+00:00",
+        "sha256": "a56ec79ed7075bcfabf30299ad8756cff5e7de486a9722ebb89122088885c96a"
+      },
+      "REPORT-v2.md": {
+        "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/REPORT-v2.md",
+        "exists": true,
+        "bytes": 14664,
+        "mtime_iso": "2026-08-14T04:40:41.787747+00:00",
+        "sha256": "22a36f66ca1f7d8ef1d43d5c6a04206866927c273e362a4652eaf18684e4b6f9"
+      },
+      "REPORT-TECHNICAL.md": {
+        "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/REPORT-TECHNICAL.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-TECHNICAL-v3.md": {
+        "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/REPORT-TECHNICAL-v3.md",
+        "exists": true,
+        "bytes": 39590,
+        "mtime_iso": "2026-08-14T04:54:06.921835+00:00",
+        "sha256": "d18c6b7645f5fa9a7a75f9ad0996f810a5beb4c1d6683439db7ef61e5be8ec93"
+      },
+      "rule.yar": {
+        "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/rule.yar",
+        "exists": true,
+        "bytes": 1279,
+        "mtime_iso": "2026-08-12T23:53:21.583715+00:00",
+        "sha256": "f52922216bf19e739ef0a249c015f68d8b1243ddb1ac548239a3dccb5d51770a"
+      },
+      "intake-validation.json": {
+        "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/intake-validation.json",
+        "exists": true,
+        "bytes": 2134,
+        "mtime_iso": "2026-08-12T23:49:17.612954+00:00",
+        "sha256": "dd84b9527e5bd81c51fa81dfc82fd4b131b91332613ce24b42daee888159bf54"
+      },
+      "source-decisions.json": {
+        "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/source-decisions.json",
+        "exists": true,
+        "bytes": 1298,
+        "mtime_iso": "2026-08-12T23:49:17.612954+00:00",
+        "sha256": "6303498b27beae8b99d7207872054ebce873e7bb4eda266ca3faa2dce4001fe0"
+      },
+      "malcat-triage.json": {
+        "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/malcat-triage.json",
+        "exists": true,
+        "bytes": 24477,
+        "mtime_iso": "2026-08-13T15:45:35.101450+00:00",
+        "sha256": "ef359245e74a18b0e27cb12fe798a37174db18ebac81f1cb89fbfbc6f2ae8193"
+      },
+      "deep_dive/01-tools-raw.json": {
+        "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/deep_dive/01-tools-raw.json",
+        "exists": true,
+        "bytes": 73663,
+        "mtime_iso": "2026-08-13T15:45:35.105450+00:00",
+        "sha256": "a4b0e9778d914a22a2175dddfc21db4afb285f97cc068b1d9d17e351356c804a"
+      },
+      "deep_dive/01-tools-gate.json": {
+        "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/deep_dive/01-tools-gate.json",
+        "exists": true,
+        "bytes": 921,
+        "mtime_iso": "2026-08-12T23:51:50.633919+00:00",
+        "sha256": "f3d89b0704908331fb9398585035abaf1e8cb402a81b8103612e94f26673893c"
+      },
+      "deep_dive/05-deep-dive.json": {
+        "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/deep_dive/05-deep-dive.json",
+        "exists": true,
+        "bytes": 3938,
+        "mtime_iso": "2026-08-12T23:53:18.629706+00:00",
+        "sha256": "97a53e55d984f972bfb01e8e9dd73ff6b3d6ef2eece65698ebfc305ac7198395"
+      },
+      "deep_dive/03-prompt.txt": {
+        "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/deep_dive/03-prompt.txt",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "quick_scan/00-tools-raw.json": {
+        "path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/quick_scan/00-tools-raw.json",
+        "exists": true,
+        "bytes": 65490,
+        "mtime_iso": "2026-08-14T04:36:56.453751+00:00",
+        "sha256": "2e3c339039c5f67928141117b07c7b2e43aaf65b97e4afd629155832b825a7ef"
+      }
+    },
+    "report_excerpts": {
+      "v2": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-14 04:40:41 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\n\nThis report details the analysis of a UPX-packed Visual Basic 6 (VB6) crypter dropper, identified as \"Ghost Encryptor\" (Turkish: \"Ghost \u015eifreleyici Modernize Hayalet\"). The sample is a malicious executable designed to obfuscate and deliver a payload, communicating with the domain `www.hidden-sabotage.com`. Static analysis reveals a classic UPX packing stub with minimal imports for dynamic API resolution, a hallmark of evasion. The packed payload contains VB6 artifacts, including Winsock networking components, indicating potential command-and-control (C2) functionality. VirusTotal reports a high detection rate (60 malicious) and classifies it as a trojan of the `llac/babar` family. While Dynamic analysis was performed in this triage (Speakeasy emulation and Frida probing ran); both tools recorded zero runtime events, the combination of packing, suspicious C2 domain, and crypter tooling provides strong evidence of malicious intent. The sample's primary capability is defense evasion via software packing (MITRE T1027.002). No persistence, credential theft, or data exfiltration mechanisms were observed in the static analysis. The verdict is **malicious** with high confidence.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|---|---|\n| SHA256 | `9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6` |\n| File Path | `/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe` |\n| File Type | PE32 Executable (GUI subsystem) |\n| Architecture | x86 |\n| Entropy | 7.57 bits/byte (whole file) |\n| Packer | UPX (multiple signatures matched) |\n| Version Info | InternalName: \"Ghost \u015eifreleyici Modernize Hayalet\" |\n| Imphash | `b4e06d942b341e012040239c1cca0b7d` |\n\nThe sample is a 32-bit Windows executable with high entropy (7.57 bits/byte), consistent with packing or encryption (source: malcat). The version information string, \"Ghost \u015eifreleyici Modernize Hayalet,\" translates from Turkish to \"Ghost Encryptor Modernized Ghost,\" suggesting\n\u2026 [12145 more chars]",
+      "v3": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-14 04:51:58 UTC\n\n# RE Report \u2014 9451a7c4f32e\n_Generated 2026-08-14T04:51:58.634517+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=230c | cross_refs=True | llm_ok=True | runtime=60.51s -->\n\n# Executive Summary\n\nThis section provides a top-line assessment of the malware sample with SHA256 `9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6`, consolidating the verdict, family association, confidence, and key evidence to guide stakeholders.\n\n**Assessment Overview:**\n- **Verdict:** Malicious  \n- **Family:** llac (also known as Babar)  \n- **Confidence:** High (90%)  \n- **Summary:** The sample is assessed as malicious with high confidence, linked to the llac malware family, which is historically associated with obfuscation techniques and trojan-like behavior. This verdict is supported by agreement across multiple analysis engines and static indicators, though dynamic analysis revealed no overt behavioral events, possibly due to evasion tactics.\n\n**Evidence Interpretation:**\nThe following table summarizes key evidence, each interpreted with context and confidence:\n\n| Evidence Source | Key Finding | Interpretation and Confidence |\n|-----------------|-------------|-------------------------------|\n| v1_summary | YARA: 20 matches | These matches indicate strong detection signatures for known malicious patterns, likely increasing the reliability of the malicious verdict. (Source: cross-section:2) |\n| v1_summary | capa: 1 rule | This single rule likely points to a capability such as persistence or obfuscation, though limited detection may imply the sample uses advanced evasion. (Source: cross-section:2) |\n| deep_analysis | Deep confidence: 90 | The high confidence score from agentic deep dive analysis corroborates the malicious nature, suggesting robust evidence from static and contextual analysis. (Source: deep_dive_agentic) |\n| Cross-engine | Agreement: llm_and_v1_agree | Convergence between LLM and v1 tools enhances the verdict's credibility, reducing false-positive risk. (Source: cross-section:2) |\n\n**Dynamic Analysis Context:**\nTools including Speakeasy and Frida were executed in a controlled environment, but they recorded no significant behavioral events suc\n\u2026 [42844 more chars]"
+    }
+  },
+  "retry_visibility": {
+    "quick_scan": [],
+    "deep_dive": [],
+    "count": 0
+  },
+  "all_green": true,
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "layer_attribution": {
+    "ok": true,
+    "layers": {
+      "L1_tool_extraction": [],
+      "L2_evidence_prompt": [],
+      "L3_llm_interpretation": [],
+      "L4_gates": [],
+      "L5_report_authorship": []
+    },
+    "red_stages": []
+  },
+  "showcase_dir": "/opt/samples/logs/_showcase_audits/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6"
+}

@@ -1,0 +1,88 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "UPX-packed VB6 crypter dropper ('Ghost \u015eifreleyici Modernize Hayalet' \u2014 Turkish 'Ghost Encryptor Modernized Ghost') communicating with www.hidden-sabotage.com. The outer layer is a UPX stub with only 6 KERNEL32 memory-management imports (LoadLibraryA, GetProcAddress, VirtualProtect, VirtualAlloc, VirtualFree, ExitProcess). The packed payload is a Visual Basic 6 application with Winsock networking (winsck.ocx), RTF GUI controls, and embedded C2 domain references. YARA rules matched 7+ UPX packer signatures. CAPA confirms software packing (T1027.002). The crypter theme, suspicious domain, and packing obfuscation classify this as malicious tooling. Persistence mechanisms were not observed in the analyzed components, with no evidence from tools like YARA or CAPA indicating registry, startup, or scheduled task modifications. Exfiltration data or tools were not identified; while Winsock networking suggests communication, no specific data exfiltration methods or payloads were detected in static analysis. Credential access techniques were not observed; no memory scraping, keylogging, or credential theft modules were found in the unpacked VB6 payload.",
+  "key_evidence": [
+    "YARA: 7+ UPX packer rules matched (UPXv20MarkusLaszloReiser, UPXV200V290, UPX290LZMA, upx_3, PackerUPX_CompresorGratuito, UPX_wwwupxsourceforgenet_additional)",
+    "CAPA: 'packed with generic packer' \u2014 MITRE T1027.002 (Software Packing), MBC F0001.002",
+    "Entry point 0x454310: classic UPX decompression stub (PUSHAD; MOV ESI,0x43c000; LEA EDI,[ESI+0xfffc5000]; byte-copy loop with bit-shift)",
+    "Ghidra imports (6 total, all KERNEL32): LoadLibraryA, GetProcAddress, VirtualProtect, VirtualAlloc, VirtualFree, ExitProcess",
+    "pe_import_signals: dynamic API resolution (T1129) via LoadLibrary+GetProcAddress; memory protection changes (T1055) via VirtualProtect+VirtualAlloc",
+    "String 'www.hidden-sabotage.com' at Ghidra addresses 0x4561040 and 0x4561276 (resource section, VS_VERSION_INFO area)",
+    "String 'Ghost \u015eifreleyici Modernize Hayalet' (Ghost Encryptor Modernized Ghost) \u2014 Turkish crypter tool name in VS_VERSION_INFO at 0x4561516",
+    "FLOSS extracted 470 strings including VB6 artifacts: winsck.ocx (Winsock/network), FRICHTX32.OCX (RichText), rm1.Insertar_Objeto2, GraficAudio, ET_PICTURE6, TextRTF",
+    "PE memory layout: 2 executable RWX sections (SECTION.0: 241KB, SECTION.1: 106KB) \u2014 typical of packer with self-modifying unpacking code",
+    "YARA rule 'IsPacked' matched; 'HasOverlay' and 'HasRichSignature' also matched"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 29,
+  "successful_non_bootstrap_tools": 14,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

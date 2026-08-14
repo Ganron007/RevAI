@@ -1,0 +1,1013 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "challenge66.exe",
+    "file_path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+    "file_size": 169998,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 7.57,
+    "sha256": "9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6",
+    "metadata": {
+      "VersionInfo::Comments": "Modernize Hayalet",
+      "VersionInfo::CompanyName": "www.hidden-sabotage.com",
+      "VersionInfo::FileDescription": "Modernize Hayalet",
+      "VersionInfo::LegalCopyright": "Modernize Hayalet",
+      "VersionInfo::LegalTrademarks": "www.hidden-sabotage.com",
+      "VersionInfo::ProductName": "Modernize Hayalet",
+      "VersionInfo::FileVersion": "1.00",
+      "VersionInfo::ProductVersion": "1.00",
+      "VersionInfo::InternalName": "Ghost \u015eifreleyici Modernize Hayalet",
+      "VersionInfo::OriginalFilename": "Ghost \u015eifreleyici Modernize Hayalet.exe"
+    },
+    "entrypoint_ea": 104016,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 39
+      },
+      {
+        "name": "",
+        "effective_address": 1024,
+        "physical_size": 103936,
+        "virtual_size": 106496,
+        "rights": "RWX",
+        "entropy": 205
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 107520,
+        "physical_size": 15872,
+        "virtual_size": 16384,
+        "rights": "RW",
+        "entropy": 121
+      },
+      {
+        "name": "overlay",
+        "effective_address": 123904,
+        "physical_size": 49166,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 115
+      },
+      {
+        "name": "",
+        "effective_address": 173070,
+        "physical_size": 0,
+        "virtual_size": 241664,
+        "rights": "RWX",
+        "entropy": 0
+      }
+    ],
+    "kesakode_verdict": [],
+    "entropy_malcat_raw": 171,
+    "entropy_source": "whole_file_shannon_revai"
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BigBufferNoXrefMediumToHighEntropy",
+        "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 3
+      },
+      {
+        "name": "CrossSectionJump",
+        "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+        "category": "code",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "DataBetweenHeaderAndFirstSection",
+        "desc": "There is non-zero data between the PE header and the first section",
+        "category": "headers",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "DuplicatedSectionName",
+        "desc": "section name has already been used before in section table",
+        "category": "sections",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "ExecutableSectionNoCode",
+        "desc": "executable section has the flag code not set",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 2
+      },
+      {
+        "name": "ExtraSpaceAfterResourcesDataDirectory",
+        "desc": "extra physical data in rsrc section after resource directory data",
+        "category": "resources",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "GuiSubsystemNoWindowApi",
+        "desc": "A GUI windows application does not import any user32 window-related function",
+        "category": "headers",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "HugeFunctionGapAtSectionBoundary",
+        "desc": "There is a huge gap between start/end of executable section and first/last function of a section with medium-to-high entropy (which is not a know structure). It often means that data is stored there",
+        "category": "code",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidBaseOfCode",
+        "desc": "at least one code section starts before BaseOfCode, or BaseOfCode is not the start of a code section",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidBaseOfData",
+        "desc": "at least one data section starts before BaseOfData, or BaseOfData is not the start of a data section",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfCode",
+        "desc": "SizeofCode is not the sum of all code sections (raw or virtual)",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfInitializedData",
+        "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+        "category": "sections",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "NoChecksum",
+        "desc": "PE Header checksum is not set",
+        "category": "integrity",
+        "level": 1,
+        "num_hits": 1
+      },
+      {
+        "name": "Packed",
+        "desc": "File is packed using a legit or less-legit obfuscator",
+        "category": "packers",
+        "level": 2,
+        "num_hits": 6
+      },
+      {
+        "name": "PatchedUPXHeader",
+        "desc": "At least one Yara signature matched UPX but no UPX header was identified by Malcat, indicating a potential patched UPX header",
+        "category": "packers",
+        "level": 4,
+        "num_hits": 0
+      },
+      {
+        "name": "PurelyVirtualExecutableSection",
+        "desc": "a section is virtual-only and executable (packer?)",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionEmptyName",
+        "desc": "section name is null",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "SectionNameUnknown",
+        "desc": "section name is not one of the typical PE section name",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "SectionWX",
+        "desc": "section is executable and writeable",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "UnknownOverlayMediumToHighEntropy",
+        "desc": "File contains an overlay which is not of known type and has medium-to-high entropy",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "UnreferencedImports",
+        "desc": "More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the file is packed",
+        "category": "imports",
+        "level": 3,
+        "num_hits": 7
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 1
+      }
+    ],
+    "anomaly_locations": {
+      "GuiSubsystemNoWindowApi": [
+        {
+          "ea": 284,
+          "context": ""
+        }
+      ],
+      "NoChecksum": [
+        {
+          "ea": 280,
+          "context": ""
+        }
+      ],
+      "XorInLoop": [
+        {
+          "ea": 104130,
+          "context": ""
+        }
+      ]
+    },
+    "yara_hits": [
+      {
+        "id": "MSVC_6_linker",
+        "category": "compiler",
+        "reliability": 60,
+        "type": "INFO",
+        "description": "detects used visual studio version based on linker information",
+        "num_patterns": 0
+      },
+      {
+        "id": "upx_080_or_higher_01",
+        "category": "packer",
+        "reliability": 50,
+        "type": "INFO",
+        "description": "",
+        "num_patterns": 1
+      },
+      {
+        "id": "upx_089_3xx",
+        "category": "packer",
+        "reliability": 50,
+        "type": "INFO",
+        "description": "",
+        "num_patterns": 1
+      },
+      {
+        "id": "upx_0896_102_105_122_03",
+        "category": "packer",
+        "reliability": 50,
+        "type": "INFO",
+        "description": "",
+        "num_patterns": 1
+      },
+      {
+        "id": "upx_12x",
+        "category": "packer",
+        "reliability": 50,
+        "type": "INFO",
+        "description": "",
+        "num_patterns": 1
+      },
+      {
+        "id": "upx_290_lzma_02",
+        "category": "packer",
+        "reliability": 50,
+        "type": "INFO",
+        "description": "",
+        "num_patterns": 1
+      },
+      {
+        "id": "upx_391_nrv2e_02",
+        "category": "packer",
+        "reliability": 50,
+        "type": "INFO",
+        "description": "",
+        "num_patterns": 1
+      }
+    ],
+    "strings": [
+      {
+        "ea": 122832,
+        "summary": "KERNEL32.DLL"
+      },
+      {
+        "ea": 122845,
+        "summary": "MSVBVM60.DLL "
+      },
+      {
+        "ea": 122602,
+        "summary": "ifreleyici Modernize Hayalet.exe"
+      },
+      {
+        "ea": 122236,
+        "summary": "www.hidden-sabotage.com"
+      },
+      {
+        "ea": 122000,
+        "summary": "www.hidden-sabotage.com"
+      },
+      {
+        "ea": 122490,
+        "summary": "ifreleyici Modernize Hayalet"
+      },
+      {
+        "ea": 121762,
+        "summary": "VS_VERSION_INFO"
+      },
+      {
+        "ea": 122554,
+        "summary": "OriginalFilename"
+      },
+      {
+        "ea": 121890,
+        "summary": "040904B0"
+      },
+      {
+        "ea": 154773,
+        "summary": "gi~`fdImff\t\t\tO_O..BVXyo{sCdxi{lkoo"
+      },
+      {
+        "ea": 5676,
+        "summary": "e6rFRICHTX32.OCX"
+      },
+      {
+        "ea": 72047,
+        "summary": "B.dhd"
+      },
+      {
+        "ea": 122202,
+        "summary": "LegalTrademarks"
+      },
+      {
+        "ea": 123904,
+        "summary": "pepotespepotesMZ"
+      },
+      {
+        "ea": 133441,
+        "summary": "%-%=9<003000333 ...%%';=89;<>:?% Y"
+      },
+      {
+        "ea": 131783,
+        "summary": "zkl=<`ol|=985ezf..:r?o1gvn<?r1ph>0"
+      },
+      {
+        "ea": 135700,
+        "summary": "J\nh}H|oo\t\nxBfz}\t..`k\t\t\t\tzY{ej\t\t\nFg"
+      },
+      {
+        "ea": 98313,
+        "summary": "\\\\\\\\\""
+      },
+      {
+        "ea": 129674,
+        "summary": "\n\r\r\n\r"
+      },
+      {
+        "ea": 124446,
+        "summary": "\nJ\n\n\n"
+      },
+      {
+        "ea": 130188,
+        "summary": "J\n\n\n\n"
+      },
+      {
+        "ea": 150496,
+        "summary": "<\n\n\n\n"
+      },
+      {
+        "ea": 122054,
+        "summary": "FileDescription"
+      },
+      {
+        "ea": 122450,
+        "summary": "InternalName"
+      },
+      {
+        "ea": 171076,
+        "summary": "~\r~\n\t\n@\tf\tn\nh\t{\n..p\nk\tf\no\t~\r\t\tY\n=\t"
+      },
+      {
+        "ea": 171236,
+        "summary": "\t\tG\tb\nj\rj\nr\rg\td\n..*\rB\tl\rs\na\na\nh\ty\r"
+      },
+      {
+        "ea": 171844,
+        "summary": "f\n\n\n\n\n-\n\r"
+      },
+      {
+        "ea": 132753,
+        "summary": "\nW\r\n\n\n\n"
+      },
+      {
+        "ea": 131020,
+        "summary": ":\tH\n2\n9\n:\n:\t;\n;\n:"
+      },
+      {
+        "ea": 131962,
+        "summary": "@g`}`hfcsln\tJehz..}`hecsl\t\t\t\ncl9hg"
+      },
+      {
+        "ea": 94642,
+        "summary": "t2%S2AllS2%Soca%S2%teS2"
+      },
+      {
+        "ea": 130878,
+        "summary": "cosoloscic\t\td\t\n\t..\t=\t>\t:\n2\t?\t;\t5\n_"
+      },
+      {
+        "ea": 121854,
+        "summary": "StringFileInfo"
+      },
+      {
+        "ea": 122402,
+        "summary": "ProductVersion"
+      },
+      {
+        "ea": 139158,
+        "summary": "L\n\n\n"
+      },
+      {
+        "ea": 135026,
+        "summary": "\n\r\n\n"
+      },
+      {
+        "ea": 136467,
+        "summary": "\r\r\r\r\r\n\n"
+      },
+      {
+        "ea": 75790,
+        "summary": "qLLL"
+      },
+      {
+        "ea": 121974,
+        "summary": "CompanyName"
+      },
+      {
+        "ea": 139237,
+        "summary": "\n\n\nb"
+      },
+      {
+        "ea": 141700,
+        "summary": "6\n\n\n"
+      },
+      {
+        "ea": 144535,
+        "summary": "<\n\n\n"
+      },
+      {
+        "ea": 72719,
+        "summary": "99@@"
+      },
+      {
+        "ea": 156851,
+        "summary": "\r\n\r\n"
+      },
+      {
+        "ea": 10225,
+        "summary": "j.bih"
+      },
+      {
+        "ea": 74285,
+        "summary": "dPPP"
+      },
+      {
+        "ea": 149252,
+        "summary": "L\n\n\n"
+      },
+      {
+        "ea": 147893,
+        "summary": "0\n\n\n"
+      },
+      {
+        "ea": 147560,
+        "summary": "\n\n\n\r"
+      },
+      {
+        "ea": 145909,
+        "summary": "0\n\n\n"
+      },
+      {
+        "ea": 13756,
+        "summary": "StSt"
+      },
+      {
+        "ea": 15783,
+        "summary": "@@@x"
+      },
+      {
+        "ea": 143610,
+        "summary": "<\n\n\n"
+      },
+      {
+        "ea": 143532,
+        "summary": "N\n\n\n"
+      },
+      {
+        "ea": 99828,
+        "summary": "XXX2"
+      },
+      {
+        "ea": 143428,
+        "summary": "?\n\n\n"
+      },
+      {
+        "ea": 101469,
+        "summary": "dXXX"
+      },
+      {
+        "ea": 141921,
+        "summary": "`\n\n\n"
+      },
+      {
+        "ea": 77,
+        "summary": "!This program ca..in DOS mode.\r\r\n$"
+      },
+      {
+        "ea": 140415,
+        "summary": "2\n\n\n"
+      },
+      {
+        "ea": 139991,
+        "summary": "\n\n\n\nIG"
+      },
+      {
+        "ea": 124274,
+        "summary": "\n\r\n\n"
+      },
+      {
+        "ea": 132236,
+        "summary": "K\n\\K\n\n"
+      },
+      {
+        "ea": 122706,
+        "summary": "Translation"
+      },
+      {
+        "ea": 76520,
+        "summary": "\\\\XX"
+      },
+      {
+        "ea": 129710,
+        "summary": "\n\n\r\r"
+      },
+      {
+        "ea": 76230,
+        "summary": "HHLH"
+      },
+      {
+        "ea": 130671,
+        "summary": "\n\n\ne"
+      },
+      {
+        "ea": 76222,
+        "summary": "vLLv"
+      },
+      {
+        "ea": 133756,
+        "summary": "8:8..."
+      },
+      {
+        "ea": 124766,
+        "summary": "\n\n\r\n"
+      },
+      {
+        "ea": 124261,
+        "summary": "\n\r\n\n"
+      },
+      {
+        "ea": 125200,
+        "summary": "\n\r\n\r"
+      },
+      {
+        "ea": 134443,
+        "summary": "-)*/(.&%%<?95547..1>>4!.!+-*(+,*-*"
+      },
+      {
+        "ea": 122358,
+        "summary": "FileVersion"
+      },
+      {
+        "ea": 122088,
+        "summary": "Modernize Hayalet"
+      },
+      {
+        "ea": 122316,
+        "summary": "Modernize Hayalet"
+      },
+      {
+        "ea": 132811,
+        "summary": "\n\n\n\n\n\r\t\n"
+      },
+      {
+        "ea": 154728,
+        "summary": "\t\tBo}aJhefLgn`gl..OA^VYCDAUHnmXoo\n"
+      },
+      {
+        "ea": 9967,
+        "summary": "?Fromfqfkipislqsqvhnqrvjgt"
+      },
+      {
+        "ea": 130918,
+        "summary": "L\nC\t]\nB\nL\nB\nA\nK"
+      },
+      {
+        "ea": 122160,
+        "summary": "Modernize Hayalet"
+      },
+      {
+        "ea": 122432,
+        "summary": "1.00"
+      },
+      {
+        "ea": 121932,
+        "summary": "Modernize Hayalet"
+      },
+      {
+        "ea": 122384,
+        "summary": "1.00"
+      },
+      {
+        "ea": 142948,
+        "summary": "\n\n\n\n"
+      },
+      {
+        "ea": 129199,
+        "summary": "\n\n\n\n"
+      },
+      {
+        "ea": 170768,
+        "summary": "\n\n\n\r\n\n\t"
+      },
+      {
+        "ea": 156806,
+        "summary": "\r\n\n\n\n\n\n\r\n\n"
+      },
+      {
+        "ea": 129117,
+        "summary": "\n\n\n\n"
+      },
+      {
+        "ea": 129036,
+        "summary": "\n\n\n\n"
+      },
+      {
+        "ea": 10082,
+        "summary": "sllguss"
+      },
+      {
+        "ea": 131883,
+        "summary": ";ezzas`=hes;e1<~..}=p=od\n\np0k~{o:y"
+      },
+      {
+        "ea": 128759,
+        "summary": "6L\nM6L\n"
+      },
+      {
+        "ea": 124931,
+        "summary": "\n\n\n\n"
+      },
+      {
+        "ea": 126881,
+        "summary": "\n\n\n\n"
+      },
+      {
+        "ea": 126217,
+        "summary": "\n\n\n\n"
+      },
+      {
+        "ea": 122130,
+        "summary": "LegalCopyright"
+      },
+      {
+        "ea": 142270,
+        "summary": "\n\n\n\n"
+      },
+      {
+        "ea": 133369,
+        "summary": "'%$6>15654664>6&..#$,%:>5>1488:=9@"
+      }
+    ],
+    "imports": [
+      {
+        "ea": 122796,
+        "name": "kernel32.LoadLibraryA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 122800,
+        "name": "kernel32.GetProcAddress",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 122804,
+        "name": "kernel32.VirtualProtect",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 122808,
+        "name": "kernel32.VirtualAlloc",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 122812,
+        "name": "kernel32.VirtualFree",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 122816,
+        "name": "kernel32.ExitProcess",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 122824,
+        "name": "msvbvm60.rtcR8ValFromBstr",
+        "type": "IMPORT",
+        "num_refs": 1
+      }
+    ],
+    "sections": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 39
+      },
+      {
+        "name": "",
+        "effective_address": 1024,
+        "physical_size": 103936,
+        "virtual_size": 106496,
+        "rights": "RWX",
+        "entropy": 205
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 107520,
+        "physical_size": 15872,
+        "virtual_size": 16384,
+        "rights": "RW",
+        "entropy": 121
+      },
+      {
+        "name": "overlay",
+        "effective_address": 123904,
+        "physical_size": 49166,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 115
+      },
+      {
+        "name": "",
+        "effective_address": 173070,
+        "physical_size": 0,
+        "virtual_size": 241664,
+        "rights": "RWX",
+        "entropy": 0
+      }
+    ],
+    "entropy": {
+      "file_entropy": 7.57,
+      "regions": [
+        {
+          "name": "header",
+          "entropy": 39,
+          "size": null
+        },
+        {
+          "name": "",
+          "entropy": 205,
+          "size": null
+        },
+        {
+          "name": ".rsrc",
+          "entropy": 121,
+          "size": null
+        },
+        {
+          "name": "overlay",
+          "entropy": 115,
+          "size": null
+        },
+        {
+          "name": "",
+          "entropy": 0,
+          "size": null
+        }
+      ],
+      "file_entropy_malcat_raw": 171,
+      "entropy_source": "whole_file_shannon_revai"
+    },
+    "functions": [
+      {
+        "ea": 104016,
+        "name": "EntryPoint"
+      }
+    ],
+    "constants": []
+  },
+  "functions": [
+    {
+      "ea": 104016,
+      "name": "EntryPoint"
+    }
+  ],
+  "constants": [],
+  "anomalies": [
+    {
+      "name": "BigBufferNoXrefMediumToHighEntropy",
+      "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+      "category": "entropy",
+      "level": 3,
+      "num_hits": 3
+    },
+    {
+      "name": "CrossSectionJump",
+      "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+      "category": "code",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "DataBetweenHeaderAndFirstSection",
+      "desc": "There is non-zero data between the PE header and the first section",
+      "category": "headers",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "DuplicatedSectionName",
+      "desc": "section name has already been used before in section table",
+      "category": "sections",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "ExecutableSectionNoCode",
+      "desc": "executable section has the flag code not set",
+      "category": "sections",
+      "level": 4,
+      "num_hits": 2
+    },
+    {
+      "name": "ExtraSpaceAfterResourcesDataDirectory",
+      "desc": "extra physical data in rsrc section after resource directory data",
+      "category": "resources",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "GuiSubsystemNoWindowApi",
+      "desc": "A GUI windows application does not import any user32 window-related function",
+      "category": "headers",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "HugeFunctionGapAtSectionBoundary",
+      "desc": "There is a huge gap between start/end of executable section and first/last function of a section with medium-to-high entropy (which is not a know structure). It often means that data is stored there",
+      "category": "code",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidBaseOfCode",
+      "desc": "at least one code section starts before BaseOfCode, or BaseOfCode is not the start of a code section",
+      "category": "sections",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidBaseOfData",
+      "desc": "at least one data section starts before BaseOfData, or BaseOfData is not the start of a data section",
+      "category": "sections",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidSizeOfCode",
+      "desc": "SizeofCode is not the sum of all code sections (raw or virtual)",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "InvalidSizeOfInitializedData",
+      "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+      "category": "sections",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "NoChecksum",
+      "desc": "PE Header checksum is not set",
+      "category": "integrity",
+      "level": 1,
+      "num_hits": 1
+    },
+    {
+      "name": "Packed",
+      "desc": "File is packed using a legit or less-legit obfuscator",
+      "category": "packers",
+      "level": 2,
+      "num_hits": 6
+    },
+    {
+      "name": "PatchedUPXHeader",
+      "desc": "At least one Yara signature matched UPX but no UPX header was identified by Malcat, indicating a potential patched UPX header",
+      "category": "packers",
+      "level": 4,
+      "num_hits": 0
+    },
+    {
+      "name": "PurelyVirtualExecutableSection",
+      "desc": "a section is virtual-only and executable (packer?)",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "SectionEmptyName",
+      "desc": "section name is null",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 2
+    },
+    {
+      "name": "SectionNameUnknown",
+      "desc": "section name is not one of the typical PE section name",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 2
+    },
+    {
+      "name": "SectionWX",
+      "desc": "section is executable and writeable",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 2
+    },
+    {
+      "name": "UnknownOverlayMediumToHighEntropy",
+      "desc": "File contains an overlay which is not of known type and has medium-to-high entropy",
+      "category": "entropy",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "UnreferencedImports",
+      "desc": "More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the file is packed",
+      "category": "imports",
+      "level": 3,
+      "num_hits": 7
+    },
+    {
+      "name": "XorInLoop",
+      "desc": "XOR instruction in a loop",
+      "category": "code",
+      "level": 3,
+      "num_hits": 1
+    }
+  ],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

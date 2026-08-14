@@ -1,0 +1,241 @@
+# YARA matches (deterministic render)
+
+{
+  "rule_count": 20,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IP",
+      "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+      "strings": [
+        {
+          "id": "$ipv6",
+          "offset": 37486,
+          "length": 3,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "contains_base64",
+      "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 5676,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "UPXv20MarkusLaszloReiser",
+      "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+      "strings": [
+        {
+          "id": "$a0",
+          "offset": 104367,
+          "length": 85,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "UPXV200V290MarkusOberhumerLaszloMolnarJohnReiser",
+      "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+      "strings": [
+        {
+          "id": "$a0",
+          "offset": 104414,
+          "length": 39,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "UPX290LZMAMarkusOberhumerLaszloMolnarJohnReiser",
+      "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+      "strings": [
+        {
+          "id": "$a1",
+          "offset": 104016,
+          "length": 63,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "upx_3",
+      "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+      "strings": [
+        {
+          "id": "$str1",
+          "offset": 104016,
+          "length": 45,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IsPE32",
+      "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+      "strings": []
+    },
+    {
+      "rule": "IsWindowsGUI",
+      "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+      "strings": []
+    },
+    {
+      "rule": "IsPacked",
+      "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+      "strings": []
+    },
+    {
+      "rule": "HasOverlay",
+      "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+      "strings": []
+    },
+    {
+      "rule": "HasRichSignature",
+      "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+      "strings": [
+        {
+          "id": "$a0",
+          "offset": 168,
+          "length": 4,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "PackerUPX_CompresorGratuito_wwwupxsourceforgenet",
+      "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 104016,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "UPX_wwwupxsourceforgenet_additional",
+      "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 104016,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "yodas_Protector_v1033_dllocx_Ashkbiz_Danehkar_h",
+      "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 241,
+          "length": 1,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Netopsystems_FEAD_Optimizer_1",
+      "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 104016,
+          "length": 64,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "UPX_290_LZMA",
+      "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 104016,
+          "length": 63,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "UPX_290_LZMA_Markus_Oberhumer_Laszlo_Molnar_John_Reiser",
+      "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+      "strings": [
+        {
+          "id": "$b",
+          "offset": 104016,
+          "length": 63,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "UPX_290_LZMA_additional",
+      "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 104016,
+          "length": 63,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "UPX_wwwupxsourceforgenet",
+      "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 104016,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$b",
+          "offset": 104016,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    }
+  ],
+  "engine": "yara-x",
+  "rules_compiled": 454,
+  "compile_errors": [
+    "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+    "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+    "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+  ],
+  "incomplete": true,
+  "duration_s": 3.59
+}

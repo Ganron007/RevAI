@@ -1,0 +1,1458 @@
+{
+  "capa": {
+    "skipped": true,
+    "fail_open": true,
+    "reason": "not_applicable:text",
+    "error": "CAPA supports PE/ELF/Mach-O only (got text)",
+    "rule_count": 0,
+    "matched_rule_count": 0,
+    "top_rules": []
+  },
+  "pe_imports": {
+    "skipped": true,
+    "reason": "not_applicable:text",
+    "engine": "pe_imports",
+    "signal_count": 0,
+    "signals": []
+  },
+  "yara": {
+    "rule_count": 6,
+    "matches": [
+      {
+        "rule": "domain",
+        "path": "/opt/samples/corpus/malware/f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1/loveyou.js",
+        "strings": [
+          {
+            "id": "$domain_regex",
+            "offset": 0,
+            "length": 3,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "possible_includes_base64_packed_functions",
+        "path": "/opt/samples/corpus/malware/f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1/loveyou.js",
+        "strings": [
+          {
+            "id": "$f",
+            "offset": 3415,
+            "length": 4,
+            "xor_key": null
+          },
+          {
+            "id": "$fff",
+            "offset": 4,
+            "length": 20,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "function_through_object",
+        "path": "/opt/samples/corpus/malware/f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1/loveyou.js",
+        "strings": [
+          {
+            "id": "$",
+            "offset": 4117,
+            "length": 14,
+            "xor_key": null
+          },
+          {
+            "id": "$",
+            "offset": 3737,
+            "length": 16,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "contains_base64",
+        "path": "/opt/samples/corpus/malware/f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1/loveyou.js",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 4,
+            "length": 20,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "BASE64_table",
+        "path": "/opt/samples/corpus/malware/f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1/loveyou.js",
+        "strings": [
+          {
+            "id": "$c0",
+            "offset": 3337,
+            "length": 64,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "android_meterpreter",
+        "path": "/opt/samples/corpus/malware/f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1/loveyou.js",
+        "strings": [
+          {
+            "id": "$stopEval",
+            "offset": 9687,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      }
+    ],
+    "engine": "yara-x",
+    "rules_compiled": 454,
+    "compile_errors": [
+      "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+      "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+      "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+    ],
+    "incomplete": true,
+    "duration_s": 3.33
+  },
+  "floss": {
+    "skipped": true,
+    "fail_open": true,
+    "reason": "not_applicable:text",
+    "error": "FLOSS supports PE only (got text)",
+    "string_count": 0,
+    "strings": []
+  },
+  "malcat": {
+    "analysis_id": 1,
+    "path": "/opt/samples/corpus/malware/f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1/loveyou.js",
+    "profile": "deep",
+    "limits": {
+      "strings_max": 300,
+      "imports_max": 300,
+      "functions_max": 30,
+      "anomaly_locations_max": 50,
+      "decompile_top_n": 3
+    },
+    "file_summary": {
+      "analysis_id": 1,
+      "file_name": "loveyou.js",
+      "file_path": "/opt/samples/corpus/malware/f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1/loveyou.js",
+      "file_size": 16805,
+      "type": "text/utf8",
+      "architecture": "NONE",
+      "entropy": 5.74,
+      "sha256": "f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1",
+      "metadata": {},
+      "entrypoint_ea": null,
+      "layout": [
+        {
+          "name": "",
+          "effective_address": 0,
+          "physical_size": 16805,
+          "virtual_size": 16805,
+          "rights": "",
+          "entropy": 124
+        }
+      ],
+      "kesakode_verdict": [],
+      "entropy_malcat_raw": 124,
+      "entropy_source": "whole_file_shannon_revai"
+    },
+    "views": {
+      "anomalies": [],
+      "anomaly_locations": {},
+      "yara_hits": [],
+      "strings": [
+        {
+          "ea": 818,
+          "summary": "wpHDtlHDiMOWf0JK..FwrjCvHI9w4PCniw"
+        },
+        {
+          "ea": 1254,
+          "summary": "WMOWRcKKF8OUAMOn..pb8Kewq0XVS4sw6M"
+        },
+        {
+          "ea": 2069,
+          "summary": "XsKxwrDDlzHCjcK4..xNPcKDw6vDgcO0YQ"
+        },
+        {
+          "ea": 240,
+          "summary": "wqvCtBk3K8KJUSHD..AUL2TCjMOzwpbDgA"
+        },
+        {
+          "ea": 377,
+          "summary": "wqR0wpILaCFPRz9J..HsOSwrvDmcOzwoIL"
+        },
+        {
+          "ea": 1175,
+          "summary": "w5TCjisEEsKVYQXD..KnIS9XPEXDo1dEFw"
+        },
+        {
+          "ea": 5627,
+          "summary": "x20IVbqwAIVbqwct..bqweIVbqwctIVbqw"
+        },
+        {
+          "ea": 1737,
+          "summary": "VVBSJcOfw5jCusOj..ew5p2OwXCjzJZST4"
+        },
+        {
+          "ea": 5961,
+          "summary": "vIVbqwOpIVbqwNIV..IVbqwMZIVbqwAIVb"
+        },
+        {
+          "ea": 1590,
+          "summary": "dMOzwovCv8KPWDRs..r3TDki0Ybhs5w4sq"
+        },
+        {
+          "ea": 5700,
+          "summary": "x22sIVbqwhIVbqwelIVbqwLIVbqw"
+        },
+        {
+          "ea": 67,
+          "summary": "w5TCmDxpJ8K5w7Eu..DphPDqVdXWFHDiHc"
+        },
+        {
+          "ea": 1468,
+          "summary": "BMOow4DDpj3CuGTD..m8OfwqwIJMKKw4Ed"
+        },
+        {
+          "ea": 12135,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x442408"
+        },
+        {
+          "ea": 12811,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 15530,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 12690,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 5730,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 12755,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 15635,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 5532,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 12927,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 5406,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 12973,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 5344,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 6011,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 6226,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x1f6a59"
+        },
+        {
+          "ea": 6149,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 12422,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 12469,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 6103,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 6057,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 15742,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 12525,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 12643,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 5914,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 5868,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 5822,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 15682,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 5233,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 15587,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 5776,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 15091,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 13803,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 14000,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 14127,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 14183,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 14230,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 3030,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 14286,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 14333,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 14482,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 15166,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 14560,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 14617,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 14664,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 15035,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 14711,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 14776,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 14884,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 14941,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 15302,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 5287,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 6471,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 5152,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 5091,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 5047,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 4996,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 15359,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 13145,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 13209,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 13029,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 13273,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 13399,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 15245,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 13455,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 13557,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 2886,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 13604,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 13660,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 16661,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 10083,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 10139,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 7991,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 10233,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 10313,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 10370,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 10427,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 10503,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 10036,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 10621,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 7788,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 10668,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 10733,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 7732,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 10813,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 16545,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 10911,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 9640,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 9080,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 9127,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 8906,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 9319,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 8816,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 9395,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 8712,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 8595,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 10993,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 9702,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 8423,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 8367,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 8320,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 8240,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 9956,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 8146,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 12034,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 11757,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 16192,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 7021,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 6962,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 11880,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 6916,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 16088,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 11964,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 11646,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 16031,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 12081,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 15982,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 6397,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 15906,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 6351,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 15849,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 16400,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 7580,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 11124,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 16485,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 11191,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 7463,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 11252,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 7407,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 6305,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 11319,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 7360,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 11378,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 11459,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 16313,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 11516,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 11573,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 7143,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+        },
+        {
+          "ea": 4,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x515c"
+        },
+        {
+          "ea": 2985,
+          "summary": "adfgkdafkhjgrsgfksghkod_0x515c"
+        },
+        {
+          "ea": 6856,
+          "summary": "nnQnQ"
+        },
+        {
+          "ea": 536,
+          "summary": "S8KPwoQ2wpXChsO5..CwokJwpTDhCLDsXc"
+        },
+        {
+          "ea": 1936,
+          "summary": "wpHDtlHDiMOWaEJK..LDjsK9wo9XwogLIg"
+        },
+        {
+          "ea": 5612,
+          "summary": "wneIVbqwwIVbqw"
+        },
+        {
+          "ea": 6801,
+          "summary": "QdoQwnQlQoaQdfilQe"
+        },
+        {
+          "ea": 2551,
+          "summary": "CuznCuEdrXUh6w7X..hwf2VpZhLDvTbCpg"
+        },
+        {
+          "ea": 590,
+          "summary": "X8Kwwr7DuMOKUjQnw7l6DTUgTk8"
+        },
+        {
+          "ea": 6666,
+          "summary": "QOQbQjeQcQtQ"
+        },
+        {
+          "ea": 205,
+          "summary": "ZMKKwpMzw44Wd8Kow7NBJ3w1w4XCiT0"
+        },
+        {
+          "ea": 666,
+          "summary": "wogawoo5wqkow7zCm8OvwqJT"
+        },
+        {
+          "ea": 52,
+          "summary": "woQ4w4oZWw"
+        },
+        {
+          "ea": 9459,
+          "summary": "debuggerProtection"
+        },
+        {
+          "ea": 4188,
+          "summary": "decodeURIComponent"
+        },
+        {
+          "ea": 6700,
+          "summary": "QvQaQrQ"
+        },
+        {
+          "ea": 2203,
+          "summary": "GsOLwrbCoD5aYsKETcK4eFrCq1bCmSw"
+        },
+        {
+          "ea": 6547,
+          "summary": "QnoQprQoQfQile"
+        },
+        {
+          "ea": 6517,
+          "summary": "QpoQlQiQcQy"
+        },
+        {
+          "ea": 1048,
+          "summary": "wp7CpBBewpE"
+        },
+        {
+          "ea": 2453,
+          "summary": "wrg6wokTwow"
+        },
+        {
+          "ea": 3190,
+          "summary": "constructor"
+        },
+        {
+          "ea": 15506,
+          "summary": "constructor"
+        },
+        {
+          "ea": 3337,
+          "summary": "ABCDEFGHIJKLMNOP..uvwxyz0123456789"
+        },
+        {
+          "ea": 4339,
+          "summary": "0x100"
+        },
+        {
+          "ea": 1838,
+          "summary": "w58iwqlZGcONHMOLOsKqRMKjfg"
+        },
+        {
+          "ea": 4686,
+          "summary": "0x100"
+        },
+        {
+          "ea": 6687,
+          "summary": "QvQ2Q"
+        },
+        {
+          "ea": 6839,
+          "summary": "Q6Q3Q"
+        },
+        {
+          "ea": 719,
+          "summary": "E8OZw4fDoh3CllvD..rDpsKdcMObZBLCnA"
+        },
+        {
+          "ea": 4735,
+          "summary": "0x100"
+        },
+        {
+          "ea": 980,
+          "summary": "bXUYJEldw6rCrlYlSw"
+        },
+        {
+          "ea": 6876,
+          "summary": "QteQmQpQ"
+        },
+        {
+          "ea": 4456,
+          "summary": "0x100"
+        },
+        {
+          "ea": 4968,
+          "summary": "0x100"
+        },
+        {
+          "ea": 4260,
+          "summary": "0x100"
+        },
+        {
+          "ea": 7008,
+          "summary": "QWQNQ"
+        },
+        {
+          "ea": 1668,
+          "summary": "GBbChj4swo99w6Vcw4jDnMOUwp"
+        },
+        {
+          "ea": 12917,
+          "summary": "_0x115600"
+        },
+        {
+          "ea": 14173,
+          "summary": "_0x115600"
+        },
+        {
+          "ea": 10890,
+          "summary": "_0x226828"
+        },
+        {
+          "ea": 12515,
+          "summary": "_0x115600"
+        },
+        {
+          "ea": 12319,
+          "summary": "_0x115600"
+        },
+        {
+          "ea": 6529,
+          "summary": "x20QbyQpasQsQ"
+        },
+        {
+          "ea": 14108,
+          "summary": "_0x115600"
+        },
+        {
+          "ea": 12332,
+          "summary": "_0x115600"
+        },
+        {
+          "ea": 6734,
+          "summary": "QAQgQeQnt"
+        },
+        {
+          "ea": 13445,
+          "summary": "_0x115600"
+        },
+        {
+          "ea": 13380,
+          "summary": "_0x115600"
+        },
+        {
+          "ea": 12412,
+          "summary": "_0x115600"
+        },
+        {
+          "ea": 13990,
+          "summary": "_0x115600"
+        },
+        {
+          "ea": 13891,
+          "summary": "_0x115600"
+        },
+        {
+          "ea": 9928,
+          "summary": "_0x336a0a"
+        },
+        {
+          "ea": 12633,
+          "summary": "_0x115600"
+        },
+        {
+          "ea": 13650,
+          "summary": "_0x115600"
+        },
+        {
+          "ea": 5219,
+          "summary": "undefined"
+        },
+        {
+          "ea": 12609,
+          "summary": "_0x2ee8e2"
+        },
+        {
+          "ea": 5276,
+          "summary": "undefined"
+        },
+        {
+          "ea": 13135,
+          "summary": "_0x115600"
+        },
+        {
+          "ea": 13766,
+          "summary": "_0x115600"
+        },
+        {
+          "ea": 12736,
+          "summary": "_0x115600"
+        },
+        {
+          "ea": 13199,
+          "summary": "_0x115600"
+        },
+        {
+          "ea": 10013,
+          "summary": "_0x336a0a"
+        },
+        {
+          "ea": 13793,
+          "summary": "_0x115600"
+        },
+        {
+          "ea": 12581,
+          "summary": "_0x2ee8e2"
+        },
+        {
+          "ea": 13547,
+          "summary": "_0x115600"
+        },
+        {
+          "ea": 11096,
+          "summary": "_0x226828"
+        },
+        {
+          "ea": 13263,
+          "summary": "_0x115600"
+        },
+        {
+          "ea": 6759,
+          "summary": "x27QGoQoQglQe"
+        },
+        {
+          "ea": 13019,
+          "summary": "_0x115600"
+        },
+        {
+          "ea": 12801,
+          "summary": "_0x115600"
+        },
+        {
+          "ea": 14393,
+          "summary": "_0x115600"
+        },
+        {
+          "ea": 3073,
+          "summary": "undefined"
+        },
+        {
+          "ea": 14276,
+          "summary": "_0x115600"
+        },
+        {
+          "ea": 6821,
+          "summary": "x27hQtQtQp"
+        },
+        {
+          "ea": 2468,
+          "summary": "f8KkS8KSHw"
+        },
+        {
+          "ea": 182,
+          "summary": "XXZsw6wnJMK6eG3CrRs"
+        },
+        {
+          "ea": 2498,
+          "summary": "A2dQM1gqbUnCm8OGUsOdWsKi"
+        },
+        {
+          "ea": 2279,
+          "summary": "wqAswoI5wq4"
+        },
+        {
+          "ea": 758,
+          "summary": "w6RWEMOUw6U"
+        },
+        {
+          "ea": 483,
+          "summary": "wpvDvsKawoo"
+        },
+        {
+          "ea": 3739,
+          "summary": "fromCharCode"
+        },
+        {
+          "ea": 4864,
+          "summary": "fromCharCode"
+        },
+        {
+          "ea": 6885,
+          "summary": "QerQbQ19"
+        },
+        {
+          "ea": 2733,
+          "summary": "Q3RQMMOu"
+        },
+        {
+          "ea": 2348,
+          "summary": "wrfDmsKZwpjDjg"
+        },
+        {
+          "ea": 1430,
+          "summary": "e8KTwr9XTMKvHjDDug"
+        },
+        {
+          "ea": 6615,
+          "summary": "x27QeQbCQlient"
+        },
+        {
+          "ea": 11950,
+          "summary": "ActiveXObject"
+        },
+        {
+          "ea": 2294,
+          "summary": "w7pYWMKoG8OUYMK"
+        },
+        {
+          "ea": 1414,
+          "summary": "wqVsBcKBFkpcE8K"
+        },
+        {
+          "ea": 6715,
+          "summary": "QeaderQs"
+        },
+        {
+          "ea": 8136,
+          "summary": "_0x14421e"
+        },
+        {
+          "ea": 15520,
+          "summary": "_0x320560"
+        },
+        {
+          "ea": 8202,
+          "summary": "_0x510064"
+        },
+        {
+          "ea": 5207,
+          "summary": "_0x313dd6"
+        },
+        {
+          "ea": 5193,
+          "summary": "_0x515c18"
+        },
+        {
+          "ea": 15419,
+          "summary": "else"
+        },
+        {
+          "ea": 13123,
+          "summary": "_0x1dd098"
+        },
+        {
+          "ea": 5142,
+          "summary": "_0x313dd6"
+        },
+        {
+          "ea": 8123,
+          "summary": "_0x30fb10"
+        },
+        {
+          "ea": 15479,
+          "summary": "null"
+        },
+        {
+          "ea": 7968,
+          "summary": "_0x14421e"
+        },
+        {
+          "ea": 16722,
+          "summary": "else"
+        },
+        {
+          "ea": 8066,
+          "summary": "_0x30fb10"
+        },
+        {
+          "ea": 5447,
+          "summary": "_0x515c18"
+        },
+        {
+          "ea": 5469,
+          "summary": "else"
+        },
+        {
+          "ea": 5484,
+          "summary": "_0x313dd6"
+        },
+        {
+          "ea": 10205,
+          "summary": "_0x5e7a5e"
+        },
+        {
+          "ea": 8029,
+          "summary": "UyUq"
+        },
+        {
+          "ea": 16693,
+          "summary": "0x20"
+        },
+        {
+          "ea": 7981,
+          "summary": "_0x14421e"
+        },
+        {
+          "ea": 16446,
+          "summary": "_0x320560"
+        },
+        {
+          "ea": 16014,
+          "summary": "0x70"
+        },
+        {
+          "ea": 16078,
+          "summary": "_0x320560"
+        },
+        {
+          "ea": 6834,
+          "summary": "9Q2Q"
+        },
+        {
+          "ea": 11107,
+          "summary": "test"
+        },
+        {
+          "ea": 6862,
+          "summary": "eQxe"
+        },
+        {
+          "ea": 6897,
+          "summary": "Qexe"
+        },
+        {
+          "ea": 6948,
+          "summary": "0x22"
+        },
+        {
+          "ea": 16182,
+          "summary": "_0x320560"
+        },
+        {
+          "ea": 16475,
+          "summary": "_0x320560"
+        },
+        {
+          "ea": 11727,
+          "summary": "_0x48688f"
+        },
+        {
+          "ea": 7095,
+          "summary": "_0x48688f"
+        },
+        {
+          "ea": 11085,
+          "summary": "init"
+        },
+        {
+          "ea": 16366,
+          "summary": "_0x320560"
+        },
+        {
+          "ea": 16265,
+          "summary": "_0x320560"
+        },
+        {
+          "ea": 11441,
+          "summary": "else"
+        },
+        {
+          "ea": 11631,
+          "summary": "else"
+        },
+        {
+          "ea": 7199,
+          "summary": "_0x1a30a4"
+        },
+        {
+          "ea": 7219,
+          "summary": "_0x41d99d"
+        },
+        {
+          "ea": 11498,
+          "summary": "UyUq"
+        },
+        {
+          "ea": 7237,
+          "summary": "_0x1a30a4"
+        },
+        {
+          "ea": 16303,
+          "summary": "_0x320560"
+        },
+        {
+          "ea": 7257,
+          "summary": "_0x41d99d"
+        },
+        {
+          "ea": 12388,
+          "summary": "_0x285284"
+        },
+        {
+          "ea": 5808,
+          "summary": "0x11"
+        },
+        {
+          "ea": 15732,
+          "summary": "_0x320560"
+        },
+        {
+          "ea": 10290,
+          "summary": "_0x5e7a5e"
+        },
+        {
+          "ea": 5946,
+          "summary": "0x50"
+        },
+        {
+          "ea": 12557,
+          "summary": "0x10"
+        },
+        {
+          "ea": 15789,
+          "summary": "_0x3f0668"
+        },
+        {
+          "ea": 15801,
+          "summary": "_0x47e07b"
+        },
+        {
+          "ea": 15820,
+          "summary": "_0x320560"
+        },
+        {
+          "ea": 10559,
+          "summary": "_0x177672"
+        },
+        {
+          "ea": 10587,
+          "summary": "_0x177672"
+        },
+        {
+          "ea": 16651,
+          "summary": "_0x320560"
+        },
+        {
+          "ea": 15577,
+          "summary": "_0x320560"
+        },
+        {
+          "ea": 15839,
+          "summary": "_0x320560"
+        },
+        {
+          "ea": 6337,
+          "summary": "0x33"
+        },
+        {
+          "ea": 15896,
+          "summary": "_0x320560"
+        }
+      ],
+      "imports": [],
+      "sections": [
+        {
+          "name": "",
+          "effective_address": 0,
+          "physical_size": 16805,
+          "virtual_size": 16805,
+          "rights": "",
+          "entropy": 124
+        }
+      ],
+      "entropy": {
+        "file_entropy": 124,
+        "regions": [
+          {
+            "name": "",
+            "entropy": 124,
+            "size": null
+          }
+        ]
+      },
+      "functions": [],
+      "constants": [
+        {
+          "id": "crypto::Base64",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        }
+      ],
+      "carved": [],
+      "virtual_files": [],
+      "structures": []
+    },
+    "functions": [],
+    "constants": [
+      {
+        "id": "crypto::Base64",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      }
+    ],
+    "anomalies": [],
+    "carved_files": [],
+    "virtual_files": [],
+    "structures": [],
+    "decompilations": {},
+    "script_decompile": null,
+    "unpack_result": null,
+    "errors": [],
+    "entropy_bits": 5.74,
+    "entropy_malcat_raw": 124,
+    "duration_s": 3.33
+  },
+  "packer": {
+    "engine": "packer_intake",
+    "ok": true,
+    "not_applicable": true,
+    "reason": "not a PE (packer checklist is PE-only)",
+    "elapsed_s": 0.199,
+    "duration_s": 0.2
+  },
+  "revai_tools_sec": {
+    "skipped": true,
+    "reason": "not_applicable:text",
+    "engine": "revai_tools_sec"
+  },
+  "revai_tools_sinks": {
+    "skipped": true,
+    "reason": "not_applicable:text",
+    "engine": "revai_tools_sinks"
+  },
+  "_format": "text",
+  "_timings": {
+    "capa": 0.0,
+    "pe_imports": 0.0,
+    "yara": 3.33,
+    "floss": 0.0,
+    "malcat": 3.33,
+    "packer": 0.2,
+    "revai_tools_sec": 0.0,
+    "revai_tools_sinks": 0.0
+  },
+  "_stage": "quick_scan"
+}

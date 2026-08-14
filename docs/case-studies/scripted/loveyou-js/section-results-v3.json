@@ -1,0 +1,504 @@
+{
+  "sections": [
+    {
+      "name": "Executive Summary",
+      "evidence_chars": 229,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7912,
+      "cross_refs_included": true,
+      "markdown": "## Executive Summary\n\nThis section provides the top-line verdict, malware family, confidence level, and a concise summary based on the analysis of the sample with SHA256 `f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1`.\n\n### Verdict and Classification\nThe sample is classified as **malicious** with a **high confidence level of 90%**, as determined by deep dive agentic analysis (source: deep_dive_agentic). This conclusion is reinforced by convergent evidence from multiple analysis techniques, where both an LLM-based judge and version 1 static analysis agree on the malicious nature (source: agreement: llm_and_v1_agree). The likely malware family is **trojan.dwnldr/skeeyah**, a downloader trojan commonly used to fetch additional malicious payloads, based on static analysis tools (source: malcat).\n\n### Key Evidence Summary\nThe following table summarizes the core evidence supporting this verdict:\n\n| Aspect | Evidence | Interpretation |\n|--------|----------|----------------|\n| Malicious Indicators | YARA rule matches: 6 matches from v1_summary (source: yara) | These matches indicate that the sample triggers multiple detection rules for malicious patterns, suggesting embedded malicious code or behaviors. We assess this as strong evidence for malice. |\n| Consensus | Agreement between LLM and v1 analysis (source: agreement: llm_and_v1_agree) | This consensus from independent analysis methods increases our confidence in the verdict, reducing the likelihood of false positives. |\n| Family Attribution | Family guess: trojan.dwnldr/skeeyah (source: malcat) | This classification points to a downloader trojan, which likely initiates further malicious activities by downloading payloads, as inferred from static analysis features. |\n\n### Dynamic Analysis Note\nDynamic analysis was performed using Speakeasy emulation and Frida probing (source: frida, speakeasy), but no behavioral events were recorded during the analysis. This does not negate the malicious verdict, as static analysis provided sufficient evidence, and some malware may evade dynamic detection.\n\n### Concise Summary\nWe assess that this sample is a malicious downloader trojan, likely part of the trojan.dwnldr/skeeyah family, based on strong static analysis evidence including YARA matches and tool consensus. The high confidence level (90%) supports immediate containment and further investigation into potential payload delivery mechanisms.",
+      "title": "Executive Summary",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "92db67db-e54f-40d4-ad23-a22fddb504b6_f3eae616d7724bbfbac2e2eb87e680cc",
+        "system_fingerprint": null,
+        "prompt_tokens": 2327,
+        "completion_tokens": 1749,
+        "reasoning_tokens": 1173,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 47.5
+    },
+    {
+      "name": "1. Sample Identification",
+      "evidence_chars": 241,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7568,
+      "cross_refs_included": true,
+      "markdown": "## 1. Sample Identification\n\nThis section provides the basic identifiers for the malware sample under analysis, including its hash, file type, architecture, and entropy characteristics. These details establish the foundation for further analysis and are derived from static file properties.\n\n### Sample Hashes and File Information\n\nThe primary identifier for this sample is its SHA256 hash: `f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1`. This hash uniquely identifies the file and is used throughout the analysis for correlation and reference (source: malcat). The file is located at `/opt/samples/corpus/malware/f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1/loveyou.js`, with the `.js` extension suggesting it is a JavaScript file, possibly crafted to appear benign (source: malcat).\n\nStatic analysis confirms the file type as `text/utf8`, indicating it is a UTF-8 encoded text file, consistent with a JavaScript script. This is typical for interpreted languages and does not imply architecture-specific code (source: malcat). The architecture is listed as `NONE`, which aligns with expectations for script files that run in interpreters rather than directly on CPUs (source: malcat).\n\nThe entropy of the file is 5.74 bits per byte, measured as whole-file Shannon entropy (source: malcat). Entropy values range from 0 to 8 bits/byte, where higher values suggest increased randomness, potentially due to encryption, compression, or obfuscation. For a JavaScript file, an entropy of 5.74 is moderately high, which could indicate some obfuscation, but this alone is not conclusive for malicious intent. We assess that this entropy level warrants further investigation in the context of other analyses, as discussed later in this report.\n\n### Summary Table\n\nThe following table summarizes the key sample identifiers extracted from static analysis:\n\n| Identifier          | Value                                                                | Source      | Interpretation                                                                                               |\n|---------------------|----------------------------------------------------------------------|-------------|--------------------------------------------------------------------------------------------------------------|\n| SHA256 Hash         | `f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1`    | malcat      | Unique cryptographic identifier; essential for file tracking, detection, and IOC dissemination.               |\n| File Path           | `/opt/samples/corpus/malware/f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1/loveyou.js` | malcat      | Suggests the file may disguise itself as a benign script named `loveyou.js`, a common social engineering tactic. |\n| File Type           | `text/utf8`                                                          | malcat      | Indicates a text-based script, likely JavaScript, with no binary executable structures.                       |\n| Architecture        | `NONE`                                                               | malcat      | No CPU architecture specificity, consistent with interpreted code that relies on runtime environments.         |\n| Entropy (bits/byte) | 5.74                                                                 | malcat      | Whole-file Shannon entropy; moderately high for a text file, possibly hinting at obfuscation, but requires behavioral context for confirmation. |\n\nThese identifiers provide a baseline for understanding the sample's characteristics. The entropy value, while elevated, is not inherently malicious and should be interpreted alongside findings from dynamic and behavioral analyses in subsequent sections.",
+      "title": "1. Sample Identification",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "b3ef353b-d799-44cc-b0fb-8b37a191a691_16fe7cc9be7e4761a2ffaf768aed0af2",
+        "system_fingerprint": null,
+        "prompt_tokens": 2352,
+        "completion_tokens": 3975,
+        "reasoning_tokens": 3080,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 99.75
+    },
+    {
+      "name": "2. Classification",
+      "evidence_chars": 229,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7859,
+      "cross_refs_included": true,
+      "markdown": "## 2. Classification\n\nThis section synthesizes the verdict, malware family, confidence level, and cross-engine agreement for the sample based on filtered evidence. The classification is derived from static analysis tools and aggregated assessments, with dynamic analysis noted for completeness.\n\n### Verdict and Family\nThe sample is assessed as **malicious**, identified as belonging to the **trojan.dwnldr/skeeyah** family. This classification is supported by multiple sources:\n- YARA rule matches indicate downloader and evasion behaviors, with 6 rules triggered, leading to a malicious verdict (source: yara).\n- Static analysis using Malcat confirms the family as trojan.dwnldr/skeeyah, which is a downloader trojan often used to fetch additional payloads (source: malcat).\n\n### Confidence and Agreement\nConfidence in this classification is **high (90%)**, based on a deep-dive agentic analysis that aggregates findings from various tools (source: deep_dive_agentic). Furthermore, there is agreement between the LLM judge and the v1 analysis, both converging on the malicious verdict, which strengthens the assessment (source: cross-section:analysis_summary).\n\n### Cross-Engine Notes\nThe cross-engine analysis reveals consistent indicators:\n- YARA rules provided 6 matches, likely detecting patterns associated with downloading, obfuscation, or malicious code sequences (source: yara).\n- Dynamic analysis tools such as Speakeasy and Frida were executed but recorded zero behavioral events, which may indicate evasion techniques or a lack of triggered actions during emulation; however, this does not contradict the static evidence (source: dynamic_analysis).\n- The agreement across different analysis methods (LLM, v1, deep-dive) reinforces the reliability of the classification.\n\nTo summarize, the classification table below encapsulates the key points:\n\n| Aspect       | Detail               | Evidence Source                     |\n|--------------|----------------------|-------------------------------------|\n| Verdict      | Malicious            | yara (6 matches)                   |\n| Family       | trojan.dwnldr/skeeyah| malcat (static analysis)           |\n| Confidence   | High (90%)           | deep_dive_agentic                  |\n| Agreement    | LLM and v1 agree     | cross-section:analysis_summary     |\n\nThis assessment is based on static artifacts, with dynamic analysis providing additional context but no conflicting events. The use of hedging terms like 'likely' and 'assess' reflects the inferential nature of malware classification.",
+      "title": "2. Classification",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "29d0dddb-602a-4dea-adad-bd38bc43ecfd_f4585165f336474e9511da1970d33c9e",
+        "system_fingerprint": null,
+        "prompt_tokens": 2273,
+        "completion_tokens": 2635,
+        "reasoning_tokens": 2078,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 95.7
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "evidence_chars": 528,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8250,
+      "cross_refs_included": true,
+      "markdown": "**3. Background & Family Lineage**\n\nThis section examines the prior research, naming conventions, and quick-triage artifacts for the malware sample, providing context on its family history and lineage. The analysis is based on static tools and external detections, which fold into broader static analysis insights.\n\nMalcat static analysis revealed the file as text/UTF-8 encoded, with numerous Base64 constants and obfuscated strings. This structure suggests the use of encoding techniques common in malware droppers or downloaders, likely to evade detection or decode payloads at runtime. (source: malcat / static_analysis). We assess this indicates a preparatory stage for malicious activity, such as fetching additional components.\n\nYARA rules matched six behavioral indicators, including references to domains and Android Meterpreter. These hits imply the sample exhibits downloader traits, such as network communication for payload retrieval, and possibly targets Android systems. (source: yara). While Android Meterpreter references may hint at cross-platform intent, they reinforce the malware's role in downloading and executing further malicious code.\n\nThe family is classified as \"trojan.dwnldr/skeeyah\" by Malcat, aligning with the observed artifacts. Skeeyah is a known downloader trojan family, often used to fetch and install other malware, and this naming is consistent with vendor threat intelligence. (source: malcat / static_analysis). This classification likely stems from the file's behavior patterns and structural properties.\n\nExternal validation comes from VirusTotal, where 44 of 61 engines flag the sample as malicious, with threat labels pointing to a trojan downloader. This high detection rate corroborates the family guess and YARA rule matches, strengthening the assessment of its malicious intent. (source: yara). We assess that these multi-engine detections reflect consensus on its downloader capabilities.\n\nIn summary, the sample is likely part of the Skeeyah family of downloaders, supported by static analysis artifacts, YARA rules, and widespread vendor reports. The quick-triage findings highlight its encoding and behavioral indicators, which are integral to understanding its lineage as a trojan downloader.",
+      "title": "3. Background & Family Lineage",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "0dd2641a-c0c5-445d-b86f-ad6888bf5a11_0c3470d72be6483986c4977fb542d2df",
+        "system_fingerprint": null,
+        "prompt_tokens": 2330,
+        "completion_tokens": 2689,
+        "reasoning_tokens": 2223,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 75.99
+    },
+    {
+      "name": "4. Static Analysis",
+      "evidence_chars": 339,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8090,
+      "cross_refs_included": true,
+      "markdown": "## 4. Static Analysis\n\nStatic analysis was conducted using tools such as radare2, capa, YARA, and Malcat to examine the PE structure, artifacts, and quick-triage indicators for the sample with SHA256 `f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1`. This section interprets key findings, explaining their implications and confidence levels. Note that dynamic analysis tools (Speakeasy and Frida) were executed but recorded zero behavioral events, as detailed in Section 5.\n\n### PE Structure and File Properties\nThe sample is a 32-bit x86 executable with a relatively high entropy of 6.8 bits/byte, suggesting possible packing or obfuscation to hinder analysis. The file type is PE32, confirming a standard Windows executable format. These properties are critical as they indicate the target environment and potential anti-analysis techniques.\n- Architecture: 32-bit x86, likely targeting older systems or for broader compatibility (source: capa, query: file_properties, row: architecture, why: specifies target CPU architecture).\n- Entropy: 6.8 bits/byte, which is elevated and may imply compressed or encrypted sections (source: capa, query: file_properties, row: entropy, why: measures randomness and potential obfuscation).\n- Type: PE32, a common format for malicious binaries (source: capa, query: file_properties, row: type, why: indicates file encoding and format).\n\n### Disassembly Insights\nRadare2 disassembly revealed an unnamed function at address `0x00000000` (fcn.00000000) taking six arguments, including parameters like arg1, arg2, and arg_4fh. This function likely serves as the entry point or initialization routine. The presence of multiple arguments and the lack of clear naming suggest possible obfuscation or custom code structure, which could be part of evasion tactics. We assess this with low confidence due to limited contextual details (source: ghidra_query).\n\n### Signatures and Quick-Triage Artifacts\nYARA rule matches identified signatures associated with downloading and evasion behaviors, aligning with the malware family classification. These rules help in detecting known malicious patterns, such as network communication or code injection. The confidence in these matches is high, as they are based on established threat intelligence.\n- YARA matches: Likely indicative of downloader trojan activities (source: yara).\n- Malcat static analysis classified the sample as **trojan.dwnldr/skeeyah**, reinforcing the malicious nature and potential for fetching additional payloads (source: malcat / static_analysis).\n\nNo specific capa rules were matched in the filtered evidence, which may indicate either absence of common capability patterns or evasion of capa detection. A summary of key static findings is provided in the table below.\n\n| Artifact Type | Key Finding | Implication | Confidence |\n|---------------|-------------|-------------|------------|\n| File Properties | 32-bit x86, high entropy (6.8 bits/byte) | Possible packing or obfuscation | Medium |\n| Disassembly | Complex entry point with multiple arguments | Suggests obfuscated initialization | Low |\n| YARA Signatures | Hits for downloading/evasion | Indicates malicious downloader behavior | High |\n| Malcat Classification | trojan.dwnldr/skeeyah | Confirms malware family lineage | High |\n\nOverall, static analysis points to a malicious downloader trojan with characteristics aimed at evasion and payload delivery, though some inferences are hedged due to limited tool outputs.",
+      "title": "4. Static Analysis",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "bd1f33c2-8035-4a3b-b67d-e65288a63d66_67ee2a4522ef483780a5654894818807",
+        "system_fingerprint": null,
+        "prompt_tokens": 2375,
+        "completion_tokens": 3316,
+        "reasoning_tokens": 2485,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 83.9
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "evidence_chars": 20,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7744,
+      "cross_refs_included": true,
+      "markdown": "## 5. Behavioral Analysis\n\nThis section assesses the runtime behavior of the sample based on dynamic analysis tools and infers latent capabilities from static artifacts. Behavioral data from Speakeasy and Frida probes is examined, with honesty regarding tool execution and recorded events.\n\n### Dynamic Analysis Results\n\nDynamic analysis tools, including Speakeasy emulation and Frida instrumentation, were executed on the sample. However, no behavioral events were recorded during these runs. This absence of runtime activity does not necessarily indicate benign behavior; it may reflect anti-analysis techniques or environment-specific conditions that prevented execution. We assess this based on evidence from the capability assessment section, where it was noted that \"Speakeasy/Frida ran with zero events\" (source: cross-section:capability_assessment, dynamic_analysis, row: Speakeasy/Frida ran with zero events, why: no recorded activities). This means the tools actively probed the sample but detected no actions, possibly due to evasion or execution environment mismatches.\n\n### Inferred Behavioral Indicators\n\nDespite the lack of dynamic events, static analysis provides clues to potential behaviors. YARA rule matches indicate characteristics consistent with downloader and evasion functionalities. For instance, the sample triggers rules suggesting \"downloading and evasion behaviors\" (source: cross-section:executive_summary, yara, row: YARA rules, why: indicates downloading and evasion). This aligns with the malware family classification as a downloader trojan, specifically \"trojan.dwnldr/skeeyah\" (source: cross-section:background_and_family_lineage, yara, row: malware family, why: downloader trojan), which typically involves fetching additional payloads. Confidence in this inference is high due to convergent static evidence.\n\nStatic disassembly reveals entry points and function calls that may imply system interactions. For example, the binary begins with a function at address 0x00000000, showing multiple arguments that could be involved in process manipulation or network calls (source: cross-section:static_analysis, radare2, disassembly at 0x00000000, function fcn.00000000, why: entry point with multiple arguments). However, without execution, these remain latent capabilities; we cannot confirm their role without runtime data.\n\n### Table: Tool Execution and Event Summary\n\n| Tool        | Execution Status | Recorded Events | Interpretation                                                                 |\n|-------------|------------------|-----------------|--------------------------------------------------------------------------------|\n| Speakeasy   | Executed         | Zero            | No observable behavior; possibly due to anti-analysis or environment mismatch. |\n| Frida       | Executed         | Zero            | No instrumented activities; suggests evasion or failed instrumentation.        |\n\nThis table summarizes the dynamic analysis outcome, emphasizing that tools were run but yielded no data. The zero events are interpreted cautiously, as they may indicate the sample\u2019s ability to evade analysis rather than inertness.\n\n### Latent Capability Assessment\n\nFrom static analysis, we infer likely capabilities such as downloading additional payloads and evading detection. These are not directly observed but are indicated by rule matches and family traits. For example, YARA signatures point to evasion methods (source: cross-section:executive_summary, yara, why: evasion behaviors), and the downloader classification suggests network activity. However, confidence is moderate, as these inferences rely on patterns without runtime confirmation. We assess that the sample may exhibit downloader behavior if executed in a permissive environment, but this remains unverified (source: cross-section:classification, yara, row: verdict, why: malicious based on rules).\n\nIn conclusion, behavioral analysis reveals no runtime events from Speakeasy and Frida, but static indicators point to malicious downloading and evasion traits consistent with the Trojan.Dwnldr/Skeeyah family. Further analysis with varied environments might capture active behavior, but current evidence supports latent capability assessment.",
+      "title": "5. Behavioral Analysis",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "cc298830-2208-4cc3-812e-b521197d3b0d_b44806d27ac6471980eef93be3395059",
+        "system_fingerprint": null,
+        "prompt_tokens": 2221,
+        "completion_tokens": 3345,
+        "reasoning_tokens": 2506,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 76.37
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "evidence_chars": 23,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7719,
+      "cross_refs_included": true,
+      "markdown": "# 6. Network Analysis & C2\n\nThis section assesses command-and-control (C2) indicators and network infrastructure from the sample, based on static and dynamic analysis evidence. No direct network indicators such as URLs, IPs, domains, sockets, or mutexes were identified in the provided evidence for this section.\n\n## Static Analysis Assessment\n\nStatic analysis tools, including Capa and Malcat, did not extract network-related artifacts. For example, Capa rules showed no matches for capabilities involving network communication, such as socket creation or HTTP requests (source: capa, no rules matched, why: no capability data provided). Malcat analysis also failed to detect C2 patterns or domain registrations (source: malcat, no data). This absence suggests that static properties do not reveal embedded C2 infrastructure, which we assess with medium confidence due to potential obfuscation.\n\n## Dynamic Analysis Results\n\nDynamic analysis was performed using Speakeasy emulation and Frida probing to monitor runtime behavior for network activity. Both tools executed, but no behavioral events were recorded during the analysis (source: cross-section:behavioral_analysis, speakeasy, frida). Speakeasy emulation did not trigger network calls, and Frida probing detected no outgoing connections, socket operations, or DNS queries. We interpret this as the sample not exhibiting observable network behavior under emulation conditions, though this may reflect limitations in the analysis environment rather than the absence of capabilities.\n\n## Summary and Inferences\n\nWe assess that this sample likely lacks immediate C2 communication in the analyzed context, as supported by the convergence of static and dynamic findings (source: cross-section:capability_assessment). However, it is possibly a downloader trojan (source: malcat, trojan.dwnldr/skeeyah), which typically involves fetching payloads from remote servers; such behavior was not captured here. This discrepancy indicates that network capabilities might be obfuscated, conditionally triggered, or require external factors not replicated. Confidence in this assessment is medium, as the evidence is negative but not definitive.",
+      "title": "6. Network Analysis & C2",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "26c2b5ac-55de-43dd-817c-0c4858ae4e5b_678b3648a91f4a5cb1cdd23b46959fa5",
+        "system_fingerprint": null,
+        "prompt_tokens": 2217,
+        "completion_tokens": 1667,
+        "reasoning_tokens": 1217,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 41.09
+    },
+    {
+      "name": "7. Capability Assessment",
+      "evidence_chars": 20,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7435,
+      "cross_refs_included": true,
+      "markdown": "## 7. Capability Assessment\n\nThe capability assessment for the sample with SHA256 `f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1` is derived from static analysis, family classification, and cross-section inferences. No direct capability data was provided in the evidence filter, so we rely on contextual evidence and malware typology. Dynamic analysis tools were executed but yielded no recorded events, which impacts behavioral insights.\n\n### Capability Summary\n\n| Capability | Status | Evidence | Confidence | Notes |\n|------------|--------|----------|------------|-------|\n| Encryption | Latent | No evidence | Low | Possibly used for payload obfuscation, but not observed in analysis. |\n| Network | Latent | Cross-section:Executive Summary, Cross-section:Background | High | As a downloader trojan, network access is functionally required to fetch payloads. |\n| Persistence | Latent | No evidence | Medium | Common in trojans, but no artifacts identified in static or dynamic analysis. |\n| Anti-analysis | Latent | Cross-section:Executive Summary | High | Evasion behavior indicated by YARA rules, though dynamic analysis recorded no events. |\n\n### Detailed Assessment\n\n- **Encryption**: We assess encryption capabilities as latent. No cryptographic APIs or patterns were identified in static analysis (source: cross-section:Static Analysis), and dynamic analysis recorded no encryption-related events (source: cross-section:Behavioral Analysis). However, as a downloader, it might encrypt downloaded content for stealth, but this remains speculative (low confidence).\n\n- **Network**: Network capabilities are likely latent. The malware is classified as a downloader trojan (source: cross-section:Executive Summary, yara), which implies inherent network functionality to retrieve payloads. Although no network indicators were extracted (source: cross-section:Network Analysis & C2), the functional requirement supports latent network activity (high confidence).\n\n- **Persistence**: Persistence mechanisms are possibly latent. No persistence artifacts such as registry keys, services, or file paths were found in analysis (source: cross-section:Containment, Eradication, Recovery). Yet, persistence is a typical trait in trojans for maintaining access, so we infer it as latent with medium confidence.\n\n- **Anti-analysis**: Anti-analysis capabilities are likely latent. YARA rules matched evasion behavior (source: cross-section:Executive Summary), suggesting techniques to avoid detection. Dynamic analysis with Speakeasy emulation and Frida probing was executed but recorded no behavioral events (source: cross-section:Behavioral Analysis); this lack of events could be due to anti-analysis measures or emulation environment limitations (high confidence).\n\n### Dynamic Analysis Note\n\nDynamic analysis tools, including Speakeasy and Frida, were run during analysis (source: cross-section:Behavioral Analysis), but no behavioral events were recorded. This does not confirm the absence of capabilities but may indicate that the malware did not execute observable behaviors under emulation or employed anti-analysis techniques.\n\nOverall, based on its family lineage as a downloader trojan, the sample likely possesses network and anti-analysis capabilities, with encryption and persistence features being latent and unconfirmed.",
+      "title": "7. Capability Assessment",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "d8aa8cda-fbb3-42f3-a4a0-33c1aa1f6d48_ae9f32a0e7b6480e9fccf493a7289e34",
+        "system_fingerprint": null,
+        "prompt_tokens": 2195,
+        "completion_tokens": 3264,
+        "reasoning_tokens": 2545,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 78.74
+    },
+    {
+      "name": "8. Attribution",
+      "evidence_chars": 80,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7770,
+      "cross_refs_included": true,
+      "markdown": "## 8. Attribution\n\n### Introduction\nAttribution for the sample with SHA256 `f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1` aims to link it to threat actors, campaigns, or suspected origins. Based on the filtered evidence, attribution is limited to inferences derived from malware family identification, with no direct actor-specific indicators found.\n\n### Family-Based Inferences and Known Associations\nThe sample is classified as **trojan.dwnldr/Skeeyah** based on YARA rule matches (source: yara). Skeeyah is a known downloader trojan family often used in cybercrime campaigns for payload delivery, such as distributing ransomware or banking trojans through phishing or malicious sites. However, this family is generic and not unique to a single threat actor; multiple groups have utilized Skeeyah variants historically.\n\nTo supplement this, a Retrieval-Augmented Generation (RAG) search for actor and campaign intelligence associated with Skeeyah was conducted. The search indicated that without additional context from the sample\u2014like specific strings, network artifacts, or unique behaviors\u2014it is challenging to attribute this instance to a known actor or campaign. No evidence from tools like Ghidra, Capa, or MalCat provided actor-specific artifacts, such as distinct persistence mechanisms or anti-analysis techniques that could hint at threat actor TTPs (source: cross-section:7. Capability Assessment).\n\n### Confidence Assessment\nWe assess attribution confidence as **low (30%)**, resting on the following evidence:\n- **Family Identification:** YARA rules identified the Skeeyah family (source: yara), which provides a baseline but lacks actor specificity.\n- **Absence of Specific Indicators:** Static analysis via Ghidra and MalCat did not reveal unique attributes like language strings, timezone data, or command-and-control patterns that could point to an actor (source: cross-section:4. Static Analysis).\n- **Dynamic Analysis Limitations:** Speakeasy emulation and Frida probing were executed but recorded no behavioral events (source: cross-section:5. Behavioral Analysis). This means runtime activities that might expose actor patterns, such as specific API calls or network behaviors, were not captured, reducing attribution potential.\n\n### Hedged Inferences\nGiven the evidence, we can only make hedged inferences:\n- **Likely:** This sample is part of a generic downloader trojan family commonly used in various cybercrime campaigns for initial access.\n- **Possibly:** It could be associated with opportunistic threat actors who distribute Skeeyah for profit-driven activities, but this remains speculative without corroboration.\n- **Suspected Origin:** No geographical or nation-state origin can be suspected due to the lack of artifacts such as language cues, timestamps, or infrastructure ties.\n\n### Conclusion\nIn summary, while the malware family is identified, attribution to a specific threat actor or campaign is not supported by the available evidence. The analysis relies solely on family classification and the absence of actor-specific data, leading to low confidence. Enhanced attribution would require additional intelligence, such as historical campaign data, network telemetry, or deeper behavioral analysis from dynamic tools.",
+      "title": "8. Attribution",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "d4bdfe74-357e-4d16-95ad-ea6eb3b40560_f32e2be3caaa42efa318d965308f516a",
+        "system_fingerprint": null,
+        "prompt_tokens": 2280,
+        "completion_tokens": 3260,
+        "reasoning_tokens": 2540,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 88.92
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "evidence_chars": 105,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7786,
+      "cross_refs_included": true,
+      "markdown": "## 9. Indicators of Compromise\n\nThis section details indicators of compromise (IOCs) extracted from the analysis of the sample with SHA256 hash `f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1`. IOCs include hashes, network indicators, file paths, mutexes, and registry keys, based on static and dynamic evidence.\n\n| Indicator Type | Value | Evidence Source | Interpretation and Confidence |\n|----------------|-------|-----------------|--------------------------------|\n| SHA256 Hash | `f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1` | (source: capa, query: sample_hashes, row: sha256) from Section 1 | This cryptographic hash uniquely identifies the sample for tracking and correlation across analyses. Confidence: High. |\n| Encoding Technique | Base64 | (source: capa, query: crypto, row: Base64) from evidence | The sample uses Base64 encoding, which is often employed in malware for obfuscation or data handling. However, no specific Base64 strings or decoded URLs were extracted, limiting its utility as an actionable IOC. Confidence: Medium for presence, but low for operational impact. |\n| Network Indicators (IPs, URLs) | None observed | (source: ghidra_query, dynamic_analysis) from Section 6 | Static analysis found no network-related strings, and dynamic analysis tools\u2014Speakeasy and Frida\u2014ran but recorded no network events. We assess with high confidence that no network IOCs are present. |\n| File Paths, Mutexes, Registry Keys | None observed | (source: capa, ghidra_query, malcat) from Section 12 | Analysis revealed no artifacts related to file system paths, mutexes, or registry keys for persistence or execution. Confidence: High for absence. |\n\nDynamic analysis was executed using Speakeasy emulation and Frida probing, as noted in Section 5. Both tools ran but recorded zero behavioral events during the analysis window, indicating no observable runtime IOCs. This honesty in reporting ensures transparency, even when results are negative.\n\nIn summary, the primary IOC is the sample's SHA256 hash, with Base64 encoding noted but not linked to specific malicious strings. The absence of network and persistence indicators suggests limited observable compromise footprint in this analysis.",
+      "title": "9. Indicators of Compromise",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "3a01dd66-75a0-4d99-af5a-a8fa71e2fb9e_7b52d73086224ddbab6d65d17c933bf7",
+        "system_fingerprint": null,
+        "prompt_tokens": 2342,
+        "completion_tokens": 3267,
+        "reasoning_tokens": 2657,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 80.83
+    },
+    {
+      "name": "10. Detection Rules",
+      "evidence_chars": 184,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7925,
+      "cross_refs_included": true,
+      "markdown": "# 10. Detection Rules\n\nBased on static analysis evidence, this section outlines detection rules leveraging YARA matches and suggests Sigma/KQL queries for identifying similar threats. The focus is on patterns indicative of base64 obfuscation and Android-specific payloads, which are common in trojan downloaders like Skeeyah. Dynamic analysis tools (Speakeasy and Frida) executed with zero recorded events, so detection relies primarily on static signatures. Confidence levels are assessed based on rule specificity and contextual evidence from cross-sections.\n\n## YARA-Based Detection\n\nThe following table summarizes active YARA matches from the sample, explaining their detection utility and confidence. Each rule is cited from the YARA analysis evidence.\n\n| Rule Name | Detection Purpose | Confidence | Evidence Source | Interpretation |\n|-----------|-------------------|------------|-----------------|----------------|\n| android_meterpreter | Detects Android Meterpreter payloads, indicating potential Android malware or remote access trojans. | High | (source: yara) | This rule likely matches on strings or patterns unique to Metasploit's Android Meterpreter, a common tool for post-exploitation on mobile devices. |\n| contains_base64 | Identifies base64-encoded content, often used for obfuscating malicious data. | Medium | (source: yara) | Base64 encoding is frequently employed in malware to hide configuration, payloads, or network communications. |\n| BASE64_table | Detects the presence of a base64 alphabet table, essential for encoding/decoding operations. | Medium | (source: yara) | A hardcoded table suggests custom or direct base64 handling, which can be a signature for unpacking or data manipulation. |\n| domain | Matches domain-related strings, useful for spotting potential command-and-control (C2) indicators. | Medium | (source: yara) | Domains may be embedded for C2 communication, aiding in network-based detection and threat hunting. |\n| possible_includes_base64_packed_functions | Indicates functions that handle base64 packing, common in loaders or droppers that unpack payloads. | Low to Medium | (source: yara) | This rule may catch code that decodes and executes packed malicious modules, suggesting evasion techniques. |\n| function_through_object | Suggests indirect function calls or object-oriented obfuscation, potentially for anti-analysis. | Low | (source: yara) | Such patterns can evade static analysis by using dynamic dispatch or reflection, though confidence is lower due to benign usage possibilities. |\n\n## Suggested Sigma/KQL Rules\n\nWhile no specific Sigma or KQL rules were provided in the evidence, we can infer detection logic from the YARA matches. For example:\n- **Sigma Rule Idea**: `title: Detect Base64 and Domain Patterns in Malicious Files` \u2013 Trigger on files matching YARA rules 'contains_base64' or 'domain', combined with file entropy above 6 bits/byte (indicating obfuscation, as seen in section 1's entropy evidence).\n- **KQL Query Example**: `find where File has \"android_meterpreter\" YARA match or NetworkMessage contains domains from 'domain' YARA rule` \u2013 This could correlate static and network detections for improved accuracy.\n\nThese rules should be integrated with endpoint and network monitoring tools to flag similar samples. Confidence in these suggestions is medium, as they rely on generalizing from observed patterns without specific behavioral data from dynamic analysis.",
+      "title": "10. Detection Rules",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "e8399cb1-13e4-4433-be28-6c581bda0030_c349904a17e8444bb6a5d151e8d559c1",
+        "system_fingerprint": null,
+        "prompt_tokens": 2274,
+        "completion_tokens": 2848,
+        "reasoning_tokens": 2105,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 77.0
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "evidence_chars": 19,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7725,
+      "cross_refs_included": true,
+      "markdown": "## 11. MITRE ATT&CK Mapping\n\nNo direct MITRE ATT&CK mapping was provided in the filtered evidence for this section. However, based on converging indicators from static analysis, family classification, and detection rules in other sections, we can infer likely techniques associated with this sample. We assess that these inferences are probabilistic and rely on hedges like 'likely' or 'possibly' due to the absence of explicit mapping data.\n\n### Inferred Techniques\n\nThe following table summarizes MITRE ATT&CK techniques that are likely employed by this malware, derived from its identified behaviors and family lineage. Confidence levels are based on the strength of supporting evidence from cross-section analysis.\n\n| Technique ID | Technique Name | Description | Confidence | Evidence Source |\n|--------------|----------------|-------------|------------|------------------|\n| T1105        | Ingress Tool Transfer | This sample is classified as a downloader trojan, likely used to fetch additional malicious payloads from remote servers. | High | (source: cross-section:executive_summary) YARA rules indicate downloading behaviors; (source: cross-section:attribution) family classified as trojan.dwnldr/skeeyah. |\n| T1059        | Command and Scripting Interpreter | Possibly executes commands or scripts to facilitate payload delivery or evasion, though no direct runtime events were observed. | Medium | (source: cross-section:executive_summary) evasion behaviors suggest potential script use; (source: cross-section:static_analysis) static artifacts hint at command-line arguments. |\n| T1036        | Masquerading | May employ techniques to disguise its presence, such as by mimicking legitimate processes or files, based on evasion indicators. | Medium | (source: cross-section:detection_rules) YARA rule matches include evasion signatures; (source: cross-section:classification) malicious verdict supports evasion tactics. |\n| T1027        | Obfuscated Files or Information | Could use obfuscation to hinder analysis, as suggested by static properties, but evidence is limited. | Low | (source: cross-section:sample_identification) entropy measurements (e.g., from capa) may indicate obfuscation, though not definitively linked. |\n\n### Dynamic Analysis Context\n\nIt is important to note that dynamic analysis tools (Speakeasy and Frida) were executed during behavioral analysis, but no behavioral events were recorded (source: cross-section:behavioral_analysis). This means that techniques reliant on runtime behavior, such as process injection or network communication, could not be directly observed. Therefore, our inferences are primarily based on static artifacts and family characteristics.\n\n### Conclusion\n\nWhile no specific T-codes were mapped in the provided evidence, the sample's classification as a downloader trojan from the Skeeyah family strongly suggests the use of ingress tool transfer (T1105) and related evasion techniques like masquerading (T1036). We recommend focusing detection on these inferred behaviors, but caution that actual techniques may vary based on payload variations or environmental factors. Further analysis with dynamic monitoring could provide more precise mappings.",
+      "title": "11. MITRE ATT&CK Mapping",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "ffa1ee46-cea4-4e78-8326-1d1a0ec35924_a417770e22a34089b6833c1169d577b1",
+        "system_fingerprint": null,
+        "prompt_tokens": 2274,
+        "completion_tokens": 2700,
+        "reasoning_tokens": 2017,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 64.11
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "evidence_chars": 24,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7704,
+      "cross_refs_included": true,
+      "markdown": "## 12. Containment, Eradication, Recovery\n\nThis section outlines Incident Response (IR) steps based on the analysis of the malware sample with SHA256 `f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1`. As no direct containment signals (e.g., file paths, mutexes, registry keys, or services) were identified in the filtered evidence, we infer steps from the malware's classification as a downloader trojan and general IR best practices. Confidence is moderate to high, relying on convergent evidence from static analysis.\n\n### Containment\nContainment aims to limit the malware's spread and prevent further payload downloads. We assess the following actions are likely necessary:\n\n1. **Isolate Affected Systems**: Immediately disconnect infected hosts from the network to block outbound C2 communications. This is critical because the malware is a downloader trojan, which likely attempts to fetch additional malicious payloads (source: yara / executive_summary). Although Network Analysis reported no specific C2 indicators (source: cross-section: 6. Network Analysis & C2), the downloader behavior suggests network activity is possible.\n2. **Block Network Indicators**: If any IOCs emerge from memory or logs, such as domains or IPs, block them at the firewall. Currently, no network IOCs were extracted from analysis (source: capa / capability_assessment), so monitoring traffic for anomalies is advised.\n3. **User Awareness**: Alert users to avoid interacting with similar files, as the sample is malicious with high confidence (source: agreement / llm_and_v1_agree).\n\n### Eradication\nEradication involves removing the malware and any artifacts from the environment. Based on static analysis, we recommend:\n\n| Phase | Action | Rationale | Evidence Citation |\n|-------|--------|-----------|-------------------|\n| Eradication | Delete the malicious file identified by SHA256 hash. | The file is confirmed malicious and should be removed to prevent reinfection. | (source: malcat / static_analysis) |\n| Eradication | Scan for persistence mechanisms. | Although no persistence functions were found in capability assessment (source: ghidra_query / capability_assessment), as a downloader trojan, it might establish persistence via registry keys or scheduled tasks; manual inspection is recommended. | (source: cross-section: 3. Background & Family Lineage) |\n| Eradication | Use endpoint detection tools to clean residual artifacts. | Dynamic analysis tools (Speakeasy and Frida) executed but recorded no events (source: speakeasy / behavioral_analysis, frida / behavioral_analysis), so artifacts may be subtle; behavioral scans should be conducted. |\n\n### Recovery\nRecovery focuses on restoring systems to a secure state and monitoring for reinfection:\n\n1. **Restore from Clean Backups**: Ensure backups are verified clean before restoration, as the malware could have compromised system integrity.\n2. **Patch and Update**: Apply security patches to mitigate initial infection vectors, though specific exploits are not identified.\n3. **Continuous Monitoring**: Implement enhanced monitoring for similar downloader behaviors, leveraging YARA rules that matched the sample (source: yara / detection_rules). This can detect variants or related campaigns.\n\n### Summary\nIR steps are guided by the malware's trojan downloader characteristics. While no direct containment evidence was provided, proactive isolation and eradication are prudent. Recovery should emphasize monitoring due to the lack of observed persistence or network indicators. Confidence is high for containment and eradication actions based on static analysis, but dynamic gaps mean some steps rely on best practices.",
+      "title": "12. Containment, Eradication, Recovery",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "b78df458-1521-4fb7-9f20-3a5d83ef9685_f72c09c50f7640319ff8a28b2da46a40",
+        "system_fingerprint": null,
+        "prompt_tokens": 2209,
+        "completion_tokens": 1878,
+        "reasoning_tokens": 1054,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 51.72
+    },
+    {
+      "name": "13. Recommendations",
+      "evidence_chars": 81,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7757,
+      "cross_refs_included": true,
+      "markdown": "## 13. Recommendations\n\nBased on the classification of this sample as a malicious downloader trojan in the Skeeyah family (source: malcat / static_analysis, cross-section:background_family_lineage), we provide strategic guidance to mitigate risks. Dynamic analysis tools Speakeasy and Frida executed but recorded no events (source: cross-section:behavioral_analysis), so recommendations focus on preventive and detective controls aligned with typical downloader trojan behaviors.\n\n### Prioritized Actions\n\n| Category          | Recommendation                                                                 | Rationale                                                                 | Confidence |\n|-------------------|--------------------------------------------------------------------------------|---------------------------------------------------------------------------|------------|\n| Patch Priorities  | Prioritize updates for commonly exploited software (e.g., browsers, office suites). | Downloader trojans often rely on software vulnerabilities; no specific CVEs were identified in this sample, but proactive patching reduces attack surfaces. | Medium     |\n| Monitoring        | Implement network monitoring for outbound connections to unfamiliar domains.    | While no network indicators were found here (source: cross-section:network_analysis), similar threats may initiate downloads from C2 servers. | Medium     |\n|                   | Use endpoint detection tools to flag unexpected file downloads or process spawning. | Based on the malware's downloader nature (source: cross-section:background_family_lineage), behavioral monitoring can detect payload retrieval. | High       |\n| Training          | Conduct regular phishing and social engineering awareness training for staff.   | Downloaders like Skeeyah often spread via user interaction; training reduces infection likelihood through improved vigilance. | High       |\n\n### Additional Notes\n\n- **Patch Priorities**: We assess that general system hardening is advisable, with medium confidence due to the absence of direct exploit evidence in this analysis.\n\n- **Monitoring**: Since static analysis indicated downloader capabilities but dynamic tools showed no events, monitoring should prioritize heuristic detection of download patterns.\n\n- **Training**: Emphasize safe downloading practices and incident reporting to complement technical controls, leveraging the malware family's typical propagation methods.\n\nThese recommendations are likely effective for mitigating trojan downloader threats, based on the identified Skeeyah lineage.",
+      "title": "13. Recommendations",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "61545e85-775b-4c40-bb54-4cd84f080b7b_934c764560734d98b7aca77710158552",
+        "system_fingerprint": null,
+        "prompt_tokens": 2276,
+        "completion_tokens": 2245,
+        "reasoning_tokens": 1778,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 59.09
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1376,
+      "cross_refs_included": false,
+      "markdown": "## 14. Appendix A: Evidence Trail\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1336,
+      "cross_refs_included": false,
+      "markdown": "## 15. Appendix B: Module Inventory\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1318,
+      "cross_refs_included": false,
+      "markdown": "## 16. Author + Sign-off\n\n- **sha256**: `f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1`\n- **generated_at**: 2026-08-14T03:36:46.077324+00:00\n- **verdict_source**: llm_judge\n- **model**: configured-llm\n- **RAG**: bge-m3 (35,302 records, top-3 per section)\n- **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)\n- **analyst**: (your name)\n\n_This report was generated via section-based Map-Reduce pattern. Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._",
+      "runtime_sec": 0.0
+    }
+  ],
+  "timings": [
+    {
+      "name": "Executive Summary",
+      "pass": 1,
+      "runtime_sec": 85.15
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 1,
+      "runtime_sec": 97.21
+    },
+    {
+      "name": "2. Classification",
+      "pass": 1,
+      "runtime_sec": 64.46
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 1,
+      "runtime_sec": 79.02
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 1,
+      "runtime_sec": 81.02
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 1,
+      "runtime_sec": 58.21
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 1,
+      "runtime_sec": 98.28
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 1,
+      "runtime_sec": 69.28
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 1,
+      "runtime_sec": 55.3
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 1,
+      "runtime_sec": 76.15
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 1,
+      "runtime_sec": 61.88
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 1,
+      "runtime_sec": 57.23
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 1,
+      "runtime_sec": 77.17
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 1,
+      "runtime_sec": 61.08
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "Executive Summary",
+      "pass": 2,
+      "runtime_sec": 47.5
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 2,
+      "runtime_sec": 99.75
+    },
+    {
+      "name": "2. Classification",
+      "pass": 2,
+      "runtime_sec": 95.7
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 2,
+      "runtime_sec": 75.99
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 2,
+      "runtime_sec": 83.9
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 2,
+      "runtime_sec": 76.37
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 2,
+      "runtime_sec": 41.09
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 2,
+      "runtime_sec": 78.74
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 2,
+      "runtime_sec": 88.92
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 2,
+      "runtime_sec": 80.83
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 2,
+      "runtime_sec": 77.0
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 2,
+      "runtime_sec": 64.11
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 2,
+      "runtime_sec": 51.72
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 2,
+      "runtime_sec": 59.09
+    }
+  ],
+  "pass1_count": 17,
+  "pass2_count": 14
+}

@@ -1,0 +1,61 @@
+{
+  "sha256": "9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6",
+  "family": "Ghost \u015eifreleyici Modernize Hayalet (likely a RAT/trojan, possibly related to llac/babar based on VT)",
+  "imphash": "b4e06d942b341e012040239c1cca0b7d",
+  "generated_at": "2026-08-12T23:53:21.656605+00:00",
+  "string_count": 24,
+  "strings": [
+    "!This program cannot be run in DOS mode.",
+    "1^2e2.3C9",
+    "Sk8OF6.v",
+    "8!7(+6l%",
+    "Oc2->a\"6",
+    "winsck.ocx@SW",
+    "e6rFRICHTX32.OCX",
+    "DrderSty",
+    "BAFM~omctlJ",
+    "^;RS_<M_",
+    "rm1.Insertar_Objeto2",
+    "GraficAudio~Calc_Pictu",
+    "re3Slide_",
+    "g4OPEN$IL",
+    "Notify_IcoI",
+    "LabelProg\\paLB",
+    "WuC:\\WINDOWS\\sys",
+    "soft Visu@ StY\\VB`V",
+    "ect 0.1U",
+    "ET_PICTURE6",
+    "<Web m>s",
+    "?Fromfqfkipislqsqvhnqrvjgt",
+    "kmgjmti@",
+    "Ap\"ogoobcgqi"
+  ],
+  "rule_path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/rule.yar",
+  "sigma_path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/rule.yml",
+  "iocs_path": "/opt/samples/logs/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/iocs.json",
+  "yara_valid": true,
+  "yara_check": "ok",
+  "goodware_fp": {
+    "goodware_dir": "/opt/samples/goodware",
+    "fp_count": 0,
+    "fp_samples": [],
+    "skipped": "goodware corpus not staged"
+  },
+  "yargen": {
+    "skipped": true
+  },
+  "revai": true,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-12 23:53:21 UTC"
+  },
+  "publish_target": "revai_publish"
+}

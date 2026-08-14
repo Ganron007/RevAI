@@ -213,6 +213,51 @@ def test_entropy_identification_row_flagged() -> None:
     check("identification-row entropy flagged", bool(ev), repr(r["violations"]))
 
 
+def test_entropy_unit_suffix_skipped() -> None:
+    # drtg false positive (2026-08-13): "medium-to-high-entropy 10KB+ buffer"
+    # — 10KB+ is a buffer SIZE, not an entropy metric.
+    md = "BigBufferNoXrefMediumToHighEntropy: a medium-to-high-entropy 10KB+ buffer"
+    r = _cross_report_consistency(md, "", "", 6.46)
+    ev = [v for v in r["violations"] if "entropy" in v]
+    check("entropy followed by KB size -> no violation", not ev, repr(r["violations"]))
+
+
+def test_entropy_theoretical_max_skipped() -> None:
+    # raas false positive (2026-08-13): "approaches the maximum entropy of
+    # 8.0" is a theory fact (max bits/byte), not the file's measured value.
+    md = "The high entropy value of 7.39 is a strong indicator of packing, as "
+    md += "random data approaches the maximum entropy of 8.0."
+    r = _cross_report_consistency(md, "", "", 7.39)
+    ev = [v for v in r["violations"] if "entropy" in v]
+    check("theoretical max entropy -> no violation", not ev, repr(r["violations"]))
+
+
+def test_entropy_threshold_skipped() -> None:
+    # koti.xlsm false positive (2026-08-13): "Flag XLSM files with entropy
+    # above 7.0" is a detection-recommendation threshold, not a file metric.
+    md = "Flag XLSM files with entropy above 7.0 and containing macrosheets."
+    r = _cross_report_consistency(md, "", "", 7.56)
+    ev = [v for v in r["violations"] if "entropy" in v]
+    check("threshold statement -> no violation", not ev, repr(r["violations"]))
+    md2 = "Malcat anomaly HighEntropy (overall > 200)"
+    r2 = _cross_report_consistency(md2, "", "", 7.56)
+    ev2 = [v for v in r2["violations"] if "entropy" in v]
+    check("greater-than threshold -> no violation", not ev2, repr(r2["violations"]))
+
+
+def test_entropy_word_suffix_digits_skipped() -> None:
+    # loveyou.js guard FP (2026-08-14): "entropy, strings, and Base64" /
+    # "entropy. YARA ... C2" — the digits belong to Base64/C2, not entropy.
+    md = "Provided file summary, entropy, strings, and Base64 constant identification."
+    r = _cross_report_consistency(md, "", "", 5.74)
+    ev = [v for v in r["violations"] if "entropy" in v]
+    check("Base64 suffix digit -> no violation", not ev, repr(r["violations"]))
+    md2 = "The file has high entropy. YARA rules suggest potential C2 domain patterns."
+    r2 = _cross_report_consistency(md2, "", "", 5.74)
+    ev2 = [v for v in r2["violations"] if "entropy" in v]
+    check("C2 suffix digit -> no violation", not ev2, repr(r2["violations"]))
+
+
 def test_entropy_appendix_dump_skipped() -> None:
     # Raw evidence lines in appendices are verbatim tool output, not narrative.
     md = "## Executive Summary\nHigh entropy.\n\n## Appendix A: Tool Evidence Trail\nentropy: 135\n"
@@ -276,6 +321,10 @@ if __name__ == "__main__":
         test_entropy_no_mention_ok,
         test_entropy_compound_anomaly_names_skipped,
         test_entropy_anomaly_category_cell_skipped,
+        test_entropy_unit_suffix_skipped,
+        test_entropy_theoretical_max_skipped,
+        test_entropy_threshold_skipped,
+        test_entropy_word_suffix_digits_skipped,
         test_entropy_identification_row_flagged,
         test_entropy_appendix_dump_skipped,
         test_entropy_evidence_dump_line_flagged,

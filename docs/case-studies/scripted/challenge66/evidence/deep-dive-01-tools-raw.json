@@ -1,0 +1,2731 @@
+{
+  "_format": "pe",
+  "_sample_path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+  "_source": "deep_dive_agentic_checklist",
+  "yara": {
+    "rule_count": 20,
+    "matches": [
+      {
+        "rule": "domain",
+        "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+        "strings": [
+          {
+            "id": "$domain_regex",
+            "offset": 0,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IP",
+        "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+        "strings": [
+          {
+            "id": "$ipv6",
+            "offset": 37486,
+            "length": 3,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "contains_base64",
+        "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 5676,
+            "length": 12,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "UPXv20MarkusLaszloReiser",
+        "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+        "strings": [
+          {
+            "id": "$a0",
+            "offset": 104367,
+            "length": 85,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "UPXV200V290MarkusOberhumerLaszloMolnarJohnReiser",
+        "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+        "strings": [
+          {
+            "id": "$a0",
+            "offset": 104414,
+            "length": 39,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "UPX290LZMAMarkusOberhumerLaszloMolnarJohnReiser",
+        "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+        "strings": [
+          {
+            "id": "$a1",
+            "offset": 104016,
+            "length": 63,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "upx_3",
+        "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+        "strings": [
+          {
+            "id": "$str1",
+            "offset": 104016,
+            "length": 45,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IsPE32",
+        "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+        "strings": []
+      },
+      {
+        "rule": "IsWindowsGUI",
+        "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+        "strings": []
+      },
+      {
+        "rule": "IsPacked",
+        "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+        "strings": []
+      },
+      {
+        "rule": "HasOverlay",
+        "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+        "strings": []
+      },
+      {
+        "rule": "HasRichSignature",
+        "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+        "strings": [
+          {
+            "id": "$a0",
+            "offset": 168,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "PackerUPX_CompresorGratuito_wwwupxsourceforgenet",
+        "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 104016,
+            "length": 12,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "UPX_wwwupxsourceforgenet_additional",
+        "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 104016,
+            "length": 12,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "yodas_Protector_v1033_dllocx_Ashkbiz_Danehkar_h",
+        "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 241,
+            "length": 1,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Netopsystems_FEAD_Optimizer_1",
+        "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 104016,
+            "length": 64,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "UPX_290_LZMA",
+        "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 104016,
+            "length": 63,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "UPX_290_LZMA_Markus_Oberhumer_Laszlo_Molnar_John_Reiser",
+        "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+        "strings": [
+          {
+            "id": "$b",
+            "offset": 104016,
+            "length": 63,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "UPX_290_LZMA_additional",
+        "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 104016,
+            "length": 63,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "UPX_wwwupxsourceforgenet",
+        "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 104016,
+            "length": 12,
+            "xor_key": null
+          },
+          {
+            "id": "$b",
+            "offset": 104016,
+            "length": 12,
+            "xor_key": null
+          }
+        ]
+      }
+    ],
+    "engine": "yara-x",
+    "rules_compiled": 454,
+    "compile_errors": [
+      "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+      "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+      "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+    ],
+    "incomplete": true
+  },
+  "malcat": {
+    "analysis_id": 1,
+    "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+    "profile": "deep",
+    "limits": {
+      "strings_max": 300,
+      "imports_max": 300,
+      "functions_max": 30,
+      "anomaly_locations_max": 50,
+      "decompile_top_n": 3
+    },
+    "file_summary": {
+      "analysis_id": 1,
+      "file_name": "challenge66.exe",
+      "file_path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+      "file_size": 169998,
+      "type": "PE",
+      "architecture": "X86",
+      "entropy": 7.57,
+      "sha256": "9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6",
+      "metadata": {
+        "VersionInfo::Comments": "Modernize Hayalet",
+        "VersionInfo::CompanyName": "www.hidden-sabotage.com",
+        "VersionInfo::FileDescription": "Modernize Hayalet",
+        "VersionInfo::LegalCopyright": "Modernize Hayalet",
+        "VersionInfo::LegalTrademarks": "www.hidden-sabotage.com",
+        "VersionInfo::ProductName": "Modernize Hayalet",
+        "VersionInfo::FileVersion": "1.00",
+        "VersionInfo::ProductVersion": "1.00",
+        "VersionInfo::InternalName": "Ghost \u015eifreleyici Modernize Hayalet",
+        "VersionInfo::OriginalFilename": "Ghost \u015eifreleyici Modernize Hayalet.exe"
+      },
+      "entrypoint_ea": 104016,
+      "layout": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 1024,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 39
+        },
+        {
+          "name": "",
+          "effective_address": 1024,
+          "physical_size": 103936,
+          "virtual_size": 106496,
+          "rights": "RWX",
+          "entropy": 205
+        },
+        {
+          "name": ".rsrc",
+          "effective_address": 107520,
+          "physical_size": 15872,
+          "virtual_size": 16384,
+          "rights": "RW",
+          "entropy": 121
+        },
+        {
+          "name": "overlay",
+          "effective_address": 123904,
+          "physical_size": 49166,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 115
+        },
+        {
+          "name": "",
+          "effective_address": 173070,
+          "physical_size": 0,
+          "virtual_size": 241664,
+          "rights": "RWX",
+          "entropy": 0
+        }
+      ],
+      "kesakode_verdict": [],
+      "entropy_malcat_raw": 171,
+      "entropy_source": "whole_file_shannon_revai"
+    },
+    "views": {
+      "anomalies": [
+        {
+          "name": "BigBufferNoXrefMediumToHighEntropy",
+          "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+          "category": "entropy",
+          "level": 3,
+          "num_hits": 3
+        },
+        {
+          "name": "CrossSectionJump",
+          "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+          "category": "code",
+          "level": 4,
+          "num_hits": 1
+        },
+        {
+          "name": "DataBetweenHeaderAndFirstSection",
+          "desc": "There is non-zero data between the PE header and the first section",
+          "category": "headers",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "DuplicatedSectionName",
+          "desc": "section name has already been used before in section table",
+          "category": "sections",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "ExecutableSectionNoCode",
+          "desc": "executable section has the flag code not set",
+          "category": "sections",
+          "level": 4,
+          "num_hits": 2
+        },
+        {
+          "name": "ExtraSpaceAfterResourcesDataDirectory",
+          "desc": "extra physical data in rsrc section after resource directory data",
+          "category": "resources",
+          "level": 4,
+          "num_hits": 1
+        },
+        {
+          "name": "GuiSubsystemNoWindowApi",
+          "desc": "A GUI windows application does not import any user32 window-related function",
+          "category": "headers",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "HugeFunctionGapAtSectionBoundary",
+          "desc": "There is a huge gap between start/end of executable section and first/last function of a section with medium-to-high entropy (which is not a know structure). It often means that data is stored there",
+          "category": "code",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "InvalidBaseOfCode",
+          "desc": "at least one code section starts before BaseOfCode, or BaseOfCode is not the start of a code section",
+          "category": "sections",
+          "level": 4,
+          "num_hits": 1
+        },
+        {
+          "name": "InvalidBaseOfData",
+          "desc": "at least one data section starts before BaseOfData, or BaseOfData is not the start of a data section",
+          "category": "sections",
+          "level": 4,
+          "num_hits": 1
+        },
+        {
+          "name": "InvalidSizeOfCode",
+          "desc": "SizeofCode is not the sum of all code sections (raw or virtual)",
+          "category": "sections",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "InvalidSizeOfInitializedData",
+          "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+          "category": "sections",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "NoChecksum",
+          "desc": "PE Header checksum is not set",
+          "category": "integrity",
+          "level": 1,
+          "num_hits": 1
+        },
+        {
+          "name": "Packed",
+          "desc": "File is packed using a legit or less-legit obfuscator",
+          "category": "packers",
+          "level": 2,
+          "num_hits": 6
+        },
+        {
+          "name": "PatchedUPXHeader",
+          "desc": "At least one Yara signature matched UPX but no UPX header was identified by Malcat, indicating a potential patched UPX header",
+          "category": "packers",
+          "level": 4,
+          "num_hits": 0
+        },
+        {
+          "name": "PurelyVirtualExecutableSection",
+          "desc": "a section is virtual-only and executable (packer?)",
+          "category": "sections",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "SectionEmptyName",
+          "desc": "section name is null",
+          "category": "sections",
+          "level": 3,
+          "num_hits": 2
+        },
+        {
+          "name": "SectionNameUnknown",
+          "desc": "section name is not one of the typical PE section name",
+          "category": "sections",
+          "level": 3,
+          "num_hits": 2
+        },
+        {
+          "name": "SectionWX",
+          "desc": "section is executable and writeable",
+          "category": "sections",
+          "level": 3,
+          "num_hits": 2
+        },
+        {
+          "name": "UnknownOverlayMediumToHighEntropy",
+          "desc": "File contains an overlay which is not of known type and has medium-to-high entropy",
+          "category": "entropy",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "UnreferencedImports",
+          "desc": "More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the file is packed",
+          "category": "imports",
+          "level": 3,
+          "num_hits": 7
+        },
+        {
+          "name": "XorInLoop",
+          "desc": "XOR instruction in a loop",
+          "category": "code",
+          "level": 3,
+          "num_hits": 1
+        }
+      ],
+      "anomaly_locations": {
+        "GuiSubsystemNoWindowApi": [
+          {
+            "ea": 284,
+            "context": ""
+          }
+        ],
+        "NoChecksum": [
+          {
+            "ea": 280,
+            "context": ""
+          }
+        ],
+        "XorInLoop": [
+          {
+            "ea": 104130,
+            "context": ""
+          }
+        ]
+      },
+      "yara_hits": [
+        {
+          "id": "MSVC_6_linker",
+          "category": "compiler",
+          "reliability": 60,
+          "type": "INFO",
+          "description": "detects used visual studio version based on linker information",
+          "num_patterns": 0
+        },
+        {
+          "id": "upx_080_or_higher_01",
+          "category": "packer",
+          "reliability": 50,
+          "type": "INFO",
+          "description": "",
+          "num_patterns": 1
+        },
+        {
+          "id": "upx_089_3xx",
+          "category": "packer",
+          "reliability": 50,
+          "type": "INFO",
+          "description": "",
+          "num_patterns": 1
+        },
+        {
+          "id": "upx_0896_102_105_122_03",
+          "category": "packer",
+          "reliability": 50,
+          "type": "INFO",
+          "description": "",
+          "num_patterns": 1
+        },
+        {
+          "id": "upx_12x",
+          "category": "packer",
+          "reliability": 50,
+          "type": "INFO",
+          "description": "",
+          "num_patterns": 1
+        },
+        {
+          "id": "upx_290_lzma_02",
+          "category": "packer",
+          "reliability": 50,
+          "type": "INFO",
+          "description": "",
+          "num_patterns": 1
+        },
+        {
+          "id": "upx_391_nrv2e_02",
+          "category": "packer",
+          "reliability": 50,
+          "type": "INFO",
+          "description": "",
+          "num_patterns": 1
+        }
+      ],
+      "strings": [
+        {
+          "ea": 122832,
+          "summary": "KERNEL32.DLL"
+        },
+        {
+          "ea": 122845,
+          "summary": "MSVBVM60.DLL "
+        },
+        {
+          "ea": 122602,
+          "summary": "ifreleyici Modernize Hayalet.exe"
+        },
+        {
+          "ea": 122236,
+          "summary": "www.hidden-sabotage.com"
+        },
+        {
+          "ea": 122000,
+          "summary": "www.hidden-sabotage.com"
+        },
+        {
+          "ea": 122490,
+          "summary": "ifreleyici Modernize Hayalet"
+        },
+        {
+          "ea": 121762,
+          "summary": "VS_VERSION_INFO"
+        },
+        {
+          "ea": 122554,
+          "summary": "OriginalFilename"
+        },
+        {
+          "ea": 121890,
+          "summary": "040904B0"
+        },
+        {
+          "ea": 154773,
+          "summary": "gi~`fdImff\t\t\tO_O..BVXyo{sCdxi{lkoo"
+        },
+        {
+          "ea": 5676,
+          "summary": "e6rFRICHTX32.OCX"
+        },
+        {
+          "ea": 72047,
+          "summary": "B.dhd"
+        },
+        {
+          "ea": 122202,
+          "summary": "LegalTrademarks"
+        },
+        {
+          "ea": 123904,
+          "summary": "pepotespepotesMZ"
+        },
+        {
+          "ea": 133441,
+          "summary": "%-%=9<003000333 ...%%';=89;<>:?% Y"
+        },
+        {
+          "ea": 131783,
+          "summary": "zkl=<`ol|=985ezf..:r?o1gvn<?r1ph>0"
+        },
+        {
+          "ea": 135700,
+          "summary": "J\nh}H|oo\t\nxBfz}\t..`k\t\t\t\tzY{ej\t\t\nFg"
+        },
+        {
+          "ea": 98313,
+          "summary": "\\\\\\\\\""
+        },
+        {
+          "ea": 129674,
+          "summary": "\n\r\r\n\r"
+        },
+        {
+          "ea": 124446,
+          "summary": "\nJ\n\n\n"
+        },
+        {
+          "ea": 130188,
+          "summary": "J\n\n\n\n"
+        },
+        {
+          "ea": 150496,
+          "summary": "<\n\n\n\n"
+        },
+        {
+          "ea": 122054,
+          "summary": "FileDescription"
+        },
+        {
+          "ea": 122450,
+          "summary": "InternalName"
+        },
+        {
+          "ea": 171076,
+          "summary": "~\r~\n\t\n@\tf\tn\nh\t{\n..p\nk\tf\no\t~\r\t\tY\n=\t"
+        },
+        {
+          "ea": 171236,
+          "summary": "\t\tG\tb\nj\rj\nr\rg\td\n..*\rB\tl\rs\na\na\nh\ty\r"
+        },
+        {
+          "ea": 171844,
+          "summary": "f\n\n\n\n\n-\n\r"
+        },
+        {
+          "ea": 132753,
+          "summary": "\nW\r\n\n\n\n"
+        },
+        {
+          "ea": 131020,
+          "summary": ":\tH\n2\n9\n:\n:\t;\n;\n:"
+        },
+        {
+          "ea": 131962,
+          "summary": "@g`}`hfcsln\tJehz..}`hecsl\t\t\t\ncl9hg"
+        },
+        {
+          "ea": 94642,
+          "summary": "t2%S2AllS2%Soca%S2%teS2"
+        },
+        {
+          "ea": 130878,
+          "summary": "cosoloscic\t\td\t\n\t..\t=\t>\t:\n2\t?\t;\t5\n_"
+        },
+        {
+          "ea": 121854,
+          "summary": "StringFileInfo"
+        },
+        {
+          "ea": 122402,
+          "summary": "ProductVersion"
+        },
+        {
+          "ea": 139158,
+          "summary": "L\n\n\n"
+        },
+        {
+          "ea": 135026,
+          "summary": "\n\r\n\n"
+        },
+        {
+          "ea": 136467,
+          "summary": "\r\r\r\r\r\n\n"
+        },
+        {
+          "ea": 75790,
+          "summary": "qLLL"
+        },
+        {
+          "ea": 121974,
+          "summary": "CompanyName"
+        },
+        {
+          "ea": 139237,
+          "summary": "\n\n\nb"
+        },
+        {
+          "ea": 141700,
+          "summary": "6\n\n\n"
+        },
+        {
+          "ea": 144535,
+          "summary": "<\n\n\n"
+        },
+        {
+          "ea": 72719,
+          "summary": "99@@"
+        },
+        {
+          "ea": 156851,
+          "summary": "\r\n\r\n"
+        },
+        {
+          "ea": 10225,
+          "summary": "j.bih"
+        },
+        {
+          "ea": 74285,
+          "summary": "dPPP"
+        },
+        {
+          "ea": 149252,
+          "summary": "L\n\n\n"
+        },
+        {
+          "ea": 147893,
+          "summary": "0\n\n\n"
+        },
+        {
+          "ea": 147560,
+          "summary": "\n\n\n\r"
+        },
+        {
+          "ea": 145909,
+          "summary": "0\n\n\n"
+        },
+        {
+          "ea": 13756,
+          "summary": "StSt"
+        },
+        {
+          "ea": 15783,
+          "summary": "@@@x"
+        },
+        {
+          "ea": 143610,
+          "summary": "<\n\n\n"
+        },
+        {
+          "ea": 143532,
+          "summary": "N\n\n\n"
+        },
+        {
+          "ea": 99828,
+          "summary": "XXX2"
+        },
+        {
+          "ea": 143428,
+          "summary": "?\n\n\n"
+        },
+        {
+          "ea": 101469,
+          "summary": "dXXX"
+        },
+        {
+          "ea": 141921,
+          "summary": "`\n\n\n"
+        },
+        {
+          "ea": 77,
+          "summary": "!This program ca..in DOS mode.\r\r\n$"
+        },
+        {
+          "ea": 140415,
+          "summary": "2\n\n\n"
+        },
+        {
+          "ea": 139991,
+          "summary": "\n\n\n\nIG"
+        },
+        {
+          "ea": 124274,
+          "summary": "\n\r\n\n"
+        },
+        {
+          "ea": 132236,
+          "summary": "K\n\\K\n\n"
+        },
+        {
+          "ea": 122706,
+          "summary": "Translation"
+        },
+        {
+          "ea": 76520,
+          "summary": "\\\\XX"
+        },
+        {
+          "ea": 129710,
+          "summary": "\n\n\r\r"
+        },
+        {
+          "ea": 76230,
+          "summary": "HHLH"
+        },
+        {
+          "ea": 130671,
+          "summary": "\n\n\ne"
+        },
+        {
+          "ea": 76222,
+          "summary": "vLLv"
+        },
+        {
+          "ea": 133756,
+          "summary": "8:8..."
+        },
+        {
+          "ea": 124766,
+          "summary": "\n\n\r\n"
+        },
+        {
+          "ea": 124261,
+          "summary": "\n\r\n\n"
+        },
+        {
+          "ea": 125200,
+          "summary": "\n\r\n\r"
+        },
+        {
+          "ea": 134443,
+          "summary": "-)*/(.&%%<?95547..1>>4!.!+-*(+,*-*"
+        },
+        {
+          "ea": 122358,
+          "summary": "FileVersion"
+        },
+        {
+          "ea": 122088,
+          "summary": "Modernize Hayalet"
+        },
+        {
+          "ea": 122316,
+          "summary": "Modernize Hayalet"
+        },
+        {
+          "ea": 132811,
+          "summary": "\n\n\n\n\n\r\t\n"
+        },
+        {
+          "ea": 154728,
+          "summary": "\t\tBo}aJhefLgn`gl..OA^VYCDAUHnmXoo\n"
+        },
+        {
+          "ea": 9967,
+          "summary": "?Fromfqfkipislqsqvhnqrvjgt"
+        },
+        {
+          "ea": 130918,
+          "summary": "L\nC\t]\nB\nL\nB\nA\nK"
+        },
+        {
+          "ea": 122160,
+          "summary": "Modernize Hayalet"
+        },
+        {
+          "ea": 122432,
+          "summary": "1.00"
+        },
+        {
+          "ea": 121932,
+          "summary": "Modernize Hayalet"
+        },
+        {
+          "ea": 122384,
+          "summary": "1.00"
+        },
+        {
+          "ea": 142948,
+          "summary": "\n\n\n\n"
+        },
+        {
+          "ea": 129199,
+          "summary": "\n\n\n\n"
+        },
+        {
+          "ea": 170768,
+          "summary": "\n\n\n\r\n\n\t"
+        },
+        {
+          "ea": 156806,
+          "summary": "\r\n\n\n\n\n\n\r\n\n"
+        },
+        {
+          "ea": 129117,
+          "summary": "\n\n\n\n"
+        },
+        {
+          "ea": 129036,
+          "summary": "\n\n\n\n"
+        },
+        {
+          "ea": 10082,
+          "summary": "sllguss"
+        },
+        {
+          "ea": 131883,
+          "summary": ";ezzas`=hes;e1<~..}=p=od\n\np0k~{o:y"
+        },
+        {
+          "ea": 128759,
+          "summary": "6L\nM6L\n"
+        },
+        {
+          "ea": 124931,
+          "summary": "\n\n\n\n"
+        },
+        {
+          "ea": 126881,
+          "summary": "\n\n\n\n"
+        },
+        {
+          "ea": 126217,
+          "summary": "\n\n\n\n"
+        },
+        {
+          "ea": 122130,
+          "summary": "LegalCopyright"
+        },
+        {
+          "ea": 142270,
+          "summary": "\n\n\n\n"
+        },
+        {
+          "ea": 133369,
+          "summary": "'%$6>15654664>6&..#$,%:>5>1488:=9@"
+        },
+        {
+          "ea": 121914,
+          "summary": "Comments"
+        },
+        {
+          "ea": 156140,
+          "summary": "\n\n\n\n\n"
+        },
+        {
+          "ea": 134173,
+          "summary": "*)R533447546747"
+        },
+        {
+          "ea": 135613,
+          "summary": "\n\n\n\n\n"
+        },
+        {
+          "ea": 156056,
+          "summary": "\n\n\n\n\n"
+        },
+        {
+          "ea": 29949,
+          "summary": "DGGKJJKIMQKW\\SSTVVZ["
+        },
+        {
+          "ea": 140849,
+          "summary": "\n\n\n\n\n"
+        },
+        {
+          "ea": 171160,
+          "summary": "d\nn\tm\rl\nc\r'\r~\rl\rk\nf\t}\tk\nn\re"
+        },
+        {
+          "ea": 171035,
+          "summary": "\n\t\t\t\t8\r=\t=\t3\n9\t9\nK\n9\t\r\t6\r-\n"
+        },
+        {
+          "ea": 125563,
+          "summary": "\n\n\n\n\n\t"
+        },
+        {
+          "ea": 89338,
+          "summary": "Bhhh`"
+        },
+        {
+          "ea": 125468,
+          "summary": "\t\n\n\n\n\n"
+        },
+        {
+          "ea": 100054,
+          "summary": "@HH[@"
+        },
+        {
+          "ea": 72627,
+          "summary": "L2lll"
+        },
+        {
+          "ea": 126162,
+          "summary": "\n\n\t\n\n"
+        },
+        {
+          "ea": 156075,
+          "summary": "\n\n\n\n\n\n"
+        },
+        {
+          "ea": 156109,
+          "summary": "\n\t\n\n\n"
+        },
+        {
+          "ea": 153827,
+          "summary": "\n\n\t\n\n"
+        },
+        {
+          "ea": 72705,
+          "summary": "rrHHD"
+        },
+        {
+          "ea": 125083,
+          "summary": "\n\t\n\n\n"
+        },
+        {
+          "ea": 126790,
+          "summary": "\n\n\t\n\n"
+        },
+        {
+          "ea": 127240,
+          "summary": "\n\t\n\n\n"
+        },
+        {
+          "ea": 148975,
+          "summary": "\r\r\r\ne"
+        },
+        {
+          "ea": 98194,
+          "summary": "dxxx-"
+        },
+        {
+          "ea": 128960,
+          "summary": "K\n\n\n\r"
+        },
+        {
+          "ea": 99206,
+          "summary": "Lr```"
+        },
+        {
+          "ea": 124372,
+          "summary": "\n\n\t\n\n"
+        },
+        {
+          "ea": 134515,
+          "summary": "-**.\"-\"\"'<9;0001..0>00'! *).*+.-**"
+        },
+        {
+          "ea": 142004,
+          "summary": "\n\n\r\n:"
+        },
+        {
+          "ea": 133297,
+          "summary": "(*+/./-*%&$&8:::...$$$\"=<?74?30J/."
+        },
+        {
+          "ea": 27979,
+          "summary": "D\nD:D"
+        },
+        {
+          "ea": 133513,
+          "summary": "!\"\"8;;9:9=4=88=,,,"
+        },
+        {
+          "ea": 134969,
+          "summary": "\t\n\n\n\n"
+        },
+        {
+          "ea": 134380,
+          "summary": ",,/%\"\"$$ 888% 9'..5765'$'\"!!\"!!!$!"
+        },
+        {
+          "ea": 134829,
+          "summary": "\n\n\n\t\n"
+        },
+        {
+          "ea": 156821,
+          "summary": "\n\n\t\n\n"
+        },
+        {
+          "ea": 86594,
+          "summary": "<<HHh"
+        },
+        {
+          "ea": 156912,
+          "summary": "\r\r\r\r\r\r"
+        },
+        {
+          "ea": 156927,
+          "summary": "\r\t\r\r\r"
+        },
+        {
+          "ea": 171123,
+          "summary": "\tJ\tb\t`\r}\rl\rg\rs\tG\tl\rd\to\r\r\r"
+        },
+        {
+          "ea": 75736,
+          "summary": "d``pp"
+        },
+        {
+          "ea": 81428,
+          "summary": "``XHX"
+        },
+        {
+          "ea": 138853,
+          "summary": "\n\n\n\t\n.\t\n"
+        },
+        {
+          "ea": 141195,
+          "summary": "\n\"\t\n\n\n\n\n\t"
+        },
+        {
+          "ea": 132006,
+          "summary": "g>b8<q||}c?qs9|j..;z|3f?eh|h|nq8a}"
+        },
+        {
+          "ea": 172096,
+          "summary": "\n\n\n\n\n\t\n\n"
+        },
+        {
+          "ea": 131705,
+          "summary": "8wi~m8zb``=?fpx`e}yb?`z8s03ax"
+        },
+        {
+          "ea": 122874,
+          "summary": "GetProcAddress"
+        },
+        {
+          "ea": 131052,
+          "summary": ":\n1\nH\n>\n?"
+        },
+        {
+          "ea": 172198,
+          "summary": "\n\t\n\n\n\n\n"
+        },
+        {
+          "ea": 124364,
+          "summary": "\n\n\nz\n\n\n"
+        },
+        {
+          "ea": 156827,
+          "summary": "\n\t\n\n\n\r\n\n\r\n\r\t\r\n\n\r\n"
+        },
+        {
+          "ea": 133198,
+          "summary": "99E?7<<4?"
+        },
+        {
+          "ea": 136439,
+          "summary": "\t-\t\n\n\r\n\n\n"
+        },
+        {
+          "ea": 129246,
+          "summary": "M\nN\n0\nV\nM\tc\ni"
+        },
+        {
+          "ea": 29973,
+          "summary": "^^cXdkdff\njnk"
+        },
+        {
+          "ea": 8150,
+          "summary": "GraficAudio~Calc_Pictu"
+        },
+        {
+          "ea": 129772,
+          "summary": "J\n\t\r\n\n\n\n\t"
+        },
+        {
+          "ea": 72329,
+          "summary": "DDdHDE"
+        },
+        {
+          "ea": 72064,
+          "summary": "<``\\\\j"
+        },
+        {
+          "ea": 130972,
+          "summary": "6\n;\n:\n=\t<\n=\n1\tH"
+        },
+        {
+          "ea": 153223,
+          "summary": "\n\n\r\n<q"
+        },
+        {
+          "ea": 122290,
+          "summary": "ProductName"
+        },
+        {
+          "ea": 130476,
+          "summary": "\n\n\nh4:"
+        },
+        {
+          "ea": 13923,
+          "summary": "7526qz3m4wrjftizcfnu1ytg9f5d48z"
+        },
+        {
+          "ea": 144576,
+          "summary": "\t\n\n\r\n\r"
+        },
+        {
+          "ea": 129340,
+          "summary": "j\t{\rd\td\tQ\tX\tm\ne\th\tg\th\tj\th\rb\tb"
+        },
+        {
+          "ea": 8416,
+          "summary": "WuC:\\WINDOWS\\sys"
+        },
+        {
+          "ea": 29987,
+          "summary": "ooporu"
+        },
+        {
+          "ea": 131834,
+          "summary": "9<6{b{hf<s1k|y;de;;gg=\n\te2hg|"
+        },
+        {
+          "ea": 132321,
+          "summary": "\t'\n\n\t?\t<\nP\nY\nI\nI\t2"
+        },
+        {
+          "ea": 139209,
+          "summary": "\n\n\n\t\n-"
+        },
+        {
+          "ea": 138901,
+          "summary": "\t\n\n\n\nA"
+        },
+        {
+          "ea": 138545,
+          "summary": "\n\n\n\t\nF"
+        },
+        {
+          "ea": 122674,
+          "summary": "VarFileInfo"
+        },
+        {
+          "ea": 133612,
+          "summary": "264;;;...))Y"
+        },
+        {
+          "ea": 10065,
+          "summary": "Ap\"ogoobcgqi"
+        },
+        {
+          "ea": 130938,
+          "summary": "N\n3\n6\nL"
+        },
+        {
+          "ea": 98269,
+          "summary": "JllQh?h"
+        },
+        {
+          "ea": 131116,
+          "summary": ":\nN\n9\n\r"
+        },
+        {
+          "ea": 170911,
+          "summary": "\t_\nY\tV\t_\nO\tX\tY\tC\nF\tG\tV"
+        },
+        {
+          "ea": 131319,
+          "summary": "g<9$nfgQ9\n\n\\HX^D\n\n"
+        },
+        {
+          "ea": 132378,
+          "summary": "K\nM\n2\n^"
+        },
+        {
+          "ea": 135666,
+          "summary": "Z J\n\n\t\t\t\n\n\n\t\n\r\n\t"
+        },
+        {
+          "ea": 129763,
+          "summary": "\n\t\n\n\t\n\r"
+        },
+        {
+          "ea": 122860,
+          "summary": "LoadLibraryA"
+        },
+        {
+          "ea": 171304,
+          "summary": "b\r}\r\r\rB"
+        },
+        {
+          "ea": 138559,
+          "summary": "\t\nJ\n\t\n\n"
+        },
+        {
+          "ea": 155990,
+          "summary": "\n\n\n\n\n\r\t\t\n\n\n\n\n\n\n\n\n\t\n"
+        },
+        {
+          "ea": 8126,
+          "summary": "rm1.Insertar_Objeto2"
+        },
+        {
+          "ea": 8531,
+          "summary": "soft Visu@ StY\\VB`V"
+        },
+        {
+          "ea": 131294,
+          "summary": "I1SXBEOD\\XUypy~od8>Wdy"
+        },
+        {
+          "ea": 131172,
+          "summary": "X\t@\n_\nH\nY\nX\r7"
+        },
+        {
+          "ea": 172016,
+          "summary": "\n\n\n\n\n\n\n\t\t\n\n\n\n\n\n\n..\n\n\r\t\t\t\t\n\n\n\t\n\n\n\n\n"
+        },
+        {
+          "ea": 122890,
+          "summary": "VirtualProtect"
+        },
+        {
+          "ea": 134243,
+          "summary": "*U%\"2><>347073500"
+        },
+        {
+          "ea": 131919,
+          "summary": "s81k=d8`|e`p=ez?abaq;f9~ehcl"
+        },
+        {
+          "ea": 10250,
+          "summary": "gkkjlvgh"
+        },
+        {
+          "ea": 131038,
+          "summary": "9\t9\n?\n?\t2\tI\n:"
+        },
+        {
+          "ea": 131595,
+          "summary": "\n\r\rDZ\\K_D?9%MEE\n"
+        },
+        {
+          "ea": 124381,
+          "summary": "\n\n\t\n\n*\n\ni.mk}a\n"
+        },
+        {
+          "ea": 171410,
+          "summary": "k\no\nc\ty\nh\nj\nd\n$"
+        },
+        {
+          "ea": 133164,
+          "summary": "f.&9>8843340;52;"
+        },
+        {
+          "ea": 171531,
+          "summary": "\r\t\t8\n'\t9\r9\r\r\t\t\r;"
+        },
+        {
+          "ea": 129370,
+          "summary": "h\n{\nU\rF\ta\rY\rg\t`\rg\t)\tL\tx\rw"
+        },
+        {
+          "ea": 133093,
+          "summary": "&&&050LLMI3I21I"
+        },
+        {
+          "ea": 134927,
+          "summary": " K\t\n\n\n\n\n"
+        },
+        {
+          "ea": 101362,
+          "summary": "1edd"
+        },
+        {
+          "ea": 74970,
+          "summary": "dd`\\"
+        },
+        {
+          "ea": 127561,
+          "summary": "\n\t\n\n"
+        },
+        {
+          "ea": 142280,
+          "summary": "\n\n\t\n"
+        },
+        {
+          "ea": 129330,
+          "summary": "l\te\tj\rl\re"
+        },
+        {
+          "ea": 66077,
+          "summary": "rMMQ"
+        },
+        {
+          "ea": 4288,
+          "summary": "yrrd"
+        },
+        {
+          "ea": 141979,
+          "summary": "\r\r\n;"
+        },
+        {
+          "ea": 140679,
+          "summary": "\n\t\n\n"
+        },
+        {
+          "ea": 34236,
+          "summary": "MMB2"
+        },
+        {
+          "ea": 125895,
+          "summary": "\n\t\n\n"
+        },
+        {
+          "ea": 34262,
+          "summary": "==fY"
+        },
+        {
+          "ea": 15009,
+          "summary": "ww\nj"
+        },
+        {
+          "ea": 131138,
+          "summary": "^\n@\nI\nH\rF"
+        },
+        {
+          "ea": 52238,
+          "summary": "A\n\ni"
+        },
+        {
+          "ea": 78673,
+          "summary": "DDWL"
+        },
+        {
+          "ea": 96040,
+          "summary": "J`\\J"
+        },
+        {
+          "ea": 147643,
+          "summary": "I\n\r\n"
+        },
+        {
+          "ea": 172131,
+          "summary": "\n\n\t\n"
+        },
+        {
+          "ea": 98327,
+          "summary": "XX`W"
+        },
+        {
+          "ea": 98837,
+          "summary": "aHai"
+        },
+        {
+          "ea": 73470,
+          "summary": "99d\r"
+        },
+        {
+          "ea": 143226,
+          "summary": "\n\r\n>"
+        },
+        {
+          "ea": 67003,
+          "summary": "riNN"
+        },
+        {
+          "ea": 89051,
+          "summary": "OP\"P"
+        },
+        {
+          "ea": 144437,
+          "summary": "\n\r\n;"
+        },
+        {
+          "ea": 66523,
+          "summary": "pssw"
+        },
+        {
+          "ea": 99664,
+          "summary": "hh8v"
+        },
+        {
+          "ea": 78849,
+          "summary": "iriZ"
+        },
+        {
+          "ea": 143239,
+          "summary": "\n\r\r8"
+        },
+        {
+          "ea": 135686,
+          "summary": "\n\n\t\n"
+        },
+        {
+          "ea": 129000,
+          "summary": "J\n\r\n"
+        },
+        {
+          "ea": 137518,
+          "summary": "\r\n\nf"
+        },
+        {
+          "ea": 137121,
+          "summary": "\n\n\n)"
+        },
+        {
+          "ea": 76859,
+          "summary": "2DDA"
+        },
+        {
+          "ea": 20604,
+          "summary": "PP/I"
+        },
+        {
+          "ea": 83855,
+          "summary": "xxB`"
+        },
+        {
+          "ea": 136455,
+          "summary": "\n\t\t\r\t\r\r\r\r\n\r"
+        },
+        {
+          "ea": 61723,
+          "summary": "/ff\\"
+        },
+        {
+          "ea": 156095,
+          "summary": "\n\n\t\n\n\n\n\n\n\t"
+        },
+        {
+          "ea": 156051,
+          "summary": "\n\t\n\n"
+        },
+        {
+          "ea": 73964,
+          "summary": "fY;Y"
+        },
+        {
+          "ea": 23772,
+          "summary": "./0/"
+        },
+        {
+          "ea": 124538,
+          "summary": "\n\n\t\n"
+        },
+        {
+          "ea": 156178,
+          "summary": "\n\t\n\n\n\t\n\n\n\n\n\n"
+        },
+        {
+          "ea": 132514,
+          "summary": "J0UYxfj}nd)Kcej~UDdjxfz`i}*]`z"
+        },
+        {
+          "ea": 156116,
+          "summary": "\n\t\n\n\n\n\t\n\n\n\n\n"
+        },
+        {
+          "ea": 29915,
+          "summary": "58<.<K>>A;CI2G\\+Ic(S~5Vm=\\k"
+        },
+        {
+          "ea": 76328,
+          "summary": "\\w44"
+        },
+        {
+          "ea": 103236,
+          "summary": "H\rM\r"
+        },
+        {
+          "ea": 127641,
+          "summary": "\n\t\n\n"
+        },
+        {
+          "ea": 87250,
+          "summary": "PFFf"
+        },
+        {
+          "ea": 141182,
+          "summary": "\n\n\t\n"
+        },
+        {
+          "ea": 140894,
+          "summary": "\"\r\n\n"
+        },
+        {
+          "ea": 5856,
+          "summary": "7o7r"
+        },
+        {
+          "ea": 143304,
+          "summary": "\n\r\n;"
+        },
+        {
+          "ea": 33153,
+          "summary": "8]v8"
+        },
+        {
+          "ea": 33135,
+          "summary": "YC\rY"
+        },
+        {
+          "ea": 141713,
+          "summary": "\n+\n\n"
+        },
+        {
+          "ea": 139342,
+          "summary": "\r\n\nf"
+        },
+        {
+          "ea": 124627,
+          "summary": "\n\n\n\t"
+        },
+        {
+          "ea": 103512,
+          "summary": "Dj;D"
+        },
+        {
+          "ea": 128920,
+          "summary": "K\n\r\n"
+        },
+        {
+          "ea": 80014,
+          "summary": "PP\nU"
+        },
+        {
+          "ea": 138890,
+          "summary": "\n\n\t\n"
+        },
+        {
+          "ea": 138797,
+          "summary": "\t\n\n\n"
+        },
+        {
+          "ea": 43083,
+          "summary": "JJ0/"
+        },
+        {
+          "ea": 172181,
+          "summary": "\n\n\t\n\n\n\n\n\n\n\t"
+        },
+        {
+          "ea": 130385,
+          "summary": "KK\na"
+        },
+        {
+          "ea": 124454,
+          "summary": "\n\n\n\t"
+        },
+        {
+          "ea": 153834,
+          "summary": "\n\t\n\n"
+        },
+        {
+          "ea": 77199,
+          "summary": "``ht"
+        },
+        {
+          "ea": 149271,
+          "summary": "\n\r\n8"
+        },
+        {
+          "ea": 72648,
+          "summary": "@``<"
+        },
+        {
+          "ea": 6937,
+          "summary": "h0//"
+        },
+        {
+          "ea": 69883,
+          "summary": "pp?e"
+        },
+        {
+          "ea": 69991,
+          "summary": "ottl"
+        },
+        {
+          "ea": 94522,
+          "summary": "JD@J"
+        },
+        {
+          "ea": 153722,
+          "summary": "\t\n\n\n"
+        },
+        {
+          "ea": 10851,
+          "summary": "?pUU"
+        },
+        {
+          "ea": 1256,
+          "summary": "/^6^"
+        },
+        {
+          "ea": 70237,
+          "summary": "PP2T"
+        },
+        {
+          "ea": 6947,
+          "summary": "8^8N"
+        },
+        {
+          "ea": 1261,
+          "summary": "o_w_"
+        },
+        {
+          "ea": 74215,
+          "summary": "5hhG"
+        },
+        {
+          "ea": 126194,
+          "summary": "\n\t\n\n"
+        },
+        {
+          "ea": 37439,
+          "summary": "PPNC"
+        },
+        {
+          "ea": 93199,
+          "summary": "LLdb"
+        },
+        {
+          "ea": 125100,
+          "summary": "\t\n\n\n"
+        },
+        {
+          "ea": 130865,
+          "summary": "cx\n\n"
+        },
+        {
+          "ea": 71160,
+          "summary": "?@yy"
+        },
+        {
+          "ea": 71229,
+          "summary": "d882"
+        },
+        {
+          "ea": 153205,
+          "summary": ";\n\n\r"
+        }
+      ],
+      "imports": [
+        {
+          "ea": 122796,
+          "name": "kernel32.LoadLibraryA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 122800,
+          "name": "kernel32.GetProcAddress",
+          "type": "IMPORT",
+          "num_refs": 0
+        },
+        {
+          "ea": 122804,
+          "name": "kernel32.VirtualProtect",
+          "type": "IMPORT",
+          "num_refs": 0
+        },
+        {
+          "ea": 122808,
+          "name": "kernel32.VirtualAlloc",
+          "type": "IMPORT",
+          "num_refs": 0
+        },
+        {
+          "ea": 122812,
+          "name": "kernel32.VirtualFree",
+          "type": "IMPORT",
+          "num_refs": 0
+        },
+        {
+          "ea": 122816,
+          "name": "kernel32.ExitProcess",
+          "type": "IMPORT",
+          "num_refs": 0
+        },
+        {
+          "ea": 122824,
+          "name": "msvbvm60.rtcR8ValFromBstr",
+          "type": "IMPORT",
+          "num_refs": 1
+        }
+      ],
+      "sections": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 1024,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 39
+        },
+        {
+          "name": "",
+          "effective_address": 1024,
+          "physical_size": 103936,
+          "virtual_size": 106496,
+          "rights": "RWX",
+          "entropy": 205
+        },
+        {
+          "name": ".rsrc",
+          "effective_address": 107520,
+          "physical_size": 15872,
+          "virtual_size": 16384,
+          "rights": "RW",
+          "entropy": 121
+        },
+        {
+          "name": "overlay",
+          "effective_address": 123904,
+          "physical_size": 49166,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 115
+        },
+        {
+          "name": "",
+          "effective_address": 173070,
+          "physical_size": 0,
+          "virtual_size": 241664,
+          "rights": "RWX",
+          "entropy": 0
+        }
+      ],
+      "entropy": {
+        "file_entropy": 7.57,
+        "regions": [
+          {
+            "name": "header",
+            "entropy": 39,
+            "size": null
+          },
+          {
+            "name": "",
+            "entropy": 205,
+            "size": null
+          },
+          {
+            "name": ".rsrc",
+            "entropy": 121,
+            "size": null
+          },
+          {
+            "name": "overlay",
+            "entropy": 115,
+            "size": null
+          },
+          {
+            "name": "",
+            "entropy": 0,
+            "size": null
+          }
+        ],
+        "file_entropy_malcat_raw": 171,
+        "entropy_source": "whole_file_shannon_revai"
+      },
+      "functions": [
+        {
+          "ea": 104016,
+          "name": "EntryPoint"
+        }
+      ],
+      "constants": [],
+      "carved": [
+        {
+          "ea": 107804,
+          "offset": 105244,
+          "size": 9640,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 117448,
+          "offset": 114888,
+          "size": 4264,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        }
+      ],
+      "virtual_files": [
+        {
+          "path": "ICO/1/unk",
+          "unpacked_size": 9640
+        },
+        {
+          "path": "ICO/2/unk",
+          "unpacked_size": 4264
+        },
+        {
+          "path": "GRPICO/1/unk",
+          "unpacked_size": 34
+        },
+        {
+          "path": "VER/1/en-us",
+          "unpacked_size": 980
+        }
+      ],
+      "structures": [
+        {
+          "name": "MZ",
+          "ea": 0
+        },
+        {
+          "name": "RichHeader",
+          "ea": 128
+        },
+        {
+          "name": "PE",
+          "ea": 192
+        },
+        {
+          "name": "OptionalHeader",
+          "ea": 216
+        },
+        {
+          "name": "Sections",
+          "ea": 440
+        },
+        {
+          "name": "Resources",
+          "ea": 107520
+        },
+        {
+          "name": "Resources.ICO",
+          "ea": 107560
+        },
+        {
+          "name": "Resources.ICO.1",
+          "ea": 107592
+        },
+        {
+          "name": "Resources.ICO.1.unk",
+          "ea": 107616
+        },
+        {
+          "name": "Resources.ICO.2",
+          "ea": 107632
+        },
+        {
+          "name": "Resources.ICO.2.unk",
+          "ea": 107656
+        },
+        {
+          "name": "Resources.GRPICO",
+          "ea": 107672
+        },
+        {
+          "name": "Resources.GRPICO.1",
+          "ea": 107696
+        },
+        {
+          "name": "Resources.GRPICO.1.unk",
+          "ea": 107720
+        },
+        {
+          "name": "Resources.VER",
+          "ea": 107736
+        },
+        {
+          "name": "Resources.VER.1",
+          "ea": 107760
+        },
+        {
+          "name": "Resources.VER.1.en-us",
+          "ea": 107784
+        },
+        {
+          "name": "Resources.ICO.1.unk.Data",
+          "ea": 107804
+        },
+        {
+          "name": "Resources.ICO.2.unk.Data",
+          "ea": 117448
+        },
+        {
+          "name": "Resources.GRPICO.1.unk.Data",
+          "ea": 121716
+        },
+        {
+          "name": "VersionInfo",
+          "ea": 121756
+        },
+        {
+          "name": "ImportTable",
+          "ea": 122736
+        },
+        {
+          "name": "kernel32.FT",
+          "ea": 122796
+        },
+        {
+          "name": "msvbvm60.FT",
+          "ea": 122824
+        },
+        {
+          "name": "ImportNames",
+          "ea": 122832
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 104016,
+        "name": "EntryPoint"
+      }
+    ],
+    "constants": [],
+    "anomalies": [
+      {
+        "name": "BigBufferNoXrefMediumToHighEntropy",
+        "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 3
+      },
+      {
+        "name": "CrossSectionJump",
+        "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+        "category": "code",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "DataBetweenHeaderAndFirstSection",
+        "desc": "There is non-zero data between the PE header and the first section",
+        "category": "headers",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "DuplicatedSectionName",
+        "desc": "section name has already been used before in section table",
+        "category": "sections",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "ExecutableSectionNoCode",
+        "desc": "executable section has the flag code not set",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 2
+      },
+      {
+        "name": "ExtraSpaceAfterResourcesDataDirectory",
+        "desc": "extra physical data in rsrc section after resource directory data",
+        "category": "resources",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "GuiSubsystemNoWindowApi",
+        "desc": "A GUI windows application does not import any user32 window-related function",
+        "category": "headers",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "HugeFunctionGapAtSectionBoundary",
+        "desc": "There is a huge gap between start/end of executable section and first/last function of a section with medium-to-high entropy (which is not a know structure). It often means that data is stored there",
+        "category": "code",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidBaseOfCode",
+        "desc": "at least one code section starts before BaseOfCode, or BaseOfCode is not the start of a code section",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidBaseOfData",
+        "desc": "at least one data section starts before BaseOfData, or BaseOfData is not the start of a data section",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfCode",
+        "desc": "SizeofCode is not the sum of all code sections (raw or virtual)",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfInitializedData",
+        "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+        "category": "sections",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "NoChecksum",
+        "desc": "PE Header checksum is not set",
+        "category": "integrity",
+        "level": 1,
+        "num_hits": 1
+      },
+      {
+        "name": "Packed",
+        "desc": "File is packed using a legit or less-legit obfuscator",
+        "category": "packers",
+        "level": 2,
+        "num_hits": 6
+      },
+      {
+        "name": "PatchedUPXHeader",
+        "desc": "At least one Yara signature matched UPX but no UPX header was identified by Malcat, indicating a potential patched UPX header",
+        "category": "packers",
+        "level": 4,
+        "num_hits": 0
+      },
+      {
+        "name": "PurelyVirtualExecutableSection",
+        "desc": "a section is virtual-only and executable (packer?)",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionEmptyName",
+        "desc": "section name is null",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "SectionNameUnknown",
+        "desc": "section name is not one of the typical PE section name",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "SectionWX",
+        "desc": "section is executable and writeable",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "UnknownOverlayMediumToHighEntropy",
+        "desc": "File contains an overlay which is not of known type and has medium-to-high entropy",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "UnreferencedImports",
+        "desc": "More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the file is packed",
+        "category": "imports",
+        "level": 3,
+        "num_hits": 7
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 1
+      }
+    ],
+    "carved_files": [
+      {
+        "ea": 107804,
+        "offset": 105244,
+        "size": 9640,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 117448,
+        "offset": 114888,
+        "size": 4264,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      }
+    ],
+    "virtual_files": [
+      {
+        "path": "ICO/1/unk",
+        "unpacked_size": 9640
+      },
+      {
+        "path": "ICO/2/unk",
+        "unpacked_size": 4264
+      },
+      {
+        "path": "GRPICO/1/unk",
+        "unpacked_size": 34
+      },
+      {
+        "path": "VER/1/en-us",
+        "unpacked_size": 980
+      }
+    ],
+    "structures": [
+      {
+        "name": "MZ",
+        "ea": 0
+      },
+      {
+        "name": "RichHeader",
+        "ea": 128
+      },
+      {
+        "name": "PE",
+        "ea": 192
+      },
+      {
+        "name": "OptionalHeader",
+        "ea": 216
+      },
+      {
+        "name": "Sections",
+        "ea": 440
+      },
+      {
+        "name": "Resources",
+        "ea": 107520
+      },
+      {
+        "name": "Resources.ICO",
+        "ea": 107560
+      },
+      {
+        "name": "Resources.ICO.1",
+        "ea": 107592
+      },
+      {
+        "name": "Resources.ICO.1.unk",
+        "ea": 107616
+      },
+      {
+        "name": "Resources.ICO.2",
+        "ea": 107632
+      },
+      {
+        "name": "Resources.ICO.2.unk",
+        "ea": 107656
+      },
+      {
+        "name": "Resources.GRPICO",
+        "ea": 107672
+      },
+      {
+        "name": "Resources.GRPICO.1",
+        "ea": 107696
+      },
+      {
+        "name": "Resources.GRPICO.1.unk",
+        "ea": 107720
+      },
+      {
+        "name": "Resources.VER",
+        "ea": 107736
+      },
+      {
+        "name": "Resources.VER.1",
+        "ea": 107760
+      },
+      {
+        "name": "Resources.VER.1.en-us",
+        "ea": 107784
+      },
+      {
+        "name": "Resources.ICO.1.unk.Data",
+        "ea": 107804
+      },
+      {
+        "name": "Resources.ICO.2.unk.Data",
+        "ea": 117448
+      },
+      {
+        "name": "Resources.GRPICO.1.unk.Data",
+        "ea": 121716
+      },
+      {
+        "name": "VersionInfo",
+        "ea": 121756
+      },
+      {
+        "name": "ImportTable",
+        "ea": 122736
+      },
+      {
+        "name": "kernel32.FT",
+        "ea": 122796
+      },
+      {
+        "name": "msvbvm60.FT",
+        "ea": 122824
+      },
+      {
+        "name": "ImportNames",
+        "ea": 122832
+      }
+    ],
+    "decompilations": {
+      "104016": {
+        "name": "EntryPoint",
+        "decompilation": "EntryPoint {\n    // Error while decompiling : not a valid ea\n}\n"
+      }
+    },
+    "script_decompile": null,
+    "unpack_result": null,
+    "errors": []
+  },
+  "capa": {
+    "rule_count": 1,
+    "top_rules": [
+      {
+        "name": "packed with generic packer",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information",
+              "Software Packing"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "Software Packing",
+            "id": "T1027.002"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Anti-Static Analysis",
+              "Software Packing",
+              "Standard Compression"
+            ],
+            "objective": "Anti-Static Analysis",
+            "behavior": "Software Packing",
+            "method": "Standard Compression",
+            "id": "F0001.002"
+          }
+        ]
+      }
+    ],
+    "timeout_s": 60,
+    "sample_size": 169998,
+    "duration_s": 1.08,
+    "engine": "malcat-capa",
+    "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+  },
+  "pe_imports": {
+    "engine": "pe_imports",
+    "sample_size": 169998,
+    "duration_s": 0.04,
+    "import_count": 6,
+    "signal_count": 4,
+    "signals": [
+      {
+        "label": "load_library",
+        "api_match": "LoadLibrary",
+        "attack": [
+          "T1129"
+        ]
+      },
+      {
+        "label": "get_proc_address",
+        "api_match": "GetProcAddress",
+        "attack": [
+          "T1129"
+        ]
+      },
+      {
+        "label": "change_memory_protection",
+        "api_match": "VirtualProtect",
+        "attack": [
+          "T1055"
+        ]
+      },
+      {
+        "label": "allocate_memory",
+        "api_match": "VirtualAlloc",
+        "attack": [
+          "T1055"
+        ]
+      }
+    ],
+    "hint": "PE import high-signal map (pefile). Not capa."
+  },
+  "floss": {
+    "floss_ok": true,
+    "string_count": 470,
+    "strings_sampled": 80,
+    "strings": [
+      "!This program cannot be run in DOS mode.",
+      "QV8yN.[",
+      "1^2e2.3C9",
+      "<V|@d{W",
+      "=Icti>",
+      "WhXoXaZ",
+      "#g_6~=~",
+      "Sk8OF6.v",
+      "Jz+,S8",
+      "+H?nfx",
+      "i/Cr`;",
+      "|zm/GH$",
+      "LN40m/",
+      "8!7(+6l%",
+      "Oc2->a\"6",
+      "winsck.ocx@SW",
+      "+dColor",
+      "Enable",
+      "TextRTF",
+      "J;\"dfn",
+      "e6rFRICHTX32.OCX",
+      "DrderSty",
+      "BAFM~omctlJ",
+      "stView",
+      "c)6@_M",
+      "{o R^_",
+      "-3H(K^",
+      "^;RS_<M_",
+      "L.X7hoy",
+      "rm1.Insertar_Objeto2",
+      "GraficAudio~Calc_Pictu",
+      "re3Slide_",
+      "g4OPEN$IL",
+      "Notify_IcoI",
+      "Class.",
+      "LabelProg\\paLB",
+      "WuC:\\WINDOWS\\sys",
+      "soft Visu@ StY\\VB`V",
+      "s\\Soo.",
+      "ect 0.1U",
+      "OIpf4li",
+      "4oN2 #",
+      "CHE_Dtw",
+      "ET_PICTURE6",
+      "<Web m>s",
+      "y<Hw(v",
+      "?Fromfqfkipislqsqvhnqrvjgt",
+      "kmgjmti@",
+      "Ap\"ogoobcgqi",
+      "sllguss",
+      "hmsksmnct",
+      "vijnrpfmugBhv@n7",
+      "F]JGZc",
+      "9Asg y$",
+      "gkkjlvgh",
+      "\"Rt+v[",
+      "ID?CLS",
+      "jO#zuNiR#5",
+      "kOCk.=Mas",
+      "mkS7[0S",
+      "EO7cf5zRIp47v39",
+      "pB0g1LhIH",
+      "Dte'O^",
+      "gionD #o",
+      "IsURLA",
+      "'pB/\\F",
+      "r?iTw0",
+      "|_o..H",
+      "_JsaEx]",
+      "LayereCt",
+      "[f7on{f",
+      "/C:RKK",
+      "ve_kmW@J|#so?",
+      "w0wlbh",
+      "G>Dn\\=6",
+      "|\\~.a^_",
+      "b*~vba6Ans",
+      "iToUni'",
+      "er,*l'J",
+      "CaDupW"
+    ],
+    "per_category": {
+      "decoded_strings": 0,
+      "stack_strings": 0,
+      "tight_strings": 0,
+      "language_strings": 0,
+      "language_strings_missed": 0,
+      "static_strings": 470
+    },
+    "raw_key_total": 3,
+    "floss_profile": "full",
+    "floss_language": "none",
+    "duration_s": 3.82,
+    "size_bytes": 169998,
+    "static_only": false,
+    "size_exceeded_deobfuscate_limit": false
+  },
+  "dotnet": {
+    "is_dotnet": false,
+    "runtime_version": null,
+    "assembly_name": null,
+    "module_name": null,
+    "language_hint": null,
+    "external_assembly_refs": [],
+    "suspicious_native_refs": [],
+    "suspicious_methods": [],
+    "interesting_pinvoke": [],
+    "has_suppress_ildasm": false,
+    "shellcode_embed_hint": false,
+    "il_total_lines": 0,
+    "il_excerpt": ""
+  },
+  "r2_decomp": {
+    "r2_ok": true,
+    "sample": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+    "disassembly": {
+      "0x00455250": "\u250c 439: entry0 ();\n\u2502       \u254e   0x00455250      60             pushal\n\u2502       \u254e   0x00455251      be00c04300     mov esi, section.sect_1     ; 0x43c000\n\u2502       \u254e   0x00455256      8dbe0050fcff   lea edi, [esi - 0x3b000]\n\u2502       \u254e   0x0045525c      57             push edi\n\u2502       \u254e   0x0045525d      83cdff         or ebp, 0xffffffff          ; -1\n\u2502      \u250c\u2500\u2500< 0x00455260      eb10           jmp 0x455272\n..\n\u2502     \u250c\u2500\u2500\u2500> 0x00455268      8a06           mov al, byte [esi]\n\u2502     \u254e\u2502\u254e   0x0045526a      46             inc esi\n\u2502     \u254e\u2502\u254e   0x0045526b      8807           mov byte [edi], al\n\u2502     \u254e\u2502\u254e   0x0045526d      47             inc edi\n\u2502     \u254e\u2502\u254e   ; CODE XREFS from entry0 @ 0x455327(x), 0x45533d(x)\n\u2502   \u250c\u250c\u2500\u2500\u2500\u2500> 0x0045526e      01db           add ebx, ebx\n\u2502  \u250c\u2500\u2500\u2500\u2500\u2500\u2500< 0x00455270      7507           jne 0x455279\n\u2502  \u2502\u254e\u254e\u254e\u2502\u254e   ; CODE XREF from entry0 @ 0x455260(x)\n\u2502  \u2502\u254e\u254e\u254e\u2514\u2500\u2500> 0x00455272      8b1e           mov ebx, dword [esi]\n\u2502  \u2502\u254e\u254e\u254e \u254e   0x00455274      83eefc         sub esi, 0xfffffffc\n\u2502  \u2502\u254e\u254e\u254e \u254e   0x00455277      11db           adc ebx, ebx\n\u2502  \u2514\u2500\u2500\u2514\u2500\u2500\u2500< 0x00455279      72ed           jb 0x455268\n\u2502   \u254e\u254e  \u254e   0x0045527b      b801000000     mov eax, 1\n\u2502   \u254e\u254e  \u254e   ; CODE XREF from entry0 @ 0x4552aa(x)\n\u2502   \u254e\u254e \u250c\u2500\u2500> 0x00455280      01db           add ebx, ebx\n\u2502   \u254e\u254e\u250c\u2500\u2500\u2500< 0x00455282      7507           jne 0x45528b\n\u2502   \u254e\u254e\u2502\u254e\u254e   0x00455284      8b1e           mov ebx, dword [esi]\n\u2502   \u254e\u254e\u2502\u254e\u254e   0x00455286      83eefc         sub esi, 0xfffffffc\n\u2502   \u254e\u254e\u2502\u254e\u254e   0x00455289      11db           adc ebx, ebx\n\u2502   \u254e\u254e\u2514\u2500\u2500\u2500> 0x0045528b      11c0           adc eax, eax\n\u2502   \u254e\u254e \u254e\u254e   0x0045528d      01db           add ebx, ebx\n\u2502   \u254e\u254e\u250c\u2500\u2500\u2500< 0x0045528f      730b           jae 0x45529c\n\u2502  \u250c\u2500\u2500\u2500\u2500\u2500\u2500< 0x00455291      7528           jne 0x4552bb\n\u2502  \u2502\u254e\u254e\u2502\u254e\u254e   0x00455293      8b1e           mov ebx, dword [esi]\n\u2502  \u2502\u254e\u254e\u2502\u254e\u254e   0x00455295      83eefc         sub esi, 0xfffffffc\n\u2502  \u2502\u254e\u254e\u2502\u254e\u254e   0x00455298      11db           adc ebx, ebx\n\u2502 \u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x0045529a      721f           jb 0x4552bb\n\u2502 \u2502\u2502\u254e\u254e\u2514\u2500\u2500\u2500> 0x0045529c      48             dec eax\n\u2502 \u2502\u2502\u254e\u254e \u254e\u254e   0x0045529d      01db           add ebx, ebx\n\u2502 \u2502\u2502\u254e\u254e\u250c\u2500\u2500\u2500< 0x0045529f      7507           jne 0x4552a8\n\u2502 \u2502\u2502\u254e\u254e\u2502\u254e\u254e   0x004552a1      8b1e           mov ebx, dword [esi]\n\u2502 \u2502\u2502\u254e\u254e\u2502\u254e\u254e   0x004552a3      83eefc         sub esi, 0xfffffffc\n\u2502 \u2502\u2502\u254e\u254e\u2502\u254e\u254e   0x004552a6      11db           adc ebx, ebx\n\u2502 \u2502\u2502\u254e\u254e\u2514\u2500\u2500\u2500> 0x004552a8      11c0           adc eax, eax\n\u2502 \u2502\u2502\u254e\u254e \u2514\u2500\u2500< 0x004552aa      ebd4           jmp 0x455280\n\u2502 \u2502\u2502\u254e\u254e\u250c\u250c\u2500\u2500> 0x004552ac      01db           add ebx, ebx\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x004552ae      7507           jne 0x4552b7\n\u2502 \u2502\u2502\u254e\u254e\u254e\u254e\u254e   0x004552b0      8b1e           mov ebx, dword [esi]\n\u2502 \u2502\u2502\u254e\u254e\u254e\u254e\u254e   0x004552b2      83eefc         sub esi, 0xfffffffc\n\u2502 \u2502\u2502\u254e\u254e\u254e\u254e\u254e   0x004552b5      11db           adc ebx, ebx\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500> 0x004552b7      11c9           adc ecx, ecx\n\u2502 \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500< 0x004552b9      eb52           jmp 0x45530d\n\u2502 \u2514\u2514\u2500\u2500\u2500\u2500\u2500\u2500> 0x004552bb      31c9           xor ecx, ecx\n\u2502   \u254e\u254e\u254e\u254e\u254e   0x004552bd      83e803         sub eax, 3\n\u2502  \u250c\u2500\u2500\u2500\u2500\u2500\u2500< 0x004552c0      7211           jb 0x4552d3\n\u2502  \u2502\u254e\u254e\u254e\u254e\u254e   0x"
+    },
+    "engine": "pdf (disasm)",
+    "fallback": true,
+    "functions_attempted": [
+      "0x00455250"
+    ]
+  },
+  "upx": {
+    "upx_ok": false,
+    "is_packed": false,
+    "sample": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+    "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTested 0 file"
+  },
+  "xor": {
+    "xorsearch_ok": true,
+    "sample": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+    "candidates": [
+      "Found XOR 00 position 00000000: 000000C0 ........!..L.!This program cannot be r"
+    ],
+    "xorsearch_stdout": "Found XOR 00 position 00000000: 000000C0 ........!..L.!This program cannot be r\n",
+    "xorsearch_stderr": "",
+    "xorsearch_returncode": 0
+  },
+  "speakeasy": {
+    "speakeasy_ok": true,
+    "sample": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+    "module_base": null,
+    "entry_point": null,
+    "key_events": [],
+    "api_calls": [],
+    "strings": []
+  },
+  "frida_probe": {
+    "frida_available": true,
+    "frida_version": "17.16.4",
+    "pe_probe": {
+      "path": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+      "exists": true,
+      "hook_candidates": [
+        "KERNEL32.DLL!LoadLibraryA",
+        "KERNEL32.DLL!GetProcAddress",
+        "KERNEL32.DLL!VirtualProtect",
+        "KERNEL32.DLL!VirtualAlloc",
+        "KERNEL32.DLL!VirtualFree"
+      ]
+    }
+  },
+  "shellcode": {
+    "shellcode_ok": false,
+    "sample": "/opt/samples/corpus/binaries/9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6/challenge66.exe",
+    "sections_analyzed": [
+      {
+        "name": "",
+        "size": 103936,
+        "entropy": 7.8648,
+        "executable": true,
+        "writable": true
+      },
+      {
+        "name": ".rsrc",
+        "size": 15872,
+        "entropy": 6.0292,
+        "executable": false,
+        "writable": true
+      }
+    ],
+    "shellcode_section": ".rsrc",
+    "shellcode_size": 15872,
+    "shellcode_entropy": 6.029168256715781,
+    "scdbg_stdout": "Loaded 3e00 bytes from file /tmp/tmpnqbx247h.bin\nInitialization Complete..\nMax Steps: 2000000\nUsing base offset: 0x401000\n\n0\t error accessing 0x00000000 not mapped\n\n0   ???? No memory At Address\t\t step: 0  foffset: 0\neax=0         ecx=0         edx=0         ebx=0         \nesp=12fe00    ebp=12fff0    esi=0         edi=0          EFL 0 \n\n\nStepcount 0\n\n\n",
+    "scdbg_stderr": "",
+    "scdbg_returncode": 0,
+    "step_count": 0
+  },
+  "revai_tools_sec": {
+    "format": "pe",
+    "findings": [
+      {
+        "name": "Address Space Layout Randomization",
+        "present": false,
+        "claimed": false,
+        "note": "no DYNAMIC_BASE flag",
+        "consequence": "Without ASLR the image loads at a fixed base \u2014 a predictable address for ret2libc-style exploitation and ROP gadget pivots."
+      },
+      {
+        "name": "64-bit high-entropy ASLR",
+        "present": false,
+        "claimed": false,
+        "note": "64-bit high-entropy ASLR flag not set",
+        "consequence": "Without 64-bit entropy the entropy of the address space is reduced relative to the full 64-bit layout."
+      },
+      {
+        "name": "Data Execution Prevention",
+        "present": false,
+        "claimed": false,
+        "note": "Data Execution Prevention flag not set",
+        "consequence": "Without NX-compat, writable memory can be executable \u2014 classic shellcode-on-stack/heap works directly."
+      },
+      {
+        "name": "Control Flow Guard",
+        "present": false,
+        "claimed": false,
+        "note": "no GUARD_CF flag",
+        "consequence": "Without CFG, indirect calls are unvalidated \u2014 vtable and function-pointer overwrites become direct code-flow hijack."
+      },
+      {
+        "name": "Structured Exception Handling",
+        "present": true,
+        "claimed": false,
+        "note": "no NO_SEH flag \u2014 SEH handlers may exist",
+        "consequence": "The NO_SEH flag claims no SEH handlers exist; if a handler is still present the claim is false \u2014 an exception can overwrite the handler chain for control-flow hijack."
+      },
+      {
+        "name": "Signed-image enforcement",
+        "present": false,
+        "claimed": false,
+        "note": "Signed-image enforcement flag not set",
+        "consequence": "Without forced integrity, a tampered image is not rejected by the loader's integrity checks."
+      },
+      {
+        "name": "Stack cookie (/GS)",
+        "present": false,
+        "claimed": false,
+        "note": "no __security_cookie reference found",
+        "consequence": "Without a stack cookie, linear buffer overflows can overwrite the return address directly on the stack."
+      }
+    ],
+    "engine": "revai_tools_sec",
+    "source": "revai_tools"
+  },
+  "revai_tools_sinks": {
+    "format": "pe",
+    "entry_point": "0x3c000",
+    "sink_count": 0,
+    "sinks": [],
+    "engine": "revai_tools_sinks",
+    "source": "revai_tools"
+  },
+  "revai_tools_audit": {
+    "format": "pe",
+    "findings": [],
+    "engine": "revai_tools_audit",
+    "source": "revai_tools"
+  },
+  "packer": {
+    "engine": "packer_intake",
+    "ok": true,
+    "label": "packed",
+    "score": 9,
+    "sections": [
+      {
+        "name": "",
+        "entropy": 0.0,
+        "raw_size": 0,
+        "virtual_size": 241664,
+        "exec": true,
+        "writable": true
+      },
+      {
+        "name": "",
+        "entropy": 7.865,
+        "raw_size": 103936,
+        "virtual_size": 106496,
+        "exec": true,
+        "writable": true
+      },
+      {
+        "name": ".rsrc",
+        "entropy": 6.029,
+        "raw_size": 15872,
+        "virtual_size": 16384,
+        "exec": false,
+        "writable": true
+      }
+    ],
+    "checks": {
+      "last_section_exec": false,
+      "last_section_writable": true,
+      "first_section_writable": true,
+      "ep_in_last_section": false,
+      "ep_not_in_first_section": false,
+      "raw_vs_virtual_mismatch": true,
+      "memory_only_section": true,
+      "high_entropy_exec_section": true,
+      "few_imports": true,
+      "section_count_outlier": false
+    },
+    "embedded_payload_hint": false,
+    "entry_point": 4543056,
+    "ep_section": "",
+    "import_count": 2,
+    "imports_sample": [
+      "LoadLibraryA",
+      "GetProcAddress",
+      "VirtualProtect",
+      "VirtualAlloc",
+      "VirtualFree",
+      "ExitProcess"
+    ],
+    "elapsed_s": 0.003,
+    "note": "Deterministic entropy + packer checklist; heuristic label, unpacking loop still required for non-UPX packers."
+  }
+}

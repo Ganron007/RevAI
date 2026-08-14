@@ -1,0 +1,66 @@
+{
+  "sha256": "9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X86",
+      "file_size": 169998,
+      "entropy": 171,
+      "sha256": "9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6",
+      "dotnet_bundle": false,
+      "imports_count": 7,
+      "strings_count": 100,
+      "functions_count": 1,
+      "constants_count": 0,
+      "anomalies_count": 22,
+      "yara_hits_count": 7,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 6,
+      "import_ptrs": 1,
+      "funcs": 2,
+      "strings": 34
+    },
+    "ida": {
+      "imports": 0,
+      "funcs": 0,
+      "strings": 853
+    }
+  },
+  "warnings": [],
+  "source_decisions": {
+    "sha256": "9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6",
+    "imports": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "IDA reports 0 imports; Ghidra reports 6 imports, while Malcat reports 7. Ghidra is chosen for detailed import analysis."
+    },
+    "functions": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "IDA reports 0 functions; Ghidra reports 2 functions, while Malcat reports 1. Ghidra provides more functional data."
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "IDA reports 853 strings, Malcat reports 100, and Ghidra reports 34. Using both engines ensures comprehensive string coverage."
+    },
+    "decompilation": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Default to Ghidra for decompilation; IDA shows 0 functions, indicating limited analysis capability."
+    },
+    "cff": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Default to Ghidra for CFF analysis, consistent with decompilation strategy due to IDA's limited data."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat provides a fast static summary with anomalies (22), imports (7), and strings (100), ideal for initial profiling."
+    },
+    "llm_revised": true
+  }
+}

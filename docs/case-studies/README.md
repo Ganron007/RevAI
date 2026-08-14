@@ -37,13 +37,15 @@ published only after the sample passes the full quality gate (`all_green`
 
 ## Case studies (newest first within each mode)
 
-**54 published.** The full feature inventory with env gates and per-feature
+**56 published.** The full feature inventory with env gates and per-feature
 status lives in [`../FEATURES.md`](../FEATURES.md).
 
 ### Scripted
 
 | Sample | Description | Verdict | Report | Audit |
 |--------|-------------|---------|--------|-------|
+| `loveyou-js` | JavaScript loader script | malicious | [REPORT-TECHNICAL-v3.md](scripted/loveyou-js/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/loveyou-js/AUDIT-REPORT.md) |
+| `challenge66` | Course challenge, asserted-unknown label | malicious | [REPORT-TECHNICAL-v3.md](scripted/challenge66/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/challenge66/AUDIT-REPORT.md) |
 | `svchost` | Locky ransomware | malicious | [REPORT-TECHNICAL-v3.md](scripted/svchost/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/svchost/AUDIT-REPORT.md) |
 | `brbbot` | Botnet trojan (WinINet C2, RC4 config) | malicious | [REPORT-TECHNICAL-v3.md](scripted/brbbot/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/brbbot/AUDIT-REPORT.md) |
 | `getdown` | Trojan downloader (usbles26) | malicious | [REPORT-TECHNICAL-v3.md](scripted/getdown/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/getdown/AUDIT-REPORT.md) |

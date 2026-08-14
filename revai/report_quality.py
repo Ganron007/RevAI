@@ -393,8 +393,12 @@ _VERDICT_PANEL_RE = re.compile(
 )
 
 _ENTROPY_MENTION_RE = re.compile(
-    r"(?<![A-Za-z])entropy\b[^0-9\n]{0,40}(\d{1,2}(?:\.\d+)?)",
+    r"(?<![A-Za-z])entropy\b([^0-9\n]{0,40})(?<![A-Za-z0-9])(\d{1,2}(?:\.\d+)?)",
     re.IGNORECASE,
+)
+
+_COMPARATIVE_ENTROPY_RE = re.compile(
+    r"(?i)(above|over|exceed|greater than|more than|below|between|under|>|at least)",
 )
 
 _ENTROPY_SECTION_SCOPE_RE = re.compile(
@@ -483,8 +487,28 @@ def _entropy_claim_violations(md: str, file_entropy: float) -> list[str]:
         if _ENTROPY_SECTION_SCOPE_RE.search(ctx):
             continue
         try:
-            quoted = float(m.group(1))
+            quoted = float(m.group(2))
         except ValueError:
+            continue
+        # Comparative-threshold guard (koti.xlsm false positive, 2026-08-13):
+        # "flag files with entropy above 7.0", "entropy > 200", "exceeds",
+        # "between 7.0 and" — inequality statements about thresholds or other
+        # regions, not equality-style metric citations of the file.
+        if _COMPARATIVE_ENTROPY_RE.search(m.group(1)):
+            continue
+        # Unit-suffix guard (drtg false positive, 2026-08-13): anomaly
+        # descriptions like "medium-to-high-entropy 10KB+ buffer" put a SIZE
+        # after "entropy" — "10KB+" is a byte count, not an entropy metric.
+        if re.search(r"(?i)^\s*(kb|mb|gb|bytes?|%)\b", narrative[m.end():m.end() + 8]):
+            continue
+        # Theoretical-maximum guard (raas false positive, 2026-08-13):
+        # "approaches the maximum entropy of 8.0" states a theory fact
+        # (max bits/byte = 8.0), not the file's measured entropy. The window
+        # spans past the match so "maximum entropy" adjacency resolves.
+        if re.search(
+            r"(?i)(maximum entropy|max entropy|theoretical max|upper bound)",
+            narrative[max(0, m.start() - 60):m.end()],
+        ):
             continue
         if 8.0 < quoted <= 800.0:
             quoted = quoted / 100.0

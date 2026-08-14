@@ -1,0 +1,19 @@
+title: "RevAI v2: dwnldr activity"
+id: dwnldr_f3e743c919c1
+status: experimental
+level: high
+description: "Auto-generated Sigma rule for dwnldr (sha256 prefix f3e743c919c1)"
+author: RevAI yara_gen_v2
+date: 2026/08/12
+reference: "commit unknown · engine langgraph"
+tags:
+    - attack.execution
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+            Hashes|contains: "f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1"
+    condition: selection
+falsepositives:
+    - Review against goodware corpus

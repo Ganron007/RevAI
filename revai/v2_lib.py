@@ -4656,8 +4656,8 @@ def format_malcat_evidence(
     layout = fs.get("layout") or views.get("sections") or []
     if layout:
         out("### File Layout (sections/regions)")
-        out("| Name | EA | Physical | Virtual | Entropy | Rights |")
-        out("|---|---|---|---|---|---|")
+        out("| Name | EA | Physical | Virtual | Rights |")
+        out("|---|---|---|---|---|")
         for r in layout[:max_sections]:
             if not isinstance(r, dict):
                 continue
@@ -4665,8 +4665,13 @@ def format_malcat_evidence(
             ea = r.get("effective_address", r.get("ea", r.get("start", "-")))
             out(
                 f"| {name} | {ea} | {_layout_phys_size(r)} | {_layout_virt_size(r)} | "
-                f"{r.get('entropy', '?')} | {_rights_cell(r)} |"
+                f"{_rights_cell(r)} |"
             )
+        # NOTE (2026-08-14): the layout rows' raw `entropy` field is Malcat's
+        # internal per-region metric, NOT Shannon bits/byte (loveyou.js quoted
+        # 124 vs real 5.74). It is deliberately NOT rendered — the correct
+        # whole-file Shannon entropy lives in the File Summary block, and
+        # per-section Shannon entropy comes from packer_intake (LIEF).
         out("")
 
     # --- YARA (Malcat) ---

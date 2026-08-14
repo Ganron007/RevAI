@@ -1,0 +1,63 @@
+{
+  "sha256": "f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1",
+  "tool_summaries": {
+    "malcat": {
+      "type": "text/utf8",
+      "arch": "NONE",
+      "file_size": 16805,
+      "entropy": 124,
+      "sha256": "f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1",
+      "dotnet_bundle": false,
+      "imports_count": 0,
+      "strings_count": 100,
+      "functions_count": 0,
+      "constants_count": 1,
+      "anomalies_count": 0,
+      "yara_hits_count": 0,
+      "errors": []
+    },
+    "ghidra": {},
+    "ida": {
+      "imports": 0,
+      "funcs": 0,
+      "strings": 1
+    }
+  },
+  "warnings": [
+    "Ghidra validation failed: ghidrasql server died during startup for ghidra-pe-f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1 (rc=1); tail of log:\ng existing project: /home/remnux/ghidra-projects/f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1/f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1 (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1/f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1 (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: loveyou.js (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: loveyou.js\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n"
+  ],
+  "source_decisions": {
+    "sha256": "f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1",
+    "imports": {
+      "source": "none",
+      "confidence": "high",
+      "reason": "Both malcat and ida report zero imports, and ghidra failed to provide data. Evidence: {malcat, summary, imports_count: 0} and {ida, summary, imports: 0}; ghidra validation failed as per warning."
+    },
+    "functions": {
+      "source": "none",
+      "confidence": "high",
+      "reason": "Both malcat and ida show zero functions, and ghidra failed. Evidence: {malcat, summary, functions_count: 0} and {ida, summary, funcs: 0}."
+    },
+    "strings": {
+      "source": "malcat",
+      "confidence": "medium",
+      "reason": "Malcat provides a high string count (100), while ida only reports 1, and ghidra is unreliable due to failure. Evidence: {malcat, summary, strings_count: 100} and {ida, summary, strings: 1}; ghidra failed as per warning."
+    },
+    "decompilation": {
+      "source": "none",
+      "confidence": "high",
+      "reason": "No functions available from malcat or ida for decompilation, and ghidra failed. Evidence: {malcat, summary, functions_count: 0} and {ida, summary, funcs: 0}."
+    },
+    "cff": {
+      "source": "none",
+      "confidence": "high",
+      "reason": "Control flow analysis requires functions, which are absent from malcat and ida, and ghidra failed. Evidence: {malcat, summary, functions_count: 0} and {ida, summary, funcs: 0}."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat provides comprehensive static metrics such as file_size, entropy, sha256, and anomalies. Evidence: {malcat, summary, file_size: 16805, entropy: 124, anomalies_count: 0}."
+    },
+    "llm_revised": true
+  }
+}

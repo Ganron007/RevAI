@@ -1,0 +1,37 @@
+{
+  "sha256": "9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6",
+  "family": "Ghost \u015eifreleyici Modernize Hayalet (likely a RAT/trojan, possibly related to llac/babar based on VT)",
+  "verdict": "malicious@",
+  "generated_at": "2026-08-12T23:53:21.585635+00:00",
+  "hashes": {
+    "sha256": "9451a7c4f32eb94a89a021009de3cba933502d7baebfbd8ce7023a98fecd8ba6",
+    "sha1": "dfb69146ecba8aab48a418c6588fc31d948b6bcb",
+    "md5": "6240e526445aaf472d65ae244e319d22"
+  },
+  "domains": [
+    "winsck.ocx",
+    "e6rFRICHTX32.OCX",
+    "hidden-sabotage.com"
+  ],
+  "ips": [],
+  "urls": [],
+  "files": [],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive).",
+  "wallets_btc": [],
+  "wallets_eth": [],
+  "emails": [
+    "m[@]N[.]\u4718"
+  ],
+  "revai_tools": {
+    "count": 1,
+    "source": "revai_tools_iocs"
+  }
+}

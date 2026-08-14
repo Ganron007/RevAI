@@ -1,0 +1,493 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/malware/f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1/loveyou.js",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "loveyou.js",
+    "file_path": "/opt/samples/corpus/malware/f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1/loveyou.js",
+    "file_size": 16805,
+    "type": "text/utf8",
+    "architecture": "NONE",
+    "entropy": 5.74,
+    "sha256": "f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1",
+    "metadata": {},
+    "entrypoint_ea": null,
+    "layout": [
+      {
+        "name": "",
+        "effective_address": 0,
+        "physical_size": 16805,
+        "virtual_size": 16805,
+        "rights": "",
+        "entropy": 124
+      }
+    ],
+    "kesakode_verdict": [],
+    "entropy_malcat_raw": 124,
+    "entropy_source": "whole_file_shannon_revai"
+  },
+  "views": {
+    "anomalies": [],
+    "anomaly_locations": {},
+    "yara_hits": [],
+    "strings": [
+      {
+        "ea": 818,
+        "summary": "wpHDtlHDiMOWf0JK..FwrjCvHI9w4PCniw"
+      },
+      {
+        "ea": 1254,
+        "summary": "WMOWRcKKF8OUAMOn..pb8Kewq0XVS4sw6M"
+      },
+      {
+        "ea": 2069,
+        "summary": "XsKxwrDDlzHCjcK4..xNPcKDw6vDgcO0YQ"
+      },
+      {
+        "ea": 240,
+        "summary": "wqvCtBk3K8KJUSHD..AUL2TCjMOzwpbDgA"
+      },
+      {
+        "ea": 377,
+        "summary": "wqR0wpILaCFPRz9J..HsOSwrvDmcOzwoIL"
+      },
+      {
+        "ea": 1175,
+        "summary": "w5TCjisEEsKVYQXD..KnIS9XPEXDo1dEFw"
+      },
+      {
+        "ea": 5627,
+        "summary": "x20IVbqwAIVbqwct..bqweIVbqwctIVbqw"
+      },
+      {
+        "ea": 1737,
+        "summary": "VVBSJcOfw5jCusOj..ew5p2OwXCjzJZST4"
+      },
+      {
+        "ea": 5961,
+        "summary": "vIVbqwOpIVbqwNIV..IVbqwMZIVbqwAIVb"
+      },
+      {
+        "ea": 1590,
+        "summary": "dMOzwovCv8KPWDRs..r3TDki0Ybhs5w4sq"
+      },
+      {
+        "ea": 5700,
+        "summary": "x22sIVbqwhIVbqwelIVbqwLIVbqw"
+      },
+      {
+        "ea": 67,
+        "summary": "w5TCmDxpJ8K5w7Eu..DphPDqVdXWFHDiHc"
+      },
+      {
+        "ea": 1468,
+        "summary": "BMOow4DDpj3CuGTD..m8OfwqwIJMKKw4Ed"
+      },
+      {
+        "ea": 12135,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x442408"
+      },
+      {
+        "ea": 12811,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 15530,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 12690,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 5730,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 12755,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 15635,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 5532,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 12927,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 5406,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 12973,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 5344,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 6011,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 6226,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x1f6a59"
+      },
+      {
+        "ea": 6149,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 12422,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 12469,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 6103,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 6057,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 15742,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 12525,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 12643,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 5914,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 5868,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 5822,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 15682,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 5233,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 15587,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 5776,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 15091,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 13803,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 14000,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 14127,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 14183,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 14230,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 3030,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 14286,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 14333,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 14482,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 15166,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 14560,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 14617,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 14664,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 15035,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 14711,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 14776,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 14884,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 14941,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 15302,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 5287,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 6471,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 5152,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 5091,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 5047,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 4996,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 15359,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 13145,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 13209,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 13029,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 13273,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 13399,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 15245,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 13455,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 13557,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 2886,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 13604,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 13660,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 16661,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 10083,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 10139,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 7991,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 10233,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 10313,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 10370,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 10427,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 10503,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 10036,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 10621,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 7788,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 10668,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 10733,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 7732,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 10813,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 16545,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 10911,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 9640,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      },
+      {
+        "ea": 9080,
+        "summary": "adfgkdafkhjgrsgfksghkod_0x49ad"
+      }
+    ],
+    "imports": [],
+    "sections": [
+      {
+        "name": "",
+        "effective_address": 0,
+        "physical_size": 16805,
+        "virtual_size": 16805,
+        "rights": "",
+        "entropy": 124
+      }
+    ],
+    "entropy": {
+      "file_entropy": 5.74,
+      "regions": [
+        {
+          "name": "",
+          "entropy": 124,
+          "size": null
+        }
+      ],
+      "file_entropy_malcat_raw": 124,
+      "entropy_source": "whole_file_shannon_revai"
+    },
+    "functions": [],
+    "constants": [
+      {
+        "id": "crypto::Base64",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      }
+    ]
+  },
+  "functions": [],
+  "constants": [
+    {
+      "id": "crypto::Base64",
+      "category": "crypto",
+      "type": "data",
+      "num_hits": 1
+    }
+  ],
+  "anomalies": [],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

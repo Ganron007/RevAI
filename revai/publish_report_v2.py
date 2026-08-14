@@ -985,8 +985,49 @@ def main():
                     reason=tech_err or f"missing_sections:{tech_missing[:3]}",
                 )
                 technical_report["source"] = "deterministic_fallback_after_incomplete_llm"
-            elif tech_missing or tech_stubs:
-                # Keep the LLM body — unicode/heading false negatives must not wipe work
+            elif tech_missing:
+                # Completeness retry (2026-08-13, raas-class): the single-call
+                # technical v2 stopped early with sections unwritten. ONE
+                # bounded retry with a completeness nudge; accept only a
+                # strictly-better draft (mirrors the master nudge + v3
+                # technical assembly nudge).
+                try:
+                    _tnudge = (
+                        "Your previous technical report is INCOMPLETE — these "
+                        "required sections are missing: "
+                        + ", ".join(tech_missing[:8])
+                        + ". Produce the COMPLETE report with ALL required "
+                        "sections, preserving every section you already wrote "
+                        "verbatim. Return the same JSON shape with the full "
+                        "markdown."
+                    )
+                    _tresp2 = llm_judge(prompt_tech + "\n\n" + _tnudge)
+                    (ev_dir / "05b-llm-technical-retry-raw.json").write_text(
+                        json.dumps(_tresp2, indent=2, default=str)
+                    )
+                    _tr2 = _extract_report_json(
+                        _tresp2["choices"][0]["message"]["content"]
+                    )
+                    _tmd2 = str(_tr2.get("markdown") or "") if isinstance(_tr2, dict) else ""
+                    _tmiss2 = verify_technical_sections(_tmd2) if _tmd2 else tech_missing
+                    if _tmd2 and len(_tmiss2) < len(tech_missing):
+                        tech_md = _tmd2
+                        technical_report["markdown"] = tech_md
+                        technical_report["technical_completeness_retried"] = True
+                        print(
+                            f"[publish_report_v2] technical completeness retry "
+                            f"improved: missing {len(tech_missing)} -> {len(_tmiss2)}",
+                            flush=True,
+                        )
+                    tech_missing = verify_technical_sections(tech_md)
+                    tech_stubs = stub_sections(tech_md, TECHNICAL_REPORT_SECTIONS)
+                except Exception as _tre_err:
+                    print(
+                        f"[publish_report_v2] technical completeness retry error: "
+                        f"{_tre_err}",
+                        flush=True,
+                    )
+            if tech_missing or tech_stubs:
                 if not source_is_fallback(technical_report.get("source")):
                     technical_report["source"] = "llm_incomplete" if (tech_missing or tech_stubs) else technical_report.get("source")
                 technical_report["quality_fail"] = {
@@ -995,6 +1036,45 @@ def main():
                 }
             tech_missing = verify_technical_sections(tech_md)
             tech_stubs = stub_sections(tech_md, TECHNICAL_REPORT_SECTIONS)
+        # Citation-format nudge (2026-08-14, challenge66-class): the tech v2
+        # call can return semantically-cited prose (a "Source" table column)
+        # without the contract's (source: engine) markers — the traceability
+        # gate then counts zero citations. ONE bounded retry to enforce the
+        # citation format; content is preserved.
+        try:
+            _cite_count = len(re.findall(r"\(source:", tech_md))
+            if _cite_count < 8 and not source_is_fallback(technical_report.get("source")):
+                print(
+                    f"[publish_report_v2] tech v2 citations low ({_cite_count}<8); "
+                    f"one citation-format nudge",
+                    flush=True,
+                )
+                _cnudge = (
+                    "Your report cites sources via table columns, but the "
+                    "required citation format is (source: <engine>) markers. "
+                    "Rewrite the SAME report content, adding (source: "
+                    "<engine>) to every claim and table row — keep every "
+                    "section, fact and wording unchanged. Return the same "
+                    "JSON shape with the full markdown."
+                )
+                _cresp = llm_judge(prompt_tech + "\n\n" + _cnudge)
+                (ev_dir / "05c-llm-technical-cite-retry-raw.json").write_text(
+                    json.dumps(_cresp, indent=2, default=str)
+                )
+                _cr2 = _extract_report_json(_cresp["choices"][0]["message"]["content"])
+                _cmd2 = str(_cr2.get("markdown") or "") if isinstance(_cr2, dict) else ""
+                _cite2 = len(re.findall(r"\(source:", _cmd2)) if _cmd2 else 0
+                if _cite2 >= 8 or _cite2 > _cite_count:
+                    tech_md = _cmd2
+                    technical_report["markdown"] = tech_md
+                    technical_report["citation_retried"] = True
+                    print(
+                        f"[publish_report_v2] citation nudge improved: "
+                        f"{_cite_count} -> {_cite2} markers",
+                        flush=True,
+                    )
+        except Exception as _cerr:
+            print(f"[publish_report_v2] citation nudge error: {_cerr}", flush=True)
         # V5.16: always append full evidence pack so reports cannot be theory-only
         tech_md = append_technical_evidence_appendix(tech_md, technical_evidence)
         # Verdict-lock surface on the TECHNICAL report too (2026-08-07, #8a):
