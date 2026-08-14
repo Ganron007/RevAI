@@ -64,7 +64,12 @@ All three modes share the same tool stack, the same LLM backend, and the same st
 - **Deobfuscation / symbolic** — z3, angr
 - **Format-specific** — LIEF, diec, GoReSym, FindCrypt, ilspycmd, RIFT, pycdc
 
-The deep dive always runs through the LangGraph ReAct agent.
+The deep dive always runs through the LangGraph ReAct agent. A deterministic
+deep-dive engine (fixed SQL query plan with rule-based follow-ups, no LLM
+driving the analysis) is under consideration for scripted mode — the LLM
+would then be limited to verdict interpretation and report writing. Both
+engines would share the same deterministic checklist, signal extractors, and
+quality gates.
 
 > **LLM-assisted analysis is inherently probabilistic.** Results can vary between runs, and green means every deterministic gate passed — not that the verdict is objectively correct. Models can misread evidence, and tool limits (packing, obfuscation, emulation) leave gaps the gates cannot fully close. Treat reports as a starting point for analyst review, never as ground truth.
 
