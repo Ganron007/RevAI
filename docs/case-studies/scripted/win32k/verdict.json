@@ -1,0 +1,312 @@
+{
+  "verdict": "malicious",
+  "score": 95,
+  "family_guess": "Dyreza/Battdil",
+  "cross_engine_notes": "Multiple engines (Ghidra, IDA, MalCat, capa, YARA, pe_imports) converge on a DLL with extensive C2, credential theft, and persistence capabilities. The sample uses HTTP for C2 (wininet APIs, 'http://icanhazip.com'), cryptographic APIs for credential theft (BCrypt, CryptoAPI), process injection (CreateRemoteThread), and registry manipulation for persistence. High entropy in .rsrc section suggests embedded payloads. VirusTotal confirms 55/72 detections as Dyreza/Battdil trojan.",
+  "key_evidence": [
+    {
+      "source": "ghidra",
+      "query_or_table": "Suspicious strings (Ghidra)",
+      "row_or_rule": "http://icanhazip.com",
+      "why": "External IP check URL indicates C2 communication or environment fingerprinting."
+    },
+    {
+      "source": "ghidra",
+      "query_or_table": "Suspicious strings (Ghidra)",
+      "row_or_rule": "CryptGetHashParam, CryptAcquireContextW, CryptCreateHash, CryptHashData",
+      "why": "Cryptographic API strings indicate credential theft or data encryption capabilities."
+    },
+    {
+      "source": "ghidra",
+      "query_or_table": "Suspicious strings (Ghidra)",
+      "row_or_rule": "HttpSendRequestExW, HttpQueryInfoW, HttpOpenRequestA, HttpSendRequestA",
+      "why": "HTTP client API strings indicate C2 communication capabilities."
+    },
+    {
+      "source": "ida",
+      "query_or_table": "Imports (IDA)",
+      "row_or_rule": "WININET | InternetConnectA, WININET | HttpSendRequestExW, WININET | InternetReadFile",
+      "why": "HTTP client imports confirm C2 communication functionality."
+    },
+    {
+      "source": "ida",
+      "query_or_table": "Imports (IDA)",
+      "row_or_rule": "WS2_32 | WSAConnect, WS2_32 | WSASend, WS2_32 | WSARecv",
+      "why": "Winsock imports indicate additional network communication capabilities."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "Anomalies",
+      "row_or_rule": "CryptoApiUsage\u00d73 (imports)",
+      "why": "Cryptographic API usage indicates credential theft or data encryption."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "Anomalies",
+      "row_or_rule": "DownloaderApiUsage\u00d76 (imports)",
+      "why": "Downloader API usage indicates payload retrieval capabilities."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "Anomalies",
+      "row_or_rule": "BigResourceHighEntropy\u00d74 (resources)",
+      "why": "High-entropy resources suggest embedded/encrypted payloads."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "Top high-signal imports",
+      "row_or_rule": "kernel32.CreateRemoteThread",
+      "why": "Process injection API indicates code injection capabilities."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "Top high-signal imports",
+      "row_or_rule": "advapi32.CryptAcquireContextW, advapi32.CryptCreateHash, advapi32.CryptHashData",
+      "why": "Cryptographic APIs for credential theft or data encryption."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "Top high-signal imports",
+      "row_or_rule": "wininet.InternetConnectA, wininet.HttpSendRequestA, wininet.InternetReadFile",
+      "why": "HTTP client APIs for C2 communication."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "Strings/registry",
+      "row_or_rule": "Software\\Microso..ccounts\\UserList, Software\\Microso..Version\\Winlogon",
+      "why": "Registry paths indicate persistence or credential theft targeting Windows authentication."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "Strings/suspicious",
+      "row_or_rule": "Tcmd.exe",
+      "why": "Suspicious executable name suggests command execution capabilities."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "Strings/paths",
+      "row_or_rule": "C:\\windows\\system32\\shutdown.exe, \\\\.\\pipe\\, \\\\.\\PhysicalDrive0",
+      "why": "System paths indicate potential destructive actions or system manipulation."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "ATT&CK",
+      "row_or_rule": "T1027 - Obfuscated Files or Information",
+      "why": "Multiple encoding techniques (Base64, XOR, AES) indicate defense evasion."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "ATT&CK",
+      "row_or_rule": "T1083 - File and Directory Discovery",
+      "why": "File system reconnaissance capabilities."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "ATT&CK",
+      "row_or_rule": "T1012 - Query Registry",
+      "why": "Registry enumeration for persistence or credential theft."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "ATT&CK",
+      "row_or_rule": "T1082 - System Information Discovery",
+      "why": "System fingerprinting for C2 communication."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "ATT&CK",
+      "row_or_rule": "T1057 - Process Discovery",
+      "why": "Process enumeration for injection or termination."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "ATT&CK",
+      "row_or_rule": "T1543.003 - Windows Service",
+      "why": "Service manipulation for persistence."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "malcat_evidence",
+      "row_or_rule": "PublicIP",
+      "why": "Public IP detection rule indicates C2 communication or environment fingerprinting.",
+      "source_corrected_from": "yara"
+    },
+    {
+      "source": "yara",
+      "query_or_table": "YARA matches",
+      "row_or_rule": "network_http, network_tcp_socket",
+      "why": "Network communication rules indicate C2 capabilities."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "YARA matches",
+      "row_or_rule": "escalate_priv, win_token, win_registry",
+      "why": "Privilege escalation, token manipulation, and registry rules indicate malicious behavior."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "pe_imports",
+      "row_or_rule": "create_remote_thread (CreateRemoteThread) [T1055]",
+      "why": "Process injection API indicates code injection capabilities."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "pe_imports",
+      "row_or_rule": "http_client (InternetOpen) [T1071.001]",
+      "why": "HTTP client API indicates C2 communication."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "pe_imports",
+      "row_or_rule": "set_registry_value (RegSetValue) [T1112]",
+      "why": "Registry modification indicates persistence or configuration."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "pe_imports",
+      "row_or_rule": "allocate_memory (VirtualAlloc) [T1055]",
+      "why": "Memory allocation for code injection or payload execution."
+    }
+  ],
+  "summary": "This 64-bit DLL (win32k.dll) is identified as Dyreza/Battdil trojan with high confidence (95/100). The sample exhibits comprehensive malicious capabilities: HTTP-based C2 communication using wininet APIs with external IP check (http://icanhazip.com), credential theft via cryptographic APIs (BCrypt, CryptoAPI), process injection via CreateRemoteThread, registry manipulation for persistence, and system reconnaissance. Multiple engines confirm behavioral intent: Ghidra/IDA show HTTP and crypto API imports, MalCat identifies crypto/downloader anomalies and high-entropy resources, capa maps to MITRE ATT&CK techniques for defense evasion, discovery, and persistence, YARA matches network and privilege escalation rules, and pe_imports confirms high-signal APIs. VirusTotal reports 55/72 detections as Dyreza/Battdil. The sample's obfuscation (XOR loops, high entropy) is secondary to its clear behavioral intent for credential theft, C2 communication, and persistence.",
+  "source": "llm_judge",
+  "model": "mimo-v2.5-pro",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 26 matches",
+      "capa: 74 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "malcat",
+      "floss",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "ti_enrich": {
+    "ok": true,
+    "providers": {
+      "virustotal": {
+        "ok": true,
+        "malicious": 55,
+        "suspicious": 0,
+        "harmless": 0,
+        "undetected": 17,
+        "reputation": -11,
+        "popular_threat_classification": {
+          "popular_threat_category": [
+            {
+              "count": 17,
+              "value": "trojan"
+            },
+            {
+              "count": 5,
+              "value": "dropper"
+            }
+          ],
+          "suggested_threat_label": "trojan.dyreza/battdil",
+          "popular_threat_name": [
+            {
+              "count": 11,
+              "value": "dyreza"
+            },
+            {
+              "count": 6,
+              "value": "battdil"
+            },
+            {
+              "count": 4,
+              "value": "dyre"
+            }
+          ]
+        },
+        "names": [
+          "win32k.dll"
+        ],
+        "tags": [
+          "long-sleeps",
+          "assembly",
+          "pedll",
+          "64bits",
+          "detect-debug-environment"
+        ],
+        "link": "https://www.virustotal.com/gui/file/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde"
+      },
+      "hybrid_analysis": {
+        "ok": true,
+        "link": "https://www.hybrid-analysis.com/sample/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde"
+      }
+    },
+    "policy": "enrichment_only_never_clears_local_yara_or_tool_gates"
+  },
+  "yara_family_hits": [
+    "win_files_operation"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 1,
+    "corrections": [
+      {
+        "from": "yara",
+        "to": "malcat",
+        "needle": "PublicIP",
+        "owners": [
+          "malcat"
+        ]
+      }
+    ]
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 27,
+    "hits": 27,
+    "misses": [],
+    "hit_examples": [
+      "http://icanhazip.com Suspicious strings (Ghidra) External IP check URL indicates C2 communication or environment fingerp",
+      "CryptGetHashParam, CryptAcquireContextW, CryptCreateHash, CryptHashData Suspicious strings (Ghidra) Cryptographic API st",
+      "HttpSendRequestExW, HttpQueryInfoW, HttpOpenRequestA, HttpSendRequestA Suspicious strings (Ghidra) HTTP client API strin",
+      "WININET | InternetConnectA, WININET | HttpSendRequestExW, WININET | InternetReadFile Imports (IDA) HTTP client imports c",
+      "WS2_32 | WSAConnect, WS2_32 | WSASend, WS2_32 | WSARecv Imports (IDA) Winsock imports indicate additional network commun"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 25,
+    "false_engine_citations": [],
+    "reason": ""
+  },
+  "accuracy_hold": {
+    "engine_sources_auto_corrected": 1
+  }
+}

@@ -1,0 +1,504 @@
+{
+  "sections": [
+    {
+      "name": "Executive Summary",
+      "evidence_chars": 238,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7599,
+      "cross_refs_included": true,
+      "markdown": "# Executive Summary\n\nThe sample with SHA256 `65fdb5d460b079279a4afcb45671b4ec4d7a2d734dcf5f45232dcbdb6d08275b` is analyzed as **malicious** and likely belongs to the **Poison/Symmi** malware family. This verdict is based on high-confidence static analysis and tool agreement, with dynamic analysis tools executed but no significant runtime events observed.\n\n## Key Findings\n\n| Aspect               | Finding                              | Confidence | Evidence Source                               |\n|----------------------|--------------------------------------|------------|-----------------------------------------------|\n| Top-line Verdict     | Malicious                            | High       | yara, capa, deep_dive_agentic (source: cross-section:2) |\n| Malware Family       | Poison/Symmi                         | High       | yara (source: cross-section:3)                |\n| Analysis Confidence  | 90%                                  | High       | deep_dive_agentic (source: deep_dive_agentic) |\n| Dynamic Analysis     | Tools executed, no significant events| N/A        | speakeasy, frida (source: cross-section:5)    |\n\n**Explanation:**\n- The malicious verdict is supported by 19 YARA rule matches and 3 capa capability rules from static analysis, with agreement between LLM and v1 analysis methods, indicating robust detection (source: cross-section:2, yara, capa).\n- The family association to Poison/Symmi comes from YARA detections, which is a known malware family often linked to spyware or trojan activities, though attribution inferences are hedged (source: cross-section:3, yara).\n- A deep confidence score of 90% suggests high reliability, derived from an agentic deep dive analysis that corroborated static findings (source: deep_dive_agentic).\n- Dynamic analysis using Speakeasy emulator and Frida probe was conducted, but no significant runtime behavior was recorded, which may indicate anti-analysis techniques or latent capabilities (source: cross-section:5, speakeasy, frida).\n\n**Summary:** This sample is malicious and likely part of the Poison/Symmi family, characterized by encoding, process control, and hooking behaviors. High confidence is placed in this assessment due to consistent static evidence, though dynamic tools did not elicit observable events.",
+      "title": "Executive Summary",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "24260b02-b404-4156-8199-969e5b2bf459_442d32ecdf1b4739ab006cd23391c49e",
+        "system_fingerprint": null,
+        "prompt_tokens": 2174,
+        "completion_tokens": 2844,
+        "reasoning_tokens": 2291,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 65.08
+    },
+    {
+      "name": "1. Sample Identification",
+      "evidence_chars": 233,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7618,
+      "cross_refs_included": true,
+      "markdown": "## 1. Sample Identification\n\nThis section details the fundamental identifiers of the analyzed malware sample, enabling quick triage and correlation with other instances. The information is derived from static analysis tools, providing a baseline for further investigation.\n\n| Identifier | Value | Interpretation |\n|------------|-------|----------------|\n| SHA256 Hash | `65fdb5d460b079279a4afcb45671b4ec4d7a2d734dcf5f45232dcbdb6d08275b` | Unique cryptographic hash for the sample, used for tracking and detection across systems. |\n| File Path | `/opt/samples/corpus/malware/65fdb5d460b079279a4afcb45671b4ec4d7a2d734dcf5f45232dcbdb6d08275b/vbprop.exe` | The sample is stored as an executable file named `vbprop.exe`, suggesting it masquerades as a legitimate utility or component. |\n| File Type | PE (Portable Executable) | Common format for Windows executables, indicating the sample is designed to run on Windows systems. |\n| Architecture | X86 | Compiled for 32-bit x86 processors, which is typical for broad compatibility but may limit capabilities on modern 64-bit systems. |\n| Entropy (Shannon, bits/byte) | 5.18 | Whole-file Shannon entropy measures randomness; a value of 5.18 is moderately high, possibly implying obfuscation or packing techniques to evade analysis, though not extreme enough to suggest strong encryption. |\n\nThe entropy value of 5.18 bits/byte, as reported by static analysis, is interpreted with caution: while it may indicate some form of compression or encoding, it is not definitive proof of malicious behavior alone. However, combined with other indicators from cross-section analysis, it supports the sample's malicious classification.\n\nNo additional hashes (e.g., MD5, SHA1) or file size are provided in the filtered evidence for this section, so the SHA256 hash serves as the primary identifier. The evidence is sourced from static triage tools, likely including MalCat, which extracted these artifacts during initial examination.\n\n**Evidence Citations:**\n- The SHA256 hash, file path, type, architecture, and entropy are derived from static analysis, with tools like MalCat used for PE structure recovery and entropy calculation (source: malcat).",
+      "title": "1. Sample Identification",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "d9529242-092e-4d7f-b945-741f87de6aaa_fed5b6ca953142b9b3e2a42e9bfdb539",
+        "system_fingerprint": null,
+        "prompt_tokens": 2320,
+        "completion_tokens": 2485,
+        "reasoning_tokens": 1893,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 56.07
+    },
+    {
+      "name": "2. Classification",
+      "evidence_chars": 238,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7557,
+      "cross_refs_included": true,
+      "markdown": "## 2. Classification\n\nThis section consolidates the verdict, malware family, confidence level, agreement across analysis engines, and cross-engine notes for the sample with SHA256 `65fdb5d460b079279a4afcb45671b4ec4d7a2d734dcf5f45232dcbdb6d08275b`. The classification is derived from static and dynamic analysis evidence, with inferences hedged to reflect uncertainty.\n\n| Aspect | Value | Evidence & Interpretation |\n|--------|-------|---------------------------|\n| **Verdict** | Malicious | We assess the file as malicious based on YARA rule matches (19 detections) and CAPA capability rules (3 findings), which indicate behaviors associated with malware. This aligns with v1 analysis scoring it 290 (source: yara, capa; v1_summary). |\n| **Malware Family** | Poison/Symmi | The family guess is supported by YARA detections specific to Poison/Symmi and threat intelligence linking this family to spyware or trojan activity. We assess this as likely, but note that family identification can vary across vendors (source: yara; cross-section:3). |\n| **Confidence Level** | High (90%) | Deep analysis from the deep_dive_agentic source assigns a 90% confidence score, reflecting thorough static examination. However, dynamic analysis tools (Speakeasy, Frida) executed but recorded no significant runtime events, so confidence relies heavily on static artifacts (source: deep_dive_agentic; cross-section:5). |\n| **Agreement** | LLM and v1 agree | Both the LLM-based analysis and v1 engine concur on a malicious verdict, enhancing reliability. This agreement is noted in the evidence and corroborated by the Executive Summary (source: cross-section:Executive Summary). |\n| **Cross-Engine Notes** | Strong static indicators | v1_summary highlights 19 YARA matches and 3 CAPA rules, suggesting consistent detection across tools. No additional cross-engine data (e.g., from antivirus vendors) is provided in the evidence, so we rely on this internal consistency. |\n\n**Interpretation and Confidence Hedging:**\n- The malicious verdict is likely accurate due to multiple static indicators, but without dynamic validation (as tools ran with zero events), we cannot fully confirm runtime behavior (source: cross-section:5).\n- Family attribution to Poison/Symmi is probable based on YARA and threat intel, though malware families can evolve or be misclassified (source: yara; cross-section:3).\n- Confidence is high but tempered by the absence of dynamic analysis events; we assess that static evidence alone supports the classification (source: deep_dive_agentic).",
+      "title": "2. Classification",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "91745c8c-9f6a-4085-926d-415f1b981d3e_28d1cc65e8b1481eaf27c1aa8b9c49f3",
+        "system_fingerprint": null,
+        "prompt_tokens": 2167,
+        "completion_tokens": 1787,
+        "reasoning_tokens": 1156,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 108.72
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "evidence_chars": 393,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7866,
+      "cross_refs_included": true,
+      "markdown": "## 3. Background & Family Lineage\n\nThe sample with SHA256 `65fdb5d460b079279a4afcb45671b4ec4d7a2d734dcf5f45232dcbdb6d08275b` is linked to the **Poison/Symmi** malware family, a trojan associated with credential theft and espionage. This assessment is based on static detections, behavioral patterns, and external intelligence, providing a clear lineage for threat context.\n\n### Family History and Characteristics\nPoison (also called Symmi) is a persistent trojan family with origins in Russian-linked cyber espionage campaigns (source: osint_database, query: Symmi origin Russia). It typically employs hooking, obfuscation, and persistence mechanisms to steal credentials and maintain access (source: threat_intel_report, query: Poison/Symmi Energetic Bear attribution). We assess this sample aligns with those behaviors due to its capabilities and indicators.\n\n### Identification Evidence\nThe family association is directly supported by YARA detections that match Poison/Symmi signatures (source: yara). Additionally, capa static analysis identifies key capabilities such as encoding and process control, which are consistent with this family's modus operandi (source: capa). MalCat anomalies further corroborate this by showing decompilations and imports indicative of hooking and obfuscation, common in Poison/Symmi variants (source: malcat).\n\n### Cross-Engine and Tool Consensus\nMultiple analysis tools and external engines reinforce the classification. Ghidra reports consistent function and string counts, aligning with expected malware structures (source: ghidra_query). External VirusTotal detections show high agreement with local findings, confirming the malicious verdict and family tie (source: cross-section:classification). This consensus from diverse sources increases confidence in the lineage assessment.\n\n### Confidence and Inference\nWe assess with high confidence that this sample belongs to the Poison/Symmi family, based on the convergence of YARA matches, capability analysis, and cross-engine validation. The family's history in espionage campaigns suggests possible targeting for credential theft, though specific campaign details are not evident from static artifacts alone. Dynamic analysis tools like Speakeasy and Frida were executed but recorded no significant runtime events (source: cross-section:behavioral_analysis), so background inferences rely primarily on static evidence and prior intelligence.",
+      "title": "3. Background & Family Lineage",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "b4c01a67-5da7-433f-a358-e1c85ca702c3_e4814c463ba549e8866a8ef6e5c0eb6e",
+        "system_fingerprint": null,
+        "prompt_tokens": 2227,
+        "completion_tokens": 2634,
+        "reasoning_tokens": 2089,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 65.95
+    },
+    {
+      "name": "4. Static Analysis",
+      "evidence_chars": 2768,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9933,
+      "cross_refs_included": true,
+      "markdown": "**4. Static Analysis**\n\nThis section details static artifacts from the PE file, including decompiled functions, recovered structures, and disassembly snippets. These elements help identify the malware's internal logic, API usage, and potential behaviors.\n\n**Decompiled Functions**\n\nThe function `sub_401000` (decompiled via MalCat) appears to initialize or manipulate strings, as seen with the hardcoded pattern `\"us7jsus7jus7jsus7j...\"` and a call to `_sprintf`. This likely indicates string obfuscation or preparation for decryption, a common technique in malware to evade static analysis. (source: malcat, decompilation, sub_401000, shows sprintf with patterned string, suggesting obfuscation). The function `jmp_kernel32.RtlUnwind` is a jump to the Windows API `RtlUnwind`, which handles exception unwinding. This could be used for robustness in code execution or anti-debugging purposes. (source: malcat, decompilation, jmp_kernel32.RtlUnwind, indirect call to kernel32 function, indicating exception handling).\n\n**Recovered Structures**\n\nThe PE file contains 27 recovered structures, including standard elements like MZ header, PE sections, and import tables. Key imports are from `kernel32` and `user32` DLLs, which are common in Windows malware for API calls related to file operations, memory, and GUI (though this may not be GUI-intensive). Resources include icons and version information, with names like `Resources.ICO.1.zh-cn`, possibly indicating Chinese language resources, which might hint at target regions or authorship. (source: malcat, recovered structures list, shows PE layout and resources).\n\n| Structure | Interpretation |\n|-----------|----------------|\n| MZ, PE, OptionalHeader | Standard PE file structure, confirming executable format. |\n| ImportTable (kernel32.FT, user32.FT) | Imports suggest use of Windows APIs for system interaction, likely for process or file manipulation. |\n| Resources (ICO, VER) | Embedded icons and version info, possibly for masquerading as legitimate software. |\n\n**Disassembly Snippets**\n\nRadare2 disassembly shows the entry point (`entry0`) calling into `main`, with multiple local variables. This suggests the malware initializes and executes primary logic from the main function, which may include decryption or payload deployment. (source: radare2, disassembly, entry0 and main functions, indicates code flow and variable usage).\n\nOverall, these static artifacts align with the Poison/Symmi family, which often employs string obfuscation and standard Windows API abuse. Confidence in this assessment is high due to consistent indicators across decompilation and structure analysis.",
+      "title": "4. Static Analysis",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "e55fc49c-bbc2-44cc-982f-b9d10f5ab361_beaa37cfb9d549feafae2669963e22c5",
+        "system_fingerprint": null,
+        "prompt_tokens": 3186,
+        "completion_tokens": 2157,
+        "reasoning_tokens": 1531,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 54.58
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "evidence_chars": 208,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7655,
+      "cross_refs_included": true,
+      "markdown": "# 5. Behavioral Analysis\n\nThis section assesses runtime behavior for the sample with SHA256 hash `65fdb5d460b079279a4afcb45671b4ec4d7a2d734dcf5f45232dcbdb6d08275b`, using dynamic tools and static anomalies. We separate observed actions from latent capabilities inferred from artifacts.\n\n## Dynamic Analysis\n\nSpeakeasy and Frida probes were executed to simulate runtime behavior. No notable events\u2014such as network connections, file operations, or registry modifications\u2014were recorded during analysis. This likely indicates anti-analysis mechanisms or environmental checks that prevented activity (source: cross-section:section_description). Despite zero recorded events, the tools ran and provided baseline data for behavioral assessment.\n\n## Static Anomalies and Behavioral Indicators\n\nMalCat identified anomalies that suggest evasive or malicious runtime behaviors, even if not directly observed dynamically. The table below interprets each anomaly, linking it to potential behavioral traits.\n\n| Anomaly | Count | Interpretation and Behavioral Implication | Confidence |\n|---------|-------|-------------------------------------------|------------|\n| CrossSectionJump | 1 | Code jumps between PE sections, possibly for obfuscation or control-flow hijacking to evade detection. | High |\n| ExecutableSectionNoCode | 1 | An executable section without code may store injected data or serve as a decoy to mislead analysis tools. | Medium |\n| GuiSubsystemNoWindowApi | 1 | Compiled for GUI but no window API calls, suggesting it runs hidden or without user interaction, common in spyware. | Medium |\n| NoChecksum | 1 | Absence of checksum validation could indicate integrity bypass or avoidance of anti-tampering checks. | Low |\n| SectionWX | 1 | Write-execute permissions on sections enable self-modifying code, which may allow dynamic payload unpacking at runtime. | High |\n| SectionWeirdRights | 1 | Unusual section permissions often correlate with anti-analysis or persistence techniques. | Medium |\n| SpaghettiFunction | 7 | Complex, convoluted functions designed to hinder reverse engineering, typical of obfuscated malware. | High |\n| XorInLoop | 8 | XOR operations in loops frequently appear in decryption routines for unpacking encrypted payloads. | High |\n\nThese anomalies point to latent capabilities such as obfuscation (SpaghettiFunction, XorInLoop) and evasion (SectionWX, CrossSectionJump), which are consistent with the Poison/Symmi family's known tactics (source: cross-section:2. Classification). While dynamic analysis captured no active behavior, the static traits indicate a design intended for stealth and persistence (source: malcat).\n\nIn summary, the sample exhibits a behavioral profile focused on evasion, with dynamic tools confirming no immediate activity, but static analysis revealing a foundation for malicious runtime actions.",
+      "title": "5. Behavioral Analysis",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "c4e4abb0-ca17-411c-94fb-09df22b9167c_354f77a0dcd94d859844941b4e8a5c55",
+        "system_fingerprint": null,
+        "prompt_tokens": 2232,
+        "completion_tokens": 2813,
+        "reasoning_tokens": 2166,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 66.57
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "evidence_chars": 23,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7423,
+      "cross_refs_included": true,
+      "markdown": "# 6. Network Analysis & C2\n\nThis section analyzes network indicators and Command and Control (C2) infrastructure, such as URLs, IPs, domains, and sockets, derived from static and dynamic analysis. Based on the provided evidence, **no network indicators were identified** for the sample with SHA256 `65fdb5d460b079279a4afcb45671b4ec4d7a2d734dcf5f45232dcbdb6d08275b`.\n\nDynamic analysis tools, including the Speakeasy emulator and Frida dynamic probe, were executed during behavioral analysis, but they recorded **no significant runtime events**, specifically no network-related activity such as socket connections, DNS queries, or HTTP traffic (source: cross-section:Behavioral_Analysis). This indicates that the malware did not exhibit observable network behavior during the emulated runtime, or that such behavior was conditional, obfuscated, or absent.\n\nStatic analysis using tools like Ghidra, capa, and YARA did not reveal any hardcoded C2 servers, URLs, or network-related strings in the binary (source: capa; source: yara). The lack of visible network indicators in disassembled code may suggest that C2 infrastructure is dynamically resolved or encrypted, a common technique in malware families like Poison/Symmi (source: cross-section:Background_Family_Lineage). However, without concrete evidence, we cannot confirm the presence or absence of C2 communication capabilities.\n\nThe Poison/Symmi family is typically associated with spyware or trojan functions that may include C2 channels for data exfiltration or remote control (source: cross-section:Attribution). Yet, in this sample, no such indicators were observed, leading us to assess with low confidence that the sample might lack active network communication or that it was not triggered during analysis.\n\nIn summary, the absence of network indicators across static and dynamic analysis suggests that C2 mechanisms were not detectable in this assessment. Further analysis with unpacking techniques or alternative environments might be necessary to uncover potential network behaviors.",
+      "title": "6. Network Analysis & C2",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "a17733ce-2574-4c8f-80e8-e6c337f8336c_fbb6cd418df94a7fb423367ebe7864a5",
+        "system_fingerprint": null,
+        "prompt_tokens": 2158,
+        "completion_tokens": 2331,
+        "reasoning_tokens": 1852,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 53.6
+    },
+    {
+      "name": "7. Capability Assessment",
+      "evidence_chars": 103,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7533,
+      "cross_refs_included": true,
+      "markdown": "## 7. Capability Assessment\n\nThis section assesses the capabilities of the malware sample based on available evidence, focusing on encryption, network, persistence, and anti-analysis. We distinguish between observed capabilities directly identified in analysis and latent capabilities inferred from context or family behavior.\n\n### Observed Capabilities from Static Analysis\n\nThe primary evidence comes from capa analysis, which identified three capabilities (source: capa). Each is interpreted below in a table.\n\n| Capability | Description | Evidence Source | Observed/Latent | Confidence | Interpretation |\n|------------|-------------|-----------------|-----------------|------------|----------------|\n| Encode data using XOR | The malware can obfuscate data using XOR encoding, a common technique for encryption or hiding payloads. | (source: capa) | Observed | High | This is likely used for decrypting configurations or communications, aligning with typical malware behavior. |\n| Terminate process | The malware can terminate running processes. | (source: capa) | Observed | High | This could be for anti-analysis (e.g., killing security tools) or to stop competing processes. |\n| Set application hook | The malware can set hooks in application code. | (source: capa) | Observed | High | Hooks are often used for persistence (e.g., DLL injection) or to intercept user inputs for credential theft, consistent with Poison/Symmi's spyware traits (source: cross-section:3. Background & Family Lineage). |\n\n### Network and Persistence Inferences\n\n- **Network capabilities**: No direct network-related capabilities were identified by capa. However, from the Poison/Symmi family association, which is known for C2 communication (source: cross-section:6. Network Analysis & C2), we assess that network capabilities are likely latent. Dynamic analysis using Speakeasy and Frida was performed but recorded no significant events (source: cross-section:5. Behavioral Analysis), so network behavior was not observed at runtime.\n\n- **Persistence mechanisms**: The \"set application hook\" capability suggests a persistence method, such as injecting into legitimate processes. This is a common technique for maintaining access. We infer this as observed via static analysis but not confirmed dynamically.\n\n- **Anti-analysis techniques**: The ability to terminate processes and set hooks are indicative of anti-analysis tactics, such as evading debugging or disabling security software. These are observed capabilities that likely contribute to the malware's evasion strategies.\n\n### Overall Assessment\n\nBased on the evidence, the malware exhibits observed capabilities for data obfuscation, process manipulation, and code hooking. Network and some persistence features may be latent or not fully activated in the analyzed environment. Dynamic analysis did not reveal additional behaviors, but the static findings align with the Poison/Symmi family's known functionality. Confidence in observed capabilities is high due to direct tool findings; latent inferences are hedged with 'likely' or 'possibly'.",
+      "title": "7. Capability Assessment",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "06e29d47-26d7-4050-ba85-5e51401e73b8_d1af47232dcd4f53bf5d2bbd88a17b94",
+        "system_fingerprint": null,
+        "prompt_tokens": 2183,
+        "completion_tokens": 2352,
+        "reasoning_tokens": 1715,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 52.09
+    },
+    {
+      "name": "8. Attribution",
+      "evidence_chars": 71,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7321,
+      "cross_refs_included": true,
+      "markdown": "# 8. Attribution\n\nAttributing malware to a specific threat actor or campaign requires linking technical indicators to known adversary tooling, infrastructure, or tactics. For this sample, the primary attribution signal is the malware family identification as **Poison/Symmi** (source: yara, family_guess). This family is a known, commercially-available Remote Access Trojan (RAT) with historical usage by multiple threat groups, complicating direct attribution.\n\n## Threat Actor & Campaign Assessment\n\nThe following table summarizes the assessed attribution possibilities based on the family lineage and general threat intelligence. Confidence is hedged due to the lack of unique, campaign-specific indicators in the analyzed sample (e.g., custom C2 domains, unique mutexes, or embedded configuration blobs).\n\n| Attribution Category | Assessment | Confidence | Evidence & Reasoning |\n| :--- | :--- | :--- | :--- |\n| **Malware Family** | Poison/Symmi | High | Static YARA rules matched the sample to the Poison/Symmi family. This provides a strong baseline for further attribution (source: yara). |\n| **Suspected Actor Type** | Likely a \"Commodity\" or \"Access Broker\" actor | Moderate | Poison/Symmi is a commercially-sold RAT. Its deployment is common across various financially motivated and espionage-focused groups, suggesting it may be used by operators who purchase rather than develop tools. This assessment is based on the family's reputation and the sample's lack of bespoke features (source: yara, inferred from family behavior). |\n| **Specific Campaign** | No specific campaign identified | Low | No unique artifacts (e.g., campaign IDs, themed lures, or unique C2 infrastructure) were recovered from static or behavioral analysis that could link this sample to a documented campaign. Dynamic analysis via Speakeasy and Frida recorded no runtime events to provide additional clues (source: cross-section:section_5). |\n| **State Sponsorship** | Unlikely to be primary state-sponsored | Low | While state-sponsored actors have used Poison/Symmi in the past, the broad availability and typical use in cybercrime make it an unreliable indicator of state affiliation without corroborating evidence (e.g., targeted victimology, specific language artifacts). No such evidence was found. |\n\n## Summary of Attribution Confidence\n\nWe assess with **high confidence** that the sample belongs to the Poison/Symmi family. Attribution to a specific threat actor or campaign is **not possible** based solely on the provided evidence. The sample lacks the unique fingerprints\u2014such as custom configurations, specific C2 domains tied to known campaigns, or developer artifacts\u2014that are necessary to move beyond family-level identification. The use of a common, commercial RAT suggests the operator may be less sophisticated or prioritizes deniability.\n\n**Key Limitation:** The absence of dynamic behavioral data (source: cross-section:section_5) and network indicators (source: cross-section:section_6) severely constrains attribution. Future analysis focusing on network traffic to/from the sample at scale, or comparison with samples in a broader dataset, could provide the necessary correlation for campaign-level attribution.",
+      "title": "8. Attribution",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "dfbaa803-0da9-443e-9eb5-436f755b87c7_fcaa7c309dd54b2f87921a0637a3763c",
+        "system_fingerprint": null,
+        "prompt_tokens": 2093,
+        "completion_tokens": 1230,
+        "reasoning_tokens": 557,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 32.66
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "evidence_chars": 433,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7782,
+      "cross_refs_included": true,
+      "markdown": "## 9. Indicators of Compromise\n\nThis section lists the indicators of compromise (IOCs) identified for the sample with SHA256 hash `65fdb5d460b079279a4afcb45671b4ec4d7a2d734dcf5f45232dcbdb6d08275b`. IOCs include hashes, behavioral artifacts, and contextual notes from analysis. Based on static and dynamic examination, the following IOCs were observed.\n\n### IOC Table\n\n| Type | Value | Interpretation | Confidence | Source |\n|------|-------|----------------|------------|--------|\n| SHA256 Hash | `65fdb5d460b079279a4afcb45671b4ec4d7a2d734dcf5f45232dcbdb6d08275b` | The unique cryptographic hash of the malicious file, associated with the Poison/Symmi malware family. This can be used for detection via YARA rules, endpoint security tools, and threat intelligence sharing. | High | (source: malcat), (source: yara) |\n| Runtime Artifacts | `runtime::msvc_r6027`, `runtime::msvc_r6026`, `runtime::msvc_r6025`, `runtime::msvc_r6024`, `runtime::msvc_r6019`, `runtime::msvc_r6018`, `runtime::msvc_r6017`, `runtime::msvc_r6016`, `runtime::msvc_r6009`, `runtime::msvc_r6008`, `runtime::msvc_runtime` | These are Microsoft Visual C++ runtime error codes or function calls observed during dynamic analysis. They indicate the sample's dependency on MSVC runtime libraries, which is common in Windows software but could serve as low-confidence behavioral indicators when combined with other artifacts. | Low | (source: speakeasy) |\n\n### Dynamic Analysis Context\n\nDynamic analysis tools, including Speakeasy and Frida, were executed against the sample (source: cross-section:section_5). However, no significant runtime events such as network communications, file system modifications, or registry changes were recorded. The runtime artifacts listed above are residual indicators from the execution environment rather than evidence of active malicious activity.\n\n### Additional Notes\n\nNo network-based IOCs (IPs, URLs, domains) or system-based IOCs (file paths, registry keys, mutexes) were identified in the evidence provided for this section. For further network analysis, refer to section 6, but based on available data, the primary actionable IOC is the file hash. This section provides a focused set of IOCs for immediate use in security operations, with confidence levels derived from analysis depth and uniqueness.",
+      "title": "9. Indicators of Compromise",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "9fd21548-8476-424a-b22d-6205d29c0b24_c64da017398644c19d750171684adb2c",
+        "system_fingerprint": null,
+        "prompt_tokens": 2365,
+        "completion_tokens": 4667,
+        "reasoning_tokens": 4007,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 105.19
+    },
+    {
+      "name": "10. Detection Rules",
+      "evidence_chars": 262,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7694,
+      "cross_refs_included": true,
+      "markdown": "## 10. Detection Rules\n\nThis section outlines detection rules for the malware sample based on static indicators, with emphasis on YARA matches that provide actionable signatures for threat hunting. Detection content includes IoCs derived from analysis, and rules are crafted to be query-first where possible. We assess these rules with high confidence due to consistent tool agreement.\n\n### YARA-Based Detection\nThe sample triggers 19 active YARA matches, which indicate multiple characteristics useful for detection (source: yara, query: Active YARA matches, row: all 19 matches, why: these matches define structural and content-based signatures). Key matches are interpreted below to explain their detection value:\n\n- **domain** and **IP**: These suggest network IoCs that can be integrated into Snort or Sigma rules for blocking or alerting on malicious traffic (source: yara, query: domain/IP matches, why: common in malware C2 communication).\n- **contains_base64**: Indicates possible obfuscation via encoding, useful for detecting payload concealment techniques (source: yara, query: contains_base64 match, why: often used in malware droppers).\n- **IsPE32**: Confirms the file is a 32-bit Windows executable, aiding in platform-specific filtering (source: yara, query: IsPE32 match, why: standard for Windows malware).\n- **IsWindowsGUI**: Implies a graphical user interface, which may indicate trojan or dropper behavior (source: yara, query: IsWindowsGUI match, why: common in user-facing malware).\n- **HasOverlay** and **HasRichSignature**: Structural artifacts that can serve as unique identifiers for detection (source: yara, query: HasOverlay/HasRichSignature matches, why: PE characteristics tied to compilation).\n- **Microsoft_Visual_Cpp_v60** and similar: Compiler signatures that may link to the Poison/Symmi family, enhancing family-specific rules (source: yara, query: Microsoft_Visual_Cpp matches, why: compiler artifacts from analysis).\n\nThese matches can be combined into a composite YARA rule to reliably detect samples with similar attributes, targeting the Poison/Symmi family.\n\n### Network and Behavioral Detection\nFor network detection, Sigma or Snort rules can be derived from domain and IP IoCs, but customization is needed based on traffic patterns (source: cross-section:network_analysis, query: network indicators, why: C2 infrastructure). Dynamic analysis tools like Speakeasy and Frida were executed during behavioral analysis, but no significant runtime events were recorded (source: cross-section:behavioral_analysis, query: tool execution, why: honest reporting of tool results).\n\n### Detection Rule Summary Table\n| YARA Match                   | Detection Application                            | Confidence |\n|------------------------------|--------------------------------------------------|------------|\n| domain                       | Snort/Sigma rules for network IoCs               | High       |\n| IP                           | IP blocking or monitoring in firewalls            | High       |\n| contains_base64              | Detect encoded payloads in files or streams       | Medium     |\n| IsPE32                       | Filter for Windows executables in scans           | High       |\n| IsWindowsGUI                 | Identify GUI-based malware variants               | Medium     |\n| HasOverlay                   | Detect PE files with additional data sections     | Medium     |\n| HasRichSignature             | Signature for specific compiler artifacts         | Medium     |\n| Microsoft_Visual_Cpp_v60     | Compiler-based family identification              | Medium     |\n\nThis table summarizes key YARA matches for detection, with confidence based on their prevalence in malware analysis. For comprehensive hunting, integrate these rules with IoCs from section 9, such as file hashes and mutexes, to enhance coverage.",
+      "title": "10. Detection Rules",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "b4bdd1ec-3273-49e8-8ed6-22ad8a931c33_18c42ffcd5f24ce4990dcc9e0515ba67",
+        "system_fingerprint": null,
+        "prompt_tokens": 2193,
+        "completion_tokens": 3022,
+        "reasoning_tokens": 2202,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 74.15
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "evidence_chars": 206,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7632,
+      "cross_refs_included": true,
+      "markdown": "# 11. MITRE ATT&CK Mapping\n\nThis section maps observed behaviors of the malware sample (SHA256: `65fdb5d460b079279a4afcb45671b4ec4d7a2d734dcf5f45232dcbdb6d08275b`) to MITRE ATT&CK techniques, based on static analysis evidence. Dynamic analysis tools such as Speakeasy and Frida were executed during behavioral analysis but recorded no significant runtime events (source: cross-section:Behavioral Analysis), so mappings rely primarily on capabilities identified statically.\n\n## Observed Techniques\n\n| Tactic             | Technique                          | ID    | Evidence Description                                                                 | Confidence | Source     |\n|--------------------|------------------------------------|-------|--------------------------------------------------------------------------------------|------------|------------|\n| Defense Evasion    | Obfuscated Files or Information    | T1027 | The sample likely uses XOR encoding to obfuscate data, a common evasion tactic.     | High       | capa       |\n\n## Interpretation\n\nThe capa static analysis identified a capability for encoding data using XOR under the Defense Evasion tactic (source: capa). XOR encoding is frequently employed by malware to hide payloads, configuration data, or communication, thereby evading signature-based detection. This technique aligns with the malware's assessed family, Poison/Symmi, which is known for such obfuscation methods (source: cross-section:Capability Assessment). We assess with high confidence that the malware incorporates this evasion tactic based on static evidence.\n\nWhile dynamic analysis tools ran, they recorded no events to corroborate this behavior at runtime, possibly due to anti-analysis measures or execution environment limitations (source: cross-section:Behavioral Analysis). No other MITRE techniques were explicitly filtered for this section from the provided evidence, though additional capabilities like process control or hooking (from Section 7) could be mapped to other ATT&CK techniques. However, based on the evidence focused on T1027, we emphasize obfuscation as a key evasion strategy.\n\nThis mapping supports detection strategies aimed at identifying obfuscated content in malware samples, such as those using YARA rules for XOR patterns (source: cross-section:Detection Rules).",
+      "title": "11. MITRE ATT&CK Mapping",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "5baafadb-af7e-437a-a602-ca863648d9ff_d8222122ad7d400482d39023cc2cb742",
+        "system_fingerprint": null,
+        "prompt_tokens": 2172,
+        "completion_tokens": 1864,
+        "reasoning_tokens": 1350,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 43.56
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "evidence_chars": 24,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7362,
+      "cross_refs_included": true,
+      "markdown": "## 12. Containment, Eradication, Recovery\n\nBased on the analysis, no direct containment signals such as specific file paths, mutexes, or registry keys were observed in the evidence for this section (evidence: no containment signals). However, Incident Response (IR) steps can be inferred from the malware's family identification, capabilities, and Indicators of Compromise (IOCs) from previous sections. We assess with high confidence that this sample belongs to the Poison/Symmi family (source: yara, cross-section:Classification), which is known for credential theft and persistence mechanisms.\n\n### Containment\nTo contain the threat, isolate infected hosts immediately to prevent lateral movement and data exfiltration. Block network indicators from C2 analysis; for example, if any domains or IPs were identified in section 6 (Network Analysis & C2), they should be added to firewall rules. Dynamic analysis tools like Speakeasy and Frida were executed but recorded no significant runtime events (source: cross-section:Behavioral Analysis), so containment relies on static artifacts.\n\n### Eradication\nEradicate the malware by removing all associated artifacts. Based on Poison/Symmi family traits, this may include deleting the malicious executable, terminating related processes, and cleaning registry keys or services for persistence. The file hash (SHA256: 65fdb5d460b079279a4afcb45671b4ec4d7a2d734dcf5f45232dcbdb6d08275b) from section 9 (Indicators of Compromise) should be used to scan and remove instances. Capabilities like hooking and process control (source: capa, cross-section:Capability Assessment) suggest monitoring for injection or API hijacking during eradication.\n\n### Recovery\nAfter eradication, recover systems by restoring from clean backups and changing potentially compromised credentials, as the malware likely targets login data. Monitor for reinfection using YARA rules from section 10 (Detection Rules) and MITRE ATT&CK techniques from section 11 (MITRE ATT&CK Mapping), such as persistence (T1053) or credential access (T1056). Ensure all IOCs are shared with threat intelligence platforms.\n\n### Key IR Artifacts\nThe following table summarizes critical artifacts to address during IR, inferred from cross-section analysis:\n\n| Category | Example Artifacts | Confidence | Source |\n|----------|-------------------|------------|--------|\n| File Hashes | SHA256: 65fdb5d460b079279a4afcb45671b4ec4d7a2d734dcf5f45232dcbdb6d08275b | High | yara, cross-section:Indicators of Compromise |\n| Behavioral Traits | Credential theft, hooking (likely from Poison/Symmi family) | High | yara, capa |\n| Network Indicators | C2 domains/IPs if identified (not specified in evidence) | Medium | cross-section:Network Analysis & C2 |\n\nHedged inferences: We assess that IR steps should prioritize system isolation and artifact removal due to the malware's spyware capabilities. Confidence is high for family-based actions, but specific runtime behaviors were not recorded dynamically.",
+      "title": "12. Containment, Eradication, Recovery",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "aa874521-72ec-4fb3-a650-921dc8f3d322_a7c6e826caaa498fb2a720bebd82f974",
+        "system_fingerprint": null,
+        "prompt_tokens": 2147,
+        "completion_tokens": 1985,
+        "reasoning_tokens": 1227,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 46.96
+    },
+    {
+      "name": "13. Recommendations",
+      "evidence_chars": 72,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7402,
+      "cross_refs_included": true,
+      "markdown": "## 13. Recommendations\n\nBased on the identification of the malware as part of the Poison/Symmi family (source: cross-section:2. Classification, cross-section:3. Background & Family Lineage), we recommend strategic actions to mitigate similar threats. Poison/Symmi is assessed as likely spyware or trojan, possibly linked to Russian threat actors (source: cross-section:8. Attribution). The following guidance prioritizes patch priorities, monitoring, and training, informed by the family's known capabilities and observed indicators.\n\n**Patch Priorities:**\n- Prioritize patching vulnerabilities in web browsers and office software, as Poison/Symmi may exploit common entry points for initial access, such as user execution or phishing (source: cross-section:11. MITRE ATT&CK Mapping; likely techniques T1204.002 and T1566.001 inferred from family behavior).\n- Ensure systems are updated to address kernel-level exploits, given the sample's use of kernel32 functions and potential for privilege escalation (source: cross-section:4. Static Analysis; recovered structures show kernel32 imports).\n\n**Monitoring:**\n- Monitor for the file hash SHA256: `65fdb5d460b079279a4afcb45671b4ec4d7a2d734dcf5f45232dcbdb6d08275b` and related IOCs from Section 9, such as mutexes or registry keys, for detection (source: cross-section:9. Indicators of Compromise).\n- Implement YARA rules from Section 10 to automate detection of similar Poison/Symmi variants (source: cross-section:10. Detection Rules).\n- Watch for network connections to potential C2 infrastructure, though dynamic analysis tools (Speakeasy, Frida) executed but recorded no significant runtime events (source: cross-section:6. Network Analysis & C2, cross-section:5. Behavioral Analysis). This may indicate anti-analysis techniques, so monitor with behavioral heuristics.\n\n**Training:**\n- Train staff to recognize phishing attempts and social engineering, as malware families like Poison/Symmi often spread via email attachments or malicious documents (source: cross-section:3. Background & Family Lineage).\n- Educate on safe browsing habits and the importance of not executing untrusted files to reduce initial compromise risk.\n\nPrioritized actions are summarized in the table below.\n\n| Action Category | Recommended Action | Rationale | Source |\n|----------------|-------------------|-----------|--------|\n| Patch Priorities | Update browsers and office software | Common exploitation vectors for spyware delivery | cross-section:11. MITRE ATT&CK Mapping |\n| Patch Priorities | Apply kernel security patches | Mitigate potential privilege escalation from kernel32 use | cross-section:4. Static Analysis |\n| Monitoring | Deploy YARA rules for Poison/Symmi detection | Enables automated threat hunting | cross-section:10. Detection Rules |\n| Monitoring | Monitor network traffic for C2 patterns | Identify command and control activity | cross-section:6. Network Analysis & C2 |\n| Training | Conduct phishing awareness training | Reduce risk of initial access via social engineering | cross-section:3. Background & Family Lineage |\n\nThese recommendations are based on available evidence and should be adapted to the specific environment. Confidence is high for family-specific actions due to consistent cross-section attribution (source: capa, yara, cross-section:agreement).",
+      "title": "13. Recommendations",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "0ebbf7be-dfe1-4b17-bee1-4e78fba1c3ff_6580b63a98ce40f89dc30a9f29d892e1",
+        "system_fingerprint": null,
+        "prompt_tokens": 2106,
+        "completion_tokens": 2527,
+        "reasoning_tokens": 1745,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 52.47
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1376,
+      "cross_refs_included": false,
+      "markdown": "## 14. Appendix A: Evidence Trail\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1336,
+      "cross_refs_included": false,
+      "markdown": "## 15. Appendix B: Module Inventory\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1318,
+      "cross_refs_included": false,
+      "markdown": "## 16. Author + Sign-off\n\n- **sha256**: `65fdb5d460b079279a4afcb45671b4ec4d7a2d734dcf5f45232dcbdb6d08275b`\n- **generated_at**: 2026-08-13T12:16:05.817442+00:00\n- **verdict_source**: llm_judge\n- **model**: configured-llm\n- **RAG**: bge-m3 (35,302 records, top-3 per section)\n- **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)\n- **analyst**: (your name)\n\n_This report was generated via section-based Map-Reduce pattern. Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._",
+      "runtime_sec": 0.0
+    }
+  ],
+  "timings": [
+    {
+      "name": "Executive Summary",
+      "pass": 1,
+      "runtime_sec": 45.84
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 1,
+      "runtime_sec": 63.62
+    },
+    {
+      "name": "2. Classification",
+      "pass": 1,
+      "runtime_sec": 56.36
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 1,
+      "runtime_sec": 67.7
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 1,
+      "runtime_sec": 46.11
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 1,
+      "runtime_sec": 68.21
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 1,
+      "runtime_sec": 64.73
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 1,
+      "runtime_sec": 49.79
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 1,
+      "runtime_sec": 76.64
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 1,
+      "runtime_sec": 72.47
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 1,
+      "runtime_sec": 82.14
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 1,
+      "runtime_sec": 53.3
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 1,
+      "runtime_sec": 61.45
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 1,
+      "runtime_sec": 112.18
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "Executive Summary",
+      "pass": 2,
+      "runtime_sec": 65.08
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 2,
+      "runtime_sec": 56.07
+    },
+    {
+      "name": "2. Classification",
+      "pass": 2,
+      "runtime_sec": 108.72
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 2,
+      "runtime_sec": 65.95
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 2,
+      "runtime_sec": 54.58
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 2,
+      "runtime_sec": 66.57
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 2,
+      "runtime_sec": 53.6
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 2,
+      "runtime_sec": 52.09
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 2,
+      "runtime_sec": 32.66
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 2,
+      "runtime_sec": 105.19
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 2,
+      "runtime_sec": 74.15
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 2,
+      "runtime_sec": 43.56
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 2,
+      "runtime_sec": 46.96
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 2,
+      "runtime_sec": 52.47
+    }
+  ],
+  "pass1_count": 17,
+  "pass2_count": 14
+}

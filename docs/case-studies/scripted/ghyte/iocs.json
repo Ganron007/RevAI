@@ -1,0 +1,32 @@
+{
+  "sha256": "a59b2cb9f6c706635b4d97edc574a72ac54fba47f9a4a1eae77cf58a96ccf567",
+  "family": "upatre",
+  "verdict": "malicious@",
+  "generated_at": "2026-08-12T17:27:05.187489+00:00",
+  "hashes": {
+    "sha256": "a59b2cb9f6c706635b4d97edc574a72ac54fba47f9a4a1eae77cf58a96ccf567",
+    "sha1": "76b843f5789e19508680fb64fe287fcd242a7286",
+    "md5": "e9699457ffc92c1b1c0b26588b2fab56"
+  },
+  "domains": [
+    "trojan.upatre"
+  ],
+  "ips": [],
+  "urls": [],
+  "files": [],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive).",
+  "wallets_btc": [],
+  "wallets_eth": [],
+  "revai_tools": {
+    "count": 0,
+    "source": "revai_tools_iocs"
+  }
+}

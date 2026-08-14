@@ -1,0 +1,91 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "This is the 'brbbot' backdoor/RAT. It establishes persistence via the Windows Run registry key using the name 'brbbot', encrypts/decrypts its configuration file (brbconfig.tmp) using RC4 via the Windows Crypto API with a base64-encoded key 'YnJiYm90' (= 'brbbot'), communicates with a C2 server over HTTP/1.1 using a spoofed IE8 user-agent, and supports remote command execution via CreateProcessA. The binary includes anti-debug checks via ZwQuerySystemInformation and XOR-based data encoding. CAPA identified 35 capability matches covering encryption, persistence, network, and process injection techniques. YARA rules flagged anti-debug, network HTTP, screenshot capture, registry manipulation, dropper strings, and WinCrypt usage. Exfiltration was not observed based on CAPA's capability matches and YARA rule outputs {CAPA, capability matches, 'encryption, persistence, network, process injection', 'no exfiltration techniques listed'} {YARA, rules, 'anti-debug, network HTTP, screenshot capture, registry manipulation, dropper strings, WinCrypt usage', 'no exfiltration indicators'}. Credential access was not observed based on the same sources {CAPA, capability matches, 'encryption, persistence, network, process injection', 'no credential access techniques listed'} {YARA, rules, 'anti-debug, network HTTP, screenshot capture, registry manipulation, dropper strings, WinCrypt usage', 'no credential access indicators'}.",
+  "key_evidence": [
+    "Ghidra string_refs: FUN_140002230 and FUN_140002550 reference 'Software\\Microsoft\\Windows\\CurrentVersion\\Run' with registry value name 'brbbot' \u2014 classic persistence mechanism",
+    "Ghidra string_refs: FUN_140002230 references 'APPDATA' and 'brbconfig.tmp' \u2014 config file stored in user AppData",
+    "Ghidra string_refs: FUN_140002940 and FUN_140002c50 reference 'Microsoft Enhanced Cryptographic Provider v1.0' and base64-encoded key 'YnJiYm90' (= 'brbbot') for RC4 encryption of config",
+    "Ghidra imports: Full CryptoAPI chain \u2014 CryptAcquireContextW, CryptCreateHash, CryptHashData, CryptDeriveKey, CryptEncrypt, CryptDecrypt, CryptDestroyKey, CryptDestroyHash, CryptReleaseContext",
+    "Ghidra imports: RegSetValueExA, RegOpenKeyExA, RegDeleteValueA, RegFlushKey, RegCloseKey \u2014 registry manipulation for persistence",
+    "Ghidra imports: CreateProcessA, CreateFileA/W, CopyFileA, DeleteFileA, FindResourceA, GetModuleFileNameA \u2014 dropper/file operations and remote command execution",
+    "Ghidra string_refs: FUN_140003030 references 'HTTP/1.1' and 'Connection: close\\r\\n' \u2014 C2 HTTP communication",
+    "Ghidra string_refs: FUN_140002f50 references 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; Trident/4.0)' \u2014 spoofed user-agent for C2",
+    "Ghidra string_refs: FUN_140003300 references 'ZwQuerySystemInformation' and 'ntdll.dll' \u2014 anti-analysis/process enumeration",
+    "Ghidra string_refs: FUN_1400012e0 references 'encode' and 'sleep' \u2014 data encoding and C2 sleep/beacon loop",
+    "CAPA: 35 rules matched including 'encode data using XOR' (T1027), 'encrypt or decrypt via WinCrypt' (T1027), 'encrypt data using RC4 via WinAPI' (C0027.009), 'create new key via CryptAcquireContext'",
+    "YARA: 17 rules matched including anti_dbg, network_http, screenshot, win_registry, win_files_operation, Dropper_Strings, Advapi_Hash_API, contains_base64",
+    "Ghidra function_metrics: FUN_1400012e0 has cyclomatic_complexity=59, call_out_count=37, string_ref_count=2 \u2014 complex C2 command dispatcher; FUN_140001840 cc=45, call_out=24; FUN_140001c10 cc=47, call_out=28 \u2014 multi-path logic with high branching"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 30,
+  "successful_non_bootstrap_tools": 16,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

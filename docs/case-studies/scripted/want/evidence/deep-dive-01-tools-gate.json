@@ -1,0 +1,67 @@
+{
+  "ok": true,
+  "format": "pe",
+  "required": [
+    "capa",
+    "pe_imports",
+    "yara",
+    "floss",
+    "dotnet",
+    "r2_decomp",
+    "upx",
+    "xor",
+    "speakeasy",
+    "frida_probe"
+  ],
+  "tools": {
+    "capa": {
+      "ok": false,
+      "why": "soft_fail_packed:capa_incomplete:capa returned empty rules",
+      "soft": true,
+      "packer": "packed"
+    },
+    "pe_imports": {
+      "ok": true,
+      "why": "ok"
+    },
+    "yara": {
+      "ok": true,
+      "why": "ok"
+    },
+    "floss": {
+      "ok": true,
+      "why": "ok"
+    },
+    "dotnet": {
+      "ok": true,
+      "why": "ok"
+    },
+    "r2_decomp": {
+      "ok": true,
+      "why": "ok"
+    },
+    "upx": {
+      "ok": true,
+      "why": "ok"
+    },
+    "xor": {
+      "ok": true,
+      "why": "ok"
+    },
+    "speakeasy": {
+      "ok": true,
+      "why": "ok"
+    },
+    "frida_probe": {
+      "ok": true,
+      "why": "ok"
+    }
+  },
+  "hard_failures": [],
+  "soft_failures": [
+    "capa"
+  ],
+  "missing": [],
+  "not_applicable": [],
+  "large_sample": false
+}

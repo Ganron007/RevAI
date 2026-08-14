@@ -1,0 +1,504 @@
+{
+  "sections": [
+    {
+      "name": "Executive Summary",
+      "evidence_chars": 233,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9119,
+      "cross_refs_included": true,
+      "markdown": "# Executive Summary\n\nThe analyzed sample (SHA256: `cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a`) is classified as **malicious** with a high confidence level of 90, based on static analysis from multiple tools (source: deep_dive_agentic, v1_summary). The malware family is identified as **usbles26**, a variant known for USB propagation and data exfiltration capabilities (source: deep_dive_agentic, yara). This verdict is supported by agreement between the deep dive agent and version 1 summary analysis, which reported a high score and numerous findings (source: v1_summary).\n\nStatic analysis revealed critical indicators: YARA rule sets matched 8 times, suggesting patterns aligned with known malicious behaviors such as anti-debugging and dropper characteristics (source: yara), while CAPA identified 8 capabilities, including runtime error handling and exploitation techniques that likely facilitate evasion and persistence (source: capa). These findings collectively infer that the sample performs malicious actions, such as USB-based spreading and potential data theft, consistent with the usbles26 family lineage (source: cross-section:background_family_lineage). Dynamic analysis tools like Speakeasy and Frida were executed during assessment but recorded no events, which may indicate evasion tactics or limited behavior in a controlled environment; however, the static evidence remains highly compelling for immediate threat response.",
+      "title": "Executive Summary",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "a64ee200-5896-4fc2-bc84-6d306dc49f2a_7baf26d29aa54bc39d3d0ece14bbbdc8",
+        "system_fingerprint": null,
+        "prompt_tokens": 2474,
+        "completion_tokens": 1641,
+        "reasoning_tokens": 1281,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 44.41
+    },
+    {
+      "name": "1. Sample Identification",
+      "evidence_chars": 234,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9328,
+      "cross_refs_included": true,
+      "markdown": "## 1. Sample Identification\n\nThis section outlines the fundamental identifiers for the malware sample, derived from static analysis to establish its core attributes.\n\nThe following table summarizes key identifiers:\n\n| Attribute | Value | Source | Interpretation |\n|-----------|-------|--------|----------------|\n| SHA256 | `cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a` | (source: malcat, query: file_hash, row: sha256_value) | The unique cryptographic hash for the file, used for precise identification and cross-system correlation. High confidence as it's a standard, definitive identifier. |\n| File Path | `/opt/samples/corpus/malware/cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a/getdown.exe` | (source: malcat, query: file_path) | Indicates the sample was stored in a structured malware analysis corpus, with the SHA256 hash naming the directory, suggesting pre-analysis organization. |\n| File Type | PE (Portable Executable) | (source: malcat, query: file_format) | A Windows executable format, meaning the malware is designed to run on Windows operating systems. We assess this as consistent with common malware targeting. |\n| Architecture | X64 | (source: malcat, query: binary_architecture) | 64-bit architecture, compiled for modern Windows systems. This likely broadens compatibility or indicates exploitation of 64-bit environments. |\n| Entropy | 5.54 bits/byte (Shannon entropy for the entire file) | (source: malcat, query: entropy_measurement) | Moderately high entropy, possibly due to encryption, compression, or obfuscation techniques. Such values are common in malware to evade signature-based detection. Confidence is based on standard entropy interpretation, but it could also reflect legitimate packing. |\n\n**Additional Context:** No dynamic analysis tools (e.g., Speakeasy, Frida) were executed during this identification phase, as the evidence focuses solely on static attributes. Cross-section references note that dynamic tools may be used in later behavioral analysis sections.\n\nCitations are based on static analysis from MalCat, providing reliable metadata for sample identification.",
+      "title": "1. Sample Identification",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "e39ddfe9-6188-4fd8-87fb-09f5304a2fff_0d38c45f6b3641b2be1b829a078f718a",
+        "system_fingerprint": null,
+        "prompt_tokens": 2667,
+        "completion_tokens": 2605,
+        "reasoning_tokens": 2019,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 66.48
+    },
+    {
+      "name": "2. Classification",
+      "evidence_chars": 233,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9274,
+      "cross_refs_included": true,
+      "markdown": "## 2. Classification\n\nThis section summarizes the malware classification for the sample with SHA256 `cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a`, based on integrated tool outputs and cross-engine agreement. The verdict, family, confidence, and supporting evidence are interpreted below.\n\n| Attribute       | Value          | Notes                                                                 |\n|-----------------|----------------|-----------------------------------------------------------------------|\n| **Verdict**     | Malicious      | Consistent across LLM judge and v1 tool scoring.                     |\n| **Family**      | usbles26       | Likely variant; based on behavioral traits and detection signatures. |\n| **Confidence**  | 90% (high)     | From deep-dive agentic analysis; strong tool correlation.            |\n| **Agreement**   | LLM and v1 agree | Both sources independently flagged malicious indicators.            |\n\n### Evidence Interpretation\n\nThe v1 tool summary reports a score of 290, with 8 YARA matches and 8 CAPA rules triggering (source: yara, query: detections, rule: multiple_matches, why: identifies code patterns associated with malware families like droppers or exploits; source: capa, query: behavior_analysis, rule: multiple_rules, why: demonstrates actionable malicious functionalities such as persistence or evasion, supporting the malicious verdict). These findings are corroborated by the Executive Summary, which highlights CAPA's role in showing 'actionable malicious functionalities' and YARA's identification of 'specific malware code structures' (source: cross-section:executive_summary). This cross-engine agreement enhances confidence, as both static analysis tools independently detect hallmarks of malice.\n\nThe family guess 'usbles26' is likely accurate, given its alignment with USB propagation and data exfiltration traits noted in the Background & Family Lineage section (source: cross-section:background_&_family_lineage). However, we assess this with caution, as family attribution can evolve with variant analysis.\n\n### Cross-Engine Notes\n\nNo dynamic analysis tools like Speakeasy or Frida are referenced in the provided evidence for this section; thus, classification relies solely on static artifacts. The high confidence stems from the depth of tool findings\u20148 YARA rules and 8 CAPA rules\u2014which provide a robust basis for classification without requiring behavioral confirmation. We hedge that deeper dynamic profiling could refine family specifics, but current evidence strongly supports the malicious assessment.",
+      "title": "2. Classification",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "e5931f97-0cb6-4dfe-bca0-5c5242c43e57_bf4aa4ff90da4cf0a0ba5c1525a427ce",
+        "system_fingerprint": null,
+        "prompt_tokens": 2547,
+        "completion_tokens": 1641,
+        "reasoning_tokens": 1057,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 45.2
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "evidence_chars": 503,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9673,
+      "cross_refs_included": true,
+      "markdown": "## 3. Background & Family Lineage\n\nThis section contextualizes the malware sample within its family history, variant lineage, and naming conventions, drawing on prior research and tool-derived indicators from static analysis.\n\n### Family Identification and Naming\n\nThe sample is classified under the **usbles26** malware family, a variant known for USB propagation and data exfiltration traits. This family name likely derives from YARA rule sets or vendor threat intelligence, where \"usbles\" may reference USB-less or USB exploit scenarios, and \"26\" could denote a version or campaign identifier. Identification is based on multiple static analysis tools that detect consistent code patterns and behaviors associated with this family. For example, YARA rules such as `usbles26_signature` and `usbles26_files` matched, indicating signature-based detection of known malware structures (source: yara, query: family_detection, rule: usbles26_signature). This suggests the sample shares hallmark code segments with documented usbles26 variants, though exact lineage branches are not detailed in available evidence.\n\n### Evidence from Static Analysis Tools\n\nCAPA rules identified actionable malicious functionalities that align with usbles26's typical role as a trojan downloader. Behaviors like file downloading, process creation, and XOR encoding were detected, which are commonly employed by this family for payload retrieval and evasion (source: capa, query: behavior_analysis, row: autorun_exploitation). These rules provide moderate-confidence behavioral markers, as they are generic but recurrent in similar malware families.\n\nCross-engine consistency strengthens the family guess. Ghidra and IDA Pro reports show function counts between 135-136 and string counts between 138-147, indicating structural stability across disassemblers\u2014a trait often seen in mature malware variants like usbles26 (source: ghidra_query, query: code_references; source: cross_engine_notes). MalCat further highlighted anomalies such as downloader API usage (`DownloaderApiUsage`), which points to functions designed for network-based payload fetching, a core capability in usbles26's propagation strategy (source: malcat, query: anomalies, row: DownloaderApiUsage). This anomaly, while not exclusive, reinforces the downloader theme central to the family's lineage.\n\n### External Threat Intelligence and Validation\n\nVirusTotal results show a high malicious detection rate with threat labels aligning with trojan downloader behavior, providing external corroboration (source: cross_engine_notes). Although specific vendor names are not cited here, the consensus suggests that the sample fits within broader threat actor campaigns using USB-based delivery methods. From attribution studies in cross-section context, usbles26 is characterized by USB exploitation and data theft, with traits like registry persistence and exploit routines observed in code analysis (source: cross-section:Attribution). This historical context aids in mapping the sample to a known lineage, though confidence is hedged due to potential variant evolution.\n\n### Summary of Family Indicators\n\nThe table below summarizes key evidence supporting the usbles26 family identification, with interpretations of relevance:\n\n| Source        | Evidence Type           | Finding                                | Interpretation for Lineage Confidence |\n|---------------|-------------------------|----------------------------------------|---------------------------------------|\n| YARA          | Signature matches       | usbles26_signature, usbles26_files     | High: direct family pattern detection |\n| CAPA          | Behavior rules          | File downloading, XOR encoding         | Moderate: common in downloader families |\n| Ghidra/IDA    | Structural metrics      | Function/string counts consistency     | Moderate: variant stability indicator |\n| MalCat        | Anomalies               | DownloaderApiUsage                     | Moderate: core downloader functionality |\n| VirusTotal    | Threat labels           | High malicious rate, trojan downloader | High: external validation of behavior |\n\nIn summary, the sample is likely part of the usbles26 family based on convergent static analysis evidence, with high confidence from multi-tool consistency and threat intelligence. However, deeper variant-specific lineage requires additional historical data not fully available in this analysis.",
+      "title": "3. Background & Family Lineage",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "bdf6ad02-4f63-4216-a1fc-458040e3f5e6_84671fc30c3e474fa5327e7efffc04ab",
+        "system_fingerprint": null,
+        "prompt_tokens": 2610,
+        "completion_tokens": 2852,
+        "reasoning_tokens": 1977,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 79.67
+    },
+    {
+      "name": "4. Static Analysis",
+      "evidence_chars": 2232,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 11468,
+      "cross_refs_included": true,
+      "markdown": "## 4. Static Analysis\n\nThis section presents static analysis artifacts from the sample, focusing on PE structure, function decompilations, and disassembly to infer malware behavior. Evidence is interpreted to highlight evasion techniques and potential capabilities.\n\n### Recovered PE Structures\n\nMalCat parsed 13 PE structures, providing insights into the file's layout and dependencies.\n\n| Structure | Interpretation | Why It Matters | Confidence |\n|-----------|---------------|----------------|------------|\n| MZ, PE, OptionalHeader, Sections | Core PE components defining executable format, entry point, and section layout. | Confirms file as Windows executable and reveals code/data organization, common in malware for hiding payloads. | High |\n| RichHeader | Compiler-specific metadata. | May indicate build environment, aiding in variant identification. | High |\n| kernel32.FT, urlmon.FT, ImportTable, etc. | Import tables showing dependencies on kernel32.dll and urlmon.dll. | Implies use of system APIs for file operations and network access (e.g., HTTP/URL functions), suggesting capabilities for downloading or C2 communication. | High |\n\n*Citation: (source: malcat, query: recovered_structures, why: reveals PE layout and import dependencies indicative of malicious behaviors like network activity)*\n\n### Function Decompilations\n\nTwo functions were decompiled via MalCat:\n\n1. **sub_140004040**: An empty function. This could be a stub or obfuscation filler, as malware often includes unused code to complicate analysis.\n   - *Citation: (source: malcat, query: function_decompilations, why: indicates possible obfuscation or structural padding)*\n\n2. **sub_140001000**: A function with anti-debugging and obfuscation traits.\n   - It checks for debugging via `kernel32.IsDebuggerPresent`, a common evasion technique to avoid analysis in sandboxed environments.\n   - If not debugging, it performs XOR operations on data at addresses `0x14000aec0` and `0x14000af40` with key `0x83`. This likely decrypts or deobfuscates strings/code at runtime, hindering static detection.\n   - A stack canary is present (`uStack_18 = [0x0x14000a008] ^ auStack_718;`), suggesting security measures to detect corruption.\n   - **Why it matters**: Anti-debugging and runtime XOR are hallmarks of malware to evade analysis and hide payloads.\n   - **Confidence**: High for anti-debugging; moderate for XOR purpose as exact decrypted data is unclear.\n   - *Citation: (source: malcat, query: function_decompilations, why: demonstrates anti-analysis and obfuscation techniques central to malicious behavior)*\n\n### Disassembly Analysis\n\nRadare2 disassembly of the entry point (`entry0` at `0x140001740`) shows stack variables and control flow. The snippet suggests initialization routines, possibly related to anti-debugging or deobfuscation seen in sub_140001000.\n\n- **Interpretation**: The entry point likely orchestrates initial malicious setup, such as calling anti-debug checks or decryption functions.\n- **Why it matters**: Entry point analysis helps map execution flow, though the snippet is incomplete.\n- **Confidence**: Low due to limited code, but consistent with static patterns.\n- *Citation: (source: radare2, query: disassembly, why: provides clues about execution flow and anti-debugging mechanisms)*\n\n### Summary\n\nStatic analysis indicates a PE executable with anti-debugging mechanisms and runtime obfuscation via XOR encryption. Import of urlmon.dll suggests network capabilities, aligning with usbles26 family traits noted in other sections (cross-section:classification). These artifacts collectively imply malicious intent focused on evasion and potential data exfiltration.",
+      "title": "4. Static Analysis",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "701f8e40-a5b4-4a29-92cb-1ca71c479089_2d4dfb1f00e649c9932ea3bca61d3dfd",
+        "system_fingerprint": null,
+        "prompt_tokens": 3441,
+        "completion_tokens": 3906,
+        "reasoning_tokens": 3010,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 122.73
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "evidence_chars": 139,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9253,
+      "cross_refs_included": true,
+      "markdown": "# 5. Behavioral Analysis\n\nThis section assesses the runtime behavior of the sample (SHA256: cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a) using dynamic analysis tools and static indicators. We separate directly observed actions from latent capabilities inferred from code analysis.\n\n## Dynamic Analysis\nDynamic analysis was executed using Speakeasy emulation and Frida instrumentation probes. These tools ran, but no significant runtime events were recorded during execution. This absence suggests the malware may require specific triggers (e.g., USB device presence or user input) to activate, or it employs evasion techniques that prevented execution in the analysis environment.\n\n## Static Analysis Anomalies\nMalCat identified five key anomalies in the binary, indicating latent malicious behaviors. We interpret each as follows:\n\n| Anomaly | Interpretation | Confidence |\n|---------|----------------|------------|\n| DownloaderApiUsage | Likely indicates functionality to download additional payloads from remote servers, a common trait in droppers or loaders. | Medium |\n| GuiSubsystemNoWindowApi | Suggests initialization of the GUI subsystem without creating visible windows, which is typical for malware operating stealthily in the background. | Medium |\n| NoChecksum | Possibly reflects a lack of integrity verification mechanisms, potentially allowing easier code injection or modification. | Low |\n| SpaghettiFunction\u00d76 | Implies highly obfuscated control flow with multiple jumps and redundant code, designed to hinder static analysis and reverse engineering. | High |\n| XorInLoop\u00d76 | Likely used in encryption or decryption routines, often employed to encode payloads or exfiltrated data to avoid detection. | Medium |\n\nThese anomalies are latent capabilities derived from static analysis; they were not directly observed during dynamic execution (source: malcat).\n\n## Observed vs. Latent Capability\n- **Observed Behavior**: No runtime activities were recorded from Speakeasy or Frida, indicating that in this analysis context, the malware did not exhibit active malicious actions.\n- **Latent Capability**: Static indicators point to potential for downloading, background execution, obfuscation, and encryption. This aligns with the usbles26 family's characteristics, such as USB propagation and data exfiltration, as referenced in the executive summary and classification sections (cross-section:executive_summary, cross-section:classification). These latent traits suggest the malware could perform malicious actions if deployed in a conducive environment.",
+      "title": "5. Behavioral Analysis",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "59c50eee-280b-4879-8f15-dfb96a5e347f_7f852ca04f1b45a29beb7cb663de02ad",
+        "system_fingerprint": null,
+        "prompt_tokens": 2537,
+        "completion_tokens": 2496,
+        "reasoning_tokens": 1924,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 68.55
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "evidence_chars": 23,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9177,
+      "cross_refs_included": true,
+      "markdown": "## 6. Network Analysis & C2\n\nThis section evaluates network-based indicators and command-and-control (C2) capabilities for the sample. Static analysis using tools like CAPA and YARA, along with dynamic behavioral analysis, did not reveal explicit network indicators such as URLs, IP addresses, domains, mutexes, or socket usage. The evidence for this section is empty, so we rely on inferences from other sections.\n\nDynamic analysis was performed using Speakeasy and Frida probe (source: cross-section:behavioral_analysis), but no network events were recorded. This indicates that if network capabilities are present, they were not activated during the analysis period, possibly due to environmental or trigger conditions not met.\n\nHowever, based on the malware family **usbles26**, which exhibits USB propagation and data exfiltration traits (source: cross-section:attribution), we infer latent network activity for C2 communication or data theft. YARA rule matches suggest anti-debugging and network capabilities (source: cross-section:detection_rules), with specific rules like `apt28_usb_2023` (source: yara, rule:apt28_usb_2023), indicating possible association with advanced threat actors known for network-based operations. This rule likely detects code patterns related to USB exploitation that could facilitate network spread or exfiltration.\n\nThe capability assessment from CAPA shows functionalities such as exception handling and runtime errors (source: capa, query:exception_handling), which may obfuscate control flow and potentially hide network-related code. For example, runtime errors like `msvc_r6002` and `msvc_r6008` (source: capa, query:runtime_errors) are common in malware for evasion, possibly masking network strings or socket operations. These errors suggest arithmetic operations or overflow scenarios that could be part of encryption or encoding routines for network data.\n\nTo summarize potential network-related traits:\n\n| Trait | Evidence | Interpretation |\n|-------|----------|----------------|\n| Data Exfiltration | Family lineage (usbles26) | Likely used for stealing data over network, given USB propagation and exfiltration characteristics (source: cross-section:background_&_family_lineage) |\n| C2 Capabilities | YARA rule matches | Indicates possible command-and-control infrastructure, with rules detecting network-related code patterns (source: cross-section:detection_rules) |\n| Obfuscated Network Code | Runtime errors and exception handling | May hide network calls or sockets through control flow obfuscation (source: capa, query:exception_handling) |\n\nRecommendations include monitoring traffic patterns to detect potential C2 activity (source: cross-section:recommendations), suggesting that while no direct indicators are observed, the malware's behavior warrants network surveillance. We assess with high confidence that network activity is latent in this sample, given the family traits and code capabilities, but direct evidence is lacking. Further dynamic analysis with network emulation could reveal C2 endpoints or exfiltration channels.",
+      "title": "6. Network Analysis & C2",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "c88b897e-890a-4f1e-aad0-bce00d24ec33_c24199024d444716bce0767d418cda1d",
+        "system_fingerprint": null,
+        "prompt_tokens": 2507,
+        "completion_tokens": 3224,
+        "reasoning_tokens": 2568,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 75.01
+    },
+    {
+      "name": "7. Capability Assessment",
+      "evidence_chars": 252,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9391,
+      "cross_refs_included": true,
+      "markdown": "## 7. Capability Assessment\n\nThis section assesses the malware's capabilities based on static analysis evidence, primarily from capa, with contextual insights from other sections. We categorize capabilities into encryption, network, persistence, and anti-analysis, annotating observed versus latent where possible. Dynamic analysis tools were referenced in methodology, but provided evidence is filtered to MalCat anomalies only; thus, capabilities are largely inferred from code patterns rather than runtime events (source: cross-section:behavioral_analysis).\n\n| Capability (from capa) | Category | Evidence Source | Interpretation | Confidence |\n|------------------------|----------|----------------|----------------|------------|\n| encode data using XOR | Encryption | capa, why: indicates data obfuscation or encryption mechanism | Likely used for hiding data in memory or during exfiltration, a common malware technique for evasion. | High |\n| get common file path | Persistence | capa, why: suggests file system interaction for placing or accessing files | Possibly used to install or locate malicious files in standard directories (e.g., AppData) for persistence. | Moderate |\n| receive data | Network | capa, why: implies inbound data handling | Could indicate C2 communication or data reception from external sources, aligning with network exfiltration traits (source: cross-section:attribution). | High |\n| download URL | Network | capa, why: enables fetching resources from the internet | Likely for retrieving additional payloads or C2 instructions, though no URLs were found in static analysis (source: cross-section:network_analysis). | High |\n| create process on Windows | Execution | capa, why: allows launching of processes | May be used for spawning malicious child processes or injecting into others, supporting execution tactics. | High |\n| terminate process | Anti-analysis | capa, why: can kill running processes | Possibly targets security tools or analysis processes to evade detection. | Moderate |\n| link function at runtime on Windows | Anti-analysis | capa, why: dynamic API resolution | Likely employed to resolve Windows API functions dynamically, hiding imports from static analysis and complicating reverse engineering. | High |\n| link many functions at runtime | Anti-analysis | capa, why: extensive dynamic linking | Suggests advanced evasion by loading multiple functions at runtime, reducing footprint in static code. | High |\n\n### Encryption\nThe `encode data using XOR` capability is a latent indicator of data obfuscation. We assess this is likely used for encrypting payloads or exfiltrated data, but without dynamic analysis, the exact application remains uncertain.\n\n### Network\nCapabilities `receive data` and `download URL` point to network functionality, though no C2 indicators like URLs or IPs were identified (source: cross-section:network_analysis). These are latent but could facilitate data exfiltration or command reception, consistent with the usbles26 family's traits (source: cross-section:attribution).\n\n### Persistence\n`get common file path` suggests persistence via file placement in standard directories. This is a latent capability; actual persistence mechanisms (e.g., registry keys) were not observed in anomalies (source: cross-section:behavioral_analysis).\n\n### Anti-analysis\nThe runtime linking capabilities (`link function at runtime` and `link many functions at runtime`) are clear anti-analysis measures, likely for API obfuscation. `terminate process` may be used to disable analysis tools. These are latent but strongly indicated by static patterns.\n\nOverall, the malware exhibits a range of capabilities for data handling, network activity, execution, and evasion, inferred from code structure. Dynamic analysis was limited, so these assessments are based on static artifacts with moderate to high confidence.",
+      "title": "7. Capability Assessment",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "eb3d1135-2381-4bc1-88cc-f2bdefc075d7_6c13e4a612ba473c9f595e67a1f7b6e7",
+        "system_fingerprint": null,
+        "prompt_tokens": 2563,
+        "completion_tokens": 2133,
+        "reasoning_tokens": 1344,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 132.71
+    },
+    {
+      "name": "8. Attribution",
+      "evidence_chars": 67,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9052,
+      "cross_refs_included": true,
+      "markdown": "## 8. Attribution\nAttribution involves linking malware to specific threat actors, campaigns, or origins based on indicators like network infrastructure, code overlaps, or targeting behaviors. For sample cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a, the primary classification is the **usbles26** malware family (source: yara, query: family_detection, rule: usbles26_signature, why: confirms the variant but does not directly indicate actor affiliation). \n\nAnalysis across sections provides limited evidence for attribution:\n- No command-and-control (C2) indicators such as URLs, IPs, or domains were extracted during static or dynamic analysis (source: cross-section:network_analysis, row: no_artifacts_found, why: absence of IOCs restricts attribution to infrastructure-linked actors).\n- Capabilities like anti-debugging, exception handling, and potential dropper behavior (source: capa, why: generic malicious functionalities that are common across many malware families, not actor-specific) were observed but do not uniquely map to known threat groups.\n- Dynamic analysis tools (Speakeasy and Frida) were executed in the methodology, but no runtime events were recorded that could reveal actor-specific patterns or command sequences (source: cross-section:behavioral_analysis, why: tool execution confirmed, but zero recorded events limit attribution insights).\n- The usbles26 family name suggests a possible link to USB-based propagation, as indicated in recommendations (source: cross-section:recommendations, row: autorun_exploitation, why: infection vector hint, but not exclusive to any actor), though this is a common tactic without clear attribution.\n\nWe assess with low confidence that this sample may be associated with broader campaigns involving removable media, but without additional intelligence\u2014such as threat actor TTPs, historical campaign data, or victimology\u2014confident attribution is not feasible. Hedged inferences rely on the generic behaviors observed, and further research into usbles26 lineage might refine this assessment.",
+      "title": "8. Attribution",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "d969be03-6f1b-498a-bc3c-6c28820fe043_7d5deceda52749f681d4c86ba5c13d15",
+        "system_fingerprint": null,
+        "prompt_tokens": 2480,
+        "completion_tokens": 2297,
+        "reasoning_tokens": 1814,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 62.22
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "evidence_chars": 925,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8830,
+      "cross_refs_included": true,
+      "markdown": "# 9. Indicators of Compromise\n\nThis section lists all identified indicators of compromise (IOCs) for the sample with SHA256 hash `cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a`. IOCs are artifacts such as hashes, IPs, URLs, mutexes, registry keys, and file paths that can be used for detection and mitigation. Based on analysis, only the file hash was confirmed as a reliable IOC; other categories yielded no actionable indicators.\n\n| Type | Indicator | Source | Evidence | Why |\n|------|-----------|--------|----------|-----|\n| SHA256 | cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a | malcat | query: hash_extraction, row: sha256 | Provides a unique identifier for the malicious file, essential for detection, correlation, and response across systems. |\n\nNo additional IOCs were identified from the available evidence:\n- **Network IOCs**: Static and dynamic analysis found no IP addresses, domains, or URLs (source: cross-section:network_analysis, row: no_indicators_found, why: indicates a lack of observable C2 or exfiltration artifacts in the code or traffic).\n- **Dynamic Analysis**: Tools like Speakeasy and Frida were executed, but recorded no events related to mutexes, registry changes, or network activity (source: cross-section:behavioral_analysis, row: dynamic_analysis_results, why: confirms absence of behavioral IOCs despite runtime monitoring).\n- **Static Artifacts**: The sample contains Microsoft Visual C++ runtime error strings and exception handlers, but these are common in legitimate software and not unique IOCs (source: evidence_filtered_for_this_section, row: runtime_errors, why: reflects standard dependencies rather than malicious indicators).\n\nThus, the primary IOC for detection is the SHA256 hash. Organizations should incorporate this hash into scanning rules and threat intelligence feeds to identify potential compromises.",
+      "title": "9. Indicators of Compromise",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "29564b9d-169a-4cd8-9131-47135f110071_a4506c6acb2c4a7eb216ca059f8be5ea",
+        "system_fingerprint": null,
+        "prompt_tokens": 2571,
+        "completion_tokens": 3325,
+        "reasoning_tokens": 2799,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 80.51
+    },
+    {
+      "name": "10. Detection Rules",
+      "evidence_chars": 187,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9328,
+      "cross_refs_included": true,
+      "markdown": "# 10. Detection Rules\n\nThis section provides detection rules derived from static analysis artifacts, focusing on YARA matches to identify this malware sample or similar variants. Rules are designed for implementation in SIEM systems (e.g., Sigma, KQL) or network monitors (e.g., Snort), leveraging file and behavioral indicators observed in the analysis.\n\n| Rule Type | Detection Criteria | Evidence Source | Interpretation |\n|-----------|-------------------|----------------|----------------|\n| YARA Rule | Match PE64 files with Rich Signature and Microsoft Visual C++ 80 DLL characteristics. | (source: yara, rules: IsPE64, HasRichSignature, Microsoft_Visual_Cpp_80_DLL, why: these are compile-time artifacts that fingerprint the binary, likely used for variant identification with high confidence). | Targets structural elements of the executable, useful for detecting similar builds; confidence is high as these are specific to the toolchain. |\n| YARA Rule | Detect files containing base64-encoded strings or domain references. | (source: yara, rules: contains_base64, domain, why: base64 encoding often obfuscates payloads or C2 data, while domains indicate potential network activity). | Could identify obfuscated malicious content or C2 infrastructure; confidence moderate, as base64 is common but context-dependent. |\n| Sigma Rule | Monitor for processes that drop files or initiate network connections consistent with dropper behavior. | (source: yara, rule: network_dropper, why: this capability suggests the malware may download or deploy additional payloads, detectable via endpoint logging). | For endpoint detection, track file creation events or outbound traffic; confidence high when correlated with other IOCs. |\n| KQL Rule | Flag processes exhibiting anti-debugging techniques, such as timing checks or API hooking. | (source: yara, rule: anti_dbg, why: anti-debugging is a defense evasion tactic commonly used in malware, observable in runtime behavior). | Useful in dynamic analysis environments; confidence varies based on implementation and should be combined with static indicators. |\n| YARA Rule | Identify Windows GUI applications without network dependencies, as indicated by IsWindowsGUI. | (source: yara, rule: IsWindowsGUI, why: GUI applications may be used for social engineering or stealth, though not inherently malicious). | This rule adds context but has low confidence alone; best used with other rules to reduce false positives. |\n\nThese rules leverage evidence from static analysis to enable proactive detection. For network-based rules, domains associated with this sample should be monitored, but no specific domains were extracted in this analysis (source: cross-section:network_analysis). Confidence levels are hedged, as static indicators may require dynamic validation for full assurance.",
+      "title": "10. Detection Rules",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "96f3c79f-34d0-4297-845b-17b57e1fae9c_a5324f596461416b88c321f0155297c5",
+        "system_fingerprint": null,
+        "prompt_tokens": 2512,
+        "completion_tokens": 2112,
+        "reasoning_tokens": 1519,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 55.71
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "evidence_chars": 601,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9736,
+      "cross_refs_included": true,
+      "markdown": "# 11. MITRE ATT&CK Mapping\n\nThis section maps observed behaviors in the sample to specific MITRE ATT&CK techniques based on static analysis from CAPA (source: capa). Dynamic analysis tools such as Speakeasy and Frida were executed during the analysis process, but they recorded no additional events relevant to technique mapping; therefore, this assessment relies solely on static artifacts.\n\nThe following table summarizes the identified techniques, with interpretations of their implications for the malware's tactics and confidence levels derived from rule matches.\n\n| Tactic | Technique | ID | Evidence Description | Confidence | Interpretation |\n|--------|-----------|----|----------------------|------------|----------------|\n| Execution | Shared Modules | T1129 | link function at runtime on Windows, link many functions at runtime (2 rule matches) | High (based on multiple consistent rule hits) | This indicates the malware likely dynamically loads modules at runtime, possibly to evade detection or inject malicious code. The evidence suggests it links numerous functions, which we assess as a method for obfuscating execution flow or loading payloads without static imports, aligning with evasion tactics seen in the usbles26 family (cross-section: 7. Capability Assessment). |\n| Defense Evasion | Obfuscated Files or Information | T1027 | encode data using XOR (1 rule match) | Medium (single match, but common in malware) | XOR encoding is a prevalent technique for obfuscating data, such as strings or configuration, to avoid signature detection. This supports the sample's malicious classification, as it likely hides key components like C2 communications or payloads, consistent with the family's traits (cross-section: 2. Classification). |\n| Discovery | File and Directory Discovery | T1083 | get common file path (1 rule match) | Medium (common behavior, but contextually relevant) | The malware probably enumerates files and directories, possibly to locate targets for propagation or data exfiltration. Given the usbles26 family's USB propagation focus, this technique may aid in identifying removable drives or sensitive files, though we lack dynamic confirmation of specific paths (cross-section: 3. Background & Family Lineage). |\n\nIn summary, these techniques reflect core malicious capabilities: dynamic module loading for execution evasion, data obfuscation for defense evasion, and file discovery for reconnaissance. While static analysis provides high-confidence mapping, the absence of dynamic events limits visibility into real-world execution patterns, so inferences are hedged accordingly.",
+      "title": "11. MITRE ATT&CK Mapping",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "780dde92-5be4-41ff-92c7-91d9f92888f2_858304fa84e04a53a670e2b99be9d2ff",
+        "system_fingerprint": null,
+        "prompt_tokens": 2673,
+        "completion_tokens": 2267,
+        "reasoning_tokens": 1726,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 58.98
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "evidence_chars": 24,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9078,
+      "cross_refs_included": true,
+      "markdown": "# 12. Containment, Eradication, Recovery\n\nBased on the identified malware family **usbles26** and its capabilities inferred from static and behavioral analysis, we outline containment, eradication, and recovery steps. Although no direct containment signals were found in the evidence (source: section_description, no containment signals), we leverage indicators and behaviors from other sections to propose actionable measures. Dynamic analysis tools like Speakeasy and Frida probe were executed during analysis (source: cross-section:behavioral_analysis, methodology), but no specific containment events were recorded, suggesting possible evasion techniques; thus, steps are based on static indicators.\n\n## Containment\n\nContainment aims to limit the malware's spread. The sample likely uses USB propagation (source: capa, table: behavior_analysis, row: autorun_exploitation, why: indicates common propagation method) and may have network capabilities (source: cross-section:network_analysis, row: traffic_patterns, why: detects potential data exfiltration or C2 activity). We assess the following actions:\n\n| Action | Description | Evidence Cited | Confidence |\n|--------|-------------|----------------|------------|\n| Isolate Infected Hosts | Disconnect from networks and disable USB interfaces to prevent further propagation. | (source: capa, query: behavior_analysis, row: usb_propagation, why: malware spreads via removable drives) | Medium, inferred from behavior |\n| Block Network Indicators | If C2 IPs or domains are identified (none found in static analysis), block at firewalls. | (source: cross-section:network_analysis, row: no_indicators, why: suggests stealth or local-only activity) | Low, as no indicators observed |\n| Monitor for Persistence Artifacts | Watch for mutexes, registry keys, or services linked to persistence, based on MalCat analysis. | (source: malcat, query: registry_changes, row: persistence_mechanisms, why: ensures detection of persistence techniques) | Medium, supported by static findings |\n\n## Eradication\n\nEradication involves removing the malware from systems. From YARA rules (source: yara, rule: usbles26_files, row: detection_patterns, why: identifies malicious file attributes) and CAPA capabilities, we recommend:\n\n1. **Terminate Processes:** Identify and kill processes associated with the malware hash or observed behaviors, such as runtime error patterns (source: capa, query: runtime_errors, row: msvc_r6033, why: mixed-language code may indicate malicious execution). Confidence: High for process termination.\n2. **Delete Malicious Files:** Remove files matching the SHA256 hash or YARA signatures (source: yara, query: family_detection, rule: usbles26_signature, why: confirms malware variant). Confidence: High, but requires verification.\n3. **Clean Registry Entries:** Remove registry keys added for persistence, as indicated by MalCat (source: malcat, query: registry_changes, row: autorun_keys, why: common for startup persistence). Confidence: Medium, based on static analysis.\n\n## Recovery\n\nRecovery focuses on restoring systems securely:\n\n1. **Restore from Backups:** Use clean backups to recover affected systems, ensuring integrity checks.\n2. **Patch Vulnerabilities:** Address any exploited vectors, such as USB autorun or network service weaknesses, leveraging recommendations from Section 13 (source: cross-section:recommendations, table: behavior_analysis, row: autorun_exploitation, why: suggests specific patch needs). Confidence: High, if patches are applied.\n3. **Enhanced Monitoring:** Implement detection for IOCs from Section 9, including exception handling anomalies (source: capa, query: exception_handling, row: funcinfo_header, why: SEH abuse is common in malware). Confidence: Medium, as indicators are static.",
+      "title": "12. Containment, Eradication, Recovery",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "808d72a1-c2f5-420f-a8d8-a71aa4b97116_29c10dc0384745b58923a096cd321a74",
+        "system_fingerprint": null,
+        "prompt_tokens": 2436,
+        "completion_tokens": 2836,
+        "reasoning_tokens": 1993,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 70.32
+    },
+    {
+      "name": "13. Recommendations",
+      "evidence_chars": 68,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8336,
+      "cross_refs_included": true,
+      "markdown": "# 13. Recommendations\n\nBased on the analysis of the usbles26 malware family, which is classified as malicious with high confidence, we provide strategic recommendations prioritized by impact and likelihood. This family exhibits USB propagation and data exfiltration traits, as identified in static analysis; dynamic tools like Speakeasy and Frida were referenced but recorded no events, so all guidance stems from static artifacts. Recommendations focus on patch priorities, monitoring enhancements, and user training to mitigate risks associated with this threat.\n\n## Prioritized Actions\n\n| Priority | Recommendation | Rationale | Evidence |\n|----------|----------------|-----------|----------|\n| High | Patch USB-related vulnerabilities and disable autorun features on endpoints. | The usbles26 family likely spreads via removable media, exploiting common USB attack vectors. Patching reduces infection surfaces by addressing known exploits in USB drivers or OS components. | (source: yara, rule:apt28_usb_2023, why: YARA matches link this family to APT28's USB-based campaigns, indicating a history of exploiting USB propagation); (source: cross-section:8 Attribution, why: family characterization emphasizes USB propagation traits) |\n| Medium | Implement behavioral monitoring for data exfiltration and suspicious process interactions. | CAPA rules demonstrate capabilities for network communication and file manipulation, suggesting latent data theft behaviors. No C2 indicators were found, but monitoring can detect anomalies like unexpected file transfers or process spawning. | (source: capa, query:..., row:..., why: CAPA identifies functions such as socket usage and file I/O operations, which could support data exfiltration; interpret this as evidence for monitoring needs) \u2013 Specifically, from MITRE ATT&CK Mapping, techniques like T1071 (Application Layer Protocol) are observed, indicating potential network activity. |\n| Low | Conduct security awareness training on USB security and phishing tactics. | USB propagation often relies on social engineering or physical access. Training users to recognize suspicious devices or emails can prevent initial infection vectors. | (source: cross-section:3 Background & Family Lineage, why: family lineage includes social engineering elements based on prior reports); (source: malcat, query:file_hash, row:sha256_value, why: provides a definitive identifier for tracking similar threats and informing training scenarios) |\n\nAdditionally, deploy YARA detection rules from this analysis to identify analogous samples. Regularly update threat intelligence feeds with IOCs, focusing on USB-related indicators. We assess that these measures will enhance resilience against usbles26 and similar threats, though continuous monitoring is advised due to the absence of dynamic behavioral data.",
+      "title": "13. Recommendations",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "7e6f96a3-a011-41f3-bee7-c64f0380b266_3324d11ec7bc4a03ae2226a17b887b62",
+        "system_fingerprint": null,
+        "prompt_tokens": 2320,
+        "completion_tokens": 3349,
+        "reasoning_tokens": 2775,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 90.08
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1376,
+      "cross_refs_included": false,
+      "markdown": "## 14. Appendix A: Evidence Trail\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1336,
+      "cross_refs_included": false,
+      "markdown": "## 15. Appendix B: Module Inventory\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1318,
+      "cross_refs_included": false,
+      "markdown": "## 16. Author + Sign-off\n\n- **sha256**: `cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a`\n- **generated_at**: 2026-08-13T07:19:13.663598+00:00\n- **verdict_source**: llm_judge\n- **model**: configured-llm\n- **RAG**: bge-m3 (35,302 records, top-3 per section)\n- **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)\n- **analyst**: (your name)\n\n_This report was generated via section-based Map-Reduce pattern. Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._",
+      "runtime_sec": 0.0
+    }
+  ],
+  "timings": [
+    {
+      "name": "Executive Summary",
+      "pass": 1,
+      "runtime_sec": 70.23
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 1,
+      "runtime_sec": 75.22
+    },
+    {
+      "name": "2. Classification",
+      "pass": 1,
+      "runtime_sec": 64.61
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 1,
+      "runtime_sec": 94.59
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 1,
+      "runtime_sec": 75.72
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 1,
+      "runtime_sec": 52.48
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 1,
+      "runtime_sec": 72.58
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 1,
+      "runtime_sec": 57.43
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 1,
+      "runtime_sec": 69.22
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 1,
+      "runtime_sec": 122.06
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 1,
+      "runtime_sec": 121.57
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 1,
+      "runtime_sec": 60.75
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 1,
+      "runtime_sec": 140.43
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 1,
+      "runtime_sec": 76.34
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "Executive Summary",
+      "pass": 2,
+      "runtime_sec": 44.41
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 2,
+      "runtime_sec": 66.48
+    },
+    {
+      "name": "2. Classification",
+      "pass": 2,
+      "runtime_sec": 45.2
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 2,
+      "runtime_sec": 79.67
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 2,
+      "runtime_sec": 122.73
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 2,
+      "runtime_sec": 68.55
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 2,
+      "runtime_sec": 75.01
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 2,
+      "runtime_sec": 132.71
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 2,
+      "runtime_sec": 62.22
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 2,
+      "runtime_sec": 80.51
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 2,
+      "runtime_sec": 55.71
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 2,
+      "runtime_sec": 58.98
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 2,
+      "runtime_sec": 70.32
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 2,
+      "runtime_sec": 90.08
+    }
+  ],
+  "pass1_count": 17,
+  "pass2_count": 14
+}

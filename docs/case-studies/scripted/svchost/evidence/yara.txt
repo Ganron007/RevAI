@@ -1,0 +1,506 @@
+# YARA matches (deterministic render)
+
+{
+  "rule_count": 24,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IP",
+      "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "strings": [
+        {
+          "id": "$ipv4",
+          "offset": 75759,
+          "length": 13,
+          "xor_key": null
+        },
+        {
+          "id": "$ipv6",
+          "offset": 96935,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Locky_Ransomware_2",
+      "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "strings": [
+        {
+          "id": "$a1",
+          "offset": 76020,
+          "length": 13,
+          "xor_key": null
+        },
+        {
+          "id": "$a2",
+          "offset": 76097,
+          "length": 13,
+          "xor_key": null
+        },
+        {
+          "id": "$a3",
+          "offset": 76110,
+          "length": 13,
+          "xor_key": null
+        },
+        {
+          "id": "$a4",
+          "offset": 76123,
+          "length": 13,
+          "xor_key": null
+        },
+        {
+          "id": "$a5",
+          "offset": 76136,
+          "length": 13,
+          "xor_key": null
+        },
+        {
+          "id": "$a6",
+          "offset": 76149,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$a7",
+          "offset": 76700,
+          "length": 15,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "contains_base64",
+      "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 68984,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "System_Tools",
+      "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "strings": []
+    },
+    {
+      "rule": "Dropper_Strings",
+      "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "strings": [
+        {
+          "id": "$a0",
+          "offset": 76939,
+          "length": 18,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Misc_Suspicious_Strings",
+      "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "strings": [
+        {
+          "id": "$a4",
+          "offset": 77068,
+          "length": 14,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Advapi_Hash_API",
+      "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "strings": [
+        {
+          "id": "$advapi32",
+          "offset": 89940,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$CryptCreateHash",
+          "offset": 89758,
+          "length": 15,
+          "xor_key": null
+        },
+        {
+          "id": "$CryptHashData",
+          "offset": 89838,
+          "length": 13,
+          "xor_key": null
+        },
+        {
+          "id": "$CryptAcquireContext",
+          "offset": 89592,
+          "length": 19,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IsPE32",
+      "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "strings": []
+    },
+    {
+      "rule": "IsWindowsGUI",
+      "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "strings": []
+    },
+    {
+      "rule": "HasRichSignature",
+      "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "strings": [
+        {
+          "id": "$a0",
+          "offset": 200,
+          "length": 4,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "VC8_Microsoft_Corporation",
+      "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 15664,
+          "length": 10,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Microsoft_Visual_Cpp_8",
+      "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 607,
+          "length": 82,
+          "xor_key": null
+        },
+        {
+          "id": "$b",
+          "offset": 33965,
+          "length": 10,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "SEH_Save",
+      "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 44005,
+          "length": 7,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "SEH_Init",
+      "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 44062,
+          "length": 6,
+          "xor_key": null
+        },
+        {
+          "id": "$b",
+          "offset": 23648,
+          "length": 7,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "anti_dbg",
+      "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "strings": [
+        {
+          "id": "$d1",
+          "offset": 77028,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 90574,
+          "length": 17,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "network_http",
+      "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 90264,
+          "length": 11,
+          "xor_key": null
+        },
+        {
+          "id": "$c1",
+          "offset": 90084,
+          "length": 15,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 90046,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c4",
+          "offset": 90246,
+          "length": 16,
+          "xor_key": null
+        },
+        {
+          "id": "$c5",
+          "offset": 90170,
+          "length": 17,
+          "xor_key": null
+        },
+        {
+          "id": "$c6",
+          "offset": 90104,
+          "length": 15,
+          "xor_key": null
+        },
+        {
+          "id": "$c7",
+          "offset": 90148,
+          "length": 15,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "screenshot",
+      "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "strings": [
+        {
+          "id": "$d1",
+          "offset": 89468,
+          "length": 9,
+          "xor_key": null
+        },
+        {
+          "id": "$d2",
+          "offset": 89260,
+          "length": 10,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 89182,
+          "length": 5,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "win_registry",
+      "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 89940,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c1",
+          "offset": 89700,
+          "length": 16,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 89616,
+          "length": 13,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 89632,
+          "length": 11,
+          "xor_key": null
+        },
+        {
+          "id": "$c4",
+          "offset": 89664,
+          "length": 14,
+          "xor_key": null
+        },
+        {
+          "id": "$c6",
+          "offset": 89632,
+          "length": 11,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "win_token",
+      "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 89940,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 89796,
+          "length": 16,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "win_files_operation",
+      "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 77028,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c1",
+          "offset": 88230,
+          "length": 9,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 88328,
+          "length": 14,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 88230,
+          "length": 9,
+          "xor_key": null
+        },
+        {
+          "id": "$c4",
+          "offset": 88316,
+          "length": 8,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Str_Win32_Wininet_Library",
+      "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "strings": [
+        {
+          "id": "$wininet_lib",
+          "offset": 90264,
+          "length": 11,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Str_Win32_Internet_API",
+      "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "strings": [
+        {
+          "id": "$wininet_call_closeh",
+          "offset": 90004,
+          "length": 19,
+          "xor_key": null
+        },
+        {
+          "id": "$wininet_call_readf",
+          "offset": 90246,
+          "length": 16,
+          "xor_key": null
+        },
+        {
+          "id": "$wininet_call_connect",
+          "offset": 90084,
+          "length": 15,
+          "xor_key": null
+        },
+        {
+          "id": "$wininet_call_open",
+          "offset": 90046,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Str_Win32_Http_API",
+      "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "strings": [
+        {
+          "id": "$wininet_call_httpr",
+          "offset": 90148,
+          "length": 15,
+          "xor_key": null
+        },
+        {
+          "id": "$wininet_call_httpq",
+          "offset": 90228,
+          "length": 13,
+          "xor_key": null
+        },
+        {
+          "id": "$wininet_call_httpo",
+          "offset": 90104,
+          "length": 15,
+          "xor_key": null
+        }
+      ]
+    }
+  ],
+  "engine": "yara-x",
+  "rules_compiled": 454,
+  "compile_errors": [
+    "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+    "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+    "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+  ],
+  "incomplete": true,
+  "duration_s": 3.88
+}

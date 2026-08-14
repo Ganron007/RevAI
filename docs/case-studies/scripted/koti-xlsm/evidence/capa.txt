@@ -1,0 +1,11 @@
+# capa rules (deterministic render)
+
+{
+  "skipped": true,
+  "fail_open": true,
+  "reason": "not_applicable:ooxml",
+  "error": "CAPA supports PE/ELF/Mach-O only (got ooxml)",
+  "rule_count": 0,
+  "matched_rule_count": 0,
+  "top_rules": []
+}

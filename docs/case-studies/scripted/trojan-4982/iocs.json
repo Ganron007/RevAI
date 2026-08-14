@@ -1,0 +1,41 @@
+{
+  "sha256": "38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73",
+  "family": "Trioris/Cerbu trojan",
+  "verdict": "malicious@",
+  "generated_at": "2026-08-12T21:51:39.939718+00:00",
+  "hashes": {
+    "sha256": "38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73",
+    "sha1": "2a4d5365e6adb6a50c9f4b225d3d5abc549b7c9c",
+    "md5": "2b6f4fb770a17ff7dc764851fd004982"
+  },
+  "domains": [
+    "www[.]microsoft[.]com",
+    "crl[.]microsoft[.]com"
+  ],
+  "ips": [],
+  "urls": [
+    "http[:]//www[.]microsoft[.]com/pki/certs/MicRooCerAut_2010-06-23[.]crt0",
+    "http[:]//www[.]microsoft[.]com/windows0",
+    "http[:]//www[.]microsoft[.]com/pki/certs/MicRooCerAut_2010-06-23[.]crt0\ufffd\ufffd\u0006\u0003U",
+    "http[:]//www[.]microsoft[.]com/pki/certs/MicTimStaPCA_2010-07-01[.]crt0"
+  ],
+  "files": [],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive).",
+  "wallets_btc": [],
+  "wallets_eth": [],
+  "emails": [
+    "jp[@]-[.]G"
+  ],
+  "revai_tools": {
+    "count": 7,
+    "source": "revai_tools_iocs"
+  }
+}

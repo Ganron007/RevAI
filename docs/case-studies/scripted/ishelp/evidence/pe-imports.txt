@@ -1,0 +1,61 @@
+# PE import signals (deterministic render)
+
+{
+  "engine": "pe_imports",
+  "sample_size": 78848,
+  "duration_s": 0.02,
+  "import_count": 88,
+  "signal_count": 7,
+  "signals": [
+    {
+      "label": "allocate_memory",
+      "api_match": "VirtualAllocEx",
+      "attack": [
+        "T1055"
+      ]
+    },
+    {
+      "label": "write_process_memory",
+      "api_match": "WriteProcessMemory",
+      "attack": [
+        "T1055"
+      ]
+    },
+    {
+      "label": "create_remote_thread",
+      "api_match": "CreateRemoteThread",
+      "attack": [
+        "T1055"
+      ]
+    },
+    {
+      "label": "create_process",
+      "api_match": "CreateProcess",
+      "attack": [
+        "T1106"
+      ]
+    },
+    {
+      "label": "load_library",
+      "api_match": "LoadLibrary",
+      "attack": [
+        "T1129"
+      ]
+    },
+    {
+      "label": "get_proc_address",
+      "api_match": "GetProcAddress",
+      "attack": [
+        "T1129"
+      ]
+    },
+    {
+      "label": "change_memory_protection",
+      "api_match": "VirtualProtect",
+      "attack": [
+        "T1055"
+      ]
+    }
+  ],
+  "hint": "PE import high-signal map (pefile). Not capa."
+}

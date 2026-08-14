@@ -1,0 +1,95 @@
+# capa rules (deterministic render)
+
+{
+  "rule_count": 3,
+  "top_rules": [
+    {
+      "name": "encrypt data using RC4 PRGA",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Cryptography",
+            "Encrypt Data",
+            "RC4"
+          ],
+          "objective": "Cryptography",
+          "behavior": "Encrypt Data",
+          "method": "RC4",
+          "id": "C0027.009"
+        },
+        {
+          "parts": [
+            "Cryptography",
+            "Generate Pseudo-random Sequence",
+            "RC4 PRGA"
+          ],
+          "objective": "Cryptography",
+          "behavior": "Generate Pseudo-random Sequence",
+          "method": "RC4 PRGA",
+          "id": "C0021.004"
+        }
+      ]
+    },
+    {
+      "name": "accept command line arguments",
+      "attack": [
+        {
+          "parts": [
+            "Execution",
+            "Command and Scripting Interpreter"
+          ],
+          "tactic": "Execution",
+          "technique": "Command and Scripting Interpreter",
+          "subtechnique": "",
+          "id": "T1059"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Execution",
+            "Command and Scripting Interpreter"
+          ],
+          "objective": "Execution",
+          "behavior": "Command and Scripting Interpreter",
+          "method": "",
+          "id": "E1059"
+        }
+      ]
+    },
+    {
+      "name": "hide graphical window",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Hide Artifacts",
+            "Hidden Window"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Hide Artifacts",
+          "subtechnique": "Hidden Window",
+          "id": "T1564.003"
+        }
+      ],
+      "mbc": []
+    }
+  ],
+  "timeout_s": 300,
+  "sample_size": 26624,
+  "duration_s": 2.09,
+  "engine": "malcat-capa",
+  "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+}

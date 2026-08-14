@@ -1,0 +1,95 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 98,
+  "summary": "This 64-bit DLL (named 'win32k.dll' to masquerade as the legitimate Windows kernel component) is a fully-featured backdoor/RAT with 855 exports, HTTP-based C2, persistence via scheduled tasks, privilege escalation, process injection, and browser credential theft capabilities. It fingerprints the OS version for beaconing, checks its public IP via icanhazip.com, uses a custom HTTP protocol ('httprdc'/'httprex'), and employs multiple encryption layers (AES, XOR, Base64, SHA-2/BLAKE2). Evasion techniques are evident through masquerading as 'win32k.dll' and using encryption layers to hinder analysis. Exfiltration capabilities are not explicitly observed, though data theft is implied via credential theft and HTTP C2. Defense impairment techniques are not observed.",
+  "key_evidence": [
+    "855 exports in a single DLL is abnormal and consistent with a modular malware framework (Ghidra exports table: 855 rows)",
+    "Persistence via scheduled tasks every 1 minute running as System: '/c echo N|schtasks /create /tn \"%s\" /tr \"%s\" /sc minute /mo 1 /ru \"System\"' (Ghidra string_refs to FUN_18000bf10)",
+    "Privilege escalation APIs imported: AdjustTokenPrivileges, DuplicateTokenEx, CreateProcessAsUserW, LookupPrivilegeValueW, OpenProcessToken, GetTokenInformation (Ghidra imports from ADVAPI32.DLL)",
+    "Process injection: CreateRemoteThread + VirtualAlloc + OpenProcess from KERNEL32.DLL (pe_import_signals: T1055 injection)",
+    "HTTP C2 channel: InternetOpenA, InternetConnectA, HttpOpenRequestA, HttpSendRequestA, HttpSendRequestExW, InternetReadFile (Ghidra imports from WININET.DLL)",
+    "External IP check via http://icanhazip.com referenced in FUN_180013cb0 (Ghidra string_refs)",
+    "Custom C2 protocol strings 'httprdc' and 'httprex' with command-response pattern including 'success' and 'no\\r\\n\\r\\n\\r\\n' (Ghidra string_refs to FUN_18000deb0, FUN_18000e4d0, FUN_18000e6e0)",
+    "OS fingerprinting beacon URL: '/%s/%s/0/%s/%d/%s/%s/' with version strings Win_XP through Win_10_TH1 and _64bit detection (Ghidra string_refs to FUN_180005120)",
+    "Browser credential theft targeting: chrome.exe, firefox.exe, iexplore.exe, microsoftedge (Ghidra string_refs to FUN_180018b90)",
+    "CAPA: 74 behavioral rules including Base64 encoding (T1027), XOR encoding (T1027), manually built AES constants (T1027), socket operations, registry manipulation (T1112), process creation (T1106)",
+    "YARA SHA2/BLAKE2 IVs match at offsets 40612-40665 indicating embedded cryptographic constants (checklist_yara_scan)",
+    "YARA Advapi_Hash_API matches: CryptAcquireContext, CryptCreateHash, CryptHashData at offsets 120654-120914 (checklist_yara_scan)",
+    "BCrypt cryptographic API chain: BCryptOpenAlgorithmProvider, BCryptCreateHash, BCryptHashData, BCryptFinishHash, BCryptVerifySignature (Ghidra imports from BCRYPT.DLL)",
+    "Extremely high cyclomatic complexity functions: CC=97 (FUN_18000b5e0, 144 blocks), CC=91 (FUN_18000d940, 118 blocks), CC=75 (FUN_180015390, 109 blocks) indicating obfuscated or complex C2 logic (Ghidra function_metrics)",
+    "Service manipulation: ControlService imported from ADVAPI32.DLL (Ghidra imports)",
+    "User-Agent masquerade as Chrome: 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36' (Ghidra string_refs to FUN_1800095b0)",
+    "YARA Dropper_Strings match and Misc_Suspicious_Strings match at offsets 108846 and 104200 (checklist_yara_scan)"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 30,
+  "successful_non_bootstrap_tools": 16,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

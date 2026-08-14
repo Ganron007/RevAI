@@ -1,0 +1,66 @@
+{
+  "sha256": "683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X86",
+      "file_size": 50861,
+      "entropy": 135,
+      "sha256": "683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96",
+      "dotnet_bundle": false,
+      "imports_count": 21,
+      "strings_count": 100,
+      "functions_count": 10,
+      "constants_count": 2,
+      "anomalies_count": 7,
+      "yara_hits_count": 1,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 21,
+      "import_ptrs": 0,
+      "funcs": 28,
+      "strings": 44
+    },
+    "ida": {
+      "imports": 21,
+      "funcs": 28,
+      "strings": 94
+    }
+  },
+  "warnings": [],
+  "source_decisions": {
+    "sha256": "683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96",
+    "imports": {
+      "source": "ghidra",
+      "confidence": "high",
+      "reason": "Ghidra reports 21 imports, matching IDA's 21 and malcat's imports_count of 21, indicating consistent data for import analysis."
+    },
+    "functions": {
+      "source": "ghidra",
+      "confidence": "high",
+      "reason": "Ghidra and IDA both report 28 functions, while malcat reports 10; ghidra provides reliable detailed function disassembly."
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "Malcat reports 100 strings, IDA reports 94, and Ghidra reports 44; combining both malcat and IDA ensures comprehensive string coverage."
+    },
+    "decompilation": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra is a default choice for decompilation offering pseudo-code generation; no specific data in tool summaries."
+    },
+    "cff": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "CFF analysis is best handled by disassemblers like Ghidra; default selection based on common practice."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat provides file entropy (135), anomalies count (7), file size (50861), and other static metadata ideal for profiling."
+    },
+    "llm_revised": true
+  }
+}

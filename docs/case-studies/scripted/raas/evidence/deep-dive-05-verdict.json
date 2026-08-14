@@ -1,0 +1,97 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "This is a sophisticated ransomware sample ('raas.exe' - Ransomware-as-a-Service) with extensive anti-analysis capabilities. The binary employs a multi-layered encryption scheme (RC4 for file encryption, AES for key wrapping, RSA public key for asymmetric key exchange), characteristic of modern ransomware. It contains a comprehensive anti-analysis toolkit targeting VMs (VMware, VirtualBox, Xen, Parallels), debuggers (OllyDbg, IDA Pro, WinDbg, Immunity Debugger), sandboxes (Sandboxie, JoeBox), and security tools (ProcessHacker, ProcMon, Wireshark). The sample uses XOR encoding, RC4 PRGA, CRC32 hashing, and obfuscated stack strings for defense evasion. It performs process injection via VirtualAllocEx/VirtualProtect, direct disk access through \\\\.\\PhysicalDrive0, and file operations (read, encrypt, delete, move) targeting victim data. Network APIs (WSAStartup, connect, send, recv) indicate C2 communication capability. High cyclomatic complexity functions (123, 113, 98) suggest control flow flattening/obfuscation. The binary is packed with overlay data. Exfiltration capability is not explicitly observed in the analysis, but network APIs {source: 'binary analysis', query_or_table: 'network APIs', row_or_rule: 'WSAStartup, connect, send, recv', why: 'indicate C2 communication potential for data transfer'}. Imports are observed with critical Windows APIs {source: 'binary analysis', query_or_table: 'import table', row_or_rule: 'VirtualAllocEx, VirtualProtect', why: 'support process injection and memory manipulation'} and network functions {source: 'binary analysis', query_or_table: 'network APIs', row_or_rule: 'WSAStartup, connect, send, recv', why: 'enable C2 communication'}.",
+  "key_evidence": [
+    "CAPA: encrypt data using RC4 PRGA (T1027, C0027.009) - ransomware file encryption",
+    "CAPA: encrypt data using AES via WinAPI (T1027) with RSA public key reference - hybrid encryption chain",
+    "CAPA: encode data using XOR (T1027, C0026.002), contain obfuscated stackstrings - defense evasion",
+    "CAPA: resolve function by hash (T1027) - shellcode-style dynamic API resolution",
+    "PE_IMPORT_SIGNALS: VirtualAllocEx + VirtualProtect (T1055) - process injection capabilities",
+    "PE_IMPORT_SIGNALS: IsDebuggerPresent (T1622) + NtQueryInformationProcess - anti-debugging",
+    "FLOSS: anti-VM strings (VMware Tools, vmhgfs.sys, vmmouse.sys, VBoxMouse.sys, xenservice, prl_tools, VMSrvc)",
+    "FLOSS: anti-sandbox strings (SANDBOX, MALWARE, MALTEST, TEQUILABOOMBOOM, SbieDll.dll, joeboxcontrol, IVIRTUALBOX)",
+    "FLOSS: anti-debug strings (ollydbg.exe, Immunity Debugger, idaq.exe, idaq64.exe, WinDbgFrameClass, windbg.exe)",
+    "FLOSS: anti-analysis tools (ProcessHacker.exe, ProcMon.exe, Wireshark.exe, HookExplorer.exe, ImportREC.exe, PETools.exe, LordPE.exe)",
+    "Ghidra SQL: full crypto API chain - CryptAcquireContextW, CryptCreateHash, CryptHashData, CryptGetHashParam (ADVAPI32.DLL)",
+    "Ghidra SQL: network stack - WSAStartup, connect, send, recv, closesocket (WS2_32.DLL) - C2 communication",
+    "Ghidra SQL: file operations - CreateFileW, ReadFile, WriteFile, DeleteFileW, MoveFileExW - file encryption workflow",
+    "Ghidra SQL: direct disk access via \\\\.\\PhysicalDrive0 - bypass filesystem for encryption",
+    "Ghidra SQL: AddVectoredExceptionHandler - SEH-based anti-debugging",
+    "Ghidra SQL: high cyclomatic complexity functions (123, 113, 98) - control flow obfuscation/flattening",
+    "YARA: IsPacked rule matched - binary is packed",
+    "YARA: CRC32_poly_Constant at offset 1226 - integrity checking or hash-based resolution",
+    "YARA: maldoc_find_kernel32_base_method_1 - PEB-based shellcode API resolution technique"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 33,
+  "successful_non_bootstrap_tools": 19,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

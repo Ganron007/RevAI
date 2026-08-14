@@ -1,0 +1,1223 @@
+{
+  "sha": "a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395",
+  "mode": "single",
+  "mode_effective": "large",
+  "strict_standard": false,
+  "audited_at": "2026-08-14T02:02:24.225864+00:00",
+  "session_pipeline_mode": "single",
+  "sample_path": "/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin",
+  "stages": {
+    "intake": {
+      "ok": true,
+      "checks": {
+        "intake_validation": true,
+        "has_source_decisions": true,
+        "ghidra_mentioned": true
+      },
+      "evidence": {
+        "intake_validation": {
+          "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/intake-validation.json",
+          "exists": true,
+          "bytes": 3001,
+          "mtime_iso": "2026-08-13T00:36:51.996177+00:00",
+          "sha256": "11c39996445d40fa1f0d93505e999d637c0521ee170fc598c02302d5cec8597a"
+        },
+        "malcat_triage": {
+          "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/malcat-triage.json",
+          "exists": true,
+          "bytes": 136500,
+          "mtime_iso": "2026-08-14T01:34:37.120844+00:00",
+          "sha256": "3335f24022355201927bcd5c92703379002d4c0a70e44460967063cbc598038a"
+        },
+        "source_decisions": {
+          "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/source-decisions.json",
+          "exists": true,
+          "bytes": 2086,
+          "mtime_iso": "2026-08-13T00:36:51.996177+00:00",
+          "sha256": "97556a158a29cef09f5e06bd4456c19aa6c0925406b2fe6abeeb6b1e48103e77"
+        },
+        "ghidra_import_log": {
+          "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/intake-analyzeHeadless.log",
+          "exists": true,
+          "bytes": 7882,
+          "mtime_iso": "2026-08-13T00:35:21.754126+00:00",
+          "sha256": "ee3ea2a089658b66fae14896e5a66c931465314e02c96778335f2dc8e9c12ddc"
+        },
+        "ida_bootstrap_log": {
+          "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/intake-idasql.log",
+          "exists": true,
+          "bytes": 218,
+          "mtime_iso": "2026-08-13T00:35:26.739126+00:00",
+          "sha256": "d5a5bff6f20fbc047bc8cfc7aebce268f8ab0f0ea89a336a41e6e16db9ffde71"
+        },
+        "source_decisions_excerpt": "{\n  \"sha256\": \"a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395\",\n  \"imports\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"high\",\n    \"reason\": \"{source: 'tool_summaries', query_or_table: 'ghidra and ida', row_or_rule: 'imports count', why: 'Both Ghidra and IDA report 187 imports, showing consistency and reliability for import extraction, while Malcat's count (863) diverges significantly.'}\"\n  },\n  \"functions\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"medium\",\n    \"reason\": \"{source: 'tool_summaries', query_or_table: 'ghidra and ida', row_or_rule: 'functions count', why: 'Ghidra reports 1342 functions and IDA reports 1534, within a 14% difference, making Ghidra a standard tool for function analysis, whereas Malcat's count (10) is unreliable.'}\"\n  },\n  \"strings\": {\n    \n\u2026 [1309 more chars]",
+        "malcat_triage_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n  \"profile\": \"triage\",\n  \"limits\": {\n    \"strings_max\": 100,\n    \"imports_max\": 100,\n    \"functions_max\": 10,\n    \"anomaly_locations_max\": 5,\n    \"decompile_top_n\": 1\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"dumped_dll.bin\",\n    \"file_path\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n    \"file_size\": 733696,\n    \"type\": \"PE\",\n    \"architecture\": \"X64\",\n    \"entropy\": 6.56,\n    \"sha256\": \"a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395\",\n    \"metadata\": {\n      \"VersionInfo::CompanyName\": \"www.xmrig.com\",\n      \"VersionInfo::FileDescription\": \"XMRig C\n\u2026 [135700 more chars]"
+      }
+    },
+    "quick_scan": {
+      "ok": true,
+      "checks": {
+        "prompt": true,
+        "verdict": true,
+        "has_capa_section": true,
+        "has_yara_section": true,
+        "has_malcat_section": true,
+        "has_floss_section": true,
+        "verdict_has_family": true,
+        "llm_source": true,
+        "tools_all_ok": true,
+        "citations_grounded": true,
+        "capa_salvage_used": false,
+        "evidence_pack_present": true,
+        "benign_blocked_if_incomplete": true,
+        "yara_family_not_cleared": true
+      },
+      "tools": {
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 43,\n  \"top_rules\": [\n    {\n      \"name\": \"contain obfuscated stackstrings\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Indicator Removal from Tools\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"Indicator Removal from Tools\",\n          \"id\": \"T1027.005\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Executable Code Obfuscation\",\n            \"Argument Obfuscation\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Executable Code Obfuscation\",\n          \"method\": \"Argument Obfuscation\",\n          \"id\": \"B0032.020\"\n        },\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Executable Code Obfuscation\",\n            \"Stack Strings\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Executable Code Obfuscation\",\n          \"method\": \"Stack Strings\",\n          \"id\": \"B0032.017\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encode data using XOR\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encoding-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encoding-Standard Algorithm\",\n          \"id\": \"E1027.m02\"\n        },\n        {\n          \"parts\": [\n            \"Data\",\n            \"Encode Data\",\n            \"XOR\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Encode Data\",\n          \"method\": \"XOR\",\n          \"id\": \"C0026.002\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encrypt data using AES\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encryption-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encryption-Standard Algorithm\",\n          \"id\": \"E1027.m05\"\n        },\n        {\n          \"parts\": [\n            \"Cryptography\",\n            \"Encrypt Data\",\n            \"AES\"\n          ],\n          \"objective\": \"Cryptography\",\n          \"behavior\": \"Encrypt Data\",\n          \"method\": \"AES\",\n          \"id\": \"C0027.001\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encrypt data using AES via x86 extensions\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"i\n\u2026 [6278 more chars]",
+          "present": true
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 23,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv4\",\n          \"offset\": 639648,\n          \"length\": 7,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 616601,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 13589,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"SHA2_BLAKE2_IVs\",\n      \"path\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 534868,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c1\",\n          \"offset\": 534890,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c2\",\n          \"offset\": 534897,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c3\",\n          \"offset\": 534904,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c4\",\n          \"offset\": 534911,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c5\",\n          \"offset\": 534918,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c6\",\n          \"offset\": 534925,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c7\",\n          \"offset\": 534933,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"RijnDael_AES_CHAR\",\n      \"path\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 615696,\n          \"length\": 32,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"SHA3_constants\",\n      \"path\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 612424,\n          \"length\": 8,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c1\",\n          \"offset\": 612552,\n          \"length\": 8,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c2\",\n          \"offset\": 612568,\n          \"length\": 8,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c3\",\n          \"offset\": 612504,\n          \"length\": 8,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c4\",\n          \"offset\": 612408,\n          \"length\": 8,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c5\",\n          \"offset\": 612512,\n          \"length\": 8,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c6\",\n\u2026 [10041 more chars]",
+          "present": true
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 2082,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"P]P)]$7\",\n    \"\\\\$ UVWf\",\n    \"M.i,ud&\",\n    \"efefefefefefefe\",\n    \"efefefefefe\",\n    \"!This program cannot be run in DOS mode.\",\n    \"`.rdata\",\n    \"@.data\",\n    \".pdata\",\n    \"@.rsrc\",\n    \"@.reloc\",\n    \"L$ SUVWH\",\n    \"@WATAUAVAWH\",\n    \"0A_A^A]A\\\\_\",\n    \"t$ WAVAWH\",\n    \"\\\\$ UVWAVAWH\",\n    \"0A_A^_^]\",\n    \"|$ ATAUAVAWH\",\n    \"|$@A_A^A]A\\\\\",\n    \"UVWATAUAVAWH\",\n    \"A_A^A]A\\\\_^]\",\n    \"SVWATAUAVAWH\",\n    \"<$HkD$ XI\",\n    \"`A_A^A]A\\\\_^[\",\n    \"l$0L;C\",\n    \"t$XL;C\",\n    \"L$ SVWH\",\n    \"K @81u\",\n    \"6</uZH\",\n    \"L$ UVWAUAWH\",\n    \"d$`u>A\",\n    \"0A_A]_^]\",\n    \"2</uVH\",\n    \"SUVWATAUAWH\",\n    \"@8l$ tV\",\n    \"A_A]A\\\\_^][\",\n    \"|$ AVH\",\n    \"w+H;G v\",\n    \"w(H;G v\",\n    \"^H;G v\",\n    \"t$ WATAUAVAWH\",\n    \"WAVAWH\",\n    \"I9y }@I\",\n    \"I;y }:I\",\n    \"I9y s@I\",\n    \"I;y s:I\",\n    \"H9C }*H\",\n    \"TUUUUUU\",\n    \"H9C s*H\",\n    \"UATAUAVAWH\",\n    \"A_A^A]A\\\\]\",\n    \"pA_A^A]A\\\\_^]\",\n    \"@WAVAWH\",\n    \"0A_A^_\",\n    \"|$ ATAVAWH\",\n    \"H3;H3s\",\n    \"A_A^A\\\\I\",\n    \"SUVWATAUAVAWH\",\n    \"n(H3/L36L3g\",\n    \"8A_A^A]A\\\\_^][H\",\n    \"L3#L3k\",\n    \"0A_A^A]A\\\\_^]I\",\n    \"hA_A^A]A\\\\_^][H\",\n    \"WATAUAVAWH\",\n    \"A_A^A]A\\\\_\",\n    \"oL$0fL\",\n    \"\\\\$Pfff\",\n    \"o|$pfL\",\n    \"\\\\$pfff\",\n    \"ot$PfL\",\n    \"ol$@fD\",\n    \"@SWAVH\",\n    \"I30I3h\",\n    \"0A^_[I\",\n    \"SVAVAWH\",\n    \"hA_A^^[\",\n    \"](L3>L3e\",\n    \"H3D$0I3\",\n    \"hA_A^^[H\",\n    \"SATAWH\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 3,\n    \"stack_strings\": 0,\n    \"tight_strings\": 4,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 2075\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 90.09,\n  \"size_bytes\": 733696,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}",
+          "present": true
+        },
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"dumped_dll.bin\",\n    \"file_path\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n    \"file_size\": 733696,\n    \"type\": \"PE\",\n    \"architecture\": \"X64\",\n    \"entropy\": 6.56,\n    \"sha256\": \"a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395\",\n    \"metadata\": {\n      \"VersionInfo::CompanyName\": \"www.xmrig.com\",\n      \"VersionInfo::FileDescription\": \"XMRig CPU miner\",\n      \"VersionInfo::FileVersion\": \"2.6.2\",\n      \"VersionInfo::LegalCopyright\": \"Copyright (C) 2016-2018 xmrig.com\",\n      \"VersionInfo::OriginalFilename\": \"xmrig.exe\",\n      \"VersionInfo::ProductName\": \"XMRig\",\n      \"VersionInfo::ProductVersion\": \"2.6.2\",\n      \"Exports::Module name\": \"xmrig.dll\",\n      \"Debug::Date.Debug.Pogo\": \"2018-05-28 19:45:53\"\n    },\n    \"entrypoint_ea\": 304096,\n    \"layout\": [\n      {\n        \"name\": \"header\",\n        \"effective_address\": 0,\n        \"physical_size\": 1024,\n        \"virtual_size\": 0,\n        \"rights\": \"\",\n        \"entropy\": 91\n      },\n      {\n        \"name\": \".text\",\n        \"effective_address\": 1024,\n        \"physical_size\": 563200,\n        \"virtual_size\": 565248,\n        \"rights\": \"RX\",\n        \"entropy\": 126\n      },\n      {\n        \"name\": \".rdata\",\n        \"effective_address\": 566272,\n        \"physical_size\": 118272,\n        \"virtual_size\": 118784,\n        \"rights\": \"R\",\n        \"entropy\": 100\n      },\n      {\n        \"name\": \".data\",\n        \"effective_address\": 685056,\n        \"physical_size\": 6144,\n        \"virtual_size\": 16384,\n        \"rights\": \"RW\",\n        \"entropy\": 61\n      },\n      {\n        \"name\": \".pdata\",\n        \"effective_address\": 701440,\n        \"physical_size\": 18944,\n        \"virtual_size\": 20480,\n        \"rights\": \"R\",\n        \"entropy\": 84\n      },\n      {\n        \"name\": \".rsrc\",\n        \"effective_address\": 721920,\n        \"physical_size\": 23040,\n        \"virtual_size\": 24576,\n        \"rights\": \"R\",\n        \"entropy\": 116\n      },\n      {\n        \"name\": \".reloc\",\n        \"effective_address\": 746496,\n        \"physical_size\": 3072,\n        \"virtual_size\": 4096,\n        \"rights\": \"R\",\n        \"entropy\": 31\n      }\n    ],\n    \"kesakode_verdict\": [],\n    \"entropy_malcat_raw\": 120,\n    \"entropy_source\": \"whole_file_shannon_revai\"\n  },\n  \"views\": {\n    \"anomalies\": [\n      {\n        \"name\": \"BigStringHiScore\",\n        \"desc\": \"string has more than 256 characters and high interest score\",\n        \"category\": \"strings\",\n        \"level\": 3,\n        \"num_hits\": 5\n      },\n      {\n        \"name\": \"CryptoApiUsage\",\n        \"desc\": \"Crypto-related apis are used\",\n        \"category\": \"imports\",\n        \"level\": 2,\n        \"num_hits\": 2\n      },\n      {\n        \"name\": \"DynamicString\",\n        \"desc\": \"string is constructed dynamically\",\n        \"category\": \"strings\",\n        \"level\": 3,\n        \"num_hits\": 10\n      },\n      {\n        \"name\": \"HighXrefLoopingFunction\",\n        \"desc\": \"Function contains a loop and has a lot of incoming references (string decryption candidate)\",\n        \"category\": \"code\",\n        \"level\": 1,\n        \"num_hits\": 8\n      },\n      {\n        \"name\": \"ManyHi\n\u2026 [175048 more chars]",
+          "present": true
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 5,
+        "hits": 5,
+        "misses": [],
+        "hit_examples": [
+          "XMRIG_Miner YARA matches YARA rule directly matches the XMRig miner signature, confirming the sample's identity as crypt",
+          "addr 6443065440 | Usage: xmrig [OPTIONS] ... cryptonight Suspicious strings (Ghidra) String contains mining usage instru",
+          "log keystrokes capa rules Capa identifies keylogging behavior (ATT&CK T1056.001), which is a malicious input capture tec",
+          "MiningProtocol YARA matches MalCat's YARA detects mining protocol, corroborating the presence of mining-related network ",
+          "receive data, send data capa rules Capa rules indicate network data transmission and reception, suggesting command-and-c"
+        ],
+        "reason": ""
+      },
+      "format": "pe",
+      "required_tools": [
+        "capa",
+        "yara",
+        "floss"
+      ],
+      "verdict_preview": {
+        "verdict": "malicious",
+        "family": "XMRig Miner",
+        "score": 40.0,
+        "agreement": "llm_and_v1_agree",
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "key_evidence": [
+          {
+            "source": "yara",
+            "query_or_table": "YARA matches",
+            "row_or_rule": "XMRIG_Miner",
+            "why": "YARA rule directly matches the XMRig miner signature, confirming the sample's identity as cryptocurrency mining software."
+          },
+          {
+            "source": "ghidra",
+            "query_or_table": "Suspicious strings (Ghidra)",
+            "row_or_rule": "addr 6443065440 | Usage: xmrig [OPTIONS] ... cryptonight",
+            "why": "String contains mining usage instructions and cryptonight algorithm references, providing evidence of cryptocurrency mining functionality."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "capa rules",
+            "row_or_rule": "log keystrokes",
+            "why": "Capa identifies keylogging behavior (ATT&CK T1056.001), which is a malicious input capture technique indicating credential theft or monitoring."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "YARA matches",
+            "row_or_rule": "MiningProtocol",
+            "why": "MalCat's YARA detects mining protocol, corroborating the presence of mining-related network communication."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "capa rules",
+            "row_or_rule": "receive data, send data",
+            "why": "Capa rules indicate network data transmission and reception, suggesting command-and-control or mining pool communication, which is a behavioral intent for malicious activity."
+          }
+        ],
+        "summary": "The sample is identified as XMRig CPU miner version 2.6.2 with malicious behaviors including cryptocurrency mining and keylogging. Evidence from multiple tools shows mining algorithm references, keylogging capabilities, and network activity, supported by high external detections. This constitutes clear behavioral intent beyond obfuscation, warranting a malicious verdict."
+      },
+      "evidence": {
+        "prompt": {
+          "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/prompt.txt",
+          "exists": true,
+          "bytes": 38130,
+          "mtime_iso": "2026-08-14T01:37:08.429846+00:00",
+          "sha256": "9a027b5f4f5344948835a592c07ae21228e00d6e98366b9ea769d62f267cd6a8"
+        },
+        "verdict": {
+          "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/verdict.json",
+          "exists": true,
+          "bytes": 6112,
+          "mtime_iso": "2026-08-14T01:37:51.562846+00:00",
+          "sha256": "d38d148e7dad65455127f1dccb9eba5b3c6de0bad532bc10c6be65f1a5b8f3af"
+        },
+        "prompt_excerpt": "# Triage evidence\nsha256: a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395\nsample_path: /opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\nghidra_session: ghidra-pe-a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395\nida_session: ida-a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395\n\n## Source decisions (from intake validation)\n- imports: ghidra (confidence=high) \u2014 {source: 'tool_summaries', query_or_table: 'ghidra and ida', row_or_rule: 'imports count', why: 'Both Ghidra and IDA report 187 imports, showing consistency and reliability for import extraction, while Malcat's count (863) diverges significantly.'}\n- functions: ghidra (confidence=medium) \u2014 {source: 'tool_summaries', query_or_table: 'ghidra and ida', row_or_rule: 'functions count', why: 'Ghidra reports 1342 functions and IDA reports 1534, within a 14% difference, making Ghidra a standard tool for function analysis, whereas Malcat'\n\u2026 [37066 more chars]",
+        "verdict_excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 40.0,\n  \"family_guess\": \"XMRig Miner\",\n  \"cross_engine_notes\": \"Multiple analysis engines converge on identifying this sample as a cryptocurrency miner (XMRig) with malicious behaviors. Ghidra and IDA strings reveal mining usage and cryptonight algorithm references. MalCat's YARA and anomalies detect mining protocols and crypto API usage. Capa rules indicate keylogging and network activity. YARA matches include specific miner and keylogger rules, and external VirusTotal detections confirm high malicious classification.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"YARA matches\",\n      \"row_or_rule\": \"XMRIG_Miner\",\n      \"why\": \"YARA rule directly matches the XMRig miner signature, confirming the sample's identity as cryptocurrency mining software.\"\n    },\n    {\n      \"source\": \"ghidra\",\n      \"query_or_table\": \"Suspicious strings (Ghidra)\",\n      \"row_or_rule\": \"addr 6443065440 | Usage: xmrig [OPTIONS] ... cryptonigh\n\u2026 [5112 more chars]"
+      }
+    },
+    "deep_dive": {
+      "ok": true,
+      "checks": {
+        "01_tools_raw": true,
+        "00_sql_evidence": false,
+        "03_prompt": false,
+        "04_llm": false,
+        "05_deep": true,
+        "tools_all_ok": true,
+        "llm_source": false,
+        "citations_grounded": true,
+        "engine_citation_ok": true,
+        "upx_second_pass_ok": true,
+        "no_incomplete_tooling": true,
+        "confidence_sane": true,
+        "evidence_pack_present": true,
+        "depth_coverage": true,
+        "agentic_json": true,
+        "sql_deep_re": true,
+        "complete_verdict": true,
+        "not_incomplete": true,
+        "checklist_ok_flag": true,
+        "agentic_confidence_sane": true
+      },
+      "tools": {
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        },
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 43,\n  \"top_rules\": [\n    {\n      \"name\": \"contain obfuscated stackstrings\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Indicator Removal from Tools\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"Indicator Removal from Tools\",\n          \"id\": \"T1027.005\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Executable Code Obfuscation\",\n            \"Argument Obfuscation\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Executable Code Obfuscation\",\n          \"method\": \"Argument Obfuscation\",\n          \"id\": \"B0032.020\"\n        },\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Executable Code Obfuscation\",\n            \"Stack Strings\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Executable Code Obfuscation\",\n          \"method\": \"Stack Strings\",\n          \"id\": \"B0032.017\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encode data using XOR\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encoding-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encoding-Standard Algorithm\",\n          \"id\": \"E1027.m02\"\n        },\n        {\n          \"parts\": [\n            \"Data\",\n            \"Encode Data\",\n            \"XOR\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Encode Data\",\n          \"method\": \"XOR\",\n          \"id\": \"C0026.002\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encrypt data using AES\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encryption-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encryption-Standard Algorithm\",\n          \"id\": \"E1027.m05\"\n        },\n        {\n          \"parts\": [\n            \"Cryptography\",\n            \"Encrypt Data\",\n            \"AES\"\n          ],\n          \"objective\": \"Cryptography\",\n          \"behavior\": \"Encrypt Data\",\n          \"method\": \"AES\",\n          \"id\": \"C0027.001\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encrypt data using AES via x86 extensions\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"i\n\u2026 [6277 more chars]"
+        },
+        "pe_imports": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 733696,\n  \"duration_s\": 0.04,\n  \"import_count\": 187,\n  \"signal_count\": 4,\n  \"signals\": [\n    {\n      \"label\": \"check_debugger\",\n      \"api_match\": \"IsDebuggerPresent\",\n      \"attack\": [\n        \"T1622\"\n      ]\n    },\n    {\n      \"label\": \"load_library\",\n      \"api_match\": \"LoadLibrary\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \"get_proc_address\",\n      \"api_match\": \"GetProcAddress\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \"allocate_memory\",\n      \"api_match\": \"VirtualAlloc\",\n      \"attack\": [\n        \"T1055\"\n      ]\n    }\n  ],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 23,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv4\",\n          \"offset\": 639648,\n          \"length\": 7,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 616601,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 13589,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"SHA2_BLAKE2_IVs\",\n      \"path\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 534868,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c1\",\n          \"offset\": 534890,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c2\",\n          \"offset\": 534897,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c3\",\n          \"offset\": 534904,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c4\",\n          \"offset\": 534911,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c5\",\n          \"offset\": 534918,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c6\",\n          \"offset\": 534925,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c7\",\n          \"offset\": 534933,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"RijnDael_AES_CHAR\",\n      \"path\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 615696,\n          \"length\": 32,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"SHA3_constants\",\n      \"path\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 612424,\n          \"length\": 8,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c1\",\n          \"offset\": 612552,\n          \"length\": 8,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c2\",\n          \"offset\": 612568,\n          \"length\": 8,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c3\",\n          \"offset\": 612504,\n          \"length\": 8,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c4\",\n          \"offset\": 612408,\n          \"length\": 8,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c5\",\n          \"offset\": 612512,\n          \"length\": 8,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c6\",\n\u2026 [10019 more chars]"
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 2082,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"P]P)]$7\",\n    \"\\\\$ UVWf\",\n    \"M.i,ud&\",\n    \"efefefefefefefe\",\n    \"efefefefefe\",\n    \"!This program cannot be run in DOS mode.\",\n    \"`.rdata\",\n    \"@.data\",\n    \".pdata\",\n    \"@.rsrc\",\n    \"@.reloc\",\n    \"L$ SUVWH\",\n    \"@WATAUAVAWH\",\n    \"0A_A^A]A\\\\_\",\n    \"t$ WAVAWH\",\n    \"\\\\$ UVWAVAWH\",\n    \"0A_A^_^]\",\n    \"|$ ATAUAVAWH\",\n    \"|$@A_A^A]A\\\\\",\n    \"UVWATAUAVAWH\",\n    \"A_A^A]A\\\\_^]\",\n    \"SVWATAUAVAWH\",\n    \"<$HkD$ XI\",\n    \"`A_A^A]A\\\\_^[\",\n    \"l$0L;C\",\n    \"t$XL;C\",\n    \"L$ SVWH\",\n    \"K @81u\",\n    \"6</uZH\",\n    \"L$ UVWAUAWH\",\n    \"d$`u>A\",\n    \"0A_A]_^]\",\n    \"2</uVH\",\n    \"SUVWATAUAWH\",\n    \"@8l$ tV\",\n    \"A_A]A\\\\_^][\",\n    \"|$ AVH\",\n    \"w+H;G v\",\n    \"w(H;G v\",\n    \"^H;G v\",\n    \"t$ WATAUAVAWH\",\n    \"WAVAWH\",\n    \"I9y }@I\",\n    \"I;y }:I\",\n    \"I9y s@I\",\n    \"I;y s:I\",\n    \"H9C }*H\",\n    \"TUUUUUU\",\n    \"H9C s*H\",\n    \"UATAUAVAWH\",\n    \"A_A^A]A\\\\]\",\n    \"pA_A^A]A\\\\_^]\",\n    \"@WAVAWH\",\n    \"0A_A^_\",\n    \"|$ ATAVAWH\",\n    \"H3;H3s\",\n    \"A_A^A\\\\I\",\n    \"SUVWATAUAVAWH\",\n    \"n(H3/L36L3g\",\n    \"8A_A^A]A\\\\_^][H\",\n    \"L3#L3k\",\n    \"0A_A^A]A\\\\_^]I\",\n    \"hA_A^A]A\\\\_^][H\",\n    \"WATAUAVAWH\",\n    \"A_A^A]A\\\\_\",\n    \"oL$0fL\",\n    \"\\\\$Pfff\",\n    \"o|$pfL\",\n    \"\\\\$pfff\",\n    \"ot$PfL\",\n    \"ol$@fD\",\n    \"@SWAVH\",\n    \"I30I3h\",\n    \"0A^_[I\",\n    \"SVAVAWH\",\n    \"hA_A^^[\",\n    \"](L3>L3e\",\n    \"H3D$0I3\",\n    \"hA_A^^[H\",\n    \"SATAWH\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 3,\n    \"stack_strings\": 0,\n    \"tight_strings\": 4,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 2075\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 89.92,\n  \"size_bytes\": 733696,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}"
+        },
+        "dotnet": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        "r2_decomp": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n  \"disassembly\": {\n    \"0x18004afe0\": \"\\u250c 362: entry0 (int64_t arg1, int64_t arg2, int64_t arg3, int64_t arg_78h);\\n\\u2502      \\u254e\\u254e   ; arg int64_t arg1 @ rcx\\n\\u2502      \\u254e\\u254e   ; arg int64_t arg2 @ rdx\\n\\u2502      \\u254e\\u254e   ; arg int64_t arg3 @ r8\\n\\u2502      \\u254e\\u254e   ; arg int64_t arg_78h @ rsp+0xd8\\n\\u2502      \\u254e\\u254e   ; var int64_t var_30h @ rsp+0x30\\n\\u2502      \\u254e\\u254e   ; var int64_t var_8h @ rsp+0x60\\n\\u2502      \\u254e\\u254e   ; var int64_t var_10h @ rsp+0x68\\n\\u2502      \\u254e\\u254e   0x18004afe0      48895c2408     mov qword [var_8h], rbx\\n\\u2502      \\u254e\\u254e   0x18004afe5      4889742410     mov qword [var_10h], rsi\\n\\u2502      \\u254e\\u254e   0x18004afea      57             push rdi\\n\\u2502      \\u254e\\u254e   0x18004afeb      4883ec20       sub rsp, 0x20\\n\\u2502      \\u254e\\u254e   0x18004afef      498bf8         mov rdi, r8                ; arg3\\n\\u2502      \\u254e\\u254e   0x18004aff2      8bda           mov ebx, edx               ; arg2\\n\\u2502      \\u254e\\u254e   0x18004aff4      488bf1         mov rsi, rcx               ; arg1\\n\\u2502      \\u254e\\u254e   0x18004aff7      83fa01         cmp edx, 1                 ; 1 ; arg2\\n\\u2502     \\u250c\\u2500\\u2500\\u2500< 0x18004affa      7505           jne 0x18004b001\\n\\u2502     \\u2502\\u254e\\u254e   0x18004affc      e867040000     call 0x18004b468\\n\\u2502     \\u2514\\u2500\\u2500\\u2500> 0x18004b001      4c8bc7         mov r8, rdi\\n\\u2502      \\u254e\\u254e   0x18004b004      8bd3           mov edx, ebx\\n\\u2502      \\u254e\\u254e   0x18004b006      488bce         mov rcx, rsi\\n\\u2502      \\u254e\\u254e   0x18004b009      488b5c2430     mov rbx, qword [var_8h]\\n\\u2502      \\u254e\\u254e   0x18004b00e      488b742438     mov rsi, qword [var_10h]\\n\\u2502      \\u254e\\u254e   0x18004b013      4883c420       add rsp, 0x20\\n\\u2502      \\u254e\\u254e   0x18004b017      5f             pop rdi\\n\\u2502      \\u2514\\u2500\\u2500< 0x18004b018      e98ffeffff     jmp 0x18004aeac\\n..\\n\\u2502           ; CODE XREF from fcn.18004a490 @ 0x18004a490(x)\",\n    \"0x18007f630\": \"\\u250c 103: sym.xmrig.dll_Start (int64_t arg2);\\n\\u2502           ; arg int64_t arg2 @ rdx\\n\\u2502           ; var int64_t var_20h @ rsp+0x20\\n\\u2502           ; var int64_t var_30h @ rsp+0x30\\n\\u2502           ; var int64_t var_38h @ rsp+0x38\\n\\u2502           ; var int64_t var_360h @ rsp+0x360\\n\\u2502           0x18007f630      4053           push rbx\\n\\u2502           0x18007f632      4881ec7003..   sub rsp, 0x370\\n\\u2502           0x18007f639      48c7442420..   mov qword [var_20h], 0xfffffffffffffffe\\n\\u2502           0x18007f642      488d4c2430     lea rcx, [var_30h]\\n\\u2502           0x18007f647      e8045cfeff     call fcn.180065250\\n\\u2502           0x18007f64c      488d4c2430     lea rcx, [var_30h]\\n\\u2502           0x18007f651      e87a58feff     call fcn.180064ed0\\n\\u2502           0x18007f656      8bd8           mov ebx, eax\\n\\u2502           0x18007f658      488d0571b7..   lea rax, [0x18009add0]\\n\\u2502           0x18007f65f      4889442430     mov qword [var_30h], rax\\n\\u2502           0x18007f664      ba68010000     mov edx, 0x168             ; 360\\n\\u2502           0x18007f669      488b4c2438     mov rcx, qword [var_38h]\\n\\u2502           0x18007f66e      e81daefcff     call fcn.18004a490\\n\\u2502           0x18007f673      488b8c2460\n\u2026 [7831 more chars]"
+        },
+        "upx": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTested 0 file\"\n}"
+        },
+        "xor": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 00000120 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 00000120 ........!..L.!This program cannot be r\\n\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 0\n}"
+        },
+        "speakeasy": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        "frida_probe": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n    \"exists\": true\n  }\n}"
+        },
+        "frida_trace": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 18,
+        "hits": 18,
+        "misses": [],
+        "hit_examples": [
+          "String 'XMRig 2.6.2\\n built on May 28 2018 with MSVC' at address 0x1800b66a8",
+          "Full xmrig usage banner with CryptoNight/CryptoNight-Lite/CryptoNight-Heavy algorithm options",
+          "String 'stratum+tcp://' at address 0x1800cf458 \u2014 mining pool connection protocol",
+          "References to '.nicehash.com' and '.minergate.com' pool domains",
+          "References to 'miner.fee.xmrig.com' and 'emergency.fee.xmrig.com' \u2014 built-in dev fee domains"
+        ],
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "upx_second_pass": {
+        "applicable": false,
+        "ok": true,
+        "reason": "upx_not_unpacked"
+      },
+      "depth_coverage": {
+        "ok": true,
+        "missing": [],
+        "covered": {
+          "persistence": true,
+          "c2_network": true,
+          "evasion_anti_analysis": true,
+          "exfiltration": true,
+          "defense_impairment": true,
+          "credential_access": true,
+          "encryption_obfuscation": true,
+          "entry_point": true,
+          "imports": true,
+          "strings": true
+        },
+        "domain_count": 10
+      },
+      "format_routing": "pe",
+      "required_tools": [
+        "capa",
+        "pe_imports",
+        "yara",
+        "floss",
+        "dotnet",
+        "r2_decomp",
+        "upx",
+        "xor",
+        "speakeasy",
+        "frida_probe"
+      ],
+      "deep_preview": {
+        "source": "deep_dive_agentic",
+        "confidence": 90,
+        "summary": "XMRig 2.6.2 Monero cryptocurrency miner DLL (built May 28, 2018 with MSVC). This is a 64-bit DLL that performs CryptoNight-family cryptocurrency mining, consuming victim CPU resources to mine Monero for the attacker. It escalates privileges via SeLockMemoryPrivilege and LSA APIs (LsaAddAccountRights",
+        "key_evidence": [
+          "String 'XMRig 2.6.2\\n built on May 28 2018 with MSVC' at address 0x1800b66a8",
+          "Full xmrig usage banner with CryptoNight/CryptoNight-Lite/CryptoNight-Heavy algorithm options",
+          "String 'stratum+tcp://' at address 0x1800cf458 \u2014 mining pool connection protocol",
+          "References to '.nicehash.com' and '.minergate.com' pool domains",
+          "References to 'miner.fee.xmrig.com' and 'emergency.fee.xmrig.com' \u2014 built-in dev fee domains",
+          "Function FUN_180064ed0 references 'SeLockMemoryPrivilege' for huge page memory allocation",
+          "Import: AdjustTokenPrivileges (ADVAPI32.DLL) \u2014 privilege escalation",
+          "Import: LsaAddAccountRights, LsaOpenPolicy (ADVAPI32.DLL) \u2014 LSA manipulation for privilege grants",
+          "Import: SetPriorityClass (KERNEL32.DLL) \u2014 elevates process priority for mining",
+          "Import: IsDebuggerPresent, SetConsoleCtrlHandler \u2014 anti-analysis/stealth capabilities",
+          "Import: CreateThread \u2014 multi-threaded mining execution",
+          "YARA match: RijnDael_AES_CHAR at offset 0x96550 \u2014 AES S-box for CryptoNight",
+          "YARA match: SHA2_BLAKE2_IVs (8 hits) and SHA3_constants (8 hits) \u2014 mining algorithm internals",
+          "YARA match: anti_dbg rule \u2014 SetConsoleCtrlHandler pattern for debugger evasion",
+          "2021 exports in DLL \u2014 large attack surface for injection into other processes",
+          "High-complexity functions: FUN_18003d590 (CC=279, 1398 instructions), FUN_180073a70 (CC=248, 1426 instructions)",
+          "String 'donate-level' with default 5% (5 minutes per 100 minutes) \u2014 covert developer revenue",
+          "Configurable max-cpu-usage, cpu-affinity, cpu-priority, background mode \u2014 evasion of detection"
+        ],
+        "model": null,
+        "llm_audit": null
+      },
+      "evidence": {
+        "tools_raw": {
+          "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/deep_dive/01-tools-raw.json",
+          "exists": true,
+          "bytes": 243241,
+          "mtime_iso": "2026-08-14T01:34:37.131844+00:00",
+          "sha256": "75e931da5d2bbe400ce75af131cb5a526727a11257d919c66296d2e113231115"
+        },
+        "sql_evidence": {
+          "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/deep_dive/00-sql-evidence.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "prompt": {
+          "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/deep_dive/03-prompt.txt",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "llm_raw": {
+          "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/deep_dive/04-llm-raw.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "deep05": {
+          "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/deep_dive/05-deep-dive.json",
+          "exists": true,
+          "bytes": 4544,
+          "mtime_iso": "2026-08-13T00:57:49.667803+00:00",
+          "sha256": "b7a0cf72564a7c55b2bf68e4b5c4ea3b6c39576f1f7b194944a44d8573dcb472"
+        },
+        "prompt_excerpt": "",
+        "llm_raw_excerpt": "{}",
+        "deep05_excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"XMRig 2.6.2 Monero cryptocurrency miner DLL (built May 28, 2018 with MSVC). This is a 64-bit DLL that performs CryptoNight-family cryptocurrency mining, consuming victim CPU resources to mine Monero for the attacker. It escalates privileges via SeLockMemoryPrivilege and LSA APIs (LsaAddAccountRights, AdjustTokenPrivileges) to allocate huge pages for efficient mining. It connects to mining pools over stratum+tcp:// protocol with references to nicehash.com and minergate.com, includes a built-in 5% developer donation fee, and supports background/stealth operation. Anti-analysis includes IsDebuggerPresent and SetConsoleCtrlHandler imports. YARA rules matched AES S-box, SHA2/B\n\u2026 [3744 more chars]",
+        "agentic": {
+          "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/deep_dive/agentic_deep_dive.json",
+          "exists": true,
+          "bytes": 712047,
+          "mtime_iso": "2026-08-13T00:57:49.667803+00:00",
+          "sha256": "6215c19bfd3de149762447de3c789609a034eba93ecb932acc966b59dd5a8a27"
+        }
+      },
+      "tools_ok_history": [
+        "yara_scan",
+        "malcat_analyze",
+        "capa_analyze",
+        "pe_import_signals",
+        "floss_extract",
+        "dotnet_analyze",
+        "r2_decompile",
+        "upx_unpack",
+        "xor_string_search",
+        "speakeasy_emulate",
+        "frida_static_probe",
+        "revai_tools_sec",
+        "revai_tools_sinks",
+        "signal_extractors",
+        "packer_scan",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query"
+      ],
+      "history_evidence": [
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (yara)",
+          "result_excerpt": "{\n  \"rule_count\": 23,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples\n\u2026 [13119 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (malcat)",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"dumped_dll.bin\",\n    \"file_pat\n\u2026 [177991 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (capa)",
+          "result_excerpt": "{\n  \"rule_count\": 43,\n  \"top_rules\": [\n    {\n      \"name\": \"contain obfuscated stackstrings\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Indicator Removal from Tools\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \n\u2026 [9377 more chars]"
+        },
+        {
+          "tool": "pe_import_signals",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (pe_imports)",
+          "result_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 733696,\n  \"duration_s\": 0.04,\n  \"import_count\": 187,\n  \"signal_count\": 4,\n  \"signals\": [\n    {\n      \"label\": \"check_debugger\",\n      \"api_match\": \"IsDebuggerPresent\",\n      \"attack\": [\n        \"T1622\"\n      ]\n    },\n    {\n      \"label\": \"load_library\",\n      \"api_match\": \"LoadLibrary\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\n\u2026 [296 more chars]"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (floss)",
+          "result_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 2082,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"P]P)]$7\",\n    \"\\\\$ UVWf\",\n    \"M.i,ud&\",\n    \"efefefefefefefe\",\n    \"efefefefefe\",\n    \"!This program cannot be run in DOS mode.\",\n    \"`.rdata\",\n    \"@.data\",\n    \".pdata\",\n    \"@.rsrc\",\n    \"@.reloc\",\n    \"L$ SUVWH\",\n    \"@WATAUAVAWH\",\n    \"0A_A^A]A\\\\_\",\n    \"t$ WAVAWH\",\n    \"\\\\$ UVWAVAWH\",\n    \"0A_A^_^]\",\n\u2026 [1418 more chars]"
+        },
+        {
+          "tool": "dotnet_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (dotnet)",
+          "result_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        {
+          "tool": "r2_decompile",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (r2_decomp)",
+          "result_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n  \"disassembly\": {\n    \"0x18004afe0\": \"\\u250c 362: entry0 (int64_t arg1, int64_t arg2, int64_t arg3, int64_t arg_78h);\\n\\u2502      \\u254e\\u254e   ; arg int64_t arg1 @ rcx\\n\\u2502      \\u254e\\u254e   ; arg int64_t arg2 @ rdx\\n\\u2502      \\u254e\\u254e   ; arg int\n\u2026 [10931 more chars]"
+        },
+        {
+          "tool": "upx_unpack",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (upx)",
+          "result_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTested 0 file\"\n}"
+        },
+        {
+          "tool": "xor_string_search",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (xor)",
+          "result_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 00000120 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 00000120 ........!..L.!This program cannot be r\\n\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_\n\u2026 [16 more chars]"
+        },
+        {
+          "tool": "speakeasy_emulate",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (speakeasy)",
+          "result_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        {
+          "tool": "frida_static_probe",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (frida_probe)",
+          "result_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n    \"exists\": true\n  }\n}"
+        },
+        {
+          "tool": "shellcode_extract",
+          "ok": false,
+          "error": "no high-entropy executable/writable shellcode-size section found",
+          "checklist": true,
+          "reason": "Required checklist tool (shellcode)",
+          "result_excerpt": "{\n  \"shellcode_ok\": false,\n  \"sample\": \"/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin\",\n  \"sections_analyzed\": [\n    {\n      \"name\": \".text\",\n      \"size\": 563200,\n      \"entropy\": 6.5266,\n      \"executable\": true,\n      \"writable\": false\n    },\n    {\n      \"name\": \".rdata\",\n      \"size\": 118272,\n      \"entropy\": 5.7108,\n      \"executable\":\n\u2026 [652 more chars]"
+        },
+        {
+          "tool": "revai_tools_sec",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (revai_tools_sec)",
+          "result_excerpt": "{\n  \"format\": \"pe\",\n  \"findings\": [\n    {\n      \"name\": \"Address Space Layout Randomization\",\n      \"present\": true,\n      \"claimed\": true,\n      \"note\": \"claim only: DYNAMIC_BASE set but no .reloc section \\u2014 loads at preferred base\",\n      \"consequence\": \"Without ASLR the image loads at a fixed base \\u2014 a predictable address for ret2libc-style exploitation and ROP gadget pivots.\"\n    },\n  \n\u2026 [1815 more chars]"
+        },
+        {
+          "tool": "revai_tools_sinks",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (revai_tools_sinks)",
+          "result_excerpt": "{\n  \"format\": \"pe\",\n  \"entry_point\": \"0x1000\",\n  \"sink_count\": 5,\n  \"sinks\": [\n    {\n      \"api\": \"heapalloc\",\n      \"dll\": \"KERNEL32.dll\",\n      \"class\": \"integer_overflow_size\",\n      \"address\": \"0x180058ef2\",\n      \"function\": \"fcn.180058eb4\"\n    },\n    {\n      \"api\": \"heapalloc\",\n      \"dll\": \"KERNEL32.dll\",\n      \"class\": \"integer_overflow_size\",\n      \"address\": \"0x18005b1c1\",\n      \"functio\n\u2026 [620 more chars]"
+        },
+        {
+          "tool": "revai_tools_audit",
+          "ok": false,
+          "error": "revai_tools_audit: timeout",
+          "checklist": true,
+          "reason": "Required checklist tool (revai_tools_audit)",
+          "result_excerpt": "{\n  \"error\": \"revai_tools_audit: timeout\",\n  \"fail_open\": true,\n  \"skipped\": true,\n  \"reason\": \"not_applicable:timeout\"\n}"
+        },
+        {
+          "tool": "signal_extractors",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Deterministic anti-analysis + dynamic-import-resolve signals",
+          "result_excerpt": "{\n  \"anti_analysis_summary\": {\n    \"categories\": {\n      \"peb_access\": 3,\n      \"debugger_string\": 3\n    },\n    \"total_signals\": 6,\n    \"functions_with_signals\": 6,\n    \"elapsed_s\": 69.95,\n    \"note\": \"Deterministic; TLS callbacks are pre-entry-point candidates.\"\n  },\n  \"dynamic_resolve_summary\": {\n    \"resolver_funcs\": 0,\n    \"resolve_sites\": 0,\n    \"peb_module_walkers\": 0,\n    \"ordinal_imports\":\n\u2026 [159 more chars]"
+        },
+        {
+          "tool": "packer_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Deterministic packer checklist (packed-context for gate)",
+          "result_excerpt": "{\n  \"label\": \"suspicious\",\n  \"name\": null,\n  \"score\": 3\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "Auto SQL seed for large-mode deep RE gate",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_180073a70\",\n      \"address\": \"6442924656\",\n      \"size\": \"8403\"\n    },\n    {\n      \"name\": \"FUN_18002cba0\",\n      \"address\": \"6442634144\",\n      \"size\": \"6264\"\n    },\n    {\n      \"name\": \"FUN_180015650\",\n      \"address\": \"6442538576\",\n      \"size\": \"6199\"\n    },\n    {\n      \"name\": \"FUN_18001b8b0\",\n   \n\u2026 [2378 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"module\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"AdjustTokenPrivileges\",\n      \"module\": \"ADVAPI32.DLL\"\n    },\n    {\n      \"name\": \"CryptAcquireContextA\",\n      \"module\": \"ADVAPI32.DLL\"\n    },\n    {\n      \"name\": \"CryptGenRandom\",\n      \"module\": \"ADVAPI32.DLL\"\n    },\n    {\n      \"name\": \"CryptReleaseContext\",\n      \"module\": \"ADVAPI32.DLL\"\n    },\n    {\n      \"name\":\n\u2026 [6215 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"Usage: xmrig [OPTIONS]\\nOptions:\\n  -a, --algo=ALGO          specify the algorithm to use\\n                             cryptonight\\n                             cryptonight-lite\\n                             cryptonight-heavy\\n  -o, --url=URL            URL of mining server\\n  -O, --userpass=U:P  \n\u2026 [9069 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"cyclomatic_complexity\",\n    \"size\",\n    \"instruction_count\",\n    \"call_out_count\",\n    \"string_ref_count\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_180073a70\",\n      \"address\": \"6442924656\",\n      \"cyclomatic_complexity\": \"248\",\n      \"size\": \"8403\",\n      \"instruction_count\": \"1426\",\n      \"call_out_count\": \"244\",\n      \"string_ref_count\": \"0\"\n    \n\u2026 [6899 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"module\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"SetPriorityClass\",\n      \"module\": \"KERNEL32.DLL\"\n    }\n  ],\n  \"row_count\": 1,\n  \"total_row_count\": 1,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395\",\n  \"audit_path\": \"/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b\n\u2026 [41 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"SchedulerKind\",\n      \"address\": \"6443023288\"\n    },\n    {\n      \"content\": \"SchedulingProtocol\",\n      \"address\": \"6443023432\"\n    },\n    {\n      \"content\": \"unknown node or service\",\n      \"address\": \"6443092896\"\n    },\n    {\n      \"content\": \"service not available for socket type\",\n      \"address\": \"644309298\n\u2026 [467 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"CreateThreadpoolTimer\",\n      \"address\": \"6443022448\"\n    },\n    {\n      \"content\": \"SetThreadpoolTimer\",\n      \"address\": \"6443022472\"\n    },\n    {\n      \"content\": \"WaitForThreadpoolTimerCallbacks\",\n      \"address\": \"6443022496\"\n    },\n    {\n      \"content\": \"CloseThreadpoolTimer\",\n      \"address\": \"6443022528\n\u2026 [4655 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"cpu-affinity\",\n      \"address\": \"6443061152\"\n    },\n    {\n      \"content\": \"cpu-affinity\",\n      \"address\": \"6443061168\"\n    },\n    {\n      \"content\": \"cpu-priority\",\n      \"address\": \"6443061184\"\n    },\n    {\n      \"content\": \"donate-level\",\n      \"address\": \"6443061200\"\n    },\n    {\n      \"content\": \"max-cpu-u\n\u2026 [1493 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395\",\n  \"audit_path\": \"/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"NtSetInformationFile\",\n      \"address\": \"6443095896\"\n    },\n    {\n      \"content\": \"SleepConditionVariableCS\",\n      \"address\": \"6443096136\"\n    },\n    {\n      \"content\": \"SleepConditionVariableSRW\",\n      \"address\": \"6443096168\"\n    },\n    {\n      \"content\": \"SetConsoleCtrlHandler\",\n      \"address\": \"6443135156\n\u2026 [537 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"stratum+tcp://\",\n      \"address\": \"6443069720\"\n    },\n    {\n      \"content\": \".nicehash.com\",\n      \"address\": \"6443069816\"\n    },\n    {\n      \"content\": \".minergate.com\",\n      \"address\": \"6443069848\"\n    },\n    {\n      \"content\": \"miner.fee.xmrig.com\",\n      \"address\": \"6443070488\"\n    },\n    {\n      \"content\"\n\u2026 [544 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"FlsAlloc\",\n      \"address\": \"6443022272\"\n    },\n    {\n      \"content\": \"InitializeSRWLock\",\n      \"address\": \"6443022856\"\n    },\n    {\n      \"content\": \"AcquireSRWLockExclusive\",\n      \"address\": \"6443022880\"\n    },\n    {\n      \"content\": \"TryAcquireSRWLockExclusive\",\n      \"address\": \"6443022904\"\n    },\n    {\n \n\u2026 [3854 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"Usage: xmrig [OPTIONS]\\nOptions:\\n  -a, --algo=ALGO          specify the algorithm to use\\n                             cryptonight\\n                             cryptonight-lite\\n                             cryptonight-heavy\\n  -o, --url=URL            URL of mining server\\n  -O, --userpass=U:P       username:\n\u2026 [3149 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"func_addr\",\n    \"string_value\"\n  ],\n  \"rows\": [\n    {\n      \"func_name\": \"FUN_180049e54\",\n      \"func_addr\": \"6442753620\",\n      \"string_value\": \"FlsAlloc\"\n    },\n    {\n      \"func_name\": \"__vcrt_FlsAlloc\",\n      \"func_addr\": \"6442771808\",\n      \"string_value\": \"FlsAlloc\"\n    },\n    {\n      \"func_name\": \"__acrt_FlsAlloc\",\n      \"func_addr\": \"6442824820\",\n    \n\u2026 [6684 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_180001000\",\n      \"address\": \"6442455040\"\n    },\n    {\n      \"name\": \"FUN_180001040\",\n      \"address\": \"6442455104\"\n    },\n    {\n      \"name\": \"FUN_180001090\",\n      \"address\": \"6442455184\"\n    },\n    {\n      \"name\": \"FUN_1800010cc\",\n      \"address\": \"6442455244\"\n    },\n    {\n      \"name\": \"FUN_1800010f8\",\n      \"\n\u2026 [1452 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"func_addr\",\n    \"string_value\"\n  ],\n  \"rows\": [\n    {\n      \"func_name\": \"FUN_180063b40\",\n      \"func_addr\": \"6442859328\",\n      \"string_value\": \"background\"\n    },\n    {\n      \"func_name\": \"FUN_180063b40\",\n      \"func_addr\": \"6442859328\",\n      \"string_value\": \"background\"\n    },\n    {\n      \"func_name\": \"FUN_1800664c0\",\n      \"func_addr\": \"6442869952\",\n    \n\u2026 [7000 more chars]"
+        },
+        {
+          "tool": "ghidra_decompile",
+          "ok": false,
+          "error": "session registry not found: /opt/samples/sessions/pe-a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395.json",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"session registry not found: /opt/samples/sessions/pe-a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395.json\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"func_addr\",\n    \"string_value\"\n  ],\n  \"rows\": [\n    {\n      \"func_name\": \"FUN_180064ed0\",\n      \"func_addr\": \"6442864336\",\n      \"string_value\": \"SeLockMemoryPrivilege\"\n    },\n    {\n      \"func_name\": \"FUN_180064ed0\",\n      \"func_addr\": \"6442864336\",\n      \"string_value\": \"SeLockMemoryPrivilege\"\n    }\n  ],\n  \"row_count\": 2,\n  \"total_row_count\": 2,\n  \"truncate\n\u2026 [247 more chars]"
+        }
+      ],
+      "agentic_preview": {
+        "verdict": "malicious",
+        "confidence": 90,
+        "summary": "XMRig 2.6.2 Monero cryptocurrency miner DLL (built May 28, 2018 with MSVC). This is a 64-bit DLL that performs CryptoNight-family cryptocurrency mining, consuming victim CPU resources to mine Monero for the attacker. It escalates privileges via SeLockMemoryPrivilege and LSA APIs (LsaAddAccountRights",
+        "checklist_ok": true,
+        "sql_deep_ok": true,
+        "successful_tool_calls": 32
+      }
+    },
+    "yara_gen": {
+      "ok": true,
+      "checks": {
+        "rule_yar": true,
+        "non_empty": true,
+        "has_rule_block": true,
+        "rule_compiles": true,
+        "rule_check": "ok",
+        "meta_yara_valid": true
+      },
+      "evidence": {
+        "rule_yar": {
+          "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/rule.yar",
+          "exists": true,
+          "bytes": 1085,
+          "mtime_iso": "2026-08-13T00:57:52.670802+00:00",
+          "sha256": "969189e58de7a8e79181f1e79f7bc1122951c1f0bf982680fc4ad819e4b13dc7"
+        },
+        "other_rules": [
+          "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/rule.yara.json",
+          "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/rule.yar",
+          "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/rule.yar"
+        ],
+        "excerpt": "// yara_gen_v2.py \u2014 2026-08-13T00:57:52.671515+00:00\nimport \"pe\"\nrule CADRE_v2_xmrig_a2923d838f2d {\n    meta:\n        description = \"RevAI v2 auto rule for xmrig\"\n        sha256 = \"a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395\"\n        family = \"xmrig\"\n        revai = true\n        revai_commit = \"unknown\"\n        revai_engine = \"langgraph\"\n        severity = \"high\"\n        confidence = \"medium\"\n    strings:\n        $s0 = \"efefefefefefefe\" ascii wide\n        $s1 = \"efefefefefe\" ascii wide\n        $s2 = \"!This program cannot be run in DOS mode.\" ascii wide\n        $s3 = \"L$ SUVWH\" ascii wide\n        $s4 = \"@WATAUAVAWH\" ascii wide\n        $s5 = \"0A_A^A]A\\\\_\" ascii wide\n        $s6 = \"t$ WAVAWH\" ascii wide\n        $s7 = \"\\\\$ UVWAVAWH\" ascii wide\n        $s8 = \"0A_A^_^]\" asci\n\u2026 [283 more chars]"
+      }
+    },
+    "publish": {
+      "ok": true,
+      "checks": {
+        "REPORT_MASTER_v2": true,
+        "REPORT_MASTER_v3": true,
+        "REPORT_v2": true,
+        "REPORT_TECHNICAL_v2": true,
+        "REPORT_TECHNICAL_v3": true,
+        "v2_min_chars": true,
+        "v3_min_chars": true,
+        "v2_heads": true,
+        "v3_heads": true,
+        "v2_fresh_vs_deep": true,
+        "v3_fresh_vs_deep": true,
+        "not_llm_env_failure_v2": true,
+        "not_llm_env_failure_v3": true,
+        "v2_no_missing_sections": true,
+        "verdict_lock_ok": true,
+        "quality_pack_ok": true,
+        "master_source_llm": true,
+        "tech2_source_llm": true,
+        "tech3_source_ok": true,
+        "tech2_no_stubs": true,
+        "no_tech2_fallback": true,
+        "quality_issues": [],
+        "engine_citation_ok": true
+      },
+      "heads_v2": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "heads_v3": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "report_json_source": "llm_judge",
+      "sections_missing": [],
+      "quality_pack": {
+        "ok": true,
+        "quality_green": true,
+        "sha256": "a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395",
+        "issues": [],
+        "checks": {
+          "master_v2": {
+            "ok": true,
+            "label": "master_v2",
+            "source": "llm_judge",
+            "chars": 21750,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 67,
+              "prose_ratio": 0.7,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 3,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v2": {
+            "ok": true,
+            "label": "technical_v2",
+            "source": "llm_raw_markdown",
+            "chars": 76527,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 60,
+              "prose_ratio": 0.57,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v3": {
+            "ok": true,
+            "label": "technical_v3",
+            "source": "llm_judge",
+            "chars": 104581,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 34,
+              "prose_ratio": 0.17,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "master_v3_present": true,
+          "tech3_file_present": true,
+          "cross_report_consistency": {
+            "ok": true,
+            "violations": [],
+            "checks": {
+              "master_dyn_negation": false,
+              "tech_dyn_evidence": true,
+              "file_entropy": 6.560187136724199,
+              "master_verdict": "malicious",
+              "tech_verdict": "malicious"
+            }
+          },
+          "deep_checklist_ok": true,
+          "deep_sql_deep_ok": true,
+          "pipeline_audit_all_green": false
+        },
+        "models": {
+          "master": "mimo-v2.5-pro",
+          "technical_v2": "mimo-v2.5-pro",
+          "technical_v3": "mimo-v2.5-pro",
+          "planner_hint": "configured via env",
+          "judgment_hint": "configured via env"
+        }
+      },
+      "verdict_lock": {
+        "ok": true,
+        "conflict": false,
+        "upstream": "malicious",
+        "publish": "malicious",
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "mtimes": {
+        "v2": 1786671754.3874056,
+        "v3": 1786672452.6833658,
+        "deep_ref": 1786582669.667803,
+        "v2_chars": 21750,
+        "v3_chars": 49996,
+        "v2_iso": "2026-08-14T01:42:34.387406+00:00",
+        "v3_iso": "2026-08-14T01:54:12.683366+00:00"
+      },
+      "evidence": {
+        "REPORT_MASTER_v2": {
+          "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/REPORT-MASTER-v2.md",
+          "exists": true,
+          "bytes": 21757,
+          "mtime_iso": "2026-08-14T01:42:34.387406+00:00",
+          "sha256": "f51b0875f5a392b673f98bd93f63402566f4fd38de175c6c90fa806cbfed6e9f"
+        },
+        "REPORT_MASTER_v3": {
+          "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/REPORT-MASTER-v3.md",
+          "exists": true,
+          "bytes": 50013,
+          "mtime_iso": "2026-08-14T01:54:12.683366+00:00",
+          "sha256": "73630003552c5c49ba0f75a5597bfc09a4e8dc6aa0b59a279ddd89d0f72fb127"
+        },
+        "REPORT_v2": {
+          "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/REPORT-v2.md",
+          "exists": true,
+          "bytes": 21757,
+          "mtime_iso": "2026-08-14T01:42:34.387406+00:00",
+          "sha256": "f51b0875f5a392b673f98bd93f63402566f4fd38de175c6c90fa806cbfed6e9f"
+        },
+        "REPORT_TECHNICAL_v2": {
+          "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/REPORT-TECHNICAL-v2.md",
+          "exists": true,
+          "bytes": 77121,
+          "mtime_iso": "2026-08-14T01:46:24.197090+00:00",
+          "sha256": "63099754e12152745f818bec6a7c46586ce9f4bd93d3ab8b5dde090f187823bc"
+        },
+        "REPORT_TECHNICAL_v3": {
+          "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/REPORT-TECHNICAL-v3.md",
+          "exists": true,
+          "bytes": 105748,
+          "mtime_iso": "2026-08-14T02:02:24.176407+00:00",
+          "sha256": "5ef803418b2d583889a3b100a5fa302f846cb1aed06ab49b621826cb1d4682de"
+        },
+        "report_v2_json": {
+          "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/report-v2.json",
+          "exists": true,
+          "bytes": 24683,
+          "mtime_iso": "2026-08-14T01:46:24.202090+00:00",
+          "sha256": "cce3200b22bada8354bef5ff1583fdeb1cd2c6adb33537f9ebe10ca50442a2c8"
+        },
+        "v2_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-14 01:42:34 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\n\nThis report details the analysis of a 64-bit Windows DLL (SHA256: a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395) identified as XMRig version 2.6.2, a cryptocurrency mining application. The sample is classified as **malicious** due to its primary function of unauthorized cryptocurrency mining, which consumes victim CPU resources for the attacker's financial gain. The analysis reveals a sophisticate\n\u2026 [20850 more chars]",
+        "v3_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-14 01:54:12 UTC\n\n# RE Report \u2014 a2923d838f2d\n_Generated 2026-08-14T01:54:12.674984+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=238c | cross_refs=True | llm_ok=True | runtime=71.68s -->\n\n## Executive Summary\n\nThis sample is **malicious** and classified as part of the **XMRig Miner** family, with high confidence (90%) based on static analysis. The verdict is corroborated by multiple detection engines, and the family identification is consistent with known mining malware behaviors.\n\n| Attribute | Value | Confidence | Evidence Interpretation |\n|-----------|-------|------------|-------------------\n\u2026 [49096 more chars]"
+      }
+    }
+  },
+  "policy": {
+    "v3_required": true,
+    "no_optional_stages": true,
+    "tool_fail_is_fail": false,
+    "capa_salvage": "malcat capa_summary + LLM citation"
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-14 02:02:24 UTC"
+  },
+  "cross_cutting": {
+    "sample_path": "/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin",
+    "pipeline_mode": "single",
+    "llm": {
+      "triage": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "verdict": "malicious",
+        "family": "XMRig Miner",
+        "confidence": 40,
+        "agreement": "llm_and_v1_agree",
+        "key_evidence": [
+          {
+            "source": "yara",
+            "query_or_table": "YARA matches",
+            "row_or_rule": "XMRIG_Miner",
+            "why": "YARA rule directly matches the XMRig miner signature, confirming the sample's identity as cryptocurrency mining software."
+          },
+          {
+            "source": "ghidra",
+            "query_or_table": "Suspicious strings (Ghidra)",
+            "row_or_rule": "addr 6443065440 | Usage: xmrig [OPTIONS] ... cryptonight",
+            "why": "String contains mining usage instructions and cryptonight algorithm references, providing evidence of cryptocurrency mining functionality."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "capa rules",
+            "row_or_rule": "log keystrokes",
+            "why": "Capa identifies keylogging behavior (ATT&CK T1056.001), which is a malicious input capture technique indicating credential theft or monitoring."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "YARA matches",
+            "row_or_rule": "MiningProtocol",
+            "why": "MalCat's YARA detects mining protocol, corroborating the presence of mining-related network communication."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "capa rules",
+            "row_or_rule": "receive data, send data",
+            "why": "Capa rules indicate network data transmission and reception, suggesting command-and-control or mining pool communication, which is a behavioral intent for malicious activity."
+          }
+        ],
+        "incomplete_tooling": null,
+        "excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 40.0,\n  \"family_guess\": \"XMRig Miner\",\n  \"cross_engine_notes\": \"Multiple analysis engines converge on identifying this sample as a cryptocurrency miner (XMRig) with malicious behaviors. Ghidra and IDA strings reveal mining usage and cryptonight algorithm references. MalCat's YARA and anomalies detect mining protocols and crypto API usage. Capa rules indicate keylogging and network activity. YARA matches include specific miner and keylogger rules, and external VirusTotal detections confirm high malicious classification.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"YARA matches\",\n      \"row_or_rule\": \"XMRIG_Miner\",\n      \"why\": \"YARA rule directly matches the XMRig miner signature, confirming the sample's identity as cryptocurrency mining software.\"\n    },\n    {\n      \"source\": \"ghidra\",\n      \"query_or_table\": \"Suspicious strings (Ghidra)\",\n      \"row_or_rule\": \"addr 6443065440 | Usage: xmrig [OPTIONS] ... cryptonight\",\n      \"why\": \"String contains mining usage instructions and cryptonight algorithm references, providing evidence of cryptocurrency mining functionality.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"capa rules\",\n      \"row_or_rule\": \"log keystrokes\",\n      \"why\": \"Capa identifies keylogging behavior (ATT&CK T1056.001), which is a malicious input capture technique indicating credential theft or monitoring.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"YARA matches\",\n      \"row_or_rule\": \"MiningProtocol\",\n      \"why\": \"MalCat's YARA detects mining protocol, corroborating the presence of mining-related network communication.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"capa rules\",\n      \"row_or_rule\": \"receive data, send data\",\n      \"why\": \"Capa rules indicate network data transmission and reception, suggesting command-and-control or mining pool communication, which is a behavioral intent for malicious activity.\"\n    }\n  ],\n  \"summary\": \"The sample is identified as XMRig CPU miner version 2.6.2 with malicious behaviors including cryptocurrency mining and keylogging. Evidence from multiple tools shows mining algorithm references, keylogging capabilities, and network activity, supported by high external detections. This constitutes clear behavioral intent beyond obfuscation, warranting a malicious verdict.\",\n  \"source\": \"llm_judge\",\n  \"model\": \"mimo-v2.5-pro\",\n  \"agreement\": \"llm_and_v1_agree\",\n  \"v1_summary\": {\n    \"verdict\": \"malicious\",\n    \"score\": 290,\n    \"findings\": [\n      \"yara: 23 matches\",\n      \"capa: 43 rules\"\n    ]\n  },\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"pe\",\n    \"required\": [\n      \"capa\",\n      \"yara\",\n      \"malcat\",\n      \"floss\",\n      \"pe_imports\"\n    ],\n    \"tools\": {\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"floss\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"pe_imports\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      }\n    },\n    \"hard_failures\": [],\n    \"soft_failures\": [],\n    \"missing\": [],\n    \"not_applicable\": [],\n    \"large_sample\": false\n  },\n  \"ti_enrich\": {\n    \"ok\": true,\n    \"providers\": {\n      \"virustotal\": {\n        \"ok\": true,\n        \"malicious\": 51,\n        \"suspicious\": 0,\n        \"harmless\": 0,\n        \"undetected\": 19,\n        \"reputation\": 1,\n        \"popular_threat_classification\": {\n          \"suggested_threat_label\": \"miner.toolxmr/xmr\n\u2026 [2612 more chars]"
+      },
+      "deep_dive": {
+        "source": "deep_dive_agentic",
+        "model": null,
+        "verdict": "malicious",
+        "confidence": 90,
+        "key_evidence": [
+          "String 'XMRig 2.6.2\\n built on May 28 2018 with MSVC' at address 0x1800b66a8",
+          "Full xmrig usage banner with CryptoNight/CryptoNight-Lite/CryptoNight-Heavy algorithm options",
+          "String 'stratum+tcp://' at address 0x1800cf458 \u2014 mining pool connection protocol",
+          "References to '.nicehash.com' and '.minergate.com' pool domains",
+          "References to 'miner.fee.xmrig.com' and 'emergency.fee.xmrig.com' \u2014 built-in dev fee domains",
+          "Function FUN_180064ed0 references 'SeLockMemoryPrivilege' for huge page memory allocation",
+          "Import: AdjustTokenPrivileges (ADVAPI32.DLL) \u2014 privilege escalation",
+          "Import: LsaAddAccountRights, LsaOpenPolicy (ADVAPI32.DLL) \u2014 LSA manipulation for privilege grants",
+          "Import: SetPriorityClass (KERNEL32.DLL) \u2014 elevates process priority for mining",
+          "Import: IsDebuggerPresent, SetConsoleCtrlHandler \u2014 anti-analysis/stealth capabilities",
+          "Import: CreateThread \u2014 multi-threaded mining execution",
+          "YARA match: RijnDael_AES_CHAR at offset 0x96550 \u2014 AES S-box for CryptoNight",
+          "YARA match: SHA2_BLAKE2_IVs (8 hits) and SHA3_constants (8 hits) \u2014 mining algorithm internals",
+          "YARA match: anti_dbg rule \u2014 SetConsoleCtrlHandler pattern for debugger evasion",
+          "2021 exports in DLL \u2014 large attack surface for injection into other processes",
+          "High-complexity functions: FUN_18003d590 (CC=279, 1398 instructions), FUN_180073a70 (CC=248, 1426 instructions)",
+          "String 'donate-level' with default 5% (5 minutes per 100 minutes) \u2014 covert developer revenue",
+          "Configurable max-cpu-usage, cpu-affinity, cpu-priority, background mode \u2014 evasion of detection"
+        ],
+        "incomplete_tooling": false,
+        "excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"XMRig 2.6.2 Monero cryptocurrency miner DLL (built May 28, 2018 with MSVC). This is a 64-bit DLL that performs CryptoNight-family cryptocurrency mining, consuming victim CPU resources to mine Monero for the attacker. It escalates privileges via SeLockMemoryPrivilege and LSA APIs (LsaAddAccountRights, AdjustTokenPrivileges) to allocate huge pages for efficient mining. It connects to mining pools over stratum+tcp:// protocol with references to nicehash.com and minergate.com, includes a built-in 5% developer donation fee, and supports background/stealth operation. Anti-analysis includes IsDebuggerPresent and SetConsoleCtrlHandler imports. YARA rules matched AES S-box, SHA2/BLAKE2, and SHA3 constants \\u2014 all consistent with CryptoNight mining internals. The sample has 2021 exports and high-complexity functions (CC up to 279), consistent with an obfuscated/packed mining library. Persistence mechanisms were not observed in the analysis, with no evidence of auto-start, registry modifications, or scheduled tasks for maintaining presence. Defense impairment is indicated by anti-analysis imports such as IsDebuggerPresent and SetConsoleCtrlHandler, which can be used to evade debugger detection and handle console control events to prevent termination, as seen in the DLL's import table {source: static analysis, query: import table, row: IsDebuggerPresent and SetConsoleCtrlHandler, why: these functions impair debugging and shutdown processes}.\",\n  \"key_evidence\": [\n    \"String 'XMRig 2.6.2\\\\n built on May 28 2018 with MSVC' at address 0x1800b66a8\",\n    \"Full xmrig usage banner with CryptoNight/CryptoNight-Lite/CryptoNight-Heavy algorithm options\",\n    \"String 'stratum+tcp://' at address 0x1800cf458 \\u2014 mining pool connection protocol\",\n    \"References to '.nicehash.com' and '.minergate.com' pool domains\",\n    \"References to 'miner.fee.xmrig.com' and 'emergency.fee.xmrig.com' \\u2014 built-in dev fee domains\",\n    \"Function FUN_180064ed0 references 'SeLockMemoryPrivilege' for huge page memory allocation\",\n    \"Import: AdjustTokenPrivileges (ADVAPI32.DLL) \\u2014 privilege escalation\",\n    \"Import: LsaAddAccountRights, LsaOpenPolicy (ADVAPI32.DLL) \\u2014 LSA manipulation for privilege grants\",\n    \"Import: SetPriorityClass (KERNEL32.DLL) \\u2014 elevates process priority for mining\",\n    \"Import: IsDebuggerPresent, SetConsoleCtrlHandler \\u2014 anti-analysis/stealth capabilities\",\n    \"Import: CreateThread \\u2014 multi-threaded mining execution\",\n    \"YARA match: RijnDael_AES_CHAR at offset 0x96550 \\u2014 AES S-box for CryptoNight\",\n    \"YARA match: SHA2_BLAKE2_IVs (8 hits) and SHA3_constants (8 hits) \\u2014 mining algorithm internals\",\n    \"YARA match: anti_dbg rule \\u2014 SetConsoleCtrlHandler pattern for debugger evasion\",\n    \"2021 exports in DLL \\u2014 large attack surface for injection into other processes\",\n    \"High-complexity functions: FUN_18003d590 (CC=279, 1398 instructions), FUN_180073a70 (CC=248, 1426 instructions)\",\n    \"String 'donate-level' with default 5% (5 minutes per 100 minutes) \\u2014 covert developer revenue\",\n    \"Configurable max-cpu-usage, cpu-affinity, cpu-priority, background mode \\u2014 evasion of detection\"\n  ],\n  \"incomplete_tooling\": false,\n  \"successful_tool_calls\": 32,\n  \"successful_non_bootstrap_tools\": 19,\n  \"checklist_ok\": true,\n  \"sql_deep_ok\": true,\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\n\u2026 [1044 more chars]"
+      },
+      "publish": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "excerpt": "{\n  \"title\": \"Malware Analysis Report: XMRig Miner DLL (SHA256: a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395)\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `unknown` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-14 01:42:34 UTC\\n\\n# Verdict sources (multi-source)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | malicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | malicious |\\n\\n- **Locked over publish LLM:** no\\n\\n## Executive Summary\\n\\nThis report details the analysis of a 64-bit Windows DLL (SHA256: a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395) identified as XMRig version 2.6.2, a cryptocurrency mining application. The sample is classified as **malicious** due to its primary function of unauthorized cryptocurrency mining, which consumes victim CPU resources for the attacker's financial gain. The analysis reveals a sophisticated miner with capabilities for privilege escalation, anti-analysis evasion, and network communication with mining pools. Key findings include the presence of keylogging functionality, references to known mining pool domains, and the use of advanced memory allocation techniques to optimize mining performance. The sample's behavior constitutes a clear threat, warranting immediate containment and eradication measures.\\n\\n## 1. Sample Identification\\n\\n| Attribute | Value |\\n|---|---|\\n| **SHA256** | a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395 |\\n| **File Type** | PE64 DLL (Dynamic Link Library) |\\n| **Architecture** | x86-64 (64-bit) |\\n| **Compiler/Linker** | MSVC (Visual Studio 2017) |\\n| **Build Date** | May 28, 2018 (source: ghidra_query, string 'XMRig 2.6.2\\\\n built on May 28 2018 with MSVC') |\\n| **Project Name** | 710 |\\n| **Sample Path** | /opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin |\\n| **Import Hash (Imphash)** | 0c4c8e94664e68ee06fc2a3faae408ec (source: rule.yara.json) |\\n| **Entropy** | 6.56 bits/byte (source: MalCat, whole-file Shannon entropy) |\\n| **Packed** | No (UPX probe returned 'Tested 0 file') (source: UPX unpack evidence) |\\n\\n## 2. Classification\\n\\n**Verdict: MALICIOUS**\\n\\n**Confidence: HIGH (90%)**\\n\\n**Family: XMRig Miner**\\n\\nThe classification is based on multiple, corroborating pieces of evidence that demonstrate clear malicious intent beyond mere obfuscation or protection. The sample's core functionality is cryptocurrency mining, which is inherently malicious when deployed without user consent on a victim's machine. The presence of keylogging capabilities further solidifies this classification, as it indicates an intent to capture sensitive user input. The sample's behavior aligns with known malware tactics, techniques, and procedures (TTPs) for resource hijacking and credential theft.\\n\\n**Key Evidence for Malicious Verdict:**\\n\\n| Source | Evidence | Why it Indicates Malice |\\n|---|---|---|\\n| YARA | Rule 'XMRIG_Miner' matched | Directly identifies the sample as known cryptocurrency mining malware. (source: triage verdict.json, YARA matches) |\\n| Ghidra | String 'Usage: xmrig [OPTIONS] ... cryptonight' | Contains mining usage instructions and references to the CryptoNight algorithm, confirming mining functionality. (source: triage verdict.json, Ghidra strings) |\n\u2026 [21183 more chars]"
+      }
+    },
+    "artifact_inventory": {
+      "verdict.json": {
+        "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/verdict.json",
+        "exists": true,
+        "bytes": 6112,
+        "mtime_iso": "2026-08-14T01:37:51.562846+00:00",
+        "sha256": "d38d148e7dad65455127f1dccb9eba5b3c6de0bad532bc10c6be65f1a5b8f3af"
+      },
+      "prompt.txt": {
+        "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/prompt.txt",
+        "exists": true,
+        "bytes": 38130,
+        "mtime_iso": "2026-08-14T01:37:08.429846+00:00",
+        "sha256": "9a027b5f4f5344948835a592c07ae21228e00d6e98366b9ea769d62f267cd6a8"
+      },
+      "pipeline-audit.json": {
+        "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/pipeline-audit.json",
+        "exists": true,
+        "bytes": 115747,
+        "mtime_iso": "2026-08-13T01:18:11.406148+00:00",
+        "sha256": "56bda8692d8879feb7ebfdb2b8afccc411fd8afff173d9044a417dfbd5ac7712"
+      },
+      "AUDIT-REPORT.md": {
+        "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/AUDIT-REPORT.md",
+        "exists": true,
+        "bytes": 85307,
+        "mtime_iso": "2026-08-13T01:18:11.407148+00:00",
+        "sha256": "796904f7c104ae84bd6d7eba939a8939b2222f309489e39e85ed84c79a90abc4"
+      },
+      "REPORT-MASTER-v2.md": {
+        "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/REPORT-MASTER-v2.md",
+        "exists": true,
+        "bytes": 21757,
+        "mtime_iso": "2026-08-14T01:42:34.387406+00:00",
+        "sha256": "f51b0875f5a392b673f98bd93f63402566f4fd38de175c6c90fa806cbfed6e9f"
+      },
+      "REPORT-MASTER-v3.md": {
+        "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/REPORT-MASTER-v3.md",
+        "exists": true,
+        "bytes": 50013,
+        "mtime_iso": "2026-08-14T01:54:12.683366+00:00",
+        "sha256": "73630003552c5c49ba0f75a5597bfc09a4e8dc6aa0b59a279ddd89d0f72fb127"
+      },
+      "REPORT-v2.md": {
+        "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/REPORT-v2.md",
+        "exists": true,
+        "bytes": 21757,
+        "mtime_iso": "2026-08-14T01:42:34.387406+00:00",
+        "sha256": "f51b0875f5a392b673f98bd93f63402566f4fd38de175c6c90fa806cbfed6e9f"
+      },
+      "REPORT-TECHNICAL.md": {
+        "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/REPORT-TECHNICAL.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-TECHNICAL-v3.md": {
+        "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/REPORT-TECHNICAL-v3.md",
+        "exists": true,
+        "bytes": 105748,
+        "mtime_iso": "2026-08-14T02:02:24.176407+00:00",
+        "sha256": "5ef803418b2d583889a3b100a5fa302f846cb1aed06ab49b621826cb1d4682de"
+      },
+      "rule.yar": {
+        "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/rule.yar",
+        "exists": true,
+        "bytes": 1085,
+        "mtime_iso": "2026-08-13T00:57:52.670802+00:00",
+        "sha256": "969189e58de7a8e79181f1e79f7bc1122951c1f0bf982680fc4ad819e4b13dc7"
+      },
+      "intake-validation.json": {
+        "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/intake-validation.json",
+        "exists": true,
+        "bytes": 3001,
+        "mtime_iso": "2026-08-13T00:36:51.996177+00:00",
+        "sha256": "11c39996445d40fa1f0d93505e999d637c0521ee170fc598c02302d5cec8597a"
+      },
+      "source-decisions.json": {
+        "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/source-decisions.json",
+        "exists": true,
+        "bytes": 2086,
+        "mtime_iso": "2026-08-13T00:36:51.996177+00:00",
+        "sha256": "97556a158a29cef09f5e06bd4456c19aa6c0925406b2fe6abeeb6b1e48103e77"
+      },
+      "malcat-triage.json": {
+        "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/malcat-triage.json",
+        "exists": true,
+        "bytes": 136500,
+        "mtime_iso": "2026-08-14T01:34:37.120844+00:00",
+        "sha256": "3335f24022355201927bcd5c92703379002d4c0a70e44460967063cbc598038a"
+      },
+      "deep_dive/01-tools-raw.json": {
+        "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/deep_dive/01-tools-raw.json",
+        "exists": true,
+        "bytes": 243241,
+        "mtime_iso": "2026-08-14T01:34:37.131844+00:00",
+        "sha256": "75e931da5d2bbe400ce75af131cb5a526727a11257d919c66296d2e113231115"
+      },
+      "deep_dive/01-tools-gate.json": {
+        "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/deep_dive/01-tools-gate.json",
+        "exists": true,
+        "bytes": 921,
+        "mtime_iso": "2026-08-13T00:53:46.090559+00:00",
+        "sha256": "f3d89b0704908331fb9398585035abaf1e8cb402a81b8103612e94f26673893c"
+      },
+      "deep_dive/05-deep-dive.json": {
+        "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/deep_dive/05-deep-dive.json",
+        "exists": true,
+        "bytes": 4544,
+        "mtime_iso": "2026-08-13T00:57:49.667803+00:00",
+        "sha256": "b7a0cf72564a7c55b2bf68e4b5c4ea3b6c39576f1f7b194944a44d8573dcb472"
+      },
+      "deep_dive/03-prompt.txt": {
+        "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/deep_dive/03-prompt.txt",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "quick_scan/00-tools-raw.json": {
+        "path": "/opt/samples/logs/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/quick_scan/00-tools-raw.json",
+        "exists": true,
+        "bytes": 228888,
+        "mtime_iso": "2026-08-14T01:37:06.912846+00:00",
+        "sha256": "002a62cb571d6b088c442013c60717f845fda1ade458bec5d65d7716084837f6"
+      }
+    },
+    "report_excerpts": {
+      "v2": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-14 01:42:34 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\n\nThis report details the analysis of a 64-bit Windows DLL (SHA256: a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395) identified as XMRig version 2.6.2, a cryptocurrency mining application. The sample is classified as **malicious** due to its primary function of unauthorized cryptocurrency mining, which consumes victim CPU resources for the attacker's financial gain. The analysis reveals a sophisticated miner with capabilities for privilege escalation, anti-analysis evasion, and network communication with mining pools. Key findings include the presence of keylogging functionality, references to known mining pool domains, and the use of advanced memory allocation techniques to optimize mining performance. The sample's behavior constitutes a clear threat, warranting immediate containment and eradication measures.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|---|---|\n| **SHA256** | a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395 |\n| **File Type** | PE64 DLL (Dynamic Link Library) |\n| **Architecture** | x86-64 (64-bit) |\n| **Compiler/Linker** | MSVC (Visual Studio 2017) |\n| **Build Date** | May 28, 2018 (source: ghidra_query, string 'XMRig 2.6.2\\n built on May 28 2018 with MSVC') |\n| **Project Name** | 710 |\n| **Sample Path** | /opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin |\n| **Import Hash (Imphash)** | 0c4c8e94664e68ee06fc2a3faae408ec (source: rule.yara.json) |\n| **Entropy** | 6.56 bits/byte (source: MalCat, whole-file Shannon entropy) |\n| **Packed** | No (UPX probe returned 'Tested 0 file') (source: UPX unpack evidence) |\n\n## 2. Classification\n\n**Verdict: MALICIOUS**\n\n**Confidence: HIGH (90%)**\n\n**Family: XMRig Miner**\n\nThe classification is based on multiple, corroborating pieces of evidence that demonstrate clear malicious intent beyond mere obfuscation or protection. The sample's core functionality is cryptocurrency mining, which is inherently malicious when deployed without user consent\n\u2026 [19250 more chars]",
+      "v3": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-14 01:54:12 UTC\n\n# RE Report \u2014 a2923d838f2d\n_Generated 2026-08-14T01:54:12.674984+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=238c | cross_refs=True | llm_ok=True | runtime=71.68s -->\n\n## Executive Summary\n\nThis sample is **malicious** and classified as part of the **XMRig Miner** family, with high confidence (90%) based on static analysis. The verdict is corroborated by multiple detection engines, and the family identification is consistent with known mining malware behaviors.\n\n| Attribute | Value | Confidence | Evidence Interpretation |\n|-----------|-------|------------|------------------------|\n| Verdict | Malicious | 90% | Supported by 23 YARA matches and 43 CAPA rules, indicating strong indicators of malicious code such as cryptocurrency mining artifacts (source: yara, capa). |\n| Family | XMRig Miner | High | YARA rules specifically detect XMRig patterns, confirming the sample's lineage as a Monero miner often used for unauthorized resource exploitation (source: yara). |\n| Agreement | LLM and v1 analysis agree | Consistent | Cross-engine consensus reduces the likelihood of false positives, enhancing assessment reliability. |\n\nThe malware is a 64-bit DLL likely designed to perform unauthorized cryptocurrency mining, which could lead to excessive resource consumption and potential system compromise. It exhibits behaviors aligned with XMRig miners, such as encryption use and network communication with mining pools, based on static analysis from tools like CAPA and YARA. Dynamic analysis tools were not referenced in the evidence, so behavioral insights are derived solely from static examination.\n\n---\n\n<!-- section: 1. Sample Identification | pass=2 | evidence=233c | cross_refs=True | llm_ok=True | runtime=63.5s -->\n\n## 1. Sample Identification\n\nThis section outlines the key identifiers and characteristics of the analyzed sample, providing foundational context for subsequent analysis. All data is derived from static analysis, with no dynamic analysis performed for this identification phase.\n\n| Identifier | Value | Notes |\n|------------|-------|-------|\n| SHA256 | a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395 | Unique hash for file identifica\n\u2026 [47496 more chars]"
+    }
+  },
+  "retry_visibility": {
+    "quick_scan": [],
+    "deep_dive": [],
+    "count": 0
+  },
+  "all_green": true,
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "layer_attribution": {
+    "ok": true,
+    "layers": {
+      "L1_tool_extraction": [],
+      "L2_evidence_prompt": [],
+      "L3_llm_interpretation": [],
+      "L4_gates": [],
+      "L5_report_authorship": []
+    },
+    "red_stages": []
+  },
+  "showcase_dir": "/opt/samples/logs/_showcase_audits/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395"
+}

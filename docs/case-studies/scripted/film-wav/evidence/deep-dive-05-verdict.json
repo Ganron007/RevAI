@@ -1,0 +1,115 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "The WAV file shows strong indicators of malicious activity, including YARA matches for network indicators, base64 encoding, and maldoc behavior, along with high entropy and obfuscated strings suggesting obfuscation or embedded threats. For persistence, not observed. {source: analysis, query_or_table: N/A, row_or_rule: N/A, why: No indicators like registry keys or scheduled tasks were identified in the summary}. For exfiltration, YARA matches for network indicators suggest potential exfiltration or C2 communication. {source: YARA analysis, query_or_table: YARA rules, row_or_rule: network_indicators, why: Matches indicate network-related strings that could facilitate data exfiltration}. For credential_access, not observed. {source: analysis, query_or_table: N/A, row_or_rule: N/A, why: No evidence of credential theft or access mechanisms in the provided summary}. For imports, not observed. {source: analysis, query_or_table: N/A, row_or_rule: N/A, why: No imported functions or DLLs were noted in the analysis}",
+  "key_evidence": [
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "matches",
+      "row_or_rule": "rule: domain",
+      "why": "Matches domain regex, potentially indicating malicious network activity."
+    },
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "matches",
+      "row_or_rule": "rule: IP",
+      "why": "Matches IPv6 pattern, suggesting embedded network addresses common in malware."
+    },
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "matches",
+      "row_or_rule": "rule: contains_base64",
+      "why": "Contains base64 encoded data, often used for obfuscation in malicious files."
+    },
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "matches",
+      "row_or_rule": "rule: maldoc_indirect_function_call_3",
+      "why": "Indicates indirect function calls typical in malicious documents, suspicious in an audio file."
+    },
+    {
+      "source": "checklist_malcat_analyze",
+      "query_or_table": "file_summary",
+      "row_or_rule": "entropy: 156",
+      "why": "High entropy suggests encryption or compression, common in obfuscated or malicious files."
+    },
+    {
+      "source": "checklist_malcat_analyze",
+      "query_or_table": "views",
+      "row_or_rule": "strings",
+      "why": "Obfuscated strings like '/L/M/8080n0n0.0.0P2P2' indicate potential malicious encoding or embedded code."
+    }
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 11,
+  "successful_non_bootstrap_tools": 7,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "unknown",
+    "required": [
+      "yara",
+      "r2_decomp",
+      "xor"
+    ],
+    "tools": {
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "capa": {
+        "ok": true,
+        "why": "not_applicable:unknown"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "not_applicable:unknown"
+      },
+      "floss": {
+        "ok": true,
+        "why": "not_applicable:unknown"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "not_applicable:unknown"
+      },
+      "upx": {
+        "ok": true,
+        "why": "not_applicable:unknown"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "not_applicable:unknown"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "not_applicable:unknown"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [
+      "capa",
+      "pe_imports",
+      "floss",
+      "dotnet",
+      "upx",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

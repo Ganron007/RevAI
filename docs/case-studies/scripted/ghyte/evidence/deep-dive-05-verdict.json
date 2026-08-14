@@ -1,0 +1,87 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "Packed/protected PE executable using ZProtect/Safeguard protection with RC4 encryption and hidden-window capabilities. The binary is heavily obfuscated with only 6 functions recoverable from a 26KB sample, garbled strings throughout, and many unresolved indirect calls. CAPA confirms RC4 PRGA encryption (T1027), hidden window creation (T1564.003), and command-line argument processing. The combination of commercial-grade packing, cryptographic obfuscation, and stealth window capabilities indicates a malicious payload concealed within the protector wrapper. Persistence mechanisms were not observed in the analysis. C2 network communications were not identified. Defense impairment techniques were not detected.",
+  "key_evidence": [
+    "YARA: ZProtect_v144_lifeengines and Safeguard_103_Simonzh packer signatures matched",
+    "CAPA: 'encrypt data using RC4 PRGA' - RC4 encryption for obfuscation (T1027)",
+    "CAPA: 'hide graphical window' - Defense Evasion via Hidden Window (T1564.003)",
+    "CAPA: 'accept command line arguments' - Execution via Command and Scripting Interpreter (T1059)",
+    "Ghidra: Only 6 functions identified in 26KB binary indicating heavy packing",
+    "Ghidra: High cyclomatic complexity in FUN_00401686 (CC=14, 17 blocks) and FUN_00402bdb (CC=15, 35 blocks)",
+    "Ghidra: 11 of 12 call targets in FUN_00401686 resolve to sub_0 (unresolved indirect calls typical of packed code)",
+    "IDA: 96 strings found but most are garbled random bytes (e.g., '00N,t', 'qH1Hl', 'VXlt|NO') indicating encrypted/compressed data",
+    "Ghidra: All 24 imports are GUI-only (USER32, GDI32, KERNEL32) despite hidden-window capability suggesting real payload loaded dynamically"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 35,
+  "successful_non_bootstrap_tools": 21,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

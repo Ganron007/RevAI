@@ -1,0 +1,39 @@
+# Dynamic-resolve signals (deterministic render of 02-signals.json)
+
+{
+  "engine": "dynamic_resolve_detect",
+  "summary": {
+    "resolver_funcs": 0,
+    "resolve_sites": 0,
+    "peb_module_walkers": 0,
+    "ordinal_imports": 5,
+    "min_resolve_calls": 2,
+    "elapsed_s": 1.3,
+    "note": "Resolve sites are core logic of packed/stripped samples (static import dir empty)."
+  },
+  "resolver_funcs": [],
+  "resolve_sites": [],
+  "peb_module_walkers": [],
+  "ordinal_imports": [
+    {
+      "name": "Ordinal_52",
+      "module": "WS2_32.DLL"
+    },
+    {
+      "name": "Ordinal_116",
+      "module": "WS2_32.DLL"
+    },
+    {
+      "name": "Ordinal_115",
+      "module": "WS2_32.DLL"
+    },
+    {
+      "name": "Ordinal_12",
+      "module": "WS2_32.DLL"
+    },
+    {
+      "name": "Ordinal_57",
+      "module": "WS2_32.DLL"
+    }
+  ]
+}

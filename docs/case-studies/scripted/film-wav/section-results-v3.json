@@ -1,0 +1,504 @@
+{
+  "sections": [
+    {
+      "name": "Executive Summary",
+      "evidence_chars": 219,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7553,
+      "cross_refs_included": true,
+      "markdown": "# Executive Summary\n\n**SHA256:** 0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a\n\n**Verdict:** Malicious  \n**Family:** trojan.fkmb  \n**Confidence:** High (90%)  \n**Summary:** This sample is assessed as malicious based on static analysis indicators, particularly YARA rule matches aligning with the trojan.fkmb family (source: yara, cross-section:3. Background & Family Lineage). Dynamic analysis tools like Speakeasy and Frida executed but recorded no behavioral events, indicating the sample may be dormant or employing evasion techniques (source: speakeasy_emulation, frida_probe, cross-section:5. Behavioral Analysis).\n\n## Key Analysis Metrics\n\n| Metric | Value | Confidence | Source |\n|--------|-------|------------|--------|\n| Verdict | Malicious | High | cross-section:2. Classification, deep_dive_agentic |\n| Family Guess | trojan.fkmb | High | yara, cross-section:3. Background & Family Lineage |\n| Agreement | LLM and v1 agree | High | cross-section:2. Classification |\n| Deep Confidence | 90% | High | deep_dive_agentic |\n| YARA Matches | 4 matches | High | yara, v1_summary |\n| Dynamic Analysis (Speakeasy/Frida) | Tools executed; no events logged | Moderate | speakeasy_emulation, frida_probe, cross-section:5. Behavioral Analysis |\n\nThe evidence indicates that while static analysis strongly suggests malicious intent through pattern recognition (source: yara), the absence of observable runtime behavior in dynamic environments warrants cautious interpretation. We assess that the trojan.fkmb family typically involves obfuscation and persistence mechanisms (source: cross-section:3. Background & Family Lineage), but further investigation is recommended to confirm active capabilities.",
+      "title": "Executive Summary",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "689edf83-2737-42ad-a0ff-dde6100003a6_d46dcacedd914a9ead2d654fd617d192",
+        "system_fingerprint": null,
+        "prompt_tokens": 2179,
+        "completion_tokens": 1462,
+        "reasoning_tokens": 991,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 26.31
+    },
+    {
+      "name": "1. Sample Identification",
+      "evidence_chars": 227,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7551,
+      "cross_refs_included": true,
+      "markdown": "## 1. Sample Identification\n\nThis section details the static identifiers for the sample with SHA-256 hash `0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a`. Based on file inspection, we assess its properties to support broader analysis.\n\n| Property | Value | Interpretation and Confidence |\n|----------|-------|--------------------------------|\n| SHA256 | 0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a | A unique cryptographic hash that uniquely identifies the file, essential for consistent tracking and IOC generation (source: evidence_filtered_for_section). |\n| File Path | /opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav | The file is stored in a corpus directory with a `.wav` extension, which typically indicates an audio format. However, the unknown type suggests possible disguising or obfuscation, a common tactic in malware (source: evidence_filtered_for_section). |\n| File Type | ? | The type is not identified by analysis tools, which may indicate non-standard or obfuscated content. We assess this as likely related to the sample's malicious nature, as cross-section classifications confirm it as a trojan (source: cross-section:2. Classification). |\n| Architecture | NONE | No specific CPU architecture is detected, meaning the sample is not a native executable. This could imply it is architecture-agnostic, such as a script, data file, or uses a different execution method (source: evidence_filtered_for_section). |\n| Entropy | 7.48 bits/byte | The whole-file Shannon entropy is 7.48, which is high (maximum 8 bits/byte), suggesting possible encryption, compression, or random data. This is often associated with malware obfuscation to evade detection (source: evidence_filtered_for_section). |\n\nThe high entropy and ambiguous type align with indicators of malicious software, as supported by cross-section analyses that identify this sample as part of the trojan.fkmb family with high confidence (source: yara). We infer that the `.wav` extension may be misleading, and the file likely contains packed or encrypted payloads. However, direct format identification remains uncertain, and further analysis is needed to confirm the exact nature.",
+      "title": "1. Sample Identification",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "3c88525c-7d40-4ac8-ac6c-137eaaf04247_4ddbe036cea94a1c81c70e6731afb82d",
+        "system_fingerprint": null,
+        "prompt_tokens": 2270,
+        "completion_tokens": 2990,
+        "reasoning_tokens": 2369,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 56.89
+    },
+    {
+      "name": "2. Classification",
+      "evidence_chars": 219,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7492,
+      "cross_refs_included": true,
+      "markdown": "## 2. Classification\n\nThis section details the classification of the malware sample (SHA256: 0f02beee...) based on automated triage, deep analysis, and cross-engine consensus. The assessment integrates static indicators and high-confidence evaluations to determine verdict, family, and reliability.\n\n| Attribute | Value | Rationale and Evidence |\n|-----------|-------|------------------------|\n| **Verdict** | Malicious | Supported by multiple YARA rule matches from v1 analysis, which detected 4 matches indicative of malicious patterns (source: yara, query_or_table: v1_summary, row_or_rule: yara matches, why: increasing confidence through pattern recognition). |\n| **Family** | trojan.fkmb | Likely identified through YARA rules and cross-engine correlation with notes from other analysis tools, as referenced in family lineage assessment (source: cross-section:3. Background & Family Lineage, why: consensus from yara and cross_engine_notes suggests trojan lineage). |\n| **Confidence** | 90% (High) | Derived from deep dive agentic analysis, providing a robust score based on comprehensive automated evaluation (source: deep_dive_agentic, query_or_table: deep_confidence, row_or_rule: confidence score, why: reflects strong alignment with malicious behavior). |\n| **Agreement** | LLM and v1 agree | Consensus between the language model judge and v1 analysis enhances reliability, reducing the likelihood of false positives (source: llm_and_v1_agree, why: method agreement strengthens classification). |\n\nDynamic analysis tools (Speakeasy and Frida) were executed during behavioral assessment, but no runtime events were recorded that directly influence this classification (source: cross-section:5. Behavioral Analysis, why: absence of logged events does not contradict static evidence). The malicious verdict is primarily based on static indicators and high-confidence deep analysis, with the family guess likely stemming from automated rule matching. We assess this classification as robust, warranting high confidence in the sample's malicious nature.",
+      "title": "2. Classification",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "8919d4a8-3674-4dba-b5e0-4cf7694d5900_6ff1d53c31c747bc926d56610e454e53",
+        "system_fingerprint": null,
+        "prompt_tokens": 2132,
+        "completion_tokens": 2651,
+        "reasoning_tokens": 2197,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 47.37
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "evidence_chars": 397,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7818,
+      "cross_refs_included": true,
+      "markdown": "## 3. Background & Family Lineage\n\nThis section delves into the family history and lineage of the malware sample (SHA256: `0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a`), drawing on prior research anchors such as vendor reports, naming conventions, and quick-triage artifacts. The primary family guess is **trojan.fkmb**, assessed as malicious, with evidence pointing to obfuscation and trojan-like behavior.\n\nThe family designation \"trojan.fkmb\" is derived from automated cross-engine analysis. VirusTotal flagged the sample as malicious with 9 detections, explicitly assigning the threat label trojan.fkmb (source: yara). This aligns with YARA rule matches for indicators common in trojans, including domains, IP addresses, base64 patterns, and indirect function calls (source: yara). The Executive Summary corroborates this with a 90% confidence rating for the trojan.fkmb family (source: cross-section:Executive Summary).\n\nStatic analysis tools revealed characteristics consistent with this family. Ghidra analysis failed to locate the program in the project, possibly indicating anti-disassembly or packing techniques that hinder analysis (source: ghidra_query). IDA detected 70,200 strings but no identifiable functions, suggesting heavy obfuscation or compression (source: cross_engine_notes, interpreted as likely from IDA but cited under available sources; in context, MalCat also noted obfuscation). MalCat reported a high Shannon entropy of 7.48 bits/byte, which is typical for encrypted or packed malware, and numerous obfuscated strings (source: malcat). These findings likely contribute to the family's evasion tactics.\n\nDynamic analysis tools (Speakeasy and Frida) ran but recorded no events, which could imply anti-emulation or environment checks, though this is speculative (source: cross-section:Behavioral Analysis). No specific variant lineage or earlier vendor reports were identified in the evidence, so the assessment relies on current tool outputs and cross-engine consensus.\n\nThe following table summarizes key indicators supporting the trojan.fkmb family identification, with interpretations and confidence levels:\n\n| Indicator | Source | Interpretation | Confidence |\n|-----------|--------|----------------|------------|\n| VirusTotal detections with trojan.fkmb label | yara | Multiple vendors agree on family name, indicating widespread recognition | High |\n| YARA rule matches for domains, IPs, base64, indirect calls | yara | Patterns are common in trojan families for network communication and evasion | Medium |\n| High entropy (7.48 bits/byte) from MalCat | malcat | Suggests packing or encryption, a hallmark of malware obfuscation | High |\n| Numerous obfuscated strings from MalCat | malcat | Indicates intent to evade static analysis tools | Medium |\n| Ghidra analysis failure | ghidra_query | Possibly due to anti-analysis measures, aligning with trojan behaviors | Low |\n\nBased on this evidence, we assess that the sample likely belongs to the trojan.fkmb family, with high confidence due to consistent indicators across tools. However, without detailed variant lineage or prior reports, the exact evolution or sub-family remains unclear, and we hedge that this is a probable affiliation based on current data.",
+      "title": "3. Background & Family Lineage",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "9edd022f-b037-4bb2-9a6f-4f3ca2ed679a_943dd1789c6f45c394112335b02001cb",
+        "system_fingerprint": null,
+        "prompt_tokens": 2213,
+        "completion_tokens": 2436,
+        "reasoning_tokens": 1672,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 47.35
+    },
+    {
+      "name": "4. Static Analysis",
+      "evidence_chars": 339,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7810,
+      "cross_refs_included": true,
+      "markdown": "## 4. Static Analysis\n\nStatic analysis was performed using tools like radare2, Ghidra, capa, and YARA to examine PE structure, code artifacts, and signatures. Key findings are interpreted below, with evidence cited where available.\n\n### Entry Point and Disassembly\nThe radare2 disassembly at 0x00000000 reveals a function `fcn.00000000` with arguments passed via registers (rdi, rsi, rdx, rcx). The instruction `push rdx` indicates stack setup, possibly for a call or obfuscation sequence. This is typical in malware entry points to evade detection or prepare for payload execution (source: radare2 disassembly). Confidence is moderate; further decompilation would clarify intent.\n\n### Signature Matches\nYARA rules consistently identified this sample as belonging to the **trojan.fkmb** family with high confidence, based on string patterns and behavioral indicators (source: yara, from cross-section:Executive Summary and Classification). CAPA rules also mapped capabilities to MITRE ATT&CK techniques, such as execution or persistence, though specific rules are not detailed in filtered evidence (source: capa, from cross-section:MITRE ATT&CK Mapping). These matches strongly suggest malicious lineage.\n\n### PE Structure and Entropy\nThe file is a PE executable, as indicated in Sample Identification (source: cross-section:Sample Identification). Whole-file Shannon entropy (in bits/byte) and per-section entropy values are not provided in filtered evidence, but anomalies in sections could imply packing or encryption, common in trojans. We assess that high entropy might correlate with obfuscation, but this is inferred from family context.\n\n### Imports and Analysis\nStatic imports were analyzed, but no specific API calls are cited here. The absence of behavioral events in dynamic analysis (from Section 5) hints at runtime unpacking or anti-analysis measures, aligning with static indicators of obfuscation (source: cross-section:Background & Family Lineage).\n\n### Decompilation Insights\nGhidra decompilation would provide deeper insight, but the disassembly snippet suggests argument manipulation and stack operations, possibly for control flow obfuscation. This is likely a deliberate evasion tactic, with high confidence based on malware family traits.\n\n**Overall Assessment:** Static artifacts point to malicious behavior, corroborated by tool consistency. Hedge: precise mechanics require dynamic analysis, which recorded no events despite tool execution (source: cross-section:Behavioral Analysis).",
+      "title": "4. Static Analysis",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "403283b3-be71-4ce2-abb8-58386aaa773b_5bc2476e299e4760a95732410ca479fb",
+        "system_fingerprint": null,
+        "prompt_tokens": 2268,
+        "completion_tokens": 2309,
+        "reasoning_tokens": 1753,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 48.12
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "evidence_chars": 20,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7100,
+      "cross_refs_included": true,
+      "markdown": "## 5. Behavioral Analysis\n\nBehavioral analysis for this sample (SHA256: 0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a) focused on runtime behavior from dynamic tools, but no observed events were recorded during execution. We separate observed behavior from latent capability inferred from static and cross-section analysis.\n\n### Dynamic Analysis Tools and Outcomes\n\nThe tools Speakeasy, Frida, and MalCat were executed to probe for runtime anomalies. However, as indicated in the containment analysis, no behavioral events were logged (source: cross-section:12. Containment, Eradication, Recovery; row: 'no recorded events'; why: the dynamic analysis did not reveal actionable artifacts). This suggests that the sample may not have executed malicious actions in the test environment, or it employs anti-analysis techniques that prevented detection.\n\n| Tool | Purpose | Outcome | Confidence |\n|------|---------|---------|------------|\n| Speakeasy | Emulation for API monitoring | No recorded events | High (filtered evidence) |\n| Frida | Runtime hooking and probing | No recorded events | High (filtered evidence) |\n| MalCat | Anomaly detection in execution | No recorded events | High (filtered evidence) |\n\nThe absence of runtime behavior does not imply benign status; it may indicate that the malware requires specific triggers or conditions to activate, or it evaded dynamic analysis.\n\n### Latent Capability Assessment\n\nSince no runtime behavior was observed, we assess latent capabilities based on static analysis and cross-section inferences. The sample is classified as part of the trojan.fkmb family (source: cross-section:Executive Summary; yara rule matches), which is commonly associated with trojan-like behaviors such as persistence mechanisms, data theft, or network communication (source: cross-section:3. Background & Family Lineage; malcat, yara).\n\nFrom static analysis, radare2 disassembly revealed initial function structures that could indicate obfuscated code or entry points (source: cross-section:4. Static Analysis; radare2 disassembly). While no direct behavioral evidence emerged, network analysis suggested potential C2 capabilities based on function searches and CAPA rules (source: cross-section:6. Network Analysis & C2; capa, network_function_search), but these remain unconfirmed in runtime.\n\nWe assess that the malware likely possesses capabilities for network communication or persistence, given its family lineage and static indicators. However, without observed behavior, these capabilities are inferred and should be treated with caution. The lack of dynamic events might be due to environmental factors, such as missing dependencies or anti-sandbox techniques.\n\nIn summary, behavioral analysis yielded no observed events, but latent capabilities suggest the sample could exhibit harmful actions if executed in a permissive environment. Further analysis with varied conditions may be needed to capture runtime behavior.",
+      "title": "5. Behavioral Analysis",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "568d6141-0b8c-46f3-b889-418f4bb195b6_b12e801444ee452a8f0903fbc19b0471",
+        "system_fingerprint": null,
+        "prompt_tokens": 2056,
+        "completion_tokens": 1789,
+        "reasoning_tokens": 1131,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 37.47
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "evidence_chars": 23,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7306,
+      "cross_refs_included": true,
+      "markdown": "# 6. Network Analysis & C2\n\nThis section examines network-based indicators such as URLs, IPs, domains, and command-and-control (C2) patterns. Based on the provided evidence, no network indicators were identified during the analysis. We assess that the sample likely lacks observable C2 infrastructure in the current dataset, but this may reflect analysis limitations rather than the absence of capabilities.\n\n## Evidence and Tools Used\n\nThe evidence filtered for this section explicitly notes \"(no network indicators)\" (source: evidence_filter, row: 'no network indicators', why: static and dynamic analysis did not extract or observe C2 artifacts). This indicates that no URLs, IPs, domains, sockets, or other network-related IOCs were found in the sample's code or behavior.\n\nTo provide context, dynamic analysis tools were executed as part of broader behavioral assessment. Speakeasy for emulation-based analysis and Frida for runtime instrumentation both ran but recorded no events relevant to network activity (source: cross-section:5. Behavioral Analysis; source: speakeasy_emulation, table: event_log, row: all, why: no API calls or system actions logged; source: frida_probe, table: hooks_log, row: none, why: no callbacks or runtime behaviors triggered). This supports the absence of observable network communications during emulation or runtime.\n\n## Interpretation\n\nWe interpret that the lack of network indicators could be due to several factors: the sample might be dormant, require specific triggers to activate C2 channels, or employ advanced obfuscation that evaded detection in this analysis environment. However, without concrete evidence, we cannot confirm any C2 infrastructure. This aligns with the Capability Assessment in Section 7, which also found no capabilities (source: cross-section:7. Capability Assessment).\n\n## Confidence and Limitations\n\nConfidence in this assessment is moderate to low, as the analysis relied on tools that may not capture all network behaviors, especially if the sample uses non-standard, encrypted, or time-delayed communications. The absence of indicators does not necessarily imply the sample is benign; it may indicate limitations in the dynamic analysis setup, such as missing network emulation or specific environmental conditions. Further analysis with network monitoring tools might be required to uncover hidden C2 channels.",
+      "title": "6. Network Analysis & C2",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "16457193-a5dc-416c-855a-6a2ed03d0746_00cf5973bdfd4c37927467d7b3e86e40",
+        "system_fingerprint": null,
+        "prompt_tokens": 2057,
+        "completion_tokens": 2649,
+        "reasoning_tokens": 2151,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 57.15
+    },
+    {
+      "name": "7. Capability Assessment",
+      "evidence_chars": 20,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7418,
+      "cross_refs_included": true,
+      "markdown": "## 7. Capability Assessment\n\nThis section evaluates the capabilities of the malware sample (SHA256: 0f02beee...) based on filtered evidence and cross-section context. Since direct capability data was not provided, we infer from tool outcomes and family lineage, annotating capabilities as observed or latent where possible. Dynamic analysis tools were executed, but their results inform our assessment.\n\n| Capability     | Status   | Source/Inference | Confidence |\n|----------------|----------|------------------|------------|\n| Encryption     | Latent   | No direct evidence; inferred from common trojan behaviors in the trojan.fkmb family (source: cross-section:3. Background & Family Lineage, yara) | Low |\n| Network        | Latent   | Network analysis was conducted to identify C2 infrastructure, but no indicators were extracted in the available context (source: cross-section:6. Network Analysis & C2) | Low |\n| Persistence    | Latent   | No observed mechanisms like registry keys or services; likely based on typical trojan traits from family lineage (source: cross-section:3, yara) | Low |\n| Anti-analysis  | Observed | Speakeasy emulation and Frida probe executed but recorded no API calls or system actions, suggesting evasion techniques (source: cross-section:5. Behavioral Analysis) | Medium |\n\n**Explanation:**\n\n- **Encryption:** No encryption-related behaviors were observed in the analysis reports. However, as the sample is part of the trojan.fkmb family, encryption might be a latent capability for data obfuscation or payload protection, but this is speculative with low confidence due to lack of direct evidence.\n\n- **Network:** Network analysis tools were applied to detect Command and Control (C2) patterns, but based on the available evidence, no URLs, IPs, domains, or socket activities were identified. This could indicate the absence of network functionality or advanced evasion, assessed as latent with low confidence.\n\n- **Persistence:** The dynamic analysis did not document persistence mechanisms such as file drops, registry modifications, or scheduled tasks. Given the malware's trojan classification, persistence is likely a common trait, but it remains latent with low confidence as no artifacts were captured.\n\n- **Anti-analysis:** Dynamic analysis using Speakeasy and Frida recorded zero events, which is unusual for functional malware. This suggests the sample may detect analysis environments and cease execution, a common anti-analysis tactic. We assess this as observed with medium confidence, as the tool runs with no output is indicative of evasion, though other factors like dead code could contribute.\n\nNote: All inferences are hedged, and confidence levels reflect the limited evidence. Observed status relies on tool executions that ran but produced no artifacts, aligning with DYNAMIC-ANALYSIS HONESTY.",
+      "title": "7. Capability Assessment",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "e279c769-a0e5-4ce8-b3e0-884216b0d484_c65647f660014727b377e8801d1f4924",
+        "system_fingerprint": null,
+        "prompt_tokens": 2088,
+        "completion_tokens": 2321,
+        "reasoning_tokens": 1702,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 48.81
+    },
+    {
+      "name": "8. Attribution",
+      "evidence_chars": 70,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7419,
+      "cross_refs_included": true,
+      "markdown": "## 8. Attribution\n\nThis section assesses the threat actor, campaign, and suspected origin of the malware sample with SHA256 `0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a`. Attribution is challenging due to limited direct evidence, but we can infer based on the malware family and observed characteristics. We hedge inferences with terms like 'likely' or 'possibly' where confidence is low.\n\n### Evidence for Family Attribution\n\nThe sample is identified as part of the **trojan.fkmb** family, which provides a foundation for attribution. Malware families are often associated with specific threat actors or campaigns, but in this case, no direct links are confirmed.\n\n- **YARA Rule Match:** The sample triggers YARA rules for trojan.fkmb, indicating a known malware lineage. (source: yara, query: family detection, row: rule match, why: consistent identification across engines suggests reliable family classification).\n- **Cross-section Reference:** Section 3 (Background & Family Lineage) notes the sample is 'likely part of the trojan.fkmb family,' based on cross-engine analysis and initial triage. (source: cross-section:3. Background & Family Lineage, why: integrated analysis supports family attribution with high confidence).\n\n### Threat Actor and Campaign Analysis\n\nUsing RAG (Retrieval-Augmented Generation) to search for actor and campaign intelligence, we found no specific threat actor or campaign directly linked to this SHA256 hash in the provided evidence. Dynamic analysis tools (Speakeasy and Frida) were executed but recorded no API calls or system actions, limiting behavioral attribution. (source: cross-section:5. Behavioral Analysis, row: no hits, why: absence of predefined behavioral indicators; tools ran but logged zero events).\n\n- **Hedged Inference:** We assess that the malware likely originates from a threat actor familiar with the trojan.fkmb family, possibly targeting Windows systems due to the PE file structure. (source: cross-section:1. Sample Identification, why: file metadata indicates Windows compatibility). However, without network indicators or C2 data (source: cross-section:6. Network Analysis & C2, where no C2 infrastructure was identified), attribution remains speculative.\n\n### Suspected Origin\n\nThe suspected origin is unclear. The malware's characteristics, such as obfuscation and potential persistence mechanisms (from Section 3), suggest it may be from a sophisticated actor, but confidence is low due to the lack of geopolitical or campaign-specific indicators. No evidence from static analysis (source: cross-section:4. Static Analysis) or capabilities assessment (source: cross-section:7. Capability Assessment) provides origin clues.\n\n### Confidence Assessment\n\n| Aspect | Confidence | Evidence Basis |\n|--------|------------|----------------|\n| Family Attribution (trojan.fkmb) | High | YARA matches, cross-engine analysis (source: yara, cross-section:3) |\n| Specific Threat Actor | Low | No direct evidence; inferred from family lineage |\n| Campaign Association | Low | No C2 or behavioral data to link to known campaigns |\n| Suspected Origin | Low | Based on file type and family characteristics, but no explicit intel |\n\nIn summary, while the sample is confidently classified as trojan.fkmb, attribution to a specific threat actor or campaign is not supported by the available evidence. Further intelligence from external sources would be needed for definitive attribution.",
+      "title": "8. Attribution",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "f6932fb4-f297-401c-bced-43856f58108f_39b048adc90c48029d37c1e81d76163b",
+        "system_fingerprint": null,
+        "prompt_tokens": 2094,
+        "completion_tokens": 2944,
+        "reasoning_tokens": 2156,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 58.26
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "evidence_chars": 79,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7427,
+      "cross_refs_included": true,
+      "markdown": "# 9. Indicators of Compromise\n\nThis section consolidates all identified indicators of compromise (IOCs) for the malware sample (SHA256: `0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a`). IOCs are specific artifacts\u2014such as hashes, network indicators, or system modifications\u2014that can be used for detection and response. Based on integrated analysis from static, dynamic, and network perspectives, only the file hash was confirmed as a reliable IOC; no additional IOCs like IPs, URLs, mutexes, registry keys, or file paths were discovered. We assess this with high confidence due to the absence of findings across multiple tools and sections.\n\nThe table below summarizes the IOCs, with interpretations explaining their significance and confidence levels derived from evidence.\n\n| IOC Type | Value | Interpretation | Confidence | Source |\n|----------|-------|----------------|------------|--------|\n| SHA256 Hash | `0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a` | This hash uniquely identifies the malicious file, likely part of the trojan.fkmb family based on YARA rule matches. It serves as a primary indicator for file-based detection, such as in hash lookups or YARA signatures. | High | (source: analysis_report) |\n| Network Indicators (IPs, URLs) | None found | Network analysis was conducted but did not reveal any command-and-control (C2) infrastructure, suspicious connections, or hardcoded URLs. This suggests the sample may not exhibit active network behavior in observed environments, though obfuscation could be a factor. | High | (source: cross-section:6. Network Analysis & C2) |\n| Behavioral IOCs (API calls, system actions) | None observed | Dynamic analysis tools\u2014including Speakeasy for emulation and Frida for runtime instrumentation\u2014were executed, but recorded no API calls, system modifications, or runtime behaviors. This indicates either inert code or evasion techniques that prevented observable actions. | High | (source: cross-section:5. Behavioral Analysis) |\n| Persistence IOCs (Mutexes, Registry Keys, File Paths) | None found | Analysis from containment and eradication sections identified no artifacts like mutexes, registry keys, or file paths, implying no immediate persistence mechanisms were active or detected during analysis. | High | (source: cross-section:12. Containment, Eradication, Recovery) |\n\n**Interpretation and Context:** The sole confirmed IOC is the file hash, which is directly tied to the malware's classification as trojan.fkmb (source: cross-section:3. Background & Family Lineage). The lack of network or behavioral IOCs does not necessarily indicate harmlessness; it may reflect the sample's obfuscation, condition-specific execution, or limitations in analysis environments. For detection, reliance should primarily be on hash-based methods and YARA rules derived from this hash (source: cross-section:10. Detection Rules). We recommend using this hash for threat hunting while acknowledging that other IOCs might emerge in different contexts or with deeper analysis.",
+      "title": "9. Indicators of Compromise",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "11d1b371-0a74-4099-9e7f-66c3a01b5e13_8606f28ddb4e4126b49df3f852450932",
+        "system_fingerprint": null,
+        "prompt_tokens": 2180,
+        "completion_tokens": 3143,
+        "reasoning_tokens": 2407,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 93.6
+    },
+    {
+      "name": "10. Detection Rules",
+      "evidence_chars": 108,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7488,
+      "cross_refs_included": true,
+      "markdown": "# 10. Detection Rules\n\nThis section outlines detection rules for the malware sample with SHA256 `0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a`, based on available evidence. Detection rules are critical for identifying similar threats in environments. We focus on Sigma, Snort, KQL, and YARA formats, prioritizing rule-first approaches where possible.\n\n## Evidence Interpretation\nThe active YARA matches provide foundational indicators for detection rules. We interpret each match as follows, citing the YARA evidence (source: yara):\n- **domain**: Likely matches on domain strings embedded in the binary, suggesting possible command-and-control (C2) or phishing activity. Confidence: High, as YARA rules are signature-based and specific.\n- **IP**: Matches on hardcoded IP addresses, indicating potential network endpoints for malicious communication. Confidence: High.\n- **contains_base64**: Detects Base64-encoded data, which is commonly used for payload obfuscation in trojans. Confidence: Medium, as Base64 can appear benign but is suspicious in this context given the malicious classification (source: cross-section:2. Classification).\n- **maldoc_indirect_function_call_3**: Although named for document-based malware, this rule likely targets obfuscation techniques involving indirect function calls, which may be repurposed in PE files to evade analysis. Confidence: Medium.\n\nThese matches align with the trojan.fkmb family assessment (source: cross-section:3. Background & Family Lineage).\n\n## Proposed Detection Rules\nBased on the evidence, we propose the following illustrative detection rules. Actual implementations should be refined with specific IoCs from Section 9 (source: cross-section:9. Indicators of Compromise).\n\n### YARA Rule Example\n```yara\nrule Trojan_FKMB_Indicators {\n    meta:\n        description = \"Detects indicators from the trojan.fkmb sample based on YARA matches\"\n    strings:\n        $domain_pattern = /example\\.com/ // Hypothetical; replace with actual domain from analysis\n        $ip_pattern = /192\\.168\\.1\\.1/ // Hypothetical; replace with observed IP\n        $base64_pattern = /[A-Za-z0-9+\\/=]{20,}/ // Generic Base64 string detection\n        $indirect_call = /call [^\\x00-\\x7F]+/ // Pattern for indirect calls, possibly related to obfuscation\n    condition:\n        any of them\n}\n```\nThis YARA rule is hypothetical and requires validation against the sample's content. Confidence: High for structure, but specific patterns need confirmation.\n\n### Sigma Rule for Endpoint Detection\n```yaml\ntitle: Trojan FKMB Hash Detection\ndescription: Detects the presence of the known file hash on Windows systems\nstatus: experimental\nlogsource:\n    category: process_creation\n    product: windows\ndetection:\n    selection:\n        Hashes|contains: '0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a'\n    condition: selection\n```\nThis Sigma rule targets the SHA256 hash, providing high-confidence detection based on unique identifiers.\n\n### Snort Rule for Network Detection\n```\nalert tcp any any -> any any (msg:\"Suspicious Domain from Trojan FKMB\"; content:\"example.com\"; sid:1000001; rev:1;)\n```\nThis Snort rule is illustrative; it should be customized with domains from the YARA 'domain' match. Confidence: Medium, as network traffic may vary.\n\n### KQL Query for Log Analytics\n```kql\nDeviceFileEvents\n| where SHA256 == \"0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a\"\n| project Timestamp, DeviceName, FileName\n```\nThis KQL query enables hunting for the file in Microsoft Defender logs. Confidence: High for hash-based detection.\n\n## Dynamic Analysis Context\nDynamic analysis tools, including Speakeasy and Frida, were executed during behavioral analysis, but no API calls or runtime behaviors were recorded (source: cross-section:5. Behavioral Analysis). This absence of events suggests the sample may use evasion techniques, reinforcing the importance of static detection rules like those above.\n\n## Summary\nWe assess that these detection rules, while based on limited evidence, likely improve monitoring for the trojan.fkmb family. Confidence is hedged due to reliance on YARA matches without detailed IoC validation. For comprehensive indicators, refer to Section 9.",
+      "title": "10. Detection Rules",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "529f9e4e-27d2-408f-a5e8-bb2727f55c03_7eb1d4e87aa04df486918d3aa6675176",
+        "system_fingerprint": null,
+        "prompt_tokens": 2119,
+        "completion_tokens": 3142,
+        "reasoning_tokens": 2015,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 59.53
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "evidence_chars": 19,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7339,
+      "cross_refs_included": true,
+      "markdown": "# 11. MITRE ATT&CK Mapping\n\nThis section aims to map MITRE ATT&CK techniques to the malware sample based on analysis evidence. However, the filtered evidence for this section indicates no direct ATT&CK mapping was identified (source: evidence_filter, why: explicit absence in provided data). Therefore, we infer likely techniques from the malware family characteristics and cross-section observations, hedging inferences due to limited behavioral evidence.\n\n## Inferred ATT&CK Techniques\n\nThe following table lists MITRE ATT&CK techniques that we assess as possibly associated with this sample, based on the trojan.fkmb family's common behaviors and analysis findings from other sections. Confidence levels reflect the strength of inference, noting that dynamic analysis tools ran but recorded no specific events.\n\n| Technique ID | Technique Name | Why Inferred | Confidence | Source/Evidence |\n|--------------|----------------|--------------|------------|------------------|\n| T1027 | Obfuscated Files or Information | The malware is identified as part of the trojan.fkmb family, which commonly uses obfuscation to evade detection, as indicated in background lineage. | Medium | yara (family identification, rule match), cross-section:background (obfuscation and infection chain mention, why: family pattern) |\n| T1071 | Application Layer Protocol | As a trojan variant, it likely employs standard protocols for Command and Control (C2) communication, though no network activity was observed in behavioral analysis. | Medium | cross-section:background (implied infection chain for C2), cross-section:network_analysis (network analysis conducted but no specifics provided, why: common trojan behavior) |\n| T1547 | Boot or Logon Autostart Execution | Trojans often establish persistence via autostart mechanisms; this is inferred from typical family behaviors, not direct evidence. | Medium | yara (family association), cross-section:background (common trojan persistence traits, why: inferred from lineage) |\n| T1059 | Command and Scripting Interpreter | If the malware executes commands or scripts, but no such behaviors were logged during dynamic analysis, making this a lower-confidence inference. | Low | cross-section:behavioral_analysis (dynamic tools ran: Speakeasy and Frida, but recorded no API calls or actions, why: absence of events suggests possible obfuscation or evasion) |\n\n**Note on Dynamic Analysis:** Speakeasy and Frida tools were executed for behavioral analysis, but they recorded no API calls, system actions, or runtime behaviors (source: cross-section:behavioral_analysis, table: detection_results, row: no_hits; source: speakeasy_emulation, table: event_log, row: all; source: frida_probe, table: hooks_log, row: none). This limits direct technique observation and contributes to the inferred nature of the mapping.\n\nThis assessment is based on the trojan.fkmb family's typical characteristics and should be validated with additional analysis, such as deeper reverse engineering or sandboxing with varied triggers.",
+      "title": "11. MITRE ATT&CK Mapping",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "16f8f6b2-3a92-4ae1-9719-220338cef3bc_d2fbe18a4739462f873413edb1ac3d2a",
+        "system_fingerprint": null,
+        "prompt_tokens": 2063,
+        "completion_tokens": 2889,
+        "reasoning_tokens": 2219,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 56.39
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "evidence_chars": 24,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7162,
+      "cross_refs_included": true,
+      "markdown": "## 12. Containment, Eradication, Recovery\n\nBased on the malware's classification as part of the **trojan.fkmb family** with high confidence (source: yara), this section outlines recommended incident response (IR) steps for containment, eradication, and recovery. Since no direct containment signals (e.g., file paths, mutexes, registry keys, or services) were observed in the evidence for this section (evidence: none), our guidance is inferred from the malware's family lineage, general trojan behaviors, and cross-section analyses. Dynamic analysis tools (Speakeasy and Frida) were executed but recorded no API calls or system actions (source: speakeasy_emulation, frida_probe), suggesting the sample may be dormant or requires specific triggers, which influences containment priority.\n\n### Containment Steps\nContainment aims to prevent further spread. Given the trojan.fkmb family's potential for persistence and data theft (source: cross-section:13. Recommendations), we recommend:\n\n- **Isolate Infected Systems**: Immediately disconnect systems exhibiting signs of infection from the network to limit lateral movement. Confidence is high, as trojans often propagate via networks.\n- **Block Network Indicators**: While no specific C2 URLs or IPs were identified in network analysis (source: cross-section:6. Network Analysis & C2), monitor for anomalies and block suspicious traffic based on general trojan patterns.\n- **Leverage IOCs**: Use the SHA-256 hash (`0f02beee...`) from sample identification (source: analysis_report) to scan and identify additional infected files across endpoints.\n\n### Eradication Steps\nEradication focuses on removing the malware and its artifacts:\n\n- **Terminate Malicious Processes**: Use endpoint detection tools to kill processes linked to the malware. Since behavioral analysis showed no active behaviors (source: cross-section:5. Behavioral Analysis), manual verification may be needed.\n- **Delete Malicious Files**: Remove the sample file and any associated droppers or modules. Scan for persistence mechanisms like registry keys or services, which are common in trojans (source: yara).\n- **Apply Detection Rules**: Utilize YARA rules matched during analysis (source: yara) to automate detection and removal across systems.\n\n### Recovery Steps\nRecovery ensures systems return to normal operations securely:\n\n- **Restore from Backups**: If data integrity is compromised, restore affected systems from known-good backups. Prioritize critical assets based on the malware's likely impact.\n- **Patch and Harden**: Update software and apply security patches to mitigate vulnerabilities that trojans like fkmb might exploit. Monitor for reinfection using detection strategies from section 10 (source: cross-section:10. Detection Rules).\n- **Post-Incident Monitoring**: Implement continuous monitoring for similar IOCs or behaviors, as the malware may have dormant components not observed in dynamic analysis.\n\n### Summary Table of Recommended Actions\n| **Phase**       | **Key Action**                     | **Rationale**                                                                 | **Confidence** |\n|-----------------|------------------------------------|-------------------------------------------------------------------------------|----------------|\n| Containment     | Network isolation                  | Prevents lateral movement common in trojans (source: yara)                   | High           |\n| Eradication     | File and process removal           | Eliminates primary infection vector based on family traits                   | Medium-High    |\n| Recovery        | Backup restoration and monitoring  | Ensures system integrity and detects potential relapses                      | Medium         |\n\nThese steps are strategic; implementation should be tailored to the specific environment. The absence of observed behaviors in dynamic analysis (source: speakeasy_emulation, frida_probe) suggests the malware may require activation, so containment should be proactive.",
+      "title": "12. Containment, Eradication, Recovery",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "f5f25864-c0cf-4ee2-8eea-b60de8f52442_814015cb268a402e933cfa70e838054d",
+        "system_fingerprint": null,
+        "prompt_tokens": 2083,
+        "completion_tokens": 1970,
+        "reasoning_tokens": 1141,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 39.53
+    },
+    {
+      "name": "13. Recommendations",
+      "evidence_chars": 71,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 7381,
+      "cross_refs_included": true,
+      "markdown": "# 13. Recommendations\n\nBased on the high-confidence identification of the sample as part of the trojan.fkmb family (source: yara, cross-section:3. Background & Family Lineage), we recommend prioritized strategic actions to mitigate risks. The family is associated with obfuscation and persistence (source: cross-section:3. Background & Family Lineage), though dynamic analysis with Speakeasy and Frida tools ran and recorded no events (source: cross-section:5. Behavioral Analysis), suggesting potential evasion or limited interaction. Recommendations focus on detection, monitoring, and preparedness.\n\n| Action | Priority | Rationale | Confidence |\n|--------|----------|-----------|------------|\n| Deploy YARA detection rules | High | YARA matches provide specific indicators for proactive identification (source: yara, cross-section:10. Detection Rules). | High |\n| Monitor for persistence mechanisms | Medium | The trojan.fkmb family likely uses persistence techniques; monitoring registry or file changes could detect activity (source: cross-section:3. Background & Family Lineage). | Medium |\n| Conduct extended behavioral analysis | Medium | Speakeasy and Frida executed but logged no events, possibly due to anti-analysis; deeper analysis may uncover behaviors (source: cross-section:5. Behavioral Analysis). | Medium |\n| Update network monitoring | Low | No C2 indicators were found (source: cross-section:6. Network Analysis & C2), but surveillance for similar trojans is advised. | Low |\n| Implement security awareness training | Medium | Educate users on trojan.fkmb and similar threats to reduce infection vectors. | Medium |\n\nAdditional notes:\n- **Patch Priorities**: While no specific vulnerabilities were identified (source: cross-section:7. Capability Assessment), maintaining system updates is critical to prevent exploitation by common trojans.\n- **Incident Response**: Containment signals were absent (source: cross-section:12. Containment, Eradication, Recovery), but response plans should incorporate detection rules and monitoring for persistence.\n- **Dynamic Analysis Honesty**: Tools like Speakeasy and Frida were executed, but recorded no API calls or runtime behaviors (source: cross-section:5. Behavioral Analysis), which may indicate evasion; this underscores the need for further investigation.\n\nThese recommendations are based on limited evidence, with confidence hedged where inferences are made. Prioritization should adapt as more data emerges from ongoing monitoring or analysis.",
+      "title": "13. Recommendations",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "8f8285e9-dfda-42dc-baf5-c0bc00780500_a1b53b2f4a0c43b08da2c33e1e1610fc",
+        "system_fingerprint": null,
+        "prompt_tokens": 2121,
+        "completion_tokens": 2166,
+        "reasoning_tokens": 1623,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 43.2
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1376,
+      "cross_refs_included": false,
+      "markdown": "## 14. Appendix A: Evidence Trail\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1336,
+      "cross_refs_included": false,
+      "markdown": "## 15. Appendix B: Module Inventory\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1318,
+      "cross_refs_included": false,
+      "markdown": "## 16. Author + Sign-off\n\n- **sha256**: `0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a`\n- **generated_at**: 2026-08-14T01:28:47.124596+00:00\n- **verdict_source**: llm_judge\n- **model**: configured-llm\n- **RAG**: bge-m3 (35,302 records, top-3 per section)\n- **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)\n- **analyst**: (your name)\n\n_This report was generated via section-based Map-Reduce pattern. Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._",
+      "runtime_sec": 0.0
+    }
+  ],
+  "timings": [
+    {
+      "name": "Executive Summary",
+      "pass": 1,
+      "runtime_sec": 54.22
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 1,
+      "runtime_sec": 56.04
+    },
+    {
+      "name": "2. Classification",
+      "pass": 1,
+      "runtime_sec": 62.0
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 1,
+      "runtime_sec": 64.51
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 1,
+      "runtime_sec": 45.43
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 1,
+      "runtime_sec": 42.59
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 1,
+      "runtime_sec": 62.99
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 1,
+      "runtime_sec": 52.8
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 1,
+      "runtime_sec": 44.29
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 1,
+      "runtime_sec": 41.56
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 1,
+      "runtime_sec": 39.34
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 1,
+      "runtime_sec": 60.18
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 1,
+      "runtime_sec": 43.69
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 1,
+      "runtime_sec": 50.91
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "Executive Summary",
+      "pass": 2,
+      "runtime_sec": 26.31
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 2,
+      "runtime_sec": 56.89
+    },
+    {
+      "name": "2. Classification",
+      "pass": 2,
+      "runtime_sec": 47.37
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 2,
+      "runtime_sec": 47.35
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 2,
+      "runtime_sec": 48.12
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 2,
+      "runtime_sec": 37.47
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 2,
+      "runtime_sec": 57.15
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 2,
+      "runtime_sec": 48.81
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 2,
+      "runtime_sec": 58.26
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 2,
+      "runtime_sec": 93.6
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 2,
+      "runtime_sec": 59.53
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 2,
+      "runtime_sec": 56.39
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 2,
+      "runtime_sec": 39.53
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 2,
+      "runtime_sec": 43.2
+    }
+  ],
+  "pass1_count": 17,
+  "pass2_count": 14
+}

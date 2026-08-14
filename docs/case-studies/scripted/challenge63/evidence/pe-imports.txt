@@ -1,0 +1,33 @@
+# PE import signals (deterministic render)
+
+{
+  "engine": "pe_imports",
+  "sample_size": 134144,
+  "duration_s": 0.02,
+  "import_count": 277,
+  "signal_count": 3,
+  "signals": [
+    {
+      "label": "set_registry_value",
+      "api_match": "RegSetValue",
+      "attack": [
+        "T1112"
+      ]
+    },
+    {
+      "label": "load_library",
+      "api_match": "LoadLibrary",
+      "attack": [
+        "T1129"
+      ]
+    },
+    {
+      "label": "get_proc_address",
+      "api_match": "GetProcAddress",
+      "attack": [
+        "T1129"
+      ]
+    }
+  ],
+  "hint": "PE import high-signal map (pefile). Not capa."
+}

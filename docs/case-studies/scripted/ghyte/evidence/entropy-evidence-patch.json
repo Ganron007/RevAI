@@ -1,0 +1,11 @@
+{
+  "sha256": "a59b2cb9f6c706635b4d97edc574a72ac54fba47f9a4a1eae77cf58a96ccf567",
+  "entropy_bits_whole_file": 6.04,
+  "entropy_source": "whole_file_shannon_revai",
+  "patched_files": [],
+  "reason": "malcat entropy field is not whole-file entropy (2026-08-12); replaced with ground-truth value, raw preserved as entropy_malcat_raw",
+  "verdict_prose_stale_entropy": [
+    "cross_engine_notes",
+    "key_evidence[4].row_or_rule"
+  ]
+}

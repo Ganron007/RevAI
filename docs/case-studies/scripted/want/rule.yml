@@ -1,0 +1,21 @@
+title: "RevAI v2: ransomware.lockbit activity"
+id: ransomware_lockbit_d52f0647e519
+status: experimental
+level: high
+description: "Auto-generated Sigma rule for ransomware.lockbit (sha256 prefix d52f0647e519)"
+author: RevAI yara_gen_v2
+date: 2026/08/12
+reference: "commit unknown · engine langgraph"
+tags:
+    - attack.execution
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+            CommandLine|contains: "*!This program cannot be run in DOS mode.*"
+            CommandLine|contains: "*GetProcAddress*"
+            CommandLine|contains: "*kernel32.dll*"
+    condition: selection
+falsepositives:
+    - Review against goodware corpus

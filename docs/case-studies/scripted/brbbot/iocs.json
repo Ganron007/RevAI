@@ -1,0 +1,30 @@
+{
+  "sha256": "f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e",
+  "family": "trojan.blocker/bckn (botnet trojan)",
+  "verdict": "malicious@",
+  "generated_at": "2026-08-12T16:45:56.084920+00:00",
+  "hashes": {
+    "sha256": "f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e",
+    "sha1": "4db5a8e237937b6d7b435a8506b8584121a7e9e3",
+    "md5": "1c7243c8f3586b799a5f9a2e4200aa92"
+  },
+  "domains": [],
+  "ips": [],
+  "urls": [],
+  "files": [],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive).",
+  "wallets_btc": [],
+  "wallets_eth": [],
+  "revai_tools": {
+    "count": 0,
+    "source": "revai_tools_iocs"
+  }
+}

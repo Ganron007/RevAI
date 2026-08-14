@@ -1,0 +1,83 @@
+{
+  "anti_analysis": {
+    "engine": "anti_analysis_signals",
+    "signals": [],
+    "functions": {},
+    "summary": {
+      "categories": {},
+      "total_signals": 0,
+      "functions_with_signals": 0,
+      "elapsed_s": 5.58,
+      "note": "Deterministic; TLS callbacks are pre-entry-point candidates."
+    }
+  },
+  "dynamic_resolve": {
+    "engine": "dynamic_resolve_detect",
+    "summary": {
+      "resolver_funcs": 0,
+      "resolve_sites": 0,
+      "peb_module_walkers": 0,
+      "ordinal_imports": 13,
+      "min_resolve_calls": 2,
+      "elapsed_s": 2.75,
+      "note": "Resolve sites are core logic of packed/stripped samples (static import dir empty)."
+    },
+    "resolver_funcs": [],
+    "resolve_sites": [],
+    "peb_module_walkers": [],
+    "ordinal_imports": [
+      {
+        "name": "Ordinal_4",
+        "module": "COMCTL32.DLL"
+      },
+      {
+        "name": "Ordinal_2",
+        "module": "COMCTL32.DLL"
+      },
+      {
+        "name": "Ordinal_358",
+        "module": "COMCTL32.DLL"
+      },
+      {
+        "name": "Ordinal_359",
+        "module": "COMCTL32.DLL"
+      },
+      {
+        "name": "Ordinal_329",
+        "module": "COMCTL32.DLL"
+      },
+      {
+        "name": "Ordinal_337",
+        "module": "COMCTL32.DLL"
+      },
+      {
+        "name": "Ordinal_338",
+        "module": "COMCTL32.DLL"
+      },
+      {
+        "name": "Ordinal_334",
+        "module": "COMCTL32.DLL"
+      },
+      {
+        "name": "Ordinal_236",
+        "module": "COMCTL32.DLL"
+      },
+      {
+        "name": "Ordinal_340",
+        "module": "COMCTL32.DLL"
+      },
+      {
+        "name": "Ordinal_365",
+        "module": "COMCTL32.DLL"
+      },
+      {
+        "name": "Ordinal_363",
+        "module": "COMCTL32.DLL"
+      },
+      {
+        "name": "Ordinal_2",
+        "module": "ACLUI.DLL"
+      }
+    ]
+  }
+}

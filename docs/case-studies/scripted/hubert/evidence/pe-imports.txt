@@ -1,0 +1,40 @@
+# PE import signals (deterministic render)
+
+{
+  "engine": "pe_imports",
+  "sample_size": 323584,
+  "duration_s": 0.04,
+  "import_count": 79,
+  "signal_count": 4,
+  "signals": [
+    {
+      "label": "http_client",
+      "api_match": "InternetOpen",
+      "attack": [
+        "T1071.001"
+      ]
+    },
+    {
+      "label": "set_registry_value",
+      "api_match": "RegSetValue",
+      "attack": [
+        "T1112"
+      ]
+    },
+    {
+      "label": "create_process",
+      "api_match": "CreateProcess",
+      "attack": [
+        "T1106"
+      ]
+    },
+    {
+      "label": "allocate_memory",
+      "api_match": "VirtualAlloc",
+      "attack": [
+        "T1055"
+      ]
+    }
+  ],
+  "hint": "PE import high-signal map (pefile). Not capa."
+}

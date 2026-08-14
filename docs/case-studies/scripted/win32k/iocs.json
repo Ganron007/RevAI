@@ -1,0 +1,34 @@
+{
+  "sha256": "8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde",
+  "family": "trojan.dyreza/battdil",
+  "verdict": "malicious@",
+  "generated_at": "2026-08-12T18:18:50.099452+00:00",
+  "hashes": {
+    "sha256": "8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde",
+    "sha1": "e46b46400d8af345bad009fd0b100e1d6a6ae13a",
+    "md5": "07458acb129ef3ef233d284361b4e158"
+  },
+  "domains": [
+    "icanhazip[.]com"
+  ],
+  "ips": [],
+  "urls": [
+    "http[:]//icanhazip[.]com\u0000\u0000\u0000\u0000No"
+  ],
+  "files": [],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive).",
+  "wallets_btc": [],
+  "wallets_eth": [],
+  "revai_tools": {
+    "count": 2,
+    "source": "revai_tools_iocs"
+  }
+}

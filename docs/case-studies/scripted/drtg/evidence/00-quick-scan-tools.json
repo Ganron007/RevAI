@@ -1,0 +1,2102 @@
+{
+  "capa": {
+    "rule_count": 7,
+    "top_rules": [
+      {
+        "name": "reference Base64 string",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "",
+            "id": "T1027"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Data",
+              "Encode Data",
+              "Base64"
+            ],
+            "objective": "Data",
+            "behavior": "Encode Data",
+            "method": "Base64",
+            "id": "C0026.001"
+          },
+          {
+            "parts": [
+              "Data",
+              "Check String"
+            ],
+            "objective": "Data",
+            "behavior": "Check String",
+            "method": "",
+            "id": "C0019"
+          }
+        ]
+      },
+      {
+        "name": "reference anti-VM strings targeting Qemu",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Virtualization/Sandbox Evasion",
+              "System Checks"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Virtualization/Sandbox Evasion",
+            "subtechnique": "System Checks",
+            "id": "T1497.001"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Anti-Behavioral Analysis",
+              "Virtual Machine Detection"
+            ],
+            "objective": "Anti-Behavioral Analysis",
+            "behavior": "Virtual Machine Detection",
+            "method": "",
+            "id": "B0009"
+          }
+        ]
+      },
+      {
+        "name": "inspect section memory permissions",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Discovery",
+              "Code Discovery",
+              "Inspect Section Memory Permissions"
+            ],
+            "objective": "Discovery",
+            "behavior": "Code Discovery",
+            "method": "Inspect Section Memory Permissions",
+            "id": "B0046.002"
+          }
+        ]
+      },
+      {
+        "name": "parse PE header",
+        "attack": [
+          {
+            "parts": [
+              "Execution",
+              "Shared Modules"
+            ],
+            "tactic": "Execution",
+            "technique": "Shared Modules",
+            "subtechnique": "",
+            "id": "T1129"
+          }
+        ],
+        "mbc": []
+      },
+      {
+        "name": "contains PDB path",
+        "attack": [],
+        "mbc": []
+      },
+      {
+        "name": "print debug messages",
+        "attack": [],
+        "mbc": []
+      },
+      {
+        "name": "resolve function by parsing PE exports",
+        "attack": [],
+        "mbc": []
+      }
+    ],
+    "timeout_s": 300,
+    "sample_size": 50861,
+    "duration_s": 1.69,
+    "engine": "malcat-capa",
+    "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+  },
+  "pe_imports": {
+    "engine": "pe_imports",
+    "sample_size": 50861,
+    "duration_s": 0.01,
+    "import_count": 21,
+    "signal_count": 0,
+    "signals": [],
+    "hint": "PE import high-signal map (pefile). Not capa."
+  },
+  "yara": {
+    "rule_count": 15,
+    "matches": [
+      {
+        "rule": "domain",
+        "path": "/opt/samples/corpus/malware/683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96/drtg.exe",
+        "strings": [
+          {
+            "id": "$domain_regex",
+            "offset": 0,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IP",
+        "path": "/opt/samples/corpus/malware/683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96/drtg.exe",
+        "strings": [
+          {
+            "id": "$ipv6",
+            "offset": 22282,
+            "length": 3,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "contains_base64",
+        "path": "/opt/samples/corpus/malware/683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96/drtg.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1216,
+            "length": 16,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Qemu_Detection",
+        "path": "/opt/samples/corpus/malware/683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96/drtg.exe",
+        "strings": [
+          {
+            "id": "$a0",
+            "offset": 44611,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "BASE64_table",
+        "path": "/opt/samples/corpus/malware/683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96/drtg.exe",
+        "strings": [
+          {
+            "id": "$c0",
+            "offset": 47688,
+            "length": 64,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "url",
+        "path": "/opt/samples/corpus/malware/683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96/drtg.exe",
+        "strings": [
+          {
+            "id": "$url_regex",
+            "offset": 49141,
+            "length": 53,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IsPE32",
+        "path": "/opt/samples/corpus/malware/683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96/drtg.exe",
+        "strings": []
+      },
+      {
+        "rule": "IsWindowsGUI",
+        "path": "/opt/samples/corpus/malware/683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96/drtg.exe",
+        "strings": []
+      },
+      {
+        "rule": "HasOverlay",
+        "path": "/opt/samples/corpus/malware/683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96/drtg.exe",
+        "strings": []
+      },
+      {
+        "rule": "HasDebugData",
+        "path": "/opt/samples/corpus/malware/683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96/drtg.exe",
+        "strings": []
+      },
+      {
+        "rule": "HasRichSignature",
+        "path": "/opt/samples/corpus/malware/683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96/drtg.exe",
+        "strings": [
+          {
+            "id": "$a0",
+            "offset": 200,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Safeguard_103_Simonzh",
+        "path": "/opt/samples/corpus/malware/683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96/drtg.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 6416,
+            "length": 5,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Check_OutputDebugStringA_iat",
+        "path": "/opt/samples/corpus/malware/683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96/drtg.exe",
+        "strings": []
+      },
+      {
+        "rule": "anti_dbg",
+        "path": "/opt/samples/corpus/malware/683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96/drtg.exe",
+        "strings": [
+          {
+            "id": "$d1",
+            "offset": 690,
+            "length": 12,
+            "xor_key": null
+          },
+          {
+            "id": "$c3",
+            "offset": 9350,
+            "length": 17,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Ransom_Satana_Dropper",
+        "path": "/opt/samples/corpus/malware/683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96/drtg.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1264,
+            "length": 12,
+            "xor_key": null
+          },
+          {
+            "id": "$b",
+            "offset": 1628,
+            "length": 28,
+            "xor_key": null
+          },
+          {
+            "id": "$c",
+            "offset": 1196,
+            "length": 8,
+            "xor_key": null
+          }
+        ]
+      }
+    ],
+    "engine": "yara-x",
+    "rules_compiled": 454,
+    "compile_errors": [
+      "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+      "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+      "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+    ],
+    "incomplete": true,
+    "duration_s": 3.44
+  },
+  "floss": {
+    "floss_ok": true,
+    "string_count": 145,
+    "strings_sampled": 80,
+    "strings": [
+      "ZwProtectVirtualMemory",
+      "ZwWriteVirtualMemory",
+      "GetModuleFileNameW",
+      "FlushInstructionCache",
+      "ZwUnmapViewOfSection",
+      "4siPKFd;`U7v`U0VcPGjirHv`fWPIVuSGQ2TISePjPGf[1KP30Lv0UQeVLWP`AEeVFiD@@6PVP2dCemdFCCPVS6OCuOAEW2PFujLJzeFVSSPC22rKh7LCCIPASjF[E@lQPUZ",
+      "NtAllocateVirtualMemory",
+      "?456789:;<=",
+      "!\"#$%&'()*+,-./0123",
+      "SetUnhandledExceptionFilter",
+      "RtlDecompressBuffer",
+      "!This program cannot be run in DOS mode.",
+      "`.data",
+      "@.reloc",
+      "ntdll.dll",
+      "KERNEL32.dll",
+      "USER32.dll",
+      "OPENGL32.dll",
+      "kaxkytpp",
+      "qfntvthb",
+      "ZwGetContextThread",
+      "MyUnhandledExceptionFilter",
+      "%s-TryExcept",
+      "EntryPoint",
+      "First_tls",
+      "on_tls_callback1",
+      "on_tls_callback2",
+      "on_tls_callback3",
+      "@ffffff",
+      "?333333",
+      "333333",
+      "d:\\lbetwmwy\\uijeuqplfwub.pdb",
+      "YUSW_[]",
+      "^SP@X[Q=",
+      "QSVWh(",
+      "Rj@ZZQ}",
+      "Ilz`_R",
+      "UWRjyZZ_]PP|",
+      "_P@XUf",
+      "UjS]]f",
+      "t.VGWP",
+      "Vjt^^v",
+      "WjI__Uw",
+      "Sj*[[]",
+      "WRWO_Z_s",
+      "_stricmp",
+      "vsprintf",
+      "memmove",
+      "NtYieldExecution",
+      "strchr",
+      "strncpy",
+      "GetLocalTime",
+      "OutputDebugStringA",
+      "MessageBoxA",
+      "glClear",
+      "glPointSize",
+      "glVertex3d",
+      "glLineStipple",
+      "glDisable",
+      "glBegin",
+      "glColor3d",
+      "glPolygonMode",
+      "glLineWidth",
+      "glEnable",
+      "memset",
+      "DfGmmxhAmp",
+      "qwvywvszdcvle",
+      "Veu[qljtotrrP",
+      "tydqcgfwwka",
+      "ythlbnzpc",
+      "ewsyeor",
+      "panamkve",
+      "5rhQJGe:aT6waT1WbQFkhsIwagVQHWtRFP3UHRdQkQFgZ0JQ21Mw1TPdWMVQa@DdWGhEAA7QWQ3eBdleGBBQWR7NBtN@DV3QGtkMK{dGWRRQB33sJi6MBBHQ@RkGZDAmPQT[FQTV3SsQ:a5sVARPTJ3wrU3QEi7A5qrsV{NTwHoRBAFT3vntF{YQ:a;UrP3QEruTs5oP",
+      "jmenfrhmjebkjhainycnyvrdfclb",
+      "Bg~Tyfm`j~J`~Kobm",
+      "asdzfk",
+      "@bMrbRmmft",
+      "aijrjgxt",
+      "vannql",
+      "!)#);'"
+    ],
+    "per_category": {
+      "decoded_strings": 15,
+      "stack_strings": 0,
+      "tight_strings": 0,
+      "language_strings": 0,
+      "language_strings_missed": 0,
+      "static_strings": 130
+    },
+    "raw_key_total": 3,
+    "floss_profile": "full",
+    "floss_language": "none",
+    "duration_s": 7.21,
+    "size_bytes": 50861,
+    "static_only": false,
+    "size_exceeded_deobfuscate_limit": false
+  },
+  "malcat": {
+    "analysis_id": 1,
+    "path": "/opt/samples/corpus/malware/683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96/drtg.exe",
+    "profile": "deep",
+    "limits": {
+      "strings_max": 300,
+      "imports_max": 300,
+      "functions_max": 30,
+      "anomaly_locations_max": 50,
+      "decompile_top_n": 3
+    },
+    "file_summary": {
+      "analysis_id": 1,
+      "file_name": "drtg.exe",
+      "file_path": "/opt/samples/corpus/malware/683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96/drtg.exe",
+      "file_size": 50861,
+      "type": "PE",
+      "architecture": "X86",
+      "entropy": 6.46,
+      "sha256": "683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96",
+      "metadata": {
+        "Debug::Date.Debug.Fixup": "2009-11-10 10:17:40"
+      },
+      "entrypoint_ea": 6416,
+      "layout": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 1024,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 52
+        },
+        {
+          "name": ".text",
+          "effective_address": 1024,
+          "physical_size": 8704,
+          "virtual_size": 12288,
+          "rights": "RX",
+          "entropy": 124
+        },
+        {
+          "name": ".data",
+          "effective_address": 13312,
+          "physical_size": 38912,
+          "virtual_size": 40960,
+          "rights": "RW",
+          "entropy": 144
+        },
+        {
+          "name": ".rsrc",
+          "effective_address": 54272,
+          "physical_size": 1024,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 89
+        },
+        {
+          "name": ".reloc",
+          "effective_address": 58368,
+          "physical_size": 1024,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 19
+        },
+        {
+          "name": "overlay",
+          "effective_address": 62464,
+          "physical_size": 173,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 170
+        }
+      ],
+      "kesakode_verdict": [],
+      "entropy_malcat_raw": 135,
+      "entropy_source": "whole_file_shannon_revai"
+    },
+    "views": {
+      "anomalies": [
+        {
+          "name": "BigBufferNoXrefMediumToHighEntropy",
+          "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+          "category": "entropy",
+          "level": 3,
+          "num_hits": 2
+        },
+        {
+          "name": "BoundImports",
+          "desc": "Bound imports are present",
+          "category": "imports",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "ManyUniqueImmediateBytes",
+          "desc": "More than 48 unique bytes defined across all immediate operands in the function",
+          "category": "code",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "RichMultipleLinkers",
+          "desc": "multiple linker entries in rich header",
+          "category": "rich",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "StringBase64",
+          "desc": "string has more than 16 characters is encoded using base64",
+          "category": "strings",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "WeirdDebugInfoType",
+          "desc": "the Debug infos are not in the usual format",
+          "category": "headers",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "XorInLoop",
+          "desc": "XOR instruction in a loop",
+          "category": "code",
+          "level": 3,
+          "num_hits": 11
+        }
+      ],
+      "anomaly_locations": {
+        "ManyUniqueImmediateBytes": [
+          {
+            "ea": 4176,
+            "context": ""
+          }
+        ],
+        "XorInLoop": [
+          {
+            "ea": 4361,
+            "context": ""
+          },
+          {
+            "ea": 4422,
+            "context": ""
+          },
+          {
+            "ea": 4454,
+            "context": ""
+          },
+          {
+            "ea": 4546,
+            "context": ""
+          },
+          {
+            "ea": 4598,
+            "context": ""
+          }
+        ]
+      },
+      "yara_hits": [
+        {
+          "id": "MSVC_2010_linker",
+          "category": "compiler",
+          "reliability": 60,
+          "type": "INFO",
+          "description": "detects used visual studio version based on linker information",
+          "num_patterns": 0
+        }
+      ],
+      "strings": [
+        {
+          "ea": 51272,
+          "summary": "ABCDEFGHIJKLMNOP..wxyz0123456789+/"
+        },
+        {
+          "ea": 13552,
+          "summary": "5rhQJGe:aT6waT1W..BBBBBBBBBBBBBBBB"
+        },
+        {
+          "ea": 54360,
+          "summary": "<assembly xmlns=..XPADDINGPADDINGX"
+        },
+        {
+          "ea": 1236,
+          "summary": "MyUnhandledExceptionFilter"
+        },
+        {
+          "ea": 1480,
+          "summary": "333333"
+        },
+        {
+          "ea": 1332,
+          "summary": "on_tls_callback1"
+        },
+        {
+          "ea": 1216,
+          "summary": "ZwGetContextThread"
+        },
+        {
+          "ea": 1320,
+          "summary": "First_tls"
+        },
+        {
+          "ea": 1208,
+          "summary": ".dll"
+        },
+        {
+          "ea": 680,
+          "summary": "ntdll.dll"
+        },
+        {
+          "ea": 9322,
+          "summary": "ntdll.dll"
+        },
+        {
+          "ea": 1372,
+          "summary": "on_tls_callback3"
+        },
+        {
+          "ea": 1352,
+          "summary": "on_tls_callback2"
+        },
+        {
+          "ea": 1196,
+          "summary": "qfntvthb"
+        },
+        {
+          "ea": 1280,
+          "summary": "EntryPoint"
+        },
+        {
+          "ea": 690,
+          "summary": "KERNEL32.dll"
+        },
+        {
+          "ea": 9370,
+          "summary": "KERNEL32.dll"
+        },
+        {
+          "ea": 9548,
+          "summary": "OPENGL32.dll"
+        },
+        {
+          "ea": 9398,
+          "summary": "USER32.dll"
+        },
+        {
+          "ea": 714,
+          "summary": "OPENGL32.dll"
+        },
+        {
+          "ea": 703,
+          "summary": "USER32.dll"
+        },
+        {
+          "ea": 1264,
+          "summary": "%s-TryExcept"
+        },
+        {
+          "ea": 1312,
+          "summary": "%s-4"
+        },
+        {
+          "ea": 1304,
+          "summary": "%s-3"
+        },
+        {
+          "ea": 1296,
+          "summary": "%s-2"
+        },
+        {
+          "ea": 1628,
+          "summary": "d:\\lbetwmwy\\uijeuqplfwub.pdb"
+        },
+        {
+          "ea": 50622,
+          "summary": "jmenfrhmjebkjhainycnyvrdfclb"
+        },
+        {
+          "ea": 1487,
+          "summary": "@ffffff\n@"
+        },
+        {
+          "ea": 77,
+          "summary": "!This program ca..in DOS mode.\r\r\n$"
+        },
+        {
+          "ea": 58823,
+          "summary": "6\"6>6I6N6S6"
+        },
+        {
+          "ea": 1399,
+          "summary": "@ffffff"
+        },
+        {
+          "ea": 1415,
+          "summary": "?333333"
+        },
+        {
+          "ea": 58561,
+          "summary": ":!:/:J:X:e:m:y:"
+        },
+        {
+          "ea": 51638,
+          "summary": "bapbjfrknvrsmfmrn"
+        },
+        {
+          "ea": 9274,
+          "summary": "memmove"
+        },
+        {
+          "ea": 51730,
+          "summary": "ehjegborhilopxmydycpasir"
+        },
+        {
+          "ea": 58677,
+          "summary": "081L1Y1^1i1v1~1"
+        },
+        {
+          "ea": 58383,
+          "summary": "3$30363C3Z3j3{3"
+        },
+        {
+          "ea": 58723,
+          "summary": "2$2)2=2E2V2`2t2"
+        },
+        {
+          "ea": 58589,
+          "summary": ";,;H;S;c;o;"
+        },
+        {
+          "ea": 58411,
+          "summary": "4*424>4\\4w4"
+        },
+        {
+          "ea": 51438,
+          "summary": "kyhtwlttycl"
+        },
+        {
+          "ea": 58435,
+          "summary": "5&525=5[5v5"
+        },
+        {
+          "ea": 58459,
+          "summary": "6(606<6Z6u6"
+        },
+        {
+          "ea": 58485,
+          "summary": "7,747@7^7y7"
+        },
+        {
+          "ea": 9350,
+          "summary": "OutputDebugStringA"
+        },
+        {
+          "ea": 58507,
+          "summary": "7\t868D8Q8Y8e8p8{8"
+        },
+        {
+          "ea": 58613,
+          "summary": "<*<5<@<O=X=R>j>o>"
+        },
+        {
+          "ea": 9458,
+          "summary": "glLineStipple"
+        },
+        {
+          "ea": 58851,
+          "summary": "8#8(8I8d8i8w8"
+        },
+        {
+          "ea": 51774,
+          "summary": "fxpusugcfbhgdacizktsh"
+        },
+        {
+          "ea": 9508,
+          "summary": "glPolygonMode"
+        },
+        {
+          "ea": 58635,
+          "summary": ">B?N?`?f?"
+        },
+        {
+          "ea": 50901,
+          "summary": "hcqzqdnqhvfbsrryd"
+        },
+        {
+          "ea": 9564,
+          "summary": "memset"
+        },
+        {
+          "ea": 58805,
+          "summary": "5!5&505I5U5"
+        },
+        {
+          "ea": 58535,
+          "summary": "8\n949B9Q9~9"
+        },
+        {
+          "ea": 51139,
+          "summary": "uqvgoieyrqolhevswzxu"
+        },
+        {
+          "ea": 51200,
+          "summary": "YGI@GGV"
+        },
+        {
+          "ea": 51545,
+          "summary": "nrxqlxmdujmn"
+        },
+        {
+          "ea": 51688,
+          "summary": "tuwhzxcunkawcvsamcb"
+        },
+        {
+          "ea": 1150,
+          "summary": "kaxkytpp"
+        },
+        {
+          "ea": 51512,
+          "summary": "wrawfeeh"
+        },
+        {
+          "ea": 51078,
+          "summary": "yaqrbysjaqmdw"
+        },
+        {
+          "ea": 9284,
+          "summary": "NtYieldExecution"
+        },
+        {
+          "ea": 58761,
+          "summary": "3$3)3M3k3"
+        },
+        {
+          "ea": 9496,
+          "summary": "glColor3d"
+        },
+        {
+          "ea": 58793,
+          "summary": "4$4*4B4_4"
+        },
+        {
+          "ea": 58891,
+          "summary": ":!;9;I;[;"
+        },
+        {
+          "ea": 13317,
+          "summary": "DfGmmxhAmp"
+        },
+        {
+          "ea": 50925,
+          "summary": "rPc@P`__TF"
+        },
+        {
+          "ea": 50977,
+          "summary": "wemzgrdwugjw"
+        },
+        {
+          "ea": 51101,
+          "summary": "hMTmQVK@FTFdIJ"
+        },
+        {
+          "ea": 13339,
+          "summary": "qwvywvszdcvle"
+        },
+        {
+          "ea": 50689,
+          "summary": "@bMrbRmmft"
+        },
+        {
+          "ea": 9386,
+          "summary": "MessageBoxA"
+        },
+        {
+          "ea": 13361,
+          "summary": "Veu[qljtotrrP"
+        },
+        {
+          "ea": 58947,
+          "summary": ">B?G?"
+        },
+        {
+          "ea": 51765,
+          "summary": "CS[S^"
+        },
+        {
+          "ea": 50821,
+          "summary": "mypvm"
+        },
+        {
+          "ea": 1603,
+          "summary": "@RSDS"
+        },
+        {
+          "ea": 560,
+          "summary": ".rsrc"
+        },
+        {
+          "ea": 480,
+          "summary": ".text"
+        },
+        {
+          "ea": 51001,
+          "summary": "437==/"
+        },
+        {
+          "ea": 13465,
+          "summary": "ewsyeor"
+        },
+        {
+          "ea": 50813,
+          "summary": "1<\\\nQQ"
+        },
+        {
+          "ea": 9304,
+          "summary": "strchr"
+        },
+        {
+          "ea": 519,
+          "summary": "`.data"
+        },
+        {
+          "ea": 9412,
+          "summary": "glClear"
+        },
+        {
+          "ea": 9486,
+          "summary": "glBegin"
+        },
+        {
+          "ea": 50750,
+          "summary": "vannql"
+        },
+        {
+          "ea": 9334,
+          "summary": "GetLocalTime"
+        },
+        {
+          "ea": 50657,
+          "summary": "Bg~Tyfm`j~J`~Kobm"
+        },
+        {
+          "ea": 9444,
+          "summary": "glVertex3d"
+        },
+        {
+          "ea": 9474,
+          "summary": "glDisable"
+        },
+        {
+          "ea": 51613,
+          "summary": "y[fRSWHK_MCW]"
+        },
+        {
+          "ea": 13390,
+          "summary": "tydqcgfwwka"
+        },
+        {
+          "ea": 9538,
+          "summary": "glEnable"
+        },
+        {
+          "ea": 13503,
+          "summary": "panamkve"
+        },
+        {
+          "ea": 9524,
+          "summary": "glLineWidth"
+        },
+        {
+          "ea": 50709,
+          "summary": "aijrjgxt"
+        },
+        {
+          "ea": 50945,
+          "summary": "klexmsffqzuwlrntb"
+        },
+        {
+          "ea": 51261,
+          "summary": "chnsbmna"
+        },
+        {
+          "ea": 51212,
+          "summary": "mtkedgildxvj"
+        },
+        {
+          "ea": 50857,
+          "summary": "faasulcmnej"
+        },
+        {
+          "ea": 50787,
+          "summary": "blfmaqhzknqdixy"
+        },
+        {
+          "ea": 51413,
+          "summary": "WnQhbawIoegf"
+        },
+        {
+          "ea": 51393,
+          "summary": "hedbzlnpahqxkz"
+        },
+        {
+          "ea": 51457,
+          "summary": "Dtheyk[p{olp"
+        },
+        {
+          "ea": 51713,
+          "summary": "sJiUDGHQe@FSN"
+        },
+        {
+          "ea": 51471,
+          "summary": "mvcknsyo"
+        },
+        {
+          "ea": 9262,
+          "summary": "vsprintf"
+        },
+        {
+          "ea": 9422,
+          "summary": "glPointSize"
+        },
+        {
+          "ea": 9250,
+          "summary": "_stricmp"
+        },
+        {
+          "ea": 200,
+          "summary": "Richd"
+        },
+        {
+          "ea": 58923,
+          "summary": "> >|>"
+        },
+        {
+          "ea": 599,
+          "summary": "@.reloc"
+        },
+        {
+          "ea": 9436,
+          "summary": "glEnd"
+        },
+        {
+          "ea": 9314,
+          "summary": "strncpy"
+        },
+        {
+          "ea": 13328,
+          "summary": "Dl~kl"
+        },
+        {
+          "ea": 51014,
+          "summary": "dbrwuso"
+        },
+        {
+          "ea": 51579,
+          "summary": "rfvjaw"
+        },
+        {
+          "ea": 51569,
+          "summary": "AEZFVL"
+        },
+        {
+          "ea": 51497,
+          "summary": "nbMdo"
+        },
+        {
+          "ea": 51431,
+          "summary": "Nm`fd"
+        },
+        {
+          "ea": 51193,
+          "summary": "B@AU_F"
+        },
+        {
+          "ea": 50766,
+          "summary": "/'/\""
+        },
+        {
+          "ea": 51255,
+          "summary": "^]YQ"
+        },
+        {
+          "ea": 51485,
+          "summary": "Bg~[`jkaM~"
+        },
+        {
+          "ea": 13430,
+          "summary": "ythlbnzpc"
+        },
+        {
+          "ea": 51356,
+          "summary": "khzzjyzrx"
+        },
+        {
+          "ea": 51042,
+          "summary": "hazmlbt"
+        },
+        {
+          "ea": 50969,
+          "summary": "# =#mm"
+        },
+        {
+          "ea": 51341,
+          "summary": "[vfO{~kBzEamg"
+        },
+        {
+          "ea": 50676,
+          "summary": "asdzfk"
+        },
+        {
+          "ea": 13417,
+          "summary": "%/%/%\n&-!\""
+        },
+        {
+          "ea": 51161,
+          "summary": "-./z"
+        },
+        {
+          "ea": 50616,
+          "summary": "9<0("
+        },
+        {
+          "ea": 51628,
+          "summary": "S_}Z"
+        },
+        {
+          "ea": 1610,
+          "summary": ":&?*"
+        },
+        {
+          "ea": 50771,
+          "summary": " !)#);'"
+        }
+      ],
+      "imports": [
+        {
+          "ea": 1024,
+          "name": "kernel32.GetLocalTime",
+          "type": "IMPORT",
+          "num_refs": 8
+        },
+        {
+          "ea": 1028,
+          "name": "kernel32.OutputDebugStringA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 1036,
+          "name": "opengl32.glEnd",
+          "type": "IMPORT",
+          "num_refs": 10
+        },
+        {
+          "ea": 1040,
+          "name": "opengl32.glEnable",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 1044,
+          "name": "opengl32.glLineWidth",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 1048,
+          "name": "opengl32.glPolygonMode",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 1052,
+          "name": "opengl32.glColor3d",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 1056,
+          "name": "opengl32.glBegin",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 1060,
+          "name": "opengl32.glDisable",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 1064,
+          "name": "opengl32.glClear",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 1068,
+          "name": "opengl32.glPointSize",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 1072,
+          "name": "opengl32.glLineStipple",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 1076,
+          "name": "opengl32.glVertex3d",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 1084,
+          "name": "user32.MessageBoxA",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 1092,
+          "name": "ntdll.vsprintf",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 1096,
+          "name": "ntdll.memmove",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 1100,
+          "name": "ntdll.NtYieldExecution",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 1104,
+          "name": "ntdll.strchr",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 1108,
+          "name": "ntdll.strncpy",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 1112,
+          "name": "ntdll._stricmp",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 1116,
+          "name": "ntdll.memset",
+          "type": "IMPORT",
+          "num_refs": 1
+        }
+      ],
+      "sections": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 1024,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 52
+        },
+        {
+          "name": ".text",
+          "effective_address": 1024,
+          "physical_size": 8704,
+          "virtual_size": 12288,
+          "rights": "RX",
+          "entropy": 124
+        },
+        {
+          "name": ".data",
+          "effective_address": 13312,
+          "physical_size": 38912,
+          "virtual_size": 40960,
+          "rights": "RW",
+          "entropy": 144
+        },
+        {
+          "name": ".rsrc",
+          "effective_address": 54272,
+          "physical_size": 1024,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 89
+        },
+        {
+          "name": ".reloc",
+          "effective_address": 58368,
+          "physical_size": 1024,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 19
+        },
+        {
+          "name": "overlay",
+          "effective_address": 62464,
+          "physical_size": 173,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 170
+        }
+      ],
+      "entropy": {
+        "file_entropy": 6.46,
+        "regions": [
+          {
+            "name": "header",
+            "entropy": 52,
+            "size": null
+          },
+          {
+            "name": ".text",
+            "entropy": 124,
+            "size": null
+          },
+          {
+            "name": ".data",
+            "entropy": 144,
+            "size": null
+          },
+          {
+            "name": ".rsrc",
+            "entropy": 89,
+            "size": null
+          },
+          {
+            "name": ".reloc",
+            "entropy": 19,
+            "size": null
+          },
+          {
+            "name": "overlay",
+            "entropy": 170,
+            "size": null
+          }
+        ],
+        "file_entropy_malcat_raw": 135,
+        "entropy_source": "whole_file_shannon_revai"
+      },
+      "functions": [
+        {
+          "ea": 4704,
+          "name": "sub_401e60"
+        },
+        {
+          "ea": 5136,
+          "name": "sub_402010"
+        },
+        {
+          "ea": 1712,
+          "name": "PEBx86"
+        },
+        {
+          "ea": 4176,
+          "name": "sub_401c50"
+        },
+        {
+          "ea": 6672,
+          "name": "sub_402610"
+        },
+        {
+          "ea": 5168,
+          "name": "sub_402030"
+        },
+        {
+          "ea": 8816,
+          "name": "sub_402e70"
+        },
+        {
+          "ea": 8352,
+          "name": "sub_402ca0"
+        },
+        {
+          "ea": 7952,
+          "name": "sub_402b10"
+        },
+        {
+          "ea": 1664,
+          "name": "sub_401280"
+        },
+        {
+          "ea": 8224,
+          "name": "sub_402c20"
+        },
+        {
+          "ea": 1728,
+          "name": "sub_4012c0"
+        },
+        {
+          "ea": 1808,
+          "name": "sub_401310"
+        },
+        {
+          "ea": 7488,
+          "name": "sub_402940"
+        },
+        {
+          "ea": 1744,
+          "name": "sub_4012d0"
+        },
+        {
+          "ea": 1696,
+          "name": "sub_4012a0"
+        },
+        {
+          "ea": 7232,
+          "name": "sub_402840"
+        },
+        {
+          "ea": 4158,
+          "name": "jmp_ntdll.memset"
+        },
+        {
+          "ea": 6416,
+          "name": "EntryPoint"
+        },
+        {
+          "ea": 7312,
+          "name": "sub_402890"
+        },
+        {
+          "ea": 6608,
+          "name": "sub_4025d0"
+        },
+        {
+          "ea": 6432,
+          "name": "sub_402520"
+        },
+        {
+          "ea": 6256,
+          "name": "sub_402470"
+        },
+        {
+          "ea": 6512,
+          "name": "sub_402570"
+        },
+        {
+          "ea": 8560,
+          "name": "sub_402d70"
+        },
+        {
+          "ea": 6208,
+          "name": "sub_402440"
+        },
+        {
+          "ea": 8176,
+          "name": "sub_402bf0"
+        },
+        {
+          "ea": 7221,
+          "name": "sub_402835"
+        },
+        {
+          "ea": 7296,
+          "name": "sub_402880"
+        }
+      ],
+      "constants": [
+        {
+          "id": "code::PEBx86",
+          "category": "code",
+          "type": "code",
+          "num_hits": 1
+        },
+        {
+          "id": "crypto::Base64",
+          "category": "crypto",
+          "type": "data",
+          "num_hits": 1
+        }
+      ],
+      "carved": [],
+      "virtual_files": [
+        {
+          "path": "MANIF/1/en-us",
+          "unpacked_size": 607
+        }
+      ],
+      "structures": [
+        {
+          "name": "MZ",
+          "ea": 0
+        },
+        {
+          "name": "RichHeader",
+          "ea": 128
+        },
+        {
+          "name": "PE",
+          "ea": 232
+        },
+        {
+          "name": "OptionalHeader",
+          "ea": 256
+        },
+        {
+          "name": "Sections",
+          "ea": 480
+        },
+        {
+          "name": "BoundImportTable",
+          "ea": 640
+        },
+        {
+          "name": "BoundImportNames",
+          "ea": 680
+        },
+        {
+          "name": "kernel32.FT",
+          "ea": 1024
+        },
+        {
+          "name": "opengl32.FT",
+          "ea": 1036
+        },
+        {
+          "name": "user32.FT",
+          "ea": 1084
+        },
+        {
+          "name": "ntdll.FT",
+          "ea": 1092
+        },
+        {
+          "name": "DebugDirectory",
+          "ea": 1168
+        },
+        {
+          "name": "Debug.Fixup",
+          "ea": 1604
+        },
+        {
+          "name": "ImportTable",
+          "ea": 9048
+        },
+        {
+          "name": "kernel32.OFT",
+          "ea": 9148
+        },
+        {
+          "name": "opengl32.OFT",
+          "ea": 9160
+        },
+        {
+          "name": "user32.OFT",
+          "ea": 9208
+        },
+        {
+          "name": "ntdll.OFT",
+          "ea": 9216
+        },
+        {
+          "name": "ImportNames",
+          "ea": 9248
+        },
+        {
+          "name": "Resources",
+          "ea": 54272
+        },
+        {
+          "name": "Resources.MANIF",
+          "ea": 54296
+        },
+        {
+          "name": "Resources.MANIF.1",
+          "ea": 54320
+        },
+        {
+          "name": "Resources.MANIF.1.en-us",
+          "ea": 54344
+        },
+        {
+          "name": "Manifest",
+          "ea": 54360
+        },
+        {
+          "name": "Relocations",
+          "ea": 58368
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 4704,
+        "name": "sub_401e60"
+      },
+      {
+        "ea": 5136,
+        "name": "sub_402010"
+      },
+      {
+        "ea": 1712,
+        "name": "PEBx86"
+      },
+      {
+        "ea": 4176,
+        "name": "sub_401c50"
+      },
+      {
+        "ea": 6672,
+        "name": "sub_402610"
+      },
+      {
+        "ea": 5168,
+        "name": "sub_402030"
+      },
+      {
+        "ea": 8816,
+        "name": "sub_402e70"
+      },
+      {
+        "ea": 8352,
+        "name": "sub_402ca0"
+      },
+      {
+        "ea": 7952,
+        "name": "sub_402b10"
+      },
+      {
+        "ea": 1664,
+        "name": "sub_401280"
+      },
+      {
+        "ea": 8224,
+        "name": "sub_402c20"
+      },
+      {
+        "ea": 1728,
+        "name": "sub_4012c0"
+      },
+      {
+        "ea": 1808,
+        "name": "sub_401310"
+      },
+      {
+        "ea": 7488,
+        "name": "sub_402940"
+      },
+      {
+        "ea": 1744,
+        "name": "sub_4012d0"
+      },
+      {
+        "ea": 1696,
+        "name": "sub_4012a0"
+      },
+      {
+        "ea": 7232,
+        "name": "sub_402840"
+      },
+      {
+        "ea": 4158,
+        "name": "jmp_ntdll.memset"
+      },
+      {
+        "ea": 6416,
+        "name": "EntryPoint"
+      },
+      {
+        "ea": 7312,
+        "name": "sub_402890"
+      },
+      {
+        "ea": 6608,
+        "name": "sub_4025d0"
+      },
+      {
+        "ea": 6432,
+        "name": "sub_402520"
+      },
+      {
+        "ea": 6256,
+        "name": "sub_402470"
+      },
+      {
+        "ea": 6512,
+        "name": "sub_402570"
+      },
+      {
+        "ea": 8560,
+        "name": "sub_402d70"
+      },
+      {
+        "ea": 6208,
+        "name": "sub_402440"
+      },
+      {
+        "ea": 8176,
+        "name": "sub_402bf0"
+      },
+      {
+        "ea": 7221,
+        "name": "sub_402835"
+      },
+      {
+        "ea": 7296,
+        "name": "sub_402880"
+      }
+    ],
+    "constants": [
+      {
+        "id": "code::PEBx86",
+        "category": "code",
+        "type": "code",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::Base64",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      }
+    ],
+    "anomalies": [
+      {
+        "name": "BigBufferNoXrefMediumToHighEntropy",
+        "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "BoundImports",
+        "desc": "Bound imports are present",
+        "category": "imports",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "ManyUniqueImmediateBytes",
+        "desc": "More than 48 unique bytes defined across all immediate operands in the function",
+        "category": "code",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "RichMultipleLinkers",
+        "desc": "multiple linker entries in rich header",
+        "category": "rich",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "StringBase64",
+        "desc": "string has more than 16 characters is encoded using base64",
+        "category": "strings",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "WeirdDebugInfoType",
+        "desc": "the Debug infos are not in the usual format",
+        "category": "headers",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 11
+      }
+    ],
+    "carved_files": [],
+    "virtual_files": [
+      {
+        "path": "MANIF/1/en-us",
+        "unpacked_size": 607
+      }
+    ],
+    "structures": [
+      {
+        "name": "MZ",
+        "ea": 0
+      },
+      {
+        "name": "RichHeader",
+        "ea": 128
+      },
+      {
+        "name": "PE",
+        "ea": 232
+      },
+      {
+        "name": "OptionalHeader",
+        "ea": 256
+      },
+      {
+        "name": "Sections",
+        "ea": 480
+      },
+      {
+        "name": "BoundImportTable",
+        "ea": 640
+      },
+      {
+        "name": "BoundImportNames",
+        "ea": 680
+      },
+      {
+        "name": "kernel32.FT",
+        "ea": 1024
+      },
+      {
+        "name": "opengl32.FT",
+        "ea": 1036
+      },
+      {
+        "name": "user32.FT",
+        "ea": 1084
+      },
+      {
+        "name": "ntdll.FT",
+        "ea": 1092
+      },
+      {
+        "name": "DebugDirectory",
+        "ea": 1168
+      },
+      {
+        "name": "Debug.Fixup",
+        "ea": 1604
+      },
+      {
+        "name": "ImportTable",
+        "ea": 9048
+      },
+      {
+        "name": "kernel32.OFT",
+        "ea": 9148
+      },
+      {
+        "name": "opengl32.OFT",
+        "ea": 9160
+      },
+      {
+        "name": "user32.OFT",
+        "ea": 9208
+      },
+      {
+        "name": "ntdll.OFT",
+        "ea": 9216
+      },
+      {
+        "name": "ImportNames",
+        "ea": 9248
+      },
+      {
+        "name": "Resources",
+        "ea": 54272
+      },
+      {
+        "name": "Resources.MANIF",
+        "ea": 54296
+      },
+      {
+        "name": "Resources.MANIF.1",
+        "ea": 54320
+      },
+      {
+        "name": "Resources.MANIF.1.en-us",
+        "ea": 54344
+      },
+      {
+        "name": "Manifest",
+        "ea": 54360
+      },
+      {
+        "name": "Relocations",
+        "ea": 58368
+      }
+    ],
+    "decompilations": {
+      "4704": {
+        "name": "sub_401e60",
+        "decompilation": "\n/* WARNING: Removing unreachable block (ram,0x00401fb1) */\n/* WARNING: Removing unreachable block (ram,0x00401ef3) */\n/* WARNING: Removing unreachable block (ram,0x00401ef5) */\n/* WARNING: Removing unreachable block (ram,0x00401ee4) */\n/* WARNING: Removing unreachable block (ram,0x00401ee6) */\n/* WARNING: Removing unreachable block (ram,0x00401ebf) */\n/* WARNING: Removing unreachable block (ram,0x00401f10) */\n/* WARNING: Removing unreachable block (ram,0x00401fbb) */\n/* WARNING: Removing unreachable block (ram,0x00401ec4) */\n/* WARNING: Restarted to delay deadcode elimination for space: stack */\n\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid sub_401e60(void)\n\n{\n    uint32_t uVar1;\n    uint32_t uStack_8;\n    \n    sub_4012d0(0x40110c, \"First_tls\");\n    uVar1 = [0x0x401064];\n    [0x0x40d594] = 0;\n    if (([0x0x40d41c] == 0) && ([0x0x401064] != 0)) {\n        uStack_8 = 0;\n        do {\n            uStack_8 = uStack_8 + 1;\n        } while (uStack_8 < 0xfaa7c);\n        0040d668 = PEBx86();\n        if (0040d668 != 0) {\n            0040d41c = *(0040d668 + 0x30);\n            uStack_8 = 0;\n            if ((uVar1 >> 0x10) + ([0x0x401064] & 0xffff) * 2 != 0) {\n                do {\n                    uStack_8 = uStack_8 + 1;\n                } while (uStack_8 < (uVar1 >> 0x10) + ([0x0x401064] & 0xffff) * 2);\n            }\n            if (0040d41c != 0) {\n                sub_402520();\n                return;\n            }\n            func_0x0040103c();\n        }\n    }\n    return;\n}\n"
+      },
+      "5136": {
+        "name": "sub_402010",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid sub_402010(void)\n\n{\n    int32_t iVar1;\n    \n    iVar1 = 0;\n    do {\n        *((&Base64)[iVar1] + 0x40d6a8) = iVar1;\n        iVar1 = iVar1 + 1;\n    } while (iVar1 < 0x40);\n    return;\n}\n"
+      },
+      "1712": {
+        "name": "PEBx86",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nundefined4 PEBx86(void)\n\n{\n    int32_t unaff_FS_OFFSET;\n    \n    return *(unaff_FS_OFFSET + 0x18);\n}\n"
+      }
+    },
+    "script_decompile": null,
+    "unpack_result": null,
+    "errors": [],
+    "entropy_bits": 6.46,
+    "entropy_malcat_raw": 135,
+    "duration_s": 3.64
+  },
+  "packer": {
+    "engine": "packer_intake",
+    "ok": true,
+    "label": "none",
+    "score": 2,
+    "sections": [
+      {
+        "name": ".text",
+        "entropy": 6.357,
+        "raw_size": 8704,
+        "virtual_size": 12288,
+        "exec": true,
+        "writable": false
+      },
+      {
+        "name": ".data",
+        "entropy": 5.986,
+        "raw_size": 38912,
+        "virtual_size": 40960,
+        "exec": false,
+        "writable": true
+      },
+      {
+        "name": ".rsrc",
+        "entropy": 5.168,
+        "raw_size": 1024,
+        "virtual_size": 4096,
+        "exec": false,
+        "writable": false
+      },
+      {
+        "name": ".reloc",
+        "entropy": 4.981,
+        "raw_size": 1024,
+        "virtual_size": 930,
+        "exec": false,
+        "writable": false
+      }
+    ],
+    "checks": {
+      "last_section_exec": false,
+      "last_section_writable": false,
+      "first_section_writable": false,
+      "ep_in_last_section": false,
+      "ep_not_in_first_section": false,
+      "raw_vs_virtual_mismatch": false,
+      "memory_only_section": false,
+      "high_entropy_exec_section": true,
+      "few_imports": false,
+      "section_count_outlier": false
+    },
+    "embedded_payload_hint": false,
+    "entry_point": 4203792,
+    "ep_section": ".text",
+    "import_count": 4,
+    "imports_sample": [
+      "vsprintf",
+      "memmove",
+      "NtYieldExecution",
+      "strchr",
+      "strncpy",
+      "_stricmp",
+      "memset",
+      "GetLocalTime",
+      "OutputDebugStringA",
+      "MessageBoxA",
+      "glEnd",
+      "glEnable",
+      "glLineWidth",
+      "glPolygonMode",
+      "glColor3d",
+      "glBegin",
+      "glDisable",
+      "glClear",
+      "glPointSize",
+      "glLineStipple",
+      "glVertex3d"
+    ],
+    "elapsed_s": 0.2,
+    "note": "Deterministic entropy + packer checklist; heuristic label, unpacking loop still required for non-UPX packers.",
+    "duration_s": 0.2
+  },
+  "revai_tools_sec": {
+    "format": "pe",
+    "findings": [
+      {
+        "name": "Address Space Layout Randomization",
+        "present": false,
+        "claimed": false,
+        "note": "no DYNAMIC_BASE flag",
+        "consequence": "Without ASLR the image loads at a fixed base \u2014 a predictable address for ret2libc-style exploitation and ROP gadget pivots."
+      },
+      {
+        "name": "64-bit high-entropy ASLR",
+        "present": false,
+        "claimed": false,
+        "note": "64-bit high-entropy ASLR flag not set",
+        "consequence": "Without 64-bit entropy the entropy of the address space is reduced relative to the full 64-bit layout."
+      },
+      {
+        "name": "Data Execution Prevention",
+        "present": false,
+        "claimed": false,
+        "note": "Data Execution Prevention flag not set",
+        "consequence": "Without NX-compat, writable memory can be executable \u2014 classic shellcode-on-stack/heap works directly."
+      },
+      {
+        "name": "Control Flow Guard",
+        "present": false,
+        "claimed": false,
+        "note": "no GUARD_CF flag",
+        "consequence": "Without CFG, indirect calls are unvalidated \u2014 vtable and function-pointer overwrites become direct code-flow hijack."
+      },
+      {
+        "name": "Structured Exception Handling",
+        "present": true,
+        "claimed": false,
+        "note": "no NO_SEH flag \u2014 SEH handlers may exist",
+        "consequence": "The NO_SEH flag claims no SEH handlers exist; if a handler is still present the claim is false \u2014 an exception can overwrite the handler chain for control-flow hijack."
+      },
+      {
+        "name": "Signed-image enforcement",
+        "present": false,
+        "claimed": false,
+        "note": "Signed-image enforcement flag not set",
+        "consequence": "Without forced integrity, a tampered image is not rejected by the loader's integrity checks."
+      },
+      {
+        "name": "Stack cookie (/GS)",
+        "present": false,
+        "claimed": false,
+        "note": "no __security_cookie reference found",
+        "consequence": "Without a stack cookie, linear buffer overflows can overwrite the return address directly on the stack."
+      }
+    ],
+    "engine": "revai_tools_sec",
+    "source": "revai_tools",
+    "duration_s": 0.05
+  },
+  "revai_tools_sinks": {
+    "format": "pe",
+    "entry_point": "0x1000",
+    "sink_count": 2,
+    "sinks": [
+      {
+        "api": "vsprintf",
+        "dll": "ntdll.dll",
+        "class": "format_string",
+        "address": "0x4012ea",
+        "function": "fcn.004012d0"
+      },
+      {
+        "api": "memmove",
+        "dll": "ntdll.dll",
+        "class": "unbounded_copy",
+        "address": "0x401e50",
+        "function": "fcn.00401c50"
+      }
+    ],
+    "engine": "revai_tools_sinks",
+    "source": "revai_tools",
+    "duration_s": 1.7
+  },
+  "_format": "pe",
+  "_timings": {
+    "capa": 1.69,
+    "pe_imports": 0.01,
+    "yara": 3.44,
+    "floss": 7.21,
+    "malcat": 3.64,
+    "packer": 0.2,
+    "revai_tools_sec": 0.05,
+    "revai_tools_sinks": 1.7
+  },
+  "_stage": "quick_scan"
+}

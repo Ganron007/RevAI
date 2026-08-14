@@ -1,0 +1,465 @@
+# capa rules (deterministic render)
+
+{
+  "rule_count": 50,
+  "top_rules": [
+    {
+      "name": "encode data using XOR",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Encoding-Standard Algorithm"
+          ],
+          "objective": "Defense Evasion",
+          "behavior": "Obfuscated Files or Information",
+          "method": "Encoding-Standard Algorithm",
+          "id": "E1027.m02"
+        },
+        {
+          "parts": [
+            "Data",
+            "Encode Data",
+            "XOR"
+          ],
+          "objective": "Data",
+          "behavior": "Encode Data",
+          "method": "XOR",
+          "id": "C0026.002"
+        }
+      ]
+    },
+    {
+      "name": "encrypt or decrypt via WinCrypt",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Cryptography",
+            "Decrypt Data"
+          ],
+          "objective": "Cryptography",
+          "behavior": "Decrypt Data",
+          "method": "",
+          "id": "C0031"
+        },
+        {
+          "parts": [
+            "Cryptography",
+            "Encrypt Data"
+          ],
+          "objective": "Cryptography",
+          "behavior": "Encrypt Data",
+          "method": "",
+          "id": "C0027"
+        }
+      ]
+    },
+    {
+      "name": "encrypt data using AES via x86 extensions",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Encryption-Standard Algorithm"
+          ],
+          "objective": "Defense Evasion",
+          "behavior": "Obfuscated Files or Information",
+          "method": "Encryption-Standard Algorithm",
+          "id": "E1027.m05"
+        },
+        {
+          "parts": [
+            "Cryptography",
+            "Encrypt Data",
+            "AES"
+          ],
+          "objective": "Cryptography",
+          "behavior": "Encrypt Data",
+          "method": "AES",
+          "id": "C0027.001"
+        }
+      ]
+    },
+    {
+      "name": "delete volume shadow copies",
+      "attack": [
+        {
+          "parts": [
+            "Impact",
+            "Inhibit System Recovery"
+          ],
+          "tactic": "Impact",
+          "technique": "Inhibit System Recovery",
+          "subtechnique": "",
+          "id": "T1490"
+        },
+        {
+          "parts": [
+            "Defense Evasion",
+            "Indicator Removal",
+            "File Deletion"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Indicator Removal",
+          "subtechnique": "File Deletion",
+          "id": "T1070.004"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Impact",
+            "Data Destruction",
+            "Delete Shadow Copies"
+          ],
+          "objective": "Impact",
+          "behavior": "Data Destruction",
+          "method": "Delete Shadow Copies",
+          "id": "E1485.m04"
+        }
+      ]
+    },
+    {
+      "name": "create new key via CryptAcquireContext",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Cryptography",
+            "Encryption Key"
+          ],
+          "objective": "Cryptography",
+          "behavior": "Encryption Key",
+          "method": "",
+          "id": "C0028"
+        }
+      ]
+    },
+    {
+      "name": "get common file path",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "File and Directory Discovery",
+          "subtechnique": "",
+          "id": "T1083"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "File and Directory Discovery",
+          "method": "",
+          "id": "E1083"
+        }
+      ]
+    },
+    {
+      "name": "enumerate files on Windows",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "File and Directory Discovery",
+          "subtechnique": "",
+          "id": "T1083"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "File and Directory Discovery",
+          "method": "",
+          "id": "E1083"
+        }
+      ]
+    },
+    {
+      "name": "enumerate files recursively",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "File and Directory Discovery",
+          "subtechnique": "",
+          "id": "T1083"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "File and Directory Discovery",
+          "method": "",
+          "id": "E1083"
+        }
+      ]
+    },
+    {
+      "name": "get file size",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "File and Directory Discovery",
+          "subtechnique": "",
+          "id": "T1083"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "File and Directory Discovery",
+          "method": "",
+          "id": "E1083"
+        }
+      ]
+    },
+    {
+      "name": "set file attributes",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "File and Directory Permissions Modification"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "File and Directory Permissions Modification",
+          "subtechnique": "",
+          "id": "T1222"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "File System",
+            "Set File Attributes"
+          ],
+          "objective": "File System",
+          "behavior": "Set File Attributes",
+          "method": "",
+          "id": "C0050"
+        }
+      ]
+    },
+    {
+      "name": "get disk information",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "System Information Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "System Information Discovery",
+          "subtechnique": "",
+          "id": "T1082"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "System Information Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "System Information Discovery",
+          "method": "",
+          "id": "E1082"
+        }
+      ]
+    },
+    {
+      "name": "get disk size",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "System Information Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "System Information Discovery",
+          "subtechnique": "",
+          "id": "T1082"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "System Information Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "System Information Discovery",
+          "method": "",
+          "id": "E1082"
+        }
+      ]
+    },
+    {
+      "name": "check OS version",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "System Information Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "System Information Discovery",
+          "subtechnique": "",
+          "id": "T1082"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "System Information Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "System Information Discovery",
+          "method": "",
+          "id": "E1082"
+        }
+      ]
+    },
+    {
+      "name": "query or enumerate registry value",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "Query Registry"
+          ],
+          "tactic": "Discovery",
+          "technique": "Query Registry",
+          "subtechnique": "",
+          "id": "T1012"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Operating System",
+            "Registry",
+            "Query Registry Value"
+          ],
+          "objective": "Operating System",
+          "behavior": "Registry",
+          "method": "Query Registry Value",
+          "id": "C0036.006"
+        }
+      ]
+    },
+    {
+      "name": "delete registry value",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Modify Registry"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Modify Registry",
+          "subtechnique": "",
+          "id": "T1112"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Operating System",
+            "Registry",
+            "Delete Registry Value"
+          ],
+          "objective": "Operating System",
+          "behavior": "Registry",
+          "method": "Delete Registry Value",
+          "id": "C0036.007"
+        }
+      ]
+    }
+  ],
+  "timeout_s": 300,
+  "sample_size": 104448,
+  "duration_s": 2.4,
+  "engine": "malcat-capa",
+  "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+}

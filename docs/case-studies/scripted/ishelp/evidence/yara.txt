@@ -1,0 +1,492 @@
+# YARA matches (deterministic render)
+
+{
+  "rule_count": 26,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IP",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$ipv6",
+          "offset": 60279,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "contains_base64",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 16611,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "System_Tools",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": []
+    },
+    {
+      "rule": "Dropper_Strings",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$a0",
+          "offset": 16899,
+          "length": 18,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Misc_Suspicious_Strings",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$a4",
+          "offset": 61976,
+          "length": 7,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "SHA512_Constants",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$c1",
+          "offset": 58812,
+          "length": 4,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 58820,
+          "length": 4,
+          "xor_key": null
+        },
+        {
+          "id": "$c5",
+          "offset": 58828,
+          "length": 4,
+          "xor_key": null
+        },
+        {
+          "id": "$c7",
+          "offset": 58836,
+          "length": 4,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "BASE64_table",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$c0",
+          "offset": 58736,
+          "length": 64,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Emissary_APT_Malware_1",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$s1",
+          "offset": 61976,
+          "length": 18,
+          "xor_key": null
+        },
+        {
+          "id": "$s2",
+          "offset": 61996,
+          "length": 20,
+          "xor_key": null
+        },
+        {
+          "id": "$s3",
+          "offset": 17696,
+          "length": 25,
+          "xor_key": null
+        },
+        {
+          "id": "$s4",
+          "offset": 61864,
+          "length": 28,
+          "xor_key": null
+        },
+        {
+          "id": "$s5",
+          "offset": 60320,
+          "length": 50,
+          "xor_key": null
+        },
+        {
+          "id": "$s6",
+          "offset": 61412,
+          "length": 32,
+          "xor_key": null
+        },
+        {
+          "id": "$s7",
+          "offset": 70960,
+          "length": 20,
+          "xor_key": null
+        },
+        {
+          "id": "$s8",
+          "offset": 61896,
+          "length": 40,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IsPE32",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": []
+    },
+    {
+      "rule": "IsDLL",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": []
+    },
+    {
+      "rule": "IsWindowsGUI",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": []
+    },
+    {
+      "rule": "HasRichSignature",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$a0",
+          "offset": 240,
+          "length": 4,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Visual_Cpp_2005_DLL_Microsoft",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 10359,
+          "length": 9,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Visual_Cpp_2003_DLL_Microsoft",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 7466,
+          "length": 5,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "SEH_Save",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 8549,
+          "length": 7,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "SEH_Init",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 14706,
+          "length": 6,
+          "xor_key": null
+        },
+        {
+          "id": "$b",
+          "offset": 8567,
+          "length": 7,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Check_OutputDebugStringA_iat",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": []
+    },
+    {
+      "rule": "anti_dbg",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$d1",
+          "offset": 16664,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 19564,
+          "length": 17,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "inject_thread",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$c1",
+          "offset": 19118,
+          "length": 11,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 19380,
+          "length": 14,
+          "xor_key": null
+        },
+        {
+          "id": "$c4",
+          "offset": 19446,
+          "length": 18,
+          "xor_key": null
+        },
+        {
+          "id": "$c5",
+          "offset": 19468,
+          "length": 18,
+          "xor_key": null
+        },
+        {
+          "id": "$c6",
+          "offset": 67782,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c7",
+          "offset": 19118,
+          "length": 11,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "escalate_priv",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$d1",
+          "offset": 20102,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c1",
+          "offset": 16932,
+          "length": 16,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 20080,
+          "length": 21,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "win_mutex",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$c1",
+          "offset": 19636,
+          "length": 11,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "win_registry",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 20102,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 19988,
+          "length": 13,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 20004,
+          "length": 11,
+          "xor_key": null
+        },
+        {
+          "id": "$c4",
+          "offset": 68498,
+          "length": 14,
+          "xor_key": null
+        },
+        {
+          "id": "$c6",
+          "offset": 20004,
+          "length": 11,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "win_token",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 20102,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 20080,
+          "length": 21,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 20036,
+          "length": 16,
+          "xor_key": null
+        },
+        {
+          "id": "$c4",
+          "offset": 20056,
+          "length": 21,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "win_files_operation",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 16664,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c1",
+          "offset": 19016,
+          "length": 9,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 19054,
+          "length": 14,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 19016,
+          "length": 9,
+          "xor_key": null
+        },
+        {
+          "id": "$c4",
+          "offset": 19042,
+          "length": 8,
+          "xor_key": null
+        },
+        {
+          "id": "$c5",
+          "offset": 19512,
+          "length": 11,
+          "xor_key": null
+        },
+        {
+          "id": "$c6",
+          "offset": 19002,
+          "length": 11,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Str_Win32_Winsock2_Library",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$wsock2_lib",
+          "offset": 68580,
+          "length": 11,
+          "xor_key": null
+        }
+      ]
+    }
+  ],
+  "engine": "yara-x",
+  "rules_compiled": 454,
+  "compile_errors": [
+    "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+    "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+    "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+  ],
+  "incomplete": true,
+  "duration_s": 4.63
+}

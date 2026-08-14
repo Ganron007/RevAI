@@ -1,0 +1,959 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/malware/683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96/drtg.exe",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "drtg.exe",
+    "file_path": "/opt/samples/corpus/malware/683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96/drtg.exe",
+    "file_size": 50861,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 6.46,
+    "sha256": "683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96",
+    "metadata": {
+      "Debug::Date.Debug.Fixup": "2009-11-10 10:17:40"
+    },
+    "entrypoint_ea": 6416,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 52
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 8704,
+        "virtual_size": 12288,
+        "rights": "RX",
+        "entropy": 124
+      },
+      {
+        "name": ".data",
+        "effective_address": 13312,
+        "physical_size": 38912,
+        "virtual_size": 40960,
+        "rights": "RW",
+        "entropy": 144
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 54272,
+        "physical_size": 1024,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 89
+      },
+      {
+        "name": ".reloc",
+        "effective_address": 58368,
+        "physical_size": 1024,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 19
+      },
+      {
+        "name": "overlay",
+        "effective_address": 62464,
+        "physical_size": 173,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 170
+      }
+    ],
+    "kesakode_verdict": [],
+    "entropy_malcat_raw": 135,
+    "entropy_source": "whole_file_shannon_revai"
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BigBufferNoXrefMediumToHighEntropy",
+        "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "BoundImports",
+        "desc": "Bound imports are present",
+        "category": "imports",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "ManyUniqueImmediateBytes",
+        "desc": "More than 48 unique bytes defined across all immediate operands in the function",
+        "category": "code",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "RichMultipleLinkers",
+        "desc": "multiple linker entries in rich header",
+        "category": "rich",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "StringBase64",
+        "desc": "string has more than 16 characters is encoded using base64",
+        "category": "strings",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "WeirdDebugInfoType",
+        "desc": "the Debug infos are not in the usual format",
+        "category": "headers",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 11
+      }
+    ],
+    "anomaly_locations": {
+      "ManyUniqueImmediateBytes": [
+        {
+          "ea": 4176,
+          "context": ""
+        }
+      ],
+      "XorInLoop": [
+        {
+          "ea": 4361,
+          "context": ""
+        },
+        {
+          "ea": 4422,
+          "context": ""
+        },
+        {
+          "ea": 4454,
+          "context": ""
+        },
+        {
+          "ea": 4546,
+          "context": ""
+        },
+        {
+          "ea": 4598,
+          "context": ""
+        }
+      ]
+    },
+    "yara_hits": [
+      {
+        "id": "MSVC_2010_linker",
+        "category": "compiler",
+        "reliability": 60,
+        "type": "INFO",
+        "description": "detects used visual studio version based on linker information",
+        "num_patterns": 0
+      }
+    ],
+    "strings": [
+      {
+        "ea": 51272,
+        "summary": "ABCDEFGHIJKLMNOP..wxyz0123456789+/"
+      },
+      {
+        "ea": 13552,
+        "summary": "5rhQJGe:aT6waT1W..BBBBBBBBBBBBBBBB"
+      },
+      {
+        "ea": 54360,
+        "summary": "<assembly xmlns=..XPADDINGPADDINGX"
+      },
+      {
+        "ea": 1236,
+        "summary": "MyUnhandledExceptionFilter"
+      },
+      {
+        "ea": 1480,
+        "summary": "333333"
+      },
+      {
+        "ea": 1332,
+        "summary": "on_tls_callback1"
+      },
+      {
+        "ea": 1216,
+        "summary": "ZwGetContextThread"
+      },
+      {
+        "ea": 1320,
+        "summary": "First_tls"
+      },
+      {
+        "ea": 1208,
+        "summary": ".dll"
+      },
+      {
+        "ea": 680,
+        "summary": "ntdll.dll"
+      },
+      {
+        "ea": 9322,
+        "summary": "ntdll.dll"
+      },
+      {
+        "ea": 1372,
+        "summary": "on_tls_callback3"
+      },
+      {
+        "ea": 1352,
+        "summary": "on_tls_callback2"
+      },
+      {
+        "ea": 1196,
+        "summary": "qfntvthb"
+      },
+      {
+        "ea": 1280,
+        "summary": "EntryPoint"
+      },
+      {
+        "ea": 690,
+        "summary": "KERNEL32.dll"
+      },
+      {
+        "ea": 9370,
+        "summary": "KERNEL32.dll"
+      },
+      {
+        "ea": 9548,
+        "summary": "OPENGL32.dll"
+      },
+      {
+        "ea": 9398,
+        "summary": "USER32.dll"
+      },
+      {
+        "ea": 714,
+        "summary": "OPENGL32.dll"
+      },
+      {
+        "ea": 703,
+        "summary": "USER32.dll"
+      },
+      {
+        "ea": 1264,
+        "summary": "%s-TryExcept"
+      },
+      {
+        "ea": 1312,
+        "summary": "%s-4"
+      },
+      {
+        "ea": 1304,
+        "summary": "%s-3"
+      },
+      {
+        "ea": 1296,
+        "summary": "%s-2"
+      },
+      {
+        "ea": 1628,
+        "summary": "d:\\lbetwmwy\\uijeuqplfwub.pdb"
+      },
+      {
+        "ea": 50622,
+        "summary": "jmenfrhmjebkjhainycnyvrdfclb"
+      },
+      {
+        "ea": 1487,
+        "summary": "@ffffff\n@"
+      },
+      {
+        "ea": 77,
+        "summary": "!This program ca..in DOS mode.\r\r\n$"
+      },
+      {
+        "ea": 58823,
+        "summary": "6\"6>6I6N6S6"
+      },
+      {
+        "ea": 1399,
+        "summary": "@ffffff"
+      },
+      {
+        "ea": 1415,
+        "summary": "?333333"
+      },
+      {
+        "ea": 58561,
+        "summary": ":!:/:J:X:e:m:y:"
+      },
+      {
+        "ea": 51638,
+        "summary": "bapbjfrknvrsmfmrn"
+      },
+      {
+        "ea": 9274,
+        "summary": "memmove"
+      },
+      {
+        "ea": 51730,
+        "summary": "ehjegborhilopxmydycpasir"
+      },
+      {
+        "ea": 58677,
+        "summary": "081L1Y1^1i1v1~1"
+      },
+      {
+        "ea": 58383,
+        "summary": "3$30363C3Z3j3{3"
+      },
+      {
+        "ea": 58723,
+        "summary": "2$2)2=2E2V2`2t2"
+      },
+      {
+        "ea": 58589,
+        "summary": ";,;H;S;c;o;"
+      },
+      {
+        "ea": 58411,
+        "summary": "4*424>4\\4w4"
+      },
+      {
+        "ea": 51438,
+        "summary": "kyhtwlttycl"
+      },
+      {
+        "ea": 58435,
+        "summary": "5&525=5[5v5"
+      },
+      {
+        "ea": 58459,
+        "summary": "6(606<6Z6u6"
+      },
+      {
+        "ea": 58485,
+        "summary": "7,747@7^7y7"
+      },
+      {
+        "ea": 9350,
+        "summary": "OutputDebugStringA"
+      },
+      {
+        "ea": 58507,
+        "summary": "7\t868D8Q8Y8e8p8{8"
+      },
+      {
+        "ea": 58613,
+        "summary": "<*<5<@<O=X=R>j>o>"
+      },
+      {
+        "ea": 9458,
+        "summary": "glLineStipple"
+      },
+      {
+        "ea": 58851,
+        "summary": "8#8(8I8d8i8w8"
+      },
+      {
+        "ea": 51774,
+        "summary": "fxpusugcfbhgdacizktsh"
+      },
+      {
+        "ea": 9508,
+        "summary": "glPolygonMode"
+      },
+      {
+        "ea": 58635,
+        "summary": ">B?N?`?f?"
+      },
+      {
+        "ea": 50901,
+        "summary": "hcqzqdnqhvfbsrryd"
+      },
+      {
+        "ea": 9564,
+        "summary": "memset"
+      },
+      {
+        "ea": 58805,
+        "summary": "5!5&505I5U5"
+      },
+      {
+        "ea": 58535,
+        "summary": "8\n949B9Q9~9"
+      },
+      {
+        "ea": 51139,
+        "summary": "uqvgoieyrqolhevswzxu"
+      },
+      {
+        "ea": 51200,
+        "summary": "YGI@GGV"
+      },
+      {
+        "ea": 51545,
+        "summary": "nrxqlxmdujmn"
+      },
+      {
+        "ea": 51688,
+        "summary": "tuwhzxcunkawcvsamcb"
+      },
+      {
+        "ea": 1150,
+        "summary": "kaxkytpp"
+      },
+      {
+        "ea": 51512,
+        "summary": "wrawfeeh"
+      },
+      {
+        "ea": 51078,
+        "summary": "yaqrbysjaqmdw"
+      },
+      {
+        "ea": 9284,
+        "summary": "NtYieldExecution"
+      },
+      {
+        "ea": 58761,
+        "summary": "3$3)3M3k3"
+      },
+      {
+        "ea": 9496,
+        "summary": "glColor3d"
+      },
+      {
+        "ea": 58793,
+        "summary": "4$4*4B4_4"
+      },
+      {
+        "ea": 58891,
+        "summary": ":!;9;I;[;"
+      },
+      {
+        "ea": 13317,
+        "summary": "DfGmmxhAmp"
+      },
+      {
+        "ea": 50925,
+        "summary": "rPc@P`__TF"
+      },
+      {
+        "ea": 50977,
+        "summary": "wemzgrdwugjw"
+      },
+      {
+        "ea": 51101,
+        "summary": "hMTmQVK@FTFdIJ"
+      },
+      {
+        "ea": 13339,
+        "summary": "qwvywvszdcvle"
+      },
+      {
+        "ea": 50689,
+        "summary": "@bMrbRmmft"
+      },
+      {
+        "ea": 9386,
+        "summary": "MessageBoxA"
+      },
+      {
+        "ea": 13361,
+        "summary": "Veu[qljtotrrP"
+      },
+      {
+        "ea": 58947,
+        "summary": ">B?G?"
+      },
+      {
+        "ea": 51765,
+        "summary": "CS[S^"
+      },
+      {
+        "ea": 50821,
+        "summary": "mypvm"
+      },
+      {
+        "ea": 1603,
+        "summary": "@RSDS"
+      },
+      {
+        "ea": 560,
+        "summary": ".rsrc"
+      },
+      {
+        "ea": 480,
+        "summary": ".text"
+      },
+      {
+        "ea": 51001,
+        "summary": "437==/"
+      },
+      {
+        "ea": 13465,
+        "summary": "ewsyeor"
+      },
+      {
+        "ea": 50813,
+        "summary": "1<\\\nQQ"
+      },
+      {
+        "ea": 9304,
+        "summary": "strchr"
+      },
+      {
+        "ea": 519,
+        "summary": "`.data"
+      },
+      {
+        "ea": 9412,
+        "summary": "glClear"
+      },
+      {
+        "ea": 9486,
+        "summary": "glBegin"
+      },
+      {
+        "ea": 50750,
+        "summary": "vannql"
+      },
+      {
+        "ea": 9334,
+        "summary": "GetLocalTime"
+      },
+      {
+        "ea": 50657,
+        "summary": "Bg~Tyfm`j~J`~Kobm"
+      },
+      {
+        "ea": 9444,
+        "summary": "glVertex3d"
+      },
+      {
+        "ea": 9474,
+        "summary": "glDisable"
+      },
+      {
+        "ea": 51613,
+        "summary": "y[fRSWHK_MCW]"
+      },
+      {
+        "ea": 13390,
+        "summary": "tydqcgfwwka"
+      },
+      {
+        "ea": 9538,
+        "summary": "glEnable"
+      },
+      {
+        "ea": 13503,
+        "summary": "panamkve"
+      },
+      {
+        "ea": 9524,
+        "summary": "glLineWidth"
+      }
+    ],
+    "imports": [
+      {
+        "ea": 1024,
+        "name": "kernel32.GetLocalTime",
+        "type": "IMPORT",
+        "num_refs": 8
+      },
+      {
+        "ea": 1028,
+        "name": "kernel32.OutputDebugStringA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 1036,
+        "name": "opengl32.glEnd",
+        "type": "IMPORT",
+        "num_refs": 10
+      },
+      {
+        "ea": 1040,
+        "name": "opengl32.glEnable",
+        "type": "IMPORT",
+        "num_refs": 4
+      },
+      {
+        "ea": 1044,
+        "name": "opengl32.glLineWidth",
+        "type": "IMPORT",
+        "num_refs": 4
+      },
+      {
+        "ea": 1048,
+        "name": "opengl32.glPolygonMode",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 1052,
+        "name": "opengl32.glColor3d",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 1056,
+        "name": "opengl32.glBegin",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 1060,
+        "name": "opengl32.glDisable",
+        "type": "IMPORT",
+        "num_refs": 4
+      },
+      {
+        "ea": 1064,
+        "name": "opengl32.glClear",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 1068,
+        "name": "opengl32.glPointSize",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 1072,
+        "name": "opengl32.glLineStipple",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 1076,
+        "name": "opengl32.glVertex3d",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 1084,
+        "name": "user32.MessageBoxA",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 1092,
+        "name": "ntdll.vsprintf",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 1096,
+        "name": "ntdll.memmove",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 1100,
+        "name": "ntdll.NtYieldExecution",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 1104,
+        "name": "ntdll.strchr",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 1108,
+        "name": "ntdll.strncpy",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 1112,
+        "name": "ntdll._stricmp",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 1116,
+        "name": "ntdll.memset",
+        "type": "IMPORT",
+        "num_refs": 1
+      }
+    ],
+    "sections": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 52
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 8704,
+        "virtual_size": 12288,
+        "rights": "RX",
+        "entropy": 124
+      },
+      {
+        "name": ".data",
+        "effective_address": 13312,
+        "physical_size": 38912,
+        "virtual_size": 40960,
+        "rights": "RW",
+        "entropy": 144
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 54272,
+        "physical_size": 1024,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 89
+      },
+      {
+        "name": ".reloc",
+        "effective_address": 58368,
+        "physical_size": 1024,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 19
+      },
+      {
+        "name": "overlay",
+        "effective_address": 62464,
+        "physical_size": 173,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 170
+      }
+    ],
+    "entropy": {
+      "file_entropy": 6.46,
+      "regions": [
+        {
+          "name": "header",
+          "entropy": 52,
+          "size": null
+        },
+        {
+          "name": ".text",
+          "entropy": 124,
+          "size": null
+        },
+        {
+          "name": ".data",
+          "entropy": 144,
+          "size": null
+        },
+        {
+          "name": ".rsrc",
+          "entropy": 89,
+          "size": null
+        },
+        {
+          "name": ".reloc",
+          "entropy": 19,
+          "size": null
+        },
+        {
+          "name": "overlay",
+          "entropy": 170,
+          "size": null
+        }
+      ],
+      "file_entropy_malcat_raw": 135,
+      "entropy_source": "whole_file_shannon_revai"
+    },
+    "functions": [
+      {
+        "ea": 4704,
+        "name": "sub_401e60"
+      },
+      {
+        "ea": 5136,
+        "name": "sub_402010"
+      },
+      {
+        "ea": 1712,
+        "name": "PEBx86"
+      },
+      {
+        "ea": 4176,
+        "name": "sub_401c50"
+      },
+      {
+        "ea": 6672,
+        "name": "sub_402610"
+      },
+      {
+        "ea": 5168,
+        "name": "sub_402030"
+      },
+      {
+        "ea": 8816,
+        "name": "sub_402e70"
+      },
+      {
+        "ea": 8352,
+        "name": "sub_402ca0"
+      },
+      {
+        "ea": 7952,
+        "name": "sub_402b10"
+      },
+      {
+        "ea": 1664,
+        "name": "sub_401280"
+      }
+    ],
+    "constants": [
+      {
+        "id": "code::PEBx86",
+        "category": "code",
+        "type": "code",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::Base64",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      }
+    ]
+  },
+  "functions": [
+    {
+      "ea": 4704,
+      "name": "sub_401e60"
+    },
+    {
+      "ea": 5136,
+      "name": "sub_402010"
+    },
+    {
+      "ea": 1712,
+      "name": "PEBx86"
+    },
+    {
+      "ea": 4176,
+      "name": "sub_401c50"
+    },
+    {
+      "ea": 6672,
+      "name": "sub_402610"
+    },
+    {
+      "ea": 5168,
+      "name": "sub_402030"
+    },
+    {
+      "ea": 8816,
+      "name": "sub_402e70"
+    },
+    {
+      "ea": 8352,
+      "name": "sub_402ca0"
+    },
+    {
+      "ea": 7952,
+      "name": "sub_402b10"
+    },
+    {
+      "ea": 1664,
+      "name": "sub_401280"
+    }
+  ],
+  "constants": [
+    {
+      "id": "code::PEBx86",
+      "category": "code",
+      "type": "code",
+      "num_hits": 1
+    },
+    {
+      "id": "crypto::Base64",
+      "category": "crypto",
+      "type": "data",
+      "num_hits": 1
+    }
+  ],
+  "anomalies": [
+    {
+      "name": "BigBufferNoXrefMediumToHighEntropy",
+      "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+      "category": "entropy",
+      "level": 3,
+      "num_hits": 2
+    },
+    {
+      "name": "BoundImports",
+      "desc": "Bound imports are present",
+      "category": "imports",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "ManyUniqueImmediateBytes",
+      "desc": "More than 48 unique bytes defined across all immediate operands in the function",
+      "category": "code",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "RichMultipleLinkers",
+      "desc": "multiple linker entries in rich header",
+      "category": "rich",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "StringBase64",
+      "desc": "string has more than 16 characters is encoded using base64",
+      "category": "strings",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "WeirdDebugInfoType",
+      "desc": "the Debug infos are not in the usual format",
+      "category": "headers",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "XorInLoop",
+      "desc": "XOR instruction in a loop",
+      "category": "code",
+      "level": 3,
+      "num_hits": 11
+    }
+  ],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

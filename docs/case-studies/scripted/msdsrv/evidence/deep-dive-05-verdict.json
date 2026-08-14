@@ -1,0 +1,91 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "This PE executable (msdsrv.exe) is a keylogger with HTTP-based C2 exfiltration capability. CAPA confirms two keylogging techniques: application hooking (SetWindowsHookExA) and polling (GetAsyncKeyState/GetKeyState), both mapped to MITRE ATT&CK T1056.001. The sample uses WININET.DLL HTTP APIs (InternetOpenA, InternetConnectA, HttpSendRequestExA, InternetWriteFile) to exfiltrate captured keystrokes to a remote server. Keystrokes are also written locally to 'temp.txt'. Base64 encoding (T1027) is used for defense evasion. The executable tracks the active foreground window (GetForegroundWindow) to associate keystrokes with specific applications. The filename 'msdsrv.exe' masquerades as a Microsoft service. YARA rules matched anti-debug strings, window hooking, HTTP networking, and IP address patterns. The function at 0x004024d0 has extremely high complexity (cyclomatic complexity 336, 148 call-outs, 9 string references) consistent with the main malware payload orchestrating keylogging and network communication.",
+  "key_evidence": [
+    "CAPA: 'log keystrokes via application hook' (T1056.001 / F0002.001) - SetWindowsHookExA keyboard hook",
+    "CAPA: 'log keystrokes via polling' (T1056.001 / F0002.002) - GetAsyncKeyState/GetKeyState polling",
+    "Imports: SetWindowsHookExA (USER32.DLL), GetAsyncKeyState (USER32.DLL), GetKeyState (USER32.DLL), GetForegroundWindow (USER32.DLL)",
+    "Imports: InternetOpenA, InternetConnectA, HttpSendRequestExA, InternetWriteFile, InternetReadFile (WININET.DLL) - full HTTP C2 stack",
+    "String refs: 'temp.txt' referenced in FUN_00403610 (0x00403610) - local keystroke log file",
+    "Strings: 'CHttpConnection', 'CHttpFile', 'http://', 'HTTP/1.0', 'WININET.DLL' - MFC HTTP client classes for C2",
+    "CAPA: 'encode data using Base64' (T1027 / E1027.m02 / C0026.001) - defense evasion via encoding",
+    "YARA: anti_dbg matched at offsets 191098 and 193100 - anti-debugging strings present",
+    "YARA: win_hook matched at offsets 175752, 191366, 191278, 191260 - window hooking infrastructure",
+    "YARA: network_http matched at offsets 163812, 163429, 191716, 191806, 191786, 191886 - HTTP networking strings",
+    "YARA: contains_base64 matched at offset 162639 - Base64 encoded data present",
+    "Ghidra funcs: FUN_004024d0 at 0x004024d0 has cyclomatic_complexity=336, call_out_count=148, string_ref_count=9 - main payload orchestrator",
+    "Filename 'msdsrv.exe' masquerades as Microsoft service (MSD/Microsoft naming convention)"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 25,
+  "successful_non_bootstrap_tools": 12,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": null
+}

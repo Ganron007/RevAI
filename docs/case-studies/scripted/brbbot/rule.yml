@@ -1,0 +1,21 @@
+title: "RevAI v2: trojan.blocker/bckn (botnet trojan) activity"
+id: trojan_blocker_bckn_botnet_trojan_f47060d0f7de
+status: experimental
+level: high
+description: "Auto-generated Sigma rule for trojan.blocker/bckn (botnet trojan) (sha256 prefix f47060d0f7de)"
+author: RevAI yara_gen_v2
+date: 2026/08/12
+reference: "commit unknown · engine langgraph"
+tags:
+    - attack.execution
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+            CommandLine|contains: "*!This program cannot be run in DOS mode.*"
+            CommandLine|contains: "*\\$ UVWATAUAVAWH*"
+            CommandLine|contains: "*UVWATAUAVAWH*"
+    condition: selection
+falsepositives:
+    - Review against goodware corpus

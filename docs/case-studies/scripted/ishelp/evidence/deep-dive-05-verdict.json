@@ -1,0 +1,90 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 98,
+  "summary": "This is a DLL dropper/loader component of the Emissary APT malware family. YARA rule 'Emissary_APT_Malware_1' matched with 8 distinct strings. The DLL exports a 'Setting' function designed to be invoked via rundll32.exe. Its behavioral chain: (1) creates mutex '_MICROSOFT_LOADER_MUTEX_' for single-instance enforcement, (2) enables SeDebugPrivilege via AdjustTokenPrivileges for elevated process access, (3) extracts an embedded payload from PE resources to disk as 'A08E81B411.DAT' in a \\LocalData\\ directory (FindResourceW/LockResource/CreateFileA), (4) enumerates running processes using CreateToolhelp32Snapshot to locate IE (iexplore.exe) as injection target, (5) performs classic process injection via VirtualAllocEx + WriteProcessMemory + CreateRemoteThread into the target process, (6) establishes registry persistence under Software\\Microsoft\\Windows\\CurrentVersion\\Run with 'rundll32.exe \"%s\",Setting', (7) reads proxy configuration from Internet Settings registry keys (ProxyEnable/ProxyServer) likely for C2 configuration. CAPA confirms stack string obfuscation (T1027.005), Base64 encoding (T1027), and file discovery (T1083). The 151-cyclomatic-complexity main function (FUN_10003853, 2771 bytes) suggests heavy obfuscation or control-flow flattening. VersionInfo metadata claiming 'Loader Dynamic Link Library' and 'Copyright (C) 2015' is irrelevant \u2014 all functional indicators are unambiguously malicious. Exfiltration: Not observed based on YARA rule 'Emissary_APT_Malware_1' and CAPA analysis, as no data exfiltration techniques (e.g., network transmission, file transfer) were identified in the behavioral chain or tool outputs. Defense impairment: Not observed based on YARA rule 'Emissary_APT_Malware_1' and CAPA analysis, as no techniques to disable security tools, clear logs, or evade defenses were identified in the behavioral chain or tool outputs.",
+  "key_evidence": [
+    "YARA rule 'Emissary_APT_Malware_1' matched with 8 strings at offsets 61976, 61996, 17696, 61864, 60320, 61412, 70960, 61896",
+    "Imports: CreateRemoteThread, WriteProcessMemory, VirtualAllocEx, VirtualProtectEx, OpenProcess (classic DLL injection chain)",
+    "Imports: AdjustTokenPrivileges, LookupPrivilegeValueA, OpenProcessToken (privilege escalation)",
+    "String refs in FUN_10002300: 'IE Process is running.' and '_MICROSOFT_LOADER_MUTEX_' (IE injection targeting + mutex)",
+    "String refs in FUN_100019a0: 'Software\\Microsoft\\Windows\\CurrentVersion\\Run', 'A08E81B411.DAT', 'SeDebugPrivilege', '\\LocalData\\' (persistence + payload drop + priv esc)",
+    "Export 'Setting' with string 'rundll32.exe \"%s\",Setting' (autorun persistence via rundll32)",
+    "Strings: 'ProxyEnable', 'ProxyServer', 'Internet Settings' registry path (proxy credential theft)",
+    "FUN_10001820 references 'ReleaseFile Error->FindResource Failed', 'LoadLibrary Failed', 'GetProcAddress Failed', 'CreateFile Failed' (resource-based dropper with debug strings)",
+    "CAPA: obfuscated stackstrings (T1027.005), Base64 encoding (T1027), file/directory discovery (T1083)",
+    "FUN_10003853: size=2771, cyclomatic_complexity=151, 240 basic blocks (heavily obfuscated main payload logic)",
+    "Imports: CreateToolhelp32Snapshot, Process32First, Process32Next, Module32First, Module32Next (process/module enumeration for injection target)",
+    "SHA512 constants and BASE64 alphabet table detected at offsets 58812-58836 and 58736 (crypto encoding infrastructure)"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 35,
+  "successful_non_bootstrap_tools": 20,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

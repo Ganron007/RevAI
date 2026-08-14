@@ -1,0 +1,9 @@
+{
+  "sha256": "c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505",
+  "entropy_bits_whole_file": 7.39,
+  "entropy_source": "whole_file_shannon_revai",
+  "patched_files": [
+    "c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/quick_scan/00-tools-raw.json"
+  ],
+  "reason": "malcat entropy field is not whole-file entropy (2026-08-12); replaced with ground-truth value, raw preserved as entropy_malcat_raw"
+}

@@ -1,0 +1,46 @@
+{
+  "sha256": "0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a",
+  "family": "fkmb",
+  "imphash": null,
+  "generated_at": "2026-08-13T00:21:05.735069+00:00",
+  "string_count": 9,
+  "strings": [
+    "xxhiYXLMKJIH==,,! ##))..2245;;??CBBBBB>>77/.()&&'&--<<OOZZ__`a``]\\TTPQMLFF>?7623-,'&))..98GGWWbbhhfgee__QPA@./",
+    "%$'&(()(++,-.../..//.../00447689<<@@EDHHLMOOQQQPSRRSRRPPNNJJDD@@<=9823-,++))&&&&&'''&''&''''&&''%$!",
+    "66NN^^hhjjjjffdddehhnnrrttvvrrnnjkkjhicbVVJKDD?>77//,,00231101548889885523-,()%$!",
+    "./<<IHSRXX``eeihjklloonnqqqpnnmlmmjjihggddbb``^^\\][Z[[XXXYVVUTSRPPLLKKEE>?8811((",
+    "Behavioral rule detecting indirect function calls, commonly used in malware for code execution, evasion, and malicious i",
+    "Presence of base64 encoded data suggests possible hidden payloads, commands, or exfiltrated data.",
+    "Matches for domain and IP patterns indicate potential network communication strings, possibly for command and control (C",
+    "Entropy value of 156 is abnormally high, consistent with obfuscation, encryption, or packing often associated with malic",
+    "Strings exhibit obfuscated patterns (e.g., 'zzsrppnnnnllhhff..NNIIDDCC>>77..##'), atypical for a WAV audio file, indicat"
+  ],
+  "rule_path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/rule.yar",
+  "sigma_path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/rule.yml",
+  "iocs_path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/iocs.json",
+  "yara_valid": true,
+  "yara_check": "ok",
+  "goodware_fp": {
+    "goodware_dir": "/opt/samples/goodware",
+    "fp_count": 0,
+    "fp_samples": [],
+    "skipped": "goodware corpus not staged"
+  },
+  "yargen": {
+    "skipped": true
+  },
+  "revai": true,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-13 00:21:05 UTC"
+  },
+  "publish_target": "revai_publish"
+}

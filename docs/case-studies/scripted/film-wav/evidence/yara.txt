@@ -1,0 +1,71 @@
+# YARA matches (deterministic render)
+
+{
+  "rule_count": 4,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 4,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IP",
+      "path": "/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav",
+      "strings": [
+        {
+          "id": "$ipv6",
+          "offset": 880,
+          "length": 4,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "contains_base64",
+      "path": "/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 3750495,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "maldoc_indirect_function_call_3",
+      "path": "/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 1743485,
+          "length": 9,
+          "xor_key": null
+        }
+      ]
+    }
+  ],
+  "engine": "yara-x",
+  "rules_compiled": 454,
+  "compile_errors": [
+    "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+    "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+    "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+  ],
+  "incomplete": true,
+  "duration_s": 6.23
+}

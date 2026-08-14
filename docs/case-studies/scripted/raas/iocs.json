@@ -1,0 +1,44 @@
+{
+  "sha256": "c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505",
+  "family": "ransomware.shaitan/troldesh",
+  "verdict": "malicious@",
+  "generated_at": "2026-08-12T21:21:56.613102+00:00",
+  "hashes": {
+    "sha256": "c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505",
+    "sha1": "25bb2935f75e15b4117779b93d064367049b5fa9",
+    "md5": "c50deba5542672ce85086c6ad747a1e4"
+  },
+  "domains": [],
+  "ips": [],
+  "urls": [],
+  "files": [
+    "wpespy.dll",
+    "pstorec.dll",
+    "avghookx.dll",
+    "avghooka.dll",
+    "dwmapi.dll",
+    "ollydbg.exe",
+    "ProcessHacker.exe",
+    "tcpview.exe",
+    "autoruns.exe",
+    "autorunsc.exe",
+    "filemon.exe",
+    "ntdll.dll",
+    "procmon.exe"
+  ],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive).",
+  "wallets_btc": [],
+  "wallets_eth": [],
+  "revai_tools": {
+    "count": 0,
+    "source": "revai_tools_iocs"
+  }
+}

@@ -1,0 +1,1328 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/malware/0598e95ea5f28e3e591a8ab26bd6794e06f038282cac8ecf302009c6636cd0bc/hubert.dll",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "hubert.dll",
+    "file_path": "/opt/samples/corpus/malware/0598e95ea5f28e3e591a8ab26bd6794e06f038282cac8ecf302009c6636cd0bc/hubert.dll",
+    "file_size": 323584,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 7.99,
+    "sha256": "0598e95ea5f28e3e591a8ab26bd6794e06f038282cac8ecf302009c6636cd0bc",
+    "metadata": {
+      "Exports::Module name": "Adware.dll",
+      "Exports::Exports date": "2010-07-08 12:26:17"
+    },
+    "entrypoint_ea": 6943,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 36
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 8192,
+        "virtual_size": 8192,
+        "rights": "RX",
+        "entropy": 224
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 9216,
+        "physical_size": 5120,
+        "virtual_size": 8192,
+        "rights": "R",
+        "entropy": 88
+      },
+      {
+        "name": ".data",
+        "effective_address": 17408,
+        "physical_size": 1024,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".tlsc",
+        "effective_address": 21504,
+        "physical_size": 304128,
+        "virtual_size": 307200,
+        "rights": "R",
+        "entropy": 226
+      },
+      {
+        "name": ".nasoc",
+        "effective_address": 328704,
+        "physical_size": 4096,
+        "virtual_size": 4096,
+        "rights": "WX",
+        "entropy": 225
+      }
+    ],
+    "kesakode_verdict": [],
+    "entropy_malcat_raw": 223,
+    "entropy_source": "whole_file_shannon_revai"
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "BigBufferNoXrefMediumToHighEntropy",
+        "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 9
+      },
+      {
+        "name": "DllNoRelocation",
+        "desc": "dll has no relocation information",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "ExecutableSectionNoCode",
+        "desc": "executable section has the flag code not set",
+        "category": "sections",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "HighEntropy",
+        "desc": "File has high entropy overall (> 200)",
+        "category": "entropy",
+        "level": 2,
+        "num_hits": 0
+      },
+      {
+        "name": "HugeFunctionGapAtSectionBoundary",
+        "desc": "There is a huge gap between start/end of executable section and first/last function of a section with medium-to-high entropy (which is not a know structure). It often means that data is stored there",
+        "category": "code",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionNameUnknown",
+        "desc": "section name is not one of the typical PE section name",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "SectionWX",
+        "desc": "section is executable and writeable",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "UnreferencedImports",
+        "desc": "More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the file is packed",
+        "category": "imports",
+        "level": 3,
+        "num_hits": 79
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 3
+      }
+    ],
+    "anomaly_locations": {
+      "XorInLoop": [
+        {
+          "ea": 7008,
+          "context": ""
+        },
+        {
+          "ea": 7021,
+          "context": ""
+        },
+        {
+          "ea": 7187,
+          "context": ""
+        }
+      ]
+    },
+    "yara_hits": [
+      {
+        "id": "MSVC_2005_linker",
+        "category": "compiler",
+        "reliability": 60,
+        "type": "INFO",
+        "description": "detects used visual studio version based on linker information",
+        "num_patterns": 0
+      },
+      {
+        "id": "DownloadUsingWininet",
+        "category": "network",
+        "reliability": 60,
+        "type": "UNCOMMON",
+        "description": "can download files from internet using wininet API",
+        "num_patterns": 1
+      },
+      {
+        "id": "ProcessInjectionTargets",
+        "category": "evasion",
+        "reliability": 20,
+        "type": "UNCOMMON",
+        "description": "contains a list of process names often used as injection target in Windows",
+        "num_patterns": 2
+      },
+      {
+        "id": "ElevatePrivileges",
+        "category": "lateral movement",
+        "reliability": 70,
+        "type": "UNCOMMON",
+        "description": "elevate privileges using Windows API",
+        "num_patterns": 1
+      }
+    ],
+    "strings": [
+      {
+        "ea": 12080,
+        "summary": "\\Internet Explorer\\iexplore.exe"
+      },
+      {
+        "ea": 11960,
+        "summary": "explorer.exe"
+      },
+      {
+        "ea": 12846,
+        "summary": "InternetReadFile"
+      },
+      {
+        "ea": 14016,
+        "summary": "AdjustTokenPrivileges"
+      },
+      {
+        "ea": 12756,
+        "summary": "ntdll.dll"
+      },
+      {
+        "ea": 12902,
+        "summary": "WININET.dll"
+      },
+      {
+        "ea": 14128,
+        "summary": "ole32.dll"
+      },
+      {
+        "ea": 14210,
+        "summary": "Adware.dll"
+      },
+      {
+        "ea": 12986,
+        "summary": "SHELL32.dll"
+      },
+      {
+        "ea": 14078,
+        "summary": "ADVAPI32.dll"
+      },
+      {
+        "ea": 13600,
+        "summary": "KERNEL32.dll"
+      },
+      {
+        "ea": 13890,
+        "summary": "USER32.dll"
+      },
+      {
+        "ea": 12812,
+        "summary": "SHLWAPI.dll"
+      },
+      {
+        "ea": 11584,
+        "summary": "System files of ..our system ASAP."
+      },
+      {
+        "ea": 11216,
+        "summary": "a=gg0<45(7a=0(1=..156(=56`a70`26gf"
+      },
+      {
+        "ea": 10600,
+        "summary": "D%v`fpwlq|%qmw`d..b`%qj%w`hjs`%lq+"
+      },
+      {
+        "ea": 9904,
+        "summary": "Mdwhcpi%slwpv`v%..c%|jpw%fjhupq`w+"
+      },
+      {
+        "ea": 10264,
+        "summary": "Lq%lv%vqwjkbi|%w..c%|jpw%fjhupq`w+"
+      },
+      {
+        "ea": 10408,
+        "summary": "Lq%lv%vqwjkbi|%w..c%|jpw%fjhupq`w+"
+      },
+      {
+        "ea": 10064,
+        "summary": "\\jp%dw`%wpkklkb%..c%|jpw%fjhupq`w+"
+      },
+      {
+        "ea": 9736,
+        "summary": "D%v`fpwlq|%qmw`d..c%|jpw%fjhupq`w+"
+      },
+      {
+        "ea": 10992,
+        "summary": "Mdwhcpi%slwpv`v%..mw`dqv%cjw%cw``+"
+      },
+      {
+        "ea": 10770,
+        "summary": "`a%u`wvjk%qwl`v%..%la`kqlq|%qm`cq+"
+      },
+      {
+        "ea": 11880,
+        "summary": "Vjcqrdw`YYHlfwjv..Ujilfl`vYYV|vq`h"
+      },
+      {
+        "ea": 14221,
+        "summary": "_Run@0"
+      },
+      {
+        "ea": 10899,
+        "summary": "`a%dff`vv%qj%|jp..lslwpv%vjcqrdw`+"
+      },
+      {
+        "ea": 11776,
+        "summary": "\\_favdata.dat"
+      },
+      {
+        "ea": 11800,
+        "summary": "mqqu?** v*w`daad..vljk8 v#dardw`jn"
+      },
+      {
+        "ea": 12028,
+        "summary": "24d1ca9a-a864-4f..6fe-495eb56529d8"
+      },
+      {
+        "ea": 11988,
+        "summary": "dd1c3e54-4b10-4a..1eb-fa561c094261"
+      },
+      {
+        "ea": 11292,
+        "summary": "<1=51=354163<276..<160<255<2245757"
+      },
+      {
+        "ea": 12156,
+        "summary": "SeShutdownPrivilege"
+      },
+      {
+        "ea": 11120,
+        "summary": "A`c`kv`%F`kq`w"
+      },
+      {
+        "ea": 11376,
+        "summary": "\\license.dat"
+      },
+      {
+        "ea": 11456,
+        "summary": "fjiesogjfoerajgoasj"
+      },
+      {
+        "ea": 13212,
+        "summary": "DisableThreadLibraryCalls"
+      },
+      {
+        "ea": 13112,
+        "summary": "InitializeCriticalSection"
+      },
+      {
+        "ea": 13274,
+        "summary": "DeleteCriticalSection"
+      },
+      {
+        "ea": 11748,
+        "summary": "Printers\\Connections"
+      },
+      {
+        "ea": 118562,
+        "summary": "0.sjE"
+      },
+      {
+        "ea": 12196,
+        "summary": "fiuejsiogj"
+      },
+      {
+        "ea": 13492,
+        "summary": "GetFileAttributesA"
+      },
+      {
+        "ea": 131627,
+        "summary": "h.bDy"
+      },
+      {
+        "ea": 77,
+        "summary": "!This program ca..in DOS mode.\r\r\n$"
+      },
+      {
+        "ea": 313532,
+        "summary": "R.hCi"
+      },
+      {
+        "ea": 11532,
+        "summary": "YYqwjo555+`}`"
+      },
+      {
+        "ea": 14110,
+        "summary": "CoCreateInstance"
+      },
+      {
+        "ea": 12826,
+        "summary": "InternetOpenUrlA"
+      },
+      {
+        "ea": 13770,
+        "summary": "TranslateMessage"
+      },
+      {
+        "ea": 12882,
+        "summary": "InternetCloseHandle"
+      },
+      {
+        "ea": 11504,
+        "summary": "YYvudh556+`}`"
+      },
+      {
+        "ea": 12866,
+        "summary": "InternetOpenA"
+      },
+      {
+        "ea": 11476,
+        "summary": "YYvudh554+`}`"
+      },
+      {
+        "ea": 13442,
+        "summary": "GetCurrentProcess"
+      },
+      {
+        "ea": 14040,
+        "summary": "InitiateSystemShutdownW"
+      },
+      {
+        "ea": 9668,
+        "summary": "ujwkjqpg`+fjh"
+      },
+      {
+        "ea": 13140,
+        "summary": "GetVolumeInformationA"
+      },
+      {
+        "ea": 11188,
+        "summary": "rvfvsf67+`}`"
+      },
+      {
+        "ea": 13978,
+        "summary": "LookupPrivilegeValueW"
+      },
+      {
+        "ea": 9640,
+        "summary": "kpa`qpg`+fjh"
+      },
+      {
+        "ea": 13904,
+        "summary": "OpenProcessToken"
+      },
+      {
+        "ea": 12916,
+        "summary": "SHGetSpecialFolderPathA"
+      },
+      {
+        "ea": 12942,
+        "summary": "SHGetSpecialFolderPathW"
+      },
+      {
+        "ea": 12768,
+        "summary": "StrStrIA"
+      },
+      {
+        "ea": 13858,
+        "summary": "CreateDialogParamA"
+      },
+      {
+        "ea": 68379,
+        "summary": "fQXQQ"
+      },
+      {
+        "ea": 13750,
+        "summary": "IsDialogMessageW"
+      },
+      {
+        "ea": 13298,
+        "summary": "CreateThread"
+      },
+      {
+        "ea": 11340,
+        "summary": "A`c`kv`%F`kq`w"
+      },
+      {
+        "ea": 13424,
+        "summary": "CreateProcessW"
+      },
+      {
+        "ea": 13374,
+        "summary": "SetFilePointer"
+      },
+      {
+        "ea": 9616,
+        "summary": "|jpujwk+fjh"
+      },
+      {
+        "ea": 13616,
+        "summary": "DispatchMessageW"
+      },
+      {
+        "ea": 182012,
+        "summary": "z4.fAy"
+      },
+      {
+        "ea": 13326,
+        "summary": "GetTempFileNameW"
+      },
+      {
+        "ea": 13000,
+        "summary": "GetComputerNameA"
+      },
+      {
+        "ea": 14140,
+        "summary": "memset"
+      },
+      {
+        "ea": 13240,
+        "summary": "GetModuleFileNameA"
+      },
+      {
+        "ea": 318360,
+        "summary": "X0HXCHW"
+      },
+      {
+        "ea": 13020,
+        "summary": "CreateMutexW"
+      },
+      {
+        "ea": 13844,
+        "summary": "GetMessageW"
+      },
+      {
+        "ea": 13828,
+        "summary": "PostMessageW"
+      },
+      {
+        "ea": 71907,
+        "summary": "]lyfXX]"
+      },
+      {
+        "ea": 13666,
+        "summary": "PostMessageA"
+      },
+      {
+        "ea": 13650,
+        "summary": "SendMessageW"
+      },
+      {
+        "ea": 13636,
+        "summary": "FindWindowA"
+      },
+      {
+        "ea": 11152,
+        "summary": "a`cfkq+`}`"
+      },
+      {
+        "ea": 117812,
+        "summary": "h2[[dDd"
+      },
+      {
+        "ea": 13572,
+        "summary": "LockResource"
+      },
+      {
+        "ea": 13540,
+        "summary": "GetLastError"
+      },
+      {
+        "ea": 13720,
+        "summary": "GetWindowTextW"
+      },
+      {
+        "ea": 13060,
+        "summary": "WaitForSingleObject"
+      },
+      {
+        "ea": 13962,
+        "summary": "RegCreateKeyA"
+      },
+      {
+        "ea": 13942,
+        "summary": "RegQueryValueExA"
+      },
+      {
+        "ea": 148400,
+        "summary": "MMPY"
+      },
+      {
+        "ea": 83168,
+        "summary": "wwG@"
+      },
+      {
+        "ea": 137921,
+        "summary": "WTWU"
+      },
+      {
+        "ea": 138148,
+        "summary": "<-t<"
+      },
+      {
+        "ea": 309209,
+        "summary": "rr\ru"
+      },
+      {
+        "ea": 139392,
+        "summary": "7M1M"
+      }
+    ],
+    "imports": [
+      {
+        "ea": 7280,
+        "name": "_Run@0",
+        "type": "EXPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9216,
+        "name": "advapi32.RegCloseKey",
+        "type": "IMPORT",
+        "num_refs": 4
+      },
+      {
+        "ea": 9220,
+        "name": "advapi32.InitiateSystemShutdownW",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9224,
+        "name": "advapi32.AdjustTokenPrivileges",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9228,
+        "name": "advapi32.RegOpenKeyA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9232,
+        "name": "advapi32.LookupPrivilegeValueW",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9236,
+        "name": "advapi32.RegCreateKeyA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9240,
+        "name": "advapi32.RegQueryValueExA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9244,
+        "name": "advapi32.RegSetValueExA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9248,
+        "name": "advapi32.OpenProcessToken",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9256,
+        "name": "kernel32.CloseHandle",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9260,
+        "name": "kernel32.LockResource",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9264,
+        "name": "kernel32.VirtualAlloc",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9268,
+        "name": "kernel32.GetLastError",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9272,
+        "name": "kernel32.CreateFileW",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9276,
+        "name": "kernel32.GetComputerNameA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9280,
+        "name": "kernel32.CreateMutexW",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9284,
+        "name": "kernel32.lstrlenA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9288,
+        "name": "kernel32.lstrcpynA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9292,
+        "name": "kernel32.WaitForSingleObject",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9296,
+        "name": "kernel32.GetTickCount",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9300,
+        "name": "kernel32.VirtualFree",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9304,
+        "name": "kernel32.InitializeCriticalSection",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9308,
+        "name": "kernel32.GetVolumeInformationA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9312,
+        "name": "kernel32.Sleep",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9316,
+        "name": "kernel32.lstrcatA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9320,
+        "name": "kernel32.lstrlenW",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9324,
+        "name": "kernel32.GetTempPathW",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9328,
+        "name": "kernel32.DisableThreadLibraryCalls",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9332,
+        "name": "kernel32.GetModuleFileNameA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9336,
+        "name": "kernel32.lstrcatW",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9340,
+        "name": "kernel32.DeleteCriticalSection",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9344,
+        "name": "kernel32.CreateThread",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9348,
+        "name": "kernel32.lstrcpyA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9352,
+        "name": "kernel32.GetTempFileNameW",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9356,
+        "name": "kernel32.CreateFileA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9360,
+        "name": "kernel32.GetFileSize",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9364,
+        "name": "kernel32.SetFilePointer",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9368,
+        "name": "kernel32.FindResourceW",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9372,
+        "name": "kernel32.LoadResource",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9376,
+        "name": "kernel32.CreateProcessW",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9380,
+        "name": "kernel32.GetCurrentProcess",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9384,
+        "name": "kernel32.WriteFile",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9388,
+        "name": "kernel32.ReadFile",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9392,
+        "name": "kernel32.SizeofResource",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9396,
+        "name": "kernel32.GetFileAttributesA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9404,
+        "name": "shell32.Shell_NotifyIconA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9408,
+        "name": "shell32.SHGetSpecialFolderPathW",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9412,
+        "name": "shell32.SHGetSpecialFolderPathA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9420,
+        "name": "shlwapi.StrCatW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9424,
+        "name": "shlwapi.wnsprintfA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9428,
+        "name": "shlwapi.StrCpyW",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9432,
+        "name": "shlwapi.StrStrIA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9440,
+        "name": "user32.DispatchMessageW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9444,
+        "name": "user32.FindWindowA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9448,
+        "name": "user32.SendMessageW",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9452,
+        "name": "user32.PostMessageA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9456,
+        "name": "user32.IsWindow",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9460,
+        "name": "user32.ShowWindow",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9464,
+        "name": "user32.EndDialog",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9468,
+        "name": "user32.GetWindowTextW",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9472,
+        "name": "user32.LoadIconW",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9476,
+        "name": "user32.IsDialogMessageW",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9480,
+        "name": "user32.TranslateMessage",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9484,
+        "name": "user32.EnumWindows",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9488,
+        "name": "user32.wsprintfA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9492,
+        "name": "user32.KillTimer",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9496,
+        "name": "user32.PostMessageW",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9500,
+        "name": "user32.GetMessageW",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9504,
+        "name": "user32.CreateDialogParamA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9508,
+        "name": "user32.SetTimer",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9516,
+        "name": "wininet.InternetReadFile",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9520,
+        "name": "wininet.InternetOpenA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9524,
+        "name": "wininet.InternetCloseHandle",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9528,
+        "name": "wininet.InternetOpenUrlA",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9536,
+        "name": "ntdll.atol",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9540,
+        "name": "ntdll.memset",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9544,
+        "name": "ntdll._chkstk",
+        "type": "IMPORT",
+        "num_refs": 0
+      },
+      {
+        "ea": 9552,
+        "name": "ole32.CoInitialize",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 9556,
+        "name": "ole32.CoCreateInstance",
+        "type": "IMPORT",
+        "num_refs": 0
+      }
+    ],
+    "sections": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 36
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 8192,
+        "virtual_size": 8192,
+        "rights": "RX",
+        "entropy": 224
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 9216,
+        "physical_size": 5120,
+        "virtual_size": 8192,
+        "rights": "R",
+        "entropy": 88
+      },
+      {
+        "name": ".data",
+        "effective_address": 17408,
+        "physical_size": 1024,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".tlsc",
+        "effective_address": 21504,
+        "physical_size": 304128,
+        "virtual_size": 307200,
+        "rights": "R",
+        "entropy": 226
+      },
+      {
+        "name": ".nasoc",
+        "effective_address": 328704,
+        "physical_size": 4096,
+        "virtual_size": 4096,
+        "rights": "WX",
+        "entropy": 225
+      }
+    ],
+    "entropy": {
+      "file_entropy": 7.99,
+      "regions": [
+        {
+          "name": "header",
+          "entropy": 36,
+          "size": null
+        },
+        {
+          "name": ".text",
+          "entropy": 224,
+          "size": null
+        },
+        {
+          "name": ".rdata",
+          "entropy": 88,
+          "size": null
+        },
+        {
+          "name": ".data",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": ".tlsc",
+          "entropy": 226,
+          "size": null
+        },
+        {
+          "name": ".nasoc",
+          "entropy": 225,
+          "size": null
+        }
+      ],
+      "file_entropy_malcat_raw": 223,
+      "entropy_source": "whole_file_shannon_revai"
+    },
+    "functions": [
+      {
+        "ea": 6985,
+        "name": "sub_10002749"
+      },
+      {
+        "ea": 7141,
+        "name": "sub_100027e5"
+      },
+      {
+        "ea": 6943,
+        "name": "EntryPoint"
+      },
+      {
+        "ea": 7280,
+        "name": "_Run@0"
+      },
+      {
+        "ea": 7127,
+        "name": "sub_100027d7"
+      },
+      {
+        "ea": 7117,
+        "name": "sub_100027cd"
+      },
+      {
+        "ea": 7124,
+        "name": "sub_100027d4"
+      }
+    ],
+    "constants": [
+      {
+        "id": "guid::IShellLinkW",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "guid::IPersistFile",
+        "category": "guid",
+        "type": "data",
+        "num_hits": 1
+      }
+    ]
+  },
+  "functions": [
+    {
+      "ea": 6985,
+      "name": "sub_10002749"
+    },
+    {
+      "ea": 7141,
+      "name": "sub_100027e5"
+    },
+    {
+      "ea": 6943,
+      "name": "EntryPoint"
+    },
+    {
+      "ea": 7280,
+      "name": "_Run@0"
+    },
+    {
+      "ea": 7127,
+      "name": "sub_100027d7"
+    },
+    {
+      "ea": 7117,
+      "name": "sub_100027cd"
+    },
+    {
+      "ea": 7124,
+      "name": "sub_100027d4"
+    }
+  ],
+  "constants": [
+    {
+      "id": "guid::IShellLinkW",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "guid::IPersistFile",
+      "category": "guid",
+      "type": "data",
+      "num_hits": 1
+    }
+  ],
+  "anomalies": [
+    {
+      "name": "BigBufferNoXrefMediumToHighEntropy",
+      "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+      "category": "entropy",
+      "level": 3,
+      "num_hits": 9
+    },
+    {
+      "name": "DllNoRelocation",
+      "desc": "dll has no relocation information",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "ExecutableSectionNoCode",
+      "desc": "executable section has the flag code not set",
+      "category": "sections",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "HighEntropy",
+      "desc": "File has high entropy overall (> 200)",
+      "category": "entropy",
+      "level": 2,
+      "num_hits": 0
+    },
+    {
+      "name": "HugeFunctionGapAtSectionBoundary",
+      "desc": "There is a huge gap between start/end of executable section and first/last function of a section with medium-to-high entropy (which is not a know structure). It often means that data is stored there",
+      "category": "code",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "SectionNameUnknown",
+      "desc": "section name is not one of the typical PE section name",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 2
+    },
+    {
+      "name": "SectionWX",
+      "desc": "section is executable and writeable",
+      "category": "sections",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "UnreferencedImports",
+      "desc": "More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the file is packed",
+      "category": "imports",
+      "level": 3,
+      "num_hits": 79
+    },
+    {
+      "name": "XorInLoop",
+      "desc": "XOR instruction in a loop",
+      "category": "code",
+      "level": 3,
+      "num_hits": 3
+    }
+  ],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

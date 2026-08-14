@@ -1,0 +1,51 @@
+{
+  "sha256": "98ab99efa9cc35e89d3a43ec1976c52d2ac91055c3ac787f2497b7e733c63648",
+  "family": "luder",
+  "verdict": "malicious@",
+  "generated_at": "2026-08-12T23:34:53.043526+00:00",
+  "hashes": {
+    "sha256": "98ab99efa9cc35e89d3a43ec1976c52d2ac91055c3ac787f2497b7e733c63648",
+    "sha1": "ce50ca7f829bb1df3b549413cfddd51ee908ff9c",
+    "md5": "ed8ba1c2791dd37df22cc5b7e2068f88"
+  },
+  "domains": [
+    "hhctrl.ocx",
+    "regedit.pdb",
+    "virus.luder"
+  ],
+  "ips": [
+    "1[.]0[.]0[.]0",
+    "6[.]0[.]0[.]0"
+  ],
+  "urls": [],
+  "files": [
+    "msvcrt.dll",
+    "ADVAPI32.dll",
+    "KERNEL32.dll",
+    "NTDLL.DLL",
+    "GDI32.dll",
+    "USER32.dll",
+    "COMCTL32.dll",
+    "comdlg32.dll",
+    "SHELL32.dll",
+    "AUTHZ.dll",
+    "ACLUI.dll",
+    "ole32.dll",
+    "ulib.dll"
+  ],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive).",
+  "wallets_btc": [],
+  "wallets_eth": [],
+  "revai_tools": {
+    "count": 2,
+    "source": "revai_tools_iocs"
+  }
+}

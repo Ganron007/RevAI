@@ -1,0 +1,1170 @@
+{
+  "sha": "ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98",
+  "mode": "single",
+  "mode_effective": "large",
+  "strict_standard": false,
+  "audited_at": "2026-08-13T09:04:02.888858+00:00",
+  "session_pipeline_mode": "single",
+  "sample_path": "/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe",
+  "stages": {
+    "intake": {
+      "ok": true,
+      "checks": {
+        "intake_validation": true,
+        "has_source_decisions": true,
+        "ghidra_mentioned": true
+      },
+      "evidence": {
+        "intake_validation": {
+          "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/intake-validation.json",
+          "exists": true,
+          "bytes": 2478,
+          "mtime_iso": "2026-08-12T18:42:49.762780+00:00",
+          "sha256": "51a9d0d858b098f713dfeed9cd7038e193b56f172e71745a0467473b946c7b90"
+        },
+        "malcat_triage": {
+          "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/malcat-triage.json",
+          "exists": true,
+          "bytes": 224442,
+          "mtime_iso": "2026-08-13T04:41:40.110344+00:00",
+          "sha256": "06a20175afaf0e461812c2d152a5386df3d61e1af373f25d53e766904179851e"
+        },
+        "source_decisions": {
+          "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/source-decisions.json",
+          "exists": true,
+          "bytes": 1563,
+          "mtime_iso": "2026-08-12T18:42:49.762780+00:00",
+          "sha256": "6434260334d8a2daad6a618d0472400f77116f99847f4379d25efd8c5e898500"
+        },
+        "ghidra_import_log": {
+          "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/intake-analyzeHeadless.log",
+          "exists": true,
+          "bytes": 9314,
+          "mtime_iso": "2026-08-12T18:40:39.794739+00:00",
+          "sha256": "df8687682d5e7bb38bb2e0623655f771793669d5929d837c93054fd37c07d344"
+        },
+        "ida_bootstrap_log": {
+          "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/intake-idasql.log",
+          "exists": true,
+          "bytes": 213,
+          "mtime_iso": "2026-08-12T18:40:42.037741+00:00",
+          "sha256": "aa6e97077268a08f1a58bb7d1e1c4549a1c7cf22770dab126b7e982e11290af4"
+        },
+        "source_decisions_excerpt": "{\n  \"sha256\": \"ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98\",\n  \"imports\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"medium\",\n    \"reason\": \"Ghidra and IDA both report 264 imports, indicating consistency. Malcat's 1573 imports likely include duplicates or indirect references, making it less reliable for direct import analysis.\"\n  },\n  \"functions\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"medium\",\n    \"reason\": \"Ghidra reports 1107 functions, IDA reports 923, within a 2x range. Ghidra's higher count may include more thorough analysis, but both are credible.\"\n  },\n  \"strings\": {\n    \"source\": \"both\",\n    \"confidence\": \"high\",\n    \"reason\": \"Using both engines provides comprehensive coverage: Ghidra (654 strings), IDA (677 strings), and Malcat (100 strings). Combini\n\u2026 [786 more chars]",
+        "malcat_triage_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n  \"profile\": \"triage\",\n  \"limits\": {\n    \"strings_max\": 100,\n    \"imports_max\": 100,\n    \"functions_max\": 10,\n    \"anomaly_locations_max\": 5,\n    \"decompile_top_n\": 1\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"msdsrv.exe\",\n    \"file_path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n    \"file_size\": 328704,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 5.88,\n    \"sha256\": \"ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98\",\n    \"metadata\": {\n      \"VersionInfo::FileDescription\": \"System Search Indexer\",\n      \"VersionInfo::FileVersion\": \"14.\n\u2026 [223642 more chars]"
+      }
+    },
+    "quick_scan": {
+      "ok": true,
+      "checks": {
+        "prompt": true,
+        "verdict": true,
+        "has_capa_section": true,
+        "has_yara_section": true,
+        "has_malcat_section": true,
+        "has_floss_section": true,
+        "verdict_has_family": true,
+        "llm_source": true,
+        "tools_all_ok": true,
+        "citations_grounded": true,
+        "capa_salvage_used": false,
+        "evidence_pack_present": true,
+        "benign_blocked_if_incomplete": true,
+        "yara_family_not_cleared": true
+      },
+      "tools": {
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 22,\n  \"top_rules\": [\n    {\n      \"name\": \"encode data using Base64\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encoding-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encoding-Standard Algorithm\",\n          \"id\": \"E1027.m02\"\n        },\n        {\n          \"parts\": [\n            \"Data\",\n            \"Encode Data\",\n            \"Base64\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Encode Data\",\n          \"method\": \"Base64\",\n          \"id\": \"C0026.001\"\n        }\n      ]\n    },\n    {\n      \"name\": \"log keystrokes via application hook\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Collection\",\n            \"Input Capture\",\n            \"Keylogging\"\n          ],\n          \"tactic\": \"Collection\",\n          \"technique\": \"Input Capture\",\n          \"subtechnique\": \"Keylogging\",\n          \"id\": \"T1056.001\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Collection\",\n            \"Keylogging\",\n            \"Application Hook\"\n          ],\n          \"objective\": \"Collection\",\n          \"behavior\": \"Keylogging\",\n          \"method\": \"Application Hook\",\n          \"id\": \"F0002.001\"\n        }\n      ]\n    },\n    {\n      \"name\": \"log keystrokes via polling\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Collection\",\n            \"Input Capture\",\n            \"Keylogging\"\n          ],\n          \"tactic\": \"Collection\",\n          \"technique\": \"Input Capture\",\n          \"subtechnique\": \"Keylogging\",\n          \"id\": \"T1056.001\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Collection\",\n            \"Keylogging\",\n            \"Polling\"\n          ],\n          \"objective\": \"Collection\",\n          \"behavior\": \"Keylogging\",\n          \"method\": \"Polling\",\n          \"id\": \"F0002.002\"\n        }\n      ]\n    },\n    {\n      \"name\": \"get common file path\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Discovery\",\n            \"File and Directory Discovery\"\n          ],\n          \"tactic\": \"Discovery\",\n          \"technique\": \"File and Directory Discovery\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1083\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Discovery\",\n            \"File and Directory Discovery\"\n          ],\n          \"objective\": \"Discovery\",\n          \"behavior\": \"File and Directory Discovery\",\n          \"method\": \"\",\n          \"id\": \"E1083\"\n        }\n      ]\n    },\n    {\n      \"name\": \"get hostname\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Discovery\",\n            \"System Information Discovery\"\n          ],\n          \"tactic\": \"Discovery\",\n          \"technique\": \"System Information Discovery\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1082\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Discovery\",\n            \"System Information Discovery\"\n          ],\n          \"objective\": \"Discovery\",\n          \"behavior\": \"System Information Dis\n\u2026 [3910 more chars]",
+          "present": true
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 19,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv4\",\n          \"offset\": 295772,\n          \"length\": 16,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 176064,\n          \"length\": 6,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 162639,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE32\",\n      \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsWindowsGUI\",\n      \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasRichSignature\",\n      \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 216,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"VC8_Microsoft_Corporation\",\n      \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 22742,\n          \"length\": 10,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Microsoft_Visual_Cpp_8\",\n      \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 671,\n          \"length\": 82,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$b\",\n          \"offset\": 61476,\n          \"length\": 10,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"SEH_Save\",\n      \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 76034,\n          \"length\": 7,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"SEH_Init\",\n      \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 1244,\n          \"length\": 6,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$b\",\n          \"offset\": 104575,\n          \"length\": 7,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"anti_dbg\",\n      \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$d1\",\n          \"offset\": 191098,\n          \"leng\n\u2026 [8417 more chars]",
+          "present": true
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 1166,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"DataABackup.lnk\",\n    \"!This program cannot be run in DOS mode.\",\n    \"`.rdata\",\n    \"@.data\",\n    \"@.reloc\",\n    \"D$DSUVW\",\n    \"D$@9|$Ts\",\n    \"D$tPQPVU\",\n    \"\\\\$@9|$8r\",\n    \"L$ _^3\",\n    \"?????????????\",\n    \"??????????????????\",\n    \"!\\\"#$%&?????'()*+,-./0??????????????????????????????????????????????????????112233????????????????????456789:??????????????????????????;<=>\",\n    \"L$0QjnP\",\n    \"SSjPSP\",\n    \"SSOWVQ\",\n    \"HtpHHt\",\n    \"u6hgo@\",\n    \"td9~<u_\",\n    \"9~<u;h\",\n    \"N8;N@r(\",\n    \"8\\\\t\\tj/\",\n    \"+F(_^[;E\",\n    \"F(@@;F,v\",\n    \"F(;^ r\",\n    \"F(;F0u\",\n    \"^(_^[]\",\n    \"<A|0<Z\",\n    \"<A|S<Z\",\n    \"u*h`FC\",\n    \"S\\\\_^[]\",\n    \"t39w u&\",\n    \"_ 9w$u\",\n    \"9~Pu\\tP\",\n    \"t\\t9p(u\",\n    \"Ht;O u\",\n    \"u:j0^V\",\n    \"SVWj(3\",\n    \"tj9~8u@j\",\n    \"9~8ucj\",\n    \"F4_^[]\",\n    \"0WWWWW\",\n    \"YSSSSS\",\n    \"YWWWWW\",\n    \"QQSVWd\",\n    \"0SSSSS\",\n    \"^SSSSS\",\n    \"8VVVVV\",\n    \"0A@@Ju\",\n    \"<at9<rt,<wt\",\n    \"URPQQh\",\n    \"j@j ^V\",\n    \"HHtXHHt\",\n    \">If90t\",\n    \"HHtYHHt\",\n    \"t$<\\\"u\\t3\",\n    \">=Yt1j\",\n    \"< tK<\\ttG\",\n    \"j\\\"^SSSSS\",\n    \"s[S;7|G;w\",\n    \"tR99u2\",\n    \"PPPPPPPP\",\n    \"^WWWWW\",\n    \"0WhLkC\",\n    \">:u8FV\",\n    \"VVVVVQRSSj\",\n    \"v\\tN+D$\",\n    \"_VVVVV\",\n    \"uL9= jC\",\n    \"t\\\"SS9]\",\n    \"tGHt.Ht&\",\n    \";t$,v-\",\n    \"UQPXY]Y[\",\n    \"t+WWVPV\",\n    \"<+t(<-t$:\",\n    \"+t HHt\",\n    \"FCOleException\",\n    \"DISPLAY\",\n    \"CInvalidArgException\",\n    \"CNotSupportedException\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 1,\n    \"stack_strings\": 0,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 1165\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 60.31,\n  \"size_bytes\": 328704,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}",
+          "present": true
+        },
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"msdsrv.exe\",\n    \"file_path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n    \"file_size\": 328704,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 5.88,\n    \"sha256\": \"ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98\",\n    \"metadata\": {\n      \"VersionInfo::FileDescription\": \"System Search Indexer\",\n      \"VersionInfo::FileVersion\": \"14.8.1.6\",\n      \"VersionInfo::InternalName\": \"System Search Indexer\",\n      \"VersionInfo::LegalCopyright\": \"Copyright \\u00a9  2014\",\n      \"VersionInfo::OriginalFilename\": \"System Search Indexer\",\n      \"VersionInfo::ProductName\": \"System Search Indexer\",\n      \"VersionInfo::ProductVersion\": \"13.9.6.11\"\n    },\n    \"entrypoint_ea\": 74850,\n    \"layout\": [\n      {\n        \"name\": \"header\",\n        \"effective_address\": 0,\n        \"physical_size\": 1024,\n        \"virtual_size\": 0,\n        \"rights\": \"\",\n        \"entropy\": 49\n      },\n      {\n        \"name\": \".text\",\n        \"effective_address\": 1024,\n        \"physical_size\": 160256,\n        \"virtual_size\": 163840,\n        \"rights\": \"RX\",\n        \"entropy\": 139\n      },\n      {\n        \"name\": \".rdata\",\n        \"effective_address\": 164864,\n        \"physical_size\": 34304,\n        \"virtual_size\": 36864,\n        \"rights\": \"R\",\n        \"entropy\": 75\n      },\n      {\n        \"name\": \".data\",\n        \"effective_address\": 201728,\n        \"physical_size\": 9216,\n        \"virtual_size\": 28672,\n        \"rights\": \"RW\",\n        \"entropy\": 99\n      },\n      {\n        \"name\": \".rsrc\",\n        \"effective_address\": 230400,\n        \"physical_size\": 92160,\n        \"virtual_size\": 94208,\n        \"rights\": \"R\",\n        \"entropy\": 84\n      },\n      {\n        \"name\": \".reloc\",\n        \"effective_address\": 324608,\n        \"physical_size\": 31744,\n        \"virtual_size\": 32768,\n        \"rights\": \"R\",\n        \"entropy\": 77\n      }\n    ],\n    \"kesakode_verdict\": [],\n    \"entropy_malcat_raw\": 112,\n    \"entropy_source\": \"whole_file_shannon_revai\"\n  },\n  \"views\": {\n    \"anomalies\": [\n      {\n        \"name\": \"DownloaderApiUsage\",\n        \"desc\": \"Downloader-related apis are used\",\n        \"category\": \"imports\",\n        \"level\": 2,\n        \"num_hits\": 6\n      },\n      {\n        \"name\": \"HighXrefLoopingFunction\",\n        \"desc\": \"Function contains a loop and has a lot of incoming references (string decryption candidate)\",\n        \"category\": \"code\",\n        \"level\": 1,\n        \"num_hits\": 3\n      },\n      {\n        \"name\": \"InvalidChecksum\",\n        \"desc\": \"PE Header checksum is wrong\",\n        \"category\": \"integrity\",\n        \"level\": 4,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"ManyHighValueImmediates\",\n        \"desc\": \"Function contains at least 5 and more than 10% of high-value immediate operands (i.e. immediate values that contains at least 2 non-zero non-FF bytes and are not a valid address)\",\n        \"category\": \"code\",\n        \"level\": 3,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"ManyUniqueImmediateBytes\",\n        \"desc\": \"More than 48 unique bytes defined across all immediate operands in the function\",\n      \n\u2026 [255623 more chars]",
+          "present": true
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 6,
+        "hits": 6,
+        "misses": [],
+        "hit_examples": [
+          "log keystrokes via application hook rule Detects keystroke capture capability via application hooks, a clear data theft ",
+          "read clipboard data rule Identifies clipboard data theft, another data collection technique for credential or sensitive ",
+          "InternetOpen imports HTTP client API import suggests capability for command-and-control communication or data exfiltrati",
+          "DownloaderApiUsage anomalies Indicates downloader-related API usage, often associated with malware for fetching payloads",
+          "keylogger matches YARA rule detects keylogging patterns, corroborating capa findings and confirming data theft functiona"
+        ],
+        "reason": ""
+      },
+      "format": "pe",
+      "required_tools": [
+        "capa",
+        "yara",
+        "floss"
+      ],
+      "verdict_preview": {
+        "verdict": "malicious",
+        "family": "trojan.graftor/skeeyah",
+        "score": 95,
+        "agreement": "llm_and_v1_agree",
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "key_evidence": [
+          {
+            "source": "capa",
+            "query_or_table": "rule",
+            "row_or_rule": "log keystrokes via application hook",
+            "why": "Detects keystroke capture capability via application hooks, a clear data theft behavior indicating malicious intent (ATT&CK T1056.001)."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "rule",
+            "row_or_rule": "read clipboard data",
+            "why": "Identifies clipboard data theft, another data collection technique for credential or sensitive information theft (ATT&CK T1115)."
+          },
+          {
+            "source": "pe_imports",
+            "query_or_table": "imports",
+            "row_or_rule": "InternetOpen",
+            "why": "HTTP client API import suggests capability for command-and-control communication or data exfiltration (ATT&CK T1071.001)."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "anomalies",
+            "row_or_rule": "DownloaderApiUsage",
+            "why": "Indicates downloader-related API usage, often associated with malware for fetching payloads or additional components."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "matches",
+            "row_or_rule": "keylogger",
+            "why": "YARA rule detects keylogging patterns, corroborating capa findings and confirming data theft functionality."
+          },
+          {
+            "source": "external_ti",
+            "query_or_table": "VirusTotal",
+            "row_or_rule": "malicious=56",
+            "why": "High detection rate by antivirus vendors, with popular threat names 'graftor' and 'skeeyah', classifying it as malicious trojan."
+          }
+        ],
+        "summary": "This PE executable, disguised as 'System Search Indexer', exhibits malicious behaviors including keylogging, clipboard data theft, network communication via WinINet APIs (e.g., InternetOpen, HttpOpenRequestA), and anti-analysis techniques (e.g., IsDebuggerPresent, obfuscation anomalies). Multiple analysis engines corroborate these findings, and external threat intelligence confirms it belongs to t"
+      },
+      "evidence": {
+        "prompt": {
+          "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/prompt.txt",
+          "exists": true,
+          "bytes": 33125,
+          "mtime_iso": "2026-08-12T18:44:13.856632+00:00",
+          "sha256": "fb6b9e583cda7295e56735baf1020a3c3b3851352a4fb56c55e295f1492e0832"
+        },
+        "verdict": {
+          "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/verdict.json",
+          "exists": true,
+          "bytes": 6333,
+          "mtime_iso": "2026-08-12T18:44:57.102618+00:00",
+          "sha256": "b666ca3fd9ffe810fd8251a24af9053948cbab57c2dac3e29872690882e58550"
+        },
+        "prompt_excerpt": "# Triage evidence\nsha256: ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98\nsample_path: /opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\nghidra_session: ghidra-pe-ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98\nida_session: ida-ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98\n\n## Source decisions (from intake validation)\n- imports: ghidra (confidence=medium) \u2014 Ghidra and IDA both report 264 imports, indicating consistency. Malcat's 1573 imports likely include duplicates or indirect references, making it less reliable for direct import analysis.\n- functions: ghidra (confidence=medium) \u2014 Ghidra reports 1107 functions, IDA reports 923, within a 2x range. Ghidra's higher count may include more thorough analysis, but both are credible.\n- strings: both (confidence=high) \u2014 Using both engines provides comprehensive coverage: Ghidra (654 strings), IDA (677 strings), and Malcat (100 strings). \n\u2026 [32067 more chars]",
+        "verdict_excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 95,\n  \"family_guess\": \"trojan.graftor/skeeyah\",\n  \"cross_engine_notes\": \"Ghidra and IDA reveal HTTP-related strings (e.g., 'http://', 'WININET.DLL') and DLL imports, indicating network capabilities. Malcat identifies obfuscation anomalies like DownloaderApiUsage and XorInLoop, alongside YARA matches for keylogger and network rules. Capa confirms behavioral-intent evidence: keylogging and clipboard data theft. pe_imports highlights high-signal imports such as IsDebuggerPresent and InternetOpen for anti-debugging and C2. External TI from VirusTotal shows 56 malicious detections, classifying it as a trojan with tags like persistence and runtime-modules.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"rule\",\n      \"row_or_rule\": \"log keystrokes via application hook\",\n      \"why\": \"Detects keystroke capture capability via application hooks, a clear data theft behavior indicating malicious intent (ATT&CK T1056.001).\"\n    },\n\n\u2026 [5333 more chars]"
+      }
+    },
+    "deep_dive": {
+      "ok": true,
+      "checks": {
+        "01_tools_raw": true,
+        "00_sql_evidence": false,
+        "03_prompt": false,
+        "04_llm": false,
+        "05_deep": true,
+        "tools_all_ok": true,
+        "llm_source": false,
+        "citations_grounded": true,
+        "engine_citation_ok": true,
+        "upx_second_pass_ok": true,
+        "no_incomplete_tooling": true,
+        "confidence_sane": true,
+        "evidence_pack_present": true,
+        "depth_coverage": true,
+        "agentic_json": true,
+        "sql_deep_re": true,
+        "complete_verdict": true,
+        "not_incomplete": true,
+        "checklist_ok_flag": true,
+        "agentic_confidence_sane": true
+      },
+      "tools": {
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        },
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 22,\n  \"top_rules\": [\n    {\n      \"name\": \"encode data using Base64\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encoding-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encoding-Standard Algorithm\",\n          \"id\": \"E1027.m02\"\n        },\n        {\n          \"parts\": [\n            \"Data\",\n            \"Encode Data\",\n            \"Base64\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Encode Data\",\n          \"method\": \"Base64\",\n          \"id\": \"C0026.001\"\n        }\n      ]\n    },\n    {\n      \"name\": \"log keystrokes via application hook\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Collection\",\n            \"Input Capture\",\n            \"Keylogging\"\n          ],\n          \"tactic\": \"Collection\",\n          \"technique\": \"Input Capture\",\n          \"subtechnique\": \"Keylogging\",\n          \"id\": \"T1056.001\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Collection\",\n            \"Keylogging\",\n            \"Application Hook\"\n          ],\n          \"objective\": \"Collection\",\n          \"behavior\": \"Keylogging\",\n          \"method\": \"Application Hook\",\n          \"id\": \"F0002.001\"\n        }\n      ]\n    },\n    {\n      \"name\": \"log keystrokes via polling\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Collection\",\n            \"Input Capture\",\n            \"Keylogging\"\n          ],\n          \"tactic\": \"Collection\",\n          \"technique\": \"Input Capture\",\n          \"subtechnique\": \"Keylogging\",\n          \"id\": \"T1056.001\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Collection\",\n            \"Keylogging\",\n            \"Polling\"\n          ],\n          \"objective\": \"Collection\",\n          \"behavior\": \"Keylogging\",\n          \"method\": \"Polling\",\n          \"id\": \"F0002.002\"\n        }\n      ]\n    },\n    {\n      \"name\": \"get common file path\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Discovery\",\n            \"File and Directory Discovery\"\n          ],\n          \"tactic\": \"Discovery\",\n          \"technique\": \"File and Directory Discovery\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1083\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Discovery\",\n            \"File and Directory Discovery\"\n          ],\n          \"objective\": \"Discovery\",\n          \"behavior\": \"File and Directory Discovery\",\n          \"method\": \"\",\n          \"id\": \"E1083\"\n        }\n      ]\n    },\n    {\n      \"name\": \"get hostname\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Discovery\",\n            \"System Information Discovery\"\n          ],\n          \"tactic\": \"Discovery\",\n          \"technique\": \"System Information Discovery\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1082\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Discovery\",\n            \"System Information Discovery\"\n          ],\n          \"objective\": \"Discovery\",\n          \"behavior\": \"System Information Dis\n\u2026 [3909 more chars]"
+        },
+        "pe_imports": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 328704,\n  \"duration_s\": 0.03,\n  \"import_count\": 264,\n  \"signal_count\": 5,\n  \"signals\": [\n    {\n      \"label\": \"check_debugger\",\n      \"api_match\": \"IsDebuggerPresent\",\n      \"attack\": [\n        \"T1622\"\n      ]\n    },\n    {\n      \"label\": \"http_client\",\n      \"api_match\": \"InternetOpen\",\n      \"attack\": [\n        \"T1071.001\"\n      ]\n    },\n    {\n      \"label\": \"load_library\",\n      \"api_match\": \"LoadLibrary\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \"get_proc_address\",\n      \"api_match\": \"GetProcAddress\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \"allocate_memory\",\n      \"api_match\": \"VirtualAlloc\",\n      \"attack\": [\n        \"T1055\"\n      ]\n    }\n  ],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 19,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv4\",\n          \"offset\": 295772,\n          \"length\": 16,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 176064,\n          \"length\": 6,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 162639,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE32\",\n      \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsWindowsGUI\",\n      \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasRichSignature\",\n      \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 216,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"VC8_Microsoft_Corporation\",\n      \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 22742,\n          \"length\": 10,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Microsoft_Visual_Cpp_8\",\n      \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 671,\n          \"length\": 82,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$b\",\n          \"offset\": 61476,\n          \"length\": 10,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"SEH_Save\",\n      \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 76034,\n          \"length\": 7,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"SEH_Init\",\n      \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 1244,\n          \"length\": 6,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$b\",\n          \"offset\": 104575,\n          \"length\": 7,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"anti_dbg\",\n      \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$d1\",\n          \"offset\": 191098,\n          \"leng\n\u2026 [8395 more chars]"
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 1166,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"DataABackup.lnk\",\n    \"!This program cannot be run in DOS mode.\",\n    \"`.rdata\",\n    \"@.data\",\n    \"@.reloc\",\n    \"D$DSUVW\",\n    \"D$@9|$Ts\",\n    \"D$tPQPVU\",\n    \"\\\\$@9|$8r\",\n    \"L$ _^3\",\n    \"?????????????\",\n    \"??????????????????\",\n    \"!\\\"#$%&?????'()*+,-./0??????????????????????????????????????????????????????112233????????????????????456789:??????????????????????????;<=>\",\n    \"L$0QjnP\",\n    \"SSjPSP\",\n    \"SSOWVQ\",\n    \"HtpHHt\",\n    \"u6hgo@\",\n    \"td9~<u_\",\n    \"9~<u;h\",\n    \"N8;N@r(\",\n    \"8\\\\t\\tj/\",\n    \"+F(_^[;E\",\n    \"F(@@;F,v\",\n    \"F(;^ r\",\n    \"F(;F0u\",\n    \"^(_^[]\",\n    \"<A|0<Z\",\n    \"<A|S<Z\",\n    \"u*h`FC\",\n    \"S\\\\_^[]\",\n    \"t39w u&\",\n    \"_ 9w$u\",\n    \"9~Pu\\tP\",\n    \"t\\t9p(u\",\n    \"Ht;O u\",\n    \"u:j0^V\",\n    \"SVWj(3\",\n    \"tj9~8u@j\",\n    \"9~8ucj\",\n    \"F4_^[]\",\n    \"0WWWWW\",\n    \"YSSSSS\",\n    \"YWWWWW\",\n    \"QQSVWd\",\n    \"0SSSSS\",\n    \"^SSSSS\",\n    \"8VVVVV\",\n    \"0A@@Ju\",\n    \"<at9<rt,<wt\",\n    \"URPQQh\",\n    \"j@j ^V\",\n    \"HHtXHHt\",\n    \">If90t\",\n    \"HHtYHHt\",\n    \"t$<\\\"u\\t3\",\n    \">=Yt1j\",\n    \"< tK<\\ttG\",\n    \"j\\\"^SSSSS\",\n    \"s[S;7|G;w\",\n    \"tR99u2\",\n    \"PPPPPPPP\",\n    \"^WWWWW\",\n    \"0WhLkC\",\n    \">:u8FV\",\n    \"VVVVVQRSSj\",\n    \"v\\tN+D$\",\n    \"_VVVVV\",\n    \"uL9= jC\",\n    \"t\\\"SS9]\",\n    \"tGHt.Ht&\",\n    \";t$,v-\",\n    \"UQPXY]Y[\",\n    \"t+WWVPV\",\n    \"<+t(<-t$:\",\n    \"+t HHt\",\n    \"FCOleException\",\n    \"DISPLAY\",\n    \"CInvalidArgException\",\n    \"CNotSupportedException\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 1,\n    \"stack_strings\": 0,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 1165\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 60.53,\n  \"size_bytes\": 328704,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}"
+        },
+        "dotnet": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        "r2_decomp": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n  \"disassembly\": {\n    \"0x00413062\": \"\\u250c 320: entry0 ();\\n\\u2502       \\u254e   ; var int32_t var_4h @ ebp-0x4\\n\\u2502       \\u254e   ; var int32_t var_1ch @ ebp-0x1c\\n\\u2502       \\u254e   ; var int32_t var_20h @ ebp-0x20\\n\\u2502       \\u254e   ; var int32_t var_38h @ ebp-0x38\\n\\u2502       \\u254e   ; var int32_t var_3ch @ ebp-0x3c\\n\\u2502       \\u254e   ; var int32_t var_68h @ ebp-0x68\\n\\u2502       \\u254e   0x00413062      e8509c0000     call 0x41ccb7\\n\\u2502       \\u2514\\u2500< 0x00413067      e978feffff     jmp 0x412ee4\\n..\",\n    \"0x004042e0\": \"; CALL XREF from entry0 @ 0x412ff2(x)\\n\\u250c 343: int main (int argc, char **argv, char **envp);\\n\\u2502           ; var int32_t var_ch_2 @ esp+0x24\\n\\u2502           ; var int32_t var_10h @ esp+0x28\\n\\u2502           ; var int32_t var_ch @ esp+0x34\\n\\u2502           ; var int32_t var_20h_2 @ esp+0x38\\n\\u2502           ; var int32_t var_1ch @ esp+0x44\\n\\u2502           ; var int32_t var_20h @ esp+0x48\\n\\u2502           ; var int32_t var_24h @ esp+0x4c\\n\\u2502           ; var int32_t var_2ch_2 @ esp+0x54\\n\\u2502           ; var int32_t var_30h @ esp+0x58\\n\\u2502           ; var int32_t var_28h @ esp+0x68\\n\\u2502           ; var int32_t var_2ch @ esp+0x6c\\n\\u2502           ; var int32_t var_38h_2 @ esp+0x70\\n\\u2502           ; var int32_t var_3ch @ esp+0x74\\n\\u2502           ; var int32_t var_38h @ esp+0x78\\n\\u2502           ; var int32_t var_128h @ esp+0x148\\n\\u2502           ; var int32_t var_12ch @ esp+0x150\\n\\u2502           ; var int32_t var_130h @ esp+0x160\\n\\u2502           ; var int32_t var_22ch @ esp+0x254\\n\\u2502           ; var int32_t var_230h @ esp+0x270\\n\\u2502           ; var int32_t var_328h @ esp+0x378\\n\\u2502           0x004042e0      81ec2c030000   sub esp, 0x32c\\n\\u2502           0x004042e6      a1e02b4300     mov eax, dword [0x432be0]   ; [0x432be0:4]=0xbb40e64e\\n\\u2502           0x004042eb      33c4           xor eax, esp\\n\\u2502           0x004042ed      8984242803..   mov dword [var_328h], eax\\n\\u2502           0x004042f4      56             push esi\\n\\u2502           0x004042f5      57             push edi\\n\\u2502           0x004042f6      e845fdffff     call 0x404040\\n\\u2502           0x004042fb      e870dcffff     call 0x401f70\\n\\u2502           0x00404300      e87bf2ffff     call 0x403580\\n\\u2502           0x00404305      e806f3ffff     call 0x403610\\n\\u2502           0x0040430a      8b352c924200   mov esi, dword [sym.imp.KERNEL32.dll_Sleep] ; [0x42922c:4]=0x303da reloc.KERNEL32.dll_Sleep\\n\\u2502           0x00404310      68d0070000     push 0x7d0                  ; 2000\\n\\u2502           0x00404315      ffd6           call esi\\n\\u2502           0x00404317      e834f5ffff     call 0x403850\\n\\u2502           0x0040431c      8b0db0cc4200   mov ecx, dword [0x42ccb0]   ; [0x42ccb0:4]=0x615e433f ; \\\"?C^alrn/ill\\\"\\n\\u2502           0x00404322      a1accc4200     mov eax, dword [str.A_u_Calrn_ill] ; [0x42ccac:4]=0x5e755f41 ; \\\"A_u^?C^alrn/ill\\\"\\n\\u2502           0x00404327      8b15b4cc4200   mov edx, dword [0x42ccb4]   ; [0x42ccb4:4]=0x2f6e726c ; \\\"lrn/ill\\\"\\n\\u2502           0x0040432d      68f4000000     push 0xf4                   ; 244\\n\\u2502           0x00404332      894c242c       mov dword [var_2ch], ecx\\n\\u2502           0x00404336      89442428       mov dword [var_28h], eax\\n\\u2502           0x0040433a      a1b8cc4200   \n\u2026 [622 more chars]"
+        },
+        "upx": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTested 0 file\"\n}"
+        },
+        "xor": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 000000F0 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 000000F0 ........!..L.!This program cannot be r\\n\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 0\n}"
+        },
+        "speakeasy": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        "frida_probe": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n    \"exists\": true,\n    \"hook_candidates\": [\n      \"KERNEL32.dll!LoadLibraryA\",\n      \"KERNEL32.dll!ReadFile\",\n      \"KERNEL32.dll!WriteFile\",\n      \"KERNEL32.dll!SetFilePointer\",\n      \"KERNEL32.dll!FlushFileBuffers\",\n      \"USER32.dll!GetClientRect\",\n      \"USER32.dll!SetForegroundWindow\",\n      \"USER32.dll!SetMenu\",\n      \"USER32.dll!MapWindowPoints\",\n      \"USER32.dll!GetMessagePos\",\n      \"ADVAPI32.dll!GetUserNameA\",\n      \"SHELL32.dll!SHGetSpecialFolderPathA\",\n      \"ole32.dll!CoCreateInstance\",\n      \"ole32.dll!CoInitialize\",\n      \"SHLWAPI.dll!PathFindFileNameA\",\n      \"SHLWAPI.dll!PathIsUNCA\",\n      \"SHLWAPI.dll!PathStripToRootA\",\n      \"SHLWAPI.dll!PathAppendA\",\n      \"WININET.dll!HttpOpenRequestA\",\n      \"WININET.dll!InternetConnectA\",\n      \"WININET.dll!HttpSendRequestExA\",\n      \"WININET.dll!HttpEndRequestA\",\n      \"WININET.dll!InternetReadFile\",\n      \"OLEACC.dll!LresultFromObject\",\n      \"OLEACC.dll!CreateStdAccessibleObject\",\n      \"GDI32.dll!CreateBitmap\",\n      \"GDI32.dll!DeleteObject\",\n      \"GDI32.dll!SaveDC\",\n      \"GDI32.dll!RestoreDC\",\n      \"GDI32.dll!SetBkColor\"\n    ]\n  }\n}"
+        },
+        "frida_trace": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 13,
+        "hits": 13,
+        "misses": [],
+        "hit_examples": [
+          "CAPA: 'log keystrokes via application hook' (T1056.001 / F0002.001) - SetWindowsHookExA keyboard hook",
+          "CAPA: 'log keystrokes via polling' (T1056.001 / F0002.002) - GetAsyncKeyState/GetKeyState polling",
+          "Imports: SetWindowsHookExA (USER32.DLL), GetAsyncKeyState (USER32.DLL), GetKeyState (USER32.DLL), GetForegroundWindow (U",
+          "Imports: InternetOpenA, InternetConnectA, HttpSendRequestExA, InternetWriteFile, InternetReadFile (WININET.DLL) - full H",
+          "String refs: 'temp.txt' referenced in FUN_00403610 (0x00403610) - local keystroke log file"
+        ],
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "upx_second_pass": {
+        "applicable": false,
+        "ok": true,
+        "reason": "upx_not_unpacked"
+      },
+      "depth_coverage": {
+        "ok": true,
+        "missing": [],
+        "covered": {
+          "persistence": true,
+          "c2_network": true,
+          "evasion_anti_analysis": true,
+          "exfiltration": true,
+          "defense_impairment": true,
+          "credential_access": true,
+          "encryption_obfuscation": true,
+          "entry_point": true,
+          "imports": true,
+          "strings": true
+        },
+        "domain_count": 10
+      },
+      "format_routing": "pe",
+      "required_tools": [
+        "capa",
+        "pe_imports",
+        "yara",
+        "floss",
+        "dotnet",
+        "r2_decomp",
+        "upx",
+        "xor",
+        "speakeasy",
+        "frida_probe"
+      ],
+      "deep_preview": {
+        "source": "deep_dive_agentic",
+        "confidence": 90,
+        "summary": "This PE executable (msdsrv.exe) is a keylogger with HTTP-based C2 exfiltration capability. CAPA confirms two keylogging techniques: application hooking (SetWindowsHookExA) and polling (GetAsyncKeyState/GetKeyState), both mapped to MITRE ATT&CK T1056.001. The sample uses WININET.DLL HTTP APIs (Intern",
+        "key_evidence": [
+          "CAPA: 'log keystrokes via application hook' (T1056.001 / F0002.001) - SetWindowsHookExA keyboard hook",
+          "CAPA: 'log keystrokes via polling' (T1056.001 / F0002.002) - GetAsyncKeyState/GetKeyState polling",
+          "Imports: SetWindowsHookExA (USER32.DLL), GetAsyncKeyState (USER32.DLL), GetKeyState (USER32.DLL), GetForegroundWindow (USER32.DLL)",
+          "Imports: InternetOpenA, InternetConnectA, HttpSendRequestExA, InternetWriteFile, InternetReadFile (WININET.DLL) - full HTTP C2 stack",
+          "String refs: 'temp.txt' referenced in FUN_00403610 (0x00403610) - local keystroke log file",
+          "Strings: 'CHttpConnection', 'CHttpFile', 'http://', 'HTTP/1.0', 'WININET.DLL' - MFC HTTP client classes for C2",
+          "CAPA: 'encode data using Base64' (T1027 / E1027.m02 / C0026.001) - defense evasion via encoding",
+          "YARA: anti_dbg matched at offsets 191098 and 193100 - anti-debugging strings present",
+          "YARA: win_hook matched at offsets 175752, 191366, 191278, 191260 - window hooking infrastructure",
+          "YARA: network_http matched at offsets 163812, 163429, 191716, 191806, 191786, 191886 - HTTP networking strings",
+          "YARA: contains_base64 matched at offset 162639 - Base64 encoded data present",
+          "Ghidra funcs: FUN_004024d0 at 0x004024d0 has cyclomatic_complexity=336, call_out_count=148, string_ref_count=9 - main payload orchestrator",
+          "Filename 'msdsrv.exe' masquerades as Microsoft service (MSD/Microsoft naming convention)"
+        ],
+        "model": null,
+        "llm_audit": null
+      },
+      "evidence": {
+        "tools_raw": {
+          "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/deep_dive/01-tools-raw.json",
+          "exists": true,
+          "bytes": 322668,
+          "mtime_iso": "2026-08-13T04:41:40.124344+00:00",
+          "sha256": "80ede2dfa76e13e6d574a9ea62ab95d6133e622d15ab1b5a2d4503ad122fe8de"
+        },
+        "sql_evidence": {
+          "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/deep_dive/00-sql-evidence.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "prompt": {
+          "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/deep_dive/03-prompt.txt",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "llm_raw": {
+          "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/deep_dive/04-llm-raw.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "deep05": {
+          "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/deep_dive/05-deep-dive.json",
+          "exists": true,
+          "bytes": 3856,
+          "mtime_iso": "2026-08-12T18:57:45.699135+00:00",
+          "sha256": "41c70aa66864b3a4e6e753fbcd0a66e96f8b6497fbacaf5c882fc537e35816ae"
+        },
+        "prompt_excerpt": "",
+        "llm_raw_excerpt": "{}",
+        "deep05_excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"This PE executable (msdsrv.exe) is a keylogger with HTTP-based C2 exfiltration capability. CAPA confirms two keylogging techniques: application hooking (SetWindowsHookExA) and polling (GetAsyncKeyState/GetKeyState), both mapped to MITRE ATT&CK T1056.001. The sample uses WININET.DLL HTTP APIs (InternetOpenA, InternetConnectA, HttpSendRequestExA, InternetWriteFile) to exfiltrate captured keystrokes to a remote server. Keystrokes are also written locally to 'temp.txt'. Base64 encoding (T1027) is used for defense evasion. The executable tracks the active foreground window (GetForegroundWindow) to associate keystrokes with specific applications. The filename 'msdsrv.exe' masqu\n\u2026 [3056 more chars]",
+        "agentic": {
+          "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/deep_dive/agentic_deep_dive.json",
+          "exists": true,
+          "bytes": 850375,
+          "mtime_iso": "2026-08-12T18:57:45.699135+00:00",
+          "sha256": "8dc42993a9e525dc51747bee46624c581f9d4207b316f60f07b3d1746104dae6"
+        }
+      },
+      "tools_ok_history": [
+        "yara_scan",
+        "malcat_analyze",
+        "capa_analyze",
+        "pe_import_signals",
+        "floss_extract",
+        "dotnet_analyze",
+        "r2_decompile",
+        "upx_unpack",
+        "xor_string_search",
+        "speakeasy_emulate",
+        "frida_static_probe",
+        "revai_tools_sec",
+        "revai_tools_sinks",
+        "signal_extractors",
+        "packer_scan",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "capa_analyze",
+        "ghidra_query",
+        "ghidra_query"
+      ],
+      "history_evidence": [
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (yara)",
+          "result_excerpt": "{\n  \"rule_count\": 19,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples\n\u2026 [11495 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (malcat)",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"msdsrv.exe\",\n    \"file_path\": \n\u2026 [258528 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (capa)",
+          "result_excerpt": "{\n  \"rule_count\": 22,\n  \"top_rules\": [\n    {\n      \"name\": \"encode data using Base64\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n    \n\u2026 [7009 more chars]"
+        },
+        {
+          "tool": "pe_import_signals",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (pe_imports)",
+          "result_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 328704,\n  \"duration_s\": 0.03,\n  \"import_count\": 264,\n  \"signal_count\": 5,\n  \"signals\": [\n    {\n      \"label\": \"check_debugger\",\n      \"api_match\": \"IsDebuggerPresent\",\n      \"attack\": [\n        \"T1622\"\n      ]\n    },\n    {\n      \"label\": \"http_client\",\n      \"api_match\": \"InternetOpen\",\n      \"attack\": [\n        \"T1071.001\"\n      ]\n    },\n    {\n      \"l\n\u2026 [420 more chars]"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (floss)",
+          "result_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 1166,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"DataABackup.lnk\",\n    \"!This program cannot be run in DOS mode.\",\n    \"`.rdata\",\n    \"@.data\",\n    \"@.reloc\",\n    \"D$DSUVW\",\n    \"D$@9|$Ts\",\n    \"D$tPQPVU\",\n    \"\\\\$@9|$8r\",\n    \"L$ _^3\",\n    \"?????????????\",\n    \"??????????????????\",\n    \"!\\\"#$%&?????'()*+,-./0???????????????????????????????????????????????\n\u2026 [1484 more chars]"
+        },
+        {
+          "tool": "dotnet_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (dotnet)",
+          "result_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        {
+          "tool": "r2_decompile",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (r2_decomp)",
+          "result_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n  \"disassembly\": {\n    \"0x00413062\": \"\\u250c 320: entry0 ();\\n\\u2502       \\u254e   ; var int32_t var_4h @ ebp-0x4\\n\\u2502       \\u254e   ; var int32_t var_1ch @ ebp-0x1c\\n\\u2502       \\u254e   ; var int32_t var_20h @ ebp-0x20\\n\\u2502       \\u254e   ; var int32_\n\u2026 [3722 more chars]"
+        },
+        {
+          "tool": "upx_unpack",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (upx)",
+          "result_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTested 0 file\"\n}"
+        },
+        {
+          "tool": "xor_string_search",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (xor)",
+          "result_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 000000F0 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 000000F0 ........!..L.!This program cannot be r\\n\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_\n\u2026 [16 more chars]"
+        },
+        {
+          "tool": "speakeasy_emulate",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (speakeasy)",
+          "result_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        {
+          "tool": "frida_static_probe",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (frida_probe)",
+          "result_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n    \"exists\": true,\n    \"hook_candidates\": [\n      \"KERNEL32.dll!LoadLibraryA\",\n      \"KERNEL32.dll!ReadFile\",\n      \"KERNEL32.dll!WriteFile\",\n      \"KERNEL32.dll!SetFilePointer\",\n      \"KERNEL32.dll!FlushF\n\u2026 [909 more chars]"
+        },
+        {
+          "tool": "shellcode_extract",
+          "ok": false,
+          "error": "no high-entropy executable/writable shellcode-size section found",
+          "checklist": true,
+          "reason": "Required checklist tool (shellcode)",
+          "result_excerpt": "{\n  \"shellcode_ok\": false,\n  \"sample\": \"/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe\",\n  \"sections_analyzed\": [\n    {\n      \"name\": \".text\",\n      \"size\": 160256,\n      \"entropy\": 6.6547,\n      \"executable\": true,\n      \"writable\": false\n    },\n    {\n      \"name\": \".rdata\",\n      \"size\": 34304,\n      \"entropy\": 5.0072,\n      \"executable\": \n\u2026 [517 more chars]"
+        },
+        {
+          "tool": "revai_tools_sec",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (revai_tools_sec)",
+          "result_excerpt": "{\n  \"format\": \"pe\",\n  \"findings\": [\n    {\n      \"name\": \"Address Space Layout Randomization\",\n      \"present\": false,\n      \"claimed\": false,\n      \"note\": \"no DYNAMIC_BASE flag\",\n      \"consequence\": \"Without ASLR the image loads at a fixed base \\u2014 a predictable address for ret2libc-style exploitation and ROP gadget pivots.\"\n    },\n    {\n      \"name\": \"64-bit high-entropy ASLR\",\n      \"presen\n\u2026 [1762 more chars]"
+        },
+        {
+          "tool": "revai_tools_sinks",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (revai_tools_sinks)",
+          "result_excerpt": "{\n  \"format\": \"pe\",\n  \"entry_point\": \"0x1000\",\n  \"sink_count\": 7,\n  \"sinks\": [\n    {\n      \"api\": \"heapalloc\",\n      \"dll\": \"KERNEL32.dll\",\n      \"class\": \"integer_overflow_size\",\n      \"address\": \"0x412c21\",\n      \"function\": \"fcn.00412c0d\"\n    },\n    {\n      \"api\": \"heapalloc\",\n      \"dll\": \"KERNEL32.dll\",\n      \"class\": \"integer_overflow_size\",\n      \"address\": \"0x413aee\",\n      \"function\": \"fc\n\u2026 [939 more chars]"
+        },
+        {
+          "tool": "revai_tools_audit",
+          "ok": false,
+          "error": "revai_tools_audit: timeout",
+          "checklist": true,
+          "reason": "Required checklist tool (revai_tools_audit)",
+          "result_excerpt": "{\n  \"error\": \"revai_tools_audit: timeout\",\n  \"fail_open\": true,\n  \"skipped\": true,\n  \"reason\": \"not_applicable:timeout\"\n}"
+        },
+        {
+          "tool": "signal_extractors",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Deterministic anti-analysis + dynamic-import-resolve signals",
+          "result_excerpt": "{\n  \"anti_analysis_summary\": {\n    \"categories\": {},\n    \"total_signals\": 0,\n    \"functions_with_signals\": 0,\n    \"elapsed_s\": 8.03,\n    \"note\": \"Deterministic; TLS callbacks are pre-entry-point candidates.\"\n  },\n  \"dynamic_resolve_summary\": {\n    \"resolver_funcs\": 0,\n    \"resolve_sites\": 0,\n    \"peb_module_walkers\": 0,\n    \"ordinal_imports\": 3,\n    \"min_resolve_calls\": 2,\n    \"elapsed_s\": 4.42,\n \n\u2026 [101 more chars]"
+        },
+        {
+          "tool": "packer_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Deterministic packer checklist (packed-context for gate)",
+          "result_excerpt": "{\n  \"label\": \"suspicious\",\n  \"name\": null,\n  \"score\": 3\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "Auto SQL seed for large-mode deep RE gate",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"_memcmp\",\n      \"address\": \"4276295\",\n      \"size\": \"5632\"\n    },\n    {\n      \"name\": \"FUN_004024d0\",\n      \"address\": \"4203728\",\n      \"size\": \"3759\"\n    },\n    {\n      \"name\": \"__output_s_l\",\n      \"address\": \"4307490\",\n      \"size\": \"2990\"\n    },\n    {\n      \"name\": \"__output_l\",\n      \"address\": \"43039\n\u2026 [2634 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"CHttpConnection\",\n      \"address\": \"4364372\",\n      \"length\": \"16\"\n    },\n    {\n      \"content\": \"CHttpFile\",\n      \"address\": \"4364428\",\n      \"length\": \"10\"\n    },\n    {\n      \"content\": \"http://\",\n      \"address\": \"4364524\",\n      \"length\": \"8\"\n    },\n    {\n      \"content\": \"WININET.DLL\",\n      \n\u2026 [4692 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"module\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"CreateBitmap\",\n      \"module\": \"GDI32.DLL\",\n      \"address\": \"235\"\n    },\n    {\n      \"name\": \"CreateDirectoryA\",\n      \"module\": \"KERNEL32.DLL\",\n      \"address\": \"115\"\n    },\n    {\n      \"name\": \"CreateFileA\",\n      \"module\": \"KERNEL32.DLL\",\n      \"address\": \"17\"\n    },\n    {\n      \"name\": \"HeapCreate\",\n\u2026 [2429 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"___tmainCRTStartup\",\n      \"address\": \"4271844\",\n      \"size\": \"310\"\n    },\n    {\n      \"name\": \"?SendMessageToDescendants@CWnd@@SGXPAUHWND__@@IIJHH@Z\",\n      \"address\": \"4252668\",\n      \"size\": \"127\"\n    },\n    {\n      \"name\": \"?AfxHookWindowCreate@@YGXPAVCWnd@@@Z\",\n      \"address\": \"4257144\",\n      \"size\n\u2026 [1231 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"accKeyboardShortcut\",\n      \"address\": \"4367680\"\n    },\n    {\n      \"content\": \"Microsoft Visual C++ Runtime Library\",\n      \"address\": \"4372008\"\n    },\n    {\n      \"content\": \"GetProcessWindowStation\",\n      \"address\": \"4376612\"\n    },\n    {\n      \"content\": \"GetKeyState\",\n      \"address\": \"4392074\"\n    },\n    \n\u2026 [688 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"func_addr\",\n    \"string_value\",\n    \"string_addr\"\n  ],\n  \"rows\": [\n    {\n      \"func_name\": \"\",\n      \"func_addr\": \"\",\n      \"string_value\": \"http://\",\n      \"string_addr\": \"4364524\"\n    },\n    {\n      \"func_name\": \"\",\n      \"func_addr\": \"\",\n      \"string_value\": \"CHttpFile\",\n      \"string_addr\": \"4364428\"\n    },\n    {\n      \"func_name\": \"\",\n      \"func_addr\"\n\u2026 [1128 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"cyclomatic_complexity\",\n    \"size\",\n    \"instruction_count\",\n    \"block_count\",\n    \"call_out_count\",\n    \"string_ref_count\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"_memcmp\",\n      \"address\": \"4276295\",\n      \"cyclomatic_complexity\": \"382\",\n      \"size\": \"5632\",\n      \"instruction_count\": \"1934\",\n      \"block_count\": \"439\",\n      \"call_out_count\": \"0\"\n\u2026 [5469 more chars]"
+        },
+        {
+          "tool": "ghidra_decompile",
+          "ok": false,
+          "error": "session registry not found: /opt/samples/sessions/pe-ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98.json",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"session registry not found: /opt/samples/sessions/pe-ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98.json\"\n}"
+        },
+        {
+          "tool": "ghidra_decompile",
+          "ok": false,
+          "error": "session registry not found: /opt/samples/sessions/pe-ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98.json",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"session registry not found: /opt/samples/sessions/pe-ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98.json\"\n}"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"rule_count\": 22,\n  \"top_rules\": [\n    {\n      \"name\": \"encode data using Base64\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n    \n\u2026 [7009 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"address\",\n    \"mnemonic\",\n    \"operands\",\n    \"disasm\"\n  ],\n  \"rows\": [\n    {\n      \"address\": \"4203728\",\n      \"mnemonic\": \"PUSH\",\n      \"operands\": \"-0x1\",\n      \"disasm\": \"PUSH -0x1\"\n    },\n    {\n      \"address\": \"4203730\",\n      \"mnemonic\": \"PUSH\",\n      \"operands\": \"0x427913\",\n      \"disasm\": \"PUSH 0x427913\"\n    },\n    {\n      \"address\": \"4203741\",\n      \"mnemonic\": \"PUS\n\u2026 [10082 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"func_addr\",\n    \"string_value\"\n  ],\n  \"rows\": [\n    {\n      \"func_name\": \"\",\n      \"func_addr\": \"\",\n      \"string_value\": \"http://\"\n    },\n    {\n      \"func_name\": \"\",\n      \"func_addr\": \"\",\n      \"string_value\": \"CHttpFile\"\n    },\n    {\n      \"func_name\": \"\",\n      \"func_addr\": \"\",\n      \"string_value\": \"CHttpConnection\"\n    },\n    {\n      \"func_name\": \"FUN_\n\u2026 [2508 more chars]"
+        }
+      ],
+      "agentic_preview": {
+        "verdict": "malicious",
+        "confidence": 90,
+        "summary": "This PE executable (msdsrv.exe) is a keylogger with HTTP-based C2 exfiltration capability. CAPA confirms two keylogging techniques: application hooking (SetWindowsHookExA) and polling (GetAsyncKeyState/GetKeyState), both mapped to MITRE ATT&CK T1056.001. The sample uses WININET.DLL HTTP APIs (Intern",
+        "checklist_ok": true,
+        "sql_deep_ok": true,
+        "successful_tool_calls": 25
+      }
+    },
+    "yara_gen": {
+      "ok": true,
+      "checks": {
+        "rule_yar": true,
+        "non_empty": true,
+        "has_rule_block": true,
+        "rule_compiles": true,
+        "rule_check": "ok",
+        "meta_yara_valid": true
+      },
+      "evidence": {
+        "rule_yar": {
+          "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/rule.yar",
+          "exists": true,
+          "bytes": 1130,
+          "mtime_iso": "2026-08-12T18:57:48.588131+00:00",
+          "sha256": "289ccb0f04fa9aba75ceb0a394a9a97d17df31121c4f505b564d1aededaf21d8"
+        },
+        "other_rules": [
+          "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/rule.yara.json",
+          "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/rule.yar",
+          "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/rule.yar"
+        ],
+        "excerpt": "// yara_gen_v2.py \u2014 2026-08-12T18:57:48.589329+00:00\nimport \"pe\"\nrule CADRE_v2_trojan_graftor_skeeyah_ef2d290a0b2c {\n    meta:\n        description = \"RevAI v2 auto rule for trojan.graftor/skeeyah\"\n        sha256 = \"ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98\"\n        family = \"trojan_graftor_skeeyah\"\n        revai = true\n        revai_commit = \"unknown\"\n        revai_engine = \"langgraph\"\n        severity = \"high\"\n        confidence = \"medium\"\n    strings:\n        $s0 = \"DataABackup.lnk\" ascii wide\n        $s1 = \"!This program cannot be run in DOS mode.\" ascii wide\n        $s2 = \"D$@9|$Ts\" ascii wide\n        $s3 = \"D$tPQPVU\" ascii wide\n        $s4 = \"\\\\$@9|$8r\" ascii wide\n        $s5 = \"?????????????\" ascii wide\n        $s6 = \"??????????????????\" ascii wide\n        $s7 \n\u2026 [328 more chars]"
+      }
+    },
+    "publish": {
+      "ok": true,
+      "checks": {
+        "REPORT_MASTER_v2": true,
+        "REPORT_MASTER_v3": true,
+        "REPORT_v2": true,
+        "REPORT_TECHNICAL_v2": true,
+        "REPORT_TECHNICAL_v3": true,
+        "v2_min_chars": true,
+        "v3_min_chars": true,
+        "v2_heads": true,
+        "v3_heads": true,
+        "v2_fresh_vs_deep": true,
+        "v3_fresh_vs_deep": true,
+        "not_llm_env_failure_v2": true,
+        "not_llm_env_failure_v3": true,
+        "v2_no_missing_sections": true,
+        "verdict_lock_ok": true,
+        "quality_pack_ok": true,
+        "master_source_llm": true,
+        "tech2_source_llm": true,
+        "tech3_source_ok": true,
+        "tech2_no_stubs": true,
+        "no_tech2_fallback": true,
+        "quality_issues": [],
+        "engine_citation_ok": true
+      },
+      "heads_v2": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "heads_v3": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "report_json_source": "llm_judge",
+      "sections_missing": [],
+      "quality_pack": {
+        "ok": true,
+        "quality_green": true,
+        "sha256": "ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98",
+        "issues": [],
+        "checks": {
+          "master_v2": {
+            "ok": true,
+            "label": "master_v2",
+            "source": "llm_judge",
+            "chars": 16881,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 35,
+              "prose_ratio": 0.43,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 3,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v2": {
+            "ok": true,
+            "label": "technical_v2",
+            "source": "llm_judge",
+            "chars": 58471,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 13,
+              "prose_ratio": 0.46,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v3": {
+            "ok": true,
+            "label": "technical_v3",
+            "source": "llm_judge",
+            "chars": 50576,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 37,
+              "prose_ratio": 0.52,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "master_v3_present": true,
+          "tech3_file_present": true,
+          "cross_report_consistency": {
+            "ok": true,
+            "violations": [],
+            "checks": {
+              "master_dyn_negation": false,
+              "tech_dyn_evidence": true,
+              "file_entropy": 5.875833594612196,
+              "master_verdict": "malicious",
+              "tech_verdict": "malicious"
+            }
+          },
+          "deep_checklist_ok": true,
+          "deep_sql_deep_ok": true,
+          "pipeline_audit_all_green": true
+        },
+        "models": {
+          "master": "mimo-v2.5-pro",
+          "technical_v2": "mimo-v2.5-pro",
+          "technical_v3": "mimo-v2.5-pro",
+          "planner_hint": "configured via env",
+          "judgment_hint": "configured via env"
+        }
+      },
+      "verdict_lock": {
+        "ok": true,
+        "conflict": false,
+        "upstream": "malicious",
+        "publish": "malicious",
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "mtimes": {
+        "v2": 1786610617.5022233,
+        "v3": 1786611470.629208,
+        "deep_ref": 1786561065.6991348,
+        "v2_chars": 16881,
+        "v3_chars": 44598,
+        "v2_iso": "2026-08-13T08:43:37.502223+00:00",
+        "v3_iso": "2026-08-13T08:57:50.629208+00:00"
+      },
+      "evidence": {
+        "REPORT_MASTER_v2": {
+          "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/REPORT-MASTER-v2.md",
+          "exists": true,
+          "bytes": 16896,
+          "mtime_iso": "2026-08-13T08:43:37.502223+00:00",
+          "sha256": "f96edc32df2ec55aff702dddcf61bd72ea2220af4c3d387b9589207417d6ca6b"
+        },
+        "REPORT_MASTER_v3": {
+          "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/REPORT-MASTER-v3.md",
+          "exists": true,
+          "bytes": 44614,
+          "mtime_iso": "2026-08-13T08:57:50.629208+00:00",
+          "sha256": "0819ac2e0d48d4c58d5378c6a294db3c9ace2e86a77d01a74016dc4ed4ee12ba"
+        },
+        "REPORT_v2": {
+          "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/REPORT-v2.md",
+          "exists": true,
+          "bytes": 16896,
+          "mtime_iso": "2026-08-13T08:43:37.502223+00:00",
+          "sha256": "f96edc32df2ec55aff702dddcf61bd72ea2220af4c3d387b9589207417d6ca6b"
+        },
+        "REPORT_TECHNICAL_v2": {
+          "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/REPORT-TECHNICAL-v2.md",
+          "exists": true,
+          "bytes": 58629,
+          "mtime_iso": "2026-08-13T08:47:03.042297+00:00",
+          "sha256": "e6c72977ede6413a7f3e091a67b916284fbc5434446c36064df8d8ca2fa41c90"
+        },
+        "REPORT_TECHNICAL_v3": {
+          "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/REPORT-TECHNICAL-v3.md",
+          "exists": true,
+          "bytes": 50732,
+          "mtime_iso": "2026-08-13T09:04:02.844080+00:00",
+          "sha256": "9ef0797b25d82502093ad677eb08551122407295aedb565be2cc6e65f66829db"
+        },
+        "report_v2_json": {
+          "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/report-v2.json",
+          "exists": true,
+          "bytes": 19859,
+          "mtime_iso": "2026-08-13T08:47:03.046297+00:00",
+          "sha256": "82cf66d85324a5f5483043533b1d2fcf040095f65fbfbd4d71c4a394bed28400"
+        },
+        "v2_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-13 08:43:37 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\n\nThis report details the analysis of a 32-bit Windows executable (`msdsrv.exe`) identified as a member of the **trojan.graftor/skeeyah** malware family. The sample exhibits clear malicious intent, functioning as a keylogger with HTTP-based command-and-control (C2) capabilities. It captures user keystrokes via two distinct methods\u2014application hooking and polling\u2014and exfiltrates the captured data to a remote server usi\n\u2026 [15981 more chars]",
+        "v3_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-13 08:57:50 UTC\n\n# RE Report \u2014 ef2d290a0b2c\n_Generated 2026-08-13T08:57:50.622268+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=249c | cross_refs=True | llm_ok=True | runtime=84.18s -->\n\n# Executive Summary\n\nThe malware sample with SHA256 hash `ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98` is assessed as **malicious** with high confidence, classified under the **trojan.graftor/skeeyah** family. This top-line verdict is derived from static analysis tools and cross-engine agreement, indicating a broad threat profile.\n\n| Aspect          | Value                  | Confidence | \n\u2026 [43698 more chars]"
+      }
+    }
+  },
+  "policy": {
+    "v3_required": true,
+    "no_optional_stages": true,
+    "tool_fail_is_fail": false,
+    "capa_salvage": "malcat capa_summary + LLM citation"
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-13 09:04:02 UTC"
+  },
+  "cross_cutting": {
+    "sample_path": "/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe",
+    "pipeline_mode": "single",
+    "llm": {
+      "triage": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "verdict": "malicious",
+        "family": "trojan.graftor/skeeyah",
+        "confidence": 95,
+        "agreement": "llm_and_v1_agree",
+        "key_evidence": [
+          {
+            "source": "capa",
+            "query_or_table": "rule",
+            "row_or_rule": "log keystrokes via application hook",
+            "why": "Detects keystroke capture capability via application hooks, a clear data theft behavior indicating malicious intent (ATT&CK T1056.001)."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "rule",
+            "row_or_rule": "read clipboard data",
+            "why": "Identifies clipboard data theft, another data collection technique for credential or sensitive information theft (ATT&CK T1115)."
+          },
+          {
+            "source": "pe_imports",
+            "query_or_table": "imports",
+            "row_or_rule": "InternetOpen",
+            "why": "HTTP client API import suggests capability for command-and-control communication or data exfiltration (ATT&CK T1071.001)."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "anomalies",
+            "row_or_rule": "DownloaderApiUsage",
+            "why": "Indicates downloader-related API usage, often associated with malware for fetching payloads or additional components."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "matches",
+            "row_or_rule": "keylogger",
+            "why": "YARA rule detects keylogging patterns, corroborating capa findings and confirming data theft functionality."
+          },
+          {
+            "source": "external_ti",
+            "query_or_table": "VirusTotal",
+            "row_or_rule": "malicious=56",
+            "why": "High detection rate by antivirus vendors, with popular threat names 'graftor' and 'skeeyah', classifying it as malicious trojan."
+          }
+        ],
+        "incomplete_tooling": null,
+        "excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 95,\n  \"family_guess\": \"trojan.graftor/skeeyah\",\n  \"cross_engine_notes\": \"Ghidra and IDA reveal HTTP-related strings (e.g., 'http://', 'WININET.DLL') and DLL imports, indicating network capabilities. Malcat identifies obfuscation anomalies like DownloaderApiUsage and XorInLoop, alongside YARA matches for keylogger and network rules. Capa confirms behavioral-intent evidence: keylogging and clipboard data theft. pe_imports highlights high-signal imports such as IsDebuggerPresent and InternetOpen for anti-debugging and C2. External TI from VirusTotal shows 56 malicious detections, classifying it as a trojan with tags like persistence and runtime-modules.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"rule\",\n      \"row_or_rule\": \"log keystrokes via application hook\",\n      \"why\": \"Detects keystroke capture capability via application hooks, a clear data theft behavior indicating malicious intent (ATT&CK T1056.001).\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"rule\",\n      \"row_or_rule\": \"read clipboard data\",\n      \"why\": \"Identifies clipboard data theft, another data collection technique for credential or sensitive information theft (ATT&CK T1115).\"\n    },\n    {\n      \"source\": \"pe_imports\",\n      \"query_or_table\": \"imports\",\n      \"row_or_rule\": \"InternetOpen\",\n      \"why\": \"HTTP client API import suggests capability for command-and-control communication or data exfiltration (ATT&CK T1071.001).\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"anomalies\",\n      \"row_or_rule\": \"DownloaderApiUsage\",\n      \"why\": \"Indicates downloader-related API usage, often associated with malware for fetching payloads or additional components.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"matches\",\n      \"row_or_rule\": \"keylogger\",\n      \"why\": \"YARA rule detects keylogging patterns, corroborating capa findings and confirming data theft functionality.\"\n    },\n    {\n      \"source\": \"external_ti\",\n      \"query_or_table\": \"VirusTotal\",\n      \"row_or_rule\": \"malicious=56\",\n      \"why\": \"High detection rate by antivirus vendors, with popular threat names 'graftor' and 'skeeyah', classifying it as malicious trojan.\"\n    }\n  ],\n  \"summary\": \"This PE executable, disguised as 'System Search Indexer', exhibits malicious behaviors including keylogging, clipboard data theft, network communication via WinINet APIs (e.g., InternetOpen, HttpOpenRequestA), and anti-analysis techniques (e.g., IsDebuggerPresent, obfuscation anomalies). Multiple analysis engines corroborate these findings, and external threat intelligence confirms it belongs to the graftor/skeeyah trojan family, indicating clear hostile intent beyond mere obfuscation.\",\n  \"source\": \"llm_judge\",\n  \"model\": \"mimo-v2.5-pro\",\n  \"agreement\": \"llm_and_v1_agree\",\n  \"v1_summary\": {\n    \"verdict\": \"malicious\",\n    \"score\": 290,\n    \"findings\": [\n      \"yara: 19 matches\",\n      \"capa: 22 rules\"\n    ]\n  },\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"pe\",\n    \"required\": [\n      \"capa\",\n      \"yara\",\n      \"malcat\",\n      \"floss\",\n      \"pe_imports\"\n    ],\n    \"tools\": {\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"floss\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"pe_imports\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      }\n    },\n    \"hard_failures\": [],\n    \"soft_failures\": [],\n    \"missing\n\u2026 [2833 more chars]"
+      },
+      "deep_dive": {
+        "source": "deep_dive_agentic",
+        "model": null,
+        "verdict": "malicious",
+        "confidence": 90,
+        "key_evidence": [
+          "CAPA: 'log keystrokes via application hook' (T1056.001 / F0002.001) - SetWindowsHookExA keyboard hook",
+          "CAPA: 'log keystrokes via polling' (T1056.001 / F0002.002) - GetAsyncKeyState/GetKeyState polling",
+          "Imports: SetWindowsHookExA (USER32.DLL), GetAsyncKeyState (USER32.DLL), GetKeyState (USER32.DLL), GetForegroundWindow (USER32.DLL)",
+          "Imports: InternetOpenA, InternetConnectA, HttpSendRequestExA, InternetWriteFile, InternetReadFile (WININET.DLL) - full HTTP C2 stack",
+          "String refs: 'temp.txt' referenced in FUN_00403610 (0x00403610) - local keystroke log file",
+          "Strings: 'CHttpConnection', 'CHttpFile', 'http://', 'HTTP/1.0', 'WININET.DLL' - MFC HTTP client classes for C2",
+          "CAPA: 'encode data using Base64' (T1027 / E1027.m02 / C0026.001) - defense evasion via encoding",
+          "YARA: anti_dbg matched at offsets 191098 and 193100 - anti-debugging strings present",
+          "YARA: win_hook matched at offsets 175752, 191366, 191278, 191260 - window hooking infrastructure",
+          "YARA: network_http matched at offsets 163812, 163429, 191716, 191806, 191786, 191886 - HTTP networking strings",
+          "YARA: contains_base64 matched at offset 162639 - Base64 encoded data present",
+          "Ghidra funcs: FUN_004024d0 at 0x004024d0 has cyclomatic_complexity=336, call_out_count=148, string_ref_count=9 - main payload orchestrator",
+          "Filename 'msdsrv.exe' masquerades as Microsoft service (MSD/Microsoft naming convention)"
+        ],
+        "incomplete_tooling": false,
+        "excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"This PE executable (msdsrv.exe) is a keylogger with HTTP-based C2 exfiltration capability. CAPA confirms two keylogging techniques: application hooking (SetWindowsHookExA) and polling (GetAsyncKeyState/GetKeyState), both mapped to MITRE ATT&CK T1056.001. The sample uses WININET.DLL HTTP APIs (InternetOpenA, InternetConnectA, HttpSendRequestExA, InternetWriteFile) to exfiltrate captured keystrokes to a remote server. Keystrokes are also written locally to 'temp.txt'. Base64 encoding (T1027) is used for defense evasion. The executable tracks the active foreground window (GetForegroundWindow) to associate keystrokes with specific applications. The filename 'msdsrv.exe' masquerades as a Microsoft service. YARA rules matched anti-debug strings, window hooking, HTTP networking, and IP address patterns. The function at 0x004024d0 has extremely high complexity (cyclomatic complexity 336, 148 call-outs, 9 string references) consistent with the main malware payload orchestrating keylogging and network communication.\",\n  \"key_evidence\": [\n    \"CAPA: 'log keystrokes via application hook' (T1056.001 / F0002.001) - SetWindowsHookExA keyboard hook\",\n    \"CAPA: 'log keystrokes via polling' (T1056.001 / F0002.002) - GetAsyncKeyState/GetKeyState polling\",\n    \"Imports: SetWindowsHookExA (USER32.DLL), GetAsyncKeyState (USER32.DLL), GetKeyState (USER32.DLL), GetForegroundWindow (USER32.DLL)\",\n    \"Imports: InternetOpenA, InternetConnectA, HttpSendRequestExA, InternetWriteFile, InternetReadFile (WININET.DLL) - full HTTP C2 stack\",\n    \"String refs: 'temp.txt' referenced in FUN_00403610 (0x00403610) - local keystroke log file\",\n    \"Strings: 'CHttpConnection', 'CHttpFile', 'http://', 'HTTP/1.0', 'WININET.DLL' - MFC HTTP client classes for C2\",\n    \"CAPA: 'encode data using Base64' (T1027 / E1027.m02 / C0026.001) - defense evasion via encoding\",\n    \"YARA: anti_dbg matched at offsets 191098 and 193100 - anti-debugging strings present\",\n    \"YARA: win_hook matched at offsets 175752, 191366, 191278, 191260 - window hooking infrastructure\",\n    \"YARA: network_http matched at offsets 163812, 163429, 191716, 191806, 191786, 191886 - HTTP networking strings\",\n    \"YARA: contains_base64 matched at offset 162639 - Base64 encoded data present\",\n    \"Ghidra funcs: FUN_004024d0 at 0x004024d0 has cyclomatic_complexity=336, call_out_count=148, string_ref_count=9 - main payload orchestrator\",\n    \"Filename 'msdsrv.exe' masquerades as Microsoft service (MSD/Microsoft naming convention)\"\n  ],\n  \"incomplete_tooling\": false,\n  \"successful_tool_calls\": 25,\n  \"successful_non_bootstrap_tools\": 12,\n  \"checklist_ok\": true,\n  \"sql_deep_ok\": true,\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"pe\",\n    \"required\": [\n      \"capa\",\n      \"pe_imports\",\n      \"yara\",\n      \"floss\",\n      \"dotnet\",\n      \"r2_decomp\",\n      \"upx\",\n      \"xor\",\n      \"speakeasy\",\n      \"frida_probe\"\n    ],\n    \"tools\": {\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"pe_imports\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"floss\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"dotnet\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"r2_decomp\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"upx\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"x\n\u2026 [356 more chars]"
+      },
+      "publish": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "excerpt": "{\n  \"title\": \"Malware Analysis Report: msdsrv.exe (ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98)\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `unknown` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-13 08:43:37 UTC\\n\\n# Verdict sources (multi-source)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | malicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | malicious |\\n\\n- **Locked over publish LLM:** no\\n\\n## Executive Summary\\n\\nThis report details the analysis of a 32-bit Windows executable (`msdsrv.exe`) identified as a member of the **trojan.graftor/skeeyah** malware family. The sample exhibits clear malicious intent, functioning as a keylogger with HTTP-based command-and-control (C2) capabilities. It captures user keystrokes via two distinct methods\\u2014application hooking and polling\\u2014and exfiltrates the captured data to a remote server using the Windows Internet (WinINet) API suite. The malware also performs clipboard data theft and employs basic defense evasion techniques, including anti-debugging checks and Base64 encoding.\\n\\nStatic analysis reveals a complex, non-packed executable with a high cyclomatic complexity in its main payload function, indicative of a sophisticated orchestrator. Dynamic analysis was performed in this triage (Speakeasy emulation and Frida probing ran); both tools recorded zero runtime events in this environment. The sample's behavior aligns with a data-stealing trojan designed for persistent surveillance. All findings are corroborated by multiple analysis engines and external threat intelligence.\\n\\n## 1. Sample Identification\\n\\n| Attribute | Value |\\n| :--- | :--- |\\n| **SHA256** | `ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98` |\\n| **File Name** | `msdsrv.exe` |\\n| **File Path** | `/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe` |\\n| **File Type** | PE32 executable (GUI) Intel 80386, for MS Windows |\\n| **Architecture** | x86 (32-bit) |\\n| **Compiler/Linker** | Microsoft Visual C++ 8 (2005/2008) |\\n| **Packed** | No (UPX probe returned 0 files tested) (source: upx_unpack) |\\n| **Entropy** | 5.88 bits/byte (whole file) (source: malcat) |\\n| **Import Hash** | `fbed62d6575587ffd7907c1f823fa846` (source: rule.yara.json) |\\n| **Project** | malware |\\n\\nThe filename `msdsrv.exe` is a masquerade, likely mimicking a Microsoft service (e.g., MSDTC, MSD). The file is a standard PE32 GUI executable, not packed with a known packer like UPX. The entropy of 5.88 is within the normal range for compiled code, suggesting no heavy encryption or packing. (source: malcat)\\n\\n## 2. Classification\\n\\n| Field | Value |\\n| :--- | :--- |\\n| **Verdict** | **Malicious** |\\n| **Confidence** | High (95/100) |\\n| **Family** | `trojan.graftor/skeeyah` |\\n| **Type** | Keylogger, Data Stealer, Trojan |\\n| **Primary Tactic** | Collection (TA0009) |\\n\\nThe classification is based on direct behavioral evidence of data theft (keylogging, clipboard theft) and C2 communication, not merely on obfuscation or packing. The upstream triage verdict is `malicious` with a score of 95, and the deep-dive analysis confirms this with a confidence of 90. (source: triage verdict.json, deep-dive.json)\\n\\n## 3. Background & Family Lineage\\n\\nThe `graftor`\n\u2026 [16359 more chars]"
+      }
+    },
+    "artifact_inventory": {
+      "verdict.json": {
+        "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/verdict.json",
+        "exists": true,
+        "bytes": 6333,
+        "mtime_iso": "2026-08-12T18:44:57.102618+00:00",
+        "sha256": "b666ca3fd9ffe810fd8251a24af9053948cbab57c2dac3e29872690882e58550"
+      },
+      "prompt.txt": {
+        "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/prompt.txt",
+        "exists": true,
+        "bytes": 33125,
+        "mtime_iso": "2026-08-12T18:44:13.856632+00:00",
+        "sha256": "fb6b9e583cda7295e56735baf1020a3c3b3851352a4fb56c55e295f1492e0832"
+      },
+      "pipeline-audit.json": {
+        "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/pipeline-audit.json",
+        "exists": true,
+        "bytes": 111122,
+        "mtime_iso": "2026-08-13T05:04:15.191143+00:00",
+        "sha256": "93a801bac8a9175facdbb85b129345c9c90fcea5788fbfa96c7c9e30e5667900"
+      },
+      "AUDIT-REPORT.md": {
+        "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/AUDIT-REPORT.md",
+        "exists": true,
+        "bytes": 83124,
+        "mtime_iso": "2026-08-13T05:04:15.192143+00:00",
+        "sha256": "c8b28e047776e6d28632b7aa53f17430cb35c393b5e70c79b404f9b3b2409444"
+      },
+      "REPORT-MASTER-v2.md": {
+        "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/REPORT-MASTER-v2.md",
+        "exists": true,
+        "bytes": 16896,
+        "mtime_iso": "2026-08-13T08:43:37.502223+00:00",
+        "sha256": "f96edc32df2ec55aff702dddcf61bd72ea2220af4c3d387b9589207417d6ca6b"
+      },
+      "REPORT-MASTER-v3.md": {
+        "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/REPORT-MASTER-v3.md",
+        "exists": true,
+        "bytes": 44614,
+        "mtime_iso": "2026-08-13T08:57:50.629208+00:00",
+        "sha256": "0819ac2e0d48d4c58d5378c6a294db3c9ace2e86a77d01a74016dc4ed4ee12ba"
+      },
+      "REPORT-v2.md": {
+        "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/REPORT-v2.md",
+        "exists": true,
+        "bytes": 16896,
+        "mtime_iso": "2026-08-13T08:43:37.502223+00:00",
+        "sha256": "f96edc32df2ec55aff702dddcf61bd72ea2220af4c3d387b9589207417d6ca6b"
+      },
+      "REPORT-TECHNICAL.md": {
+        "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/REPORT-TECHNICAL.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-TECHNICAL-v3.md": {
+        "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/REPORT-TECHNICAL-v3.md",
+        "exists": true,
+        "bytes": 50732,
+        "mtime_iso": "2026-08-13T09:04:02.844080+00:00",
+        "sha256": "9ef0797b25d82502093ad677eb08551122407295aedb565be2cc6e65f66829db"
+      },
+      "rule.yar": {
+        "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/rule.yar",
+        "exists": true,
+        "bytes": 1130,
+        "mtime_iso": "2026-08-12T18:57:48.588131+00:00",
+        "sha256": "289ccb0f04fa9aba75ceb0a394a9a97d17df31121c4f505b564d1aededaf21d8"
+      },
+      "intake-validation.json": {
+        "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/intake-validation.json",
+        "exists": true,
+        "bytes": 2478,
+        "mtime_iso": "2026-08-12T18:42:49.762780+00:00",
+        "sha256": "51a9d0d858b098f713dfeed9cd7038e193b56f172e71745a0467473b946c7b90"
+      },
+      "source-decisions.json": {
+        "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/source-decisions.json",
+        "exists": true,
+        "bytes": 1563,
+        "mtime_iso": "2026-08-12T18:42:49.762780+00:00",
+        "sha256": "6434260334d8a2daad6a618d0472400f77116f99847f4379d25efd8c5e898500"
+      },
+      "malcat-triage.json": {
+        "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/malcat-triage.json",
+        "exists": true,
+        "bytes": 224442,
+        "mtime_iso": "2026-08-13T04:41:40.110344+00:00",
+        "sha256": "06a20175afaf0e461812c2d152a5386df3d61e1af373f25d53e766904179851e"
+      },
+      "deep_dive/01-tools-raw.json": {
+        "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/deep_dive/01-tools-raw.json",
+        "exists": true,
+        "bytes": 322668,
+        "mtime_iso": "2026-08-13T04:41:40.124344+00:00",
+        "sha256": "80ede2dfa76e13e6d574a9ea62ab95d6133e622d15ab1b5a2d4503ad122fe8de"
+      },
+      "deep_dive/01-tools-gate.json": {
+        "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/deep_dive/01-tools-gate.json",
+        "exists": true,
+        "bytes": 921,
+        "mtime_iso": "2026-08-12T18:56:19.653287+00:00",
+        "sha256": "f3d89b0704908331fb9398585035abaf1e8cb402a81b8103612e94f26673893c"
+      },
+      "deep_dive/05-deep-dive.json": {
+        "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/deep_dive/05-deep-dive.json",
+        "exists": true,
+        "bytes": 3856,
+        "mtime_iso": "2026-08-12T18:57:45.699135+00:00",
+        "sha256": "41c70aa66864b3a4e6e753fbcd0a66e96f8b6497fbacaf5c882fc537e35816ae"
+      },
+      "deep_dive/03-prompt.txt": {
+        "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/deep_dive/03-prompt.txt",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "quick_scan/00-tools-raw.json": {
+        "path": "/opt/samples/logs/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/quick_scan/00-tools-raw.json",
+        "exists": true,
+        "bytes": 314569,
+        "mtime_iso": "2026-08-13T04:41:40.117344+00:00",
+        "sha256": "e2cc025b3564b0dd1c8c6dd51703396b32d104113ce030a802680d38dcb00c1a"
+      }
+    },
+    "report_excerpts": {
+      "v2": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-13 08:43:37 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\n\nThis report details the analysis of a 32-bit Windows executable (`msdsrv.exe`) identified as a member of the **trojan.graftor/skeeyah** malware family. The sample exhibits clear malicious intent, functioning as a keylogger with HTTP-based command-and-control (C2) capabilities. It captures user keystrokes via two distinct methods\u2014application hooking and polling\u2014and exfiltrates the captured data to a remote server using the Windows Internet (WinINet) API suite. The malware also performs clipboard data theft and employs basic defense evasion techniques, including anti-debugging checks and Base64 encoding.\n\nStatic analysis reveals a complex, non-packed executable with a high cyclomatic complexity in its main payload function, indicative of a sophisticated orchestrator. Dynamic analysis was performed in this triage (Speakeasy emulation and Frida probing ran); both tools recorded zero runtime events in this environment. The sample's behavior aligns with a data-stealing trojan designed for persistent surveillance. All findings are corroborated by multiple analysis engines and external threat intelligence.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n| :--- | :--- |\n| **SHA256** | `ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98` |\n| **File Name** | `msdsrv.exe` |\n| **File Path** | `/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe` |\n| **File Type** | PE32 executable (GUI) Intel 80386, for MS Windows |\n| **Architecture** | x86 (32-bit) |\n| **Compiler/Linker** | Microsoft Visual C++ 8 (2005/2008) |\n| **Packed** | No (UPX probe returned 0 files tested) (source: upx_unpack) |\n| **Entropy** | 5.88 bits/byte (whole file) (source: malcat) |\n| **Import Hash** | `fbed62d6575587ffd7907c1f823fa846` (source: rule.yara.json) |\n| **Project** | malware |\n\nThe filename `msdsrv.exe` is a masquerade, likely mimicking a Microsoft service (e.g., MSDTC, MSD). The file is a standard PE32 GUI executable, not packed with a known packer l\n\u2026 [14381 more chars]",
+      "v3": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-13 08:57:50 UTC\n\n# RE Report \u2014 ef2d290a0b2c\n_Generated 2026-08-13T08:57:50.622268+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=249c | cross_refs=True | llm_ok=True | runtime=84.18s -->\n\n# Executive Summary\n\nThe malware sample with SHA256 hash `ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98` is assessed as **malicious** with high confidence, classified under the **trojan.graftor/skeeyah** family. This top-line verdict is derived from static analysis tools and cross-engine agreement, indicating a broad threat profile.\n\n| Aspect          | Value                  | Confidence | Source Evidence                                                                 |\n|-----------------|------------------------|------------|---------------------------------------------------------------------------------|\n| Verdict         | Malicious              | High       | Deep static analysis (source: deep_dive_agentic) and tool agreement             |\n| Family Guess    | Trojan.Graftor/Skeeyah | High       | YARA rule matches (source: yara) and CAPA rule detections (source: capa)        |\n| Deep Confidence | 90%                    | High       | Deep static analysis assessment (source: deep_dive_agentic)                     |\n\nThe malicious verdict is supported by agreement between the LLM judge and the v1 summary, which reported 19 YARA matches and 22 CAPA rules indicative of malicious behavior (source: v1_summary, citing yara and capa). Deep static analysis from deep_dive_agentic reinforces this with a high confidence score of 90, assessing the sample's intent based on structural and behavioral patterns (source: deep_dive_agentic). The family guess of trojan.graftor/skeeyah aligns with known trojan characteristics, such as data theft and remote access capabilities, as highlighted in background analyses (source: cross-section:background_&_family_lineage).\n\nIn summary, this sample is a likely variant of the Trojan.Graftor/Skeeyah family, demonstrating capabilities for information gathering, persistence, and HTTP-based command-and-control communication, which pose risks for data exfiltration and unauthorized access. No dynamic analysis tools (e.g., Speakeasy, Frida) \n\u2026 [42098 more chars]"
+    }
+  },
+  "retry_visibility": {
+    "quick_scan": [],
+    "deep_dive": [],
+    "count": 0
+  },
+  "all_green": true,
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "layer_attribution": {
+    "ok": true,
+    "layers": {
+      "L1_tool_extraction": [],
+      "L2_evidence_prompt": [],
+      "L3_llm_interpretation": [],
+      "L4_gates": [],
+      "L5_report_authorship": []
+    },
+    "red_stages": []
+  },
+  "showcase_dir": "/opt/samples/logs/_showcase_audits/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98"
+}

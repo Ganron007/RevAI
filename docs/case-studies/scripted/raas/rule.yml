@@ -1,0 +1,21 @@
+title: "RevAI v2: ransomware.shaitan/troldesh activity"
+id: ransomware_shaitan_troldesh_c04836696d71
+status: experimental
+level: high
+description: "Auto-generated Sigma rule for ransomware.shaitan/troldesh (sha256 prefix c04836696d71)"
+author: RevAI yara_gen_v2
+date: 2026/08/12
+reference: "commit unknown · engine langgraph"
+tags:
+    - attack.execution
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+            CommandLine|contains: "*avghookx.dll*"
+            CommandLine|contains: "*HARDWARE\\DESCRIPTION\\System*"
+            CommandLine|contains: "*avghooka.dll*"
+    condition: selection
+falsepositives:
+    - Review against goodware corpus

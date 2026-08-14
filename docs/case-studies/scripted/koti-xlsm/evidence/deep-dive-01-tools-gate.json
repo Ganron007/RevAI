@@ -1,0 +1,64 @@
+{
+  "ok": true,
+  "format": "ooxml",
+  "required": [
+    "yara",
+    "r2_decomp",
+    "xor"
+  ],
+  "tools": {
+    "yara": {
+      "ok": true,
+      "why": "ok"
+    },
+    "r2_decomp": {
+      "ok": true,
+      "why": "ok"
+    },
+    "xor": {
+      "ok": true,
+      "why": "ok"
+    },
+    "capa": {
+      "ok": true,
+      "why": "not_applicable:ooxml"
+    },
+    "pe_imports": {
+      "ok": true,
+      "why": "not_applicable:ooxml"
+    },
+    "floss": {
+      "ok": true,
+      "why": "not_applicable:ooxml"
+    },
+    "dotnet": {
+      "ok": true,
+      "why": "not_applicable:ooxml"
+    },
+    "upx": {
+      "ok": true,
+      "why": "not_applicable:ooxml"
+    },
+    "speakeasy": {
+      "ok": true,
+      "why": "not_applicable:ooxml"
+    },
+    "frida_probe": {
+      "ok": true,
+      "why": "not_applicable:ooxml"
+    }
+  },
+  "hard_failures": [],
+  "soft_failures": [],
+  "missing": [],
+  "not_applicable": [
+    "capa",
+    "pe_imports",
+    "floss",
+    "dotnet",
+    "upx",
+    "speakeasy",
+    "frida_probe"
+  ],
+  "large_sample": false
+}

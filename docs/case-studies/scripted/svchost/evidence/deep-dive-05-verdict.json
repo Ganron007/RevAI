@@ -1,0 +1,88 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 99,
+  "summary": "This sample is Locky ransomware. It encrypts victim files using the Windows CryptoAPI (CryptEncrypt with RSA/AES), appends the .locky extension, drops a ransom note (\\_Locky_recover_instructions.txt), deletes Volume Shadow Copies via vssadmin to prevent recovery, reports encryption statistics to six hardcoded C2 IP addresses over HTTP, and self-deletes after execution. YARA rule Locky_Ransomware_2 matched with 7 distinct string patterns. The binary imports a full cryptographic pipeline (CryptAcquireContextA, CryptCreateHash, CryptHashData, CryptImportKey, CryptSetKeyParam, CryptEncrypt, CryptGenRandom), anti-debugging via IsDebuggerPresent, and HTTP client APIs for C2 communication. Persistence: Not observed in the provided analysis evidence. Exfiltration: Not observed; no tools or mechanisms for data theft were identified in the binary or YARA rule match. Defense impairment: Observed evidence includes the use of vssadmin to delete Volume Shadow Copies, preventing system recovery, and anti-debugging via IsDebuggerPresent to evade analysis, as cited from the binary import analysis.",
+  "key_evidence": [
+    "YARA rule Locky_Ransomware_2 matched with 7 distinct string patterns at offsets 76020-76700",
+    "String at 0x4112D4: '.locky' \u2014 ransomware file extension appended to encrypted files",
+    "String at 0x411310: '\\_Locky_recover_instructions.txt' \u2014 ransom note dropped on desktop",
+    "String at 0x4113EC: '&encrypted=' and 0x4113F8: '&act=stats&path=' \u2014 C2 reporting of encryption stats",
+    "String at 0x413400: '91.195.12.187,195.64.154.114,149.202.109.205,51.254.181.122,78.40.108.39,188.127.231.116' \u2014 six hardcoded C2 server IPs",
+    "String at 0x413800: 'vssadmin.exe Delete Shadows /All /Quiet' \u2014 deletes shadow copies to prevent file recovery",
+    "String at 0x41392C: 'cmd.exe /C del /Q /F \"' \u2014 self-deletion after payload execution",
+    "Imports: CryptAcquireContextA, CryptCreateHash, CryptHashData, CryptImportKey, CryptSetKeyParam, CryptEncrypt, CryptGenRandom from ADVAPI32.DLL \u2014 full crypto pipeline for file encryption",
+    "Import signals: crypto_encrypt (T1573), http_client (T1071.001), check_debugger (T1622), set_registry_value (T1112), create_process (T1106)",
+    "Function FUN_00404044 at 0x404044: complexity=143, 21 string refs, 91 outgoing calls \u2014 likely main ransomware orchestration logic"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 24,
+  "successful_non_bootstrap_tools": 10,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

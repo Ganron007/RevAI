@@ -1,0 +1,61 @@
+{
+  "sha256": "a59b2cb9f6c706635b4d97edc574a72ac54fba47f9a4a1eae77cf58a96ccf567",
+  "family": "upatre",
+  "imphash": "a3e8b5e80d5f9f266119a4ac18211954",
+  "generated_at": "2026-08-12T17:27:05.239912+00:00",
+  "string_count": 24,
+  "strings": [
+    "!This program cannot be run in DOS mode.",
+    "`X+ww76m@@",
+    "|`|s\\$:~",
+    "2uPj1hp@@",
+    "GGGGBBBBIu",
+    "SwW&:~8Ol",
+    "dip quip",
+    "DestroyWindow",
+    "SetTimer",
+    "KillTimer",
+    "SetWindowPos",
+    "GetWindowRect",
+    "FillRect",
+    "LoadCursorA",
+    "LoadIconA",
+    "SendMessageA",
+    "DefWindowProcA",
+    "RegisterClassExA",
+    "CreateWindowExA",
+    "LoadBitmapA",
+    "TranslateMessage",
+    "BeginPaint",
+    "DispatchMessageA",
+    "EndPaint"
+  ],
+  "rule_path": "/opt/samples/logs/a59b2cb9f6c706635b4d97edc574a72ac54fba47f9a4a1eae77cf58a96ccf567/rule.yar",
+  "sigma_path": "/opt/samples/logs/a59b2cb9f6c706635b4d97edc574a72ac54fba47f9a4a1eae77cf58a96ccf567/rule.yml",
+  "iocs_path": "/opt/samples/logs/a59b2cb9f6c706635b4d97edc574a72ac54fba47f9a4a1eae77cf58a96ccf567/iocs.json",
+  "yara_valid": true,
+  "yara_check": "ok",
+  "goodware_fp": {
+    "goodware_dir": "/opt/samples/goodware",
+    "fp_count": 0,
+    "fp_samples": [],
+    "skipped": "goodware corpus not staged"
+  },
+  "yargen": {
+    "skipped": true
+  },
+  "revai": true,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-12 17:27:05 UTC"
+  },
+  "publish_target": "revai_publish"
+}

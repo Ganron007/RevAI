@@ -1,0 +1,188 @@
+{
+  "verdict": "malicious",
+  "score": 40.0,
+  "family_guess": "XMRig Miner",
+  "cross_engine_notes": "Multiple analysis engines converge on identifying this sample as a cryptocurrency miner (XMRig) with malicious behaviors. Ghidra and IDA strings reveal mining usage and cryptonight algorithm references. MalCat's YARA and anomalies detect mining protocols and crypto API usage. Capa rules indicate keylogging and network activity. YARA matches include specific miner and keylogger rules, and external VirusTotal detections confirm high malicious classification.",
+  "key_evidence": [
+    {
+      "source": "yara",
+      "query_or_table": "YARA matches",
+      "row_or_rule": "XMRIG_Miner",
+      "why": "YARA rule directly matches the XMRig miner signature, confirming the sample's identity as cryptocurrency mining software."
+    },
+    {
+      "source": "ghidra",
+      "query_or_table": "Suspicious strings (Ghidra)",
+      "row_or_rule": "addr 6443065440 | Usage: xmrig [OPTIONS] ... cryptonight",
+      "why": "String contains mining usage instructions and cryptonight algorithm references, providing evidence of cryptocurrency mining functionality."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "capa rules",
+      "row_or_rule": "log keystrokes",
+      "why": "Capa identifies keylogging behavior (ATT&CK T1056.001), which is a malicious input capture technique indicating credential theft or monitoring."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "YARA matches",
+      "row_or_rule": "MiningProtocol",
+      "why": "MalCat's YARA detects mining protocol, corroborating the presence of mining-related network communication."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "capa rules",
+      "row_or_rule": "receive data, send data",
+      "why": "Capa rules indicate network data transmission and reception, suggesting command-and-control or mining pool communication, which is a behavioral intent for malicious activity."
+    }
+  ],
+  "summary": "The sample is identified as XMRig CPU miner version 2.6.2 with malicious behaviors including cryptocurrency mining and keylogging. Evidence from multiple tools shows mining algorithm references, keylogging capabilities, and network activity, supported by high external detections. This constitutes clear behavioral intent beyond obfuscation, warranting a malicious verdict.",
+  "source": "llm_judge",
+  "model": "mimo-v2.5-pro",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 23 matches",
+      "capa: 43 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "malcat",
+      "floss",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "ti_enrich": {
+    "ok": true,
+    "providers": {
+      "virustotal": {
+        "ok": true,
+        "malicious": 51,
+        "suspicious": 0,
+        "harmless": 0,
+        "undetected": 19,
+        "reputation": 1,
+        "popular_threat_classification": {
+          "suggested_threat_label": "miner.toolxmr/xmrig",
+          "popular_threat_category": [
+            {
+              "count": 31,
+              "value": "miner"
+            },
+            {
+              "count": 6,
+              "value": "pua"
+            },
+            {
+              "count": 6,
+              "value": "trojan"
+            }
+          ],
+          "popular_threat_name": [
+            {
+              "count": 2,
+              "value": "toolxmr"
+            },
+            {
+              "count": 2,
+              "value": "xmrig"
+            },
+            {
+              "count": 2,
+              "value": "xmrigcpumine"
+            }
+          ]
+        },
+        "names": [
+          "dump.exe",
+          "xmrig.exe",
+          "dump.bin"
+        ],
+        "tags": [
+          "64bits",
+          "assembly",
+          "pedll"
+        ],
+        "link": "https://www.virustotal.com/gui/file/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395"
+      },
+      "hybrid_analysis": {
+        "ok": false,
+        "error": "HTTP 404: {\"message\":\"Requested hash not found\"}"
+      }
+    },
+    "policy": "enrichment_only_never_clears_local_yara_or_tool_gates"
+  },
+  "yara_family_hits": [
+    "keylogger",
+    "win_files_operation"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 5,
+    "hits": 5,
+    "misses": [],
+    "hit_examples": [
+      "XMRIG_Miner YARA matches YARA rule directly matches the XMRig miner signature, confirming the sample's identity as crypt",
+      "addr 6443065440 | Usage: xmrig [OPTIONS] ... cryptonight Suspicious strings (Ghidra) String contains mining usage instru",
+      "log keystrokes capa rules Capa identifies keylogging behavior (ATT&CK T1056.001), which is a malicious input capture tec",
+      "MiningProtocol YARA matches MalCat's YARA detects mining protocol, corroborating the presence of mining-related network ",
+      "receive data, send data capa rules Capa rules indicate network data transmission and reception, suggesting command-and-c"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": false,
+    "checked": 5,
+    "false_engine_citations": [
+      {
+        "claimed": "yara",
+        "actual": [
+          "malcat"
+        ],
+        "needle": "MiningProtocol",
+        "source": "malcat"
+      }
+    ],
+    "reason": "false_engine_attribution"
+  },
+  "false_engine_citations": true,
+  "confidence_capped_from": 95,
+  "confidence": 40,
+  "accuracy_hold": {
+    "false_engine_citations": true,
+    "engine_citation_reason": "false_engine_attribution"
+  }
+}

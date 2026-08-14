@@ -1,0 +1,370 @@
+# capa rules (deterministic render)
+
+{
+  "rule_count": 24,
+  "top_rules": [
+    {
+      "name": "contain obfuscated stackstrings",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Indicator Removal from Tools"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "Indicator Removal from Tools",
+          "id": "T1027.005"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Anti-Static Analysis",
+            "Executable Code Obfuscation",
+            "Argument Obfuscation"
+          ],
+          "objective": "Anti-Static Analysis",
+          "behavior": "Executable Code Obfuscation",
+          "method": "Argument Obfuscation",
+          "id": "B0032.020"
+        },
+        {
+          "parts": [
+            "Anti-Static Analysis",
+            "Executable Code Obfuscation",
+            "Stack Strings"
+          ],
+          "objective": "Anti-Static Analysis",
+          "behavior": "Executable Code Obfuscation",
+          "method": "Stack Strings",
+          "id": "B0032.017"
+        }
+      ]
+    },
+    {
+      "name": "log keystrokes via polling",
+      "attack": [
+        {
+          "parts": [
+            "Collection",
+            "Input Capture",
+            "Keylogging"
+          ],
+          "tactic": "Collection",
+          "technique": "Input Capture",
+          "subtechnique": "Keylogging",
+          "id": "T1056.001"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Collection",
+            "Keylogging",
+            "Polling"
+          ],
+          "objective": "Collection",
+          "behavior": "Keylogging",
+          "method": "Polling",
+          "id": "F0002.002"
+        }
+      ]
+    },
+    {
+      "name": "accept command line arguments",
+      "attack": [
+        {
+          "parts": [
+            "Execution",
+            "Command and Scripting Interpreter"
+          ],
+          "tactic": "Execution",
+          "technique": "Command and Scripting Interpreter",
+          "subtechnique": "",
+          "id": "T1059"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Execution",
+            "Command and Scripting Interpreter"
+          ],
+          "objective": "Execution",
+          "behavior": "Command and Scripting Interpreter",
+          "method": "",
+          "id": "E1059"
+        }
+      ]
+    },
+    {
+      "name": "get file size",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "File and Directory Discovery",
+          "subtechnique": "",
+          "id": "T1083"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "File and Directory Discovery",
+          "method": "",
+          "id": "E1083"
+        }
+      ]
+    },
+    {
+      "name": "get hostname",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "System Information Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "System Information Discovery",
+          "subtechnique": "",
+          "id": "T1082"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "System Information Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "System Information Discovery",
+          "method": "",
+          "id": "E1082"
+        }
+      ]
+    },
+    {
+      "name": "query or enumerate registry key",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "Query Registry"
+          ],
+          "tactic": "Discovery",
+          "technique": "Query Registry",
+          "subtechnique": "",
+          "id": "T1012"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Operating System",
+            "Registry",
+            "Query Registry Key"
+          ],
+          "objective": "Operating System",
+          "behavior": "Registry",
+          "method": "Query Registry Key",
+          "id": "C0036.005"
+        }
+      ]
+    },
+    {
+      "name": "query or enumerate registry value",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "Query Registry"
+          ],
+          "tactic": "Discovery",
+          "technique": "Query Registry",
+          "subtechnique": "",
+          "id": "T1012"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Operating System",
+            "Registry",
+            "Query Registry Value"
+          ],
+          "objective": "Operating System",
+          "behavior": "Registry",
+          "method": "Query Registry Value",
+          "id": "C0036.006"
+        }
+      ]
+    },
+    {
+      "name": "delete registry key",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Modify Registry"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Modify Registry",
+          "subtechnique": "",
+          "id": "T1112"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Operating System",
+            "Registry",
+            "Delete Registry Key"
+          ],
+          "objective": "Operating System",
+          "behavior": "Registry",
+          "method": "Delete Registry Key",
+          "id": "C0036.002"
+        }
+      ]
+    },
+    {
+      "name": "delete registry value",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Modify Registry"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Modify Registry",
+          "subtechnique": "",
+          "id": "T1112"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Operating System",
+            "Registry",
+            "Delete Registry Value"
+          ],
+          "objective": "Operating System",
+          "behavior": "Registry",
+          "method": "Delete Registry Value",
+          "id": "C0036.007"
+        }
+      ]
+    },
+    {
+      "name": "open clipboard",
+      "attack": [
+        {
+          "parts": [
+            "Collection",
+            "Clipboard Data"
+          ],
+          "tactic": "Collection",
+          "technique": "Clipboard Data",
+          "subtechnique": "",
+          "id": "T1115"
+        }
+      ],
+      "mbc": []
+    },
+    {
+      "name": "read clipboard data",
+      "attack": [
+        {
+          "parts": [
+            "Collection",
+            "Clipboard Data"
+          ],
+          "tactic": "Collection",
+          "technique": "Clipboard Data",
+          "subtechnique": "",
+          "id": "T1115"
+        }
+      ],
+      "mbc": []
+    },
+    {
+      "name": "write clipboard data",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Impact",
+            "Clipboard Modification"
+          ],
+          "objective": "Impact",
+          "behavior": "Clipboard Modification",
+          "method": "",
+          "id": "E1510"
+        }
+      ]
+    },
+    {
+      "name": "delete file",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "File System",
+            "Delete File"
+          ],
+          "objective": "File System",
+          "behavior": "Delete File",
+          "method": "",
+          "id": "C0047"
+        }
+      ]
+    },
+    {
+      "name": "read file on Windows",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "File System",
+            "Read File"
+          ],
+          "objective": "File System",
+          "behavior": "Read File",
+          "method": "",
+          "id": "C0051"
+        }
+      ]
+    },
+    {
+      "name": "write file on Windows",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "File System",
+            "Writes File"
+          ],
+          "objective": "File System",
+          "behavior": "Writes File",
+          "method": "",
+          "id": "C0052"
+        }
+      ]
+    }
+  ],
+  "timeout_s": 300,
+  "sample_size": 134144,
+  "duration_s": 2.14,
+  "engine": "malcat-capa",
+  "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+}

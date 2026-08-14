@@ -1,0 +1,1061 @@
+{
+  "sha": "0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a",
+  "mode": "single",
+  "mode_effective": "large",
+  "strict_standard": false,
+  "audited_at": "2026-08-14T01:34:36.624518+00:00",
+  "session_pipeline_mode": "single",
+  "sample_path": "/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav",
+  "stages": {
+    "intake": {
+      "ok": true,
+      "checks": {
+        "intake_validation": true,
+        "has_source_decisions": true,
+        "ghidra_mentioned": true
+      },
+      "evidence": {
+        "intake_validation": {
+          "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/intake-validation.json",
+          "exists": true,
+          "bytes": 3201,
+          "mtime_iso": "2026-08-13T00:16:58.642002+00:00",
+          "sha256": "4b105453ed168d2a6423c8fc96a14b5f3b7a014a6abcc9c922b4ba6fa2988d0a"
+        },
+        "malcat_triage": {
+          "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/malcat-triage.json",
+          "exists": true,
+          "bytes": 10931,
+          "mtime_iso": "2026-08-14T01:18:56.456000+00:00",
+          "sha256": "8aaae7d622057a36918722670e9197b81737bdb09852cfcb70aa85400c384a1b"
+        },
+        "source_decisions": {
+          "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/source-decisions.json",
+          "exists": true,
+          "bytes": 1260,
+          "mtime_iso": "2026-08-13T00:16:58.642002+00:00",
+          "sha256": "397bf738177e27e3f5f11d7df55bbcc4bb4cefe7d18881cef8e202239b30a692"
+        },
+        "ghidra_import_log": {
+          "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/intake-analyzeHeadless.log",
+          "exists": true,
+          "bytes": 4114,
+          "mtime_iso": "2026-08-13T00:16:10.228000+00:00",
+          "sha256": "ec886e1d931ec05983db87e7e38324963c25014365163b6647cfcfcd39d1391a"
+        },
+        "ida_bootstrap_log": {
+          "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/intake-idasql.log",
+          "exists": true,
+          "bytes": 207,
+          "mtime_iso": "2026-08-13T00:16:20.530001+00:00",
+          "sha256": "15a4ebf7fece0706ddfaf2019ba59ab74ac6057e7a588b460d8a8915529d37fb"
+        },
+        "source_decisions_excerpt": "{\n  \"sha256\": \"0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a\",\n  \"imports\": {\n    \"source\": \"none\",\n    \"confidence\": \"medium\",\n    \"reason\": \"No imports detected from any engine: malcat imports_count=0, ida imports=0, and ghidra provided no data.\"\n  },\n  \"functions\": {\n    \"source\": \"none\",\n    \"confidence\": \"medium\",\n    \"reason\": \"No functions reported by any tool: malcat functions_count=0, ida funcs=0, and ghidra had no valid output.\"\n  },\n  \"strings\": {\n    \"source\": \"both\",\n    \"confidence\": \"high\",\n    \"reason\": \"Both malcat and ida report strings: malcat strings_count=100, ida strings=70200, offering complementary coverage.\"\n  },\n  \"decompilation\": {\n    \"source\": \"none\",\n    \"confidence\": \"medium\",\n    \"reason\": \"Function coverage is unreliable due to functions_\n\u2026 [483 more chars]",
+        "malcat_triage_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav\",\n  \"profile\": \"triage\",\n  \"limits\": {\n    \"strings_max\": 100,\n    \"imports_max\": 100,\n    \"functions_max\": 10,\n    \"anomaly_locations_max\": 5,\n    \"decompile_top_n\": 1\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"film.wav\",\n    \"file_path\": \"/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav\",\n    \"file_size\": 15179552,\n    \"type\": \"?\",\n    \"architecture\": \"NONE\",\n    \"entropy\": 7.48,\n    \"sha256\": \"0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a\",\n    \"metadata\": {},\n    \"entrypoint_ea\": null,\n    \"layout\": [\n      {\n        \"name\": \"\",\n        \"effective_address\": 0,\n        \n\u2026 [10131 more chars]"
+      }
+    },
+    "quick_scan": {
+      "ok": true,
+      "checks": {
+        "prompt": true,
+        "verdict": true,
+        "has_capa_section": true,
+        "has_yara_section": true,
+        "has_malcat_section": true,
+        "has_floss_section": true,
+        "verdict_has_family": true,
+        "llm_source": true,
+        "tools_all_ok": true,
+        "citations_grounded": true,
+        "capa_salvage_used": false,
+        "evidence_pack_present": true,
+        "benign_blocked_if_incomplete": true,
+        "yara_family_not_cleared": true
+      },
+      "tools": {
+        "capa": {
+          "ok": true,
+          "why": "not_applicable:unknown",
+          "raw_excerpt": "{\n  \"skipped\": true,\n  \"fail_open\": true,\n  \"reason\": \"not_applicable:unknown\",\n  \"error\": \"CAPA supports PE/ELF/Mach-O only (got unknown)\",\n  \"rule_count\": 0,\n  \"matched_rule_count\": 0,\n  \"top_rules\": []\n}",
+          "present": true
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 4,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 880,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 3750495,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"maldoc_indirect_function_call_3\",\n      \"path\": \"/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 1743485,\n          \"length\": 9,\n          \"xor_key\": null\n        }\n      ]\n    }\n  ],\n  \"engine\": \"yara-x\",\n  \"rules_compiled\": 454,\n  \"compile_errors\": [\n    \"/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\\n   |\\n11 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\\n   |\\n54 |          and is__elf\\n   |              ^^^^^^^ this identifier has not been declared\",\n    \"/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\\n   |\\n10 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\\n   |\\n10 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\\n   |\\n17 |         $c = /if ?\\\\(\\\\$_POST\\\\[Submit\\\\]\\\\) ?{/\\n   |                                          ^ unclosed counted repetition\\n   |\\n   = note: did you mean `\\\\{` instead of `{`?\",\n    \"/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\\n --> /o\n\u2026 [449 more chars]",
+          "present": true
+        },
+        "floss": {
+          "ok": true,
+          "why": "not_applicable:unknown",
+          "raw_excerpt": "{\n  \"skipped\": true,\n  \"fail_open\": true,\n  \"reason\": \"not_applicable:unknown\",\n  \"error\": \"FLOSS supports PE only (got unknown)\",\n  \"string_count\": 0,\n  \"strings\": []\n}",
+          "present": true
+        },
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:unknown",
+          "raw_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"film.wav\",\n    \"file_path\": \"/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav\",\n    \"file_size\": 15179552,\n    \"type\": \"?\",\n    \"architecture\": \"NONE\",\n    \"entropy\": 7.48,\n    \"sha256\": \"0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a\",\n    \"metadata\": {},\n    \"entrypoint_ea\": null,\n    \"layout\": [\n      {\n        \"name\": \"\",\n        \"effective_address\": 0,\n        \"physical_size\": 15179552,\n        \"virtual_size\": 15179552,\n        \"rights\": \"\",\n        \"entropy\": 156\n      }\n    ],\n    \"kesakode_verdict\": [],\n    \"entropy_malcat_raw\": 156,\n    \"entropy_source\": \"whole_file_shannon_revai\"\n  },\n  \"views\": {\n    \"anomalies\": [],\n    \"anomaly_locations\": {},\n    \"yara_hits\": [],\n    \"strings\": [\n      {\n        \"ea\": 252868,\n        \"summary\": \"zzsrppnnnnllhhff..NNIIDDCC>>77..##\"\n      },\n      {\n        \"ea\": 958048,\n        \"summary\": \"#\\\"((1077;;>>@@CC..99222267AAQQcbvw\"\n      },\n      {\n        \"ea\": 8705632,\n        \"summary\": \"./<<IHSRXX``eeih..PPLLKKEE>?8811((\"\n      },\n      {\n        \"ea\": 2096188,\n        \"summary\": \"66NN^^hhjjjjffdd..89885523-,()%$! \"\n      },\n      {\n        \"ea\": 1411328,\n        \"summary\": \"\\\"\\\"&&+*--1144<<DE..xyvvttrrpqpptt{z\"\n      },\n      {\n        \"ea\": 8000640,\n        \"summary\": \"\\\"\\\"''**..2366;:=<..A@=<884501,,()\\\"\\\"\"\n      },\n      {\n        \"ea\": 2095272,\n        \"summary\": \"xxhiYXLMKJIH==,,..bbhhfgee__QPA@./\"\n      },\n      {\n        \"ea\": 9326666,\n        \"summary\": \"` ^,V.P6VLj`v^jB..,H.L:D>8::4L.b&p\"\n      },\n      {\n        \"ea\": 393167,\n        \"summary\": \"\\n,\\n,\\n;\\n:\\nH\\nH\\nS\\nR..S\\nS\\nZ\\nZ\\nf\\nf\\nt\\nu\\n\"\n      },\n      {\n        \"ea\": 2104968,\n        \"summary\": \"~~{zxxxxwvsslmdd..LLFGFFLLRS_^jkzz\"\n      },\n      {\n        \"ea\": 8706004,\n        \"summary\": \"\\\"\\\"))..4588>>CBII..JJGGCB>?::54//&&\"\n      },\n      {\n        \"ea\": 257100,\n        \"summary\": \"xyaaNOBB@ABCIIPQ..;;89;;<<9922-,''\"\n      },\n      {\n        \"ea\": 1445728,\n        \"summary\": \"33BCIHFFDEBB==45..NOHH=<555588BB\\\\]\"\n      },\n      {\n        \"ea\": 1956567,\n        \"summary\": \"\\nz\\nz\\nn\\no\\nk\\nj\\nl\\nm..h\\ni\\nZ\\nZ\\nJ\\nK\\n4\\n4\\n\"\n      },\n      {\n        \"ea\": 1410872,\n        \"summary\": \"  %$'&(()(++,-....&''&''''&&''%$! \"\n      },\n      {\n        \"ea\": 196124,\n        \"summary\": \"%$**003298@@@@@@..VVRSLLIHCC::00$$\"\n      },\n      {\n        \"ea\": 1323312,\n        \"summary\": \"{znoa`SRHH@@=<;;..DDEEFGKJPQ[Zjj}|\"\n      },\n      {\n        \"ea\": 2093028,\n        \"summary\": \"~~wvmmbcVVLMHINN..QPOOHHAA8845..\\\"\\\"\"\n      },\n      {\n        \"ea\": 2106292,\n        \"summary\": \"uubbTTMMLLJKFF>>..DDHIIHBC>>88,,  \"\n      },\n      {\n        \"ea\": 2098044,\n        \"summary\": \"  11@@MLWVccnnxy..UU__hhooqqsruuyy\"\n      },\n      {\n        \"ea\": 2058472,\n        \"summary\": \"  89KKWWa`kjtuxx..NNIIBB<=66./&& !\"\n      },\n      {\n        \"ea\": 247744,\n        \"summary\": \"rsa`QQED@ACCIHTU..``UTMMKJQQ]]kk||\"\n      },\n      {\n        \"ea\": 9399475,\n        \"summary\": \"/L/M/8080n0n0.0.0P2P2\"\n      },\n      {\n        \"ea\": 2107700,\n        \"summary\": \"~~xxpqcbSSHI@A<=..EDJJPPYYbckkrs}}\"\n      },\n      {\n        \"ea\": 2091412,\n      \n\u2026 [23770 more chars]",
+          "present": true
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 5,
+        "hits": 5,
+        "misses": [],
+        "hit_examples": [
+          "domain rule yara matches File contains pattern matching domain regex at offset 0, indicating potential network communica",
+          "IP rule yara matches File contains IPv6 pattern at offset 880, suggesting embedded IP address for possible C2 or exfiltr",
+          "contains_base64 rule yara matches Base64-encoded string detected at offset 3750495, which may conceal commands or payloa",
+          "maldoc_indirect_function_call_3 rule yara matches Pattern indicative of indirect function calls at offset 1743485, commo",
+          "file_summary static_profile High entropy (7.48) and numerous obfuscated strings suggest packing or encoding, which is a "
+        ],
+        "reason": ""
+      },
+      "format": "unknown",
+      "required_tools": [
+        "yara"
+      ],
+      "verdict_preview": {
+        "verdict": "malicious",
+        "family": "trojan.fkmb",
+        "score": 85,
+        "agreement": "llm_and_v1_agree",
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "key_evidence": [
+          {
+            "source": "yara",
+            "query_or_table": "yara matches",
+            "row_or_rule": "domain rule",
+            "why": "File contains pattern matching domain regex at offset 0, indicating potential network communication or data reference."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "yara matches",
+            "row_or_rule": "IP rule",
+            "why": "File contains IPv6 pattern at offset 880, suggesting embedded IP address for possible C2 or exfiltration."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "yara matches",
+            "row_or_rule": "contains_base64 rule",
+            "why": "Base64-encoded string detected at offset 3750495, which may conceal commands or payloads."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "yara matches",
+            "row_or_rule": "maldoc_indirect_function_call_3 rule",
+            "why": "Pattern indicative of indirect function calls at offset 1743485, commonly used in malicious documents to evade detection, though file type is WAV."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "static_profile",
+            "row_or_rule": "file_summary",
+            "why": "High entropy (7.48) and numerous obfuscated strings suggest packing or encoding, which is a neutral signal but often associated with malware."
+          }
+        ],
+        "summary": "The WAV file exhibits high entropy and contains strings matching YARA rules for domain, IP, base64, and malicious document patterns, suggesting embedded malicious content. VirusTotal corroborates with trojan detections, indicating malicious intent despite the non-standard file type."
+      },
+      "evidence": {
+        "prompt": {
+          "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/prompt.txt",
+          "exists": true,
+          "bytes": 18306,
+          "mtime_iso": "2026-08-14T01:19:42.867000+00:00",
+          "sha256": "a411ca53a3ca03ccb76fa023209bb15b3102181739cb50b45cbb53e4b6e9ba59"
+        },
+        "verdict": {
+          "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/verdict.json",
+          "exists": true,
+          "bytes": 4612,
+          "mtime_iso": "2026-08-14T01:21:21.289180+00:00",
+          "sha256": "4dce6336d2676c8c0d38324db9d9076e9b70e6010709fef7564d9102a5a5ef46"
+        },
+        "prompt_excerpt": "# Triage evidence\nsha256: 0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a\nsample_path: /opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav\nghidra_session: ghidra-pe-0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a\nida_session: ida-0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a\n\n## Source decisions (from intake validation)\n- imports: none (confidence=medium) \u2014 No imports detected from any engine: malcat imports_count=0, ida imports=0, and ghidra provided no data.\n- functions: none (confidence=medium) \u2014 No functions reported by any tool: malcat functions_count=0, ida funcs=0, and ghidra had no valid output.\n- strings: both (confidence=high) \u2014 Both malcat and ida report strings: malcat strings_count=100, ida strings=70200, offering complementary coverage.\n- decompilation: none (confidence=medium) \u2014 Function coverage is unreliable due to functions_count=0 across tools, making decompilation infe\n\u2026 [17276 more chars]",
+        "verdict_excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 85,\n  \"family_guess\": \"trojan.fkmb\",\n  \"cross_engine_notes\": \"Ghidra analysis failed due to program not found in project; IDA detected 70,200 strings but no functions; MalCat reported high entropy (7.48) and numerous obfuscated strings; YARA matched rules for domain, IP, base64, and indirect function calls; VirusTotal flagged as malicious with 9 detections and threat label trojan.fkmb.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"yara matches\",\n      \"row_or_rule\": \"domain rule\",\n      \"why\": \"File contains pattern matching domain regex at offset 0, indicating potential network communication or data reference.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"yara matches\",\n      \"row_or_rule\": \"IP rule\",\n      \"why\": \"File contains IPv6 pattern at offset 880, suggesting embedded IP address for possible C2 or exfiltration.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"yara matches\",\n   \n\u2026 [3612 more chars]"
+      }
+    },
+    "deep_dive": {
+      "ok": true,
+      "checks": {
+        "01_tools_raw": true,
+        "00_sql_evidence": false,
+        "03_prompt": false,
+        "04_llm": false,
+        "05_deep": true,
+        "tools_all_ok": true,
+        "llm_source": false,
+        "citations_grounded": true,
+        "engine_citation_ok": true,
+        "upx_second_pass_ok": true,
+        "no_incomplete_tooling": true,
+        "confidence_sane": true,
+        "evidence_pack_present": true,
+        "depth_coverage": true,
+        "agentic_json": true,
+        "sql_deep_re": true,
+        "complete_verdict": true,
+        "not_incomplete": true,
+        "checklist_ok_flag": true,
+        "agentic_confidence_sane": true
+      },
+      "tools": {
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:unknown",
+          "raw_excerpt": null
+        },
+        "capa": {
+          "ok": true,
+          "why": "not_applicable:unknown",
+          "raw_excerpt": null
+        },
+        "pe_imports": {
+          "ok": true,
+          "why": "not_applicable:unknown",
+          "raw_excerpt": null
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 4,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 880,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 3750495,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"maldoc_indirect_function_call_3\",\n      \"path\": \"/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 1743485,\n          \"length\": 9,\n          \"xor_key\": null\n        }\n      ]\n    }\n  ],\n  \"engine\": \"yara-x\",\n  \"rules_compiled\": 454,\n  \"compile_errors\": [\n    \"/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\\n   |\\n11 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\\n   |\\n54 |          and is__elf\\n   |              ^^^^^^^ this identifier has not been declared\",\n    \"/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\\n   |\\n10 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\\n   |\\n10 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\\n   |\\n17 |         $c = /if ?\\\\(\\\\$_POST\\\\[Submit\\\\]\\\\) ?{/\\n   |                                          ^ unclosed counted repetition\\n   |\\n   = note: did you mean `\\\\{` instead of `{`?\",\n    \"/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\\n --> /o\n\u2026 [427 more chars]"
+        },
+        "floss": {
+          "ok": true,
+          "why": "not_applicable:unknown",
+          "raw_excerpt": null
+        },
+        "dotnet": {
+          "ok": true,
+          "why": "not_applicable:unknown",
+          "raw_excerpt": null
+        },
+        "r2_decomp": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav\",\n  \"disassembly\": {\n    \"0x00000000\": \"\\u250c 38: fcn.00000000 (int64_t arg1, int64_t arg2, int64_t arg3, int64_t arg4);\\n\\u2502           ; arg int64_t arg1 @ rdi\\n\\u2502           ; arg int64_t arg2 @ rsi\\n\\u2502           ; arg int64_t arg3 @ rdx\\n\\u2502           ; arg int64_t arg4 @ rcx\\n\\u2502           0x00000000      52             push rdx                    ; arg3\\n\\u2502           0x00000001      494646209f..   and byte [rdi + 0x415700e7], r11b ; [0x415700e7:1]=255 ; arg1\\n\\u2502           0x0000000a      56             push rsi                    ; arg2\\n\\u2502           0x0000000b      45666d         insw word [rdi], dx\\n\\u2502       \\u250c\\u2500< 0x0000000e      7420           je 0x30\\n\\u2502       \\u2502   0x00000010      1000           adc byte [rax], al\\n\\u2502       \\u2502   0x00000012      0000           add byte [rax], al\\n\\u2502       \\u2502   0x00000014      0100           add dword [rax], eax\\n\\u2502       \\u2502   0x00000016      0200           add al, byte [rax]\\n\\u2502       \\u2502   0x00000018      44ac           lodsb al, byte [rsi]\\n\\u2502       \\u2502   0x0000001a      0000           add byte [rax], al\\n\\u2502       \\u2502   0x0000001c      10b102000400   adc byte [rcx + 0x40002], dh ; arg4\\n\\u2502       \\u2502   0x00000022      1000           adc byte [rax], al\\n\\u2502       \\u2502   0x00000024      64             invalid\\n..\\n\\u2514      \\u2502\\u2514\\u2500> 0x00000030      06             invalid\"\n  },\n  \"engine\": \"pdf (disasm)\",\n  \"fallback\": true,\n  \"functions_attempted\": [\n    \"0x00000000\"\n  ]\n}"
+        },
+        "upx": {
+          "ok": true,
+          "why": "not_applicable:unknown",
+          "raw_excerpt": null
+        },
+        "xor": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"xorsearch_ok\": false,\n  \"sample\": \"/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav\",\n  \"candidates\": [],\n  \"xorsearch_stdout\": \"\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 1\n}"
+        },
+        "speakeasy": {
+          "ok": true,
+          "why": "not_applicable:unknown",
+          "raw_excerpt": null
+        },
+        "frida_probe": {
+          "ok": true,
+          "why": "not_applicable:unknown",
+          "raw_excerpt": null
+        },
+        "frida_trace": {
+          "ok": true,
+          "why": "not_applicable:unknown",
+          "raw_excerpt": null
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 6,
+        "hits": 6,
+        "misses": [],
+        "hit_examples": [
+          "rule: domain matches Matches domain regex, potentially indicating malicious network activity. checklist_yara_scan   ",
+          "rule: IP matches Matches IPv6 pattern, suggesting embedded network addresses common in malware. checklist_yara_scan   ",
+          "rule: contains_base64 matches Contains base64 encoded data, often used for obfuscation in malicious files. checklist_yar",
+          "rule: maldoc_indirect_function_call_3 matches Indicates indirect function calls typical in malicious documents, suspicio",
+          "entropy: 156 file_summary High entropy suggests encryption or compression, common in obfuscated or malicious files. chec"
+        ],
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 2,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "upx_second_pass": {
+        "applicable": false,
+        "ok": true,
+        "reason": "upx_not_unpacked"
+      },
+      "depth_coverage": {
+        "ok": true,
+        "missing": [],
+        "covered": {
+          "persistence": true,
+          "c2_network": true,
+          "evasion_anti_analysis": true,
+          "exfiltration": true,
+          "defense_impairment": true,
+          "credential_access": true,
+          "encryption_obfuscation": true,
+          "entry_point": true,
+          "imports": true,
+          "strings": true
+        },
+        "domain_count": 10
+      },
+      "format_routing": "unknown",
+      "required_tools": [
+        "yara",
+        "r2_decomp",
+        "xor"
+      ],
+      "deep_preview": {
+        "source": "deep_dive_agentic",
+        "confidence": 90,
+        "summary": "The WAV file shows strong indicators of malicious activity, including YARA matches for network indicators, base64 encoding, and maldoc behavior, along with high entropy and obfuscated strings suggesting obfuscation or embedded threats. For persistence, not observed. {source: analysis, query_or_table",
+        "key_evidence": [
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "matches",
+            "row_or_rule": "rule: domain",
+            "why": "Matches domain regex, potentially indicating malicious network activity."
+          },
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "matches",
+            "row_or_rule": "rule: IP",
+            "why": "Matches IPv6 pattern, suggesting embedded network addresses common in malware."
+          },
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "matches",
+            "row_or_rule": "rule: contains_base64",
+            "why": "Contains base64 encoded data, often used for obfuscation in malicious files."
+          },
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "matches",
+            "row_or_rule": "rule: maldoc_indirect_function_call_3",
+            "why": "Indicates indirect function calls typical in malicious documents, suspicious in an audio file."
+          },
+          {
+            "source": "checklist_malcat_analyze",
+            "query_or_table": "file_summary",
+            "row_or_rule": "entropy: 156",
+            "why": "High entropy suggests encryption or compression, common in obfuscated or malicious files."
+          },
+          {
+            "source": "checklist_malcat_analyze",
+            "query_or_table": "views",
+            "row_or_rule": "strings",
+            "why": "Obfuscated strings like '/L/M/8080n0n0.0.0P2P2' indicate potential malicious encoding or embedded code."
+          }
+        ],
+        "model": null,
+        "llm_audit": null
+      },
+      "evidence": {
+        "tools_raw": {
+          "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/deep_dive/01-tools-raw.json",
+          "exists": true,
+          "bytes": 36287,
+          "mtime_iso": "2026-08-14T01:18:56.461000+00:00",
+          "sha256": "fda09b884b79bd6014b1d7cde59976f7302d52e5bb9b5708b8c4293a3c5f0fcb"
+        },
+        "sql_evidence": {
+          "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/deep_dive/00-sql-evidence.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "prompt": {
+          "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/deep_dive/03-prompt.txt",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "llm_raw": {
+          "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/deep_dive/04-llm-raw.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "deep05": {
+          "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/deep_dive/05-deep-dive.json",
+          "exists": true,
+          "bytes": 3942,
+          "mtime_iso": "2026-08-13T00:20:55.008195+00:00",
+          "sha256": "e6ea6267ec73fced27b4e456a4d1356c24da095bef3b4e3f7418ee32a24079dd"
+        },
+        "prompt_excerpt": "",
+        "llm_raw_excerpt": "{}",
+        "deep05_excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"The WAV file shows strong indicators of malicious activity, including YARA matches for network indicators, base64 encoding, and maldoc behavior, along with high entropy and obfuscated strings suggesting obfuscation or embedded threats. For persistence, not observed. {source: analysis, query_or_table: N/A, row_or_rule: N/A, why: No indicators like registry keys or scheduled tasks were identified in the summary}. For exfiltration, YARA matches for network indicators suggest potential exfiltration or C2 communication. {source: YARA analysis, query_or_table: YARA rules, row_or_rule: network_indicators, why: Matches indicate network-related strings that could facilitate data e\n\u2026 [3142 more chars]",
+        "agentic": {
+          "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/deep_dive/agentic_deep_dive.json",
+          "exists": true,
+          "bytes": 195279,
+          "mtime_iso": "2026-08-13T00:20:55.008195+00:00",
+          "sha256": "6ee8c3056ebbbb4b8771f0b357b568258ee6933d7156ddff22c176bcc8451142"
+        }
+      },
+      "tools_ok_history": [
+        "yara_scan",
+        "malcat_analyze",
+        "r2_decompile",
+        "xor_string_search",
+        "packer_scan",
+        "malcat_analyze",
+        "ida_query",
+        "ida_query",
+        "ida_query",
+        "ida_query",
+        "ida_query"
+      ],
+      "history_evidence": [
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (yara)",
+          "result_excerpt": "{\n  \"rule_count\": 4,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus\n\u2026 [3527 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (malcat)",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"film.wav\",\n    \"file_path\": \"/opt/sa\n\u2026 [26713 more chars]"
+        },
+        {
+          "tool": "r2_decompile",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (r2_decomp)",
+          "result_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav\",\n  \"disassembly\": {\n    \"0x00000000\": \"\\u250c 38: fcn.00000000 (int64_t arg1, int64_t arg2, int64_t arg3, int64_t arg4);\\n\\u2502           ; arg int64_t arg1 @ rdi\\n\\u2502           ; arg int64_t arg2 @ rsi\\n\\u2502           ; arg int64_t arg3 @ rdx\\n\\u2502           ;\n\u2026 [1285 more chars]"
+        },
+        {
+          "tool": "xor_string_search",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (xor)",
+          "result_excerpt": "{\n  \"xorsearch_ok\": false,\n  \"sample\": \"/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav\",\n  \"candidates\": [],\n  \"xorsearch_stdout\": \"\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 1\n}"
+        },
+        {
+          "tool": "signal_extractors",
+          "ok": false,
+          "error": "RuntimeError: ghidrasql server died during startup for ghidra-pe-0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a (rc=1); tail of log:\nening existing project: /home/remnux/ghidra-projects/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: film.wav (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: film.wav\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n",
+          "checklist": true,
+          "reason": "Deterministic anti-analysis + dynamic-import-resolve signals",
+          "result_excerpt": "{\n  \"anti_analysis_summary\": {},\n  \"dynamic_resolve_summary\": {}\n}"
+        },
+        {
+          "tool": "packer_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Deterministic packer checklist (packed-context for gate)",
+          "result_excerpt": "{\n  \"label\": null,\n  \"name\": null,\n  \"score\": null\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "ghidrasql server died during startup for ghidra-pe-0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a (rc=1); tail of log:\nening existing project: /home/remnux/ghidra-projects/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: film.wav (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: film.wav\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n",
+          "checklist": false,
+          "reason": "Auto SQL seed for large-mode deep RE gate",
+          "result_excerpt": "{\n  \"error\": \"ghidrasql server died during startup for ghidra-pe-0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a (rc=1); tail of log:\\nening existing project: /home/remnux/ghidra-projects/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a (HeadlessAnalyzer)  \\nINFO  Opening project: /home/remnux/ghidra-\n\u2026 [770 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"film.wav\",\n    \"file_path\": \"/opt/sa\n\u2026 [26713 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"xxhiYXLMKJIH==,,! ##))..2245;;??CBBBBB>>77/.()&&'&--<<OOZZ__`a``]\\\\TTPQMLFF>?7623-,'&))..98GGWWbbhhfgee__QPA@./\",\n      \"address\": \"2095272\",\n      \"length\": \"220\"\n    },\n    {\n      \"content\": \"  %$'&(()(++,-.../..//.../00447689<<@@EDHHLMOOQQQPSRRSRRPPNNJJDD@@<=9823-,++))&&&&&'''&''&''''&&''%$! \",\n\u2026 [5850 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "ghidrasql server died during startup for ghidra-pe-0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a (rc=1); tail of log:\nening existing project: /home/remnux/ghidra-projects/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a (HeadlessAnalyzer)  \nINFO  Opening project: /home/remnux/ghidra-projects/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a (HeadlessProject)  \nERROR Abort due to Headless analyzer error: Requested project program file(s) not found: film.wav (HeadlessAnalyzer) java.io.IOException: Requested project program file(s) not found: film.wav\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processNoImport(HeadlessAnalyzer.java:1404)\n\tat ghidra.app.util.headless.HeadlessAnalyzer.processLocal(HeadlessAnalyzer.java:461)\n\tat ghidra.app.util.headless.AnalyzeHeadless.launch(AnalyzeHeadless.java:199)\n\tat ghidra.GhidraLauncher.launch(GhidraLauncher.java:81)\n\tat ghidra.Ghidra.main(Ghidra.java:54)\n \nGhidra exited before becoming ready (exit code 1)\n",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"ghidrasql server died during startup for ghidra-pe-0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a (rc=1); tail of log:\\nening existing project: /home/remnux/ghidra-projects/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a (HeadlessAnalyzer)  \\nINFO  Opening project: /home/remnux/ghidra-\n\u2026 [770 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ida_query\",\n  \"session_id\": \"ida-0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a\",\n  \"audit_path\": \"/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"RIFF \",\n      \"address\": \"0\",\n      \"length\": \"5\"\n    },\n    {\n      \"content\": \"WAVEfmt \",\n      \"address\": \"8\",\n      \"length\": \"8\"\n    }\n  ],\n  \"row_count\": 2,\n  \"total_row_count\": 2,\n  \"truncated\": false,\n  \"source\": \"ida_query\",\n  \"session_id\": \"ida-0f02beee4c93cd483befe638edd443bac7f6ccc93126\n\u2026 [137 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"MJ9KKG7dJC6jJ\",\n      \"address\": \"3750495\",\n      \"length\": \"13\"\n    },\n    {\n      \"content\": \"6uKh9\",\n      \"address\": \"3750513\",\n      \"length\": \"5\"\n    }\n  ],\n  \"row_count\": 2,\n  \"total_row_count\": 2,\n  \"truncated\": false,\n  \"source\": \"ida_query\",\n  \"session_id\": \"ida-0f02beee4c93cd483befe638ed\n\u2026 [155 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"{zmmZ[BB./&&()*+\",\n      \"address\": \"92808\",\n      \"length\": \"32\"\n    },\n    {\n      \"content\": \"*+>>QPeezz\",\n      \"address\": \"627888\",\n      \"length\": \"20\"\n    },\n    {\n      \"content\": \"&&66CCKKOOQQOOMMOOUU[Z``jjvv~~~~yymmZZ@@ !\",\n      \"address\": \"1311564\",\n      \"length\": \"84\"\n    },\n    {\n   \n\u2026 [1868 more chars]"
+        }
+      ],
+      "agentic_preview": {
+        "verdict": "malicious",
+        "confidence": 90,
+        "summary": "The WAV file shows strong indicators of malicious activity, including YARA matches for network indicators, base64 encoding, and maldoc behavior, along with high entropy and obfuscated strings suggesting obfuscation or embedded threats. For persistence, not observed. {source: analysis, query_or_table",
+        "checklist_ok": true,
+        "sql_deep_ok": true,
+        "successful_tool_calls": 11
+      }
+    },
+    "yara_gen": {
+      "ok": true,
+      "checks": {
+        "rule_yar": true,
+        "non_empty": true,
+        "has_rule_block": true,
+        "rule_compiles": true,
+        "rule_check": "ok",
+        "meta_yara_valid": true
+      },
+      "evidence": {
+        "rule_yar": {
+          "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/rule.yar",
+          "exists": true,
+          "bytes": 1676,
+          "mtime_iso": "2026-08-13T00:21:03.897755+00:00",
+          "sha256": "cef7ed277c2c5044e1f7539a8afdc316c0d573b8869aba89e197914282cc9203"
+        },
+        "other_rules": [
+          "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/rule.yara.json",
+          "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/rule.yar",
+          "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/rule.yar"
+        ],
+        "excerpt": "// yara_gen_v2.py \u2014 2026-08-13T00:21:03.899453+00:00\nrule CADRE_v2_fkmb_0f02beee4c93 {\n    meta:\n        description = \"RevAI v2 auto rule for fkmb\"\n        sha256 = \"0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a\"\n        family = \"fkmb\"\n        revai = true\n        revai_commit = \"unknown\"\n        revai_engine = \"langgraph\"\n        severity = \"high\"\n        confidence = \"medium\"\n    strings:\n        $s0 = \"xxhiYXLMKJIH==,,! ##))..2245;;??CBBBBB>>77/.()&&'&--<<OOZZ__`a``]\\\\TTPQMLFF>?7623-,'&))..98GGWWbbhhfgee__QPA@./\" ascii wide\n        $s1 = \"%$'&(()(++,-.../..//.../00447689<<@@EDHHLMOOQQQPSRRSRRPPNNJJDD@@<=9823-,++))&&&&&'''&''&''''&&''%$!\" ascii wide\n        $s2 = \"66NN^^hhjjjjffdddehhnnrrttvvrrnnjkkjhicbVVJKDD?>77//,,00231101548889885523-,()%$!\" ascii wide\n        $s\n\u2026 [874 more chars]"
+      }
+    },
+    "publish": {
+      "ok": true,
+      "checks": {
+        "REPORT_MASTER_v2": true,
+        "REPORT_MASTER_v3": true,
+        "REPORT_v2": true,
+        "REPORT_TECHNICAL_v2": true,
+        "REPORT_TECHNICAL_v3": true,
+        "v2_min_chars": true,
+        "v3_min_chars": true,
+        "v2_heads": true,
+        "v3_heads": true,
+        "v2_fresh_vs_deep": true,
+        "v3_fresh_vs_deep": true,
+        "not_llm_env_failure_v2": true,
+        "not_llm_env_failure_v3": true,
+        "v2_no_missing_sections": true,
+        "verdict_lock_ok": true,
+        "quality_pack_ok": true,
+        "master_source_llm": true,
+        "tech2_source_llm": true,
+        "tech3_source_ok": true,
+        "tech2_no_stubs": true,
+        "no_tech2_fallback": true,
+        "quality_issues": [],
+        "engine_citation_ok": true
+      },
+      "heads_v2": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "heads_v3": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "report_json_source": "llm_judge",
+      "sections_missing": [],
+      "quality_pack": {
+        "ok": true,
+        "quality_green": true,
+        "sha256": "0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a",
+        "issues": [],
+        "checks": {
+          "master_v2": {
+            "ok": true,
+            "label": "master_v2",
+            "source": "llm_judge",
+            "chars": 16539,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 63,
+              "prose_ratio": 0.3,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 3,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v2": {
+            "ok": true,
+            "label": "technical_v2",
+            "source": "llm_judge",
+            "chars": 33766,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 21,
+              "prose_ratio": 0.45,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v3": {
+            "ok": true,
+            "label": "technical_v3",
+            "source": "llm_judge",
+            "chars": 27062,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 56,
+              "prose_ratio": 0.62,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "master_v3_present": true,
+          "tech3_file_present": true,
+          "cross_report_consistency": {
+            "ok": true,
+            "violations": [],
+            "checks": {
+              "master_dyn_negation": false,
+              "tech_dyn_evidence": false,
+              "file_entropy": 7.481682033657383,
+              "master_verdict": "",
+              "tech_verdict": "malicious"
+            }
+          },
+          "deep_checklist_ok": true,
+          "deep_sql_deep_ok": true,
+          "pipeline_audit_all_green": false
+        },
+        "models": {
+          "master": "mimo-v2.5-pro",
+          "technical_v2": "mimo-v2.5-pro",
+          "technical_v3": "mimo-v2.5-pro",
+          "planner_hint": "configured via env",
+          "judgment_hint": "configured via env"
+        }
+      },
+      "verdict_lock": {
+        "ok": true,
+        "conflict": false,
+        "upstream": "malicious",
+        "publish": "malicious",
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 2,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "mtimes": {
+        "v2": 1786670622.5245852,
+        "v3": 1786671169.6088433,
+        "deep_ref": 1786580455.0081954,
+        "v2_chars": 16539,
+        "v3_chars": 43523,
+        "v2_iso": "2026-08-14T01:23:42.524585+00:00",
+        "v3_iso": "2026-08-14T01:32:49.608843+00:00"
+      },
+      "evidence": {
+        "REPORT_MASTER_v2": {
+          "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/REPORT-MASTER-v2.md",
+          "exists": true,
+          "bytes": 16548,
+          "mtime_iso": "2026-08-14T01:23:42.524585+00:00",
+          "sha256": "5867aba7bd1db69415803c9e6a65b69679f969391adee901ca9bef5948de1a25"
+        },
+        "REPORT_MASTER_v3": {
+          "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/REPORT-MASTER-v3.md",
+          "exists": true,
+          "bytes": 43542,
+          "mtime_iso": "2026-08-14T01:32:49.608843+00:00",
+          "sha256": "2667d8c6406f661fc0089a02dfe366b6813f6d807b028c98917dd288d8c0d756"
+        },
+        "REPORT_v2": {
+          "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/REPORT-v2.md",
+          "exists": true,
+          "bytes": 16548,
+          "mtime_iso": "2026-08-14T01:23:42.524585+00:00",
+          "sha256": "5867aba7bd1db69415803c9e6a65b69679f969391adee901ca9bef5948de1a25"
+        },
+        "REPORT_TECHNICAL_v2": {
+          "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/REPORT-TECHNICAL-v2.md",
+          "exists": true,
+          "bytes": 33915,
+          "mtime_iso": "2026-08-14T01:26:10.410200+00:00",
+          "sha256": "957096d4ff024ae73a56847da5a273af75c68c69043c0bca3b2d21b09fc96143"
+        },
+        "REPORT_TECHNICAL_v3": {
+          "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/REPORT-TECHNICAL-v3.md",
+          "exists": true,
+          "bytes": 27144,
+          "mtime_iso": "2026-08-14T01:34:36.574844+00:00",
+          "sha256": "3e55a8ac04fc7102322ba06c8f1a8fe0b88f626b1e749118bc8219e819acc3c9"
+        },
+        "report_v2_json": {
+          "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/report-v2.json",
+          "exists": true,
+          "bytes": 19350,
+          "mtime_iso": "2026-08-14T01:26:10.413200+00:00",
+          "sha256": "67e36a5477bb7f594a40aaa8bc3e5141820dcfb8c5e45a27054594a3a74b3b8a"
+        },
+        "v2_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-14 01:23:42 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: maldoc_indirect_function_call_3). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** trojan.fkmb\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n## Executive Summary\n\nThis \n\u2026 [15639 more chars]",
+        "v3_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-14 01:32:49 UTC\n\n# RE Report \u2014 0f02beee4c93\n_Generated 2026-08-14T01:32:49.602904+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=219c | cross_refs=True | llm_ok=True | runtime=26.31s -->\n\n# Executive Summary\n\n**SHA256:** 0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a\n\n**Verdict:** Malicious  \n**Family:** trojan.fkmb  \n**Confidence:** High (90%)  \n**Summary:** This sample is assessed as malicious based on static analysis indicators, particularly YARA rule matches aligning with the trojan.fkmb family (source: yara, cross-section:3. Background & Family Lineage). Dynamic analysis \n\u2026 [42623 more chars]"
+      }
+    }
+  },
+  "policy": {
+    "v3_required": true,
+    "no_optional_stages": true,
+    "tool_fail_is_fail": false,
+    "capa_salvage": "malcat capa_summary + LLM citation"
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-14 01:34:36 UTC"
+  },
+  "cross_cutting": {
+    "sample_path": "/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav",
+    "pipeline_mode": "single",
+    "llm": {
+      "triage": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "verdict": "malicious",
+        "family": "trojan.fkmb",
+        "confidence": 85,
+        "agreement": "llm_and_v1_agree",
+        "key_evidence": [
+          {
+            "source": "yara",
+            "query_or_table": "yara matches",
+            "row_or_rule": "domain rule",
+            "why": "File contains pattern matching domain regex at offset 0, indicating potential network communication or data reference."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "yara matches",
+            "row_or_rule": "IP rule",
+            "why": "File contains IPv6 pattern at offset 880, suggesting embedded IP address for possible C2 or exfiltration."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "yara matches",
+            "row_or_rule": "contains_base64 rule",
+            "why": "Base64-encoded string detected at offset 3750495, which may conceal commands or payloads."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "yara matches",
+            "row_or_rule": "maldoc_indirect_function_call_3 rule",
+            "why": "Pattern indicative of indirect function calls at offset 1743485, commonly used in malicious documents to evade detection, though file type is WAV."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "static_profile",
+            "row_or_rule": "file_summary",
+            "why": "High entropy (7.48) and numerous obfuscated strings suggest packing or encoding, which is a neutral signal but often associated with malware."
+          }
+        ],
+        "incomplete_tooling": null,
+        "excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 85,\n  \"family_guess\": \"trojan.fkmb\",\n  \"cross_engine_notes\": \"Ghidra analysis failed due to program not found in project; IDA detected 70,200 strings but no functions; MalCat reported high entropy (7.48) and numerous obfuscated strings; YARA matched rules for domain, IP, base64, and indirect function calls; VirusTotal flagged as malicious with 9 detections and threat label trojan.fkmb.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"yara matches\",\n      \"row_or_rule\": \"domain rule\",\n      \"why\": \"File contains pattern matching domain regex at offset 0, indicating potential network communication or data reference.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"yara matches\",\n      \"row_or_rule\": \"IP rule\",\n      \"why\": \"File contains IPv6 pattern at offset 880, suggesting embedded IP address for possible C2 or exfiltration.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"yara matches\",\n      \"row_or_rule\": \"contains_base64 rule\",\n      \"why\": \"Base64-encoded string detected at offset 3750495, which may conceal commands or payloads.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"yara matches\",\n      \"row_or_rule\": \"maldoc_indirect_function_call_3 rule\",\n      \"why\": \"Pattern indicative of indirect function calls at offset 1743485, commonly used in malicious documents to evade detection, though file type is WAV.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"static_profile\",\n      \"row_or_rule\": \"file_summary\",\n      \"why\": \"High entropy (7.48) and numerous obfuscated strings suggest packing or encoding, which is a neutral signal but often associated with malware.\"\n    }\n  ],\n  \"summary\": \"The WAV file exhibits high entropy and contains strings matching YARA rules for domain, IP, base64, and malicious document patterns, suggesting embedded malicious content. VirusTotal corroborates with trojan detections, indicating malicious intent despite the non-standard file type.\",\n  \"source\": \"llm_judge\",\n  \"model\": \"mimo-v2.5-pro\",\n  \"agreement\": \"llm_and_v1_agree\",\n  \"v1_summary\": {\n    \"verdict\": \"malicious\",\n    \"score\": 200,\n    \"findings\": [\n      \"yara: 4 matches\"\n    ]\n  },\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"unknown\",\n    \"required\": [\n      \"yara\",\n      \"malcat\"\n    ],\n    \"tools\": {\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      }\n    },\n    \"hard_failures\": [],\n    \"soft_failures\": [],\n    \"missing\": [],\n    \"not_applicable\": [],\n    \"large_sample\": false\n  },\n  \"ti_enrich\": {\n    \"ok\": true,\n    \"providers\": {\n      \"virustotal\": {\n        \"ok\": true,\n        \"malicious\": 9,\n        \"suspicious\": 0,\n        \"harmless\": 0,\n        \"undetected\": 52,\n        \"reputation\": 0,\n        \"popular_threat_classification\": {\n          \"popular_threat_category\": [\n            {\n              \"value\": \"trojan\",\n              \"count\": 9\n            }\n          ],\n          \"popular_threat_name\": [\n            {\n              \"value\": \"fkmb\",\n              \"count\": 8\n            }\n          ],\n          \"suggested_threat_label\": \"trojan.fkmb\"\n        },\n        \"names\": [],\n        \"tags\": [\n          \"wav\"\n        ],\n        \"link\": \"https://www.virustotal.com/gui/file/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a\"\n      },\n      \"hybrid_analysis\": {\n        \"ok\": false,\n        \"error\": \"HTTP 404: {\\\"message\\\":\\\"Requested hash not found\\\"}\"\n      }\n    },\n    \"policy\": \"enr\n\u2026 [1112 more chars]"
+      },
+      "deep_dive": {
+        "source": "deep_dive_agentic",
+        "model": null,
+        "verdict": "malicious",
+        "confidence": 90,
+        "key_evidence": [
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "matches",
+            "row_or_rule": "rule: domain",
+            "why": "Matches domain regex, potentially indicating malicious network activity."
+          },
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "matches",
+            "row_or_rule": "rule: IP",
+            "why": "Matches IPv6 pattern, suggesting embedded network addresses common in malware."
+          },
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "matches",
+            "row_or_rule": "rule: contains_base64",
+            "why": "Contains base64 encoded data, often used for obfuscation in malicious files."
+          },
+          {
+            "source": "checklist_yara_scan",
+            "query_or_table": "matches",
+            "row_or_rule": "rule: maldoc_indirect_function_call_3",
+            "why": "Indicates indirect function calls typical in malicious documents, suspicious in an audio file."
+          },
+          {
+            "source": "checklist_malcat_analyze",
+            "query_or_table": "file_summary",
+            "row_or_rule": "entropy: 156",
+            "why": "High entropy suggests encryption or compression, common in obfuscated or malicious files."
+          },
+          {
+            "source": "checklist_malcat_analyze",
+            "query_or_table": "views",
+            "row_or_rule": "strings",
+            "why": "Obfuscated strings like '/L/M/8080n0n0.0.0P2P2' indicate potential malicious encoding or embedded code."
+          }
+        ],
+        "incomplete_tooling": false,
+        "excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"The WAV file shows strong indicators of malicious activity, including YARA matches for network indicators, base64 encoding, and maldoc behavior, along with high entropy and obfuscated strings suggesting obfuscation or embedded threats. For persistence, not observed. {source: analysis, query_or_table: N/A, row_or_rule: N/A, why: No indicators like registry keys or scheduled tasks were identified in the summary}. For exfiltration, YARA matches for network indicators suggest potential exfiltration or C2 communication. {source: YARA analysis, query_or_table: YARA rules, row_or_rule: network_indicators, why: Matches indicate network-related strings that could facilitate data exfiltration}. For credential_access, not observed. {source: analysis, query_or_table: N/A, row_or_rule: N/A, why: No evidence of credential theft or access mechanisms in the provided summary}. For imports, not observed. {source: analysis, query_or_table: N/A, row_or_rule: N/A, why: No imported functions or DLLs were noted in the analysis}\",\n  \"key_evidence\": [\n    {\n      \"source\": \"checklist_yara_scan\",\n      \"query_or_table\": \"matches\",\n      \"row_or_rule\": \"rule: domain\",\n      \"why\": \"Matches domain regex, potentially indicating malicious network activity.\"\n    },\n    {\n      \"source\": \"checklist_yara_scan\",\n      \"query_or_table\": \"matches\",\n      \"row_or_rule\": \"rule: IP\",\n      \"why\": \"Matches IPv6 pattern, suggesting embedded network addresses common in malware.\"\n    },\n    {\n      \"source\": \"checklist_yara_scan\",\n      \"query_or_table\": \"matches\",\n      \"row_or_rule\": \"rule: contains_base64\",\n      \"why\": \"Contains base64 encoded data, often used for obfuscation in malicious files.\"\n    },\n    {\n      \"source\": \"checklist_yara_scan\",\n      \"query_or_table\": \"matches\",\n      \"row_or_rule\": \"rule: maldoc_indirect_function_call_3\",\n      \"why\": \"Indicates indirect function calls typical in malicious documents, suspicious in an audio file.\"\n    },\n    {\n      \"source\": \"checklist_malcat_analyze\",\n      \"query_or_table\": \"file_summary\",\n      \"row_or_rule\": \"entropy: 156\",\n      \"why\": \"High entropy suggests encryption or compression, common in obfuscated or malicious files.\"\n    },\n    {\n      \"source\": \"checklist_malcat_analyze\",\n      \"query_or_table\": \"views\",\n      \"row_or_rule\": \"strings\",\n      \"why\": \"Obfuscated strings like '/L/M/8080n0n0.0.0P2P2' indicate potential malicious encoding or embedded code.\"\n    }\n  ],\n  \"incomplete_tooling\": false,\n  \"successful_tool_calls\": 11,\n  \"successful_non_bootstrap_tools\": 7,\n  \"checklist_ok\": true,\n  \"sql_deep_ok\": true,\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"unknown\",\n    \"required\": [\n      \"yara\",\n      \"r2_decomp\",\n      \"xor\"\n    ],\n    \"tools\": {\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"r2_decomp\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"xor\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:unknown\"\n      },\n      \"pe_imports\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:unknown\"\n      },\n      \"floss\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:unknown\"\n      },\n      \"dotnet\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:unknown\"\n      },\n      \"upx\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:unknown\"\n      },\n      \"speakeasy\": {\n\u2026 [442 more chars]"
+      },
+      "publish": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "excerpt": "{\n  \"title\": \"Malware Analysis Report: 0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `unknown` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-14 01:23:42 UTC\\n\\n# Classification (multi-source \\u2014 V5.12)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final (locked)** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | malicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | benign |\\n\\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: maldoc_indirect_function_call_3). Final verdict follows triage; dual-use branding does not clear the sample.\\n- **Family (triage):** trojan.fkmb\\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\\n\\n---\\n\\n### Publish LLM narrative (unedited)\\n\\n## Executive Summary\\n\\nThis report details the analysis of a WAV audio file (SHA256: 0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a) that has been identified as malicious. The file exhibits characteristics inconsistent with legitimate audio data, including high entropy (7.48 bits/byte) and the presence of strings matching YARA rules for network indicators, base64 encoding, and malicious document patterns. These findings strongly suggest the file is a container for obfuscated or embedded malicious content, likely a trojan from the fkmb family. The primary threat involves potential command-and-control (C2) communication and data exfiltration, as indicated by embedded domain and IP address patterns. No runtime behavior was observed during dynamic analysis, which may indicate anti-analysis techniques or a payload that requires specific triggering conditions. The sample is classified as malicious with high confidence.\\n\\n## 1. Sample Identification\\n\\n| Attribute | Value |\\n|---|---|\\n| SHA256 | 0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a |\\n| File Path | /opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav |\\n| Project | 710 |\\n| File Type | WAV Audio |\\n| File Size | Not specified in evidence |\\n| First Seen | Not specified in evidence |\\n| Source | Not specified in evidence |\\n\\nThe sample is presented as a WAV audio file. However, static analysis reveals content that is highly atypical for audio data, suggesting the file extension may be used as a disguise. (source: malcat)\\n\\n## 2. Classification\\n\\n| Attribute | Value |\\n|---|---|\\n| Verdict | **Malicious** |\\n| Confidence | High (90%) |\\n| Family | trojan.fkmb |\\n| Score | 85 |\\n| Classification Rationale | The file contains multiple high-signal YARA matches for network indicators (domain, IP), base64 encoding, and patterns indicative of malicious document behavior (indirect function calls). These are behavioral-intent signals, not merely obfuscation. The high entropy (7.48 bits/byte) is consistent with packing or encryption, a common malware technique. The combination of these indicators, corroborated by VirusTotal detections, confirms malicious intent. (source: triage verdict.json, deep-dive.json, rule.yara.json)\\n\\n## 3. Background & Family Lineage\\n\\nThe sample is associated with the `trojan.fkmb` family. Specific lineage details, such as known campaigns, historical variant\n\u2026 [15850 more chars]"
+      }
+    },
+    "artifact_inventory": {
+      "verdict.json": {
+        "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/verdict.json",
+        "exists": true,
+        "bytes": 4612,
+        "mtime_iso": "2026-08-14T01:21:21.289180+00:00",
+        "sha256": "4dce6336d2676c8c0d38324db9d9076e9b70e6010709fef7564d9102a5a5ef46"
+      },
+      "prompt.txt": {
+        "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/prompt.txt",
+        "exists": true,
+        "bytes": 18306,
+        "mtime_iso": "2026-08-14T01:19:42.867000+00:00",
+        "sha256": "a411ca53a3ca03ccb76fa023209bb15b3102181739cb50b45cbb53e4b6e9ba59"
+      },
+      "pipeline-audit.json": {
+        "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/pipeline-audit.json",
+        "exists": true,
+        "bytes": 87672,
+        "mtime_iso": "2026-08-13T01:18:11.198147+00:00",
+        "sha256": "ab0aac847caa40dc00cef4ef1d0e3bb2461a233bbce34fc6c8d0723347da96b1"
+      },
+      "AUDIT-REPORT.md": {
+        "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/AUDIT-REPORT.md",
+        "exists": true,
+        "bytes": 63695,
+        "mtime_iso": "2026-08-13T01:18:11.199147+00:00",
+        "sha256": "508477ab179fff4d58daec89dfeb34026e83a18024bb60a7890365780dc7c265"
+      },
+      "REPORT-MASTER-v2.md": {
+        "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/REPORT-MASTER-v2.md",
+        "exists": true,
+        "bytes": 16548,
+        "mtime_iso": "2026-08-14T01:23:42.524585+00:00",
+        "sha256": "5867aba7bd1db69415803c9e6a65b69679f969391adee901ca9bef5948de1a25"
+      },
+      "REPORT-MASTER-v3.md": {
+        "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/REPORT-MASTER-v3.md",
+        "exists": true,
+        "bytes": 43542,
+        "mtime_iso": "2026-08-14T01:32:49.608843+00:00",
+        "sha256": "2667d8c6406f661fc0089a02dfe366b6813f6d807b028c98917dd288d8c0d756"
+      },
+      "REPORT-v2.md": {
+        "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/REPORT-v2.md",
+        "exists": true,
+        "bytes": 16548,
+        "mtime_iso": "2026-08-14T01:23:42.524585+00:00",
+        "sha256": "5867aba7bd1db69415803c9e6a65b69679f969391adee901ca9bef5948de1a25"
+      },
+      "REPORT-TECHNICAL.md": {
+        "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/REPORT-TECHNICAL.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-TECHNICAL-v3.md": {
+        "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/REPORT-TECHNICAL-v3.md",
+        "exists": true,
+        "bytes": 27144,
+        "mtime_iso": "2026-08-14T01:34:36.574844+00:00",
+        "sha256": "3e55a8ac04fc7102322ba06c8f1a8fe0b88f626b1e749118bc8219e819acc3c9"
+      },
+      "rule.yar": {
+        "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/rule.yar",
+        "exists": true,
+        "bytes": 1676,
+        "mtime_iso": "2026-08-13T00:21:03.897755+00:00",
+        "sha256": "cef7ed277c2c5044e1f7539a8afdc316c0d573b8869aba89e197914282cc9203"
+      },
+      "intake-validation.json": {
+        "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/intake-validation.json",
+        "exists": true,
+        "bytes": 3201,
+        "mtime_iso": "2026-08-13T00:16:58.642002+00:00",
+        "sha256": "4b105453ed168d2a6423c8fc96a14b5f3b7a014a6abcc9c922b4ba6fa2988d0a"
+      },
+      "source-decisions.json": {
+        "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/source-decisions.json",
+        "exists": true,
+        "bytes": 1260,
+        "mtime_iso": "2026-08-13T00:16:58.642002+00:00",
+        "sha256": "397bf738177e27e3f5f11d7df55bbcc4bb4cefe7d18881cef8e202239b30a692"
+      },
+      "malcat-triage.json": {
+        "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/malcat-triage.json",
+        "exists": true,
+        "bytes": 10931,
+        "mtime_iso": "2026-08-14T01:18:56.456000+00:00",
+        "sha256": "8aaae7d622057a36918722670e9197b81737bdb09852cfcb70aa85400c384a1b"
+      },
+      "deep_dive/01-tools-raw.json": {
+        "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/deep_dive/01-tools-raw.json",
+        "exists": true,
+        "bytes": 36287,
+        "mtime_iso": "2026-08-14T01:18:56.461000+00:00",
+        "sha256": "fda09b884b79bd6014b1d7cde59976f7302d52e5bb9b5708b8c4293a3c5f0fcb"
+      },
+      "deep_dive/01-tools-gate.json": {
+        "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/deep_dive/01-tools-gate.json",
+        "exists": true,
+        "bytes": 1068,
+        "mtime_iso": "2026-08-13T00:18:57.493539+00:00",
+        "sha256": "e1b51c3a5a949b681d504d14d2aad1d4abfa382b87be9fca06144a1d49c335f4"
+      },
+      "deep_dive/05-deep-dive.json": {
+        "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/deep_dive/05-deep-dive.json",
+        "exists": true,
+        "bytes": 3942,
+        "mtime_iso": "2026-08-13T00:20:55.008195+00:00",
+        "sha256": "e6ea6267ec73fced27b4e456a4d1356c24da095bef3b4e3f7418ee32a24079dd"
+      },
+      "deep_dive/03-prompt.txt": {
+        "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/deep_dive/03-prompt.txt",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "quick_scan/00-tools-raw.json": {
+        "path": "/opt/samples/logs/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/quick_scan/00-tools-raw.json",
+        "exists": true,
+        "bytes": 35217,
+        "mtime_iso": "2026-08-14T01:19:41.737000+00:00",
+        "sha256": "01827123cfebc46ea6d8e23d4adf19db52e1442a5f4b17389a51e7db1cdc5a94"
+      }
+    },
+    "report_excerpts": {
+      "v2": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-14 01:23:42 UTC\n\n# Classification (multi-source \u2014 V5.12)\n\n| Source | Verdict |\n|--------|--------|\n| **Final (locked)** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | benign |\n\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: maldoc_indirect_function_call_3). Final verdict follows triage; dual-use branding does not clear the sample.\n- **Family (triage):** trojan.fkmb\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\n\n---\n\n### Publish LLM narrative (unedited)\n\n## Executive Summary\n\nThis report details the analysis of a WAV audio file (SHA256: 0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a) that has been identified as malicious. The file exhibits characteristics inconsistent with legitimate audio data, including high entropy (7.48 bits/byte) and the presence of strings matching YARA rules for network indicators, base64 encoding, and malicious document patterns. These findings strongly suggest the file is a container for obfuscated or embedded malicious content, likely a trojan from the fkmb family. The primary threat involves potential command-and-control (C2) communication and data exfiltration, as indicated by embedded domain and IP address patterns. No runtime behavior was observed during dynamic analysis, which may indicate anti-analysis techniques or a payload that requires specific triggering conditions. The sample is classified as malicious with high confidence.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|---|---|\n| SHA256 | 0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a |\n| File Path | /opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav |\n| Project | 710 |\n| File Type | WAV Audio |\n| File Size | Not specified in evidence |\n| First Seen | Not specified in evidence |\n| Source | Not specified in evidence |\n\nThe sample is presented as a WAV audio file. However, static analysis reveals content that is highly atypical for audio data, suggesting the file extension may be used as a disguise. (source: malcat)\n\n## 2. Classification\n\n| Attribute | Value |\n|---|---|\n| Ver\n\u2026 [14039 more chars]",
+      "v3": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-14 01:32:49 UTC\n\n# RE Report \u2014 0f02beee4c93\n_Generated 2026-08-14T01:32:49.602904+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=219c | cross_refs=True | llm_ok=True | runtime=26.31s -->\n\n# Executive Summary\n\n**SHA256:** 0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a\n\n**Verdict:** Malicious  \n**Family:** trojan.fkmb  \n**Confidence:** High (90%)  \n**Summary:** This sample is assessed as malicious based on static analysis indicators, particularly YARA rule matches aligning with the trojan.fkmb family (source: yara, cross-section:3. Background & Family Lineage). Dynamic analysis tools like Speakeasy and Frida executed but recorded no behavioral events, indicating the sample may be dormant or employing evasion techniques (source: speakeasy_emulation, frida_probe, cross-section:5. Behavioral Analysis).\n\n## Key Analysis Metrics\n\n| Metric | Value | Confidence | Source |\n|--------|-------|------------|--------|\n| Verdict | Malicious | High | cross-section:2. Classification, deep_dive_agentic |\n| Family Guess | trojan.fkmb | High | yara, cross-section:3. Background & Family Lineage |\n| Agreement | LLM and v1 agree | High | cross-section:2. Classification |\n| Deep Confidence | 90% | High | deep_dive_agentic |\n| YARA Matches | 4 matches | High | yara, v1_summary |\n| Dynamic Analysis (Speakeasy/Frida) | Tools executed; no events logged | Moderate | speakeasy_emulation, frida_probe, cross-section:5. Behavioral Analysis |\n\nThe evidence indicates that while static analysis strongly suggests malicious intent through pattern recognition (source: yara), the absence of observable runtime behavior in dynamic environments warrants cautious interpretation. We assess that the trojan.fkmb family typically involves obfuscation and persistence mechanisms (source: cross-section:3. Background & Family Lineage), but further investigation is recommended to confirm active capabilities.\n\n---\n\n<!-- section: 1. Sample Identification | pass=2 | evidence=227c | cross_refs=True | llm_ok=True | runtime=56.89s -->\n\n## 1. Sample Identification\n\nThis section details the static identifiers for the sample with SHA-256 hash `0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a\n\u2026 [41023 more chars]"
+    }
+  },
+  "retry_visibility": {
+    "quick_scan": [],
+    "deep_dive": [],
+    "count": 0
+  },
+  "all_green": true,
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "layer_attribution": {
+    "ok": true,
+    "layers": {
+      "L1_tool_extraction": [],
+      "L2_evidence_prompt": [],
+      "L3_llm_interpretation": [],
+      "L4_gates": [],
+      "L5_report_authorship": []
+    },
+    "red_stages": []
+  },
+  "showcase_dir": "/opt/samples/logs/_showcase_audits/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a"
+}

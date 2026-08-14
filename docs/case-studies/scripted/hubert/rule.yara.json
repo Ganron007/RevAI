@@ -1,0 +1,61 @@
+{
+  "sha256": "0598e95ea5f28e3e591a8ab26bd6794e06f038282cac8ecf302009c6636cd0bc",
+  "family": "Trojan.Tibs",
+  "imphash": "c69e7c5c6b975b5dd44f2d4469eea107",
+  "generated_at": "2026-08-12T20:23:18.412119+00:00",
+  "string_count": 24,
+  "strings": [
+    "!This program cannot be run in DOS mode.",
+    "Pkdpqmjwl",
+    "`a%u`wvjk%qwl`v%qj%vq`di%|jpw%udvvrjwav%dka%uwlsdq`%lkcjwhdqljk+%Filfn%jk%qm`%h`vvdb`%qj%uw`s`kq%la`kqlq|%qm`cq+",
+    "Pkdpqmjvwl",
+    "`a%dff`vv%qj%|jpw%fjhupq`w$%Filfn%jk%qm`%h`vvdb`%qj%lkvqdii%pu(qj(adq`%dkqlslwpv%vjcqrdw`+",
+    "Mdwhcpi%slwpv`v%a`q`fq`a%jk%|jpw%fjhupq`w+%Filfn%jk%qm`%h`vvdb`%qj%vfdk%|jpw%fjhupq`w%cjw%v`fpwlq|%qmw`dqv%cjw%cw``+",
+    "<1=51=354163<2766<6<<2062567<160<255<2245757",
+    "A`c`kv`%F`kq`w",
+    "Software\\",
+    "\\license.dat",
+    "a`cfkq+`}`",
+    "Windows Security Alert",
+    "fjiesogjfoerajgoasj",
+    "Shell_TrayWnd",
+    "Printers\\Connections",
+    "\\_favdata.dat",
+    "mqqu?** v*w`daadqdbdq`rd|+umu:q|u`8vqdqv#dccla8 v#vpgla8 v#s`wvljk8 v#dardw`jn",
+    "Vjcqrdw`YYHlfwjvjcqYYRlkajrvYYFpww`kqS`wvljkYYUjilfl`vYYV|vq`h",
+    "Alvdgi`QdvnHbw",
+    "explorer.exe",
+    "Software",
+    "dd1c3e54-4b10-4a73-91eb-fa561c094261",
+    "24d1ca9a-a864-4f7b-86fe-495eb56529d8",
+    "wget 3.0"
+  ],
+  "rule_path": "/opt/samples/logs/0598e95ea5f28e3e591a8ab26bd6794e06f038282cac8ecf302009c6636cd0bc/rule.yar",
+  "sigma_path": "/opt/samples/logs/0598e95ea5f28e3e591a8ab26bd6794e06f038282cac8ecf302009c6636cd0bc/rule.yml",
+  "iocs_path": "/opt/samples/logs/0598e95ea5f28e3e591a8ab26bd6794e06f038282cac8ecf302009c6636cd0bc/iocs.json",
+  "yara_valid": true,
+  "yara_check": "ok",
+  "goodware_fp": {
+    "goodware_dir": "/opt/samples/goodware",
+    "fp_count": 0,
+    "fp_samples": [],
+    "skipped": "goodware corpus not staged"
+  },
+  "yargen": {
+    "skipped": true
+  },
+  "revai": true,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-12 20:23:18 UTC"
+  },
+  "publish_target": "revai_publish"
+}

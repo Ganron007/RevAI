@@ -1,0 +1,21 @@
+title: "RevAI v2: luder activity"
+id: luder_98ab99efa9cc
+status: experimental
+level: high
+description: "Auto-generated Sigma rule for luder (sha256 prefix 98ab99efa9cc)"
+author: RevAI yara_gen_v2
+date: 2026/08/12
+reference: "commit unknown · engine langgraph"
+tags:
+    - attack.execution
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+            CommandLine|contains: "*!This program cannot be run in DOS mode.*"
+            CommandLine|contains: "*ADVAPI32.dll*"
+            CommandLine|contains: "*KERNEL32.dll*"
+    condition: selection
+falsepositives:
+    - Review against goodware corpus

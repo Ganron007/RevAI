@@ -1,0 +1,30 @@
+{
+  "sha256": "8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e",
+  "family": "X97M",
+  "verdict": "malicious@",
+  "generated_at": "2026-08-12T22:57:34.479732+00:00",
+  "hashes": {
+    "sha256": "8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e",
+    "sha1": "59c264186b75285f57a51d90c89beae6ae41f18a",
+    "md5": "2781acaf22358b2027980adb1d74ac20"
+  },
+  "domains": [],
+  "ips": [],
+  "urls": [],
+  "files": [],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive).",
+  "wallets_btc": [],
+  "wallets_eth": [],
+  "revai_tools": {
+    "count": 0,
+    "source": "revai_tools_iocs"
+  }
+}

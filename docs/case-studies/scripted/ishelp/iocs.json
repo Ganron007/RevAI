@@ -1,0 +1,39 @@
+{
+  "sha256": "bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76",
+  "family": "trojan.lotusblossom/explorerhijack",
+  "verdict": "malicious@40",
+  "generated_at": "2026-08-12T19:20:59.427671+00:00",
+  "hashes": {
+    "sha256": "bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76",
+    "sha1": "57816a296e7c575dceea2c2fe5171a298e17f73a",
+    "md5": "8124e6c71c44bad2fc3d1870c7320c61"
+  },
+  "domains": [
+    "showip[.]net"
+  ],
+  "ips": [],
+  "urls": [
+    "http[:]//\u0000https[:]//\u0000\u0000\u0000\u0000ishelp\u0000\u0000server"
+  ],
+  "files": [
+    "iexplore.exe",
+    "000A758C8FEAE5F.TMP",
+    "Kernel32.dll",
+    "A08E81B411.DAT"
+  ],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive).",
+  "wallets_btc": [],
+  "wallets_eth": [],
+  "revai_tools": {
+    "count": 2,
+    "source": "revai_tools_iocs"
+  }
+}

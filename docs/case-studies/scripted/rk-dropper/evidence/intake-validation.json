@@ -1,0 +1,66 @@
+{
+  "sha256": "1196afa54d18ff2ddf0be7a77616657dbd286147f6705d16357239b2dd941ea0",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X86",
+      "file_size": 3388672,
+      "entropy": 112,
+      "sha256": "1196afa54d18ff2ddf0be7a77616657dbd286147f6705d16357239b2dd941ea0",
+      "dotnet_bundle": false,
+      "imports_count": 125,
+      "strings_count": 100,
+      "functions_count": 10,
+      "constants_count": 35,
+      "anomalies_count": 10,
+      "yara_hits_count": 5,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 125,
+      "import_ptrs": 4,
+      "funcs": 34,
+      "strings": 185
+    },
+    "ida": {
+      "imports": 125,
+      "funcs": 27,
+      "strings": 1091
+    }
+  },
+  "warnings": [],
+  "source_decisions": {
+    "sha256": "1196afa54d18ff2ddf0be7a77616657dbd286147f6705d16357239b2dd941ea0",
+    "imports": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Evidence: {malcat, imports_count, 125}, {ghidra, imports, 125}, {ida, imports, 125}; all tools report consistent import count of 125, within close agreement."
+    },
+    "functions": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Evidence: {ghidra, funcs, 34}, {ida, funcs, 27}, {malcat, functions_count, 10}; Ghidra and IDA show similar detailed counts (within 2x), while malcat's lower count suggests less comprehensive analysis, so Ghidra preferred."
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "Evidence: {malcat, strings_count, 100}, {ghidra, strings, 185}, {ida, strings, 1091}; strings counts vary significantly across tools, indicating complementary coverage, so using both engines is optimal for thorough analysis."
+    },
+    "decompilation": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "No direct decompilation data in summaries; defaulting to Ghidra as a reliable decompiler based on existing rule-based decision."
+    },
+    "cff": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "No specific CFF data provided in summaries; defaulting to Ghidra as per established guidelines for consistent analysis."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Evidence: {malcat, anomalies_count, 10}, {malcat, yara_hits_count, 5}, {malcat, imports_count, 125}; malcat offers fast and comprehensive static profiling including anomalies, YARA hits, and file properties."
+    },
+    "llm_revised": true
+  }
+}

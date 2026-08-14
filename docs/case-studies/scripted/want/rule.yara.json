@@ -1,0 +1,59 @@
+{
+  "sha256": "d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09",
+  "family": "ransomware.lockbit",
+  "imphash": "09d0478591d4f788cb3e5ea416c25237",
+  "generated_at": "2026-08-12T19:40:37.302857+00:00",
+  "string_count": 22,
+  "strings": [
+    "!This program cannot be run in DOS mode.",
+    "PECompact2",
+    "`J L5''m",
+    "#L6@2'}!",
+    "GetProcAddress",
+    "kernel32.dll",
+    "LoadLibraryA",
+    "VirtualAlloc",
+    "VirtualFree",
+    "Mw0qb`Y[4",
+    "PpLH U(s8",
+    "lWR% uLCQ",
+    "*k`19(sE",
+    "C2kA<9<J",
+    "fhggR$;_",
+    "ApAlicat",
+    "l?Exi)tP",
+    "High detection rate (59/70) and specific ransomware family (lockbit) indicate malicious intent, consistent with prior th",
+    "Packed with multiple packers, a common obfuscation technique in malware to evade detection, but neutral alone without be",
+    "Identified as packed with PECompact, a protector often abused for malware distribution, contributing to suspicious profi",
+    "APIs for dynamic loading and memory allocation are used in malicious code execution, such as shellcode injection or evas",
+    "Indicates potential process injection or shellcode execution, a behavioral tactic in malware."
+  ],
+  "rule_path": "/opt/samples/logs/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/rule.yar",
+  "sigma_path": "/opt/samples/logs/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/rule.yml",
+  "iocs_path": "/opt/samples/logs/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/iocs.json",
+  "yara_valid": true,
+  "yara_check": "ok",
+  "goodware_fp": {
+    "goodware_dir": "/opt/samples/goodware",
+    "fp_count": 0,
+    "fp_samples": [],
+    "skipped": "goodware corpus not staged"
+  },
+  "yargen": {
+    "skipped": true
+  },
+  "revai": true,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-12 19:40:37 UTC"
+  },
+  "publish_target": "revai_publish"
+}

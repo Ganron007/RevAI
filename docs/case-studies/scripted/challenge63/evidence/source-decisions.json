@@ -1,0 +1,33 @@
+{
+  "sha256": "98ab99efa9cc35e89d3a43ec1976c52d2ac91055c3ac787f2497b7e733c63648",
+  "imports": {
+    "source": "ghidra",
+    "confidence": "high",
+    "reason": "Evidence: {ghidra, imports, 290, consistent with ida.imports=290 and malcat.imports_count=290, all tools report same value}"
+  },
+  "functions": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Evidence: {ghidra, funcs, 321, close to ida.funcs=324 within 1%, but malcat.functions_count=10 is low, indicating possible metric difference}"
+  },
+  "strings": {
+    "source": "both",
+    "confidence": "high",
+    "reason": "Evidence: {ghidra, strings, 1100, ida.strings=357, malcat.strings_count=100, significant discrepancy, using both engines provides comprehensive analysis}"
+  },
+  "decompilation": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Evidence: {default, no specific decompilation data in summaries, ghidra is commonly used for decompilation analysis}"
+  },
+  "cff": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Evidence: {default, no cff-specific data in summaries, ghidra is standard for file format and structure analysis}"
+  },
+  "static_profile": {
+    "source": "malcat",
+    "confidence": "high",
+    "reason": "Evidence: {malcat, anomalies_count, 14, and yara_hits_count=3, provides fast file summary with anomalies, imports, and strings for static profiling}"
+  }
+}

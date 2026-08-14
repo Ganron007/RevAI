@@ -1,0 +1,30 @@
+{
+  "sha256": "8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e",
+  "format": "ooxml",
+  "mode": "document",
+  "tool_summaries": {
+    "malcat": {},
+    "ghidra": {},
+    "ida": {},
+    "doc_triage": {
+      "ok": true,
+      "kind": "ooxml_or_zip",
+      "flags": {
+        "has_vba": false,
+        "autoexec": false,
+        "suspicious": false,
+        "ioc": false
+      },
+      "analyst_next": [
+        "Review olevba for AutoExec / shell / URL",
+        "If macro drops PE: save payload \u2192 intake as child sample",
+        "HITL: Word/Excel on Flare snapshot only"
+      ]
+    }
+  },
+  "ghidra": {},
+  "ida": {},
+  "warnings": [
+    "document format: ghidra/ida skipped (doc_triage used)"
+  ]
+}

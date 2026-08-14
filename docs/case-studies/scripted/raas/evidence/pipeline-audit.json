@@ -1,0 +1,1284 @@
+{
+  "sha": "c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505",
+  "mode": "single",
+  "mode_effective": "large",
+  "strict_standard": false,
+  "audited_at": "2026-08-14T03:24:46.609319+00:00",
+  "session_pipeline_mode": "single",
+  "sample_path": "/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe",
+  "stages": {
+    "intake": {
+      "ok": true,
+      "checks": {
+        "intake_validation": true,
+        "has_source_decisions": true,
+        "ghidra_mentioned": true
+      },
+      "evidence": {
+        "intake_validation": {
+          "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/intake-validation.json",
+          "exists": true,
+          "bytes": 2566,
+          "mtime_iso": "2026-08-12T21:15:49.649260+00:00",
+          "sha256": "ec0cdc697e414fb255eed58b994263f48533125cf3572857f7a603d86f9781bd"
+        },
+        "malcat_triage": {
+          "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/malcat-triage.json",
+          "exists": true,
+          "bytes": 55213,
+          "mtime_iso": "2026-08-13T12:25:52.669769+00:00",
+          "sha256": "83bc6c7ccb50d446da6e3239400be68b7e77797559fd2c792e00ab5ff615753e"
+        },
+        "source_decisions": {
+          "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/source-decisions.json",
+          "exists": true,
+          "bytes": 1657,
+          "mtime_iso": "2026-08-12T21:15:49.649260+00:00",
+          "sha256": "1fdf2d8c0639232dd1deadbe962f60985f4340ae7def3c0722d5a06bfe4f562d"
+        },
+        "ghidra_import_log": {
+          "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/intake-analyzeHeadless.log",
+          "exists": true,
+          "bytes": 8246,
+          "mtime_iso": "2026-08-12T21:14:52.412304+00:00",
+          "sha256": "e4a83a17fa593f952a2cb3faa1127720ad3148aa0efd23792e02afcb295699bd"
+        },
+        "ida_bootstrap_log": {
+          "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/intake-idasql.log",
+          "exists": true,
+          "bytes": 211,
+          "mtime_iso": "2026-08-12T21:14:53.846299+00:00",
+          "sha256": "d6d3540df6587b99f87f20aa13d8908c4c8149efef305de847ce290c473e6c5a"
+        },
+        "source_decisions_excerpt": "{\n  \"sha256\": \"c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505\",\n  \"imports\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"high\",\n    \"reason\": \"Ghidra and IDA both report 83 imports, showing high agreement, while malcat's count (238) diverges significantly, indicating potential different analysis scope.\"\n  },\n  \"functions\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"high\",\n    \"reason\": \"Ghidra and IDA report similar function counts (248 and 226), within 10% difference, while malcat's count (10) is much lower, suggesting different analysis focus, so trust the consensus of ghidra and ida.\"\n  },\n  \"strings\": {\n    \"source\": \"both\",\n    \"confidence\": \"high\",\n    \"reason\": \"Different tools report varying string counts (ghidra 230, ida 596, malcat 100), so using both engines\n\u2026 [880 more chars]",
+        "malcat_triage_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n  \"profile\": \"triage\",\n  \"limits\": {\n    \"strings_max\": 100,\n    \"imports_max\": 100,\n    \"functions_max\": 10,\n    \"anomaly_locations_max\": 5,\n    \"decompile_top_n\": 1\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"raas.exe\",\n    \"file_path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n    \"file_size\": 173923,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 7.39,\n    \"sha256\": \"c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505\",\n    \"metadata\": {},\n    \"entrypoint_ea\": 1564,\n    \"layout\": [\n      {\n        \"name\": \"header\",\n        \"effective_address\":\n\u2026 [54413 more chars]"
+      }
+    },
+    "quick_scan": {
+      "ok": true,
+      "checks": {
+        "prompt": true,
+        "verdict": true,
+        "has_capa_section": true,
+        "has_yara_section": true,
+        "has_malcat_section": true,
+        "has_floss_section": true,
+        "verdict_has_family": true,
+        "llm_source": true,
+        "tools_all_ok": true,
+        "citations_grounded": true,
+        "capa_salvage_used": false,
+        "evidence_pack_present": true,
+        "benign_blocked_if_incomplete": true,
+        "yara_family_not_cleared": true
+      },
+      "tools": {
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 27,\n  \"top_rules\": [\n    {\n      \"name\": \"encode data using XOR\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encoding-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encoding-Standard Algorithm\",\n          \"id\": \"E1027.m02\"\n        },\n        {\n          \"parts\": [\n            \"Data\",\n            \"Encode Data\",\n            \"XOR\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Encode Data\",\n          \"method\": \"XOR\",\n          \"id\": \"C0026.002\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encrypt data using RC4 PRGA\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Cryptography\",\n            \"Encrypt Data\",\n            \"RC4\"\n          ],\n          \"objective\": \"Cryptography\",\n          \"behavior\": \"Encrypt Data\",\n          \"method\": \"RC4\",\n          \"id\": \"C0027.009\"\n        },\n        {\n          \"parts\": [\n            \"Cryptography\",\n            \"Generate Pseudo-random Sequence\",\n            \"RC4 PRGA\"\n          ],\n          \"objective\": \"Cryptography\",\n          \"behavior\": \"Generate Pseudo-random Sequence\",\n          \"method\": \"RC4 PRGA\",\n          \"id\": \"C0021.004\"\n        }\n      ]\n    },\n    {\n      \"name\": \"accept command line arguments\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Execution\",\n            \"Command and Scripting Interpreter\"\n          ],\n          \"tactic\": \"Execution\",\n          \"technique\": \"Command and Scripting Interpreter\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1059\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Execution\",\n            \"Command and Scripting Interpreter\"\n          ],\n          \"objective\": \"Execution\",\n          \"behavior\": \"Command and Scripting Interpreter\",\n          \"method\": \"\",\n          \"id\": \"E1059\"\n        }\n      ]\n    },\n    {\n      \"name\": \"query environment variable\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Discovery\",\n            \"System Information Discovery\"\n          ],\n          \"tactic\": \"Discovery\",\n          \"technique\": \"System Information Discovery\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1082\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Discovery\",\n            \"System Information Discovery\"\n          ],\n          \"objective\": \"Discovery\",\n          \"behavior\": \"System Information Discovery\",\n          \"method\": \"\",\n          \"id\": \"E1082\"\n        }\n      ]\n    },\n    {\n      \"name\": \"get common file path\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Discovery\",\n            \"File and Directory Discovery\"\n          ],\n          \"tactic\": \"Discovery\",\n          \"technique\": \"File an\n\u2026 [5818 more chars]",
+          "present": true
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 19,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 167971,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 55852,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Advapi_Hash_API\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$advapi32\",\n          \"offset\": 77130,\n          \"length\": 12,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$CryptCreateHash\",\n          \"offset\": 77012,\n          \"length\": 15,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$CryptHashData\",\n          \"offset\": 77050,\n          \"length\": 13,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$CryptAcquireContext\",\n          \"offset\": 76966,\n          \"length\": 19,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"CRC32_poly_Constant\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 1226,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"maldoc_find_kernel32_base_method_1\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a2\",\n          \"offset\": 7391,\n          \"length\": 6,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE32\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsWindowsGUI\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsPacked\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasOverlay\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasRichSignature\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 208,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Microsoft_Visual_Cpp_v50v60_MFC\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c\n\u2026 [6575 more chars]",
+          "present": true
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 579,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"wpespy.dll\",\n    \"pstorec.dll\",\n    \"avghookx.dll\",\n    \"HARDWARE\\\\DESCRIPTION\\\\System\",\n    \"avghooka.dll\",\n    \"dwmapi.dll\",\n    \"VideoBiosVersion\",\n    \"sample.\",\n    \"SOFTWARE\\\\VMware, Inc.\\\\VMware Tools\",\n    \"SystemBiosVersion\",\n    \"ollydbg.exe\",\n    \"HARDWARE\\\\DEVICEMAP\\\\Scsi\\\\Scsi Port 0\\\\Scsi Bus 0\\\\Target Id 0\\\\Logical Unit Id 0\",\n    \"WinDbgFrameClass\",\n    \"Identifier\",\n    \"ProcessHacker.exe\",\n    \"\\\\SAMPLE\",\n    \"tcpview.exe\",\n    \"drivers\\\\vmhgfs.sys\",\n    \"SANDBOX\",\n    \"autoruns.exe\",\n    \"Immunity Debugger\",\n    \"C:\\\\InsideTm\",\n    \"autorunsc.exe\",\n    \"filemon.exe\",\n    \"Zeta Debugger\",\n    \"ntdll.dll\",\n    \"procmon.exe\",\n    \"kernel32.dll\",\n    \"Rock Debugger\",\n    \"procexp.exe\",\n    \"idaq.exe\",\n    \"idaq64.exe\",\n    \"ObsidianGUI\",\n    \"drivers\\\\vmmouse.sys\",\n    \"ImmunityDebugger.exe\",\n    \"\\\\\\\\.\\\\PhysicalDrive0\",\n    \"Wireshark.exe\",\n    \"dumpcap.exe\",\n    \"HookExplorer.exe\",\n    \"ImportREC.exe\",\n    \"PETools.exe\",\n    \"LordPE.exe\",\n    \"prl_cc.exe\",\n    \"SysInspector.exe\",\n    \"prl_tools.exe\",\n    \"proc_analyser.exe\",\n    \"sysAnalyzer.exe\",\n    \"sniff_hit.exe\",\n    \"xenservice.exe\",\n    \"windbg.exe\",\n    \"VMSrvc.exe\",\n    \"joeboxcontrol.exe\",\n    \"VMUSrvc.exe\",\n    \"joeboxserver.exe\",\n    \"MALWARE\",\n    \"netmon.exe\",\n    \"MALTEST\",\n    \"SbieDll.dll\",\n    \"TEQUILABOOMBOOM\",\n    \"IRTUALBOX\",\n    \"dbghelp.dll\",\n    \"devenv.exe\",\n    \"snxhk.dll\",\n    \"api_log.dll\",\n    \"user32.dll\",\n    \"dir_watch.dll\",\n    \"vmcheck.dll\",\n    \"drivers\\\\VBoxMouse.sys\",\n    \"CheckRemoteDebuggerPresent\",\n    \"NtQueryInformationProcess\",\n    \"!This program cannot be run in DOS mode.\",\n    \"`.rdata\",\n    \"@.data\",\n    \".reloc\",\n    \"SUVWh@\",\n    \"]caIH:Q|O\",\n    \"-X<R!G\",\n    \"PWWh\\\\@\",\n    \"PSSj%S\",\n    \"QQSVW3\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 70,\n    \"stack_strings\": 0,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 509\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 20.79,\n  \"size_bytes\": 173923,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}",
+          "present": true
+        },
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"raas.exe\",\n    \"file_path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n    \"file_size\": 173923,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 7.39,\n    \"sha256\": \"c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505\",\n    \"metadata\": {},\n    \"entrypoint_ea\": 1564,\n    \"layout\": [\n      {\n        \"name\": \"header\",\n        \"effective_address\": 0,\n        \"physical_size\": 1024,\n        \"virtual_size\": 0,\n        \"rights\": \"\",\n        \"entropy\": 43\n      },\n      {\n        \"name\": \".text\",\n        \"effective_address\": 1024,\n        \"physical_size\": 54272,\n        \"virtual_size\": 57344,\n        \"rights\": \"RX\",\n        \"entropy\": 134\n      },\n      {\n        \"name\": \".rdata\",\n        \"effective_address\": 58368,\n        \"physical_size\": 22016,\n        \"virtual_size\": 24576,\n        \"rights\": \"R\",\n        \"entropy\": 86\n      },\n      {\n        \"name\": \".data\",\n        \"effective_address\": 82944,\n        \"physical_size\": 10240,\n        \"virtual_size\": 20480,\n        \"rights\": \"RW\",\n        \"entropy\": 73\n      },\n      {\n        \"name\": \".reloc\",\n        \"effective_address\": 103424,\n        \"physical_size\": 3584,\n        \"virtual_size\": 4096,\n        \"rights\": \"R\",\n        \"entropy\": 62\n      },\n      {\n        \"name\": \"overlay\",\n        \"effective_address\": 107520,\n        \"physical_size\": 82787,\n        \"virtual_size\": 0,\n        \"rights\": \"\",\n        \"entropy\": 216\n      }\n    ],\n    \"kesakode_verdict\": [],\n    \"entropy_malcat_raw\": 160,\n    \"entropy_source\": \"whole_file_shannon_revai\"\n  },\n  \"views\": {\n    \"anomalies\": [\n      {\n        \"name\": \"CryptoApiUsage\",\n        \"desc\": \"Crypto-related apis are used\",\n        \"category\": \"imports\",\n        \"level\": 2,\n        \"num_hits\": 3\n      },\n      {\n        \"name\": \"GuiSubsystemNoWindowApi\",\n        \"desc\": \"A GUI windows application does not import any user32 window-related function\",\n        \"category\": \"headers\",\n        \"level\": 2,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"HighXrefLoopingFunction\",\n        \"desc\": \"Function contains a loop and has a lot of incoming references (string decryption candidate)\",\n        \"category\": \"code\",\n        \"level\": 1,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"HugeStringHexa\",\n        \"desc\": \"string has more than 1024 characters and hexa encoding\",\n        \"category\": \"strings\",\n        \"level\": 4,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"NoChecksum\",\n        \"desc\": \"PE Header checksum is not set\",\n        \"category\": \"integrity\",\n        \"level\": 1,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"PossiblePackerApiDynamicImport\",\n        \"desc\": \"A packer-related api (VirtualProtect, ResumeThread, etc.) is present as string in the binary, but is not imported\",\n        \"category\": \"imports\",\n        \"level\": 4,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"RichUnknownTool\",\n        \"desc\": \"Tool entry is not known (either a new version or has been patched)\",\n        \"category\": \"rich\",\n        \"level\": 2,\n        \"num_hits\": 1\n      },\n      {\n   \n\u2026 [83632 more chars]",
+          "present": true
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 7,
+        "hits": 6,
+        "misses": [
+          "threat_class suggested_threat_label external TI hash enrich VirusTotal classifies as ransomware.shaitan/troldesh with 62"
+        ],
+        "hit_examples": [
+          "allocate_memory (VirtualAllocEx) pe_imports signals API for memory allocation in process injection, a technique for mali",
+          "IsDebuggerPresent imports Anti-debugging API to detect and evade analysis environments (T1622), showing defense evasion ",
+          "encrypt data using RC4 PRGA capa top_rules Encryption technique commonly used in ransomware to encrypt user files, indic",
+          "ollydbg.exe floss strings Strings targeting debuggers and analysis tools (e.g., ollydbg.exe, idaq.exe), indicating anti-",
+          "anti_dbg yara matches YARA rule detecting anti-debugging behaviors, confirming defense evasion intent. yara   "
+        ],
+        "reason": ""
+      },
+      "format": "pe",
+      "required_tools": [
+        "capa",
+        "yara",
+        "floss"
+      ],
+      "verdict_preview": {
+        "verdict": "malicious",
+        "family": "ransomware.shaitan/troldesh",
+        "score": 90,
+        "agreement": "llm_and_v1_agree",
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "key_evidence": [
+          {
+            "source": "virustotal",
+            "query_or_table": "external TI hash enrich",
+            "row_or_rule": "threat_class suggested_threat_label",
+            "why": "VirusTotal classifies as ransomware.shaitan/troldesh with 62 malicious detections, indicating confirmed malicious behavior and ransomware family."
+          },
+          {
+            "source": "pe_imports",
+            "query_or_table": "pe_imports signals",
+            "row_or_rule": "allocate_memory (VirtualAllocEx)",
+            "why": "API for memory allocation in process injection, a technique for malicious code execution (T1055)."
+          },
+          {
+            "source": "ida",
+            "query_or_table": "imports",
+            "row_or_rule": "IsDebuggerPresent",
+            "why": "Anti-debugging API to detect and evade analysis environments (T1622), showing defense evasion intent."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "capa top_rules",
+            "row_or_rule": "encrypt data using RC4 PRGA",
+            "why": "Encryption technique commonly used in ransomware to encrypt user files, indicating destructive behavior (T1027)."
+          },
+          {
+            "source": "floss",
+            "query_or_table": "floss strings",
+            "row_or_rule": "ollydbg.exe",
+            "why": "Strings targeting debuggers and analysis tools (e.g., ollydbg.exe, idaq.exe), indicating anti-analysis and sandbox evasion."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "yara matches",
+            "row_or_rule": "anti_dbg",
+            "why": "YARA rule detecting anti-debugging behaviors, confirming defense evasion intent."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "malcat anomalies",
+            "row_or_rule": "CryptoApiUsage",
+            "why": "Anomaly indicating use of cryptographic APIs, potentially for malicious file encryption or data obfuscation."
+          }
+        ],
+        "summary": "The sample exhibits clear behavioral-intent evidence: anti-debugging via IsDebuggerPresent and related strings, process injection with VirtualAllocEx and VirtualProtect, encryption capabilities via RC4 PRGA and XOR encoding, registry manipulation, and file operations. External threat intelligence confirms it as ransomware from the shaitan/troldesh family. Combined with high-signal YARA rules and c"
+      },
+      "evidence": {
+        "prompt": {
+          "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/prompt.txt",
+          "exists": true,
+          "bytes": 35306,
+          "mtime_iso": "2026-08-14T02:58:30.047510+00:00",
+          "sha256": "fe870d402cd601c89bf6b4614ee2ca05f688f0ac2e2c4edad6d57896531ac8a3"
+        },
+        "verdict": {
+          "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/verdict.json",
+          "exists": true,
+          "bytes": 6521,
+          "mtime_iso": "2026-08-14T02:59:42.525550+00:00",
+          "sha256": "428a0710ca629b4899edf0fa77eafcba3a63ae33e5228dbec8198a50dd3789d4"
+        },
+        "prompt_excerpt": "# Triage evidence\nsha256: c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505\nsample_path: /opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\nghidra_session: ghidra-pe-c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505\nida_session: ida-c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505\n\n## Source decisions (from intake validation)\n- imports: ghidra (confidence=high) \u2014 Ghidra and IDA both report 83 imports, showing high agreement, while malcat's count (238) diverges significantly, indicating potential different analysis scope.\n- functions: ghidra (confidence=high) \u2014 Ghidra and IDA report similar function counts (248 and 226), within 10% difference, while malcat's count (10) is much lower, suggesting different analysis focus, so trust the consensus of ghidra and ida.\n- strings: both (confidence=high) \u2014 Different tools report varying string counts (ghidra 230, ida 596, malcat 100), so using both en\n\u2026 [34252 more chars]",
+        "verdict_excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 90,\n  \"family_guess\": \"ransomware.shaitan/troldesh\",\n  \"cross_engine_notes\": \"Ghidra and IDA agree on function counts (248 and 226) and similar suspicious strings, while MalCat provides detailed anomalies including crypto usage and obfuscation. Capa and YARA detect encryption, anti-debugging, and injection behaviors. VirusTotal external TI strongly classifies as ransomware with high detection rate.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"virustotal\",\n      \"query_or_table\": \"external TI hash enrich\",\n      \"row_or_rule\": \"threat_class suggested_threat_label\",\n      \"why\": \"VirusTotal classifies as ransomware.shaitan/troldesh with 62 malicious detections, indicating confirmed malicious behavior and ransomware family.\"\n    },\n    {\n      \"source\": \"pe_imports\",\n      \"query_or_table\": \"pe_imports signals\",\n      \"row_or_rule\": \"allocate_memory (VirtualAllocEx)\",\n      \"why\": \"API for memory allocation in process injection, a technique for malic\n\u2026 [5521 more chars]"
+      }
+    },
+    "deep_dive": {
+      "ok": true,
+      "checks": {
+        "01_tools_raw": true,
+        "00_sql_evidence": false,
+        "03_prompt": false,
+        "04_llm": false,
+        "05_deep": true,
+        "tools_all_ok": true,
+        "llm_source": false,
+        "citations_grounded": true,
+        "engine_citation_ok": true,
+        "upx_second_pass_ok": true,
+        "no_incomplete_tooling": true,
+        "confidence_sane": true,
+        "evidence_pack_present": true,
+        "depth_coverage": true,
+        "agentic_json": true,
+        "sql_deep_re": true,
+        "complete_verdict": true,
+        "not_incomplete": true,
+        "checklist_ok_flag": true,
+        "agentic_confidence_sane": true
+      },
+      "tools": {
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        },
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 27,\n  \"top_rules\": [\n    {\n      \"name\": \"encode data using XOR\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Encoding-Standard Algorithm\"\n          ],\n          \"objective\": \"Defense Evasion\",\n          \"behavior\": \"Obfuscated Files or Information\",\n          \"method\": \"Encoding-Standard Algorithm\",\n          \"id\": \"E1027.m02\"\n        },\n        {\n          \"parts\": [\n            \"Data\",\n            \"Encode Data\",\n            \"XOR\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Encode Data\",\n          \"method\": \"XOR\",\n          \"id\": \"C0026.002\"\n        }\n      ]\n    },\n    {\n      \"name\": \"encrypt data using RC4 PRGA\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Cryptography\",\n            \"Encrypt Data\",\n            \"RC4\"\n          ],\n          \"objective\": \"Cryptography\",\n          \"behavior\": \"Encrypt Data\",\n          \"method\": \"RC4\",\n          \"id\": \"C0027.009\"\n        },\n        {\n          \"parts\": [\n            \"Cryptography\",\n            \"Generate Pseudo-random Sequence\",\n            \"RC4 PRGA\"\n          ],\n          \"objective\": \"Cryptography\",\n          \"behavior\": \"Generate Pseudo-random Sequence\",\n          \"method\": \"RC4 PRGA\",\n          \"id\": \"C0021.004\"\n        }\n      ]\n    },\n    {\n      \"name\": \"accept command line arguments\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Execution\",\n            \"Command and Scripting Interpreter\"\n          ],\n          \"tactic\": \"Execution\",\n          \"technique\": \"Command and Scripting Interpreter\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1059\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Execution\",\n            \"Command and Scripting Interpreter\"\n          ],\n          \"objective\": \"Execution\",\n          \"behavior\": \"Command and Scripting Interpreter\",\n          \"method\": \"\",\n          \"id\": \"E1059\"\n        }\n      ]\n    },\n    {\n      \"name\": \"query environment variable\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Discovery\",\n            \"System Information Discovery\"\n          ],\n          \"tactic\": \"Discovery\",\n          \"technique\": \"System Information Discovery\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1082\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Discovery\",\n            \"System Information Discovery\"\n          ],\n          \"objective\": \"Discovery\",\n          \"behavior\": \"System Information Discovery\",\n          \"method\": \"\",\n          \"id\": \"E1082\"\n        }\n      ]\n    },\n    {\n      \"name\": \"get common file path\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Discovery\",\n            \"File and Directory Discovery\"\n          ],\n          \"tactic\": \"Discovery\",\n          \"technique\": \"File an\n\u2026 [5817 more chars]"
+        },
+        "pe_imports": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 173923,\n  \"duration_s\": 0.03,\n  \"import_count\": 83,\n  \"signal_count\": 6,\n  \"signals\": [\n    {\n      \"label\": \"allocate_memory\",\n      \"api_match\": \"VirtualAllocEx\",\n      \"attack\": [\n        \"T1055\"\n      ]\n    },\n    {\n      \"label\": \"check_debugger\",\n      \"api_match\": \"IsDebuggerPresent\",\n      \"attack\": [\n        \"T1622\"\n      ]\n    },\n    {\n      \"label\": \"create_process\",\n      \"api_match\": \"CreateProcess\",\n      \"attack\": [\n        \"T1106\"\n      ]\n    },\n    {\n      \"label\": \"load_library\",\n      \"api_match\": \"LoadLibrary\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \"get_proc_address\",\n      \"api_match\": \"GetProcAddress\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \"change_memory_protection\",\n      \"api_match\": \"VirtualProtect\",\n      \"attack\": [\n        \"T1055\"\n      ]\n    }\n  ],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 19,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 167971,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 55852,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Advapi_Hash_API\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$advapi32\",\n          \"offset\": 77130,\n          \"length\": 12,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$CryptCreateHash\",\n          \"offset\": 77012,\n          \"length\": 15,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$CryptHashData\",\n          \"offset\": 77050,\n          \"length\": 13,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$CryptAcquireContext\",\n          \"offset\": 76966,\n          \"length\": 19,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"CRC32_poly_Constant\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 1226,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"maldoc_find_kernel32_base_method_1\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a2\",\n          \"offset\": 7391,\n          \"length\": 6,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IsPE32\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsWindowsGUI\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"IsPacked\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasOverlay\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"HasRichSignature\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 208,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Microsoft_Visual_Cpp_v50v60_MFC\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c\n\u2026 [6553 more chars]"
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 579,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"wpespy.dll\",\n    \"pstorec.dll\",\n    \"avghookx.dll\",\n    \"HARDWARE\\\\DESCRIPTION\\\\System\",\n    \"avghooka.dll\",\n    \"dwmapi.dll\",\n    \"VideoBiosVersion\",\n    \"sample.\",\n    \"SOFTWARE\\\\VMware, Inc.\\\\VMware Tools\",\n    \"SystemBiosVersion\",\n    \"ollydbg.exe\",\n    \"HARDWARE\\\\DEVICEMAP\\\\Scsi\\\\Scsi Port 0\\\\Scsi Bus 0\\\\Target Id 0\\\\Logical Unit Id 0\",\n    \"WinDbgFrameClass\",\n    \"Identifier\",\n    \"ProcessHacker.exe\",\n    \"\\\\SAMPLE\",\n    \"tcpview.exe\",\n    \"drivers\\\\vmhgfs.sys\",\n    \"SANDBOX\",\n    \"autoruns.exe\",\n    \"Immunity Debugger\",\n    \"C:\\\\InsideTm\",\n    \"autorunsc.exe\",\n    \"filemon.exe\",\n    \"Zeta Debugger\",\n    \"ntdll.dll\",\n    \"procmon.exe\",\n    \"kernel32.dll\",\n    \"Rock Debugger\",\n    \"procexp.exe\",\n    \"idaq.exe\",\n    \"idaq64.exe\",\n    \"ObsidianGUI\",\n    \"drivers\\\\vmmouse.sys\",\n    \"ImmunityDebugger.exe\",\n    \"\\\\\\\\.\\\\PhysicalDrive0\",\n    \"Wireshark.exe\",\n    \"dumpcap.exe\",\n    \"HookExplorer.exe\",\n    \"ImportREC.exe\",\n    \"PETools.exe\",\n    \"LordPE.exe\",\n    \"prl_cc.exe\",\n    \"SysInspector.exe\",\n    \"prl_tools.exe\",\n    \"proc_analyser.exe\",\n    \"sysAnalyzer.exe\",\n    \"sniff_hit.exe\",\n    \"xenservice.exe\",\n    \"windbg.exe\",\n    \"VMSrvc.exe\",\n    \"joeboxcontrol.exe\",\n    \"VMUSrvc.exe\",\n    \"joeboxserver.exe\",\n    \"MALWARE\",\n    \"netmon.exe\",\n    \"MALTEST\",\n    \"SbieDll.dll\",\n    \"TEQUILABOOMBOOM\",\n    \"IRTUALBOX\",\n    \"dbghelp.dll\",\n    \"devenv.exe\",\n    \"snxhk.dll\",\n    \"api_log.dll\",\n    \"user32.dll\",\n    \"dir_watch.dll\",\n    \"vmcheck.dll\",\n    \"drivers\\\\VBoxMouse.sys\",\n    \"CheckRemoteDebuggerPresent\",\n    \"NtQueryInformationProcess\",\n    \"!This program cannot be run in DOS mode.\",\n    \"`.rdata\",\n    \"@.data\",\n    \".reloc\",\n    \"SUVWh@\",\n    \"]caIH:Q|O\",\n    \"-X<R!G\",\n    \"PWWh\\\\@\",\n    \"PSSj%S\",\n    \"QQSVW3\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 70,\n    \"stack_strings\": 0,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 509\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 16.2,\n  \"size_bytes\": 173923,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}"
+        },
+        "dotnet": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        "r2_decomp": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n  \"disassembly\": {\n    \"0x0040121c\": \"\\u250c 426: entry0 ();\\n\\u2502           ; var int32_t var_4h @ ebp-0x4\\n\\u2502           ; var int32_t var_8h @ ebp-0x8\\n\\u2502           ; var int32_t var_10h @ ebp-0x10\\n\\u2502           ; var int32_t var_14h @ ebp-0x14\\n\\u2502           ; var int32_t var_18h @ ebp-0x18\\n\\u2502           ; var int32_t var_20h @ ebp-0x20\\n\\u2502           ; var int32_t var_28h @ ebp-0x28\\n\\u2502           ; var int32_t var_2ch @ ebp-0x2c\\n\\u2502           ; var int32_t var_130h @ ebp-0x130\\n\\u2502           ; var int32_t var_338h @ ebp-0x338\\n\\u2502           0x0040121c      55             push ebp\\n\\u2502           0x0040121d      8bec           mov ebp, esp\\n\\u2502           0x0040121f      81ec38030000   sub esp, 0x338\\n\\u2502           0x00401225      8d55e0         lea edx, [var_20h]\\n\\u2502           0x00401228      53             push ebx\\n\\u2502           0x00401229      56             push esi\\n\\u2502           0x0040122a      57             push edi\\n\\u2502           0x0040122b      6a1c           push 0x1c                   ; 28\\n\\u2502           0x0040122d      59             pop ecx\\n\\u2502           0x0040122e      e817210000     call 0x40334a\\n\\u2502           0x00401233      8d45e0         lea eax, [var_20h]\\n\\u2502           0x00401236      50             push eax\\n\\u2502           0x00401237      ff15f4f04000   call dword [sym.imp.KERNEL32.dll_GetModuleHandleW] ; 0x40f0f4 ; \\\"r@\\\\x01\\\" ; HMODULE GetModuleHandleW(LPCWSTR lpModuleName)\\n\\u2502           0x0040123d      85c0           test eax, eax\\n\\u2502       \\u250c\\u2500< 0x0040123f      0f8579010000   jne 0x4013be\\n\\u2502       \\u2502   0x00401245      ff15fcf04000   call dword [sym.imp.KERNEL32.dll_GetProcessHeap] ; 0x40f0fc ; \\\"L@\\\\x01\\\" ; HANDLE GetProcessHeap(void)\\n\\u2502       \\u2502   0x0040124b      8325c08741..   and dword [0x4187c0], 0     ; [0x4187c0:4]=0\\n\\u2502       \\u2502   0x00401252      8325c48741..   and dword [0x4187c4], 0     ; [0x4187c4:4]=0\\n\\u2502       \\u2502   0x00401259      a3c8874100     mov dword [0x4187c8], eax   ; [0x4187c8:4]=0\\n\\u2502       \\u2502   0x0040125e      e873190000     call 0x402bd6\\n\\u2502       \\u2502   0x00401263      85c0           test eax, eax\\n\\u2502      \\u250c\\u2500\\u2500< 0x00401265      0f8553010000   jne 0x4013be\\n\\u2502      \\u2502\\u2502   0x0040126b      2145fc         and dword [var_4h], eax\\n\\u2502      \\u2502\\u2502   0x0040126e      8d85c8fcffff   lea eax, [var_338h]\\n\\u2502      \\u2502\\u2502   0x00401274      6804010000     push 0x104                  ; 260\\n\\u2502      \\u2502\\u2502   0x00401279      50             push eax\\n\\u2502      \\u2502\\u2502   0x0040127a      6a00           push 0\\n\\u2502      \\u2502\\u2502   0x0040127c      ff1508f14000   call dword [sym.imp.KERNEL32.dll_GetModuleFileNameW] ; 0x40f108 ; DWORD GetModuleFileNameW(HMODULE hModule, LPWSTR lpFilename, DWORD nSize)\\n\\u2502      \\u2502\\u2502   0x00401282      51             push ecx\\n\\u2502      \\u2502\\u2502   0x00401283      8d55e8         lea edx, [var_18h]\\n\\u2502      \\u2502\\u2502   0x00401286      8d8dc8fcffff   lea ecx, [var_338h]\\n\\u2502      \\u2502\\u2502   0x0040128c      e8f7feffff     call 0x401188\\n\\u2502      \\u2502\\u2502   0x00401291      85c0           test eax, eax\\n\\u2502     \\u250c\\u2500\\u2500\\u2500< 0x00401293      0f8425010000   je 0x4013be\\n\\u2502     \\u2502\\u25\n\u2026 [316 more chars]"
+        },
+        "upx": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTested 0 file\"\n}"
+        },
+        "xor": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 000000E0 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 000000E0 ........!..L.!This program cannot be r\\n\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 0\n}"
+        },
+        "speakeasy": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        "frida_probe": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n    \"exists\": true,\n    \"hook_candidates\": [\n      \"KERNEL32.dll!Process32NextW\",\n      \"KERNEL32.dll!CreateToolhelp32Snapshot\",\n      \"KERNEL32.dll!GetThreadContext\",\n      \"KERNEL32.dll!RemoveVectoredExceptionHandler\",\n      \"KERNEL32.dll!SetUnhandledExceptionFilter\",\n      \"USER32.dll!FindWindowW\",\n      \"ADVAPI32.dll!RegCloseKey\",\n      \"ADVAPI32.dll!RegQueryValueExW\",\n      \"ADVAPI32.dll!RegOpenKeyExW\",\n      \"ADVAPI32.dll!GetUserNameW\",\n      \"ADVAPI32.dll!CryptHashData\",\n      \"SHLWAPI.dll!PathFileExistsW\",\n      \"SHLWAPI.dll!PathAppendW\",\n      \"SHELL32.dll!SHGetFolderPathW\"\n    ]\n  }\n}"
+        },
+        "frida_trace": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 19,
+        "hits": 19,
+        "misses": [],
+        "hit_examples": [
+          "CAPA: encrypt data using RC4 PRGA (T1027, C0027.009) - ransomware file encryption",
+          "CAPA: encrypt data using AES via WinAPI (T1027) with RSA public key reference - hybrid encryption chain",
+          "CAPA: encode data using XOR (T1027, C0026.002), contain obfuscated stackstrings - defense evasion",
+          "CAPA: resolve function by hash (T1027) - shellcode-style dynamic API resolution",
+          "PE_IMPORT_SIGNALS: VirtualAllocEx + VirtualProtect (T1055) - process injection capabilities"
+        ],
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "upx_second_pass": {
+        "applicable": false,
+        "ok": true,
+        "reason": "upx_not_unpacked"
+      },
+      "depth_coverage": {
+        "ok": true,
+        "missing": [],
+        "covered": {
+          "persistence": true,
+          "c2_network": true,
+          "evasion_anti_analysis": true,
+          "exfiltration": true,
+          "defense_impairment": true,
+          "credential_access": true,
+          "encryption_obfuscation": true,
+          "entry_point": true,
+          "imports": true,
+          "strings": true
+        },
+        "domain_count": 10
+      },
+      "format_routing": "pe",
+      "required_tools": [
+        "capa",
+        "pe_imports",
+        "yara",
+        "floss",
+        "dotnet",
+        "r2_decomp",
+        "upx",
+        "xor",
+        "speakeasy",
+        "frida_probe"
+      ],
+      "deep_preview": {
+        "source": "deep_dive_agentic",
+        "confidence": 90,
+        "summary": "This is a sophisticated ransomware sample ('raas.exe' - Ransomware-as-a-Service) with extensive anti-analysis capabilities. The binary employs a multi-layered encryption scheme (RC4 for file encryption, AES for key wrapping, RSA public key for asymmetric key exchange), characteristic of modern ranso",
+        "key_evidence": [
+          "CAPA: encrypt data using RC4 PRGA (T1027, C0027.009) - ransomware file encryption",
+          "CAPA: encrypt data using AES via WinAPI (T1027) with RSA public key reference - hybrid encryption chain",
+          "CAPA: encode data using XOR (T1027, C0026.002), contain obfuscated stackstrings - defense evasion",
+          "CAPA: resolve function by hash (T1027) - shellcode-style dynamic API resolution",
+          "PE_IMPORT_SIGNALS: VirtualAllocEx + VirtualProtect (T1055) - process injection capabilities",
+          "PE_IMPORT_SIGNALS: IsDebuggerPresent (T1622) + NtQueryInformationProcess - anti-debugging",
+          "FLOSS: anti-VM strings (VMware Tools, vmhgfs.sys, vmmouse.sys, VBoxMouse.sys, xenservice, prl_tools, VMSrvc)",
+          "FLOSS: anti-sandbox strings (SANDBOX, MALWARE, MALTEST, TEQUILABOOMBOOM, SbieDll.dll, joeboxcontrol, IVIRTUALBOX)",
+          "FLOSS: anti-debug strings (ollydbg.exe, Immunity Debugger, idaq.exe, idaq64.exe, WinDbgFrameClass, windbg.exe)",
+          "FLOSS: anti-analysis tools (ProcessHacker.exe, ProcMon.exe, Wireshark.exe, HookExplorer.exe, ImportREC.exe, PETools.exe, LordPE.exe)",
+          "Ghidra SQL: full crypto API chain - CryptAcquireContextW, CryptCreateHash, CryptHashData, CryptGetHashParam (ADVAPI32.DLL)",
+          "Ghidra SQL: network stack - WSAStartup, connect, send, recv, closesocket (WS2_32.DLL) - C2 communication",
+          "Ghidra SQL: file operations - CreateFileW, ReadFile, WriteFile, DeleteFileW, MoveFileExW - file encryption workflow",
+          "Ghidra SQL: direct disk access via \\\\.\\PhysicalDrive0 - bypass filesystem for encryption",
+          "Ghidra SQL: AddVectoredExceptionHandler - SEH-based anti-debugging",
+          "Ghidra SQL: high cyclomatic complexity functions (123, 113, 98) - control flow obfuscation/flattening",
+          "YARA: IsPacked rule matched - binary is packed",
+          "YARA: CRC32_poly_Constant at offset 1226 - integrity checking or hash-based resolution",
+          "YARA: maldoc_find_kernel32_base_method_1 - PEB-based shellcode API resolution technique"
+        ],
+        "model": null,
+        "llm_audit": null
+      },
+      "evidence": {
+        "tools_raw": {
+          "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/deep_dive/01-tools-raw.json",
+          "exists": true,
+          "bytes": 132589,
+          "mtime_iso": "2026-08-13T12:25:52.676769+00:00",
+          "sha256": "63d0b5ae128fb342380b1383fd4f57e208af2f9d8ad898ab9ed810c753dd7e2b"
+        },
+        "sql_evidence": {
+          "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/deep_dive/00-sql-evidence.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "prompt": {
+          "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/deep_dive/03-prompt.txt",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "llm_raw": {
+          "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/deep_dive/04-llm-raw.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "deep05": {
+          "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/deep_dive/05-deep-dive.json",
+          "exists": true,
+          "bytes": 5056,
+          "mtime_iso": "2026-08-12T21:21:53.725317+00:00",
+          "sha256": "5954e288b2fe8a2ad249a815a032256e12512be758fc80676da061bbb134e46f"
+        },
+        "prompt_excerpt": "",
+        "llm_raw_excerpt": "{}",
+        "deep05_excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"This is a sophisticated ransomware sample ('raas.exe' - Ransomware-as-a-Service) with extensive anti-analysis capabilities. The binary employs a multi-layered encryption scheme (RC4 for file encryption, AES for key wrapping, RSA public key for asymmetric key exchange), characteristic of modern ransomware. It contains a comprehensive anti-analysis toolkit targeting VMs (VMware, VirtualBox, Xen, Parallels), debuggers (OllyDbg, IDA Pro, WinDbg, Immunity Debugger), sandboxes (Sandboxie, JoeBox), and security tools (ProcessHacker, ProcMon, Wireshark). The sample uses XOR encoding, RC4 PRGA, CRC32 hashing, and obfuscated stack strings for defense evasion. It performs process in\n\u2026 [4256 more chars]",
+        "agentic": {
+          "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/deep_dive/agentic_deep_dive.json",
+          "exists": true,
+          "bytes": 453523,
+          "mtime_iso": "2026-08-12T21:21:53.724318+00:00",
+          "sha256": "2cc03fca8a91f7f7366059ecb62b66003968e15bf6e702bd59c58bb8a9fcfd7e"
+        }
+      },
+      "tools_ok_history": [
+        "yara_scan",
+        "malcat_analyze",
+        "capa_analyze",
+        "pe_import_signals",
+        "floss_extract",
+        "dotnet_analyze",
+        "r2_decompile",
+        "upx_unpack",
+        "xor_string_search",
+        "speakeasy_emulate",
+        "frida_static_probe",
+        "revai_tools_sec",
+        "revai_tools_sinks",
+        "revai_tools_audit",
+        "signal_extractors",
+        "packer_scan",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ida_query",
+        "ida_query",
+        "pe_import_signals",
+        "ghidra_query",
+        "capa_analyze",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "floss_extract",
+        "yara_scan",
+        "ghidra_query"
+      ],
+      "history_evidence": [
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (yara)",
+          "result_excerpt": "{\n  \"rule_count\": 19,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/c\n\u2026 [9653 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (malcat)",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"raas.exe\",\n    \"file_path\": \"/op\n\u2026 [86575 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (capa)",
+          "result_excerpt": "{\n  \"rule_count\": 27,\n  \"top_rules\": [\n    {\n      \"name\": \"encode data using XOR\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"\n\u2026 [8917 more chars]"
+        },
+        {
+          "tool": "pe_import_signals",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (pe_imports)",
+          "result_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 173923,\n  \"duration_s\": 0.03,\n  \"import_count\": 83,\n  \"signal_count\": 6,\n  \"signals\": [\n    {\n      \"label\": \"allocate_memory\",\n      \"api_match\": \"VirtualAllocEx\",\n      \"attack\": [\n        \"T1055\"\n      ]\n    },\n    {\n      \"label\": \"check_debugger\",\n      \"api_match\": \"IsDebuggerPresent\",\n      \"attack\": [\n        \"T1622\"\n      ]\n    },\n    {\n      \"\n\u2026 [556 more chars]"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (floss)",
+          "result_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 579,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"wpespy.dll\",\n    \"pstorec.dll\",\n    \"avghookx.dll\",\n    \"HARDWARE\\\\DESCRIPTION\\\\System\",\n    \"avghooka.dll\",\n    \"dwmapi.dll\",\n    \"VideoBiosVersion\",\n    \"sample.\",\n    \"SOFTWARE\\\\VMware, Inc.\\\\VMware Tools\",\n    \"SystemBiosVersion\",\n    \"ollydbg.exe\",\n    \"HARDWARE\\\\DEVICEMAP\\\\Scsi\\\\Scsi Port 0\\\\Scsi Bus 0\\\n\u2026 [1814 more chars]"
+        },
+        {
+          "tool": "dotnet_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (dotnet)",
+          "result_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        {
+          "tool": "r2_decompile",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (r2_decomp)",
+          "result_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n  \"disassembly\": {\n    \"0x0040121c\": \"\\u250c 426: entry0 ();\\n\\u2502           ; var int32_t var_4h @ ebp-0x4\\n\\u2502           ; var int32_t var_8h @ ebp-0x8\\n\\u2502           ; var int32_t var_10h @ ebp-0x10\\n\\u2502           ; var int32_t var_14h @ ebp-0x14\\n\\u\n\u2026 [3416 more chars]"
+        },
+        {
+          "tool": "upx_unpack",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (upx)",
+          "result_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTested 0 file\"\n}"
+        },
+        {
+          "tool": "xor_string_search",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (xor)",
+          "result_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 000000E0 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 000000E0 ........!..L.!This program cannot be r\\n\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_re\n\u2026 [14 more chars]"
+        },
+        {
+          "tool": "speakeasy_emulate",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (speakeasy)",
+          "result_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        {
+          "tool": "frida_static_probe",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (frida_probe)",
+          "result_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n    \"exists\": true,\n    \"hook_candidates\": [\n      \"KERNEL32.dll!Process32NextW\",\n      \"KERNEL32.dll!CreateToolhelp32Snapshot\",\n      \"KERNEL32.dll!GetThreadContext\",\n      \"KERNEL32.dll!RemoveVectoredExcept\n\u2026 [393 more chars]"
+        },
+        {
+          "tool": "shellcode_extract",
+          "ok": false,
+          "error": "no high-entropy executable/writable shellcode-size section found",
+          "checklist": true,
+          "reason": "Required checklist tool (shellcode)",
+          "result_excerpt": "{\n  \"shellcode_ok\": false,\n  \"sample\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n  \"sections_analyzed\": [\n    {\n      \"name\": \".text\",\n      \"size\": 54272,\n      \"entropy\": 6.6372,\n      \"executable\": true,\n      \"writable\": false\n    },\n    {\n      \"name\": \".rdata\",\n      \"size\": 22016,\n      \"entropy\": 4.9679,\n      \"executable\": fal\n\u2026 [382 more chars]"
+        },
+        {
+          "tool": "revai_tools_sec",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (revai_tools_sec)",
+          "result_excerpt": "{\n  \"format\": \"pe\",\n  \"findings\": [\n    {\n      \"name\": \"Address Space Layout Randomization\",\n      \"present\": false,\n      \"claimed\": false,\n      \"note\": \"no DYNAMIC_BASE flag\",\n      \"consequence\": \"Without ASLR the image loads at a fixed base \\u2014 a predictable address for ret2libc-style exploitation and ROP gadget pivots.\"\n    },\n    {\n      \"name\": \"64-bit high-entropy ASLR\",\n      \"presen\n\u2026 [1762 more chars]"
+        },
+        {
+          "tool": "revai_tools_sinks",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (revai_tools_sinks)",
+          "result_excerpt": "{\n  \"format\": \"pe\",\n  \"entry_point\": \"0x1000\",\n  \"sink_count\": 5,\n  \"sinks\": [\n    {\n      \"api\": \"createprocessw\",\n      \"dll\": \"KERNEL32.dll\",\n      \"class\": \"command_execution\",\n      \"address\": \"0x402e00\",\n      \"function\": \"\"\n    },\n    {\n      \"api\": \"heapalloc\",\n      \"dll\": \"KERNEL32.dll\",\n      \"class\": \"integer_overflow_size\",\n      \"address\": \"0x4013d7\",\n      \"function\": \"fcn.004013c7\"\n\u2026 [585 more chars]"
+        },
+        {
+          "tool": "revai_tools_audit",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (revai_tools_audit)",
+          "result_excerpt": "{\n  \"format\": \"pe\",\n  \"findings\": [],\n  \"engine\": \"revai_tools_audit\",\n  \"source\": \"revai_tools\"\n}"
+        },
+        {
+          "tool": "signal_extractors",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Deterministic anti-analysis + dynamic-import-resolve signals",
+          "result_excerpt": "{\n  \"anti_analysis_summary\": {\n    \"categories\": {},\n    \"total_signals\": 0,\n    \"functions_with_signals\": 0,\n    \"elapsed_s\": 2.26,\n    \"note\": \"Deterministic; TLS callbacks are pre-entry-point candidates.\"\n  },\n  \"dynamic_resolve_summary\": {\n    \"resolver_funcs\": 0,\n    \"resolve_sites\": 0,\n    \"peb_module_walkers\": 0,\n    \"ordinal_imports\": 0,\n    \"min_resolve_calls\": 2,\n    \"elapsed_s\": 1.13,\n \n\u2026 [101 more chars]"
+        },
+        {
+          "tool": "packer_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Deterministic packer checklist (packed-context for gate)",
+          "result_excerpt": "{\n  \"label\": \"suspicious\",\n  \"name\": null,\n  \"score\": 3\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "Auto SQL seed for large-mode deep RE gate",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_0040af2c\",\n      \"address\": \"4239148\",\n      \"size\": \"2515\"\n    },\n    {\n      \"name\": \"FUN_00405926\",\n      \"address\": \"4217126\",\n      \"size\": \"2149\"\n    },\n    {\n      \"name\": \"FUN_00408da4\",\n      \"address\": \"4230564\",\n      \"size\": \"1912\"\n    },\n    {\n      \"name\": \"FUN_0040a440\",\n      \"address\":\n\u2026 [2289 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"module\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"CryptAcquireContextW\",\n      \"module\": \"ADVAPI32.DLL\"\n    },\n    {\n      \"name\": \"CryptCreateHash\",\n      \"module\": \"ADVAPI32.DLL\"\n    },\n    {\n      \"name\": \"CryptDestroyHash\",\n      \"module\": \"ADVAPI32.DLL\"\n    },\n    {\n      \"name\": \"CryptGetHashParam\",\n      \"module\": \"ADVAPI32.DLL\"\n    },\n    {\n      \"name\": \"Cryp\n\u2026 [6350 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"R6033\\r\\n- Attempt to use MSIL code from this assembly during native code initialization\\nThis indicates a bug in your application. It is most likely the result of calling an MSIL-compiled (/clr) function from a native constructor or from DllMain.\\r\\n\",\n      \"address\": \"4259080\",\n      \"length\": \"\n\u2026 [6010 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"cyclomatic_complexity\",\n    \"size\",\n    \"instruction_count\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_00408da4\",\n      \"address\": \"4230564\",\n      \"cyclomatic_complexity\": \"123\",\n      \"size\": \"1912\",\n      \"instruction_count\": \"688\"\n    },\n    {\n      \"name\": \"FUN_0040af2c\",\n      \"address\": \"4239148\",\n      \"cyclomatic_complexity\": \"113\",\n      \"s\n\u2026 [3279 more chars]"
+        },
+        {
+          "tool": "ghidra_decompile",
+          "ok": false,
+          "error": "session registry not found: /opt/samples/sessions/pe-c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505.json",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"session registry not found: /opt/samples/sessions/pe-c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505.json\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"func_name\": \"FUN_0040af2c\",\n      \"content\": \"1#SNAN\",\n      \"address\": \"4270828\"\n    },\n    {\n      \"func_name\": \"FUN_0040af2c\",\n      \"content\": \"1#IND\",\n      \"address\": \"4270836\"\n    },\n    {\n      \"func_name\": \"FUN_0040af2c\",\n      \"content\": \"1#INF\",\n      \"address\": \"4270844\"\n    },\n    {\n      \"fun\n\u2026 [390 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"func_name\",\n    \"func_addr\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"Microsoft Visual C++ Runtime Library\",\n      \"func_name\": \"FUN_004061e8\",\n      \"func_addr\": \"4219368\"\n    }\n  ],\n  \"row_count\": 1,\n  \"total_row_count\": 1,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931\n\u2026 [120 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"func_addr\",\n    \"content\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ida_query\",\n  \"session_id\": \"ida-c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505\",\n  \"audit_path\": \"/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ida_query",
+          "ok": false,
+          "error": "idasql SQL error: no such column: i.operands",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"idasql SQL error: no such column: i.operands\"\n}"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"func_addr\",\n    \"content\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ida_query\",\n  \"session_id\": \"ida-c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505\",\n  \"audit_path\": \"/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "ghidrasql SQL error: no such column: from_func_name",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"ghidrasql SQL error: no such column: from_func_name\"\n}"
+        },
+        {
+          "tool": "pe_import_signals",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 173923,\n  \"duration_s\": 0.05,\n  \"import_count\": 83,\n  \"signal_count\": 6,\n  \"signals\": [\n    {\n      \"label\": \"allocate_memory\",\n      \"api_match\": \"VirtualAllocEx\",\n      \"attack\": [\n        \"T1055\"\n      ]\n    },\n    {\n      \"label\": \"check_debugger\",\n      \"api_match\": \"IsDebuggerPresent\",\n      \"attack\": [\n        \"T1622\"\n      ]\n    },\n    {\n      \"\n\u2026 [556 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"address\",\n    \"mnemonic\",\n    \"disasm\"\n  ],\n  \"rows\": [\n    {\n      \"address\": \"4198940\",\n      \"mnemonic\": \"PUSH\",\n      \"disasm\": \"PUSH EBP\"\n    },\n    {\n      \"address\": \"4198941\",\n      \"mnemonic\": \"MOV\",\n      \"disasm\": \"MOV EBP,ESP\"\n    },\n    {\n      \"address\": \"4198943\",\n      \"mnemonic\": \"SUB\",\n      \"disasm\": \"SUB ESP,0x338\"\n    },\n    {\n      \"address\": \"4198949\",\n\n\u2026 [6125 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "ghidrasql SQL error: no such column: from_func_addr",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"ghidrasql SQL error: no such column: from_func_addr\"\n}"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"rule_count\": 27,\n  \"top_rules\": [\n    {\n      \"name\": \"encode data using XOR\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"\n\u2026 [8917 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"func_name\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505\",\n  \"audit_path\": \"/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"RegCloseKey\"\n    },\n    {\n      \"content\": \"RegOpenKeyExW\"\n    },\n    {\n      \"content\": \"Microsoft Enhanced Cryptographic Provider v1.0\"\n    },\n    {\n      \"content\": \"Microsoft Enhanced RSA and AES Cryptographic Provider\"\n    },\n    {\n      \"content\": \"Microsoft Enhanced RSA and AES Cryptographic Provider (Prototype)\"\n    }\n\n\u2026 [305 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"MM/dd/yy\",\n      \"address\": \"4256732\"\n    },\n    {\n      \"content\": \"MM/dd/yy\",\n      \"address\": \"4257244\"\n    },\n    {\n      \"content\": \"R6024\\r\\n- not enough space for _onexit/atexit table\\r\\n\",\n      \"address\": \"4258216\"\n    },\n    {\n      \"content\": \"R6033\\r\\n- Attempt to use MSIL code from this assembly dur\n\u2026 [534 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "ghidrasql SQL error: no such column: ce.from_func_name",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"ghidrasql SQL error: no such column: ce.from_func_name\"\n}"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 579,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"wpespy.dll\",\n    \"pstorec.dll\",\n    \"avghookx.dll\",\n    \"HARDWARE\\\\DESCRIPTION\\\\System\",\n    \"avghooka.dll\",\n    \"dwmapi.dll\",\n    \"VideoBiosVersion\",\n    \"sample.\",\n    \"SOFTWARE\\\\VMware, Inc.\\\\VMware Tools\",\n    \"SystemBiosVersion\",\n    \"ollydbg.exe\",\n    \"HARDWARE\\\\DEVICEMAP\\\\Scsi\\\\Scsi Port 0\\\\Scsi Bus 0\\\n\u2026 [1815 more chars]"
+        },
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"rule_count\": 19,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/c\n\u2026 [9653 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"1#IND\"\n    },\n    {\n      \"content\": \"1#INF\"\n    },\n    {\n      \"content\": \"1#QNAN\"\n    },\n    {\n      \"content\": \"1#SNAN\"\n    }\n  ],\n  \"row_count\": 4,\n  \"total_row_count\": 4,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505\",\n  \"audit\n\u2026 [106 more chars]"
+        }
+      ],
+      "agentic_preview": {
+        "verdict": "malicious",
+        "confidence": 90,
+        "summary": "This is a sophisticated ransomware sample ('raas.exe' - Ransomware-as-a-Service) with extensive anti-analysis capabilities. The binary employs a multi-layered encryption scheme (RC4 for file encryption, AES for key wrapping, RSA public key for asymmetric key exchange), characteristic of modern ranso",
+        "checklist_ok": true,
+        "sql_deep_ok": true,
+        "successful_tool_calls": 33
+      }
+    },
+    "yara_gen": {
+      "ok": true,
+      "checks": {
+        "rule_yar": true,
+        "non_empty": true,
+        "has_rule_block": true,
+        "rule_compiles": true,
+        "rule_check": "ok",
+        "meta_yara_valid": true
+      },
+      "evidence": {
+        "rule_yar": {
+          "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/rule.yar",
+          "exists": true,
+          "bytes": 1252,
+          "mtime_iso": "2026-08-12T21:21:56.610311+00:00",
+          "sha256": "1e211c5fb644b185a11636629bdfad015c9722f554e4ed5ae779d8f013d9729e"
+        },
+        "other_rules": [
+          "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/rule.yara.json",
+          "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/rule.yar",
+          "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/rule.yar"
+        ],
+        "excerpt": "// yara_gen_v2.py \u2014 2026-08-12T21:21:56.611912+00:00\nimport \"pe\"\nrule CADRE_v2_ransomware_shaitan_troldesh_c04836696d71 {\n    meta:\n        description = \"RevAI v2 auto rule for ransomware.shaitan/troldesh\"\n        sha256 = \"c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505\"\n        family = \"ransomware_shaitan_troldesh\"\n        revai = true\n        revai_commit = \"unknown\"\n        revai_engine = \"langgraph\"\n        severity = \"high\"\n        confidence = \"medium\"\n    strings:\n        $s0 = \"wpespy.dll\" ascii wide\n        $s1 = \"pstorec.dll\" ascii wide\n        $s2 = \"avghookx.dll\" ascii wide\n        $s3 = \"HARDWARE\\\\DESCRIPTION\\\\System\" ascii wide\n        $s4 = \"avghooka.dll\" ascii wide\n        $s5 = \"dwmapi.dll\" ascii wide\n        $s6 = \"VideoBiosVersion\" ascii wide\n        \n\u2026 [450 more chars]"
+      }
+    },
+    "publish": {
+      "ok": true,
+      "checks": {
+        "REPORT_MASTER_v2": true,
+        "REPORT_MASTER_v3": true,
+        "REPORT_v2": true,
+        "REPORT_TECHNICAL_v2": true,
+        "REPORT_TECHNICAL_v3": true,
+        "v2_min_chars": true,
+        "v3_min_chars": true,
+        "v2_heads": true,
+        "v3_heads": true,
+        "v2_fresh_vs_deep": true,
+        "v3_fresh_vs_deep": true,
+        "not_llm_env_failure_v2": true,
+        "not_llm_env_failure_v3": true,
+        "v2_no_missing_sections": true,
+        "verdict_lock_ok": true,
+        "quality_pack_ok": true,
+        "master_source_llm": true,
+        "tech2_source_llm": true,
+        "tech3_source_ok": true,
+        "tech2_no_stubs": true,
+        "no_tech2_fallback": true,
+        "quality_issues": [],
+        "engine_citation_ok": true
+      },
+      "heads_v2": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "heads_v3": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "report_json_source": "llm_judge",
+      "sections_missing": [],
+      "quality_pack": {
+        "ok": true,
+        "quality_green": true,
+        "sha256": "c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505",
+        "issues": [],
+        "checks": {
+          "master_v2": {
+            "ok": true,
+            "label": "master_v2",
+            "source": "llm_judge",
+            "chars": 18587,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 24,
+              "prose_ratio": 0.34,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 3,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v2": {
+            "ok": true,
+            "label": "technical_v2",
+            "source": "llm_judge",
+            "chars": 77585,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 60,
+              "prose_ratio": 0.45,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v3": {
+            "ok": true,
+            "label": "technical_v3",
+            "source": "llm_judge",
+            "chars": 62822,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 27,
+              "prose_ratio": 0.53,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "master_v3_present": true,
+          "tech3_file_present": true,
+          "cross_report_consistency": {
+            "ok": true,
+            "violations": [],
+            "checks": {
+              "master_dyn_negation": false,
+              "tech_dyn_evidence": true,
+              "file_entropy": 7.386213541129932,
+              "master_verdict": "malicious",
+              "tech_verdict": "malicious"
+            }
+          },
+          "deep_checklist_ok": true,
+          "deep_sql_deep_ok": true,
+          "pipeline_audit_all_green": false
+        },
+        "models": {
+          "master": "mimo-v2.5-pro",
+          "technical_v2": "mimo-v2.5-pro",
+          "technical_v3": "mimo-v2.5-pro",
+          "planner_hint": "configured via env",
+          "judgment_hint": "configured via env"
+        }
+      },
+      "verdict_lock": {
+        "ok": true,
+        "conflict": false,
+        "upstream": "malicious",
+        "publish": "malicious",
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "mtimes": {
+        "v2": 1786676543.5056763,
+        "v3": 1786677455.8495636,
+        "deep_ref": 1786569713.7253175,
+        "v2_chars": 18587,
+        "v3_chars": 52119,
+        "v2_iso": "2026-08-14T03:02:23.505676+00:00",
+        "v3_iso": "2026-08-14T03:17:35.849564+00:00"
+      },
+      "evidence": {
+        "REPORT_MASTER_v2": {
+          "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/REPORT-MASTER-v2.md",
+          "exists": true,
+          "bytes": 18594,
+          "mtime_iso": "2026-08-14T03:02:23.505676+00:00",
+          "sha256": "c52bdec0291325f2928db66ad65a09d4c6697fc2d0cc060026a132015f546e75"
+        },
+        "REPORT_MASTER_v3": {
+          "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/REPORT-MASTER-v3.md",
+          "exists": true,
+          "bytes": 52135,
+          "mtime_iso": "2026-08-14T03:17:35.849564+00:00",
+          "sha256": "c9f049c2084015137179e06b5682272759211372612ad45917097eec3dfe59bd"
+        },
+        "REPORT_v2": {
+          "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/REPORT-v2.md",
+          "exists": true,
+          "bytes": 18594,
+          "mtime_iso": "2026-08-14T03:02:23.505676+00:00",
+          "sha256": "c52bdec0291325f2928db66ad65a09d4c6697fc2d0cc060026a132015f546e75"
+        },
+        "REPORT_TECHNICAL_v2": {
+          "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/REPORT-TECHNICAL-v2.md",
+          "exists": true,
+          "bytes": 77997,
+          "mtime_iso": "2026-08-14T03:07:52.208271+00:00",
+          "sha256": "2518fd953b9a632d29228b336b7f224b424bb5fe0d6bc1f80e7cba9f748c0785"
+        },
+        "REPORT_TECHNICAL_v3": {
+          "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/REPORT-TECHNICAL-v3.md",
+          "exists": true,
+          "bytes": 63034,
+          "mtime_iso": "2026-08-14T03:24:46.560933+00:00",
+          "sha256": "f64d1c015717caf2b1b4c33ee8a2a6bb299f6fd53d9d9af699db44073791ed70"
+        },
+        "report_v2_json": {
+          "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/report-v2.json",
+          "exists": true,
+          "bytes": 21407,
+          "mtime_iso": "2026-08-14T03:07:52.213271+00:00",
+          "sha256": "af3924b5750420f148249d041711bdab9d9ec1e2b4ae81fd37e60aef44852a3d"
+        },
+        "v2_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-14 03:02:23 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n# Malware Analysis Report: raas.exe (Shaitan/Troldesh Ransomware)\n\n## Executive Summary\n\nThis report details the analysis of a Windows PE executable (`raas.exe`) identified as a variant of the Shaitan/Troldesh ransomware family. The sample exhibits a high degree of sophistication, employing a multi-layered encryption scheme (RC4, AES, RSA) for file encryption and a comprehensive anti-analysis toolkit to evade detection in virtualized, de\n\u2026 [17687 more chars]",
+        "v3_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-14 03:17:35 UTC\n\n# RE Report \u2014 c04836696d71\n_Generated 2026-08-14T03:17:35.842624+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=254c | cross_refs=True | llm_ok=True | runtime=58.21s -->\n\n## Executive Summary\n\n**Top-Line Verdict:** Malicious  \n**Family:** Ransomware.Shaitan/Troldesh  \n**Confidence:** High (90%)  \n**Summary:** This sample is a malicious Windows PE executable identified as part of the Shaitan/Troldesh ransomware family, based on extensive static indicators and tool agreement. Dynamic analysis tools were executed but recorded no runtime events, so behavioral insights rely solely o\n\u2026 [51219 more chars]"
+      }
+    }
+  },
+  "policy": {
+    "v3_required": true,
+    "no_optional_stages": true,
+    "tool_fail_is_fail": false,
+    "capa_salvage": "malcat capa_summary + LLM citation"
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-14 03:24:46 UTC"
+  },
+  "cross_cutting": {
+    "sample_path": "/opt/samples/corpus/malware/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/raas.exe",
+    "pipeline_mode": "single",
+    "llm": {
+      "triage": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "verdict": "malicious",
+        "family": "ransomware.shaitan/troldesh",
+        "confidence": 90,
+        "agreement": "llm_and_v1_agree",
+        "key_evidence": [
+          {
+            "source": "virustotal",
+            "query_or_table": "external TI hash enrich",
+            "row_or_rule": "threat_class suggested_threat_label",
+            "why": "VirusTotal classifies as ransomware.shaitan/troldesh with 62 malicious detections, indicating confirmed malicious behavior and ransomware family."
+          },
+          {
+            "source": "pe_imports",
+            "query_or_table": "pe_imports signals",
+            "row_or_rule": "allocate_memory (VirtualAllocEx)",
+            "why": "API for memory allocation in process injection, a technique for malicious code execution (T1055)."
+          },
+          {
+            "source": "ida",
+            "query_or_table": "imports",
+            "row_or_rule": "IsDebuggerPresent",
+            "why": "Anti-debugging API to detect and evade analysis environments (T1622), showing defense evasion intent."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "capa top_rules",
+            "row_or_rule": "encrypt data using RC4 PRGA",
+            "why": "Encryption technique commonly used in ransomware to encrypt user files, indicating destructive behavior (T1027)."
+          },
+          {
+            "source": "floss",
+            "query_or_table": "floss strings",
+            "row_or_rule": "ollydbg.exe",
+            "why": "Strings targeting debuggers and analysis tools (e.g., ollydbg.exe, idaq.exe), indicating anti-analysis and sandbox evasion."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "yara matches",
+            "row_or_rule": "anti_dbg",
+            "why": "YARA rule detecting anti-debugging behaviors, confirming defense evasion intent."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "malcat anomalies",
+            "row_or_rule": "CryptoApiUsage",
+            "why": "Anomaly indicating use of cryptographic APIs, potentially for malicious file encryption or data obfuscation."
+          }
+        ],
+        "incomplete_tooling": null,
+        "excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 90,\n  \"family_guess\": \"ransomware.shaitan/troldesh\",\n  \"cross_engine_notes\": \"Ghidra and IDA agree on function counts (248 and 226) and similar suspicious strings, while MalCat provides detailed anomalies including crypto usage and obfuscation. Capa and YARA detect encryption, anti-debugging, and injection behaviors. VirusTotal external TI strongly classifies as ransomware with high detection rate.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"virustotal\",\n      \"query_or_table\": \"external TI hash enrich\",\n      \"row_or_rule\": \"threat_class suggested_threat_label\",\n      \"why\": \"VirusTotal classifies as ransomware.shaitan/troldesh with 62 malicious detections, indicating confirmed malicious behavior and ransomware family.\"\n    },\n    {\n      \"source\": \"pe_imports\",\n      \"query_or_table\": \"pe_imports signals\",\n      \"row_or_rule\": \"allocate_memory (VirtualAllocEx)\",\n      \"why\": \"API for memory allocation in process injection, a technique for malicious code execution (T1055).\"\n    },\n    {\n      \"source\": \"ida\",\n      \"query_or_table\": \"imports\",\n      \"row_or_rule\": \"IsDebuggerPresent\",\n      \"why\": \"Anti-debugging API to detect and evade analysis environments (T1622), showing defense evasion intent.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"capa top_rules\",\n      \"row_or_rule\": \"encrypt data using RC4 PRGA\",\n      \"why\": \"Encryption technique commonly used in ransomware to encrypt user files, indicating destructive behavior (T1027).\"\n    },\n    {\n      \"source\": \"floss\",\n      \"query_or_table\": \"floss strings\",\n      \"row_or_rule\": \"ollydbg.exe\",\n      \"why\": \"Strings targeting debuggers and analysis tools (e.g., ollydbg.exe, idaq.exe), indicating anti-analysis and sandbox evasion.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"yara matches\",\n      \"row_or_rule\": \"anti_dbg\",\n      \"why\": \"YARA rule detecting anti-debugging behaviors, confirming defense evasion intent.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"malcat anomalies\",\n      \"row_or_rule\": \"CryptoApiUsage\",\n      \"why\": \"Anomaly indicating use of cryptographic APIs, potentially for malicious file encryption or data obfuscation.\"\n    }\n  ],\n  \"summary\": \"The sample exhibits clear behavioral-intent evidence: anti-debugging via IsDebuggerPresent and related strings, process injection with VirtualAllocEx and VirtualProtect, encryption capabilities via RC4 PRGA and XOR encoding, registry manipulation, and file operations. External threat intelligence confirms it as ransomware from the shaitan/troldesh family. Combined with high-signal YARA rules and capa detections, the verdict is malicious with high confidence.\",\n  \"source\": \"llm_judge\",\n  \"model\": \"mimo-v2.5-pro\",\n  \"agreement\": \"llm_and_v1_agree\",\n  \"v1_summary\": {\n    \"verdict\": \"malicious\",\n    \"score\": 290,\n    \"findings\": [\n      \"yara: 19 matches\",\n      \"capa: 27 rules\"\n    ]\n  },\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"pe\",\n    \"required\": [\n      \"capa\",\n      \"yara\",\n      \"malcat\",\n      \"floss\",\n      \"pe_imports\"\n    ],\n    \"tools\": {\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"floss\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"pe_imports\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      }\n    },\n    \"hard_failures\": [],\n    \"soft_failures\": [],\n    \"missing\": [],\n    \"not_applicable\": [],\n    \"large_sampl\n\u2026 [3021 more chars]"
+      },
+      "deep_dive": {
+        "source": "deep_dive_agentic",
+        "model": null,
+        "verdict": "malicious",
+        "confidence": 90,
+        "key_evidence": [
+          "CAPA: encrypt data using RC4 PRGA (T1027, C0027.009) - ransomware file encryption",
+          "CAPA: encrypt data using AES via WinAPI (T1027) with RSA public key reference - hybrid encryption chain",
+          "CAPA: encode data using XOR (T1027, C0026.002), contain obfuscated stackstrings - defense evasion",
+          "CAPA: resolve function by hash (T1027) - shellcode-style dynamic API resolution",
+          "PE_IMPORT_SIGNALS: VirtualAllocEx + VirtualProtect (T1055) - process injection capabilities",
+          "PE_IMPORT_SIGNALS: IsDebuggerPresent (T1622) + NtQueryInformationProcess - anti-debugging",
+          "FLOSS: anti-VM strings (VMware Tools, vmhgfs.sys, vmmouse.sys, VBoxMouse.sys, xenservice, prl_tools, VMSrvc)",
+          "FLOSS: anti-sandbox strings (SANDBOX, MALWARE, MALTEST, TEQUILABOOMBOOM, SbieDll.dll, joeboxcontrol, IVIRTUALBOX)",
+          "FLOSS: anti-debug strings (ollydbg.exe, Immunity Debugger, idaq.exe, idaq64.exe, WinDbgFrameClass, windbg.exe)",
+          "FLOSS: anti-analysis tools (ProcessHacker.exe, ProcMon.exe, Wireshark.exe, HookExplorer.exe, ImportREC.exe, PETools.exe, LordPE.exe)",
+          "Ghidra SQL: full crypto API chain - CryptAcquireContextW, CryptCreateHash, CryptHashData, CryptGetHashParam (ADVAPI32.DLL)",
+          "Ghidra SQL: network stack - WSAStartup, connect, send, recv, closesocket (WS2_32.DLL) - C2 communication",
+          "Ghidra SQL: file operations - CreateFileW, ReadFile, WriteFile, DeleteFileW, MoveFileExW - file encryption workflow",
+          "Ghidra SQL: direct disk access via \\\\.\\PhysicalDrive0 - bypass filesystem for encryption",
+          "Ghidra SQL: AddVectoredExceptionHandler - SEH-based anti-debugging",
+          "Ghidra SQL: high cyclomatic complexity functions (123, 113, 98) - control flow obfuscation/flattening",
+          "YARA: IsPacked rule matched - binary is packed",
+          "YARA: CRC32_poly_Constant at offset 1226 - integrity checking or hash-based resolution",
+          "YARA: maldoc_find_kernel32_base_method_1 - PEB-based shellcode API resolution technique"
+        ],
+        "incomplete_tooling": false,
+        "excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 90,\n  \"summary\": \"This is a sophisticated ransomware sample ('raas.exe' - Ransomware-as-a-Service) with extensive anti-analysis capabilities. The binary employs a multi-layered encryption scheme (RC4 for file encryption, AES for key wrapping, RSA public key for asymmetric key exchange), characteristic of modern ransomware. It contains a comprehensive anti-analysis toolkit targeting VMs (VMware, VirtualBox, Xen, Parallels), debuggers (OllyDbg, IDA Pro, WinDbg, Immunity Debugger), sandboxes (Sandboxie, JoeBox), and security tools (ProcessHacker, ProcMon, Wireshark). The sample uses XOR encoding, RC4 PRGA, CRC32 hashing, and obfuscated stack strings for defense evasion. It performs process injection via VirtualAllocEx/VirtualProtect, direct disk access through \\\\\\\\.\\\\PhysicalDrive0, and file operations (read, encrypt, delete, move) targeting victim data. Network APIs (WSAStartup, connect, send, recv) indicate C2 communication capability. High cyclomatic complexity functions (123, 113, 98) suggest control flow flattening/obfuscation. The binary is packed with overlay data. Exfiltration capability is not explicitly observed in the analysis, but network APIs {source: 'binary analysis', query_or_table: 'network APIs', row_or_rule: 'WSAStartup, connect, send, recv', why: 'indicate C2 communication potential for data transfer'}. Imports are observed with critical Windows APIs {source: 'binary analysis', query_or_table: 'import table', row_or_rule: 'VirtualAllocEx, VirtualProtect', why: 'support process injection and memory manipulation'} and network functions {source: 'binary analysis', query_or_table: 'network APIs', row_or_rule: 'WSAStartup, connect, send, recv', why: 'enable C2 communication'}.\",\n  \"key_evidence\": [\n    \"CAPA: encrypt data using RC4 PRGA (T1027, C0027.009) - ransomware file encryption\",\n    \"CAPA: encrypt data using AES via WinAPI (T1027) with RSA public key reference - hybrid encryption chain\",\n    \"CAPA: encode data using XOR (T1027, C0026.002), contain obfuscated stackstrings - defense evasion\",\n    \"CAPA: resolve function by hash (T1027) - shellcode-style dynamic API resolution\",\n    \"PE_IMPORT_SIGNALS: VirtualAllocEx + VirtualProtect (T1055) - process injection capabilities\",\n    \"PE_IMPORT_SIGNALS: IsDebuggerPresent (T1622) + NtQueryInformationProcess - anti-debugging\",\n    \"FLOSS: anti-VM strings (VMware Tools, vmhgfs.sys, vmmouse.sys, VBoxMouse.sys, xenservice, prl_tools, VMSrvc)\",\n    \"FLOSS: anti-sandbox strings (SANDBOX, MALWARE, MALTEST, TEQUILABOOMBOOM, SbieDll.dll, joeboxcontrol, IVIRTUALBOX)\",\n    \"FLOSS: anti-debug strings (ollydbg.exe, Immunity Debugger, idaq.exe, idaq64.exe, WinDbgFrameClass, windbg.exe)\",\n    \"FLOSS: anti-analysis tools (ProcessHacker.exe, ProcMon.exe, Wireshark.exe, HookExplorer.exe, ImportREC.exe, PETools.exe, LordPE.exe)\",\n    \"Ghidra SQL: full crypto API chain - CryptAcquireContextW, CryptCreateHash, CryptHashData, CryptGetHashParam (ADVAPI32.DLL)\",\n    \"Ghidra SQL: network stack - WSAStartup, connect, send, recv, closesocket (WS2_32.DLL) - C2 communication\",\n    \"Ghidra SQL: file operations - CreateFileW, ReadFile, WriteFile, DeleteFileW, MoveFileExW - file encryption workflow\",\n    \"Ghidra SQL: direct disk access via \\\\\\\\.\\\\PhysicalDrive0 - bypass filesystem for encryption\",\n    \"Ghidra SQL: AddVectoredExceptionHandler - SEH-based anti-debugging\",\n    \"Ghidra SQL: high cyclomatic comp\n\u2026 [1556 more chars]"
+      },
+      "publish": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "excerpt": "{\n  \"title\": \"Malware Analysis Report: raas.exe (Shaitan/Troldesh Ransomware)\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `unknown` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-14 03:02:23 UTC\\n\\n# Verdict sources (multi-source)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | malicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | malicious |\\n\\n- **Locked over publish LLM:** no\\n\\n# Malware Analysis Report: raas.exe (Shaitan/Troldesh Ransomware)\\n\\n## Executive Summary\\n\\nThis report details the analysis of a Windows PE executable (`raas.exe`) identified as a variant of the Shaitan/Troldesh ransomware family. The sample exhibits a high degree of sophistication, employing a multi-layered encryption scheme (RC4, AES, RSA) for file encryption and a comprehensive anti-analysis toolkit to evade detection in virtualized, debugged, and sandboxed environments. The binary is packed and uses obfuscated control flow, with high cyclomatic complexity functions indicating significant code flattening. Key capabilities include process injection, direct disk access for encryption, and network communication for command-and-control (C2). The verdict is **malicious** with high confidence, based on clear behavioral-intent evidence of ransomware activity and confirmed threat intelligence.\\n\\n## 1. Sample Identification\\n\\n| Attribute | Value |\\n|---|---|\\n| **SHA256** | `c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505` |\\n| **File Name** | `raas.exe` |\\n| **File Type** | PE32 executable (GUI) Intel 80386, for MS Windows |\\n| **Architecture** | x86 (32-bit) |\\n| **File Size** | Not provided in evidence |\\n| **MD5** | Not provided in evidence |\\n| **SHA1** | Not provided in evidence |\\n| **Imphash** | `b53f6e0803fd24f3dd50f45f3b463d3f` (source: rule.yara.json) |\\n| **Compilation Timestamp** | Not provided in evidence |\\n| **Packer** | Not UPX; binary is packed (source: YARA `IsPacked` rule, MalCat `UnknownOverlayMediumToHighEntropy` anomaly) |\\n| **Project** | malware |\\n\\n## 2. Classification\\n\\n| Attribute | Value |\\n|---|---|\\n| **Verdict** | **Malicious** |\\n| **Confidence** | 90/100 |\\n| **Family** | `ransomware.shaitan/troldesh` |\\n| **Threat Class** | Ransomware |\\n| **Upstream Triage** | Malicious (score: 90) (source: triage verdict.json) |\\n| **VirusTotal** | 62 malicious detections, classified as `ransomware.shaitan/troldesh` (source: virustotal, external TI hash enrich) |\\n\\nThe classification is based on a convergence of evidence: external threat intelligence confirms the family, static analysis reveals encryption and anti-analysis capabilities, and import signals indicate process injection and anti-debugging. The sample's behavior aligns with modern ransomware-as-a-service (RaaS) operations.\\n\\n## 3. Background & Family Lineage\\n\\nThe Shaitan/Troldesh family is a known ransomware strain, often distributed as Ransomware-as-a-Service (RaaS). The filename `raas.exe` is a direct indicator of this business model. Troldesh variants are characterized by their use of strong encryption (typically hybrid RSA+AES), extensive anti-analysis checks, and the ability to encrypt files on local and network drives. The sample's import hash (`b53f6e0803fd24f3dd50f45f3b463d3f`) and behavioral patterns are consistent with this lineage. The presenc\n\u2026 [17907 more chars]"
+      }
+    },
+    "artifact_inventory": {
+      "verdict.json": {
+        "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/verdict.json",
+        "exists": true,
+        "bytes": 6521,
+        "mtime_iso": "2026-08-14T02:59:42.525550+00:00",
+        "sha256": "428a0710ca629b4899edf0fa77eafcba3a63ae33e5228dbec8198a50dd3789d4"
+      },
+      "prompt.txt": {
+        "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/prompt.txt",
+        "exists": true,
+        "bytes": 35306,
+        "mtime_iso": "2026-08-14T02:58:30.047510+00:00",
+        "sha256": "fe870d402cd601c89bf6b4614ee2ca05f688f0ac2e2c4edad6d57896531ac8a3"
+      },
+      "pipeline-audit.json": {
+        "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/pipeline-audit.json",
+        "exists": true,
+        "bytes": 119621,
+        "mtime_iso": "2026-08-13T13:13:29.422902+00:00",
+        "sha256": "c5fbdf3542674d02bd6b13a54723ee225cdbf0e9985feafb881e546a2deec4ed"
+      },
+      "AUDIT-REPORT.md": {
+        "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/AUDIT-REPORT.md",
+        "exists": true,
+        "bytes": 88258,
+        "mtime_iso": "2026-08-13T13:13:29.423902+00:00",
+        "sha256": "1e7984aec5d719cecac0d690afb7a571b8d56d76041136e529b8ee6531e898ad"
+      },
+      "REPORT-MASTER-v2.md": {
+        "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/REPORT-MASTER-v2.md",
+        "exists": true,
+        "bytes": 18594,
+        "mtime_iso": "2026-08-14T03:02:23.505676+00:00",
+        "sha256": "c52bdec0291325f2928db66ad65a09d4c6697fc2d0cc060026a132015f546e75"
+      },
+      "REPORT-MASTER-v3.md": {
+        "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/REPORT-MASTER-v3.md",
+        "exists": true,
+        "bytes": 52135,
+        "mtime_iso": "2026-08-14T03:17:35.849564+00:00",
+        "sha256": "c9f049c2084015137179e06b5682272759211372612ad45917097eec3dfe59bd"
+      },
+      "REPORT-v2.md": {
+        "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/REPORT-v2.md",
+        "exists": true,
+        "bytes": 18594,
+        "mtime_iso": "2026-08-14T03:02:23.505676+00:00",
+        "sha256": "c52bdec0291325f2928db66ad65a09d4c6697fc2d0cc060026a132015f546e75"
+      },
+      "REPORT-TECHNICAL.md": {
+        "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/REPORT-TECHNICAL.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-TECHNICAL-v3.md": {
+        "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/REPORT-TECHNICAL-v3.md",
+        "exists": true,
+        "bytes": 63034,
+        "mtime_iso": "2026-08-14T03:24:46.560933+00:00",
+        "sha256": "f64d1c015717caf2b1b4c33ee8a2a6bb299f6fd53d9d9af699db44073791ed70"
+      },
+      "rule.yar": {
+        "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/rule.yar",
+        "exists": true,
+        "bytes": 1252,
+        "mtime_iso": "2026-08-12T21:21:56.610311+00:00",
+        "sha256": "1e211c5fb644b185a11636629bdfad015c9722f554e4ed5ae779d8f013d9729e"
+      },
+      "intake-validation.json": {
+        "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/intake-validation.json",
+        "exists": true,
+        "bytes": 2566,
+        "mtime_iso": "2026-08-12T21:15:49.649260+00:00",
+        "sha256": "ec0cdc697e414fb255eed58b994263f48533125cf3572857f7a603d86f9781bd"
+      },
+      "source-decisions.json": {
+        "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/source-decisions.json",
+        "exists": true,
+        "bytes": 1657,
+        "mtime_iso": "2026-08-12T21:15:49.649260+00:00",
+        "sha256": "1fdf2d8c0639232dd1deadbe962f60985f4340ae7def3c0722d5a06bfe4f562d"
+      },
+      "malcat-triage.json": {
+        "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/malcat-triage.json",
+        "exists": true,
+        "bytes": 55213,
+        "mtime_iso": "2026-08-13T12:25:52.669769+00:00",
+        "sha256": "83bc6c7ccb50d446da6e3239400be68b7e77797559fd2c792e00ab5ff615753e"
+      },
+      "deep_dive/01-tools-raw.json": {
+        "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/deep_dive/01-tools-raw.json",
+        "exists": true,
+        "bytes": 132589,
+        "mtime_iso": "2026-08-13T12:25:52.676769+00:00",
+        "sha256": "63d0b5ae128fb342380b1383fd4f57e208af2f9d8ad898ab9ed810c753dd7e2b"
+      },
+      "deep_dive/01-tools-gate.json": {
+        "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/deep_dive/01-tools-gate.json",
+        "exists": true,
+        "bytes": 921,
+        "mtime_iso": "2026-08-12T21:18:55.894732+00:00",
+        "sha256": "f3d89b0704908331fb9398585035abaf1e8cb402a81b8103612e94f26673893c"
+      },
+      "deep_dive/05-deep-dive.json": {
+        "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/deep_dive/05-deep-dive.json",
+        "exists": true,
+        "bytes": 5056,
+        "mtime_iso": "2026-08-12T21:21:53.725317+00:00",
+        "sha256": "5954e288b2fe8a2ad249a815a032256e12512be758fc80676da061bbb134e46f"
+      },
+      "deep_dive/03-prompt.txt": {
+        "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/deep_dive/03-prompt.txt",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "quick_scan/00-tools-raw.json": {
+        "path": "/opt/samples/logs/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505/quick_scan/00-tools-raw.json",
+        "exists": true,
+        "bytes": 125488,
+        "mtime_iso": "2026-08-14T02:58:28.794512+00:00",
+        "sha256": "6f0bec9ec69b34ea67053e973d94a3e6cbb72e76c5cd5447ab01f9528077a97e"
+      }
+    },
+    "report_excerpts": {
+      "v2": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-14 03:02:23 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n# Malware Analysis Report: raas.exe (Shaitan/Troldesh Ransomware)\n\n## Executive Summary\n\nThis report details the analysis of a Windows PE executable (`raas.exe`) identified as a variant of the Shaitan/Troldesh ransomware family. The sample exhibits a high degree of sophistication, employing a multi-layered encryption scheme (RC4, AES, RSA) for file encryption and a comprehensive anti-analysis toolkit to evade detection in virtualized, debugged, and sandboxed environments. The binary is packed and uses obfuscated control flow, with high cyclomatic complexity functions indicating significant code flattening. Key capabilities include process injection, direct disk access for encryption, and network communication for command-and-control (C2). The verdict is **malicious** with high confidence, based on clear behavioral-intent evidence of ransomware activity and confirmed threat intelligence.\n\n## 1. Sample Identification\n\n| Attribute | Value |\n|---|---|\n| **SHA256** | `c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505` |\n| **File Name** | `raas.exe` |\n| **File Type** | PE32 executable (GUI) Intel 80386, for MS Windows |\n| **Architecture** | x86 (32-bit) |\n| **File Size** | Not provided in evidence |\n| **MD5** | Not provided in evidence |\n| **SHA1** | Not provided in evidence |\n| **Imphash** | `b53f6e0803fd24f3dd50f45f3b463d3f` (source: rule.yara.json) |\n| **Compilation Timestamp** | Not provided in evidence |\n| **Packer** | Not UPX; binary is packed (source: YARA `IsPacked` rule, MalCat `UnknownOverlayMediumToHighEntropy` anomaly) |\n| **Project** | malware |\n\n## 2. Classification\n\n| Attribute | Value |\n|---|---|\n| **Verdict** | **Malicious** |\n| **Confidence** | 90/100 |\n| **Family** | `ransomware.shaitan/troldesh` |\n| **Threat Class** | Ransomware |\n| **Upstream Triage** | Malicious (score: 90) (source: triage verdict.json) |\n| **VirusTotal** | 62 malicious detections, classified as `ransomware.shaitan/troldesh` (source: virustotal, external TI hash enrich) |\n\nThe classification is based on a con\n\u2026 [16087 more chars]",
+      "v3": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-14 03:17:35 UTC\n\n# RE Report \u2014 c04836696d71\n_Generated 2026-08-14T03:17:35.842624+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=254c | cross_refs=True | llm_ok=True | runtime=58.21s -->\n\n## Executive Summary\n\n**Top-Line Verdict:** Malicious  \n**Family:** Ransomware.Shaitan/Troldesh  \n**Confidence:** High (90%)  \n**Summary:** This sample is a malicious Windows PE executable identified as part of the Shaitan/Troldesh ransomware family, based on extensive static indicators and tool agreement. Dynamic analysis tools were executed but recorded no runtime events, so behavioral insights rely solely on static evidence.\n\n### Key Evidence\n\nThe malicious classification is supported by cross-engine agreement and a high-confidence deep-dive analysis. We assess the following based on integrated evidence:\n\n- **Verdict and Family:** The verdict is malicious with a family guess of ransomware.shaitan/troldesh, derived from YARA rule matches that encode family-specific patterns. This is reinforced by v1_summary showing 19 YARA matches, which significantly reduce false positive risk (source: yara, query_or_table: v1_summary, row_or_rule: yara matches, why: high match count indicates strong pattern alignment with known ransomware traits, confidence high).\n\n- **Capabilities:** CAPA analysis identified 27 rules, revealing behaviors such as file enumeration and encryption techniques. These map to MITRE ATT&CK techniques like T1083 (File and Directory Discovery), suggesting reconnaissance activities typical of ransomware (source: capa, query_or_table: v1_summary, row_or_rule: capa rules, why: capability-based rules provide behavioral evidence for malicious intent, confidence high).\n\n- **Static Properties:** The file exhibits a Shannon entropy of 7.39 bits/byte (scale 0-8), which is high and often associated with packed or encrypted content, aligning with ransomware obfuscation methods (source: malcat, query_or_table: entropy_analysis, row_or_rule: whole_file, why: elevated entropy suggests data obfuscation, confidence high).\n\n- **Dynamic Analysis Honesty:** Speakeasy and Frida probes were executed in the sandbox environment but recorded no observable runtime events. Therefore, we cannot\n\u2026 [49619 more chars]"
+    }
+  },
+  "retry_visibility": {
+    "quick_scan": [],
+    "deep_dive": [],
+    "count": 0
+  },
+  "all_green": true,
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "layer_attribution": {
+    "ok": true,
+    "layers": {
+      "L1_tool_extraction": [],
+      "L2_evidence_prompt": [],
+      "L3_llm_interpretation": [],
+      "L4_gates": [],
+      "L5_report_authorship": []
+    },
+    "red_stages": []
+  },
+  "showcase_dir": "/opt/samples/logs/_showcase_audits/c04836696d715c544382713eebf468aeff73c15616e1cd8248ca8c4c7e931505"
+}

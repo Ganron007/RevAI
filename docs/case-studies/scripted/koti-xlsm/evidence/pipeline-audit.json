@@ -1,0 +1,941 @@
+{
+  "sha": "8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e",
+  "mode": "single",
+  "mode_effective": "large",
+  "strict_standard": false,
+  "audited_at": "2026-08-13T15:10:47.807679+00:00",
+  "session_pipeline_mode": "single",
+  "sample_path": "/opt/samples/corpus/malware/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/koti.xlsm",
+  "stages": {
+    "intake": {
+      "ok": true,
+      "checks": {
+        "intake_validation": true,
+        "has_source_decisions": true,
+        "ghidra_mentioned": true
+      },
+      "evidence": {
+        "intake_validation": {
+          "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/intake-validation.json",
+          "exists": true,
+          "bytes": 723,
+          "mtime_iso": "2026-08-12T22:55:11.195969+00:00",
+          "sha256": "32aa710056c9c91d8abb7ea04982769d9b0293aa159e343d0afdd498c19e361d"
+        },
+        "malcat_triage": {
+          "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/malcat-triage.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "source_decisions": {
+          "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/source-decisions.json",
+          "exists": true,
+          "bytes": 638,
+          "mtime_iso": "2026-08-12T22:55:11.195969+00:00",
+          "sha256": "9bc4dcc048d13d016fc9eafa5b6dc7fa7ccfe2cb0307ea686d9be8414d5f6c21"
+        },
+        "ghidra_import_log": {
+          "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/intake-analyzeHeadless.log",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "ida_bootstrap_log": {
+          "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/intake-idasql.log",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "source_decisions_excerpt": "{\n  \"sha256\": \"8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e\",\n  \"format\": \"ooxml\",\n  \"imports\": {\n    \"source\": \"none\",\n    \"confidence\": \"high\",\n    \"reason\": \"document format: no PE imports (doc_triage used)\"\n  },\n  \"functions\": {\n    \"source\": \"none\",\n    \"confidence\": \"high\",\n    \"reason\": \"document format: no functions (doc_triage used)\"\n  },\n  \"strings\": {\n    \"source\": \"doc_triage\",\n    \"confidence\": \"medium\",\n    \"reason\": \"doc_triage string/flag extraction\"\n  },\n  \"decompilation\": {\n    \"source\": \"none\",\n    \"confidence\": \"high\",\n    \"reason\": \"document format: no decompilation (doc_triage used)\"\n  }\n}",
+        "malcat_triage_excerpt": ""
+      }
+    },
+    "quick_scan": {
+      "ok": true,
+      "checks": {
+        "prompt": true,
+        "verdict": true,
+        "has_capa_section": true,
+        "has_yara_section": true,
+        "has_malcat_section": true,
+        "has_floss_section": true,
+        "verdict_has_family": true,
+        "llm_source": true,
+        "tools_all_ok": true,
+        "citations_grounded": true,
+        "capa_salvage_used": false,
+        "evidence_pack_present": true,
+        "benign_blocked_if_incomplete": true,
+        "yara_family_not_cleared": true
+      },
+      "tools": {
+        "capa": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": "{\n  \"skipped\": true,\n  \"fail_open\": true,\n  \"reason\": \"not_applicable:ooxml\",\n  \"error\": \"CAPA supports PE/ELF/Mach-O only (got ooxml)\",\n  \"rule_count\": 0,\n  \"matched_rule_count\": 0,\n  \"top_rules\": []\n}",
+          "present": true
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 2,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/malware/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/koti.xlsm\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/malware/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/koti.xlsm\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 1859,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    }\n  ],\n  \"engine\": \"yara-x\",\n  \"rules_compiled\": 454,\n  \"compile_errors\": [\n    \"/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\\n   |\\n11 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\\n   |\\n54 |          and is__elf\\n   |              ^^^^^^^ this identifier has not been declared\",\n    \"/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\\n   |\\n10 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\\n   |\\n10 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\\n   |\\n17 |         $c = /if ?\\\\(\\\\$_POST\\\\[Submit\\\\]\\\\) ?{/\\n   |                                          ^ unclosed counted repetition\\n   |\\n   = note: did you mean `\\\\{` instead of `{`?\",\n    \"/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\\n   |\\n11 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\"\n  ],\n  \"incomplete\": true,\n  \"duration_s\": 3.1\n}",
+          "present": true
+        },
+        "floss": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": "{\n  \"skipped\": true,\n  \"fail_open\": true,\n  \"reason\": \"not_applicable:ooxml\",\n  \"error\": \"FLOSS supports PE only (got ooxml)\",\n  \"string_count\": 0,\n  \"strings\": []\n}",
+          "present": true
+        },
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/malware/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/koti.xlsm\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"koti.xlsm\",\n    \"file_path\": \"/opt/samples/corpus/malware/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/koti.xlsm\",\n    \"file_size\": 26363,\n    \"type\": \"ZIP\",\n    \"architecture\": \"NONE\",\n    \"entropy\": 7.56,\n    \"sha256\": \"8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e\",\n    \"metadata\": {},\n    \"entrypoint_ea\": null,\n    \"layout\": [\n      {\n        \"name\": \"[Content_Types].xml\",\n        \"effective_address\": 0,\n        \"physical_size\": 1019,\n        \"virtual_size\": 1019,\n        \"rights\": \"R\",\n        \"entropy\": 111\n      },\n      {\n        \"name\": \".rels\",\n        \"effective_address\": 1019,\n        \"physical_size\": 806,\n        \"virtual_size\": 806,\n        \"rights\": \"R\",\n        \"entropy\": 84\n      },\n      {\n        \"name\": \"workbook.xml.rels\",\n        \"effective_address\": 1825,\n        \"physical_size\": 626,\n        \"virtual_size\": 626,\n        \"rights\": \"R\",\n        \"entropy\": 125\n      },\n      {\n        \"name\": \"workbook.xml\",\n        \"effective_address\": 2451,\n        \"physical_size\": 473,\n        \"virtual_size\": 473,\n        \"rights\": \"R\",\n        \"entropy\": 215\n      },\n      {\n        \"name\": \"theme1.xml\",\n        \"effective_address\": 2924,\n        \"physical_size\": 1764,\n        \"virtual_size\": 1764,\n        \"rights\": \"R\",\n        \"entropy\": 222\n      },\n      {\n        \"name\": \"sheet1.xml\",\n        \"effective_address\": 4688,\n        \"physical_size\": 1609,\n        \"virtual_size\": 1609,\n        \"rights\": \"R\",\n        \"entropy\": 216\n      },\n      {\n        \"name\": \"sheet1.xml.rels\",\n        \"effective_address\": 6297,\n        \"physical_size\": 284,\n        \"virtual_size\": 284,\n        \"rights\": \"R\",\n        \"entropy\": 198\n      },\n      {\n        \"name\": \"sheet1.xml.rels\",\n        \"effective_address\": 6581,\n        \"physical_size\": 260,\n        \"virtual_size\": 260,\n        \"rights\": \"R\",\n        \"entropy\": 204\n      },\n      {\n        \"name\": \"sheet2.xml.rels\",\n        \"effective_address\": 6841,\n        \"physical_size\": 259,\n        \"virtual_size\": 259,\n        \"rights\": \"R\",\n        \"entropy\": 209\n      },\n      {\n        \"name\": \"drawing1.xml.rels\",\n        \"effective_address\": 7100,\n        \"physical_size\": 272,\n        \"virtual_size\": 272,\n        \"rights\": \"R\",\n        \"entropy\": 210\n      },\n      {\n        \"name\": \"sheet2.xml\",\n        \"effective_address\": 7372,\n        \"physical_size\": 1039,\n        \"virtual_size\": 1039,\n        \"rights\": \"R\",\n        \"entropy\": 209\n      },\n      {\n        \"name\": \"sheet1.xml\",\n        \"effective_address\": 8411,\n        \"physical_size\": 579,\n        \"virtual_size\": 579,\n        \"rights\": \"R\",\n        \"entropy\": 214\n      },\n      {\n        \"name\": \"styles.xml\",\n        \"effective_address\": 8990,\n        \"physical_size\": 787,\n        \"virtual_size\": 787,\n        \"rights\": \"R\",\n        \"entropy\": 218\n      },\n      {\n        \"name\": \"sharedStrings.xml\",\n        \"effective_address\": 9777,\n        \"physical_size\": 396,\n        \"virtual_size\": 396,\n        \"rights\": \"R\",\n        \"entropy\": 217\n      },\n      {\n        \"name\": \"drawing1.xml\",\n        \"effective_address\": 10173,\n        \"physical_s\n\u2026 [41076 more chars]",
+          "present": true
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 3,
+        "hits": 3,
+        "misses": [],
+        "hit_examples": [
+          "contains_base64 matches YARA rule 'contains_base64' matched at offset 1859, length 12, indicating base64-encoded content",
+          "detections: 34 malicious, 0 suspicious, 0 harmless, 30 undetected hash_lookup VirusTotal analysis shows high number of A",
+          "entropy: 7.56, type: ZIP, virtual_files: includes xl/macrosheets/sheet1.xml file_summary MalCat analysis reveals high en"
+        ],
+        "reason": ""
+      },
+      "format": "ooxml",
+      "required_tools": [
+        "yara"
+      ],
+      "verdict_preview": {
+        "verdict": "malicious",
+        "family": "XAgent",
+        "score": 85,
+        "agreement": "llm_and_v1_agree",
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "key_evidence": [
+          {
+            "source": "yara",
+            "query_or_table": "matches",
+            "row_or_rule": "contains_base64",
+            "why": "YARA rule 'contains_base64' matched at offset 1859, length 12, indicating base64-encoded content which is often used in malware for payload obfuscation or data exfiltration."
+          },
+          {
+            "source": "virustotal",
+            "query_or_table": "hash_lookup",
+            "row_or_rule": "detections: 34 malicious, 0 suspicious, 0 harmless, 30 undetected",
+            "why": "VirusTotal analysis shows high number of AV detections (34/64) with tags including 'calls-wmi', 'xlsx', and 'malware', and threat category 'trojan' and 'downloader', suggesting malicious behavior such as command-and-control or persistence mechanisms."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "file_summary",
+            "row_or_rule": "entropy: 7.56, type: ZIP, virtual_files: includes xl/macrosheets/sheet1.xml",
+            "why": "MalCat analysis reveals high entropy (7.56) indicating possible encryption or compression, and the presence of macro sheets in the OOXML structure, which is a common vector for malware delivery and execution."
+          }
+        ],
+        "summary": "The sample is an Excel macro-enabled workbook (OOXML format) with high entropy and base64-encoded content. External threat intelligence from VirusTotal indicates it is a trojan downloader associated with the XAgent family, as evidenced by multiple AV detections and behavioral tags. While static analysis tools like Ghidra and IDA failed, MalCat confirmed the macro presence and high entropy, and YAR"
+      },
+      "evidence": {
+        "prompt": {
+          "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/prompt.txt",
+          "exists": true,
+          "bytes": 12877,
+          "mtime_iso": "2026-08-13T14:04:20.524023+00:00",
+          "sha256": "1179c8440d748b3c0d0a75d534d3f907002760c1c0eed17fcd74fcdf995556f8"
+        },
+        "verdict": {
+          "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/verdict.json",
+          "exists": true,
+          "bytes": 4929,
+          "mtime_iso": "2026-08-13T14:05:16.989050+00:00",
+          "sha256": "f9fb938bf51b0a9584f6f3b6ef41753a8b0aa29b160b30fe0ac96207ba85fe32"
+        },
+        "prompt_excerpt": "# Triage evidence\nsha256: 8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e\nsample_path: /opt/samples/corpus/malware/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/koti.xlsm\nghidra_session: doc-ooxml-8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e\nida_session: (not loaded)\n\n## Ghidra SQL (capped)\n### engine: ghidra\nlabel: Total function count (Ghidra)\nsql: SELECT count(*) AS funcs FROM funcs\nerror: session doc-ooxml-8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e has no gpr_path (intake_v2 should have set it)\n\n### engine: ghidra\nlabel: Total string count (Ghidra)\nsql: SELECT count(*) AS strings FROM strings\nerror: session doc-ooxml-8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e has no gpr_path (intake_v2 should have set it)\n\n### engine: ghidra\nlabel: Imports (Ghidra) from data_items\nsql: SELECT name, addr FROM data_items WHERE name LIKE 'PTR_%' LIMIT 50\nerror: session doc-ooxml-8e516c5e0ca2a7ffed56b38b\n\u2026 [11859 more chars]",
+        "verdict_excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 85,\n  \"family_guess\": \"XAgent\",\n  \"cross_engine_notes\": \"Ghidra and IDA analysis failed due to session errors; MalCat identified the file as a ZIP/OOXML with high entropy (7.56) and macro content (xl/macrosheets/sheet1.xml); YARA rules matched for base64-encoded strings; VirusTotal reported 34 malicious detections with tags like 'calls-wmi' and threat label 'trojan.msexcel/x97m'. No direct behavioral evidence from static analysis tools, but external TI strongly indicates malicious activity.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"matches\",\n      \"row_or_rule\": \"contains_base64\",\n      \"why\": \"YARA rule 'contains_base64' matched at offset 1859, length 12, indicating base64-encoded content which is often used in malware for payload obfuscation or data exfiltration.\"\n    },\n    {\n      \"source\": \"virustotal\",\n      \"query_or_table\": \"hash_lookup\",\n      \"row_or_rule\": \"detections: 34 malicious, 0 suspicious, 0 har\n\u2026 [3929 more chars]"
+      }
+    },
+    "deep_dive": {
+      "ok": true,
+      "checks": {
+        "01_tools_raw": true,
+        "00_sql_evidence": false,
+        "03_prompt": false,
+        "04_llm": false,
+        "05_deep": true,
+        "tools_all_ok": true,
+        "llm_source": false,
+        "citations_grounded": true,
+        "engine_citation_ok": true,
+        "upx_second_pass_ok": true,
+        "no_incomplete_tooling": true,
+        "confidence_sane": true,
+        "evidence_pack_present": true,
+        "depth_coverage": true,
+        "agentic_json": true,
+        "sql_deep_re": true,
+        "complete_verdict": true,
+        "not_incomplete": true,
+        "checklist_ok_flag": true,
+        "agentic_confidence_sane": true
+      },
+      "tools": {
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        },
+        "capa": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        },
+        "pe_imports": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 2,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/malware/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/koti.xlsm\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/malware/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/koti.xlsm\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 1859,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    }\n  ],\n  \"engine\": \"yara-x\",\n  \"rules_compiled\": 454,\n  \"compile_errors\": [\n    \"/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\\n   |\\n11 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\\n   |\\n54 |          and is__elf\\n   |              ^^^^^^^ this identifier has not been declared\",\n    \"/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\\n   |\\n10 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\\n   |\\n10 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\\n   |\\n17 |         $c = /if ?\\\\(\\\\$_POST\\\\[Submit\\\\]\\\\) ?{/\\n   |                                          ^ unclosed counted repetition\\n   |\\n   = note: did you mean `\\\\{` instead of `{`?\",\n    \"/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\\n  |\\n6 | import \\\"androguard\\\"\\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\",\n    \"/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\\n   |\\n11 | import \\\"androguard\\\"\\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found\"\n  ],\n  \"incomplete\": true\n}"
+        },
+        "floss": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        },
+        "dotnet": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        },
+        "r2_decomp": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/malware/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/koti.xlsm\",\n  \"disassembly\": {\n    \"0x00000000\": \"\\u250c 24: fcn.00000000 (int64_t arg1, int64_t arg2, int64_t arg4);\\n\\u2502           ; arg int64_t arg1 @ rdi\\n\\u2502           ; arg int64_t arg2 @ rsi\\n\\u2502           ; arg int64_t arg4 @ rcx\\n\\u2502           0x00000000      50             push rax\\n\\u2502           0x00000001      4b030414       add rax, qword [r12 + r10]\\n\\u2502           0x00000005      0006           add byte [rsi], al          ; arg2\\n\\u2502           0x00000007      0008           add byte [rax], cl\\n\\u2502           0x00000009      0000           add byte [rax], al\\n\\u2502           0x0000000b      0021           add byte [rcx], ah          ; arg4\\n\\u2502           0x0000000d      00888fbe01c2   add byte [rax - 0x3dfe4171], cl\\n\\u2502           0x00000013      0100           add dword [rax], eax\\n\\u2502           0x00000015      0007           add byte [rdi], al          ; arg1\\n\\u2514           0x00000017      07             invalid\"\n  },\n  \"engine\": \"pdf (disasm)\",\n  \"fallback\": true,\n  \"functions_attempted\": [\n    \"0x00000000\"\n  ]\n}"
+        },
+        "upx": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        },
+        "xor": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"xorsearch_ok\": false,\n  \"sample\": \"/opt/samples/corpus/malware/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/koti.xlsm\",\n  \"candidates\": [],\n  \"xorsearch_stdout\": \"\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 1\n}"
+        },
+        "speakeasy": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        },
+        "frida_probe": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        },
+        "frida_trace": {
+          "ok": true,
+          "why": "not_applicable:ooxml",
+          "raw_excerpt": null
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 3,
+        "hits": 3,
+        "misses": [],
+        "hit_examples": [
+          "YARA rule 'domain' matched with string $domain_regex at offset 0 in file /opt/samples/corpus/malware/8e516c5e0ca2a7ffed5",
+          "YARA rule 'contains_base64' matched with string $a at offset 1859 in the same file, indicating the presence of base64 en",
+          "File type is XLSM (Excel macro-enabled workbook), which can contain macros, but no macro code or API calls are shown in "
+        ],
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "upx_second_pass": {
+        "applicable": false,
+        "ok": true,
+        "reason": "upx_not_unpacked"
+      },
+      "depth_coverage": {
+        "ok": true,
+        "missing": [],
+        "covered": {
+          "persistence": true,
+          "c2_network": true,
+          "evasion_anti_analysis": true,
+          "exfiltration": true,
+          "defense_impairment": true,
+          "credential_access": true,
+          "encryption_obfuscation": true,
+          "entry_point": true,
+          "imports": true,
+          "strings": true
+        },
+        "domain_count": 10
+      },
+      "format_routing": "ooxml",
+      "required_tools": [
+        "yara",
+        "r2_decomp",
+        "xor"
+      ],
+      "deep_preview": {
+        "source": "deep_dive_agentic",
+        "confidence": 70,
+        "summary": "The XLSM file triggered YARA rules for domain regex and base64 content, suggesting potential malicious payloads or obfuscation, but specific behaviors like downloading APIs are not confirmed in the evidence.",
+        "key_evidence": [
+          "YARA rule 'domain' matched with string $domain_regex at offset 0 in file /opt/samples/corpus/malware/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/koti.xlsm.",
+          "YARA rule 'contains_base64' matched with string $a at offset 1859 in the same file, indicating the presence of base64 encoded data.",
+          "File type is XLSM (Excel macro-enabled workbook), which can contain macros, but no macro code or API calls are shown in the provided evidence."
+        ],
+        "model": null,
+        "llm_audit": null
+      },
+      "evidence": {
+        "tools_raw": {
+          "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/deep_dive/01-tools-raw.json",
+          "exists": true,
+          "bytes": 54645,
+          "mtime_iso": "2026-08-13T14:04:15.852013+00:00",
+          "sha256": "7aa97f5653e397ec58e17a1b7b0e3faa829db30df9c59994ca0350e667568a20"
+        },
+        "sql_evidence": {
+          "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/deep_dive/00-sql-evidence.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "prompt": {
+          "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/deep_dive/03-prompt.txt",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "llm_raw": {
+          "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/deep_dive/04-llm-raw.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "deep05": {
+          "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/deep_dive/05-deep-dive.json",
+          "exists": true,
+          "bytes": 2313,
+          "mtime_iso": "2026-08-12T22:57:34.048671+00:00",
+          "sha256": "8a43e8eda3616b5310c9c78390ff785d4b3faac77427fc85be9798bd66118a2b"
+        },
+        "prompt_excerpt": "",
+        "llm_raw_excerpt": "{}",
+        "deep05_excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"Flagged by YARA as suspicious due to domain and base64 indicators, but no direct evidence of malicious API calls or behaviors.\",\n  \"confidence\": 70,\n  \"summary\": \"The XLSM file triggered YARA rules for domain regex and base64 content, suggesting potential malicious payloads or obfuscation, but specific behaviors like downloading APIs are not confirmed in the evidence.\",\n  \"key_evidence\": [\n    \"YARA rule 'domain' matched with string $domain_regex at offset 0 in file /opt/samples/corpus/malware/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/koti.xlsm.\",\n    \"YARA rule 'contains_base64' matched with string $a at offset 1859 in the same file, indicating the presence of base64 encoded data.\",\n    \"File \n\u2026 [1513 more chars]",
+        "agentic": {
+          "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/deep_dive/agentic_deep_dive.json",
+          "exists": true,
+          "bytes": 252950,
+          "mtime_iso": "2026-08-12T22:57:34.048671+00:00",
+          "sha256": "4baefc54c0b1e11cbbcb6529ba3753dbd2be3cbfa44d13f745e4beef890aa338"
+        }
+      },
+      "tools_ok_history": [
+        "yara_scan",
+        "malcat_analyze",
+        "r2_decompile",
+        "xor_string_search",
+        "packer_scan",
+        "yara_scan",
+        "malcat_analyze"
+      ],
+      "history_evidence": [
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (yara)",
+          "result_excerpt": "{\n  \"rule_count\": 2,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/malware/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/koti.xlsm\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/\n\u2026 [2916 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (malcat)",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/malware/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/koti.xlsm\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"koti.xlsm\",\n    \"file_path\": \"/\n\u2026 [44020 more chars]"
+        },
+        {
+          "tool": "r2_decompile",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (r2_decomp)",
+          "result_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/malware/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/koti.xlsm\",\n  \"disassembly\": {\n    \"0x00000000\": \"\\u250c 24: fcn.00000000 (int64_t arg1, int64_t arg2, int64_t arg4);\\n\\u2502           ; arg int64_t arg1 @ rdi\\n\\u2502           ; arg int64_t arg2 @ rsi\\n\\u2502           ; arg int64_t arg4 @ rcx\\n\\u2502           0x00000000\n\u2026 [805 more chars]"
+        },
+        {
+          "tool": "xor_string_search",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (xor)",
+          "result_excerpt": "{\n  \"xorsearch_ok\": false,\n  \"sample\": \"/opt/samples/corpus/malware/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/koti.xlsm\",\n  \"candidates\": [],\n  \"xorsearch_stdout\": \"\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 1\n}"
+        },
+        {
+          "tool": "signal_extractors",
+          "ok": false,
+          "error": "FileNotFoundError: session doc-ooxml-8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e has no gpr_path (intake_v2 should have set it)",
+          "checklist": true,
+          "reason": "Deterministic anti-analysis + dynamic-import-resolve signals",
+          "result_excerpt": "{\n  \"anti_analysis_summary\": {},\n  \"dynamic_resolve_summary\": {}\n}"
+        },
+        {
+          "tool": "packer_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Deterministic packer checklist (packed-context for gate)",
+          "result_excerpt": "{\n  \"label\": null,\n  \"name\": null,\n  \"score\": null\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "session doc-ooxml-8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e has no gpr_path (intake_v2 should have set it)",
+          "checklist": false,
+          "reason": "Auto SQL seed for large-mode deep RE gate",
+          "result_excerpt": "{\n  \"error\": \"session doc-ooxml-8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e has no gpr_path (intake_v2 should have set it)\"\n}"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": false,
+          "error": "FLOSS supports PE only (got ooxml)",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"skipped\": true,\n  \"fail_open\": true,\n  \"reason\": \"not_applicable:ooxml\",\n  \"error\": \"FLOSS supports PE only (got ooxml)\",\n  \"string_count\": 0,\n  \"strings\": [],\n  \"floss_profile\": \"skipped\",\n  \"duration_s\": 0.0\n}"
+        },
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"rule_count\": 2,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/malware/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/koti.xlsm\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/\n\u2026 [2916 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/malware/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/koti.xlsm\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"koti.xlsm\",\n    \"file_path\": \"/\n\u2026 [44020 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "session doc-ooxml-8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e has no gpr_path (intake_v2 should have set it)",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"session doc-ooxml-8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e has no gpr_path (intake_v2 should have set it)\"\n}"
+        }
+      ],
+      "agentic_preview": {
+        "verdict": "Flagged by YARA as suspicious due to domain and base64 indicators, but no direct evidence of malicious API calls or behaviors.",
+        "confidence": 70,
+        "summary": "The XLSM file triggered YARA rules for domain regex and base64 content, suggesting potential malicious payloads or obfuscation, but specific behaviors like downloading APIs are not confirmed in the evidence.",
+        "checklist_ok": true,
+        "sql_deep_ok": false,
+        "successful_tool_calls": 7
+      }
+    },
+    "yara_gen": {
+      "ok": true,
+      "checks": {
+        "rule_yar": true,
+        "non_empty": true,
+        "has_rule_block": true,
+        "rule_compiles": true,
+        "rule_check": "ok",
+        "meta_yara_valid": true
+      },
+      "evidence": {
+        "rule_yar": {
+          "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/rule.yar",
+          "exists": true,
+          "bytes": 916,
+          "mtime_iso": "2026-08-12T22:57:34.477670+00:00",
+          "sha256": "49c391b20edd6697dd429d83ff4e45a18fd51c105d2bd0a60f7eb21834740992"
+        },
+        "other_rules": [
+          "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/rule.yara.json",
+          "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/rule.yar",
+          "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/rule.yar"
+        ],
+        "excerpt": "// yara_gen_v2.py \u2014 2026-08-12T22:57:34.478302+00:00\nrule CADRE_v2_x97m_8e516c5e0ca2 {\n    meta:\n        description = \"RevAI v2 auto rule for X97M\"\n        sha256 = \"8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e\"\n        family = \"x97m\"\n        revai = true\n        revai_commit = \"unknown\"\n        revai_engine = \"langgraph\"\n        severity = \"high\"\n        confidence = \"medium\"\n    strings:\n        $s0 = \"Matches domain regex, suggesting possible command-and-control (C2) communication or malicious network activity, a behavi\" ascii wide\n        $s1 = \"Contains base64 encoded strings, commonly used in malware to obfuscate payloads, exfiltrate data, or evade detection.\" ascii wide\n        $s2 = \"Indicates a macro-enabled Excel document (OOXML), which is a prevalent vector\n\u2026 [114 more chars]"
+      }
+    },
+    "publish": {
+      "ok": true,
+      "checks": {
+        "REPORT_MASTER_v2": true,
+        "REPORT_MASTER_v3": true,
+        "REPORT_v2": true,
+        "REPORT_TECHNICAL_v2": true,
+        "REPORT_TECHNICAL_v3": true,
+        "v2_min_chars": true,
+        "v3_min_chars": true,
+        "v2_heads": true,
+        "v3_heads": true,
+        "v2_fresh_vs_deep": true,
+        "v3_fresh_vs_deep": true,
+        "not_llm_env_failure_v2": true,
+        "not_llm_env_failure_v3": true,
+        "v2_no_missing_sections": true,
+        "verdict_lock_ok": true,
+        "quality_pack_ok": true,
+        "master_source_llm": true,
+        "tech2_source_llm": true,
+        "tech3_source_ok": true,
+        "tech2_no_stubs": true,
+        "no_tech2_fallback": true,
+        "quality_issues": [],
+        "engine_citation_ok": true
+      },
+      "heads_v2": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "heads_v3": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "report_json_source": "llm_judge",
+      "sections_missing": [],
+      "quality_pack": {
+        "ok": true,
+        "quality_green": true,
+        "sha256": "8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e",
+        "issues": [],
+        "checks": {
+          "master_v2": {
+            "ok": true,
+            "label": "master_v2",
+            "source": "llm_judge",
+            "chars": 9869,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 28,
+              "prose_ratio": 0.82,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 3,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v2": {
+            "ok": true,
+            "label": "technical_v2",
+            "source": "llm_judge",
+            "chars": 29670,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 49,
+              "prose_ratio": 0.33,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v3": {
+            "ok": true,
+            "label": "technical_v3",
+            "source": "llm_judge",
+            "chars": 31309,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 48,
+              "prose_ratio": 0.49,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "master_v3_present": true,
+          "tech3_file_present": true,
+          "cross_report_consistency": {
+            "ok": true,
+            "violations": [],
+            "checks": {
+              "master_dyn_negation": false,
+              "tech_dyn_evidence": false,
+              "file_entropy": 7.5628452069664664,
+              "master_verdict": "malicious",
+              "tech_verdict": "malicious"
+            }
+          },
+          "deep_checklist_ok": true,
+          "deep_sql_deep_ok": false,
+          "deep_sql_deep_unavailable": "sql_failed",
+          "deep_sql_deep_fail_reason": "session doc-ooxml-8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e has no gpr_path (intake_v2 should have set it)",
+          "pipeline_audit_all_green": false
+        },
+        "models": {
+          "master": "mimo-v2.5-pro",
+          "technical_v2": "mimo-v2.5-pro",
+          "technical_v3": "mimo-v2.5-pro",
+          "planner_hint": "configured via env",
+          "judgment_hint": "configured via env"
+        }
+      },
+      "verdict_lock": {
+        "ok": true,
+        "conflict": false,
+        "upstream": "malicious",
+        "publish": "malicious",
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "mtimes": {
+        "v2": 1786630048.7660623,
+        "v3": 1786630770.689111,
+        "deep_ref": 1786575454.0486712,
+        "v2_chars": 9869,
+        "v3_chars": 45943,
+        "v2_iso": "2026-08-13T14:07:28.766062+00:00",
+        "v3_iso": "2026-08-13T14:19:30.689111+00:00"
+      },
+      "evidence": {
+        "REPORT_MASTER_v2": {
+          "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/REPORT-MASTER-v2.md",
+          "exists": true,
+          "bytes": 9876,
+          "mtime_iso": "2026-08-13T14:07:28.766062+00:00",
+          "sha256": "5204424fa918e60eea945fe23fc79f83fdafe017caa161d70e25b0b9251aaf07"
+        },
+        "REPORT_MASTER_v3": {
+          "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/REPORT-MASTER-v3.md",
+          "exists": true,
+          "bytes": 45982,
+          "mtime_iso": "2026-08-13T14:19:30.689111+00:00",
+          "sha256": "094880ddd310a18a39d4b70f2c868506da9c8cb90ee0ed065aa76a785f034485"
+        },
+        "REPORT_v2": {
+          "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/REPORT-v2.md",
+          "exists": true,
+          "bytes": 9876,
+          "mtime_iso": "2026-08-13T14:07:28.766062+00:00",
+          "sha256": "5204424fa918e60eea945fe23fc79f83fdafe017caa161d70e25b0b9251aaf07"
+        },
+        "REPORT_TECHNICAL_v2": {
+          "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/REPORT-TECHNICAL-v2.md",
+          "exists": true,
+          "bytes": 29735,
+          "mtime_iso": "2026-08-13T14:10:56.704977+00:00",
+          "sha256": "52786de88c30da5f99cacbd0b0adeb1dd750304b3ecd767a6c8d3e6a5d23d098"
+        },
+        "REPORT_TECHNICAL_v3": {
+          "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/REPORT-TECHNICAL-v3.md",
+          "exists": true,
+          "bytes": 31375,
+          "mtime_iso": "2026-08-13T14:21:55.906108+00:00",
+          "sha256": "7882dcca31f32749bf6c355d6ae1aef5b1408aa8bcf20d50996ec0be2698319e"
+        },
+        "report_v2_json": {
+          "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/report-v2.json",
+          "exists": true,
+          "bytes": 12464,
+          "mtime_iso": "2026-08-13T14:10:56.707977+00:00",
+          "sha256": "5ba3f8c710d85ff38a681ab7a160a5d81f8f00e43e5fcaa8905b61d325e5dc51"
+        },
+        "v2_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-13 14:07:28 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | Flagged by YARA as suspicious due to domain and base64 indicators, but no direct evidence of malicious API calls or behaviors. |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\n\nThis report details the analysis of a macro-enabled Excel workbook (XLSM) identified as malicious, with a high confidence score of 85 from upstream triage (source: triage_verdict.json). The sample, with SHA256 hash 8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e, is associated with th\n\u2026 [8969 more chars]",
+        "v3_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-13 14:19:30 UTC\n\n# RE Report \u2014 8e516c5e0ca2\n_Generated 2026-08-13T14:19:30.683544+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=214c | cross_refs=True | llm_ok=True | runtime=62.31s -->\n\n# Executive Summary\n\n**Top-line Verdict:** Malicious\n\n**Malware Family:** XAgent\n\n**Confidence Level:** High (70% confidence with agreement between analyses)\n\n## Key Findings\n\n| Aspect | Assessment | Evidence Source |\n|--------|------------|-----------------|\n| Maliciousness | Confirmed malicious with perfect score | v1 analysis: score 100, 2 YARA matches detecting patterns like domain names and base64 encodin\n\u2026 [45043 more chars]"
+      }
+    }
+  },
+  "policy": {
+    "v3_required": true,
+    "no_optional_stages": true,
+    "tool_fail_is_fail": false,
+    "capa_salvage": "malcat capa_summary + LLM citation"
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-13 15:10:47 UTC"
+  },
+  "cross_cutting": {
+    "sample_path": "/opt/samples/corpus/malware/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/koti.xlsm",
+    "pipeline_mode": "single",
+    "llm": {
+      "triage": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "verdict": "malicious",
+        "family": "XAgent",
+        "confidence": 85,
+        "agreement": "llm_and_v1_agree",
+        "key_evidence": [
+          {
+            "source": "yara",
+            "query_or_table": "matches",
+            "row_or_rule": "contains_base64",
+            "why": "YARA rule 'contains_base64' matched at offset 1859, length 12, indicating base64-encoded content which is often used in malware for payload obfuscation or data exfiltration."
+          },
+          {
+            "source": "virustotal",
+            "query_or_table": "hash_lookup",
+            "row_or_rule": "detections: 34 malicious, 0 suspicious, 0 harmless, 30 undetected",
+            "why": "VirusTotal analysis shows high number of AV detections (34/64) with tags including 'calls-wmi', 'xlsx', and 'malware', and threat category 'trojan' and 'downloader', suggesting malicious behavior such as command-and-control or persistence mechanisms."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "file_summary",
+            "row_or_rule": "entropy: 7.56, type: ZIP, virtual_files: includes xl/macrosheets/sheet1.xml",
+            "why": "MalCat analysis reveals high entropy (7.56) indicating possible encryption or compression, and the presence of macro sheets in the OOXML structure, which is a common vector for malware delivery and execution."
+          }
+        ],
+        "incomplete_tooling": null,
+        "excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 85,\n  \"family_guess\": \"XAgent\",\n  \"cross_engine_notes\": \"Ghidra and IDA analysis failed due to session errors; MalCat identified the file as a ZIP/OOXML with high entropy (7.56) and macro content (xl/macrosheets/sheet1.xml); YARA rules matched for base64-encoded strings; VirusTotal reported 34 malicious detections with tags like 'calls-wmi' and threat label 'trojan.msexcel/x97m'. No direct behavioral evidence from static analysis tools, but external TI strongly indicates malicious activity.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"matches\",\n      \"row_or_rule\": \"contains_base64\",\n      \"why\": \"YARA rule 'contains_base64' matched at offset 1859, length 12, indicating base64-encoded content which is often used in malware for payload obfuscation or data exfiltration.\"\n    },\n    {\n      \"source\": \"virustotal\",\n      \"query_or_table\": \"hash_lookup\",\n      \"row_or_rule\": \"detections: 34 malicious, 0 suspicious, 0 harmless, 30 undetected\",\n      \"why\": \"VirusTotal analysis shows high number of AV detections (34/64) with tags including 'calls-wmi', 'xlsx', and 'malware', and threat category 'trojan' and 'downloader', suggesting malicious behavior such as command-and-control or persistence mechanisms.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"file_summary\",\n      \"row_or_rule\": \"entropy: 7.56, type: ZIP, virtual_files: includes xl/macrosheets/sheet1.xml\",\n      \"why\": \"MalCat analysis reveals high entropy (7.56) indicating possible encryption or compression, and the presence of macro sheets in the OOXML structure, which is a common vector for malware delivery and execution.\"\n    }\n  ],\n  \"summary\": \"The sample is an Excel macro-enabled workbook (OOXML format) with high entropy and base64-encoded content. External threat intelligence from VirusTotal indicates it is a trojan downloader associated with the XAgent family, as evidenced by multiple AV detections and behavioral tags. While static analysis tools like Ghidra and IDA failed, MalCat confirmed the macro presence and high entropy, and YARA rules detected suspicious strings. These factors collectively point to malicious intent.\",\n  \"source\": \"llm_judge\",\n  \"model\": \"mimo-v2.5-pro\",\n  \"agreement\": \"llm_and_v1_agree\",\n  \"v1_summary\": {\n    \"verdict\": \"malicious\",\n    \"score\": 100,\n    \"findings\": [\n      \"yara: 2 matches\"\n    ]\n  },\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"ooxml\",\n    \"required\": [\n      \"yara\",\n      \"malcat\"\n    ],\n    \"tools\": {\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      }\n    },\n    \"hard_failures\": [],\n    \"soft_failures\": [],\n    \"missing\": [],\n    \"not_applicable\": [],\n    \"large_sample\": false\n  },\n  \"ti_enrich\": {\n    \"ok\": true,\n    \"providers\": {\n      \"virustotal\": {\n        \"ok\": true,\n        \"malicious\": 34,\n        \"suspicious\": 0,\n        \"harmless\": 0,\n        \"undetected\": 30,\n        \"reputation\": 0,\n        \"popular_threat_classification\": {\n          \"popular_threat_category\": [\n            {\n              \"count\": 16,\n              \"value\": \"trojan\"\n            },\n            {\n              \"count\": 8,\n              \"value\": \"downloader\"\n            }\n          ],\n          \"popular_threat_name\": [\n            {\n              \"count\": 2,\n              \"value\": \"msexcel\"\n            },\n            {\n              \"count\": 2,\n              \"value\": \"x97m\"\n            },\n            {\n              \"count\": 2,\n              \"value\": \"\n\u2026 [1429 more chars]"
+      },
+      "deep_dive": {
+        "source": "deep_dive_agentic",
+        "model": null,
+        "verdict": "Flagged by YARA as suspicious due to domain and base64 indicators, but no direct evidence of malicious API calls or behaviors.",
+        "confidence": 70,
+        "key_evidence": [
+          "YARA rule 'domain' matched with string $domain_regex at offset 0 in file /opt/samples/corpus/malware/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/koti.xlsm.",
+          "YARA rule 'contains_base64' matched with string $a at offset 1859 in the same file, indicating the presence of base64 encoded data.",
+          "File type is XLSM (Excel macro-enabled workbook), which can contain macros, but no macro code or API calls are shown in the provided evidence."
+        ],
+        "incomplete_tooling": false,
+        "excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"Flagged by YARA as suspicious due to domain and base64 indicators, but no direct evidence of malicious API calls or behaviors.\",\n  \"confidence\": 70,\n  \"summary\": \"The XLSM file triggered YARA rules for domain regex and base64 content, suggesting potential malicious payloads or obfuscation, but specific behaviors like downloading APIs are not confirmed in the evidence.\",\n  \"key_evidence\": [\n    \"YARA rule 'domain' matched with string $domain_regex at offset 0 in file /opt/samples/corpus/malware/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/koti.xlsm.\",\n    \"YARA rule 'contains_base64' matched with string $a at offset 1859 in the same file, indicating the presence of base64 encoded data.\",\n    \"File type is XLSM (Excel macro-enabled workbook), which can contain macros, but no macro code or API calls are shown in the provided evidence.\"\n  ],\n  \"incomplete_tooling\": false,\n  \"successful_tool_calls\": 7,\n  \"successful_non_bootstrap_tools\": 3,\n  \"checklist_ok\": true,\n  \"sql_deep_ok\": false,\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"ooxml\",\n    \"required\": [\n      \"yara\",\n      \"r2_decomp\",\n      \"xor\"\n    ],\n    \"tools\": {\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"r2_decomp\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"xor\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:ooxml\"\n      },\n      \"pe_imports\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:ooxml\"\n      },\n      \"floss\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:ooxml\"\n      },\n      \"dotnet\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:ooxml\"\n      },\n      \"upx\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:ooxml\"\n      },\n      \"speakeasy\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:ooxml\"\n      },\n      \"frida_probe\": {\n        \"ok\": true,\n        \"why\": \"not_applicable:ooxml\"\n      }\n    },\n    \"hard_failures\": [],\n    \"soft_failures\": [],\n    \"missing\": [],\n    \"not_applicable\": [\n      \"capa\",\n      \"pe_imports\",\n      \"floss\",\n      \"dotnet\",\n      \"upx\",\n      \"speakeasy\",\n      \"frida_probe\"\n    ],\n    \"large_sample\": false\n  },\n  \"depth_coverage\": null\n}"
+      },
+      "publish": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "excerpt": "{\n  \"title\": \"Malware Analysis Report: 8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `unknown` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-13 14:07:28 UTC\\n\\n# Verdict sources (multi-source)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | malicious |\\n| Deep dive | Flagged by YARA as suspicious due to domain and base64 indicators, but no direct evidence of malicious API calls or behaviors. |\\n| Publish LLM (claimed) | malicious |\\n\\n- **Locked over publish LLM:** no\\n\\n## Executive Summary\\n\\nThis report details the analysis of a macro-enabled Excel workbook (XLSM) identified as malicious, with a high confidence score of 85 from upstream triage (source: triage_verdict.json). The sample, with SHA256 hash 8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e, is associated with the XAgent malware family, known for its use as a trojan downloader. Static analysis reveals high entropy (7.56 bits/byte) and the presence of base64-encoded content and domain regex patterns, which are indicators commonly linked to malicious payloads and command-and-control (C2) communication (source: malcat, yara). VirusTotal reports 34 malicious detections, reinforcing its malicious nature (source: virustotal). Behavioral analysis was not performed in this assessment, limiting insight into runtime actions. The sample likely leverages macros for initial execution and network-based indicators suggest potential C2 activity. We assess this as a malicious artifact requiring immediate containment.\\n\\n## 1. Sample Identification\\n\\nThe sample is located at /opt/samples/corpus/malware/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/koti.xlsm (source: evidence_provided). It is an Excel macro-enabled workbook (OOXML format) with the SHA256 hash 8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e, as confirmed by multiple tools (source: malcat, triage_verdict.json). The project name is 'malware', indicating it is part of a curated malicious corpus. File type analysis shows it is a ZIP archive containing OOXML components, including macro sheets, which are a common vector for malware delivery (source: malcat).\\n\\n## 2. Classification\\n\\nBased on upstream triage, the sample is classified as malicious with a family guess of XAgent and a score of 85 (source: triage_verdict.json). This verdict is supported by behavioral intent evidence such as YARA rule matches for domain regex and base64 content, and high AV detections on VirusTotal (source: yara, virustotal). While obfuscation signals like high entropy (7.56 bits/byte) are present, they are neutral alone; however, combined with network indicators and macro capabilities, they point to malicious activity (source: malcat, deep_dive.json). The verdict must align with upstream triage, and we concur that this sample exhibits hostile behavior indicative of malware.\\n\\n## 3. Background & Family Lineage\\n\\nThe XAgent malware family is a known trojan downloader often used in cyber-espionage campaigns, typically delivered via macro-enabled documents like XLSM files (source: triage_verdict.json). It is associated with techniques such as command-and-control communication and payload obfuscation through encoding. This sample's characteristics,\n\u2026 [8964 more chars]"
+      }
+    },
+    "artifact_inventory": {
+      "verdict.json": {
+        "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/verdict.json",
+        "exists": true,
+        "bytes": 4929,
+        "mtime_iso": "2026-08-13T14:05:16.989050+00:00",
+        "sha256": "f9fb938bf51b0a9584f6f3b6ef41753a8b0aa29b160b30fe0ac96207ba85fe32"
+      },
+      "prompt.txt": {
+        "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/prompt.txt",
+        "exists": true,
+        "bytes": 12877,
+        "mtime_iso": "2026-08-13T14:04:20.524023+00:00",
+        "sha256": "1179c8440d748b3c0d0a75d534d3f907002760c1c0eed17fcd74fcdf995556f8"
+      },
+      "pipeline-audit.json": {
+        "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/pipeline-audit.json",
+        "exists": true,
+        "bytes": 73792,
+        "mtime_iso": "2026-08-13T14:21:56.005108+00:00",
+        "sha256": "0ac628856e968bfc8d541e8b0ddc48af30a49bc641ec87058d1c099eee381009"
+      },
+      "AUDIT-REPORT.md": {
+        "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/AUDIT-REPORT.md",
+        "exists": true,
+        "bytes": 53140,
+        "mtime_iso": "2026-08-13T14:21:56.005108+00:00",
+        "sha256": "3a77816958690a12c39181c503cc6fa0a0ab36ab49ac3f9dd841640c7f835660"
+      },
+      "REPORT-MASTER-v2.md": {
+        "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/REPORT-MASTER-v2.md",
+        "exists": true,
+        "bytes": 9876,
+        "mtime_iso": "2026-08-13T14:07:28.766062+00:00",
+        "sha256": "5204424fa918e60eea945fe23fc79f83fdafe017caa161d70e25b0b9251aaf07"
+      },
+      "REPORT-MASTER-v3.md": {
+        "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/REPORT-MASTER-v3.md",
+        "exists": true,
+        "bytes": 45982,
+        "mtime_iso": "2026-08-13T14:19:30.689111+00:00",
+        "sha256": "094880ddd310a18a39d4b70f2c868506da9c8cb90ee0ed065aa76a785f034485"
+      },
+      "REPORT-v2.md": {
+        "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/REPORT-v2.md",
+        "exists": true,
+        "bytes": 9876,
+        "mtime_iso": "2026-08-13T14:07:28.766062+00:00",
+        "sha256": "5204424fa918e60eea945fe23fc79f83fdafe017caa161d70e25b0b9251aaf07"
+      },
+      "REPORT-TECHNICAL.md": {
+        "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/REPORT-TECHNICAL.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-TECHNICAL-v3.md": {
+        "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/REPORT-TECHNICAL-v3.md",
+        "exists": true,
+        "bytes": 31375,
+        "mtime_iso": "2026-08-13T14:21:55.906108+00:00",
+        "sha256": "7882dcca31f32749bf6c355d6ae1aef5b1408aa8bcf20d50996ec0be2698319e"
+      },
+      "rule.yar": {
+        "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/rule.yar",
+        "exists": true,
+        "bytes": 916,
+        "mtime_iso": "2026-08-12T22:57:34.477670+00:00",
+        "sha256": "49c391b20edd6697dd429d83ff4e45a18fd51c105d2bd0a60f7eb21834740992"
+      },
+      "intake-validation.json": {
+        "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/intake-validation.json",
+        "exists": true,
+        "bytes": 723,
+        "mtime_iso": "2026-08-12T22:55:11.195969+00:00",
+        "sha256": "32aa710056c9c91d8abb7ea04982769d9b0293aa159e343d0afdd498c19e361d"
+      },
+      "source-decisions.json": {
+        "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/source-decisions.json",
+        "exists": true,
+        "bytes": 638,
+        "mtime_iso": "2026-08-12T22:55:11.195969+00:00",
+        "sha256": "9bc4dcc048d13d016fc9eafa5b6dc7fa7ccfe2cb0307ea686d9be8414d5f6c21"
+      },
+      "malcat-triage.json": {
+        "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/malcat-triage.json",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "deep_dive/01-tools-raw.json": {
+        "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/deep_dive/01-tools-raw.json",
+        "exists": true,
+        "bytes": 54645,
+        "mtime_iso": "2026-08-13T14:04:15.852013+00:00",
+        "sha256": "7aa97f5653e397ec58e17a1b7b0e3faa829db30df9c59994ca0350e667568a20"
+      },
+      "deep_dive/01-tools-gate.json": {
+        "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/deep_dive/01-tools-gate.json",
+        "exists": true,
+        "bytes": 1052,
+        "mtime_iso": "2026-08-12T22:56:23.494155+00:00",
+        "sha256": "f839515c6c93a7bd13c932d17ae657d95bbd04a58ef9ae172c0d463416124b90"
+      },
+      "deep_dive/05-deep-dive.json": {
+        "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/deep_dive/05-deep-dive.json",
+        "exists": true,
+        "bytes": 2313,
+        "mtime_iso": "2026-08-12T22:57:34.048671+00:00",
+        "sha256": "8a43e8eda3616b5310c9c78390ff785d4b3faac77427fc85be9798bd66118a2b"
+      },
+      "deep_dive/03-prompt.txt": {
+        "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/deep_dive/03-prompt.txt",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "quick_scan/00-tools-raw.json": {
+        "path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/quick_scan/00-tools-raw.json",
+        "exists": true,
+        "bytes": 54029,
+        "mtime_iso": "2026-08-13T14:04:19.009020+00:00",
+        "sha256": "f5d19d8ab37eca74b881d98ce26e30f806140a0dd527901ee7d5e37ff41b26da"
+      }
+    },
+    "report_excerpts": {
+      "v2": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-13 14:07:28 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | Flagged by YARA as suspicious due to domain and base64 indicators, but no direct evidence of malicious API calls or behaviors. |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n## Executive Summary\n\nThis report details the analysis of a macro-enabled Excel workbook (XLSM) identified as malicious, with a high confidence score of 85 from upstream triage (source: triage_verdict.json). The sample, with SHA256 hash 8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e, is associated with the XAgent malware family, known for its use as a trojan downloader. Static analysis reveals high entropy (7.56 bits/byte) and the presence of base64-encoded content and domain regex patterns, which are indicators commonly linked to malicious payloads and command-and-control (C2) communication (source: malcat, yara). VirusTotal reports 34 malicious detections, reinforcing its malicious nature (source: virustotal). Behavioral analysis was not performed in this assessment, limiting insight into runtime actions. The sample likely leverages macros for initial execution and network-based indicators suggest potential C2 activity. We assess this as a malicious artifact requiring immediate containment.\n\n## 1. Sample Identification\n\nThe sample is located at /opt/samples/corpus/malware/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/koti.xlsm (source: evidence_provided). It is an Excel macro-enabled workbook (OOXML format) with the SHA256 hash 8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e, as confirmed by multiple tools (source: malcat, triage_verdict.json). The project name is 'malware', indicating it is part of a curated malicious corpus. File type analysis shows it is a ZIP archive containing OOXML components, including macro sheets, which are a common vector for malware delivery (source: malcat).\n\n## 2. Classification\n\nBased on upstream triage, the sample is classified as malicious with a family guess of XAgent and a score of 85 (source: triage_verdict.json). This verdict is supported by behavioral intent evidence such as YARA rule matches for do\n\u2026 [7369 more chars]",
+      "v3": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-13 14:19:30 UTC\n\n# RE Report \u2014 8e516c5e0ca2\n_Generated 2026-08-13T14:19:30.683544+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=214c | cross_refs=True | llm_ok=True | runtime=62.31s -->\n\n# Executive Summary\n\n**Top-line Verdict:** Malicious\n\n**Malware Family:** XAgent\n\n**Confidence Level:** High (70% confidence with agreement between analyses)\n\n## Key Findings\n\n| Aspect | Assessment | Evidence Source |\n|--------|------------|-----------------|\n| Maliciousness | Confirmed malicious with perfect score | v1 analysis: score 100, 2 YARA matches detecting patterns like domain names and base64 encoding, indicative of C2 or obfuscation (source: yara, cross-section:classification) |\n| Family Identification | XAgent remote access trojan (RAT) | Family guess supported by background analysis, associating with advanced persistent threats (source: llm_judge, cross-section:background_&_family_lineage) |\n| Analysis Confidence | 70% confidence, consistent across methods | Deep dive agentic analysis indicates high certainty, reinforced by agreement between LLM and v1 assessments (source: deep_dive_agentic, llm_and_v1_agree) |\n| Dynamic Analysis | Tools executed but recorded no runtime events | Speakeasy and Frida probe ran, yet no behavioral data captured, which may affect confidence but does not negate static indicators (source: cross-section:behavioral_analysis) |\n\n## Summary\n\nThis sample is definitively malicious, as shown by a v1 analysis score of 100 and two YARA rule matches that likely detect malicious domains and base64 strings, common in command-and-control or data exfiltration. The malware is assessed as part of the XAgent family, a sophisticated RAT linked to advanced threats, with a deep confidence of 70% reflecting consistent static findings, though dynamic analysis yielded no recorded events.\n\n---\n\n<!-- section: 1. Sample Identification | pass=2 | evidence=234c | cross_refs=True | llm_ok=True | runtime=75.13s -->\n\n# 1. Sample Identification\n\nThis section details the sample identifiers for the artifact with SHA256 hash `8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e`, based on static analysis evidence. Identifiers include cryptographic hashes, file f\n\u2026 [43443 more chars]"
+    }
+  },
+  "retry_visibility": {
+    "quick_scan": [],
+    "deep_dive": [],
+    "count": 0
+  },
+  "all_green": true,
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "layer_attribution": {
+    "ok": true,
+    "layers": {
+      "L1_tool_extraction": [],
+      "L2_evidence_prompt": [],
+      "L3_llm_interpretation": [],
+      "L4_gates": [],
+      "L5_report_authorship": []
+    },
+    "red_stages": []
+  },
+  "showcase_dir": "/opt/samples/logs/_showcase_audits/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e"
+}

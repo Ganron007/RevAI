@@ -1,0 +1,208 @@
+{
+  "verdict": "malicious",
+  "score": 85,
+  "family_guess": "Trioris",
+  "cross_engine_notes": "Multiple tools detect anti-debugging, network communication, data theft, and obfuscation. Ghidra, IDA, and MalCat confirm PE structure and anomalies. Capa identifies behavioral intent (credit card parsing, C2). VirusTotal shows high detection rate (55/72) with threat family 'Trioris/Cerbu'.",
+  "key_evidence": [
+    {
+      "source": "pe_imports",
+      "query_or_table": "pe_imports signals",
+      "row_or_rule": "check_debugger (IsDebuggerPresent)",
+      "why": "Anti-debugging capability, common in malware to evade analysis."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "pe_imports signals",
+      "row_or_rule": "create_process (CreateProcess)",
+      "why": "Ability to create new processes, often used for process injection or launching malicious payloads."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "pe_imports signals",
+      "row_or_rule": "allocate_memory (VirtualAlloc)",
+      "why": "Dynamic memory allocation, common in code injection or unpacking."
+    },
+    {
+      "source": "pe_imports",
+      "query_or_table": "pe_imports signals",
+      "row_or_rule": "change_memory_protection (VirtualProtect)",
+      "why": "Changing memory protection to execute injected code or modify existing code."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "capa rules",
+      "row_or_rule": "parse credit card information",
+      "why": "Indicates data theft targeting financial information, a clear malicious intent."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "capa rules",
+      "row_or_rule": "send data",
+      "why": "Network communication capability for data exfiltration or C2."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "capa rules",
+      "row_or_rule": "receive data",
+      "why": "Network communication capability for command and control."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "capa rules",
+      "row_or_rule": "resolve DNS",
+      "why": "Network communication for domain resolution, typical of C2 infrastructure."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "capa rules",
+      "row_or_rule": "reference HTTP User-Agent string",
+      "why": "HTTP communication, likely for command and control or data exfiltration."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "YARA matches",
+      "row_or_rule": "anti_dbg",
+      "why": "Anti-debugging technique detected, indicating evasion."
+    },
+    {
+      "source": "external TI",
+      "query_or_table": "VirusTotal",
+      "row_or_rule": "55/72 detections, threat family trioris/cerbu",
+      "why": "High detection rate and identified threat family confirm malicious nature."
+    }
+  ],
+  "summary": "The sample is a PE x86 executable exhibiting multiple malicious behaviors: anti-debugging (IsDebuggerPresent, anti_dbg YARA), process creation and memory manipulation (CreateProcess, VirtualAlloc, VirtualProtect), network communication (send/receive data, DNS resolution, HTTP User-Agent), and data theft (credit card parsing). Obfuscation techniques (XorInLoop, DynamicString) are present but considered neutral alone; however, combined with behavioral indicators, they support malicious intent. VirusTotal reports 55/72 detections with threat family 'Trioris/Cerbu'. The sample is signed with an invalid signature, further raising suspicion.",
+  "source": "llm_judge",
+  "model": "mimo-v2.5-pro",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 20 matches",
+      "capa: 31 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "malcat",
+      "floss",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "ti_enrich": {
+    "ok": true,
+    "providers": {
+      "virustotal": {
+        "ok": true,
+        "malicious": 55,
+        "suspicious": 0,
+        "harmless": 0,
+        "undetected": 17,
+        "reputation": -1,
+        "popular_threat_classification": {
+          "popular_threat_name": [
+            {
+              "value": "trioris",
+              "count": 10
+            },
+            {
+              "value": "cerbu",
+              "count": 7
+            },
+            {
+              "value": "agentb",
+              "count": 5
+            }
+          ],
+          "suggested_threat_label": "trojan.trioris/cerbu",
+          "popular_threat_category": [
+            {
+              "value": "trojan",
+              "count": 19
+            },
+            {
+              "value": "adware",
+              "count": 10
+            }
+          ]
+        },
+        "names": [
+          "new_era.exe",
+          "trojan_4982.exe",
+          "005_ds_perm",
+          "38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73"
+        ],
+        "tags": [
+          "invalid-signature",
+          "peexe",
+          "signed",
+          "overlay",
+          "detect-debug-environment",
+          "nxdomain"
+        ],
+        "link": "https://www.virustotal.com/gui/file/38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73"
+      },
+      "hybrid_analysis": {
+        "ok": true,
+        "link": "https://www.hybrid-analysis.com/sample/38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73"
+      }
+    },
+    "policy": "enrichment_only_never_clears_local_yara_or_tool_gates"
+  },
+  "yara_family_hits": [
+    "VC8_Microsoft_Corporation",
+    "win_files_operation"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 11,
+    "hits": 11,
+    "misses": [],
+    "hit_examples": [
+      "check_debugger (IsDebuggerPresent) pe_imports signals Anti-debugging capability, common in malware to evade analysis. pe",
+      "create_process (CreateProcess) pe_imports signals Ability to create new processes, often used for process injection or l",
+      "allocate_memory (VirtualAlloc) pe_imports signals Dynamic memory allocation, common in code injection or unpacking. pe_i",
+      "change_memory_protection (VirtualProtect) pe_imports signals Changing memory protection to execute injected code or modi",
+      "parse credit card information capa rules Indicates data theft targeting financial information, a clear malicious intent."
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 7,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

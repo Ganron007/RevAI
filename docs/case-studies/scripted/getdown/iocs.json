@@ -1,0 +1,30 @@
+{
+  "sha256": "cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a",
+  "family": "usbles26",
+  "verdict": "malicious@",
+  "generated_at": "2026-08-12T17:05:45.403171+00:00",
+  "hashes": {
+    "sha256": "cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a",
+    "sha1": "414300597938d64b3486be6004003d90d565360d",
+    "md5": "2a8668a6d0e12c7380a26910d504ecbf"
+  },
+  "domains": [],
+  "ips": [],
+  "urls": [],
+  "files": [],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive).",
+  "wallets_btc": [],
+  "wallets_eth": [],
+  "revai_tools": {
+    "count": 0,
+    "source": "revai_tools_iocs"
+  }
+}

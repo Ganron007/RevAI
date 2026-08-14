@@ -1,0 +1,1886 @@
+{
+  "capa": {
+    "rule_count": 3,
+    "top_rules": [
+      {
+        "name": "encrypt data using RC4 PRGA",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "",
+            "id": "T1027"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Cryptography",
+              "Encrypt Data",
+              "RC4"
+            ],
+            "objective": "Cryptography",
+            "behavior": "Encrypt Data",
+            "method": "RC4",
+            "id": "C0027.009"
+          },
+          {
+            "parts": [
+              "Cryptography",
+              "Generate Pseudo-random Sequence",
+              "RC4 PRGA"
+            ],
+            "objective": "Cryptography",
+            "behavior": "Generate Pseudo-random Sequence",
+            "method": "RC4 PRGA",
+            "id": "C0021.004"
+          }
+        ]
+      },
+      {
+        "name": "accept command line arguments",
+        "attack": [
+          {
+            "parts": [
+              "Execution",
+              "Command and Scripting Interpreter"
+            ],
+            "tactic": "Execution",
+            "technique": "Command and Scripting Interpreter",
+            "subtechnique": "",
+            "id": "T1059"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Execution",
+              "Command and Scripting Interpreter"
+            ],
+            "objective": "Execution",
+            "behavior": "Command and Scripting Interpreter",
+            "method": "",
+            "id": "E1059"
+          }
+        ]
+      },
+      {
+        "name": "hide graphical window",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Hide Artifacts",
+              "Hidden Window"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Hide Artifacts",
+            "subtechnique": "Hidden Window",
+            "id": "T1564.003"
+          }
+        ],
+        "mbc": []
+      }
+    ],
+    "timeout_s": 300,
+    "sample_size": 26624,
+    "duration_s": 2.09,
+    "engine": "malcat-capa",
+    "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+  },
+  "pe_imports": {
+    "engine": "pe_imports",
+    "sample_size": 26624,
+    "duration_s": 0.02,
+    "import_count": 24,
+    "signal_count": 0,
+    "signals": [],
+    "hint": "PE import high-signal map (pefile). Not capa."
+  },
+  "yara": {
+    "rule_count": 7,
+    "matches": [
+      {
+        "rule": "domain",
+        "path": "/opt/samples/corpus/malware/a59b2cb9f6c706635b4d97edc574a72ac54fba47f9a4a1eae77cf58a96ccf567/ghyte.exe",
+        "strings": [
+          {
+            "id": "$domain_regex",
+            "offset": 0,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "contains_base64",
+        "path": "/opt/samples/corpus/malware/a59b2cb9f6c706635b4d97edc574a72ac54fba47f9a4a1eae77cf58a96ccf567/ghyte.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 12748,
+            "length": 12,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IsPE32",
+        "path": "/opt/samples/corpus/malware/a59b2cb9f6c706635b4d97edc574a72ac54fba47f9a4a1eae77cf58a96ccf567/ghyte.exe",
+        "strings": []
+      },
+      {
+        "rule": "IsWindowsGUI",
+        "path": "/opt/samples/corpus/malware/a59b2cb9f6c706635b4d97edc574a72ac54fba47f9a4a1eae77cf58a96ccf567/ghyte.exe",
+        "strings": []
+      },
+      {
+        "rule": "HasRichSignature",
+        "path": "/opt/samples/corpus/malware/a59b2cb9f6c706635b4d97edc574a72ac54fba47f9a4a1eae77cf58a96ccf567/ghyte.exe",
+        "strings": [
+          {
+            "id": "$a0",
+            "offset": 208,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Safeguard_103_Simonzh",
+        "path": "/opt/samples/corpus/malware/a59b2cb9f6c706635b4d97edc574a72ac54fba47f9a4a1eae77cf58a96ccf567/ghyte.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 2688,
+            "length": 5,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "ZProtect_v144_lifeengines",
+        "path": "/opt/samples/corpus/malware/a59b2cb9f6c706635b4d97edc574a72ac54fba47f9a4a1eae77cf58a96ccf567/ghyte.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 2688,
+            "length": 23,
+            "xor_key": null
+          }
+        ]
+      }
+    ],
+    "engine": "yara-x",
+    "rules_compiled": 454,
+    "compile_errors": [
+      "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+      "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+      "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+    ],
+    "incomplete": true,
+    "duration_s": 3.91
+  },
+  "floss": {
+    "floss_ok": true,
+    "string_count": 72,
+    "strings_sampled": 70,
+    "strings": [
+      "!This program cannot be run in DOS mode.",
+      "7Richu",
+      "`.data",
+      "VXlt|NO",
+      "%h@~qU",
+      "}|)8Or6",
+      "`X+ww76m@@",
+      "auf je",
+      "%h@pfQ",
+      "H]wyvK`",
+      "y8u(@%",
+      "mf tTl",
+      "%%:}[t",
+      "|`|s\\$:~",
+      "KQjO:N",
+      "%@%?vp",
+      "t7{p|Xz",
+      "2uPj1hp@@",
+      "GGGGBBBBIu",
+      "SwW&:~8Ol",
+      "8n+|Bj",
+      "terras",
+      "summer",
+      "momenr",
+      "dip quip",
+      "static",
+      "DestroyWindow",
+      "button",
+      "SetTimer",
+      "KillTimer",
+      "SetWindowPos",
+      "GetWindowRect",
+      "FillRect",
+      "LoadCursorA",
+      "LoadIconA",
+      "SendMessageA",
+      "DefWindowProcA",
+      "RegisterClassExA",
+      "CreateWindowExA",
+      "LoadBitmapA",
+      "TranslateMessage",
+      "BeginPaint",
+      "DispatchMessageA",
+      "EndPaint",
+      "GetMessageA",
+      "PostQuitMessage",
+      "ShowWindow",
+      "UpdateWindow",
+      "user32.dll",
+      "GetCommandLineA",
+      "GetModuleHandleA",
+      "GetLastError",
+      "kernel32.dll",
+      "TextOutA",
+      "gdi32.dll",
+      "<assembly xmlns=\"urn:schemas-microsoft-com:asm.v1\" manifestVersion=\"1.0\">",
+      "<trustInfo xmlns=\"urn:schemas-microsoft-com:asm.v3\">",
+      "<security>",
+      "<requestedPrivileges>",
+      "<requestedExecutionLevel level=\"asInvoker\" uiAccess=\"false\"></requestedExecutionLevel>",
+      "</requestedPrivileges>",
+      "</security>",
+      "</trustInfo>",
+      "</assembly>",
+      "\"\"\"\"\"\"\"",
+      "\"\"\"#\"\"\"",
+      "\"\"\"DB\"\"",
+      "\"\"\"BB\"\"",
+      "\"\"$BD\"\"",
+      "\"\"$\"$\"\""
+    ],
+    "per_category": {
+      "decoded_strings": 0,
+      "stack_strings": 0,
+      "tight_strings": 0,
+      "language_strings": 0,
+      "language_strings_missed": 0,
+      "static_strings": 72
+    },
+    "raw_key_total": 3,
+    "floss_profile": "full",
+    "floss_language": "none",
+    "duration_s": 5.65,
+    "size_bytes": 26624,
+    "static_only": false,
+    "size_exceeded_deobfuscate_limit": false
+  },
+  "malcat": {
+    "analysis_id": 1,
+    "path": "/opt/samples/corpus/malware/a59b2cb9f6c706635b4d97edc574a72ac54fba47f9a4a1eae77cf58a96ccf567/ghyte.exe",
+    "profile": "deep",
+    "limits": {
+      "strings_max": 300,
+      "imports_max": 300,
+      "functions_max": 30,
+      "anomaly_locations_max": 50,
+      "decompile_top_n": 3
+    },
+    "file_summary": {
+      "analysis_id": 1,
+      "file_name": "ghyte.exe",
+      "file_path": "/opt/samples/corpus/malware/a59b2cb9f6c706635b4d97edc574a72ac54fba47f9a4a1eae77cf58a96ccf567/ghyte.exe",
+      "file_size": 26624,
+      "type": "PE",
+      "architecture": "X86",
+      "entropy": 6.04,
+      "sha256": "a59b2cb9f6c706635b4d97edc574a72ac54fba47f9a4a1eae77cf58a96ccf567",
+      "metadata": {},
+      "entrypoint_ea": 2688,
+      "layout": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 1024,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 39
+        },
+        {
+          "name": ".text",
+          "effective_address": 1024,
+          "physical_size": 10752,
+          "virtual_size": 12288,
+          "rights": "RX",
+          "entropy": 137
+        },
+        {
+          "name": ".data",
+          "effective_address": 13312,
+          "physical_size": 3584,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 72
+        },
+        {
+          "name": ".rsrc",
+          "effective_address": 17408,
+          "physical_size": 11264,
+          "virtual_size": 12288,
+          "rights": "R",
+          "entropy": 52
+        }
+      ],
+      "kesakode_verdict": [],
+      "entropy_malcat_raw": 91,
+      "entropy_source": "whole_file_shannon_revai"
+    },
+    "views": {
+      "anomalies": [
+        {
+          "name": "HugeGapBetweenFunctions",
+          "desc": "There is a huge gap between two functions with medium-to-high entropy, often means that data is stored there",
+          "category": "code",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "NoChecksum",
+          "desc": "PE Header checksum is not set",
+          "category": "integrity",
+          "level": 1,
+          "num_hits": 1
+        },
+        {
+          "name": "NoValidCertificate",
+          "desc": "Certificate data directory does not point to a valid certificate (maybe corrupted ?)",
+          "category": "integrity",
+          "level": 4,
+          "num_hits": 1
+        },
+        {
+          "name": "XorInLoop",
+          "desc": "XOR instruction in a loop",
+          "category": "code",
+          "level": 3,
+          "num_hits": 1
+        }
+      ],
+      "anomaly_locations": {
+        "NoChecksum": [
+          {
+            "ea": 328,
+            "context": ""
+          }
+        ],
+        "XorInLoop": [
+          {
+            "ea": 8221,
+            "context": ""
+          }
+        ]
+      },
+      "yara_hits": [
+        {
+          "id": "MSVC_2005_linker",
+          "category": "compiler",
+          "reliability": 60,
+          "type": "INFO",
+          "description": "detects used visual studio version based on linker information",
+          "num_patterns": 0
+        },
+        {
+          "id": "MSVC_2008_rich",
+          "category": "compiler",
+          "reliability": 80,
+          "type": "INFO",
+          "description": "detects used visual studio version based on rich header information",
+          "num_patterns": 0
+        }
+      ],
+      "strings": [
+        {
+          "ea": 17712,
+          "summary": "<assembly xmlns=..fo>\r\n</assembly>"
+        },
+        {
+          "ea": 14284,
+          "summary": "DestroyWindow"
+        },
+        {
+          "ea": 14259,
+          "summary": "dip quip"
+        },
+        {
+          "ea": 16742,
+          "summary": "kernel32.dll"
+        },
+        {
+          "ea": 14272,
+          "summary": "edit"
+        },
+        {
+          "ea": 16768,
+          "summary": "gdi32.dll"
+        },
+        {
+          "ea": 14304,
+          "summary": "button"
+        },
+        {
+          "ea": 14239,
+          "summary": "summer"
+        },
+        {
+          "ea": 16676,
+          "summary": "user32.dll"
+        },
+        {
+          "ea": 14234,
+          "summary": "lunt"
+        },
+        {
+          "ea": 28252,
+          "summary": "\"\"\"DB\"\""
+        },
+        {
+          "ea": 28260,
+          "summary": "\"\"\"BB\"\""
+        },
+        {
+          "ea": 77,
+          "summary": "!This program ca..in DOS mode.\r\r\n$"
+        },
+        {
+          "ea": 16550,
+          "summary": "TranslateMessage"
+        },
+        {
+          "ea": 28199,
+          "summary": "\"\"\"\""
+        },
+        {
+          "ea": 28188,
+          "summary": "\"\"\"\"\"\"\""
+        },
+        {
+          "ea": 28292,
+          "summary": "\"\"\"\"\"\"\""
+        },
+        {
+          "ea": 28244,
+          "summary": "\"\"\"#\"\"\""
+        },
+        {
+          "ea": 16584,
+          "summary": "DispatchMessageA"
+        },
+        {
+          "ea": 16630,
+          "summary": "PostQuitMessage"
+        },
+        {
+          "ea": 16708,
+          "summary": "GetModuleHandleA"
+        },
+        {
+          "ea": 28268,
+          "summary": "\"\"$BD\"\""
+        },
+        {
+          "ea": 16464,
+          "summary": "SendMessageA"
+        },
+        {
+          "ea": 16616,
+          "summary": "GetMessageA"
+        },
+        {
+          "ea": 16728,
+          "summary": "GetLastError"
+        },
+        {
+          "ea": 16690,
+          "summary": "GetCommandLineA"
+        },
+        {
+          "ea": 16498,
+          "summary": "RegisterClassExA"
+        },
+        {
+          "ea": 13849,
+          "summary": "6Ltt"
+        },
+        {
+          "ea": 16382,
+          "summary": "KillTimer"
+        },
+        {
+          "ea": 8750,
+          "summary": "@@%@"
+        },
+        {
+          "ea": 9931,
+          "summary": "@@m\r"
+        },
+        {
+          "ea": 10163,
+          "summary": "@@%@"
+        },
+        {
+          "ea": 14150,
+          "summary": ";NNt"
+        },
+        {
+          "ea": 13874,
+          "summary": "Tqq1"
+        },
+        {
+          "ea": 28276,
+          "summary": "\"\"$\"$\"\""
+        },
+        {
+          "ea": 16570,
+          "summary": "BeginPaint"
+        },
+        {
+          "ea": 16438,
+          "summary": "LoadCursorA"
+        },
+        {
+          "ea": 16410,
+          "summary": "GetWindowRect"
+        },
+        {
+          "ea": 28284,
+          "summary": "\"\"$\"$\"\""
+        },
+        {
+          "ea": 16648,
+          "summary": "ShowWindow"
+        },
+        {
+          "ea": 9288,
+          "summary": "@%%@@"
+        },
+        {
+          "ea": 8818,
+          "summary": "pun@@"
+        },
+        {
+          "ea": 8810,
+          "summary": "0wwl?"
+        },
+        {
+          "ea": 9253,
+          "summary": "@%%@@"
+        },
+        {
+          "ea": 8580,
+          "summary": "@%%@@"
+        },
+        {
+          "ea": 488,
+          "summary": ".text"
+        },
+        {
+          "ea": 568,
+          "summary": ".rsrc"
+        },
+        {
+          "ea": 1157,
+          "summary": "qH1Hl"
+        },
+        {
+          "ea": 14277,
+          "summary": "static"
+        },
+        {
+          "ea": 527,
+          "summary": "`.data"
+        },
+        {
+          "ea": 14246,
+          "summary": "momenr"
+        },
+        {
+          "ea": 14227,
+          "summary": "terras"
+        },
+        {
+          "ea": 16370,
+          "summary": "SetTimer"
+        },
+        {
+          "ea": 16758,
+          "summary": "TextOutA"
+        },
+        {
+          "ea": 3387,
+          "summary": "`X+ww76m@@"
+        },
+        {
+          "ea": 16662,
+          "summary": "UpdateWindow"
+        },
+        {
+          "ea": 16604,
+          "summary": "EndPaint"
+        },
+        {
+          "ea": 16536,
+          "summary": "LoadBitmapA"
+        },
+        {
+          "ea": 16518,
+          "summary": "CreateWindowExA"
+        },
+        {
+          "ea": 16480,
+          "summary": "DefWindowProcA"
+        },
+        {
+          "ea": 16452,
+          "summary": "LoadIconA"
+        },
+        {
+          "ea": 16426,
+          "summary": "FillRect"
+        },
+        {
+          "ea": 16394,
+          "summary": "SetWindowPos"
+        },
+        {
+          "ea": 13830,
+          "summary": ";XZkq"
+        },
+        {
+          "ea": 10178,
+          "summary": "%@%%@"
+        },
+        {
+          "ea": 14253,
+          "summary": "Arial"
+        },
+        {
+          "ea": 8999,
+          "summary": "98Hl6"
+        },
+        {
+          "ea": 8845,
+          "summary": "KQjO:N"
+        },
+        {
+          "ea": 14298,
+          "summary": "loret"
+        },
+        {
+          "ea": 207,
+          "summary": "7Richu"
+        },
+        {
+          "ea": 1109,
+          "summary": "00N,t"
+        },
+        {
+          "ea": 7954,
+          "summary": "O8T=y"
+        },
+        {
+          "ea": 3300,
+          "summary": "8V}x8"
+        },
+        {
+          "ea": 4548,
+          "summary": "Y[\"fh"
+        },
+        {
+          "ea": 7762,
+          "summary": ")wPwm"
+        },
+        {
+          "ea": 7735,
+          "summary": "H]wyvK`"
+        },
+        {
+          "ea": 6133,
+          "summary": "@hZK"
+        },
+        {
+          "ea": 9220,
+          "summary": "%%@@"
+        },
+        {
+          "ea": 10046,
+          "summary": "]Ek\r"
+        },
+        {
+          "ea": 7934,
+          "summary": "qw4m"
+        },
+        {
+          "ea": 10202,
+          "summary": "@%@%"
+        },
+        {
+          "ea": 11252,
+          "summary": "\rXD@"
+        },
+        {
+          "ea": 13586,
+          "summary": "^j`k"
+        },
+        {
+          "ea": 13611,
+          "summary": "jh[t"
+        },
+        {
+          "ea": 14216,
+          "summary": "GjUl"
+        },
+        {
+          "ea": 8567,
+          "summary": "rvPh"
+        },
+        {
+          "ea": 5554,
+          "summary": "@hNB"
+        },
+        {
+          "ea": 5041,
+          "summary": "`mco"
+        },
+        {
+          "ea": 3513,
+          "summary": "dv?p"
+        },
+        {
+          "ea": 3319,
+          "summary": "Hep8"
+        },
+        {
+          "ea": 1360,
+          "summary": "@%@%"
+        },
+        {
+          "ea": 1310,
+          "summary": "@%%@"
+        },
+        {
+          "ea": 1118,
+          "summary": "HN\r\""
+        },
+        {
+          "ea": 248,
+          "summary": "C2^R"
+        },
+        {
+          "ea": 8869,
+          "summary": "8:[h"
+        },
+        {
+          "ea": 8592,
+          "summary": "9Lmr"
+        },
+        {
+          "ea": 8612,
+          "summary": "@xt8"
+        },
+        {
+          "ea": 8853,
+          "summary": "Wkjv"
+        },
+        {
+          "ea": 8056,
+          "summary": "y]l:"
+        },
+        {
+          "ea": 8145,
+          "summary": "<qwv"
+        },
+        {
+          "ea": 1315,
+          "summary": "VXlt|NO"
+        },
+        {
+          "ea": 8045,
+          "summary": "mf tTl"
+        },
+        {
+          "ea": 9082,
+          "summary": "%@%?vp"
+        },
+        {
+          "ea": 4864,
+          "summary": "%h@pfQ"
+        },
+        {
+          "ea": 4258,
+          "summary": "auf je"
+        },
+        {
+          "ea": 1406,
+          "summary": "Il8NL "
+        },
+        {
+          "ea": 13478,
+          "summary": "SwW&:~8Ol"
+        },
+        {
+          "ea": 8762,
+          "summary": "8{w:d"
+        },
+        {
+          "ea": 7011,
+          "summary": "emFv%"
+        },
+        {
+          "ea": 7542,
+          "summary": "h'fUZ"
+        },
+        {
+          "ea": 1372,
+          "summary": "$Ja6U"
+        },
+        {
+          "ea": 8860,
+          "summary": "H\\ym}"
+        },
+        {
+          "ea": 8078,
+          "summary": "PN%]@"
+        },
+        {
+          "ea": 13891,
+          "summary": "HOd:#"
+        },
+        {
+          "ea": 7982,
+          "summary": "?+i:r"
+        },
+        {
+          "ea": 9098,
+          "summary": "+HY]K"
+        },
+        {
+          "ea": 10051,
+          "summary": "MJ&t?"
+        },
+        {
+          "ea": 9091,
+          "summary": "]\\T}v"
+        },
+        {
+          "ea": 13560,
+          "summary": "tmZ8}"
+        },
+        {
+          "ea": 8966,
+          "summary": "h^v}2"
+        },
+        {
+          "ea": 8875,
+          "summary": "8rv%"
+        },
+        {
+          "ea": 4512,
+          "summary": "X~jh"
+        },
+        {
+          "ea": 7848,
+          "summary": "(7Qj"
+        },
+        {
+          "ea": 4574,
+          "summary": "%h@y"
+        },
+        {
+          "ea": 4610,
+          "summary": "e%h@"
+        },
+        {
+          "ea": 13626,
+          "summary": "{8kJ"
+        },
+        {
+          "ea": 4984,
+          "summary": "@hr("
+        },
+        {
+          "ea": 8138,
+          "summary": "Yj}@"
+        },
+        {
+          "ea": 5165,
+          "summary": "^N=}"
+        },
+        {
+          "ea": 4025,
+          "summary": "%h@i"
+        },
+        {
+          "ea": 5442,
+          "summary": "m5b%"
+        },
+        {
+          "ea": 8836,
+          "summary": "18v}"
+        },
+        {
+          "ea": 5605,
+          "summary": "%@h]"
+        },
+        {
+          "ea": 5749,
+          "summary": "%%h@"
+        },
+        {
+          "ea": 6102,
+          "summary": "q(ip"
+        },
+        {
+          "ea": 3742,
+          "summary": "%h@w"
+        },
+        {
+          "ea": 6285,
+          "summary": "%h@D"
+        },
+        {
+          "ea": 3290,
+          "summary": "!puy"
+        },
+        {
+          "ea": 6845,
+          "summary": "%h@i"
+        },
+        {
+          "ea": 8983,
+          "summary": "+uw7"
+        },
+        {
+          "ea": 7124,
+          "summary": "%h@."
+        },
+        {
+          "ea": 7241,
+          "summary": "@h%j"
+        },
+        {
+          "ea": 7619,
+          "summary": "%h@%"
+        },
+        {
+          "ea": 14058,
+          "summary": "X$tl"
+        },
+        {
+          "ea": 8519,
+          "summary": "@u}q"
+        },
+        {
+          "ea": 8778,
+          "summary": "%%:}[t"
+        },
+        {
+          "ea": 2582,
+          "summary": "%h@~qU"
+        },
+        {
+          "ea": 7903,
+          "summary": "y8u(@%"
+        },
+        {
+          "ea": 13451,
+          "summary": "B[~J0\t"
+        },
+        {
+          "ea": 14206,
+          "summary": "8n+|Bj"
+        },
+        {
+          "ea": 8801,
+          "summary": "|`|s\\$:~"
+        },
+        {
+          "ea": 3471,
+          "summary": "|y*Nr"
+        },
+        {
+          "ea": 8022,
+          "summary": "}*d\\H"
+        },
+        {
+          "ea": 6463,
+          "summary": "%@h]|"
+        },
+        {
+          "ea": 3252,
+          "summary": "}|)8Or6"
+        },
+        {
+          "ea": 2611,
+          "summary": "+9%h@"
+        },
+        {
+          "ea": 10020,
+          "summary": "t7{p|Xz"
+        },
+        {
+          "ea": 7915,
+          "summary": "@%:}y"
+        },
+        {
+          "ea": 8556,
+          "summary": "|\r|*\"}"
+        },
+        {
+          "ea": 2032,
+          "summary": "%h@\t"
+        },
+        {
+          "ea": 8526,
+          "summary": "X*}j"
+        },
+        {
+          "ea": 1217,
+          "summary": ")^t{"
+        },
+        {
+          "ea": 1281,
+          "summary": ")B|u"
+        },
+        {
+          "ea": 4334,
+          "summary": "}%h@"
+        },
+        {
+          "ea": 10028,
+          "summary": "p$}K"
+        },
+        {
+          "ea": 6272,
+          "summary": "!f~Q"
+        },
+        {
+          "ea": 9131,
+          "summary": "(&OF"
+        },
+        {
+          "ea": 5308,
+          "summary": "%\r\t>"
+        },
+        {
+          "ea": 9984,
+          "summary": ")$Ow}"
+        },
+        {
+          "ea": 9936,
+          "summary": "*z`|"
+        }
+      ],
+      "imports": [
+        {
+          "ea": 13312,
+          "name": "gdi32.TextOutA",
+          "type": "IMPORT",
+          "num_refs": 17
+        },
+        {
+          "ea": 13320,
+          "name": "kernel32.GetModuleHandleA",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 13324,
+          "name": "kernel32.GetCommandLineA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13328,
+          "name": "kernel32.GetLastError",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 13336,
+          "name": "user32.LoadIconA",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 13340,
+          "name": "user32.SendMessageA",
+          "type": "IMPORT",
+          "num_refs": 14
+        },
+        {
+          "ea": 13344,
+          "name": "user32.DefWindowProcA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13348,
+          "name": "user32.RegisterClassExA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13352,
+          "name": "user32.CreateWindowExA",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 13356,
+          "name": "user32.LoadBitmapA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13360,
+          "name": "user32.TranslateMessage",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13364,
+          "name": "user32.LoadCursorA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13368,
+          "name": "user32.DispatchMessageA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13372,
+          "name": "user32.EndPaint",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13376,
+          "name": "user32.GetMessageA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13380,
+          "name": "user32.PostQuitMessage",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13384,
+          "name": "user32.ShowWindow",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13388,
+          "name": "user32.UpdateWindow",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13392,
+          "name": "user32.FillRect",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13396,
+          "name": "user32.GetWindowRect",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13400,
+          "name": "user32.KillTimer",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 13404,
+          "name": "user32.SetWindowPos",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13408,
+          "name": "user32.BeginPaint",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 13412,
+          "name": "user32.SetTimer",
+          "type": "IMPORT",
+          "num_refs": 1
+        }
+      ],
+      "sections": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 1024,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 39
+        },
+        {
+          "name": ".text",
+          "effective_address": 1024,
+          "physical_size": 10752,
+          "virtual_size": 12288,
+          "rights": "RX",
+          "entropy": 137
+        },
+        {
+          "name": ".data",
+          "effective_address": 13312,
+          "physical_size": 3584,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 72
+        },
+        {
+          "name": ".rsrc",
+          "effective_address": 17408,
+          "physical_size": 11264,
+          "virtual_size": 12288,
+          "rights": "R",
+          "entropy": 52
+        }
+      ],
+      "entropy": {
+        "file_entropy": 91,
+        "regions": [
+          {
+            "name": "header",
+            "entropy": 39,
+            "size": null
+          },
+          {
+            "name": ".text",
+            "entropy": 137,
+            "size": null
+          },
+          {
+            "name": ".data",
+            "entropy": 72,
+            "size": null
+          },
+          {
+            "name": ".rsrc",
+            "entropy": 52,
+            "size": null
+          }
+        ]
+      },
+      "functions": [
+        {
+          "ea": 8155,
+          "name": "sub_402bdb"
+        },
+        {
+          "ea": 9297,
+          "name": "sub_403051"
+        },
+        {
+          "ea": 2694,
+          "name": "sub_401686"
+        },
+        {
+          "ea": 2688,
+          "name": "EntryPoint"
+        },
+        {
+          "ea": 3003,
+          "name": "sub_4017bb"
+        },
+        {
+          "ea": 1432,
+          "name": "sub_401198"
+        },
+        {
+          "ea": 8895,
+          "name": "sub_402ebf"
+        },
+        {
+          "ea": 7686,
+          "name": "sub_402a06"
+        }
+      ],
+      "constants": [],
+      "carved": [
+        {
+          "ea": 18064,
+          "offset": 16016,
+          "size": 10036,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        },
+        {
+          "ea": 28128,
+          "offset": 26080,
+          "size": 216,
+          "type": "DIB",
+          "type_category": "IMAGE"
+        }
+      ],
+      "virtual_files": [
+        {
+          "path": "BMP/101/en-us",
+          "unpacked_size": 174
+        },
+        {
+          "path": "ICO/1/en-us",
+          "unpacked_size": 10036
+        },
+        {
+          "path": "GRPICO/100/en-us",
+          "unpacked_size": 20
+        },
+        {
+          "path": "MANIF/1/en-us",
+          "unpacked_size": 346
+        }
+      ],
+      "structures": [
+        {
+          "name": "MZ",
+          "ea": 0
+        },
+        {
+          "name": "RichHeader",
+          "ea": 128
+        },
+        {
+          "name": "PE",
+          "ea": 240
+        },
+        {
+          "name": "OptionalHeader",
+          "ea": 264
+        },
+        {
+          "name": "Sections",
+          "ea": 488
+        },
+        {
+          "name": "gdi32.FT",
+          "ea": 13312
+        },
+        {
+          "name": "kernel32.FT",
+          "ea": 13320
+        },
+        {
+          "name": "user32.FT",
+          "ea": 13336
+        },
+        {
+          "name": "ImportTable",
+          "ea": 16180
+        },
+        {
+          "name": "gdi32.OFT",
+          "ea": 16260
+        },
+        {
+          "name": "kernel32.OFT",
+          "ea": 16268
+        },
+        {
+          "name": "user32.OFT",
+          "ea": 16284
+        },
+        {
+          "name": "ImportNames",
+          "ea": 16368
+        },
+        {
+          "name": "Resources",
+          "ea": 17408
+        },
+        {
+          "name": "Resources.BMP",
+          "ea": 17456
+        },
+        {
+          "name": "Resources.ICO",
+          "ea": 17480
+        },
+        {
+          "name": "Resources.GRPICO",
+          "ea": 17504
+        },
+        {
+          "name": "Resources.MANIF",
+          "ea": 17528
+        },
+        {
+          "name": "Resources.BMP.101",
+          "ea": 17552
+        },
+        {
+          "name": "Resources.ICO.1",
+          "ea": 17576
+        },
+        {
+          "name": "Resources.GRPICO.100",
+          "ea": 17600
+        },
+        {
+          "name": "Resources.MANIF.1",
+          "ea": 17624
+        },
+        {
+          "name": "Resources.BMP.101.en-us",
+          "ea": 17648
+        },
+        {
+          "name": "Resources.ICO.1.en-us",
+          "ea": 17664
+        },
+        {
+          "name": "Resources.GRPICO.100.en-us",
+          "ea": 17680
+        },
+        {
+          "name": "Resources.MANIF.1.en-us",
+          "ea": 17696
+        },
+        {
+          "name": "Manifest",
+          "ea": 17712
+        },
+        {
+          "name": "Resources.ICO.1.en-us.Data",
+          "ea": 18064
+        },
+        {
+          "name": "Resources.GRPICO.100.en-us.Data",
+          "ea": 28104
+        },
+        {
+          "name": "Resources.BMP.101.en-us.Data",
+          "ea": 28128
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 8155,
+        "name": "sub_402bdb"
+      },
+      {
+        "ea": 9297,
+        "name": "sub_403051"
+      },
+      {
+        "ea": 2694,
+        "name": "sub_401686"
+      },
+      {
+        "ea": 2688,
+        "name": "EntryPoint"
+      },
+      {
+        "ea": 3003,
+        "name": "sub_4017bb"
+      },
+      {
+        "ea": 1432,
+        "name": "sub_401198"
+      },
+      {
+        "ea": 8895,
+        "name": "sub_402ebf"
+      },
+      {
+        "ea": 7686,
+        "name": "sub_402a06"
+      }
+    ],
+    "constants": [],
+    "anomalies": [
+      {
+        "name": "HugeGapBetweenFunctions",
+        "desc": "There is a huge gap between two functions with medium-to-high entropy, often means that data is stored there",
+        "category": "code",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "NoChecksum",
+        "desc": "PE Header checksum is not set",
+        "category": "integrity",
+        "level": 1,
+        "num_hits": 1
+      },
+      {
+        "name": "NoValidCertificate",
+        "desc": "Certificate data directory does not point to a valid certificate (maybe corrupted ?)",
+        "category": "integrity",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 1
+      }
+    ],
+    "carved_files": [
+      {
+        "ea": 18064,
+        "offset": 16016,
+        "size": 10036,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      },
+      {
+        "ea": 28128,
+        "offset": 26080,
+        "size": 216,
+        "type": "DIB",
+        "type_category": "IMAGE"
+      }
+    ],
+    "virtual_files": [
+      {
+        "path": "BMP/101/en-us",
+        "unpacked_size": 174
+      },
+      {
+        "path": "ICO/1/en-us",
+        "unpacked_size": 10036
+      },
+      {
+        "path": "GRPICO/100/en-us",
+        "unpacked_size": 20
+      },
+      {
+        "path": "MANIF/1/en-us",
+        "unpacked_size": 346
+      }
+    ],
+    "structures": [
+      {
+        "name": "MZ",
+        "ea": 0
+      },
+      {
+        "name": "RichHeader",
+        "ea": 128
+      },
+      {
+        "name": "PE",
+        "ea": 240
+      },
+      {
+        "name": "OptionalHeader",
+        "ea": 264
+      },
+      {
+        "name": "Sections",
+        "ea": 488
+      },
+      {
+        "name": "gdi32.FT",
+        "ea": 13312
+      },
+      {
+        "name": "kernel32.FT",
+        "ea": 13320
+      },
+      {
+        "name": "user32.FT",
+        "ea": 13336
+      },
+      {
+        "name": "ImportTable",
+        "ea": 16180
+      },
+      {
+        "name": "gdi32.OFT",
+        "ea": 16260
+      },
+      {
+        "name": "kernel32.OFT",
+        "ea": 16268
+      },
+      {
+        "name": "user32.OFT",
+        "ea": 16284
+      },
+      {
+        "name": "ImportNames",
+        "ea": 16368
+      },
+      {
+        "name": "Resources",
+        "ea": 17408
+      },
+      {
+        "name": "Resources.BMP",
+        "ea": 17456
+      },
+      {
+        "name": "Resources.ICO",
+        "ea": 17480
+      },
+      {
+        "name": "Resources.GRPICO",
+        "ea": 17504
+      },
+      {
+        "name": "Resources.MANIF",
+        "ea": 17528
+      },
+      {
+        "name": "Resources.BMP.101",
+        "ea": 17552
+      },
+      {
+        "name": "Resources.ICO.1",
+        "ea": 17576
+      },
+      {
+        "name": "Resources.GRPICO.100",
+        "ea": 17600
+      },
+      {
+        "name": "Resources.MANIF.1",
+        "ea": 17624
+      },
+      {
+        "name": "Resources.BMP.101.en-us",
+        "ea": 17648
+      },
+      {
+        "name": "Resources.ICO.1.en-us",
+        "ea": 17664
+      },
+      {
+        "name": "Resources.GRPICO.100.en-us",
+        "ea": 17680
+      },
+      {
+        "name": "Resources.MANIF.1.en-us",
+        "ea": 17696
+      },
+      {
+        "name": "Manifest",
+        "ea": 17712
+      },
+      {
+        "name": "Resources.ICO.1.en-us.Data",
+        "ea": 18064
+      },
+      {
+        "name": "Resources.GRPICO.100.en-us.Data",
+        "ea": 28104
+      },
+      {
+        "name": "Resources.BMP.101.en-us.Data",
+        "ea": 28128
+      }
+    ],
+    "decompilations": {
+      "8155": {
+        "name": "sub_402bdb",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid sub_402bdb(void)\n\n{\n    uint8_t uVar1;\n    uint8_t uVar2;\n    uint32_t uVar3;\n    int32_t iVar4;\n    uint32_t uVar5;\n    int32_t *piVar6;\n    int32_t *piVar7;\n    int32_t *piVar8;\n    int32_t *piVar9;\n    uint8_t *puVar10;\n    uint8_t *puVar11;\n    \n    piVar8 = 0x4044cc + 1;\n    puVar10 = piVar8 + *0x4044cc;\n    piVar6 = puVar10 + -1;\n    iVar4 = ([0x0x4044c8] - *0x4044cc) + -4;\n    piVar7 = piVar8;\n    004044c8 = iVar4;\n    piRam004044cc = puVar10;\n    do {\n        *puVar10 = *puVar10 ^ [0x0x4041fc] + *piVar7;\n        piVar9 = piVar8;\n        if (piVar7 != piVar6) {\n            piVar9 = piVar7 + 1;\n        }\n        puVar10 = puVar10 + 1;\n        iVar4 = iVar4 + -1;\n        piVar7 = piVar9;\n    } while (iVar4 != 0);\n    (*user32.SendMessageA)([0x0x404468], 0x111, 0x4044c8, 0x39);\n    iVar4 = [0x0x4044c8];\n    puVar10 = 0x4044bc;\n    puVar11 = 0x4044cc;\n    do {\n        *puVar11 = *puVar10;\n        puVar10 = puVar10 + 1;\n        puVar11 = puVar11 + 1;\n        iVar4 = iVar4 + -1;\n    } while (iVar4 != 0);\n    0040444c = [0x0x4041f3] + 0x4041f7;\n    piVar7 = 0x4041f7 + 1;\n    piVar6 = piVar7 + *0x4041f7;\n    puVar10 = piVar7 + *0x4041f7;\n    uVar5 = 0;\n    uVar3 = *piVar7 + 1;\n    puVar11 = 0x4044bc;\n    piRam00404448 = piVar6;\n    while( true ) {\n        if (piVar6 <= piVar7) {\n            for (iVar4 = [0x0x40444c] - puVar10; iVar4 != 0; iVar4 = iVar4 + -1) {\n                *puVar11 = *puVar10;\n                puVar10 = puVar10 + 1;\n                puVar11 = puVar11 + 1;\n            }\n            return;\n        }\n        if (uVar3 < uVar5) break;\n        for (iVar4 = uVar3 - uVar5; iVar4 != 0; iVar4 = iVar4 + -1) {\n            *puVar11 = *puVar10;\n            puVar10 = puVar10 + 1;\n            puVar11 = puVar11 + 1;\n        }\n        uVar1 = *(piVar7 + 1);\n        uVar2 = *(piVar7 + 2);\n        uVar5 = uVar2;\n        for (uVar3 = uVar5; uVar3 != 0; uVar3 = uVar3 - 1) {\n            *puVar11 = uVar1;\n            puVar11 = puVar11 + 1;\n        }\n        piVar8 = piVar7 + 3;\n        uVar1 = *piVar8;\n        if (uVar2 == 0xff) {\n            if (uVar1 == 0xff) {\n                uVar3 = *(piVar7 + 1);\n                piVar7 = piVar7 + 6;\n            }\n            else {\n                uVar3 = 0xff;\n                piVar7 = piVar8;\n            }\n        }\n        else if (uVar1 == 0xff) {\n            uVar3 = *(piVar7 + 1);\n            piVar7 = piVar7 + 6;\n        }\n        else {\n            uVar3 = uVar1;\n            piVar7 = piVar8;\n        }\n    }\n    return;\n}\n"
+      },
+      "9297": {
+        "name": "sub_403051",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nundefined4 sub_403051(undefined4 param_1,int32_t param_2,uint32_t *param_3,int32_t param_4)\n\n{\n    undefined uVar1;\n    code *pcVar2;\n    undefined4 uVar3;\n    int32_t iVar4;\n    uint32_t uVar5;\n    uint32_t uVar6;\n    int32_t *piVar7;\n    undefined *puVar8;\n    code *pcVar9;\n    undefined *puVar10;\n    uint32_t *puVar11;\n    code *pcVar12;\n    int32_t *piVar13;\n    uint32_t uVar14;\n    undefined auStack_30 [4];\n    undefined auStack_2c [24];\n    int32_t iStack_14;\n    int32_t iStack_10;\n    int32_t iStack_c;\n    int32_t iStack_8;\n    \n    pcVar2 = kernel32.GetModuleHandleA;\n    if (param_2 == 0x401) {\n        puVar10 = *param_3;\n        puVar8 = param_3[1];\n        iVar4 = 7;\n        do {\n            uVar1 = *puVar10;\n            puVar10 = puVar10 + 1;\n            *puVar8 = uVar1;\n            puVar8 = puVar8 + -param_4;\n            iVar4 = iVar4 + -1;\n        } while (iVar4 != 0);\n        return 0;\n    }\n    if (param_2 == 1) {\n        (*user32.LoadBitmapA)([0x0x4041c7], 0x66);\n        00404458 = (*kernel32.GetLastError)();\n        iVar4 = [0x0x4041c7];\n        (*user32.CreateWindowExA)(0, \"button\", \"summer\", 0x10010000, 0xc, 10, 0x154, 0x26, param_1, 2, [0x0x4041c7], 0);\n        00404440 = (*kernel32.GetLastError)();\n        0040445c = 00404440;\n        004044d4 = 00404440;\n        00404454 = (*user32.CreateWindowExA)(0, \"edit\", 0, 0x40000000, 5, 0x4a, 500, 0x1ae, param_1, 1, iVar4, 0);\n        004041e3 = (*kernel32.GetLastError)();\n        (*user32.CreateWindowExA)(0, \"button\", \"summer\", 0x40000001, 5, 0x17c, 0xba, 0x22, 1, 2, iVar4, 0);\n        004041e3 = (*kernel32.GetLastError)();\n        0040445c = 004041e3;\n        00404464 = (*user32.SendMessageA)(param_1, 0x111, 0x40419d, 0x31);\n        (*user32.SendMessageA)(param_1, 0x111, 00404464, 0x2e);\n        return 0;\n    }\n    if (param_2 == 0x113) {\n        00404440 = [0x0x404440] + [0x0x404458];\n        (*user32.SendMessageA)(param_1, 0x111, 0, 00404440);\n        return 0;\n    }\n    if (param_2 != 2) {\n        if (param_2 == 5) {\n            (*user32.GetWindowRect)(param_1, &iStack_14);\n            (*user32.SendMessageA)(param_1, 0x111, 0, ((iStack_c - iStack_14) - (iStack_8 - iStack_10)) + 1);\n            return 0;\n        }\n        if (param_2 == 0xf) {\n            (*user32.BeginPaint)(param_1, auStack_30);\n            (*gdi32.TextOutA)();\n            (*user32.EndPaint)(param_1, auStack_2c);\n            return 0;\n        }\n        if (param_2 != 0x111) {\n            uVar3 = (*user32.DefWindowProcA)(param_1, param_2, param_3, param_4);\n            return uVar3;\n        }\n        if (param_4 == 0x2e) {\n            (*user32.SetTimer)(param_1, 1, 10, 0);\n            return 0;\n        }\n        if (param_4 == 0x31) {\n            iVar4 = 5;\n            puVar11 = param_3 + 5;\n            do {\n                uVar14 = *puVar11;\n                puVar11 = puVar11 + 1;\n                *param_3 = uVar14 + *param_3;\n                param_3 = param_3 + 1;\n                iVar4 = iVar4 + -1;\n            } while (iVar4 != 0);\n            return 0;\n        }\n        if (param_4 == 0x579) {\n            [0x0x4041cf] = [0x0x4041cf] + 8;\n            004041f3 = (*([0x0x4043bc] + -1 + [0x0x4044d4]))();\n            004044c8 = 004041f3;\n            sub_402bdb();\n            pcVar2 = sub_4017bb(user32.KillTimer, \"DestroyWindow\");\n            (*pcVar2)([0x0x404468]);\n            return 0;\n        }\n        if (param_4 == 0x37) {\n            [0x0x404468] = param_1;\n            iVar4 = [0x0x4041e3];\n            if ([0x0x4041e3] == 0) {\n                iVar4 = (*0x4044bc)();\n            }\n            (*user32.SendMessageA)(param_1, 0x111, 0, iVar4 + 1);\n            return 0;\n        }\n        if (param_4 != 0x36) {\n            if (param_4 == 0x39) {\n                uVar14 = *param_3;\n                pcVar2 = param_3[1];\n                pcVar9 = 0x4044bc + uVar14;\n                uVar5 = [0x0x4041c5];\n                uVar6 = uVar5;\n            "
+      },
+      "2694": {
+        "name": "sub_401686",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid sub_401686(void)\n\n{\n    char cVar1;\n    \n    00404474 = (*kernel32.GetCommandLineA)();\n    004041c7 = (*kernel32.GetModuleHandleA)(0);\n    [0x0x4043f0] = 0x30;\n    [0x0x4043f4] = 2;\n    0x4043f8 = sub_403051;\n    [0x0x4043fc] = 0;\n    [0x0x404400] = 0;\n    puRam004041cf = &stack0xfffffffc;\n    00404404 = 004041c7;\n    0040440c = (*user32.LoadCursorA)(0, 0x7f00);\n    00404408 = (*user32.LoadIconA)(0, 0x7f00);\n    [0x0x404418] = \"lunt\";\n    [0x0x404410] = 0xf;\n    0040441c = 00404408;\n    (*user32.RegisterClassExA)(0x4043f0);\n    00404468 = (*user32.CreateWindowExA)\n                             (0, \"lunt\", 0x4043e7, 0xcf0000, 0xfffff8f8, 0xfffff862, 0x1fe, 0x1e0, 0, 0, [0x0x4041c7]\n                              , 0);\n    (*user32.ShowWindow)(00404468, 5);\n    (*user32.UpdateWindow)([0x0x404468]);\n    while( true ) {\n        cVar1 = (*user32.GetMessageA)(0x404420, 0, 0, 0);\n        if (cVar1 == '\\0') break;\n        (*user32.TranslateMessage)(0x404420);\n        (*user32.DispatchMessageA)(0x404420);\n    }\n    sub_402a06();\n    return;\n}\n"
+      }
+    },
+    "script_decompile": null,
+    "unpack_result": null,
+    "errors": [],
+    "entropy_bits": 6.04,
+    "entropy_malcat_raw": 91,
+    "duration_s": 4.15
+  },
+  "packer": {
+    "engine": "packer_intake",
+    "ok": true,
+    "label": "suspicious",
+    "score": 4,
+    "sections": [
+      {
+        "name": ".text",
+        "entropy": 6.635,
+        "raw_size": 10752,
+        "virtual_size": 10370,
+        "exec": true,
+        "writable": false
+      },
+      {
+        "name": ".data",
+        "entropy": 3.361,
+        "raw_size": 3584,
+        "virtual_size": 3466,
+        "exec": false,
+        "writable": true
+      },
+      {
+        "name": ".rsrc",
+        "entropy": 5.651,
+        "raw_size": 11264,
+        "virtual_size": 10896,
+        "exec": false,
+        "writable": false
+      }
+    ],
+    "checks": {
+      "last_section_exec": false,
+      "last_section_writable": false,
+      "first_section_writable": false,
+      "ep_in_last_section": false,
+      "ep_not_in_first_section": false,
+      "raw_vs_virtual_mismatch": false,
+      "memory_only_section": false,
+      "high_entropy_exec_section": true,
+      "few_imports": true,
+      "section_count_outlier": false
+    },
+    "embedded_payload_hint": false,
+    "entry_point": 4200064,
+    "ep_section": ".text",
+    "import_count": 3,
+    "imports_sample": [
+      "LoadIconA",
+      "SendMessageA",
+      "DefWindowProcA",
+      "RegisterClassExA",
+      "CreateWindowExA",
+      "LoadBitmapA",
+      "TranslateMessage",
+      "LoadCursorA",
+      "DispatchMessageA",
+      "EndPaint",
+      "GetMessageA",
+      "PostQuitMessage",
+      "ShowWindow",
+      "UpdateWindow",
+      "FillRect",
+      "GetWindowRect",
+      "KillTimer",
+      "SetWindowPos",
+      "BeginPaint",
+      "SetTimer",
+      "GetModuleHandleA",
+      "GetCommandLineA",
+      "GetLastError",
+      "TextOutA"
+    ],
+    "elapsed_s": 0.256,
+    "note": "Deterministic entropy + packer checklist; heuristic label, unpacking loop still required for non-UPX packers.",
+    "duration_s": 0.26
+  },
+  "revai_tools_sec": {
+    "format": "pe",
+    "findings": [
+      {
+        "name": "Address Space Layout Randomization",
+        "present": false,
+        "claimed": false,
+        "note": "no DYNAMIC_BASE flag",
+        "consequence": "Without ASLR the image loads at a fixed base \u2014 a predictable address for ret2libc-style exploitation and ROP gadget pivots."
+      },
+      {
+        "name": "64-bit high-entropy ASLR",
+        "present": false,
+        "claimed": false,
+        "note": "64-bit high-entropy ASLR flag not set",
+        "consequence": "Without 64-bit entropy the entropy of the address space is reduced relative to the full 64-bit layout."
+      },
+      {
+        "name": "Data Execution Prevention",
+        "present": false,
+        "claimed": false,
+        "note": "Data Execution Prevention flag not set",
+        "consequence": "Without NX-compat, writable memory can be executable \u2014 classic shellcode-on-stack/heap works directly."
+      },
+      {
+        "name": "Control Flow Guard",
+        "present": false,
+        "claimed": false,
+        "note": "no GUARD_CF flag",
+        "consequence": "Without CFG, indirect calls are unvalidated \u2014 vtable and function-pointer overwrites become direct code-flow hijack."
+      },
+      {
+        "name": "Structured Exception Handling",
+        "present": true,
+        "claimed": false,
+        "note": "no NO_SEH flag \u2014 SEH handlers may exist",
+        "consequence": "The NO_SEH flag claims no SEH handlers exist; if a handler is still present the claim is false \u2014 an exception can overwrite the handler chain for control-flow hijack."
+      },
+      {
+        "name": "Signed-image enforcement",
+        "present": false,
+        "claimed": false,
+        "note": "Signed-image enforcement flag not set",
+        "consequence": "Without forced integrity, a tampered image is not rejected by the loader's integrity checks."
+      },
+      {
+        "name": "Stack cookie (/GS)",
+        "present": false,
+        "claimed": false,
+        "note": "no __security_cookie reference found",
+        "consequence": "Without a stack cookie, linear buffer overflows can overwrite the return address directly on the stack."
+      }
+    ],
+    "engine": "revai_tools_sec",
+    "source": "revai_tools",
+    "duration_s": 0.07
+  },
+  "revai_tools_sinks": {
+    "format": "pe",
+    "entry_point": "0x1000",
+    "sink_count": 0,
+    "sinks": [],
+    "engine": "revai_tools_sinks",
+    "source": "revai_tools",
+    "duration_s": 1.75
+  },
+  "_format": "pe",
+  "_timings": {
+    "capa": 2.09,
+    "pe_imports": 0.02,
+    "yara": 3.91,
+    "floss": 5.65,
+    "malcat": 4.15,
+    "packer": 0.26,
+    "revai_tools_sec": 0.07,
+    "revai_tools_sinks": 1.75
+  },
+  "_stage": "quick_scan"
+}

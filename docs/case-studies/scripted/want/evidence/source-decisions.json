@@ -1,0 +1,33 @@
+{
+  "sha256": "d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09",
+  "imports": {
+    "source": "both",
+    "confidence": "high",
+    "reason": "All sources (malcat imports_count 4, ghidra imports 4, ida imports 4) report 4 imports, indicating high consistency across tools."
+  },
+  "functions": {
+    "source": "malcat",
+    "confidence": "medium",
+    "reason": "Malcat reports functions_count 2, while Ghidra funcs 1 and Ida funcs 0; malcat may provide a more comprehensive count, but discrepancy reduces confidence."
+  },
+  "strings": {
+    "source": "both",
+    "confidence": "high",
+    "reason": "Significant variation in string counts (malcat strings_count 100, ghidra strings 5, ida strings 411); using both engines (ghidra and ida) can leverage multiple perspectives for accuracy."
+  },
+  "decompilation": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "No specific decompilation data in tool summaries; Ghidra is a standard tool for decompilation, so default choice with medium confidence."
+  },
+  "cff": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "No specific CFF data in tool summaries; default to Ghidra based on general capabilities, with medium confidence."
+  },
+  "static_profile": {
+    "source": "malcat",
+    "confidence": "high",
+    "reason": "Malcat provides detailed static analysis features such as file_size, entropy, anomalies_count 10, and imports/strings counts, ideal for profiling."
+  }
+}

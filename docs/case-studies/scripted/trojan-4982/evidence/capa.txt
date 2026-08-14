@@ -1,0 +1,383 @@
+# capa rules (deterministic render)
+
+{
+  "rule_count": 31,
+  "top_rules": [
+    {
+      "name": "contain obfuscated stackstrings",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Indicator Removal from Tools"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "Indicator Removal from Tools",
+          "id": "T1027.005"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Anti-Static Analysis",
+            "Executable Code Obfuscation",
+            "Argument Obfuscation"
+          ],
+          "objective": "Anti-Static Analysis",
+          "behavior": "Executable Code Obfuscation",
+          "method": "Argument Obfuscation",
+          "id": "B0032.020"
+        },
+        {
+          "parts": [
+            "Anti-Static Analysis",
+            "Executable Code Obfuscation",
+            "Stack Strings"
+          ],
+          "objective": "Anti-Static Analysis",
+          "behavior": "Executable Code Obfuscation",
+          "method": "Stack Strings",
+          "id": "B0032.017"
+        }
+      ]
+    },
+    {
+      "name": "encode data using XOR",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Encoding-Standard Algorithm"
+          ],
+          "objective": "Defense Evasion",
+          "behavior": "Obfuscated Files or Information",
+          "method": "Encoding-Standard Algorithm",
+          "id": "E1027.m02"
+        },
+        {
+          "parts": [
+            "Data",
+            "Encode Data",
+            "XOR"
+          ],
+          "objective": "Data",
+          "behavior": "Encode Data",
+          "method": "XOR",
+          "id": "C0026.002"
+        }
+      ]
+    },
+    {
+      "name": "encrypt data using RC4 KSA",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Cryptography",
+            "Encrypt Data",
+            "RC4"
+          ],
+          "objective": "Cryptography",
+          "behavior": "Encrypt Data",
+          "method": "RC4",
+          "id": "C0027.009"
+        },
+        {
+          "parts": [
+            "Cryptography",
+            "Encryption Key",
+            "RC4 KSA"
+          ],
+          "objective": "Cryptography",
+          "behavior": "Encryption Key",
+          "method": "RC4 KSA",
+          "id": "C0028.002"
+        }
+      ]
+    },
+    {
+      "name": "get common file path",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "File and Directory Discovery",
+          "subtechnique": "",
+          "id": "T1083"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "File and Directory Discovery",
+          "method": "",
+          "id": "E1083"
+        }
+      ]
+    },
+    {
+      "name": "check if file exists",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "File and Directory Discovery",
+          "subtechnique": "",
+          "id": "T1083"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "File and Directory Discovery",
+          "method": "",
+          "id": "E1083"
+        }
+      ]
+    },
+    {
+      "name": "get file size",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "File and Directory Discovery",
+          "subtechnique": "",
+          "id": "T1083"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "File and Directory Discovery",
+          "method": "",
+          "id": "E1083"
+        }
+      ]
+    },
+    {
+      "name": "set file attributes",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "File and Directory Permissions Modification"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "File and Directory Permissions Modification",
+          "subtechnique": "",
+          "id": "T1222"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "File System",
+            "Set File Attributes"
+          ],
+          "objective": "File System",
+          "behavior": "Set File Attributes",
+          "method": "",
+          "id": "C0050"
+        }
+      ]
+    },
+    {
+      "name": "query or enumerate registry value",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "Query Registry"
+          ],
+          "tactic": "Discovery",
+          "technique": "Query Registry",
+          "subtechnique": "",
+          "id": "T1012"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Operating System",
+            "Registry",
+            "Query Registry Value"
+          ],
+          "objective": "Operating System",
+          "behavior": "Registry",
+          "method": "Query Registry Value",
+          "id": "C0036.006"
+        }
+      ]
+    },
+    {
+      "name": "parse credit card information",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Data",
+            "Check String"
+          ],
+          "objective": "Data",
+          "behavior": "Check String",
+          "method": "",
+          "id": "C0019"
+        }
+      ]
+    },
+    {
+      "name": "receive data",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Command and Control",
+            "C2 Communication",
+            "Receive Data"
+          ],
+          "objective": "Command and Control",
+          "behavior": "C2 Communication",
+          "method": "Receive Data",
+          "id": "B0030.002"
+        }
+      ]
+    },
+    {
+      "name": "send data",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Command and Control",
+            "C2 Communication",
+            "Send Data"
+          ],
+          "objective": "Command and Control",
+          "behavior": "C2 Communication",
+          "method": "Send Data",
+          "id": "B0030.001"
+        }
+      ]
+    },
+    {
+      "name": "resolve DNS",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Communication",
+            "DNS Communication",
+            "Resolve"
+          ],
+          "objective": "Communication",
+          "behavior": "DNS Communication",
+          "method": "Resolve",
+          "id": "C0011.001"
+        }
+      ]
+    },
+    {
+      "name": "reference HTTP User-Agent string",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Communication",
+            "HTTP Communication"
+          ],
+          "objective": "Communication",
+          "behavior": "HTTP Communication",
+          "method": "",
+          "id": "C0002"
+        }
+      ]
+    },
+    {
+      "name": "check HTTP status code",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Communication",
+            "HTTP Communication",
+            "Read Header"
+          ],
+          "objective": "Communication",
+          "behavior": "HTTP Communication",
+          "method": "Read Header",
+          "id": "C0002.014"
+        }
+      ]
+    },
+    {
+      "name": "initialize Winsock library",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Communication",
+            "Socket Communication",
+            "Initialize Winsock Library"
+          ],
+          "objective": "Communication",
+          "behavior": "Socket Communication",
+          "method": "Initialize Winsock Library",
+          "id": "C0001.009"
+        }
+      ]
+    }
+  ],
+  "timeout_s": 300,
+  "sample_size": 235184,
+  "duration_s": 4.56,
+  "engine": "malcat-capa",
+  "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+}

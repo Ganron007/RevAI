@@ -1,0 +1,399 @@
+# capa rules (deterministic render)
+
+{
+  "rule_count": 27,
+  "top_rules": [
+    {
+      "name": "encode data using XOR",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Encoding-Standard Algorithm"
+          ],
+          "objective": "Defense Evasion",
+          "behavior": "Obfuscated Files or Information",
+          "method": "Encoding-Standard Algorithm",
+          "id": "E1027.m02"
+        },
+        {
+          "parts": [
+            "Data",
+            "Encode Data",
+            "XOR"
+          ],
+          "objective": "Data",
+          "behavior": "Encode Data",
+          "method": "XOR",
+          "id": "C0026.002"
+        }
+      ]
+    },
+    {
+      "name": "encrypt data using RC4 PRGA",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Cryptography",
+            "Encrypt Data",
+            "RC4"
+          ],
+          "objective": "Cryptography",
+          "behavior": "Encrypt Data",
+          "method": "RC4",
+          "id": "C0027.009"
+        },
+        {
+          "parts": [
+            "Cryptography",
+            "Generate Pseudo-random Sequence",
+            "RC4 PRGA"
+          ],
+          "objective": "Cryptography",
+          "behavior": "Generate Pseudo-random Sequence",
+          "method": "RC4 PRGA",
+          "id": "C0021.004"
+        }
+      ]
+    },
+    {
+      "name": "accept command line arguments",
+      "attack": [
+        {
+          "parts": [
+            "Execution",
+            "Command and Scripting Interpreter"
+          ],
+          "tactic": "Execution",
+          "technique": "Command and Scripting Interpreter",
+          "subtechnique": "",
+          "id": "T1059"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Execution",
+            "Command and Scripting Interpreter"
+          ],
+          "objective": "Execution",
+          "behavior": "Command and Scripting Interpreter",
+          "method": "",
+          "id": "E1059"
+        }
+      ]
+    },
+    {
+      "name": "query environment variable",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "System Information Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "System Information Discovery",
+          "subtechnique": "",
+          "id": "T1082"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "System Information Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "System Information Discovery",
+          "method": "",
+          "id": "E1082"
+        }
+      ]
+    },
+    {
+      "name": "get common file path",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "File and Directory Discovery",
+          "subtechnique": "",
+          "id": "T1083"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "File and Directory Discovery",
+          "method": "",
+          "id": "E1083"
+        }
+      ]
+    },
+    {
+      "name": "check if file exists",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "File and Directory Discovery",
+          "subtechnique": "",
+          "id": "T1083"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "File and Directory Discovery",
+          "method": "",
+          "id": "E1083"
+        }
+      ]
+    },
+    {
+      "name": "get file size",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "File and Directory Discovery",
+          "subtechnique": "",
+          "id": "T1083"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "File and Directory Discovery",
+          "method": "",
+          "id": "E1083"
+        }
+      ]
+    },
+    {
+      "name": "get disk size",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "System Information Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "System Information Discovery",
+          "subtechnique": "",
+          "id": "T1082"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "System Information Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "System Information Discovery",
+          "method": "",
+          "id": "E1082"
+        }
+      ]
+    },
+    {
+      "name": "enumerate processes",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "Process Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "Process Discovery",
+          "subtechnique": "",
+          "id": "T1057"
+        },
+        {
+          "parts": [
+            "Discovery",
+            "Software Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "Software Discovery",
+          "subtechnique": "",
+          "id": "T1518"
+        }
+      ],
+      "mbc": []
+    },
+    {
+      "name": "query or enumerate registry value",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "Query Registry"
+          ],
+          "tactic": "Discovery",
+          "technique": "Query Registry",
+          "subtechnique": "",
+          "id": "T1012"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Operating System",
+            "Registry",
+            "Query Registry Value"
+          ],
+          "objective": "Operating System",
+          "behavior": "Registry",
+          "method": "Query Registry Value",
+          "id": "C0036.006"
+        }
+      ]
+    },
+    {
+      "name": "get session user name",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "System Owner/User Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "System Owner/User Discovery",
+          "subtechnique": "",
+          "id": "T1033"
+        },
+        {
+          "parts": [
+            "Discovery",
+            "Account Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "Account Discovery",
+          "subtechnique": "",
+          "id": "T1087"
+        }
+      ],
+      "mbc": []
+    },
+    {
+      "name": "check for PEB NtGlobalFlag flag",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Anti-Behavioral Analysis",
+            "Debugger Detection",
+            "Process Environment Block NtGlobalFlag"
+          ],
+          "objective": "Anti-Behavioral Analysis",
+          "behavior": "Debugger Detection",
+          "method": "Process Environment Block NtGlobalFlag",
+          "id": "B0001.036"
+        }
+      ]
+    },
+    {
+      "name": "execute anti-debugging instructions",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Anti-Behavioral Analysis",
+            "Debugger Detection",
+            "Anti-debugging Instructions"
+          ],
+          "objective": "Anti-Behavioral Analysis",
+          "behavior": "Debugger Detection",
+          "method": "Anti-debugging Instructions",
+          "id": "B0001.034"
+        }
+      ]
+    },
+    {
+      "name": "hash data with CRC32",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Data",
+            "Checksum",
+            "CRC32"
+          ],
+          "objective": "Data",
+          "behavior": "Checksum",
+          "method": "CRC32",
+          "id": "C0032.001"
+        }
+      ]
+    },
+    {
+      "name": "hash data via WinCrypt",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Cryptography",
+            "Cryptographic Hash"
+          ],
+          "objective": "Cryptography",
+          "behavior": "Cryptographic Hash",
+          "method": "",
+          "id": "C0029"
+        }
+      ]
+    }
+  ],
+  "timeout_s": 300,
+  "sample_size": 173923,
+  "duration_s": 2.61,
+  "engine": "malcat-capa",
+  "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+}

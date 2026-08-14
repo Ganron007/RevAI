@@ -1,0 +1,94 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "Satana ransomware dropper with extensive anti-analysis capabilities. The sample matches the Ransom_Satana_Dropper YARA rule with 3 string signatures, contains anti-debugging (ZwGetContextThread, OutputDebugStringA, NtYieldExecution, 4 TLS callbacks executing before entry point), anti-VM/Qemu detection, a massive encoded payload blob with embedded URLs and IPv6 addresses, a Base64 encoding table, and highly obfuscated control flow (cyclomatic complexity 91 in main function). OpenGL API imports (11 functions) serve as anti-sandbox evasion. The dropper contains obfuscated configuration and C2 infrastructure. Persistence mechanisms: not observed. Exfiltration mechanisms: not observed.",
+  "key_evidence": [
+    "YARA rule 'Ransom_Satana_Dropper' matched with 3 strings at offsets 1264, 1628, 1196 \u2014 direct family identification",
+    "YARA rule 'anti_dbg' matched with 2 strings at offsets 690 and 9350 \u2014 anti-debugging techniques present",
+    "YARA rule 'Qemu_Detection' matched at offset 44611 \u2014 anti-VM/sandbox evasion",
+    "YARA rule 'url' matched at offset 49141 (53 chars) \u2014 embedded URL for C2 or ransom payment",
+    "YARA rule 'IP' (IPv6) matched at offset 22282 \u2014 embedded network indicators",
+    "YARA rules 'contains_base64' and 'BASE64_table' matched \u2014 encoded payload detected",
+    "Ghidra string_refs: 4 TLS callbacks (First_tls, on_tls_callback1, on_tls_callback2, on_tls_callback3) \u2014 code executes before entry point, anti-debugging technique",
+    "Ghidra imports: ZwGetContextThread from NTDLL.DLL \u2014 anti-debugging (checks debug context registers)",
+    "Ghidra imports: OutputDebugStringA from KERNEL32.DLL \u2014 known anti-debugging technique",
+    "Ghidra imports: NtYieldExecution from NTDLL.DLL \u2014 anti-debugging/anti-analysis",
+    "Ghidra imports: 11 OpenGL functions (glBegin, glClear, glColor3d, glVertex3d, etc.) from OPENGL32.DLL \u2014 unusual for non-GUI PE, anti-sandbox technique",
+    "Ghidra function_metrics: FUN_00401310 has cyclomatic_complexity=91, block_count=91, instruction_count=486, size=2349 \u2014 highly complex obfuscated logic",
+    "Ghidra strings: obfuscated string 'qfntvthb' referenced by FUN_00402030 \u2014 likely encoded key or config",
+    "Ghidra strings: massive encoded blob (thousands of chars, non-ASCII) at address 0x401B00+ \u2014 encrypted/obfuscated payload or configuration",
+    "Malcat static profile: entropy 135, anomalies count 7, file size 50861 \u2014 high entropy consistent with packed/encrypted content",
+    "YARA rule 'Safeguard_103_Simonzh' matched at offset 6416 \u2014 additional malware family signature"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 35,
+  "successful_non_bootstrap_tools": 20,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

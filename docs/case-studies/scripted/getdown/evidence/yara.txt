@@ -1,0 +1,117 @@
+# YARA matches (deterministic render)
+
+{
+  "rule_count": 8,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/malware/cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a/getdown.exe",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "contains_base64",
+      "path": "/opt/samples/corpus/malware/cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a/getdown.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 23136,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IsPE64",
+      "path": "/opt/samples/corpus/malware/cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a/getdown.exe",
+      "strings": []
+    },
+    {
+      "rule": "IsWindowsGUI",
+      "path": "/opt/samples/corpus/malware/cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a/getdown.exe",
+      "strings": []
+    },
+    {
+      "rule": "HasRichSignature",
+      "path": "/opt/samples/corpus/malware/cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a/getdown.exe",
+      "strings": [
+        {
+          "id": "$a0",
+          "offset": 200,
+          "length": 4,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Microsoft_Visual_Cpp_80_DLL",
+      "path": "/opt/samples/corpus/malware/cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a/getdown.exe",
+      "strings": [
+        {
+          "id": "$b",
+          "offset": 2880,
+          "length": 4,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "anti_dbg",
+      "path": "/opt/samples/corpus/malware/cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a/getdown.exe",
+      "strings": [
+        {
+          "id": "$d1",
+          "offset": 31234,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 31200,
+          "length": 17,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "network_dropper",
+      "path": "/opt/samples/corpus/malware/cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a/getdown.exe",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 31270,
+          "length": 10,
+          "xor_key": null
+        },
+        {
+          "id": "$c1",
+          "offset": 31250,
+          "length": 17,
+          "xor_key": null
+        }
+      ]
+    }
+  ],
+  "engine": "yara-x",
+  "rules_compiled": 454,
+  "compile_errors": [
+    "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+    "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+    "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+  ],
+  "incomplete": true,
+  "duration_s": 3.76
+}

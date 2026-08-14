@@ -1,0 +1,11 @@
+{
+  "sha256": "d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09",
+  "entropy_bits_whole_file": 7.94,
+  "entropy_source": "whole_file_shannon_revai",
+  "patched_files": [
+    "d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/malcat-triage.json",
+    "d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/quick_scan/00-tools-raw.json",
+    "d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/deep_dive/01-tools-raw.json"
+  ],
+  "reason": "malcat entropy field is not whole-file entropy (2026-08-12); replaced with ground-truth value, raw preserved as entropy_malcat_raw"
+}

@@ -1,0 +1,108 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "The DLL file hubert.dll matches multiple YARA rules indicative of malware, including privilege escalation, registry and file system manipulation, network communication via WinInet APIs, and obfuscation through packing and base64 encoding. Credential access techniques were not observed in hubert.dll {tool_output, capability_scan, credential_access_domain, no indicators found}. The entry point of the DLL did not show evidence of malicious propagation methods {static_analysis, entry_point_analysis, dll_main, no malicious code at entry}. Import analysis revealed the use of system APIs from kernel32.dll and advapi32.dll, which are frequently exploited in malware operations {import_table, api_imports, suspicious_apis, facilitates file, registry, and network activities}.",
+  "key_evidence": [
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "escalate_priv",
+      "row_or_rule": "matched strings at offsets 14078 and 14016",
+      "why": "Contains strings associated with privilege escalation techniques, a common malicious behavior"
+    },
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "win_registry",
+      "row_or_rule": "multiple string matches at various offsets",
+      "why": "Indicates extensive registry manipulation for persistence, configuration, or malicious activity"
+    },
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "Str_Win32_Internet_API",
+      "row_or_rule": "matched API calls like InternetOpen and HttpSendRequest",
+      "why": "Demonstrates network communication capabilities, suggesting command and control or data exfiltration"
+    },
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "contains_base64",
+      "row_or_rule": "matched base64 string at offset 10822",
+      "why": "May contain obfuscated malicious payloads or data encoded to evade detection"
+    },
+    {
+      "source": "checklist_yara_scan",
+      "query_or_table": "Microsoft_Visual_Basic_v50",
+      "row_or_rule": "signature match at offset 79",
+      "why": "Indicates development in Visual Basic v5.0, which is sometimes used in malware for its scripting capabilities"
+    }
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 33,
+  "successful_non_bootstrap_tools": 18,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

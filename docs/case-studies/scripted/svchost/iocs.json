@@ -1,0 +1,39 @@
+{
+  "sha256": "28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb",
+  "family": "Locky",
+  "verdict": "malicious@40",
+  "generated_at": "2026-08-12T17:53:17.594228+00:00",
+  "hashes": {
+    "sha256": "28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb",
+    "sha1": "ba17638bac43e6e3b2faf4bf3a22197b99d8a390",
+    "md5": "c63a537090d34f29daadbef221637435"
+  },
+  "domains": [],
+  "ips": [
+    "91[.]195[.]12[.]187",
+    "195[.]64[.]154[.]114",
+    "149[.]202[.]109[.]205",
+    "51[.]254[.]181[.]122",
+    "78[.]40[.]108[.]39",
+    "188[.]127[.]231[.]116"
+  ],
+  "urls": [
+    "http[:]//\u0000POST\u0000\u0000\u0000\u0000\u0000LA\u0000"
+  ],
+  "files": [],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive).",
+  "wallets_btc": [],
+  "wallets_eth": [],
+  "revai_tools": {
+    "count": 7,
+    "source": "revai_tools_iocs"
+  }
+}

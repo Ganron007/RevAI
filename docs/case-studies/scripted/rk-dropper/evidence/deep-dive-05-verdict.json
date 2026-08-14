@@ -1,0 +1,88 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "This is a packed dropper/loader (rootkit dropper) with heavy string obfuscation, process injection capabilities, and C2 infrastructure embedded in the PE overlay. The sample uses a stolen/expired Ukrainian code signing certificate from 'Kharkiv Vagon-Remont, LLC' (COMODO CA, valid 2017-01-27 to 2017-12-05) with encoded payload data embedded in the certificate ProgramName field. The binary contains high-entropy packed code (7.9 bits in .text, 7.8 in overlay), obfuscated stack strings (CAPA T1027.005, FLOSS decoded 0 of 484 strings), process injection APIs (VirtualAllocEx, OpenThread), mutex-based single-instance control, file I/O, process creation, registry access, and network C2 indicators (IP address and URL in overlay). The entry manifest requires administrator privileges. The original filename is getoohun.exe. Persistence: Not observed; no persistence mechanisms such as registry run keys or scheduled tasks were identified in the provided analysis {source: summary, query_or_table: capabilities, row_or_rule: none, why: no persistence techniques listed in evidence}. Exfiltration: Not observed; no exfiltration techniques or data theft indicators were noted {source: summary, query_or_table: network indicators, row_or_rule: C2, why: C2 indicators mentioned but specific exfiltration methods not detailed}. Imports: Observed imports include APIs for process injection (e.g., VirtualAllocEx, OpenThread), file I/O, process creation, and registry access, as per the summary's capabilities {source: summary, query_or_table: API list, row_or_rule: process injection APIs, why: these APIs are cited in the analysis}.",
+  "key_evidence": [
+    "Malcat anomalies: 10 detected including invalid checksum, high-entropy entry (7.9 bits), code in overlay at 0x33a400, high-entropy overlay (7.8 bits), orphan debug directory, suspicious certificate origin",
+    "Certificate abuse: stolen cert from 'Kharkiv Vagon-Remont, LLC' (Ukraine, COMODO CA, expired 2017-12-05); ProgramName contains encoded payload data: '9TqdEZ3BMHS0Gr1RQ4cXO8qnshebwP3RGTUZu0gheTajKJUHuJ7HsZonW0GlopENypY8gj3nkb7xoPK2SBeR3bcvE2AV5tA2YnqfqzsLO2WZwt165Du4UTUBmrqZuFu23N5XmhufmR1LapahkVAXyrwrEPiJwLS6YJMTwFaHAdyXajU4Iri8kX7ZeJG0etkDW'",
+    "CAPA: obfuscated stackstrings (T1027.005), create process (T1059), read/write files, create mutex, get disk size (T1082), get common file paths (T1083), set file attributes (T1222), reference anti-analysis tools strings (13 rules matched)",
+    "FLOSS: 484 static strings found, 0 decoded strings; all referenced strings are random-encoded sequences confirming heavy runtime string obfuscation",
+    "Import signals: VirtualAllocEx (process injection T1055), LoadLibrary (T1129); also OpenThread, CreateMutexW, CreateFileW, WriteFile, CreateNamedPipeW, CreatePipe, GetLogicalDriveStringsW, RegOpenKeyW",
+    "Ghidra function metrics: FUN_00731260 has cyclomatic complexity 81, 638 instructions, 122 blocks, 18 call-outs, 8 string refs \u2014 indicates complex obfuscated/CFF main payload function",
+    "All Ghidra string_refs to encoded strings: 'keuwosaippaldeaa', 'ottrcvfayshjoutoyipnezimhtv', 'nulmwfohcwntecottryari', 'cpagdsrpuigpkogsroyo', 'dsathahhrddowfsntrr' etc. \u2014 XOR-encoded stack strings",
+    "YARA matches: IP address at offset 0x33a000 (in overlay), URL at 0x33b61c (in overlay), base64 at 0x331c9c, mutex at 0x331e2c, file operations patterns, maldoc getEIP technique",
+    "Manifest requests requireAdministrator privileges; original filename getoohun.exe / GETOOHUN.EXE; product GETOOHUN v1.3.9.6; company '\u00a9Iofu' (suspicious)",
+    "Large single .text section (3.3MB, entropy 7.9) indicates packed/encrypted payload with overlay containing additional C2 infrastructure"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 31,
+  "successful_non_bootstrap_tools": 18,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

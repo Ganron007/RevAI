@@ -1,0 +1,171 @@
+{
+  "verdict": "malicious",
+  "score": 80,
+  "family_guess": "Adload",
+  "cross_engine_notes": "Discrepancies in string and function counts across Ghidra, IDA, and Malcat indicate varied tool coverage; Malcat and Capa consistently detect obfuscation (e.g., CrossSectionJump, XorInLoop, obfuscated stackstrings). Ghidra and IDA show common DLL imports but no definitive C2 or payload strings. External VirusTotal detections (58 malicious) strongly suggest a known malware family, but local analysis lacks explicit behavioral evidence like C2 or persistence.",
+  "key_evidence": [
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "CrossSectionJump, DynamicString, XorInLoop",
+      "why": "Multiple obfuscation techniques (cross-section jumps, dynamic string construction, XOR loops) indicate potential defense evasion and code hiding, common in malicious software."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "top high-signal imports",
+      "row_or_rule": "kernel32.VirtualAllocEx",
+      "why": "High-signal API for memory allocation often used in process injection or malicious code execution, a behavioral intent for defense evasion or execution."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "top_rules",
+      "row_or_rule": "contain obfuscated stackstrings",
+      "why": "Behavioral evidence of defense evasion through string obfuscation (T1027.005), a technique commonly employed by malware to evade static analysis."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "matches",
+      "row_or_rule": "domain, IP, url",
+      "why": "YARA rules detected network-related strings, which could indicate C2 or communication infrastructure, though content appears certificate-related and may require further analysis."
+    }
+  ],
+  "summary": "The sample exhibits multiple obfuscation indicators (e.g., CrossSectionJump, DynamicString, XorInLoop) and high-signal imports like VirtualAllocEx, suggesting defense evasion and potential code injection. Capa confirms obfuscated stackstrings as a behavioral tactic. While local analysis does not reveal explicit C2, persistence, or data exfiltration, external VirusTotal detections with 58 malicious engines and threat class 'trojan.adload/fugrafa' strongly indicate malicious intent. The combination of obfuscation and external reputation warrants a malicious verdict, though score reflects lack of clear local behavioral evidence.",
+  "source": "llm_judge",
+  "model": "mimo-v2.5-pro",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 13 matches",
+      "capa: 13 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "malcat",
+      "floss",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "ti_enrich": {
+    "ok": true,
+    "providers": {
+      "virustotal": {
+        "ok": true,
+        "malicious": 58,
+        "suspicious": 0,
+        "harmless": 0,
+        "undetected": 14,
+        "reputation": -69,
+        "popular_threat_classification": {
+          "suggested_threat_label": "trojan.adload/fugrafa",
+          "popular_threat_category": [
+            {
+              "value": "trojan",
+              "count": 17
+            },
+            {
+              "value": "adware",
+              "count": 5
+            }
+          ],
+          "popular_threat_name": [
+            {
+              "value": "adload",
+              "count": 6
+            },
+            {
+              "value": "fugrafa",
+              "count": 6
+            },
+            {
+              "value": "downloadhelper",
+              "count": 3
+            }
+          ]
+        },
+        "names": [
+          "rk-dropper.exe",
+          "GETOOHUN.EXE",
+          "getoohun.exe",
+          "1196afa54d18ff2ddf0be7a77616657dbd286147f6705d16357239b2dd941ea0.bin",
+          "download-rootkhp-software-for-get-root-rights--rootkhp.exe",
+          "1196afa54d18ff2ddf0be7a77616657dbd286147f6705d16357239b2dd941ea0.exe",
+          "1196afa54d18ff2ddf0be7a77616657dbd286147f6705d16357239b2dd941ea0"
+        ],
+        "tags": [
+          "overlay",
+          "peexe",
+          "calls-wmi",
+          "long-sleeps",
+          "runtime-modules",
+          "checks-network-adapters",
+          "nxdomain",
+          "spreader",
+          "checks-disk-space",
+          "direct-cpu-clock-access"
+        ],
+        "link": "https://www.virustotal.com/gui/file/1196afa54d18ff2ddf0be7a77616657dbd286147f6705d16357239b2dd941ea0"
+      },
+      "hybrid_analysis": {
+        "ok": true,
+        "link": "https://www.hybrid-analysis.com/sample/1196afa54d18ff2ddf0be7a77616657dbd286147f6705d16357239b2dd941ea0"
+      }
+    },
+    "policy": "enrichment_only_never_clears_local_yara_or_tool_gates"
+  },
+  "yara_family_hits": [
+    "win_files_operation"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 4,
+    "hits": 4,
+    "misses": [],
+    "hit_examples": [
+      "CrossSectionJump, DynamicString, XorInLoop anomalies Multiple obfuscation techniques (cross-section jumps, dynamic strin",
+      "kernel32.VirtualAllocEx top high-signal imports High-signal API for memory allocation often used in process injection or",
+      "contain obfuscated stackstrings top_rules Behavioral evidence of defense evasion through string obfuscation (T1027.005),",
+      "domain, IP, url matches YARA rules detected network-related strings, which could indicate C2 or communication infrastruc"
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 3,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

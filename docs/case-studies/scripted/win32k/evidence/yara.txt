@@ -1,0 +1,541 @@
+# YARA matches (deterministic render)
+
+{
+  "rule_count": 26,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IP",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": [
+        {
+          "id": "$ipv4",
+          "offset": 106664,
+          "length": 7,
+          "xor_key": null
+        },
+        {
+          "id": "$ipv6",
+          "offset": 135082,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "contains_base64",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 43498,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Browsers",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": [
+        {
+          "id": "$ie",
+          "offset": 109464,
+          "length": 24,
+          "xor_key": null
+        },
+        {
+          "id": "$ff",
+          "offset": 109440,
+          "length": 22,
+          "xor_key": null
+        },
+        {
+          "id": "$chrome",
+          "offset": 109416,
+          "length": 20,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Dropper_Strings",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": [
+        {
+          "id": "$a1",
+          "offset": 108846,
+          "length": 52,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Misc_Suspicious_Strings",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": [
+        {
+          "id": "$a4",
+          "offset": 104200,
+          "length": 14,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Advapi_Hash_API",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": [
+        {
+          "id": "$advapi32",
+          "offset": 104456,
+          "length": 24,
+          "xor_key": null
+        },
+        {
+          "id": "$CryptCreateHash",
+          "offset": 120804,
+          "length": 15,
+          "xor_key": null
+        },
+        {
+          "id": "$CryptHashData",
+          "offset": 120914,
+          "length": 13,
+          "xor_key": null
+        },
+        {
+          "id": "$CryptAcquireContext",
+          "offset": 120654,
+          "length": 19,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "SHA2_BLAKE2_IVs",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": [
+        {
+          "id": "$c0",
+          "offset": 40612,
+          "length": 4,
+          "xor_key": null
+        },
+        {
+          "id": "$c1",
+          "offset": 40619,
+          "length": 4,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 40626,
+          "length": 4,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 40633,
+          "length": 4,
+          "xor_key": null
+        },
+        {
+          "id": "$c4",
+          "offset": 40640,
+          "length": 4,
+          "xor_key": null
+        },
+        {
+          "id": "$c5",
+          "offset": 40651,
+          "length": 4,
+          "xor_key": null
+        },
+        {
+          "id": "$c6",
+          "offset": 40658,
+          "length": 4,
+          "xor_key": null
+        },
+        {
+          "id": "$c7",
+          "offset": 40665,
+          "length": 4,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "url",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": [
+        {
+          "id": "$url_regex",
+          "offset": 108232,
+          "length": 20,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IsPE64",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": []
+    },
+    {
+      "rule": "IsDLL",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": []
+    },
+    {
+      "rule": "IsWindowsGUI",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": []
+    },
+    {
+      "rule": "IsPacked",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": []
+    },
+    {
+      "rule": "HasRichSignature",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": [
+        {
+          "id": "$a0",
+          "offset": 192,
+          "length": 4,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Microsoft_Visual_Cpp_80_DLL",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": [
+        {
+          "id": "$b",
+          "offset": 3136,
+          "length": 4,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "network_http",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 120296,
+          "length": 11,
+          "xor_key": null
+        },
+        {
+          "id": "$c1",
+          "offset": 119952,
+          "length": 15,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 120194,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 120278,
+          "length": 15,
+          "xor_key": null
+        },
+        {
+          "id": "$c4",
+          "offset": 120048,
+          "length": 16,
+          "xor_key": null
+        },
+        {
+          "id": "$c5",
+          "offset": 120068,
+          "length": 17,
+          "xor_key": null
+        },
+        {
+          "id": "$c6",
+          "offset": 120128,
+          "length": 15,
+          "xor_key": null
+        },
+        {
+          "id": "$c7",
+          "offset": 119996,
+          "length": 15,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "network_tcp_socket",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 120518,
+          "length": 10,
+          "xor_key": null
+        },
+        {
+          "id": "$c1",
+          "offset": 120380,
+          "length": 9,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 109064,
+          "length": 4,
+          "xor_key": null
+        },
+        {
+          "id": "$c4",
+          "offset": 120370,
+          "length": 7,
+          "xor_key": null
+        },
+        {
+          "id": "$c5",
+          "offset": 120356,
+          "length": 10,
+          "xor_key": null
+        },
+        {
+          "id": "$c6",
+          "offset": 122633,
+          "length": 7,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "escalate_priv",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": [
+        {
+          "id": "$d1",
+          "offset": 121244,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 120858,
+          "length": 21,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "win_mutex",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": [
+        {
+          "id": "$c1",
+          "offset": 122852,
+          "length": 11,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "win_registry",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 121244,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 120882,
+          "length": 11,
+          "xor_key": null
+        },
+        {
+          "id": "$c6",
+          "offset": 120882,
+          "length": 11,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "win_token",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 121244,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c1",
+          "offset": 121040,
+          "length": 16,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 120858,
+          "length": 21,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 120634,
+          "length": 16,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "win_files_operation",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 123034,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c1",
+          "offset": 120076,
+          "length": 9,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 120076,
+          "length": 9,
+          "xor_key": null
+        },
+        {
+          "id": "$c4",
+          "offset": 120056,
+          "length": 8,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Str_Win32_Winsock2_Library",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": [
+        {
+          "id": "$ws2_lib",
+          "offset": 120518,
+          "length": 10,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Str_Win32_Wininet_Library",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": [
+        {
+          "id": "$wininet_lib",
+          "offset": 120296,
+          "length": 11,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Str_Win32_Internet_API",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": [
+        {
+          "id": "$wininet_call_closeh",
+          "offset": 120228,
+          "length": 19,
+          "xor_key": null
+        },
+        {
+          "id": "$wininet_call_readf",
+          "offset": 120048,
+          "length": 16,
+          "xor_key": null
+        },
+        {
+          "id": "$wininet_call_connect",
+          "offset": 119952,
+          "length": 15,
+          "xor_key": null
+        },
+        {
+          "id": "$wininet_call_open",
+          "offset": 120194,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Str_Win32_Http_API",
+      "path": "/opt/samples/corpus/malware/8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde/win32k.dll",
+      "strings": [
+        {
+          "id": "$wininet_call_httpr",
+          "offset": 119996,
+          "length": 15,
+          "xor_key": null
+        },
+        {
+          "id": "$wininet_call_httpq",
+          "offset": 120110,
+          "length": 13,
+          "xor_key": null
+        },
+        {
+          "id": "$wininet_call_httpo",
+          "offset": 120128,
+          "length": 15,
+          "xor_key": null
+        }
+      ]
+    }
+  ],
+  "engine": "yara-x",
+  "rules_compiled": 454,
+  "compile_errors": [
+    "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+    "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+    "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+  ],
+  "incomplete": true,
+  "duration_s": 5.01
+}

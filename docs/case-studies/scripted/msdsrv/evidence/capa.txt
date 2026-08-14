@@ -1,0 +1,335 @@
+# capa rules (deterministic render)
+
+{
+  "rule_count": 22,
+  "top_rules": [
+    {
+      "name": "encode data using Base64",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Encoding-Standard Algorithm"
+          ],
+          "objective": "Defense Evasion",
+          "behavior": "Obfuscated Files or Information",
+          "method": "Encoding-Standard Algorithm",
+          "id": "E1027.m02"
+        },
+        {
+          "parts": [
+            "Data",
+            "Encode Data",
+            "Base64"
+          ],
+          "objective": "Data",
+          "behavior": "Encode Data",
+          "method": "Base64",
+          "id": "C0026.001"
+        }
+      ]
+    },
+    {
+      "name": "log keystrokes via application hook",
+      "attack": [
+        {
+          "parts": [
+            "Collection",
+            "Input Capture",
+            "Keylogging"
+          ],
+          "tactic": "Collection",
+          "technique": "Input Capture",
+          "subtechnique": "Keylogging",
+          "id": "T1056.001"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Collection",
+            "Keylogging",
+            "Application Hook"
+          ],
+          "objective": "Collection",
+          "behavior": "Keylogging",
+          "method": "Application Hook",
+          "id": "F0002.001"
+        }
+      ]
+    },
+    {
+      "name": "log keystrokes via polling",
+      "attack": [
+        {
+          "parts": [
+            "Collection",
+            "Input Capture",
+            "Keylogging"
+          ],
+          "tactic": "Collection",
+          "technique": "Input Capture",
+          "subtechnique": "Keylogging",
+          "id": "T1056.001"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Collection",
+            "Keylogging",
+            "Polling"
+          ],
+          "objective": "Collection",
+          "behavior": "Keylogging",
+          "method": "Polling",
+          "id": "F0002.002"
+        }
+      ]
+    },
+    {
+      "name": "get common file path",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "File and Directory Discovery",
+          "subtechnique": "",
+          "id": "T1083"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "File and Directory Discovery",
+          "method": "",
+          "id": "E1083"
+        }
+      ]
+    },
+    {
+      "name": "get hostname",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "System Information Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "System Information Discovery",
+          "subtechnique": "",
+          "id": "T1082"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "System Information Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "System Information Discovery",
+          "method": "",
+          "id": "E1082"
+        }
+      ]
+    },
+    {
+      "name": "get session user name",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "System Owner/User Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "System Owner/User Discovery",
+          "subtechnique": "",
+          "id": "T1033"
+        },
+        {
+          "parts": [
+            "Discovery",
+            "Account Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "Account Discovery",
+          "subtechnique": "",
+          "id": "T1087"
+        }
+      ],
+      "mbc": []
+    },
+    {
+      "name": "connect to HTTP server",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Communication",
+            "HTTP Communication",
+            "Connect to Server"
+          ],
+          "objective": "Communication",
+          "behavior": "HTTP Communication",
+          "method": "Connect to Server",
+          "id": "C0002.009"
+        }
+      ]
+    },
+    {
+      "name": "create HTTP request",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Communication",
+            "HTTP Communication",
+            "Create Request"
+          ],
+          "objective": "Communication",
+          "behavior": "HTTP Communication",
+          "method": "Create Request",
+          "id": "C0002.012"
+        }
+      ]
+    },
+    {
+      "name": "open clipboard",
+      "attack": [
+        {
+          "parts": [
+            "Collection",
+            "Clipboard Data"
+          ],
+          "tactic": "Collection",
+          "technique": "Clipboard Data",
+          "subtechnique": "",
+          "id": "T1115"
+        }
+      ],
+      "mbc": []
+    },
+    {
+      "name": "read clipboard data",
+      "attack": [
+        {
+          "parts": [
+            "Collection",
+            "Clipboard Data"
+          ],
+          "tactic": "Collection",
+          "technique": "Clipboard Data",
+          "subtechnique": "",
+          "id": "T1115"
+        }
+      ],
+      "mbc": []
+    },
+    {
+      "name": "create directory",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "File System",
+            "Create Directory"
+          ],
+          "objective": "File System",
+          "behavior": "Create Directory",
+          "method": "",
+          "id": "C0046"
+        }
+      ]
+    },
+    {
+      "name": "delete file",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "File System",
+            "Delete File"
+          ],
+          "objective": "File System",
+          "behavior": "Delete File",
+          "method": "",
+          "id": "C0047"
+        }
+      ]
+    },
+    {
+      "name": "move file",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "File System",
+            "Move File"
+          ],
+          "objective": "File System",
+          "behavior": "Move File",
+          "method": "",
+          "id": "C0063"
+        }
+      ]
+    },
+    {
+      "name": "get graphical window text",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "Application Window Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "Application Window Discovery",
+          "method": "",
+          "id": "E1010"
+        }
+      ]
+    },
+    {
+      "name": "terminate process",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Process",
+            "Terminate Process"
+          ],
+          "objective": "Process",
+          "behavior": "Terminate Process",
+          "method": "",
+          "id": "C0018"
+        }
+      ]
+    }
+  ],
+  "timeout_s": 300,
+  "sample_size": 328704,
+  "duration_s": 1.66,
+  "engine": "malcat-capa",
+  "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+}

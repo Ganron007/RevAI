@@ -1,0 +1,61 @@
+{
+  "sha256": "bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76",
+  "family": "trojan.lotusblossom/explorerhijack",
+  "imphash": "aee2f8f6aa200110e796682791bc8758",
+  "generated_at": "2026-08-12T19:20:59.482137+00:00",
+  "string_count": 24,
+  "strings": [
+    "\\Internet Explorer\\iexplore.exe",
+    "000A758C8FEAE5F.TMP",
+    "($7/+.1$",
+    "!This program cannot be run in DOS mode.",
+    "UQPXY]Y[",
+    "Invalid parameter passed to C runtime function.",
+    "%d/%02d/%02d %02d:%02d:%02d -",
+    "ReleaseFile Error->FindResource Failed[%d].",
+    "ReleaseFile Error->Size=0.",
+    "Kernel32.dll",
+    "ReleaseFile Error->LoadLibrary Failed[%d].",
+    "LoadResource",
+    "ReleaseFile->GetProcAddress Failed[%d].",
+    "ReleaseFile->ProLdRsc Failed.",
+    "ReleaseFile->CreateFile Failed[%d].",
+    "Removing...",
+    "\\LocalData\\",
+    "Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+    "SystemDrive",
+    "SeDebugPrivilege",
+    "FreeLibrary",
+    "kernel32.dll",
+    "A08E81B411.DAT",
+    "Windows Internet Explorer"
+  ],
+  "rule_path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/rule.yar",
+  "sigma_path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/rule.yml",
+  "iocs_path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/iocs.json",
+  "yara_valid": true,
+  "yara_check": "ok",
+  "goodware_fp": {
+    "goodware_dir": "/opt/samples/goodware",
+    "fp_count": 0,
+    "fp_samples": [],
+    "skipped": "goodware corpus not staged"
+  },
+  "yargen": {
+    "skipped": true
+  },
+  "revai": true,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-12 19:20:59 UTC"
+  },
+  "publish_target": "revai_publish"
+}

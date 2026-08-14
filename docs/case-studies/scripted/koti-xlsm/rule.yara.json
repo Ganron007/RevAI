@@ -1,0 +1,40 @@
+{
+  "sha256": "8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e",
+  "family": "X97M",
+  "imphash": null,
+  "generated_at": "2026-08-12T22:57:34.541491+00:00",
+  "string_count": 3,
+  "strings": [
+    "Matches domain regex, suggesting possible command-and-control (C2) communication or malicious network activity, a behavi",
+    "Contains base64 encoded strings, commonly used in malware to obfuscate payloads, exfiltrate data, or evade detection.",
+    "Indicates a macro-enabled Excel document (OOXML), which is a prevalent vector for delivering malware via phishing or dri"
+  ],
+  "rule_path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/rule.yar",
+  "sigma_path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/rule.yml",
+  "iocs_path": "/opt/samples/logs/8e516c5e0ca2a7ffed56b38b8e10544653d4fa3b9c647895b1967eba16ae025e/iocs.json",
+  "yara_valid": true,
+  "yara_check": "ok",
+  "goodware_fp": {
+    "goodware_dir": "/opt/samples/goodware",
+    "fp_count": 0,
+    "fp_samples": [],
+    "skipped": "goodware corpus not staged"
+  },
+  "yargen": {
+    "skipped": true
+  },
+  "revai": true,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-12 22:57:34 UTC"
+  },
+  "publish_target": "revai_publish"
+}

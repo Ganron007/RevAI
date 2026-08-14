@@ -1,0 +1,361 @@
+# YARA matches (deterministic render)
+
+{
+  "rule_count": 20,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/day6/38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73/trojan_4982.exe",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IP",
+      "path": "/opt/samples/corpus/day6/38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73/trojan_4982.exe",
+      "strings": [
+        {
+          "id": "$ipv4",
+          "offset": 182084,
+          "length": 14,
+          "xor_key": null
+        },
+        {
+          "id": "$ipv6",
+          "offset": 157710,
+          "length": 6,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "contains_base64",
+      "path": "/opt/samples/corpus/day6/38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73/trojan_4982.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 138188,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "MD5_Constants",
+      "path": "/opt/samples/corpus/day6/38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73/trojan_4982.exe",
+      "strings": [
+        {
+          "id": "$c4",
+          "offset": 45729,
+          "length": 4,
+          "xor_key": null
+        },
+        {
+          "id": "$c5",
+          "offset": 45739,
+          "length": 4,
+          "xor_key": null
+        },
+        {
+          "id": "$c6",
+          "offset": 45752,
+          "length": 4,
+          "xor_key": null
+        },
+        {
+          "id": "$c7",
+          "offset": 45762,
+          "length": 4,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "url",
+      "path": "/opt/samples/corpus/day6/38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73/trojan_4982.exe",
+      "strings": [
+        {
+          "id": "$url_regex",
+          "offset": 227622,
+          "length": 69,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IsPE32",
+      "path": "/opt/samples/corpus/day6/38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73/trojan_4982.exe",
+      "strings": []
+    },
+    {
+      "rule": "IsWindowsGUI",
+      "path": "/opt/samples/corpus/day6/38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73/trojan_4982.exe",
+      "strings": []
+    },
+    {
+      "rule": "HasOverlay",
+      "path": "/opt/samples/corpus/day6/38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73/trojan_4982.exe",
+      "strings": []
+    },
+    {
+      "rule": "HasModified_DOS_Message",
+      "path": "/opt/samples/corpus/day6/38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73/trojan_4982.exe",
+      "strings": []
+    },
+    {
+      "rule": "VC8_Microsoft_Corporation",
+      "path": "/opt/samples/corpus/day6/38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73/trojan_4982.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 18194,
+          "length": 10,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Microsoft_Visual_Cpp_8",
+      "path": "/opt/samples/corpus/day6/38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73/trojan_4982.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 28,
+          "length": 82,
+          "xor_key": null
+        },
+        {
+          "id": "$b",
+          "offset": 25468,
+          "length": 10,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "SEH_Save",
+      "path": "/opt/samples/corpus/day6/38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73/trojan_4982.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 60017,
+          "length": 7,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "SEH_Init",
+      "path": "/opt/samples/corpus/day6/38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73/trojan_4982.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 3453,
+          "length": 6,
+          "xor_key": null
+        },
+        {
+          "id": "$b",
+          "offset": 110219,
+          "length": 7,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "anti_dbg",
+      "path": "/opt/samples/corpus/day6/38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73/trojan_4982.exe",
+      "strings": [
+        {
+          "id": "$d1",
+          "offset": 169872,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 170594,
+          "length": 17,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 169284,
+          "length": 17,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "network_tcp_socket",
+      "path": "/opt/samples/corpus/day6/38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73/trojan_4982.exe",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 170508,
+          "length": 10,
+          "xor_key": null
+        },
+        {
+          "id": "$c1",
+          "offset": 170442,
+          "length": 9,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 137650,
+          "length": 6,
+          "xor_key": null
+        },
+        {
+          "id": "$c4",
+          "offset": 170432,
+          "length": 7,
+          "xor_key": null
+        },
+        {
+          "id": "$c5",
+          "offset": 170418,
+          "length": 10,
+          "xor_key": null
+        },
+        {
+          "id": "$c6",
+          "offset": 137232,
+          "length": 7,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "network_dns",
+      "path": "/opt/samples/corpus/day6/38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73/trojan_4982.exe",
+      "strings": [
+        {
+          "id": "$f2",
+          "offset": 170508,
+          "length": 10,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 170466,
+          "length": 11,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "win_registry",
+      "path": "/opt/samples/corpus/day6/38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73/trojan_4982.exe",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 170082,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 170050,
+          "length": 11,
+          "xor_key": null
+        },
+        {
+          "id": "$c6",
+          "offset": 170050,
+          "length": 11,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "win_token",
+      "path": "/opt/samples/corpus/day6/38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73/trojan_4982.exe",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 170082,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 169966,
+          "length": 16,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "win_files_operation",
+      "path": "/opt/samples/corpus/day6/38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73/trojan_4982.exe",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 169872,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c1",
+          "offset": 169670,
+          "length": 9,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 171522,
+          "length": 14,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 169670,
+          "length": 9,
+          "xor_key": null
+        },
+        {
+          "id": "$c4",
+          "offset": 169690,
+          "length": 8,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Str_Win32_Winsock2_Library",
+      "path": "/opt/samples/corpus/day6/38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73/trojan_4982.exe",
+      "strings": [
+        {
+          "id": "$ws2_lib",
+          "offset": 170508,
+          "length": 10,
+          "xor_key": null
+        }
+      ]
+    }
+  ],
+  "engine": "yara-x",
+  "rules_compiled": 454,
+  "compile_errors": [
+    "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+    "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+    "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+  ],
+  "incomplete": true,
+  "duration_s": 6.99
+}

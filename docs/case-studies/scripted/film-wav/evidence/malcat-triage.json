@@ -1,0 +1,479 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "film.wav",
+    "file_path": "/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav",
+    "file_size": 15179552,
+    "type": "?",
+    "architecture": "NONE",
+    "entropy": 7.48,
+    "sha256": "0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a",
+    "metadata": {},
+    "entrypoint_ea": null,
+    "layout": [
+      {
+        "name": "",
+        "effective_address": 0,
+        "physical_size": 15179552,
+        "virtual_size": 15179552,
+        "rights": "",
+        "entropy": 156
+      }
+    ],
+    "kesakode_verdict": [],
+    "entropy_malcat_raw": 156,
+    "entropy_source": "whole_file_shannon_revai"
+  },
+  "views": {
+    "anomalies": [],
+    "anomaly_locations": {},
+    "yara_hits": [],
+    "strings": [
+      {
+        "ea": 252868,
+        "summary": "zzsrppnnnnllhhff..NNIIDDCC>>77..##"
+      },
+      {
+        "ea": 958048,
+        "summary": "#\"((1077;;>>@@CC..99222267AAQQcbvw"
+      },
+      {
+        "ea": 8705632,
+        "summary": "./<<IHSRXX``eeih..PPLLKKEE>?8811(("
+      },
+      {
+        "ea": 2096188,
+        "summary": "66NN^^hhjjjjffdd..89885523-,()%$! "
+      },
+      {
+        "ea": 1411328,
+        "summary": "\"\"&&+*--1144<<DE..xyvvttrrpqpptt{z"
+      },
+      {
+        "ea": 8000640,
+        "summary": "\"\"''**..2366;:=<..A@=<884501,,()\"\""
+      },
+      {
+        "ea": 2095272,
+        "summary": "xxhiYXLMKJIH==,,..bbhhfgee__QPA@./"
+      },
+      {
+        "ea": 9326666,
+        "summary": "` ^,V.P6VLj`v^jB..,H.L:D>8::4L.b&p"
+      },
+      {
+        "ea": 393167,
+        "summary": "\n,\n,\n;\n:\nH\nH\nS\nR..S\nS\nZ\nZ\nf\nf\nt\nu\n"
+      },
+      {
+        "ea": 2104968,
+        "summary": "~~{zxxxxwvsslmdd..LLFGFFLLRS_^jkzz"
+      },
+      {
+        "ea": 8706004,
+        "summary": "\"\"))..4588>>CBII..JJGGCB>?::54//&&"
+      },
+      {
+        "ea": 257100,
+        "summary": "xyaaNOBB@ABCIIPQ..;;89;;<<9922-,''"
+      },
+      {
+        "ea": 1445728,
+        "summary": "33BCIHFFDEBB==45..NOHH=<555588BB\\]"
+      },
+      {
+        "ea": 1956567,
+        "summary": "\nz\nz\nn\no\nk\nj\nl\nm..h\ni\nZ\nZ\nJ\nK\n4\n4\n"
+      },
+      {
+        "ea": 1410872,
+        "summary": "  %$'&(()(++,-....&''&''''&&''%$! "
+      },
+      {
+        "ea": 196124,
+        "summary": "%$**003298@@@@@@..VVRSLLIHCC::00$$"
+      },
+      {
+        "ea": 1323312,
+        "summary": "{znoa`SRHH@@=<;;..DDEEFGKJPQ[Zjj}|"
+      },
+      {
+        "ea": 2093028,
+        "summary": "~~wvmmbcVVLMHINN..QPOOHHAA8845..\"\""
+      },
+      {
+        "ea": 2106292,
+        "summary": "uubbTTMMLLJKFF>>..DDHIIHBC>>88,,  "
+      },
+      {
+        "ea": 2098044,
+        "summary": "  11@@MLWVccnnxy..UU__hhooqqsruuyy"
+      },
+      {
+        "ea": 2058472,
+        "summary": "  89KKWWa`kjtuxx..NNIIBB<=66./&& !"
+      },
+      {
+        "ea": 247744,
+        "summary": "rsa`QQED@ACCIHTU..``UTMMKJQQ]]kk||"
+      },
+      {
+        "ea": 9399475,
+        "summary": "/L/M/8080n0n0.0.0P2P2"
+      },
+      {
+        "ea": 2107700,
+        "summary": "~~xxpqcbSSHI@A<=..EDJJPPYYbckkrs}}"
+      },
+      {
+        "ea": 2091412,
+        "summary": "||qpii__PPFFFGGG..))01::@AHHRS^^on"
+      },
+      {
+        "ea": 2093600,
+        "summary": "||zzzzxxll``ZZZZ..jkffedaa^_^^ders"
+      },
+      {
+        "ea": 1311564,
+        "summary": "&&66CCKKOOQQOOMM..vv~~~~yymmZZ@@ !"
+      },
+      {
+        "ea": 985586,
+        "summary": "~qqbcTTHI@@==55...HHSS\\\\fglmqqttz{"
+      },
+      {
+        "ea": 2088824,
+        "summary": "));;EDNN__kjrspp..CCFGCC::23..)(!!"
+      },
+      {
+        "ea": 877372,
+        "summary": ",,@@RRcbmmqqnndd..**1198BBLLYXggvv"
+      },
+      {
+        "ea": 879984,
+        "summary": "nn^^VVRRRSRRQPONMMHHFGGFKKTTbbvv"
+      },
+      {
+        "ea": 9325780,
+        "summary": "@2JJPP^NjJrNzZz`..RfcrlydrXfXdjn~x"
+      },
+      {
+        "ea": 8290448,
+        "summary": "\"\",,==LMZZffppxx..rrpplmhh]\\ML<=,,"
+      },
+      {
+        "ea": 2099560,
+        "summary": "xyhiVVLLKKDD89,,..6789AALLVW_^hh{z"
+      },
+      {
+        "ea": 1756708,
+        "summary": "mmZ[JJ66*+&'((....::::::88::<<::00"
+      },
+      {
+        "ea": 626724,
+        "summary": "vvlliihhiikkooss..zz{{yyvwwvwvyx|}"
+      },
+      {
+        "ea": 9399667,
+        "summary": "/e/e/"
+      },
+      {
+        "ea": 8545763,
+        "summary": "/F/F/"
+      },
+      {
+        "ea": 2114692,
+        "summary": "rrff^^\\\\\\\\XXTTRS..#\"\"\"#\"$$'&*+**\"\""
+      },
+      {
+        "ea": 977340,
+        "summary": "$%/.99>?BBHHMLSS..SROOII@@::01))##"
+      },
+      {
+        "ea": 8496207,
+        "summary": "/K/K/"
+      },
+      {
+        "ea": 8496199,
+        "summary": "/s/s/"
+      },
+      {
+        "ea": 8322039,
+        "summary": "/r/r/"
+      },
+      {
+        "ea": 7843272,
+        "summary": "\"\"((./2298==>>@@..EEBB>>8922,-'& !"
+      },
+      {
+        "ea": 8901608,
+        "summary": "(#<6G?A65(4 =\"F)..TLneuk]RLD\\Vrlzt"
+      },
+      {
+        "ea": 90252,
+        "summary": "wwdd\\\\UUMMBB;;4466@@NNOO<<"
+      },
+      {
+        "ea": 9326846,
+        "summary": ":m>rZ|nwlnchd^fR..`vbrhrblNXBHVPxj"
+      },
+      {
+        "ea": 2110400,
+        "summary": "yxnocb[ZXXXXSRII..CKJTU`affiijkut~"
+      },
+      {
+        "ea": 9399675,
+        "summary": "/V0V0j/j/"
+      },
+      {
+        "ea": 9321540,
+        "summary": "*<FZT`XZPXBb4p.j..^<fHjZpfz^vPhRrV"
+      },
+      {
+        "ea": 1758396,
+        "summary": ",,66>>@@>>9822/...//..44A@PQ^_nn||"
+      },
+      {
+        "ea": 1455556,
+        "summary": "xxff^^aafggf^^PQFFOOmm"
+      },
+      {
+        "ea": 9072880,
+        "summary": " z&p>tJnJZJJN@N6..tBuDp@vF~NzLvF~N"
+      },
+      {
+        "ea": 2065228,
+        "summary": "{{ttoohhddcbbbbc`acc``\\]PPBB32"
+      },
+      {
+        "ea": 1650544,
+        "summary": "::XXkjqqmmbbTTHI??==A@JKXYjjyy"
+      },
+      {
+        "ea": 8706272,
+        "summary": "  $$((-,01547798..88664432//+*()$$"
+      },
+      {
+        "ea": 8700239,
+        "summary": "/6/7/V.V.I-I-"
+      },
+      {
+        "ea": 1883876,
+        "summary": "$$/.;;CCHHJJHICC:;321022::MMjk"
+      },
+      {
+        "ea": 605744,
+        "summary": "xxffXXONIHIIIHKJJJHI@@01"
+      },
+      {
+        "ea": 278012,
+        "summary": "{zturrpppprrrrnn..kkdd]\\SSJKBB67++"
+      },
+      {
+        "ea": 1410360,
+        "summary": "{zuuppoollffcc__..JKBB::542201()!!"
+      },
+      {
+        "ea": 2039476,
+        "summary": "utXXDE=<::@AKJVW..ppxxzztthhXXDD&&"
+      },
+      {
+        "ea": 140844,
+        "summary": "89NN[[_^^_`aa`bba`UU<<"
+      },
+      {
+        "ea": 2096976,
+        "summary": "vvjj^^UUJKDDAA=<==<<?>9900&&"
+      },
+      {
+        "ea": 8548644,
+        "summary": "$$,-5589>>CCEDFGFFDECC>>::54..&&"
+      },
+      {
+        "ea": 1482848,
+        "summary": "rr[[GG55----99QQyy"
+      },
+      {
+        "ea": 2114452,
+        "summary": "xymlcc[[TTLLHHHH..SRWVYY\\\\ccjkrs|}"
+      },
+      {
+        "ea": 8555188,
+        "summary": "((22113399AA=<9988<=>>;:22**"
+      },
+      {
+        "ea": 1120420,
+        "summary": "..>>MM]]hionpponjkdd[[FF//"
+      },
+      {
+        "ea": 628724,
+        "summary": "pp__PQGFBCCBGFML..rrwwvvyxyy{z|}~~"
+      },
+      {
+        "ea": 1040552,
+        "summary": "54RRbcllqpssqqnnhh`aOO;;-,22HIgg"
+      },
+      {
+        "ea": 630736,
+        "summary": "uuii__VVTTVV\\]bchiqqyy"
+      },
+      {
+        "ea": 2091616,
+        "summary": "utff]\\WWUUTTNNDD992310..\"\"\n\n"
+      },
+      {
+        "ea": 898172,
+        "summary": "&&44A@MLWV\\]\\\\[Z..TURRTUWW^^fgqq{z"
+      },
+      {
+        "ea": 1069872,
+        "summary": "iiMM==<<DDNOWWXXKK00\r\r"
+      },
+      {
+        "ea": 2076236,
+        "summary": "[[@@::55;:VV^^;:"
+      },
+      {
+        "ea": 220939,
+        "summary": "\n7\n7\nV\nV\n`\n`\ne\nd..O\nN\nC\nB\n<\n<\n0\n1\n"
+      },
+      {
+        "ea": 1397556,
+        "summary": "44LMZ[aaZZRSLLNN[Zjj"
+      },
+      {
+        "ea": 9011061,
+        "summary": "/i/Q/5/4/"
+      },
+      {
+        "ea": 2098196,
+        "summary": "++110110235411++..//76BBNOXXeeuu~~"
+      },
+      {
+        "ea": 981180,
+        "summary": "vvrronjjde__]]]\\..**$$   !\"\"%$%$!!"
+      },
+      {
+        "ea": 772384,
+        "summary": "sr`aSRMMQQXXbbjkpprsqpgfRR76"
+      },
+      {
+        "ea": 2095638,
+        "summary": "~wwkj`aZZ]\\eejjq..vvsrnnhh[ZFF67'&"
+      },
+      {
+        "ea": 1844680,
+        "summary": "66JJHH::66MM"
+      },
+      {
+        "ea": 1471548,
+        "summary": "\n\n44LLVVVVJJ00"
+      },
+      {
+        "ea": 340556,
+        "summary": "++88BBFFBB::..&&&&00BB\\\\vv"
+      },
+      {
+        "ea": 2094152,
+        "summary": "on\\\\SRLLKJKKQQXXddmmssyy"
+      },
+      {
+        "ea": 1453948,
+        "summary": "nnPP<<88>>HHVVTT66"
+      },
+      {
+        "ea": 2111756,
+        "summary": "}}yyjj[[QPONRR[Zggppssrrttwwzz"
+      },
+      {
+        "ea": 257620,
+        "summary": "||qqff\\]TTMLGGED..KJPQVW__ddlmrr{z"
+      },
+      {
+        "ea": 9144175,
+        "summary": "/L/0/"
+      },
+      {
+        "ea": 8964343,
+        "summary": "/G/1/"
+      },
+      {
+        "ea": 1937368,
+        "summary": "yxkk``TTJKAA??DEOOWVRRFF00"
+      },
+      {
+        "ea": 1569296,
+        "summary": "~~vvnndd[[RRMLMMPQXXdexx"
+      },
+      {
+        "ea": 335064,
+        "summary": "76XYgffg]\\KK??::DDYYuu"
+      },
+      {
+        "ea": 2103608,
+        "summary": "utkkccZZRRJKDDFGON[Zddkjww"
+      },
+      {
+        "ea": 9143627,
+        "summary": "/t/h/"
+      },
+      {
+        "ea": 9002473,
+        "summary": "/V/8/"
+      },
+      {
+        "ea": 115823,
+        "summary": "\r5\r4\rP\rP\r`\r`\r`\r`..L\rL\rD\rE\r<\r<\r/\r.\r"
+      },
+      {
+        "ea": 10156483,
+        "summary": "/J/R/"
+      }
+    ],
+    "imports": [],
+    "sections": [
+      {
+        "name": "",
+        "effective_address": 0,
+        "physical_size": 15179552,
+        "virtual_size": 15179552,
+        "rights": "",
+        "entropy": 156
+      }
+    ],
+    "entropy": {
+      "file_entropy": 7.48,
+      "regions": [
+        {
+          "name": "",
+          "entropy": 156,
+          "size": null
+        }
+      ],
+      "file_entropy_malcat_raw": 156,
+      "entropy_source": "whole_file_shannon_revai"
+    },
+    "functions": [],
+    "constants": []
+  },
+  "functions": [],
+  "constants": [],
+  "anomalies": [],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

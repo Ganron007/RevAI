@@ -1,0 +1,96 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "XMRig 2.6.2 Monero cryptocurrency miner DLL (built May 28, 2018 with MSVC). This is a 64-bit DLL that performs CryptoNight-family cryptocurrency mining, consuming victim CPU resources to mine Monero for the attacker. It escalates privileges via SeLockMemoryPrivilege and LSA APIs (LsaAddAccountRights, AdjustTokenPrivileges) to allocate huge pages for efficient mining. It connects to mining pools over stratum+tcp:// protocol with references to nicehash.com and minergate.com, includes a built-in 5% developer donation fee, and supports background/stealth operation. Anti-analysis includes IsDebuggerPresent and SetConsoleCtrlHandler imports. YARA rules matched AES S-box, SHA2/BLAKE2, and SHA3 constants \u2014 all consistent with CryptoNight mining internals. The sample has 2021 exports and high-complexity functions (CC up to 279), consistent with an obfuscated/packed mining library. Persistence mechanisms were not observed in the analysis, with no evidence of auto-start, registry modifications, or scheduled tasks for maintaining presence. Defense impairment is indicated by anti-analysis imports such as IsDebuggerPresent and SetConsoleCtrlHandler, which can be used to evade debugger detection and handle console control events to prevent termination, as seen in the DLL's import table {source: static analysis, query: import table, row: IsDebuggerPresent and SetConsoleCtrlHandler, why: these functions impair debugging and shutdown processes}.",
+  "key_evidence": [
+    "String 'XMRig 2.6.2\\n built on May 28 2018 with MSVC' at address 0x1800b66a8",
+    "Full xmrig usage banner with CryptoNight/CryptoNight-Lite/CryptoNight-Heavy algorithm options",
+    "String 'stratum+tcp://' at address 0x1800cf458 \u2014 mining pool connection protocol",
+    "References to '.nicehash.com' and '.minergate.com' pool domains",
+    "References to 'miner.fee.xmrig.com' and 'emergency.fee.xmrig.com' \u2014 built-in dev fee domains",
+    "Function FUN_180064ed0 references 'SeLockMemoryPrivilege' for huge page memory allocation",
+    "Import: AdjustTokenPrivileges (ADVAPI32.DLL) \u2014 privilege escalation",
+    "Import: LsaAddAccountRights, LsaOpenPolicy (ADVAPI32.DLL) \u2014 LSA manipulation for privilege grants",
+    "Import: SetPriorityClass (KERNEL32.DLL) \u2014 elevates process priority for mining",
+    "Import: IsDebuggerPresent, SetConsoleCtrlHandler \u2014 anti-analysis/stealth capabilities",
+    "Import: CreateThread \u2014 multi-threaded mining execution",
+    "YARA match: RijnDael_AES_CHAR at offset 0x96550 \u2014 AES S-box for CryptoNight",
+    "YARA match: SHA2_BLAKE2_IVs (8 hits) and SHA3_constants (8 hits) \u2014 mining algorithm internals",
+    "YARA match: anti_dbg rule \u2014 SetConsoleCtrlHandler pattern for debugger evasion",
+    "2021 exports in DLL \u2014 large attack surface for injection into other processes",
+    "High-complexity functions: FUN_18003d590 (CC=279, 1398 instructions), FUN_180073a70 (CC=248, 1426 instructions)",
+    "String 'donate-level' with default 5% (5 minutes per 100 minutes) \u2014 covert developer revenue",
+    "Configurable max-cpu-usage, cpu-affinity, cpu-priority, background mode \u2014 evasion of detection"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 32,
+  "successful_non_bootstrap_tools": 19,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

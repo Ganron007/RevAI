@@ -1,0 +1,398 @@
+# capa rules (deterministic render)
+
+{
+  "rule_count": 43,
+  "top_rules": [
+    {
+      "name": "contain obfuscated stackstrings",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Indicator Removal from Tools"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "Indicator Removal from Tools",
+          "id": "T1027.005"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Anti-Static Analysis",
+            "Executable Code Obfuscation",
+            "Argument Obfuscation"
+          ],
+          "objective": "Anti-Static Analysis",
+          "behavior": "Executable Code Obfuscation",
+          "method": "Argument Obfuscation",
+          "id": "B0032.020"
+        },
+        {
+          "parts": [
+            "Anti-Static Analysis",
+            "Executable Code Obfuscation",
+            "Stack Strings"
+          ],
+          "objective": "Anti-Static Analysis",
+          "behavior": "Executable Code Obfuscation",
+          "method": "Stack Strings",
+          "id": "B0032.017"
+        }
+      ]
+    },
+    {
+      "name": "encode data using XOR",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Encoding-Standard Algorithm"
+          ],
+          "objective": "Defense Evasion",
+          "behavior": "Obfuscated Files or Information",
+          "method": "Encoding-Standard Algorithm",
+          "id": "E1027.m02"
+        },
+        {
+          "parts": [
+            "Data",
+            "Encode Data",
+            "XOR"
+          ],
+          "objective": "Data",
+          "behavior": "Encode Data",
+          "method": "XOR",
+          "id": "C0026.002"
+        }
+      ]
+    },
+    {
+      "name": "encrypt data using AES",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Encryption-Standard Algorithm"
+          ],
+          "objective": "Defense Evasion",
+          "behavior": "Obfuscated Files or Information",
+          "method": "Encryption-Standard Algorithm",
+          "id": "E1027.m05"
+        },
+        {
+          "parts": [
+            "Cryptography",
+            "Encrypt Data",
+            "AES"
+          ],
+          "objective": "Cryptography",
+          "behavior": "Encrypt Data",
+          "method": "AES",
+          "id": "C0027.001"
+        }
+      ]
+    },
+    {
+      "name": "encrypt data using AES via x86 extensions",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Encryption-Standard Algorithm"
+          ],
+          "objective": "Defense Evasion",
+          "behavior": "Obfuscated Files or Information",
+          "method": "Encryption-Standard Algorithm",
+          "id": "E1027.m05"
+        },
+        {
+          "parts": [
+            "Cryptography",
+            "Encrypt Data",
+            "AES"
+          ],
+          "objective": "Cryptography",
+          "behavior": "Encrypt Data",
+          "method": "AES",
+          "id": "C0027.001"
+        }
+      ]
+    },
+    {
+      "name": "get socket status",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "System Network Configuration Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "System Network Configuration Discovery",
+          "subtechnique": "",
+          "id": "T1016"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Communication",
+            "Socket Communication",
+            "Get Socket Status"
+          ],
+          "objective": "Communication",
+          "behavior": "Socket Communication",
+          "method": "Get Socket Status",
+          "id": "C0001.012"
+        }
+      ]
+    },
+    {
+      "name": "encrypt data using speck",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Encryption-Standard Algorithm"
+          ],
+          "objective": "Defense Evasion",
+          "behavior": "Obfuscated Files or Information",
+          "method": "Encryption-Standard Algorithm",
+          "id": "E1027.m05"
+        }
+      ]
+    },
+    {
+      "name": "get common file path",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "File and Directory Discovery",
+          "subtechnique": "",
+          "id": "T1083"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "File and Directory Discovery",
+          "method": "",
+          "id": "E1083"
+        }
+      ]
+    },
+    {
+      "name": "check if file exists",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "File and Directory Discovery",
+          "subtechnique": "",
+          "id": "T1083"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "File and Directory Discovery",
+          "method": "",
+          "id": "E1083"
+        }
+      ]
+    },
+    {
+      "name": "check for time delay via QueryPerformanceCounter",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Anti-Behavioral Analysis",
+            "Debugger Detection",
+            "Timing/Delay Check QueryPerformanceCounter"
+          ],
+          "objective": "Anti-Behavioral Analysis",
+          "behavior": "Debugger Detection",
+          "method": "Timing/Delay Check QueryPerformanceCounter",
+          "id": "B0001.033"
+        }
+      ]
+    },
+    {
+      "name": "log keystrokes",
+      "attack": [
+        {
+          "parts": [
+            "Collection",
+            "Input Capture",
+            "Keylogging"
+          ],
+          "tactic": "Collection",
+          "technique": "Input Capture",
+          "subtechnique": "Keylogging",
+          "id": "T1056.001"
+        }
+      ],
+      "mbc": []
+    },
+    {
+      "name": "receive data",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Command and Control",
+            "C2 Communication",
+            "Receive Data"
+          ],
+          "objective": "Command and Control",
+          "behavior": "C2 Communication",
+          "method": "Receive Data",
+          "id": "B0030.002"
+        }
+      ]
+    },
+    {
+      "name": "send data",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Command and Control",
+            "C2 Communication",
+            "Send Data"
+          ],
+          "objective": "Command and Control",
+          "behavior": "C2 Communication",
+          "method": "Send Data",
+          "id": "B0030.001"
+        }
+      ]
+    },
+    {
+      "name": "resolve DNS",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Communication",
+            "DNS Communication",
+            "Resolve"
+          ],
+          "objective": "Communication",
+          "behavior": "DNS Communication",
+          "method": "Resolve",
+          "id": "C0011.001"
+        }
+      ]
+    },
+    {
+      "name": "connect pipe",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Communication",
+            "Interprocess Communication",
+            "Connect Pipe"
+          ],
+          "objective": "Communication",
+          "behavior": "Interprocess Communication",
+          "method": "Connect Pipe",
+          "id": "C0003.002"
+        }
+      ]
+    },
+    {
+      "name": "create pipe",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Communication",
+            "Interprocess Communication",
+            "Create Pipe"
+          ],
+          "objective": "Communication",
+          "behavior": "Interprocess Communication",
+          "method": "Create Pipe",
+          "id": "C0003.001"
+        }
+      ]
+    }
+  ],
+  "timeout_s": 300,
+  "sample_size": 733696,
+  "duration_s": 2.77,
+  "engine": "malcat-capa",
+  "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+}

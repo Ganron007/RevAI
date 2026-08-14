@@ -1,0 +1,79 @@
+# Dynamic-resolve signals (deterministic render of 02-signals.json)
+
+{
+  "engine": "dynamic_resolve_detect",
+  "summary": {
+    "resolver_funcs": 0,
+    "resolve_sites": 0,
+    "peb_module_walkers": 0,
+    "ordinal_imports": 15,
+    "min_resolve_calls": 2,
+    "elapsed_s": 2.28,
+    "note": "Resolve sites are core logic of packed/stripped samples (static import dir empty)."
+  },
+  "resolver_funcs": [],
+  "resolve_sites": [],
+  "peb_module_walkers": [],
+  "ordinal_imports": [
+    {
+      "name": "Ordinal_9",
+      "module": "WS2_32.DLL"
+    },
+    {
+      "name": "Ordinal_18",
+      "module": "WS2_32.DLL"
+    },
+    {
+      "name": "Ordinal_3",
+      "module": "WS2_32.DLL"
+    },
+    {
+      "name": "Ordinal_11",
+      "module": "WS2_32.DLL"
+    },
+    {
+      "name": "Ordinal_115",
+      "module": "WS2_32.DLL"
+    },
+    {
+      "name": "Ordinal_23",
+      "module": "WS2_32.DLL"
+    },
+    {
+      "name": "Ordinal_6",
+      "module": "WS2_32.DLL"
+    },
+    {
+      "name": "Ordinal_112",
+      "module": "WS2_32.DLL"
+    },
+    {
+      "name": "Ordinal_2",
+      "module": "WS2_32.DLL"
+    },
+    {
+      "name": "Ordinal_17",
+      "module": "WS2_32.DLL"
+    },
+    {
+      "name": "Ordinal_20",
+      "module": "WS2_32.DLL"
+    },
+    {
+      "name": "Ordinal_4",
+      "module": "WS2_32.DLL"
+    },
+    {
+      "name": "Ordinal_22",
+      "module": "WS2_32.DLL"
+    },
+    {
+      "name": "Ordinal_15",
+      "module": "WS2_32.DLL"
+    },
+    {
+      "name": "Ordinal_111",
+      "module": "WS2_32.DLL"
+    }
+  ]
+}

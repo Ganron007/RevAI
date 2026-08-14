@@ -1,0 +1,39 @@
+{
+  "sha256": "0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a",
+  "family": "fkmb",
+  "verdict": "malicious@",
+  "generated_at": "2026-08-13T00:21:03.931428+00:00",
+  "hashes": {
+    "sha256": "0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a",
+    "sha1": "a4e7cfe6760106f77713cb3f409651e0885e7dd1",
+    "md5": "8f4cff74e3779c7be9d02639248c4ee8"
+  },
+  "domains": [],
+  "ips": [],
+  "urls": [],
+  "files": [],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive).",
+  "wallets_btc": [],
+  "wallets_eth": [],
+  "emails": [
+    "3[@]324[.]4",
+    "0[@]0l[.]m[.]r",
+    "2[@]2s0r0d[.]d",
+    "G2E[@]G[.]D",
+    "9[@]9[.]8[.]8",
+    "M[@]v[.]FA",
+    "BO[@]fB[.]E"
+  ],
+  "revai_tools": {
+    "count": 7,
+    "source": "revai_tools_iocs"
+  }
+}

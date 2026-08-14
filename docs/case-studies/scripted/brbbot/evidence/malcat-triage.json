@@ -1,0 +1,2898 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/malware/f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e/brbbot.exe",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "brbbot.exe",
+    "file_path": "/opt/samples/corpus/malware/f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e/brbbot.exe",
+    "file_size": 75776,
+    "type": "PE",
+    "architecture": "X64",
+    "entropy": 5.92,
+    "sha256": "f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e",
+    "metadata": {},
+    "entrypoint_ea": 13204,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 49
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 50176,
+        "virtual_size": 53248,
+        "rights": "RX",
+        "entropy": 136
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 54272,
+        "physical_size": 14848,
+        "virtual_size": 16384,
+        "rights": "R",
+        "entropy": 73
+      },
+      {
+        "name": ".data",
+        "effective_address": 70656,
+        "physical_size": 5120,
+        "virtual_size": 16384,
+        "rights": "RW",
+        "entropy": 77
+      },
+      {
+        "name": ".pdata",
+        "effective_address": 87040,
+        "physical_size": 3072,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 32
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 91136,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 5
+      },
+      {
+        "name": ".reloc",
+        "effective_address": 95232,
+        "physical_size": 1024,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 18
+      }
+    ],
+    "kesakode_verdict": [],
+    "entropy_malcat_raw": 114,
+    "entropy_source": "whole_file_shannon_revai"
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "CryptoApiUsage",
+        "desc": "Crypto-related apis are used",
+        "category": "imports",
+        "level": 2,
+        "num_hits": 12
+      },
+      {
+        "name": "DownloaderApiUsage",
+        "desc": "Downloader-related apis are used",
+        "category": "imports",
+        "level": 2,
+        "num_hits": 2
+      },
+      {
+        "name": "HighXrefLoopingFunction",
+        "desc": "Function contains a loop and has a lot of incoming references (string decryption candidate)",
+        "category": "code",
+        "level": 1,
+        "num_hits": 1
+      },
+      {
+        "name": "ManyUniqueImmediateBytes",
+        "desc": "More than 48 unique bytes defined across all immediate operands in the function",
+        "category": "code",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "NoChecksum",
+        "desc": "PE Header checksum is not set",
+        "category": "integrity",
+        "level": 1,
+        "num_hits": 1
+      },
+      {
+        "name": "SpaghettiFunction",
+        "desc": "Function with lots of intra jumps, could be obfuscated",
+        "category": "code",
+        "level": 1,
+        "num_hits": 8
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 9
+      }
+    ],
+    "anomaly_locations": {
+      "CryptoApiUsage": [
+        {
+          "ea": 8247,
+          "context": ""
+        },
+        {
+          "ea": 9024,
+          "context": ""
+        },
+        {
+          "ea": 8210,
+          "context": ""
+        },
+        {
+          "ea": 8987,
+          "context": ""
+        },
+        {
+          "ea": 7769,
+          "context": ""
+        }
+      ],
+      "HighXrefLoopingFunction": [
+        {
+          "ea": 14512,
+          "context": ""
+        }
+      ],
+      "ManyUniqueImmediateBytes": [
+        {
+          "ea": 14940,
+          "context": ""
+        },
+        {
+          "ea": 20544,
+          "context": ""
+        }
+      ],
+      "NoChecksum": [
+        {
+          "ea": 320,
+          "context": ""
+        }
+      ],
+      "SpaghettiFunction": [
+        {
+          "ea": 11040,
+          "context": ""
+        },
+        {
+          "ea": 11584,
+          "context": ""
+        },
+        {
+          "ea": 19152,
+          "context": ""
+        },
+        {
+          "ea": 20544,
+          "context": ""
+        },
+        {
+          "ea": 29576,
+          "context": ""
+        }
+      ]
+    },
+    "yara_hits": [
+      {
+        "id": "MSVC_2010_linker",
+        "category": "compiler",
+        "reliability": 60,
+        "type": "INFO",
+        "description": "detects used visual studio version based on linker information",
+        "num_patterns": 0
+      },
+      {
+        "id": "msvs2010_rich",
+        "category": "compiler",
+        "reliability": 80,
+        "type": "INFO",
+        "description": "detects used visual studio version based on rich header information",
+        "num_patterns": 0
+      },
+      {
+        "id": "DownloadUsingWininet",
+        "category": "network",
+        "reliability": 60,
+        "type": "UNCOMMON",
+        "description": "can download files from internet using wininet API",
+        "num_patterns": 1
+      },
+      {
+        "id": "CustomUserAgent",
+        "category": "network",
+        "reliability": 30,
+        "type": "UNCOMMON",
+        "description": "embeds a user agent string",
+        "num_patterns": 1
+      },
+      {
+        "id": "AutorunKey",
+        "category": "persistence",
+        "reliability": 20,
+        "type": "UNCOMMON",
+        "description": "file contains path of an autorun key",
+        "num_patterns": 1
+      },
+      {
+        "id": "msvc_general_x64",
+        "category": "compiler",
+        "reliability": 50,
+        "type": "INFO",
+        "description": "",
+        "num_patterns": 1
+      }
+    ],
+    "strings": [
+      {
+        "ea": 62256,
+        "summary": "Mozilla/4.0 (com...1; Trident/4.0)"
+      },
+      {
+        "ea": 62080,
+        "summary": "Software\\Microso..rrentVersion\\Run"
+      },
+      {
+        "ea": 62144,
+        "summary": "Microsoft Enhanc..ic Provider v1.0"
+      },
+      {
+        "ea": 56576,
+        "summary": "mscoree.dll"
+      },
+      {
+        "ea": 62392,
+        "summary": "ntdll.dll"
+      },
+      {
+        "ea": 61904,
+        "summary": "USER32.DLL"
+      },
+      {
+        "ea": 66934,
+        "summary": "InternetReadFile"
+      },
+      {
+        "ea": 55488,
+        "summary": "HH:mm:ss"
+      },
+      {
+        "ea": 61792,
+        "summary": "GetProcessWindowStation"
+      },
+      {
+        "ea": 62072,
+        "summary": "APPDATA"
+      },
+      {
+        "ea": 61816,
+        "summary": "GetUserObjectInformationW"
+      },
+      {
+        "ea": 62360,
+        "summary": "ZwQuerySystemInformation"
+      },
+      {
+        "ea": 55512,
+        "summary": "dddd, MMMM dd, yyyy"
+      },
+      {
+        "ea": 61952,
+        "summary": "brbconfig.tmp"
+      },
+      {
+        "ea": 62336,
+        "summary": "Connection: close\r\n"
+      },
+      {
+        "ea": 61848,
+        "summary": "GetLastActivePopup"
+      },
+      {
+        "ea": 62048,
+        "summary": "%s?i=%s&c=%s&p=%s"
+      },
+      {
+        "ea": 56560,
+        "summary": "CorExitProcess"
+      },
+      {
+        "ea": 61872,
+        "summary": "GetActiveWindow"
+      },
+      {
+        "ea": 62320,
+        "summary": "HTTP/1.1"
+      },
+      {
+        "ea": 61928,
+        "summary": "CONOUT$"
+      },
+      {
+        "ea": 61984,
+        "summary": "exec"
+      },
+      {
+        "ea": 62408,
+        "summary": "Idle"
+      },
+      {
+        "ea": 61888,
+        "summary": "MessageBoxW"
+      },
+      {
+        "ea": 62016,
+        "summary": "sleep"
+      },
+      {
+        "ea": 62024,
+        "summary": "encode"
+      },
+      {
+        "ea": 62128,
+        "summary": "brbbot"
+      },
+      {
+        "ea": 75752,
+        "summary": "#3#or%5452o#8A"
+      },
+      {
+        "ea": 67090,
+        "summary": "WININET.dll"
+      },
+      {
+        "ea": 55552,
+        "summary": "MM/dd/yy"
+      },
+      {
+        "ea": 61944,
+        "summary": "CONFIG"
+      },
+      {
+        "ea": 61992,
+        "summary": "file"
+      },
+      {
+        "ea": 62000,
+        "summary": "conf"
+      },
+      {
+        "ea": 62008,
+        "summary": "exit"
+      },
+      {
+        "ea": 67660,
+        "summary": "KERNEL32.dll"
+      },
+      {
+        "ea": 67102,
+        "summary": "WS2_32.dll"
+      },
+      {
+        "ea": 66888,
+        "summary": "ADVAPI32.dll"
+      },
+      {
+        "ea": 61968,
+        "summary": "YnJiYm90"
+      },
+      {
+        "ea": 67682,
+        "summary": "USER32.dll"
+      },
+      {
+        "ea": 56600,
+        "summary": "runtime error "
+      },
+      {
+        "ea": 59984,
+        "summary": "         (((((  ..               H"
+      },
+      {
+        "ea": 55592,
+        "summary": "December"
+      },
+      {
+        "ea": 62036,
+        "summary": "%02x"
+      },
+      {
+        "ea": 56128,
+        "summary": "MM/dd/yy"
+      },
+      {
+        "ea": 56088,
+        "summary": "HH:mm:ss"
+      },
+      {
+        "ea": 55960,
+        "summary": "Wednesday"
+      },
+      {
+        "ea": 55656,
+        "summary": "September"
+      },
+      {
+        "ea": 55896,
+        "summary": "Saturday"
+      },
+      {
+        "ea": 55784,
+        "summary": "January"
+      },
+      {
+        "ea": 55760,
+        "summary": "February"
+      },
+      {
+        "ea": 55680,
+        "summary": "August"
+      },
+      {
+        "ea": 55616,
+        "summary": "November"
+      },
+      {
+        "ea": 55376,
+        "summary": "(null)"
+      },
+      {
+        "ea": 56104,
+        "summary": "dddd, MMMM dd, yyyy"
+      },
+      {
+        "ea": 55984,
+        "summary": "Tuesday"
+      },
+      {
+        "ea": 56152,
+        "summary": "December"
+      },
+      {
+        "ea": 55936,
+        "summary": "Thursday"
+      },
+      {
+        "ea": 55640,
+        "summary": "October"
+      },
+      {
+        "ea": 56000,
+        "summary": "Monday"
+      },
+      {
+        "ea": 56360,
+        "summary": "Wednesday"
+      },
+      {
+        "ea": 55728,
+        "summary": "April"
+      },
+      {
+        "ea": 55744,
+        "summary": "March"
+      },
+      {
+        "ea": 56192,
+        "summary": "September"
+      },
+      {
+        "ea": 55920,
+        "summary": "Friday"
+      },
+      {
+        "ea": 56016,
+        "summary": "Sunday"
+      },
+      {
+        "ea": 55696,
+        "summary": "July"
+      },
+      {
+        "ea": 55712,
+        "summary": "June"
+      },
+      {
+        "ea": 56204,
+        "summary": "August"
+      },
+      {
+        "ea": 56320,
+        "summary": "Saturday"
+      },
+      {
+        "ea": 56168,
+        "summary": "November"
+      },
+      {
+        "ea": 56248,
+        "summary": "February"
+      },
+      {
+        "ea": 56264,
+        "summary": "January"
+      },
+      {
+        "ea": 55360,
+        "summary": "(null)"
+      },
+      {
+        "ea": 60498,
+        "summary": "         h((((  ..               H"
+      },
+      {
+        "ea": 56184,
+        "summary": "October"
+      },
+      {
+        "ea": 56376,
+        "summary": "Tuesday"
+      },
+      {
+        "ea": 56344,
+        "summary": "Thursday"
+      },
+      {
+        "ea": 56220,
+        "summary": "June"
+      },
+      {
+        "ea": 56392,
+        "summary": "Sunday"
+      },
+      {
+        "ea": 56384,
+        "summary": "Monday"
+      },
+      {
+        "ea": 56332,
+        "summary": "Friday"
+      },
+      {
+        "ea": 56236,
+        "summary": "March"
+      },
+      {
+        "ea": 56228,
+        "summary": "April"
+      },
+      {
+        "ea": 56212,
+        "summary": "July"
+      },
+      {
+        "ea": 61568,
+        "summary": " !\"#$%&'()*+,-./..OPQRSTUVWXYZ{|}~"
+      },
+      {
+        "ea": 61184,
+        "summary": " !\"#$%&'()*+,-./..opqrstuvwxyz{|}~"
+      },
+      {
+        "ea": 68224,
+        "summary": "InitializeCritic..tionAndSpinCount"
+      },
+      {
+        "ea": 59200,
+        "summary": "Microsoft Visual.. Runtime Library"
+      },
+      {
+        "ea": 68416,
+        "summary": "GetSystemTimeAsFileTime"
+      },
+      {
+        "ea": 66904,
+        "summary": "InternetQueryDataAvailable"
+      },
+      {
+        "ea": 55449,
+        "summary": "`h````"
+      },
+      {
+        "ea": 67800,
+        "summary": "SetUnhandledExceptionFilter"
+      },
+      {
+        "ea": 59696,
+        "summary": "`h`hhh"
+      },
+      {
+        "ea": 68278,
+        "summary": "DeleteCriticalSection"
+      },
+      {
+        "ea": 59296,
+        "summary": "<program name unknown>"
+      },
+      {
+        "ea": 55457,
+        "summary": "xpxxxx"
+      },
+      {
+        "ea": 68352,
+        "summary": "QueryPerformanceCounter"
+      },
+      {
+        "ea": 68524,
+        "summary": "EnterCriticalSection"
+      },
+      {
+        "ea": 57344,
+        "summary": "R6031\r\n- Attempt..r application.\r\n"
+      },
+      {
+        "ea": 68154,
+        "summary": "FreeEnvironmentStringsW"
+      }
+    ],
+    "imports": [
+      {
+        "ea": 10640,
+        "name": "__security_check_cookie",
+        "type": "DEBUG",
+        "num_refs": 19
+      },
+      {
+        "ea": 10672,
+        "name": "vscan_fn",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 10896,
+        "name": "strstr",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 10984,
+        "name": "strchr",
+        "type": "DEBUG",
+        "num_refs": 7
+      },
+      {
+        "ea": 11040,
+        "name": "strncpy",
+        "type": "DEBUG",
+        "num_refs": 10
+      },
+      {
+        "ea": 11396,
+        "name": "sprintf",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 11584,
+        "name": "strncat",
+        "type": "DEBUG",
+        "num_refs": 5
+      },
+      {
+        "ea": 12016,
+        "name": "strncmp",
+        "type": "DEBUG",
+        "num_refs": 5
+      },
+      {
+        "ea": 12200,
+        "name": "_LocaleUpdate._LocaleUpdate",
+        "type": "DEBUG",
+        "num_refs": 15
+      },
+      {
+        "ea": 12364,
+        "name": "isdigit",
+        "type": "DEBUG",
+        "num_refs": 9
+      },
+      {
+        "ea": 12492,
+        "name": "isxdigit",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 12624,
+        "name": "isspace",
+        "type": "DEBUG",
+        "num_refs": 5
+      },
+      {
+        "ea": 12752,
+        "name": "strrchr",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 12792,
+        "name": "__tmainCRTStartup",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 13204,
+        "name": "mainCRTStartup",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 13224,
+        "name": "__report_gsfailure",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 13584,
+        "name": "strlen",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 13760,
+        "name": "_call_reportfault",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 14092,
+        "name": "_invoke_watson",
+        "type": "DEBUG",
+        "num_refs": 8
+      },
+      {
+        "ea": 14144,
+        "name": "_invalid_parameter",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 14256,
+        "name": "_invalid_parameter_noinfo",
+        "type": "DEBUG",
+        "num_refs": 32
+      },
+      {
+        "ea": 14288,
+        "name": "_get_errno_from_oserr",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 14360,
+        "name": "_errno",
+        "type": "DEBUG",
+        "num_refs": 80
+      },
+      {
+        "ea": 14392,
+        "name": "__doserrno",
+        "type": "DEBUG",
+        "num_refs": 26
+      },
+      {
+        "ea": 14424,
+        "name": "_dosmaperr",
+        "type": "DEBUG",
+        "num_refs": 7
+      },
+      {
+        "ea": 14512,
+        "name": "memset",
+        "type": "DEBUG",
+        "num_refs": 33
+      },
+      {
+        "ea": 14748,
+        "name": "__check_float_string",
+        "type": "DEBUG",
+        "num_refs": 7
+      },
+      {
+        "ea": 14940,
+        "name": "_input_l",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 19152,
+        "name": "strtoxl",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 19772,
+        "name": "strtol",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 19820,
+        "name": "_flsbuf",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 20220,
+        "name": "write_char",
+        "type": "DEBUG",
+        "num_refs": 6
+      },
+      {
+        "ea": 20292,
+        "name": "write_multi_char",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 20376,
+        "name": "write_string",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 20544,
+        "name": "_output_l",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 23204,
+        "name": "setSBCS",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 23344,
+        "name": "setSBUpLow",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 23840,
+        "name": "__updatetmbcinfo",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 24028,
+        "name": "getSystemCP",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 24172,
+        "name": "_setmbcp_nolock",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 24804,
+        "name": "_setmbcp",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 25284,
+        "name": "__initmbctable",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 25324,
+        "name": "__addlocaleref",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 25464,
+        "name": "__removelocaleref",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 25628,
+        "name": "__freetlocinfo",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 26008,
+        "name": "_updatetlocinfoEx_nolock",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 26096,
+        "name": "__updatetlocinfo",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 26228,
+        "name": "_mtterm",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 26268,
+        "name": "_initptd",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 26452,
+        "name": "_getptd_noexit",
+        "type": "DEBUG",
+        "num_refs": 8
+      },
+      {
+        "ea": 26584,
+        "name": "_getptd",
+        "type": "DEBUG",
+        "num_refs": 9
+      },
+      {
+        "ea": 26620,
+        "name": "_freefls",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 26928,
+        "name": "_mtinit",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 27060,
+        "name": "_isctype_l",
+        "type": "DEBUG",
+        "num_refs": 5
+      },
+      {
+        "ea": 27292,
+        "name": "__CxxUnhandledExceptionFilter",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 27360,
+        "name": "__CxxSetUnhandledExceptionFilter",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 27384,
+        "name": "__crtCorExitProcess",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 27468,
+        "name": "_lockexit",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 27480,
+        "name": "_unlockexit",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 27492,
+        "name": "_init_pointers",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 27560,
+        "name": "_initterm",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 27612,
+        "name": "_initterm_e",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 27672,
+        "name": "_cinit",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 27848,
+        "name": "doexit",
+        "type": "DEBUG",
+        "num_refs": 6
+      },
+      {
+        "ea": 28260,
+        "name": "_exit",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 28272,
+        "name": "_cexit",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 28288,
+        "name": "_c_exit",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 28304,
+        "name": "_amsg_exit",
+        "type": "DEBUG",
+        "num_refs": 10
+      },
+      {
+        "ea": 28344,
+        "name": "_GET_RTERRMSG",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 28388,
+        "name": "_NMSG_WRITE",
+        "type": "DEBUG",
+        "num_refs": 8
+      },
+      {
+        "ea": 28996,
+        "name": "_FF_MSGBANNER",
+        "type": "DEBUG",
+        "num_refs": 6
+      },
+      {
+        "ea": 29064,
+        "name": "__C_specific_handler",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 29576,
+        "name": "_XcptFilter",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 30040,
+        "name": "_wwincmdln",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 30128,
+        "name": "_wsetenvp",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 30440,
+        "name": "wparse_cmdline",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 30848,
+        "name": "_wsetargv",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 31088,
+        "name": "__crtGetEnvironmentStringsW",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 31224,
+        "name": "_ioinit",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 32060,
+        "name": "_heap_init",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 32148,
+        "name": "__security_init_cookie",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 32336,
+        "name": "__GSHandlerCheckCommon",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 32436,
+        "name": "__GSHandlerCheck",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 32468,
+        "name": "_malloc_crt",
+        "type": "DEBUG",
+        "num_refs": 8
+      },
+      {
+        "ea": 33024,
+        "name": "memmove",
+        "type": "DEBUG",
+        "num_refs": 9
+      },
+      {
+        "ea": 33844,
+        "name": "_filbuf",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 34184,
+        "name": "_ungetc_nolock",
+        "type": "DEBUG",
+        "num_refs": 11
+      },
+      {
+        "ea": 34452,
+        "name": "_mbtowc_l",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 34828,
+        "name": "mbtowc",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 34836,
+        "name": "_isleadbyte_l",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 34908,
+        "name": "isleadbyte",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 34980,
+        "name": "_initp_misc_cfltcvt_tab",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 35036,
+        "name": "free",
+        "type": "DEBUG",
+        "num_refs": 148
+      },
+      {
+        "ea": 35100,
+        "name": "_fileno",
+        "type": "DEBUG",
+        "num_refs": 13
+      },
+      {
+        "ea": 35140,
+        "name": "_lseeki64_nolock",
+        "type": "DEBUG",
+        "num_refs": 7
+      },
+      {
+        "ea": 35292,
+        "name": "_lseeki64",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 35520,
+        "name": "_write_nolock",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 37408,
+        "name": "_write",
+        "type": "DEBUG",
+        "num_refs": 5
+      },
+      {
+        "ea": 37632,
+        "name": "_getbuf",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 37716,
+        "name": "_isatty",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 37820,
+        "name": "__initstdio",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 38044,
+        "name": "__endstdio",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 38084,
+        "name": "_lock_file",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 38184,
+        "name": "_lock_file2",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 38236,
+        "name": "_unlock_file",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 38312,
+        "name": "_unlock_file2",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 38344,
+        "name": "_get_printf_count_output",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 38368,
+        "name": "_wctomb_s_l",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 38820,
+        "name": "wctomb_s",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 38840,
+        "name": "__crtLCMapStringA_stat",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 39556,
+        "name": "__crtLCMapStringA",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 39708,
+        "name": "__crtGetStringTypeA_stat",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 40060,
+        "name": "__crtGetStringTypeA",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 40188,
+        "name": "_mtinitlocks",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 40320,
+        "name": "_mtdeletelocks",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 40456,
+        "name": "_unlock",
+        "type": "DEBUG",
+        "num_refs": 25
+      },
+      {
+        "ea": 40480,
+        "name": "_mtinitlocknum",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 40712,
+        "name": "_lock",
+        "type": "DEBUG",
+        "num_refs": 17
+      },
+      {
+        "ea": 40780,
+        "name": "__free_lc_time",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 41896,
+        "name": "__free_lconv_mon",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 42584,
+        "name": "terminate",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 42620,
+        "name": "_initp_eh_hooks",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 42700,
+        "name": "raise",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 43288,
+        "name": "_callnewh",
+        "type": "DEBUG",
+        "num_refs": 6
+      },
+      {
+        "ea": 43340,
+        "name": "__onexitinit",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 43408,
+        "name": "_onexit",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 43676,
+        "name": "atexit",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 43712,
+        "name": "_ValidateImageBase",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 43760,
+        "name": "_FindPESection",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 43840,
+        "name": "_IsNonwritableInCurrentImage",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 44428,
+        "name": "wcscat_s",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 44564,
+        "name": "wcsncpy_s",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 44772,
+        "name": "wcslen",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 44800,
+        "name": "wcscpy_s",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 44908,
+        "name": "_set_error_mode",
+        "type": "DEBUG",
+        "num_refs": 5
+      },
+      {
+        "ea": 45092,
+        "name": "malloc",
+        "type": "DEBUG",
+        "num_refs": 6
+      },
+      {
+        "ea": 45276,
+        "name": "_calloc_impl",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 45432,
+        "name": "realloc",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 45644,
+        "name": "_recalloc",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 45780,
+        "name": "_read_nolock",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 47608,
+        "name": "_read",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 47892,
+        "name": "_fptrap",
+        "type": "DEBUG",
+        "num_refs": 15
+      },
+      {
+        "ea": 47904,
+        "name": "_free_osfhnd",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 48076,
+        "name": "_get_osfhandle",
+        "type": "DEBUG",
+        "num_refs": 7
+      },
+      {
+        "ea": 48192,
+        "name": "__lock_fhandle",
+        "type": "DEBUG",
+        "num_refs": 7
+      },
+      {
+        "ea": 48360,
+        "name": "_unlock_fhandle",
+        "type": "DEBUG",
+        "num_refs": 7
+      },
+      {
+        "ea": 48400,
+        "name": "_putwch_nolock",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 48512,
+        "name": "_alloca_probe",
+        "type": "DEBUG",
+        "num_refs": 5
+      },
+      {
+        "ea": 48592,
+        "name": "_fcloseall",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 48764,
+        "name": "_flush",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 48888,
+        "name": "_fflush_nolock",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 49212,
+        "name": "abort",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 49276,
+        "name": "_msize",
+        "type": "DEBUG",
+        "num_refs": 4
+      },
+      {
+        "ea": 49336,
+        "name": "__initconout",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 49432,
+        "name": "_fclose_nolock",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 49556,
+        "name": "fclose",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 49660,
+        "name": "_commit",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 49876,
+        "name": "_close_nolock",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 50064,
+        "name": "_close",
+        "type": "DEBUG",
+        "num_refs": 3
+      },
+      {
+        "ea": 50260,
+        "name": "_freebuf",
+        "type": "DEBUG",
+        "num_refs": 2
+      },
+      {
+        "ea": 50608,
+        "name": "_IsNonwritableInCurrentImage$filt$0",
+        "type": "DEBUG",
+        "num_refs": 1
+      },
+      {
+        "ea": 54272,
+        "name": "advapi32.RegSetValueExA",
+        "type": "IMPORT",
+        "num_refs": 6
+      },
+      {
+        "ea": 54280,
+        "name": "advapi32.RegOpenKeyExA",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54288,
+        "name": "advapi32.RegDeleteValueA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54296,
+        "name": "advapi32.RegFlushKey",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54304,
+        "name": "advapi32.RegCloseKey",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54312,
+        "name": "advapi32.CryptAcquireContextW",
+        "type": "IMPORT",
+        "num_refs": 4
+      },
+      {
+        "ea": 54320,
+        "name": "advapi32.CryptDeriveKey",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54328,
+        "name": "advapi32.CryptReleaseContext",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54336,
+        "name": "advapi32.CryptEncrypt",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54344,
+        "name": "advapi32.CryptCreateHash",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54352,
+        "name": "advapi32.CryptDestroyKey",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54360,
+        "name": "advapi32.CryptDecrypt",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54368,
+        "name": "advapi32.CryptDestroyHash",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54376,
+        "name": "advapi32.CryptHashData",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54392,
+        "name": "kernel32.CreateFileW",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54400,
+        "name": "kernel32.HeapSize",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54408,
+        "name": "kernel32.WriteConsoleW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54416,
+        "name": "kernel32.SetStdHandle",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54424,
+        "name": "kernel32.LoadLibraryW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54432,
+        "name": "kernel32.GetStringTypeW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54440,
+        "name": "kernel32.LCMapStringW",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 54448,
+        "name": "kernel32.LeaveCriticalSection",
+        "type": "IMPORT",
+        "num_refs": 6
+      },
+      {
+        "ea": 54456,
+        "name": "kernel32.EnterCriticalSection",
+        "type": "IMPORT",
+        "num_refs": 4
+      },
+      {
+        "ea": 54464,
+        "name": "kernel32.CreateFileA",
+        "type": "IMPORT",
+        "num_refs": 4
+      },
+      {
+        "ea": 54472,
+        "name": "kernel32.FindResourceA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54480,
+        "name": "kernel32.LoadResource",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54488,
+        "name": "kernel32.HeapAlloc",
+        "type": "IMPORT",
+        "num_refs": 20
+      },
+      {
+        "ea": 54496,
+        "name": "kernel32.HeapFree",
+        "type": "IMPORT",
+        "num_refs": 22
+      },
+      {
+        "ea": 54504,
+        "name": "kernel32.GetProcessHeap",
+        "type": "IMPORT",
+        "num_refs": 41
+      },
+      {
+        "ea": 54512,
+        "name": "kernel32.WriteFile",
+        "type": "IMPORT",
+        "num_refs": 10
+      },
+      {
+        "ea": 54520,
+        "name": "kernel32.SizeofResource",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54528,
+        "name": "kernel32.GetLastError",
+        "type": "IMPORT",
+        "num_refs": 44
+      },
+      {
+        "ea": 54536,
+        "name": "kernel32.LockResource",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54544,
+        "name": "kernel32.GetModuleHandleA",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54552,
+        "name": "kernel32.CloseHandle",
+        "type": "IMPORT",
+        "num_refs": 7
+      },
+      {
+        "ea": 54560,
+        "name": "kernel32.GetComputerNameA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54568,
+        "name": "kernel32.HeapReAlloc",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 54576,
+        "name": "kernel32.MoveFileExA",
+        "type": "IMPORT",
+        "num_refs": 5
+      },
+      {
+        "ea": 54584,
+        "name": "kernel32.WaitForSingleObject",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54592,
+        "name": "kernel32.SetEvent",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54600,
+        "name": "kernel32.GetModuleHandleW",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 54608,
+        "name": "kernel32.GetSystemWow64DirectoryA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54616,
+        "name": "kernel32.CreateProcessA",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54624,
+        "name": "kernel32.GetSystemDirectoryA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54632,
+        "name": "kernel32.GetEnvironmentVariableA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54640,
+        "name": "kernel32.CopyFileA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54648,
+        "name": "kernel32.CreateEventW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54656,
+        "name": "kernel32.GetModuleFileNameA",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54664,
+        "name": "kernel32.DeleteFileA",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 54672,
+        "name": "kernel32.GetFileSize",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54680,
+        "name": "kernel32.ReadFile",
+        "type": "IMPORT",
+        "num_refs": 4
+      },
+      {
+        "ea": 54688,
+        "name": "kernel32.WideCharToMultiByte",
+        "type": "IMPORT",
+        "num_refs": 5
+      },
+      {
+        "ea": 54696,
+        "name": "kernel32.GetProcAddress",
+        "type": "IMPORT",
+        "num_refs": 7
+      },
+      {
+        "ea": 54704,
+        "name": "kernel32.GetTempFileNameA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54712,
+        "name": "kernel32.GetTempPathA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54720,
+        "name": "kernel32.FlushFileBuffers",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54728,
+        "name": "kernel32.GetConsoleMode",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54736,
+        "name": "kernel32.GetCommandLineW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54744,
+        "name": "kernel32.GetStartupInfoW",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54752,
+        "name": "kernel32.TerminateProcess",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54760,
+        "name": "kernel32.GetCurrentProcess",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54768,
+        "name": "kernel32.UnhandledExceptionFilter",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54776,
+        "name": "kernel32.SetUnhandledExceptionFilter",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 54784,
+        "name": "kernel32.IsDebuggerPresent",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54792,
+        "name": "kernel32.RtlVirtualUnwind",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54800,
+        "name": "kernel32.RtlLookupFunctionEntry",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54808,
+        "name": "kernel32.RtlCaptureContext",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54816,
+        "name": "kernel32.EncodePointer",
+        "type": "IMPORT",
+        "num_refs": 12
+      },
+      {
+        "ea": 54824,
+        "name": "kernel32.DecodePointer",
+        "type": "IMPORT",
+        "num_refs": 20
+      },
+      {
+        "ea": 54832,
+        "name": "kernel32.GetCPInfo",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54840,
+        "name": "kernel32.GetACP",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54848,
+        "name": "kernel32.GetOEMCP",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54856,
+        "name": "kernel32.IsValidCodePage",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54864,
+        "name": "kernel32.FlsGetValue",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54872,
+        "name": "kernel32.FlsSetValue",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54880,
+        "name": "kernel32.FlsFree",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54888,
+        "name": "kernel32.SetLastError",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54896,
+        "name": "kernel32.GetCurrentThreadId",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 54904,
+        "name": "kernel32.FlsAlloc",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54912,
+        "name": "kernel32.ExitProcess",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54920,
+        "name": "kernel32.GetStdHandle",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54928,
+        "name": "kernel32.GetModuleFileNameW",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54936,
+        "name": "kernel32.RtlUnwindEx",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54944,
+        "name": "kernel32.FreeEnvironmentStringsW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54952,
+        "name": "kernel32.GetEnvironmentStringsW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54960,
+        "name": "kernel32.SetHandleCount",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 54968,
+        "name": "kernel32.InitializeCriticalSectionAndSpinCount",
+        "type": "IMPORT",
+        "num_refs": 5
+      },
+      {
+        "ea": 54976,
+        "name": "kernel32.GetFileType",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 54984,
+        "name": "kernel32.DeleteCriticalSection",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 54992,
+        "name": "kernel32.HeapSetInformation",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 55000,
+        "name": "kernel32.GetVersion",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 55008,
+        "name": "kernel32.HeapCreate",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 55016,
+        "name": "kernel32.QueryPerformanceCounter",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 55024,
+        "name": "kernel32.GetTickCount",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 55032,
+        "name": "kernel32.GetCurrentProcessId",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 55040,
+        "name": "kernel32.GetSystemTimeAsFileTime",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 55048,
+        "name": "kernel32.Sleep",
+        "type": "IMPORT",
+        "num_refs": 4
+      },
+      {
+        "ea": 55056,
+        "name": "kernel32.MultiByteToWideChar",
+        "type": "IMPORT",
+        "num_refs": 7
+      },
+      {
+        "ea": 55064,
+        "name": "kernel32.SetFilePointer",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 55072,
+        "name": "kernel32.GetConsoleCP",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 55088,
+        "name": "user32.GetDC",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 55104,
+        "name": "wininet.HttpSendRequestA",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 55112,
+        "name": "wininet.InternetQueryDataAvailable",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 55120,
+        "name": "wininet.InternetReadFile",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 55128,
+        "name": "wininet.InternetCloseHandle",
+        "type": "IMPORT",
+        "num_refs": 4
+      },
+      {
+        "ea": 55136,
+        "name": "wininet.HttpQueryInfoA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 55144,
+        "name": "wininet.InternetConnectA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 55152,
+        "name": "wininet.InternetOpenA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 55160,
+        "name": "wininet.HttpOpenRequestA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 55168,
+        "name": "wininet.InternetSetOptionA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 55184,
+        "name": "ws2_32.gethostbyname",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 55192,
+        "name": "ws2_32.WSACleanup",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 55200,
+        "name": "ws2_32.WSAStartup",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 55208,
+        "name": "ws2_32.inet_ntoa",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 55216,
+        "name": "ws2_32.gethostname",
+        "type": "IMPORT",
+        "num_refs": 1
+      }
+    ],
+    "sections": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 49
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 50176,
+        "virtual_size": 53248,
+        "rights": "RX",
+        "entropy": 136
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 54272,
+        "physical_size": 14848,
+        "virtual_size": 16384,
+        "rights": "R",
+        "entropy": 73
+      },
+      {
+        "name": ".data",
+        "effective_address": 70656,
+        "physical_size": 5120,
+        "virtual_size": 16384,
+        "rights": "RW",
+        "entropy": 77
+      },
+      {
+        "name": ".pdata",
+        "effective_address": 87040,
+        "physical_size": 3072,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 32
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 91136,
+        "physical_size": 512,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 5
+      },
+      {
+        "name": ".reloc",
+        "effective_address": 95232,
+        "physical_size": 1024,
+        "virtual_size": 4096,
+        "rights": "R",
+        "entropy": 18
+      }
+    ],
+    "entropy": {
+      "file_entropy": 5.92,
+      "regions": [
+        {
+          "name": "header",
+          "entropy": 49,
+          "size": null
+        },
+        {
+          "name": ".text",
+          "entropy": 136,
+          "size": null
+        },
+        {
+          "name": ".rdata",
+          "entropy": 73,
+          "size": null
+        },
+        {
+          "name": ".data",
+          "entropy": 77,
+          "size": null
+        },
+        {
+          "name": ".pdata",
+          "entropy": 32,
+          "size": null
+        },
+        {
+          "name": ".rsrc",
+          "entropy": 5,
+          "size": null
+        },
+        {
+          "name": ".reloc",
+          "entropy": 18,
+          "size": null
+        }
+      ],
+      "file_entropy_malcat_raw": 114,
+      "entropy_source": "whole_file_shannon_revai"
+    },
+    "functions": [
+      {
+        "ea": 8272,
+        "name": "sub_140002c50"
+      },
+      {
+        "ea": 7488,
+        "name": "sub_140002940"
+      },
+      {
+        "ea": 5680,
+        "name": "sub_140002230"
+      },
+      {
+        "ea": 6480,
+        "name": "sub_140002550"
+      },
+      {
+        "ea": 45040,
+        "name": "sub_14000bbf0"
+      },
+      {
+        "ea": 4112,
+        "name": "sub_140001c10"
+      },
+      {
+        "ea": 42192,
+        "name": "sub_14000b0d0"
+      },
+      {
+        "ea": 43908,
+        "name": "sub_14000b784"
+      },
+      {
+        "ea": 1760,
+        "name": "sub_1400012e0"
+      },
+      {
+        "ea": 9984,
+        "name": "sub_140003300"
+      }
+    ],
+    "constants": [
+      {
+        "id": "registry::HKEY_LOCAL_MACHINE",
+        "category": "registry",
+        "type": "code",
+        "num_hits": 2
+      },
+      {
+        "id": "exception::C++ exception",
+        "category": "exception",
+        "type": "code",
+        "num_hits": 2
+      },
+      {
+        "id": "exception::FuncInfo header",
+        "category": "exception",
+        "type": "code",
+        "num_hits": 4
+      },
+      {
+        "id": "runtime::msvc_tloss_error",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_sing_error",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_domain_error",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6033",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6032",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6031",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6030",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6028",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6027",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6026",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6025",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6024",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6019",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6018",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6017",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6016",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6010",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6009",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6008",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6002",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_rl",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_name_unknown",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_runtime_error",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "registry::autorun",
+        "category": "registry",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "crypto::crypto_provider",
+        "category": "crypto",
+        "type": "data",
+        "num_hits": 1
+      }
+    ]
+  },
+  "functions": [
+    {
+      "ea": 8272,
+      "name": "sub_140002c50"
+    },
+    {
+      "ea": 7488,
+      "name": "sub_140002940"
+    },
+    {
+      "ea": 5680,
+      "name": "sub_140002230"
+    },
+    {
+      "ea": 6480,
+      "name": "sub_140002550"
+    },
+    {
+      "ea": 45040,
+      "name": "sub_14000bbf0"
+    },
+    {
+      "ea": 4112,
+      "name": "sub_140001c10"
+    },
+    {
+      "ea": 42192,
+      "name": "sub_14000b0d0"
+    },
+    {
+      "ea": 43908,
+      "name": "sub_14000b784"
+    },
+    {
+      "ea": 1760,
+      "name": "sub_1400012e0"
+    },
+    {
+      "ea": 9984,
+      "name": "sub_140003300"
+    }
+  ],
+  "constants": [
+    {
+      "id": "registry::HKEY_LOCAL_MACHINE",
+      "category": "registry",
+      "type": "code",
+      "num_hits": 2
+    },
+    {
+      "id": "exception::C++ exception",
+      "category": "exception",
+      "type": "code",
+      "num_hits": 2
+    },
+    {
+      "id": "exception::FuncInfo header",
+      "category": "exception",
+      "type": "code",
+      "num_hits": 4
+    },
+    {
+      "id": "runtime::msvc_tloss_error",
+      "category": "runtime",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "runtime::msvc_sing_error",
+      "category": "runtime",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "runtime::msvc_domain_error",
+      "category": "runtime",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "runtime::msvc_r6033",
+      "category": "runtime",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "runtime::msvc_r6032",
+      "category": "runtime",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "runtime::msvc_r6031",
+      "category": "runtime",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "runtime::msvc_r6030",
+      "category": "runtime",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "runtime::msvc_r6028",
+      "category": "runtime",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "runtime::msvc_r6027",
+      "category": "runtime",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "runtime::msvc_r6026",
+      "category": "runtime",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "runtime::msvc_r6025",
+      "category": "runtime",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "runtime::msvc_r6024",
+      "category": "runtime",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "runtime::msvc_r6019",
+      "category": "runtime",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "runtime::msvc_r6018",
+      "category": "runtime",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "runtime::msvc_r6017",
+      "category": "runtime",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "runtime::msvc_r6016",
+      "category": "runtime",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "runtime::msvc_r6010",
+      "category": "runtime",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "runtime::msvc_r6009",
+      "category": "runtime",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "runtime::msvc_r6008",
+      "category": "runtime",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "runtime::msvc_r6002",
+      "category": "runtime",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "runtime::msvc_rl",
+      "category": "runtime",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "runtime::msvc_name_unknown",
+      "category": "runtime",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "runtime::msvc_runtime_error",
+      "category": "runtime",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "registry::autorun",
+      "category": "registry",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "crypto::crypto_provider",
+      "category": "crypto",
+      "type": "data",
+      "num_hits": 1
+    }
+  ],
+  "anomalies": [
+    {
+      "name": "CryptoApiUsage",
+      "desc": "Crypto-related apis are used",
+      "category": "imports",
+      "level": 2,
+      "num_hits": 12
+    },
+    {
+      "name": "DownloaderApiUsage",
+      "desc": "Downloader-related apis are used",
+      "category": "imports",
+      "level": 2,
+      "num_hits": 2
+    },
+    {
+      "name": "HighXrefLoopingFunction",
+      "desc": "Function contains a loop and has a lot of incoming references (string decryption candidate)",
+      "category": "code",
+      "level": 1,
+      "num_hits": 1
+    },
+    {
+      "name": "ManyUniqueImmediateBytes",
+      "desc": "More than 48 unique bytes defined across all immediate operands in the function",
+      "category": "code",
+      "level": 3,
+      "num_hits": 2
+    },
+    {
+      "name": "NoChecksum",
+      "desc": "PE Header checksum is not set",
+      "category": "integrity",
+      "level": 1,
+      "num_hits": 1
+    },
+    {
+      "name": "SpaghettiFunction",
+      "desc": "Function with lots of intra jumps, could be obfuscated",
+      "category": "code",
+      "level": 1,
+      "num_hits": 8
+    },
+    {
+      "name": "XorInLoop",
+      "desc": "XOR instruction in a loop",
+      "category": "code",
+      "level": 3,
+      "num_hits": 9
+    }
+  ],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

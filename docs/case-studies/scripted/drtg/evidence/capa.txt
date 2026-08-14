@@ -1,0 +1,126 @@
+# capa rules (deterministic render)
+
+{
+  "rule_count": 7,
+  "top_rules": [
+    {
+      "name": "reference Base64 string",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Data",
+            "Encode Data",
+            "Base64"
+          ],
+          "objective": "Data",
+          "behavior": "Encode Data",
+          "method": "Base64",
+          "id": "C0026.001"
+        },
+        {
+          "parts": [
+            "Data",
+            "Check String"
+          ],
+          "objective": "Data",
+          "behavior": "Check String",
+          "method": "",
+          "id": "C0019"
+        }
+      ]
+    },
+    {
+      "name": "reference anti-VM strings targeting Qemu",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Virtualization/Sandbox Evasion",
+            "System Checks"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Virtualization/Sandbox Evasion",
+          "subtechnique": "System Checks",
+          "id": "T1497.001"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Anti-Behavioral Analysis",
+            "Virtual Machine Detection"
+          ],
+          "objective": "Anti-Behavioral Analysis",
+          "behavior": "Virtual Machine Detection",
+          "method": "",
+          "id": "B0009"
+        }
+      ]
+    },
+    {
+      "name": "inspect section memory permissions",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "Code Discovery",
+            "Inspect Section Memory Permissions"
+          ],
+          "objective": "Discovery",
+          "behavior": "Code Discovery",
+          "method": "Inspect Section Memory Permissions",
+          "id": "B0046.002"
+        }
+      ]
+    },
+    {
+      "name": "parse PE header",
+      "attack": [
+        {
+          "parts": [
+            "Execution",
+            "Shared Modules"
+          ],
+          "tactic": "Execution",
+          "technique": "Shared Modules",
+          "subtechnique": "",
+          "id": "T1129"
+        }
+      ],
+      "mbc": []
+    },
+    {
+      "name": "contains PDB path",
+      "attack": [],
+      "mbc": []
+    },
+    {
+      "name": "print debug messages",
+      "attack": [],
+      "mbc": []
+    },
+    {
+      "name": "resolve function by parsing PE exports",
+      "attack": [],
+      "mbc": []
+    }
+  ],
+  "timeout_s": 300,
+  "sample_size": 50861,
+  "duration_s": 1.69,
+  "engine": "malcat-capa",
+  "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+}

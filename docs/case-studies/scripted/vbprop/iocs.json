@@ -1,0 +1,30 @@
+{
+  "sha256": "65fdb5d460b079279a4afcb45671b4ec4d7a2d734dcf5f45232dcbdb6d08275b",
+  "family": "trojan.poison/symmi",
+  "verdict": "malicious@",
+  "generated_at": "2026-08-12T20:54:04.086062+00:00",
+  "hashes": {
+    "sha256": "65fdb5d460b079279a4afcb45671b4ec4d7a2d734dcf5f45232dcbdb6d08275b",
+    "sha1": "ea0bc8d51d0b70754b0c48e2e11dd55c23f96373",
+    "md5": "ce69dee5307d58db4e2a6fdbcbf87e9d"
+  },
+  "domains": [],
+  "ips": [],
+  "urls": [],
+  "files": [],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive).",
+  "wallets_btc": [],
+  "wallets_eth": [],
+  "revai_tools": {
+    "count": 0,
+    "source": "revai_tools_iocs"
+  }
+}

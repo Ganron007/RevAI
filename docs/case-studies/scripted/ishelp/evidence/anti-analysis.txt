@@ -1,0 +1,62 @@
+# Anti-analysis signals (deterministic render of 02-signals.json)
+
+{
+  "engine": "anti_analysis_signals",
+  "signals": [
+    {
+      "category": "process_scan",
+      "weight": 1,
+      "func_addr": "268442016",
+      "func_name": "FUN_100019a0",
+      "evidence": "calls CreateToolhelp32Snapshot",
+      "note": "process/tool enumeration"
+    },
+    {
+      "category": "process_scan",
+      "weight": 1,
+      "func_addr": "268442016",
+      "func_name": "FUN_100019a0",
+      "evidence": "calls Process32First",
+      "note": "process/tool enumeration"
+    },
+    {
+      "category": "process_scan",
+      "weight": 1,
+      "func_addr": "268442016",
+      "func_name": "FUN_100019a0",
+      "evidence": "calls Process32Next",
+      "note": "process/tool enumeration"
+    },
+    {
+      "category": "process_scan",
+      "weight": 1,
+      "func_addr": "268442016",
+      "func_name": "FUN_100019a0",
+      "evidence": "calls CreateToolhelp32Snapshot",
+      "note": "process/tool enumeration"
+    }
+  ],
+  "functions": {
+    "268442016": {
+      "name": "FUN_100019a0",
+      "score": 1,
+      "signals": [
+        "process_scan"
+      ],
+      "evidence": [
+        "calls CreateToolhelp32Snapshot",
+        "calls Process32First",
+        "calls Process32Next"
+      ]
+    }
+  },
+  "summary": {
+    "categories": {
+      "process_scan": 4
+    },
+    "total_signals": 4,
+    "functions_with_signals": 1,
+    "elapsed_s": 0.84,
+    "note": "Deterministic; TLS callbacks are pre-entry-point candidates."
+  }
+}

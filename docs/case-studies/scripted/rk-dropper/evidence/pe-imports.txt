@@ -1,0 +1,26 @@
+# PE import signals (deterministic render)
+
+{
+  "engine": "pe_imports",
+  "sample_size": 3388672,
+  "duration_s": 0.1,
+  "import_count": 125,
+  "signal_count": 2,
+  "signals": [
+    {
+      "label": "allocate_memory",
+      "api_match": "VirtualAllocEx",
+      "attack": [
+        "T1055"
+      ]
+    },
+    {
+      "label": "load_library",
+      "api_match": "LoadLibrary",
+      "attack": [
+        "T1129"
+      ]
+    }
+  ],
+  "hint": "PE import high-signal map (pefile). Not capa."
+}

@@ -1,0 +1,68 @@
+{
+  "sha256": "65fdb5d460b079279a4afcb45671b4ec4d7a2d734dcf5f45232dcbdb6d08275b",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X86",
+      "file_size": 65729,
+      "entropy": 89,
+      "sha256": "65fdb5d460b079279a4afcb45671b4ec4d7a2d734dcf5f45232dcbdb6d08275b",
+      "dotnet_bundle": false,
+      "imports_count": 130,
+      "strings_count": 100,
+      "functions_count": 10,
+      "constants_count": 11,
+      "anomalies_count": 8,
+      "yara_hits_count": 4,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 49,
+      "import_ptrs": 16,
+      "funcs": 102,
+      "strings": 110
+    },
+    "ida": {
+      "imports": 49,
+      "funcs": 106,
+      "strings": 106
+    }
+  },
+  "warnings": [
+    "Malcat imports (130) diverge from IDA imports (49)."
+  ],
+  "source_decisions": {
+    "sha256": "65fdb5d460b079279a4afcb45671b4ec4d7a2d734dcf5f45232dcbdb6d08275b",
+    "imports": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra and IDA both report 49 imports, showing consistency, while Malcat reports 130, indicating potential discrepancy in counting methodology."
+    },
+    "functions": {
+      "source": "ghidra",
+      "confidence": "high",
+      "reason": "Ghidra (102) and IDA (106) report closely aligned function counts, suggesting accuracy, whereas Malcat reports only 10, likely under-counting or using different criteria."
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "All tools report similar string counts (Malcat: 100, Ghidra: 110, IDA: 106), so using both engines ensures comprehensive and verified string extraction."
+    },
+    "decompilation": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra is a reliable decompiler with no conflicting data from other tools in the summaries; Malcat may not provide full decompilation capabilities."
+    },
+    "cff": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra is robust for code analysis, and no specific data for CFF is provided in the summaries; defaulting to Ghidra for consistency with other code-related categories."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat provides a comprehensive static profile including file size, entropy, anomalies (8), and various counts, ideal for initial malware assessment."
+    },
+    "llm_revised": true
+  }
+}

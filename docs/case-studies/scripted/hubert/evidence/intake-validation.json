@@ -1,0 +1,66 @@
+{
+  "sha256": "0598e95ea5f28e3e591a8ab26bd6794e06f038282cac8ecf302009c6636cd0bc",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X86",
+      "file_size": 323584,
+      "entropy": 223,
+      "sha256": "0598e95ea5f28e3e591a8ab26bd6794e06f038282cac8ecf302009c6636cd0bc",
+      "dotnet_bundle": false,
+      "imports_count": 80,
+      "strings_count": 100,
+      "functions_count": 7,
+      "constants_count": 2,
+      "anomalies_count": 9,
+      "yara_hits_count": 4,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 79,
+      "import_ptrs": 0,
+      "funcs": 6,
+      "strings": 104
+    },
+    "ida": {
+      "imports": 79,
+      "funcs": 4,
+      "strings": 2065
+    }
+  },
+  "warnings": [],
+  "source_decisions": {
+    "sha256": "0598e95ea5f28e3e591a8ab26bd6794e06f038282cac8ecf302009c6636cd0bc",
+    "imports": {
+      "source": "ghidra",
+      "confidence": "high",
+      "reason": "All tools report similar import counts: malcat imports_count=80, ghidra imports=79, ida imports=79. The consistency within 1% indicates reliable data, supporting ghidra as a primary source with high confidence."
+    },
+    "functions": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Function counts vary slightly: malcat functions_count=7, ghidra funcs=6, ida funcs=4. Ghidra and malcat are closer (difference of 1), while ida differs more. Ghidra is chosen for consistency with decompilation, with medium confidence due to minor discrepancies."
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "Significant disparity in string counts: malcat strings_count=100, ghidra strings=104, ida strings=2065. Using both engines ensures comprehensive coverage, with ida likely capturing additional strings, hence high confidence in combined analysis."
+    },
+    "decompilation": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "No direct decompilation data in tool summaries, but Ghidra is a standard decompiler for malware analysis. Default choice with medium confidence, as Ghidra provides robust decompilation capabilities."
+    },
+    "cff": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "CFF (likely Control Flow or File Format analysis) data not explicitly in summaries. Ghidra is default for such analysis in malware workflows, with medium confidence due to lack of specific tool comparisons."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat provides extensive static profiling: file summary with entropy, size, anomalies_count=9, yara_hits_count=4, imports_count=80, strings_count=100. This comprehensive overview supports high confidence for static analysis."
+    },
+    "llm_revised": true
+  }
+}

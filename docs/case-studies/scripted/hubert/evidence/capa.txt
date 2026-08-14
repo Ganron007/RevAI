@@ -1,0 +1,85 @@
+# capa rules (deterministic render)
+
+{
+  "rule_count": 3,
+  "top_rules": [
+    {
+      "name": "encode data using XOR",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Encoding-Standard Algorithm"
+          ],
+          "objective": "Defense Evasion",
+          "behavior": "Obfuscated Files or Information",
+          "method": "Encoding-Standard Algorithm",
+          "id": "E1027.m02"
+        },
+        {
+          "parts": [
+            "Data",
+            "Encode Data",
+            "XOR"
+          ],
+          "objective": "Data",
+          "behavior": "Encode Data",
+          "method": "XOR",
+          "id": "C0026.002"
+        }
+      ]
+    },
+    {
+      "name": "reference anti-VM strings targeting Xen",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Virtualization/Sandbox Evasion",
+            "System Checks"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Virtualization/Sandbox Evasion",
+          "subtechnique": "System Checks",
+          "id": "T1497.001"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Anti-Behavioral Analysis",
+            "Virtual Machine Detection"
+          ],
+          "objective": "Anti-Behavioral Analysis",
+          "behavior": "Virtual Machine Detection",
+          "method": "",
+          "id": "B0009"
+        }
+      ]
+    },
+    {
+      "name": "contain loop",
+      "attack": [],
+      "mbc": []
+    }
+  ],
+  "timeout_s": 300,
+  "sample_size": 323584,
+  "duration_s": 2.43,
+  "engine": "capa",
+  "capa_bin": "capa",
+  "engine_fallback_from": "malcat-capa empty/no rules"
+}

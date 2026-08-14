@@ -1,0 +1,2242 @@
+{
+  "capa": {
+    "error": "capa returned empty rules",
+    "timeout_s": 300,
+    "sample_size": 68096,
+    "duration_s": 1.85,
+    "engine": "capa"
+  },
+  "pe_imports": {
+    "engine": "pe_imports",
+    "sample_size": 68096,
+    "duration_s": 0.02,
+    "import_count": 4,
+    "signal_count": 3,
+    "signals": [
+      {
+        "label": "load_library",
+        "api_match": "LoadLibrary",
+        "attack": [
+          "T1129"
+        ]
+      },
+      {
+        "label": "get_proc_address",
+        "api_match": "GetProcAddress",
+        "attack": [
+          "T1129"
+        ]
+      },
+      {
+        "label": "allocate_memory",
+        "api_match": "VirtualAlloc",
+        "attack": [
+          "T1055"
+        ]
+      }
+    ],
+    "hint": "PE import high-signal map (pefile). Not capa."
+  },
+  "yara": {
+    "rule_count": 26,
+    "matches": [
+      {
+        "rule": "domain",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": [
+          {
+            "id": "$domain_regex",
+            "offset": 0,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "contains_base64",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 63582,
+            "length": 12,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "PECompactV2XBitsumTechnologies",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": [
+          {
+            "id": "$a0",
+            "offset": 1024,
+            "length": 27,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "PECompact2xxBitSumTechnologies",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": [
+          {
+            "id": "$a0",
+            "offset": 1024,
+            "length": 35,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "PECompactv2xx",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": [
+          {
+            "id": "$a0",
+            "offset": 1024,
+            "length": 35,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "pecompact2",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": [
+          {
+            "id": "$str1",
+            "offset": 1024,
+            "length": 27,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IsPE32",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": []
+      },
+      {
+        "rule": "IsWindowsGUI",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": []
+      },
+      {
+        "rule": "IsPacked",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": []
+      },
+      {
+        "rule": "HasRichSignature",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": [
+          {
+            "id": "$a0",
+            "offset": 208,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "PeCompact_v208_Bitsum_Technologiessignature_by_loveboom",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1024,
+            "length": 29,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "PECompact_2x_Jeremy_Collake",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1024,
+            "length": 27,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "PECompact_20x_Heuristic_Mode_Jeremy_Collake",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1024,
+            "length": 35,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "PECompact_2xx_BitSum_Technologies",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1024,
+            "length": 35,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "PECompact_v2xx",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1024,
+            "length": 35,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "PECompact_V2X_Bitsum_Technologies_additional",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1024,
+            "length": 27,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "PECompact_V2X_Bitsum_Technologies",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1024,
+            "length": 27,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "PECompact_v20_additional",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1024,
+            "length": 29,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "PeCompact_2xx_BitSum_Technologies",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1024,
+            "length": 35,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "PeCompact_253_DLL_BitSum_Technologies_additional",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1024,
+            "length": 35,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "PECompact_v20",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1024,
+            "length": 29,
+            "xor_key": null
+          },
+          {
+            "id": "$b",
+            "offset": 1024,
+            "length": 35,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "PeCompact_253_DLL_BitSum_Technologies",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1024,
+            "length": 35,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "PECompact_v2xx_additional",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1024,
+            "length": 35,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "suspicious_packer_section",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": []
+      },
+      {
+        "rule": "SEH_Save",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1030,
+            "length": 7,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "SEH_Init",
+        "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+        "strings": [
+          {
+            "id": "$b",
+            "offset": 1037,
+            "length": 7,
+            "xor_key": null
+          }
+        ]
+      }
+    ],
+    "engine": "yara-x",
+    "rules_compiled": 454,
+    "compile_errors": [
+      "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+      "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+      "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+    ],
+    "incomplete": true,
+    "duration_s": 3.73
+  },
+  "floss": {
+    "floss_ok": true,
+    "string_count": 148,
+    "strings_sampled": 80,
+    "strings": [
+      "!This program cannot be run in DOS mode.",
+      ".reloc",
+      "PECompact2",
+      "T5K;\tV",
+      "sZ]2@^w",
+      "dMe!p/",
+      "@b*!.>",
+      "@Qd]w+A",
+      "hUDf&A4",
+      "pWC7kl",
+      "`J L5''m",
+      "(3FcewM",
+      "TA-rD,",
+      "nmsA.r",
+      "@)*)][",
+      "d2*wnC5",
+      "MKX/s0",
+      "^ /c_j",
+      "}Dgt|(",
+      "(./m)j",
+      "ye\"%ey",
+      "=3OD4X",
+      "q,Gdg+",
+      "6|e0kg",
+      "P1%4CO",
+      "u&)b\t9",
+      "q^4xDRa",
+      "\\_JQE6",
+      "JsHVHL",
+      ".BH2pKB",
+      "~D&y2$",
+      "i}feR5",
+      "PXg+j~k",
+      "A6EDNc",
+      "tE\t,K&",
+      "(.D|\"b",
+      "#L6@2'}!",
+      "nOPmlH\\",
+      "^rh2pR",
+      "{CRnB3",
+      "$bpy%D",
+      "<&Ien]",
+      "7Bn|./",
+      "*0FX(G",
+      "rGc'qp",
+      "@;>'Qg",
+      "$}1-R?",
+      "6#HifR",
+      "wHfsUl",
+      "gY$!yu",
+      "*?^zC'",
+      "8$GLnZ",
+      ";\\5|u%m",
+      "dxE9Rs",
+      "Y*bU(x",
+      "!M{`,`9",
+      "EChw@7>",
+      "e_S%%)",
+      "z+RCFe(",
+      "FlBdCb",
+      "pKlS@z",
+      "{Wj30im",
+      "}jG;)h",
+      "'B?xQT",
+      "z$&'n8w",
+      "k~~gm;",
+      "{0x}*q",
+      "D!qzY&",
+      "I3ueeO",
+      "}:H*U\"",
+      "q$QeVD",
+      "<.CAf6",
+      "x%!i{O",
+      "U0wU>1",
+      "jwb?;8",
+      "ev2d2%",
+      "qB;+yJ",
+      "dGi\ty}",
+      "@Z'/7Jd",
+      "55#laB"
+    ],
+    "per_category": {
+      "decoded_strings": 0,
+      "stack_strings": 0,
+      "tight_strings": 0,
+      "language_strings": 0,
+      "language_strings_missed": 0,
+      "static_strings": 148
+    },
+    "raw_key_total": 3,
+    "floss_profile": "full",
+    "floss_language": "none",
+    "duration_s": 4.94,
+    "size_bytes": 68096,
+    "static_only": false,
+    "size_exceeded_deobfuscate_limit": false
+  },
+  "malcat": {
+    "analysis_id": 1,
+    "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+    "profile": "deep",
+    "limits": {
+      "strings_max": 300,
+      "imports_max": 300,
+      "functions_max": 30,
+      "anomaly_locations_max": 50,
+      "decompile_top_n": 3
+    },
+    "file_summary": {
+      "analysis_id": 1,
+      "file_name": "want.exe",
+      "file_path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "file_size": 68096,
+      "type": "PE",
+      "architecture": "X86",
+      "entropy": 7.94,
+      "sha256": "d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09",
+      "metadata": {},
+      "entrypoint_ea": 1024,
+      "layout": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 1024,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 42
+        },
+        {
+          "name": ".text",
+          "effective_address": 1024,
+          "physical_size": 62464,
+          "virtual_size": 163840,
+          "rights": "RWX",
+          "entropy": 226
+        },
+        {
+          "name": ".rsrc",
+          "effective_address": 164864,
+          "physical_size": 4096,
+          "virtual_size": 4096,
+          "rights": "RWX",
+          "entropy": 0
+        },
+        {
+          "name": ".reloc",
+          "effective_address": 168960,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 0
+        }
+      ],
+      "kesakode_verdict": [],
+      "entropy_malcat_raw": 223,
+      "entropy_source": "whole_file_shannon_revai"
+    },
+    "views": {
+      "anomalies": [
+        {
+          "name": "BigBufferNoXrefMediumToHighEntropy",
+          "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+          "category": "entropy",
+          "level": 3,
+          "num_hits": 3
+        },
+        {
+          "name": "GuiSubsystemNoWindowApi",
+          "desc": "A GUI windows application does not import any user32 window-related function",
+          "category": "headers",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "HighEntropy",
+          "desc": "File has high entropy overall (> 200)",
+          "category": "entropy",
+          "level": 2,
+          "num_hits": 0
+        },
+        {
+          "name": "InvalidSizeOfCode",
+          "desc": "SizeofCode is not the sum of all code sections (raw or virtual)",
+          "category": "sections",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "InvalidSizeOfInitializedData",
+          "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+          "category": "sections",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "MultiplePackers",
+          "desc": "File is packed using multiple packers, very suspicious",
+          "category": "packers",
+          "level": 4,
+          "num_hits": 1
+        },
+        {
+          "name": "Packed",
+          "desc": "File is packed using a legit or less-legit obfuscator",
+          "category": "packers",
+          "level": 2,
+          "num_hits": 1
+        },
+        {
+          "name": "SectionWX",
+          "desc": "section is executable and writeable",
+          "category": "sections",
+          "level": 3,
+          "num_hits": 2
+        },
+        {
+          "name": "UnbalancedVirtualPhysicalRatio",
+          "desc": "huge difference between the physical and virtual size of a section",
+          "category": "sections",
+          "level": 1,
+          "num_hits": 1
+        },
+        {
+          "name": "UnreferencedImports",
+          "desc": "More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the file is packed",
+          "category": "imports",
+          "level": 3,
+          "num_hits": 4
+        }
+      ],
+      "anomaly_locations": {
+        "GuiSubsystemNoWindowApi": [
+          {
+            "ea": 324,
+            "context": ""
+          }
+        ]
+      },
+      "yara_hits": [
+        {
+          "id": "MSVC_2017_linker",
+          "category": "compiler",
+          "reliability": 60,
+          "type": "INFO",
+          "description": "detects used visual studio version based on linker information",
+          "num_patterns": 0
+        },
+        {
+          "id": "visual_studio_2017_version_15_0_rich",
+          "category": "compiler",
+          "reliability": 80,
+          "type": "INFO",
+          "description": "detects used visual studio version based on rich header information",
+          "num_patterns": 0
+        },
+        {
+          "id": "PECompact2",
+          "category": "packer",
+          "reliability": 60,
+          "type": "INFO",
+          "description": "Detect PECompact based on section artifacts",
+          "num_patterns": 0
+        },
+        {
+          "id": "pecompact_2xx",
+          "category": "packer",
+          "reliability": 50,
+          "type": "INFO",
+          "description": "",
+          "num_patterns": 1
+        }
+      ],
+      "strings": [
+        {
+          "ea": 1052,
+          "summary": "mpact2"
+        },
+        {
+          "ea": 164940,
+          "summary": "kernel32.dll"
+        },
+        {
+          "ea": 77,
+          "summary": "!This program ca..in DOS mode.\r\r\n$"
+        },
+        {
+          "ea": 33271,
+          "summary": "oj.FwT"
+        },
+        {
+          "ea": 41646,
+          "summary": "\n:{T.KbA"
+        },
+        {
+          "ea": 164974,
+          "summary": "GetProcAddress"
+        },
+        {
+          "ea": 164958,
+          "summary": "LoadLibraryA"
+        },
+        {
+          "ea": 57474,
+          "summary": "VUgg"
+        },
+        {
+          "ea": 5264,
+          "summary": "wwRF"
+        },
+        {
+          "ea": 27725,
+          "summary": "d//i"
+        },
+        {
+          "ea": 5437,
+          "summary": ";6ZZ"
+        },
+        {
+          "ea": 2562,
+          "summary": "gqrg"
+        },
+        {
+          "ea": 30147,
+          "summary": "9\\P9"
+        },
+        {
+          "ea": 26088,
+          "summary": "qq5?"
+        },
+        {
+          "ea": 42984,
+          "summary": "xM9M"
+        },
+        {
+          "ea": 43443,
+          "summary": "22<^"
+        },
+        {
+          "ea": 11613,
+          "summary": "JII1"
+        },
+        {
+          "ea": 37999,
+          "summary": "0mTT"
+        },
+        {
+          "ea": 50279,
+          "summary": "T@UT"
+        },
+        {
+          "ea": 164994,
+          "summary": "VirtualAlloc"
+        },
+        {
+          "ea": 165010,
+          "summary": "VirtualFree"
+        },
+        {
+          "ea": 19476,
+          "summary": "qqGf\\"
+        },
+        {
+          "ea": 29941,
+          "summary": "es6sn"
+        },
+        {
+          "ea": 57277,
+          "summary": "KuHHf"
+        },
+        {
+          "ea": 480,
+          "summary": ".text"
+        },
+        {
+          "ea": 21800,
+          "summary": "vvH/="
+        },
+        {
+          "ea": 13770,
+          "summary": ".]]W="
+        },
+        {
+          "ea": 9262,
+          "summary": "hljlM"
+        },
+        {
+          "ea": 35535,
+          "summary": "47->>"
+        },
+        {
+          "ea": 520,
+          "summary": ".rsrc"
+        },
+        {
+          "ea": 46670,
+          "summary": "^l2\r2"
+        },
+        {
+          "ea": 19713,
+          "summary": "2jDMM"
+        },
+        {
+          "ea": 49794,
+          "summary": "wmGeG<"
+        },
+        {
+          "ea": 41600,
+          "summary": "-mpLWm"
+        },
+        {
+          "ea": 6113,
+          "summary": "ye\"%ey"
+        },
+        {
+          "ea": 45161,
+          "summary": "ZiZ_o/"
+        },
+        {
+          "ea": 9516,
+          "summary": ".BH2pKB"
+        },
+        {
+          "ea": 9013,
+          "summary": "JsHVHL"
+        },
+        {
+          "ea": 63038,
+          "summary": "/\\k09k"
+        },
+        {
+          "ea": 24778,
+          "summary": "I3ueeO"
+        },
+        {
+          "ea": 27857,
+          "summary": "U0wU>1"
+        },
+        {
+          "ea": 45745,
+          "summary": "C2kA<9<J"
+        },
+        {
+          "ea": 167899,
+          "summary": "ApAlicat"
+        },
+        {
+          "ea": 46528,
+          "summary": "fhggR$;_"
+        },
+        {
+          "ea": 48306,
+          "summary": "Mw0qb`Y[4"
+        },
+        {
+          "ea": 24677,
+          "summary": "5;Hy^"
+        },
+        {
+          "ea": 10515,
+          "summary": "=-^9f"
+        },
+        {
+          "ea": 45150,
+          "summary": "5dIhO"
+        },
+        {
+          "ea": 11065,
+          "summary": "A6EDNc"
+        },
+        {
+          "ea": 44639,
+          "summary": "VWv-j"
+        },
+        {
+          "ea": 46036,
+          "summary": "wWKI?"
+        },
+        {
+          "ea": 44032,
+          "summary": "vq\"l@"
+        },
+        {
+          "ea": 43998,
+          "summary": "0qMrd"
+        },
+        {
+          "ea": 19575,
+          "summary": "dxE9Rs"
+        },
+        {
+          "ea": 43370,
+          "summary": "[Y{Yb"
+        },
+        {
+          "ea": 42805,
+          "summary": "txg.j"
+        },
+        {
+          "ea": 42666,
+          "summary": "?\rioA"
+        },
+        {
+          "ea": 42451,
+          "summary": "^Y:n4"
+        },
+        {
+          "ea": 12612,
+          "summary": "HuQ/P"
+        },
+        {
+          "ea": 46181,
+          "summary": "<bU\n-x"
+        },
+        {
+          "ea": 24622,
+          "summary": "A>C.y"
+        },
+        {
+          "ea": 46983,
+          "summary": "s?8GWS"
+        },
+        {
+          "ea": 47527,
+          "summary": "chUH\\"
+        },
+        {
+          "ea": 20066,
+          "summary": "I9=Dx"
+        },
+        {
+          "ea": 22214,
+          "summary": "gXKPV"
+        },
+        {
+          "ea": 21750,
+          "summary": "FlBdCb"
+        },
+        {
+          "ea": 8678,
+          "summary": "\\_JQE6"
+        },
+        {
+          "ea": 20477,
+          "summary": "EChw@7>"
+        },
+        {
+          "ea": 48912,
+          "summary": "s:QM5"
+        },
+        {
+          "ea": 48923,
+          "summary": "`/F]\\"
+        },
+        {
+          "ea": 49328,
+          "summary": "k?K/W"
+        },
+        {
+          "ea": 8478,
+          "summary": "q^4xDRa"
+        },
+        {
+          "ea": 8396,
+          "summary": "NV0XP"
+        },
+        {
+          "ea": 21070,
+          "summary": "fd/bt"
+        },
+        {
+          "ea": 33337,
+          "summary": "qkIWc\n"
+        },
+        {
+          "ea": 37520,
+          "summary": "WXq#yW"
+        },
+        {
+          "ea": 14846,
+          "summary": "W7smc"
+        },
+        {
+          "ea": 36465,
+          "summary": "OF_oO("
+        },
+        {
+          "ea": 35987,
+          "summary": "q&SDq"
+        },
+        {
+          "ea": 35934,
+          "summary": "Ah:lD"
+        },
+        {
+          "ea": 17588,
+          "summary": "wHfsUl"
+        },
+        {
+          "ea": 15549,
+          "summary": "J<=@i"
+        },
+        {
+          "ea": 33964,
+          "summary": "d5<\\k"
+        },
+        {
+          "ea": 37756,
+          "summary": "\"\"-{Z"
+        },
+        {
+          "ea": 30765,
+          "summary": "A$lAm"
+        },
+        {
+          "ea": 16340,
+          "summary": "ea9VC"
+        },
+        {
+          "ea": 33043,
+          "summary": "K:i7<"
+        },
+        {
+          "ea": 32492,
+          "summary": "[^Ia_"
+        },
+        {
+          "ea": 32115,
+          "summary": "55#laB"
+        },
+        {
+          "ea": 31847,
+          "summary": "IaP`H"
+        },
+        {
+          "ea": 31761,
+          "summary": "]<>dO"
+        },
+        {
+          "ea": 26521,
+          "summary": "anbSM"
+        },
+        {
+          "ea": 30425,
+          "summary": "Re\ns1"
+        },
+        {
+          "ea": 38366,
+          "summary": "6ib6#9"
+        },
+        {
+          "ea": 30055,
+          "summary": ":F5]\n"
+        },
+        {
+          "ea": 28905,
+          "summary": "jwb?;8"
+        },
+        {
+          "ea": 14037,
+          "summary": "ZTc?K"
+        },
+        {
+          "ea": 27578,
+          "summary": "0IHfU"
+        },
+        {
+          "ea": 13618,
+          "summary": "^rh2pR"
+        },
+        {
+          "ea": 13524,
+          "summary": "nOPmlH\\"
+        },
+        {
+          "ea": 40790,
+          "summary": "c_Rrb"
+        },
+        {
+          "ea": 41298,
+          "summary": "GlE6vQF"
+        },
+        {
+          "ea": 26967,
+          "summary": "<.CAf6"
+        },
+        {
+          "ea": 26744,
+          "summary": "g9ent"
+        },
+        {
+          "ea": 42098,
+          "summary": "Hv;; e"
+        },
+        {
+          "ea": 42181,
+          "summary": "Df@6H"
+        },
+        {
+          "ea": 31202,
+          "summary": "\rfk.["
+        },
+        {
+          "ea": 56204,
+          "summary": "o/nCs"
+        },
+        {
+          "ea": 167963,
+          "summary": "SDL:G"
+        },
+        {
+          "ea": 167611,
+          "summary": "msvb."
+        },
+        {
+          "ea": 52926,
+          "summary": "akYVm"
+        },
+        {
+          "ea": 166492,
+          "summary": "@\"_^<"
+        },
+        {
+          "ea": 2605,
+          "summary": "\\;!yy"
+        },
+        {
+          "ea": 2673,
+          "summary": "sZ]2@^w"
+        },
+        {
+          "ea": 165878,
+          "summary": "[f@aU"
+        },
+        {
+          "ea": 53828,
+          "summary": "IQ\n?X]"
+        },
+        {
+          "ea": 54351,
+          "summary": "cq\"PV"
+        },
+        {
+          "ea": 54567,
+          "summary": "ZJZC!Di"
+        },
+        {
+          "ea": 3550,
+          "summary": "pWC7kl"
+        },
+        {
+          "ea": 62038,
+          "summary": "KIZCiv"
+        },
+        {
+          "ea": 49935,
+          "summary": "U8i6h"
+        },
+        {
+          "ea": 56561,
+          "summary": "uJ\"pH"
+        },
+        {
+          "ea": 61974,
+          "summary": "lnxZ9g"
+        },
+        {
+          "ea": 5310,
+          "summary": "MKX/s0"
+        },
+        {
+          "ea": 61960,
+          "summary": "x`Y=6t"
+        },
+        {
+          "ea": 3977,
+          "summary": "nmsA.r"
+        },
+        {
+          "ea": 61123,
+          "summary": "8lV`g"
+        },
+        {
+          "ea": 5002,
+          "summary": "K07/:"
+        },
+        {
+          "ea": 59727,
+          "summary": ";|p^;"
+        },
+        {
+          "ea": 58447,
+          "summary": "0A/B52"
+        },
+        {
+          "ea": 59588,
+          "summary": "GryJA"
+        },
+        {
+          "ea": 58808,
+          "summary": "J@/jM"
+        },
+        {
+          "ea": 51642,
+          "summary": "b>EAl"
+        },
+        {
+          "ea": 50269,
+          "summary": "]qm?i"
+        },
+        {
+          "ea": 168039,
+          "summary": "hHand"
+        },
+        {
+          "ea": 7146,
+          "summary": "=3OD4X"
+        },
+        {
+          "ea": 168005,
+          "summary": "Bo8xA=w"
+        },
+        {
+          "ea": 50228,
+          "summary": "h\"KH7"
+        },
+        {
+          "ea": 168382,
+          "summary": "USQWVR"
+        },
+        {
+          "ea": 168520,
+          "summary": "Z^_Y[]"
+        },
+        {
+          "ea": 50625,
+          "summary": "2\rhS\""
+        },
+        {
+          "ea": 560,
+          "summary": ".reloc"
+        },
+        {
+          "ea": 7335,
+          "summary": "[HP>_"
+        },
+        {
+          "ea": 31642,
+          "summary": "q`WG"
+        },
+        {
+          "ea": 21670,
+          "summary": "@4]5"
+        },
+        {
+          "ea": 61450,
+          "summary": "Zf95"
+        },
+        {
+          "ea": 21540,
+          "summary": "<Cey"
+        },
+        {
+          "ea": 31191,
+          "summary": "v7a<"
+        },
+        {
+          "ea": 31985,
+          "summary": "Nuv7"
+        },
+        {
+          "ea": 32003,
+          "summary": "uJn^"
+        },
+        {
+          "ea": 21613,
+          "summary": "v1EL"
+        },
+        {
+          "ea": 30753,
+          "summary": "4lg>"
+        },
+        {
+          "ea": 30497,
+          "summary": "\\`cd"
+        },
+        {
+          "ea": 32070,
+          "summary": "LF\n["
+        },
+        {
+          "ea": 62304,
+          "summary": "@Gom"
+        },
+        {
+          "ea": 59637,
+          "summary": "PkR."
+        },
+        {
+          "ea": 34371,
+          "summary": "5@4p"
+        },
+        {
+          "ea": 34169,
+          "summary": "oY[<"
+        },
+        {
+          "ea": 59253,
+          "summary": "wv?u"
+        },
+        {
+          "ea": 34012,
+          "summary": "\"EtW"
+        },
+        {
+          "ea": 208,
+          "summary": "Rich"
+        },
+        {
+          "ea": 49872,
+          "summary": "\\nYQ"
+        },
+        {
+          "ea": 33948,
+          "summary": "2Gf>"
+        },
+        {
+          "ea": 33550,
+          "summary": "OrHc"
+        },
+        {
+          "ea": 32392,
+          "summary": "d=fa"
+        },
+        {
+          "ea": 21154,
+          "summary": "h`wJ"
+        },
+        {
+          "ea": 21498,
+          "summary": "-1u?"
+        },
+        {
+          "ea": 33231,
+          "summary": "X.M0"
+        },
+        {
+          "ea": 33128,
+          "summary": "IVcB"
+        },
+        {
+          "ea": 59762,
+          "summary": "8=m\\"
+        },
+        {
+          "ea": 60171,
+          "summary": "5:8m"
+        },
+        {
+          "ea": 32811,
+          "summary": ".h\\x"
+        },
+        {
+          "ea": 60762,
+          "summary": "iWQ<"
+        },
+        {
+          "ea": 167322,
+          "summary": "'nPP"
+        },
+        {
+          "ea": 23310,
+          "summary": "\t8CC"
+        },
+        {
+          "ea": 26696,
+          "summary": "k?@["
+        },
+        {
+          "ea": 166561,
+          "summary": "PN1Z"
+        },
+        {
+          "ea": 26492,
+          "summary": "OEj3"
+        },
+        {
+          "ea": 167150,
+          "summary": "X<t\n"
+        },
+        {
+          "ea": 25591,
+          "summary": "dyE1"
+        },
+        {
+          "ea": 25392,
+          "summary": "wJ>F"
+        },
+        {
+          "ea": 25248,
+          "summary": "3>Id"
+        },
+        {
+          "ea": 27241,
+          "summary": "607Z"
+        },
+        {
+          "ea": 167332,
+          "summary": "P1tM"
+        },
+        {
+          "ea": 167587,
+          "summary": "PWQS"
+        },
+        {
+          "ea": 23840,
+          "summary": "2IGT"
+        },
+        {
+          "ea": 167821,
+          "summary": "vPlM"
+        },
+        {
+          "ea": 23874,
+          "summary": "-y?m"
+        },
+        {
+          "ea": 24483,
+          "summary": "\"76w"
+        },
+        {
+          "ea": 24236,
+          "summary": "\"Jed"
+        },
+        {
+          "ea": 28791,
+          "summary": "\nYJ<"
+        },
+        {
+          "ea": 62263,
+          "summary": "8jMJ"
+        },
+        {
+          "ea": 30212,
+          "summary": ":0XL"
+        },
+        {
+          "ea": 24015,
+          "summary": "V^j<"
+        },
+        {
+          "ea": 63015,
+          "summary": "r\"pV"
+        },
+        {
+          "ea": 30014,
+          "summary": ";f]b"
+        },
+        {
+          "ea": 29437,
+          "summary": "2_YK"
+        },
+        {
+          "ea": 165226,
+          "summary": "_^[7"
+        },
+        {
+          "ea": 28833,
+          "summary": "Wxvc"
+        },
+        {
+          "ea": 21696,
+          "summary": "IlkC"
+        },
+        {
+          "ea": 21779,
+          "summary": "P-^L"
+        },
+        {
+          "ea": 28572,
+          "summary": "5sV/"
+        },
+        {
+          "ea": 28078,
+          "summary": ">GRD"
+        },
+        {
+          "ea": 22122,
+          "summary": "VX2a"
+        },
+        {
+          "ea": 165914,
+          "summary": "h\nLR"
+        },
+        {
+          "ea": 27720,
+          "summary": "wIl?"
+        },
+        {
+          "ea": 27675,
+          "summary": "veqI"
+        },
+        {
+          "ea": 44370,
+          "summary": "EhXe"
+        },
+        {
+          "ea": 52560,
+          "summary": "YC\nF"
+        },
+        {
+          "ea": 52631,
+          "summary": "QkP6"
+        },
+        {
+          "ea": 45675,
+          "summary": "8tN."
+        },
+        {
+          "ea": 52649,
+          "summary": ">Jc5"
+        },
+        {
+          "ea": 52820,
+          "summary": "adOh"
+        },
+        {
+          "ea": 45025,
+          "summary": "49V\n"
+        },
+        {
+          "ea": 44889,
+          "summary": ".tyF"
+        },
+        {
+          "ea": 53064,
+          "summary": "2>_N"
+        },
+        {
+          "ea": 44592,
+          "summary": "\"eiN"
+        },
+        {
+          "ea": 44555,
+          "summary": "LH.B"
+        },
+        {
+          "ea": 52457,
+          "summary": "y/]T"
+        },
+        {
+          "ea": 53184,
+          "summary": "0H\nk"
+        },
+        {
+          "ea": 44222,
+          "summary": "/1XB"
+        },
+        {
+          "ea": 44156,
+          "summary": "/7Zg"
+        },
+        {
+          "ea": 44099,
+          "summary": "_S@U"
+        },
+        {
+          "ea": 53592,
+          "summary": "AQKC"
+        },
+        {
+          "ea": 53621,
+          "summary": ">6PX"
+        },
+        {
+          "ea": 43992,
+          "summary": "y_I:"
+        },
+        {
+          "ea": 43656,
+          "summary": "lFc1"
+        },
+        {
+          "ea": 53687,
+          "summary": "4uv3"
+        },
+        {
+          "ea": 48062,
+          "summary": "[S:-"
+        },
+        {
+          "ea": 49445,
+          "summary": "C^@6"
+        },
+        {
+          "ea": 50036,
+          "summary": "hK<>"
+        },
+        {
+          "ea": 50070,
+          "summary": "Ks4r"
+        },
+        {
+          "ea": 48580,
+          "summary": "d7Zx"
+        },
+        {
+          "ea": 48488,
+          "summary": "jJp["
+        },
+        {
+          "ea": 51216,
+          "summary": "F_`D"
+        },
+        {
+          "ea": 48155,
+          "summary": "iW59"
+        },
+        {
+          "ea": 48126,
+          "summary": ".`R@"
+        },
+        {
+          "ea": 51310,
+          "summary": "osc;"
+        },
+        {
+          "ea": 48092,
+          "summary": "RFqm"
+        },
+        {
+          "ea": 43145,
+          "summary": "iP7L"
+        },
+        {
+          "ea": 51519,
+          "summary": "^.:6"
+        },
+        {
+          "ea": 47409,
+          "summary": "\\Qb\n"
+        },
+        {
+          "ea": 47087,
+          "summary": "_uu "
+        },
+        {
+          "ea": 47074,
+          "summary": "9@NK"
+        },
+        {
+          "ea": 46773,
+          "summary": "xa@D"
+        },
+        {
+          "ea": 52093,
+          "summary": "=8DM"
+        },
+        {
+          "ea": 52103,
+          "summary": "0Py2"
+        },
+        {
+          "ea": 46371,
+          "summary": "lVT/"
+        },
+        {
+          "ea": 52149,
+          "summary": ";5BN"
+        },
+        {
+          "ea": 37379,
+          "summary": "8H?y"
+        },
+        {
+          "ea": 39286,
+          "summary": "qKGB"
+        },
+        {
+          "ea": 57087,
+          "summary": "hy_?"
+        },
+        {
+          "ea": 38991,
+          "summary": "e6G="
+        },
+        {
+          "ea": 38853,
+          "summary": "7kI\r"
+        },
+        {
+          "ea": 38490,
+          "summary": "bpi2"
+        },
+        {
+          "ea": 57696,
+          "summary": "[>-]"
+        },
+        {
+          "ea": 38170,
+          "summary": "N8QV"
+        },
+        {
+          "ea": 57782,
+          "summary": "mB^y"
+        },
+        {
+          "ea": 58077,
+          "summary": "2l`W"
+        },
+        {
+          "ea": 37427,
+          "summary": "2Lt]"
+        },
+        {
+          "ea": 39324,
+          "summary": "QP=J"
+        },
+        {
+          "ea": 37052,
+          "summary": "W8Hn"
+        },
+        {
+          "ea": 37046,
+          "summary": "qrSI"
+        },
+        {
+          "ea": 58610,
+          "summary": "EVbs"
+        },
+        {
+          "ea": 36161,
+          "summary": "v.Wo"
+        },
+        {
+          "ea": 58803,
+          "summary": "d3Un"
+        },
+        {
+          "ea": 35891,
+          "summary": "y\n`a"
+        },
+        {
+          "ea": 58870,
+          "summary": "4S05"
+        },
+        {
+          "ea": 35482,
+          "summary": "uNjU"
+        },
+        {
+          "ea": 35315,
+          "summary": ":_Hs"
+        },
+        {
+          "ea": 55320,
+          "summary": "SB\"<"
+        },
+        {
+          "ea": 54121,
+          "summary": "wCKB"
+        },
+        {
+          "ea": 54786,
+          "summary": "deVv"
+        },
+        {
+          "ea": 55061,
+          "summary": "kfte"
+        },
+        {
+          "ea": 42223,
+          "summary": "8Ag<"
+        },
+        {
+          "ea": 55161,
+          "summary": "iG]p"
+        },
+        {
+          "ea": 55237,
+          "summary": "G|pG"
+        },
+        {
+          "ea": 41912,
+          "summary": ",667"
+        },
+        {
+          "ea": 41764,
+          "summary": "iDx`"
+        },
+        {
+          "ea": 41729,
+          "summary": "tpI?"
+        },
+        {
+          "ea": 35139,
+          "summary": "Y1vs"
+        },
+        {
+          "ea": 55749,
+          "summary": "n:CU"
+        },
+        {
+          "ea": 55799,
+          "summary": "sji8"
+        },
+        {
+          "ea": 40673,
+          "summary": "1Aw^"
+        },
+        {
+          "ea": 40114,
+          "summary": "j,vj"
+        },
+        {
+          "ea": 56702,
+          "summary": "<Dcg"
+        },
+        {
+          "ea": 40014,
+          "summary": "bt4m"
+        },
+        {
+          "ea": 39996,
+          "summary": "Qy54"
+        },
+        {
+          "ea": 39588,
+          "summary": "g[bt"
+        },
+        {
+          "ea": 39333,
+          "summary": "VkmX"
+        },
+        {
+          "ea": 19372,
+          "summary": "k7HR"
+        },
+        {
+          "ea": 10401,
+          "summary": "W7[1"
+        },
+        {
+          "ea": 10115,
+          "summary": "[Bo]"
+        },
+        {
+          "ea": 9586,
+          "summary": "L/oQ"
+        },
+        {
+          "ea": 9103,
+          "summary": "Mf2/"
+        },
+        {
+          "ea": 18721,
+          "summary": "hVtZ"
+        },
+        {
+          "ea": 8145,
+          "summary": "mA_N"
+        },
+        {
+          "ea": 7978,
+          "summary": "gy[N"
+        },
+        {
+          "ea": 18969,
+          "summary": "aqMc"
+        },
+        {
+          "ea": 7726,
+          "summary": "Ml[`"
+        }
+      ],
+      "imports": [
+        {
+          "ea": 164880,
+          "name": "kernel32.LoadLibraryA",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 164884,
+          "name": "kernel32.GetProcAddress",
+          "type": "IMPORT",
+          "num_refs": 0
+        },
+        {
+          "ea": 164888,
+          "name": "kernel32.VirtualAlloc",
+          "type": "IMPORT",
+          "num_refs": 0
+        },
+        {
+          "ea": 164892,
+          "name": "kernel32.VirtualFree",
+          "type": "IMPORT",
+          "num_refs": 0
+        }
+      ],
+      "sections": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 1024,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 42
+        },
+        {
+          "name": ".text",
+          "effective_address": 1024,
+          "physical_size": 62464,
+          "virtual_size": 163840,
+          "rights": "RWX",
+          "entropy": 226
+        },
+        {
+          "name": ".rsrc",
+          "effective_address": 164864,
+          "physical_size": 4096,
+          "virtual_size": 4096,
+          "rights": "RWX",
+          "entropy": 0
+        },
+        {
+          "name": ".reloc",
+          "effective_address": 168960,
+          "physical_size": 512,
+          "virtual_size": 4096,
+          "rights": "RW",
+          "entropy": 0
+        }
+      ],
+      "entropy": {
+        "file_entropy": 223,
+        "regions": [
+          {
+            "name": "header",
+            "entropy": 42,
+            "size": null
+          },
+          {
+            "name": ".text",
+            "entropy": 226,
+            "size": null
+          },
+          {
+            "name": ".rsrc",
+            "entropy": 0,
+            "size": null
+          },
+          {
+            "name": ".reloc",
+            "entropy": 0,
+            "size": null
+          }
+        ]
+      },
+      "functions": [
+        {
+          "ea": 1024,
+          "name": "EntryPoint"
+        },
+        {
+          "ea": 168332,
+          "name": "sub_429d8c"
+        }
+      ],
+      "constants": [],
+      "carved": [],
+      "virtual_files": [],
+      "structures": [
+        {
+          "name": "MZ",
+          "ea": 0
+        },
+        {
+          "name": "RichHeader",
+          "ea": 128
+        },
+        {
+          "name": "PE",
+          "ea": 232
+        },
+        {
+          "name": "OptionalHeader",
+          "ea": 256
+        },
+        {
+          "name": "Sections",
+          "ea": 480
+        },
+        {
+          "name": "kernel32.OFT",
+          "ea": 164880
+        },
+        {
+          "name": "ImportTable",
+          "ea": 164900
+        },
+        {
+          "name": "ImportNames",
+          "ea": 164940
+        },
+        {
+          "name": "Relocations",
+          "ea": 168960
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 1024,
+        "name": "EntryPoint"
+      },
+      {
+        "ea": 168332,
+        "name": "sub_429d8c"
+      }
+    ],
+    "constants": [],
+    "anomalies": [
+      {
+        "name": "BigBufferNoXrefMediumToHighEntropy",
+        "desc": "a medium-to-high-entropy 10KB+ buffer, which is not part of a known structure and has no cross-reference inside: most likely a big crypto data block. File must have at least one function for this anomaly to run",
+        "category": "entropy",
+        "level": 3,
+        "num_hits": 3
+      },
+      {
+        "name": "GuiSubsystemNoWindowApi",
+        "desc": "A GUI windows application does not import any user32 window-related function",
+        "category": "headers",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "HighEntropy",
+        "desc": "File has high entropy overall (> 200)",
+        "category": "entropy",
+        "level": 2,
+        "num_hits": 0
+      },
+      {
+        "name": "InvalidSizeOfCode",
+        "desc": "SizeofCode is not the sum of all code sections (raw or virtual)",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "InvalidSizeOfInitializedData",
+        "desc": "SizeOfInitializedData is not the sum of all ininitalized data sections (raw or virtual)",
+        "category": "sections",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "MultiplePackers",
+        "desc": "File is packed using multiple packers, very suspicious",
+        "category": "packers",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "Packed",
+        "desc": "File is packed using a legit or less-legit obfuscator",
+        "category": "packers",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "SectionWX",
+        "desc": "section is executable and writeable",
+        "category": "sections",
+        "level": 3,
+        "num_hits": 2
+      },
+      {
+        "name": "UnbalancedVirtualPhysicalRatio",
+        "desc": "huge difference between the physical and virtual size of a section",
+        "category": "sections",
+        "level": 1,
+        "num_hits": 1
+      },
+      {
+        "name": "UnreferencedImports",
+        "desc": "More than half of the imports are not referenced, it could mean that the APIs are just decoys, or that the file is packed",
+        "category": "imports",
+        "level": 3,
+        "num_hits": 4
+      }
+    ],
+    "carved_files": [],
+    "virtual_files": [],
+    "structures": [
+      {
+        "name": "MZ",
+        "ea": 0
+      },
+      {
+        "name": "RichHeader",
+        "ea": 128
+      },
+      {
+        "name": "PE",
+        "ea": 232
+      },
+      {
+        "name": "OptionalHeader",
+        "ea": 256
+      },
+      {
+        "name": "Sections",
+        "ea": 480
+      },
+      {
+        "name": "kernel32.OFT",
+        "ea": 164880
+      },
+      {
+        "name": "ImportTable",
+        "ea": 164900
+      },
+      {
+        "name": "ImportNames",
+        "ea": 164940
+      },
+      {
+        "name": "Relocations",
+        "ea": 168960
+      }
+    ],
+    "decompilations": {
+      "1024": {
+        "name": "EntryPoint",
+        "decompilation": "EntryPoint {\n    // Error while decompiling : not a valid va\n}\n"
+      },
+      "168332": {
+        "name": "sub_429d8c",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nundefined4 sub_429d8c(int32_t param_1)\n\n{\n    undefined *puVar1;\n    \n    [0x0x429db0] = 0xf0428b11;\n    puVar1 = *(param_1 + 0xc);\n    *puVar1 = 0xe9;\n    *(puVar1 + 1) = 0x429daf - (puVar1 + 5);\n    return 0;\n}\n"
+      }
+    },
+    "script_decompile": null,
+    "unpack_result": null,
+    "errors": [],
+    "entropy_bits": 7.94,
+    "entropy_malcat_raw": 223,
+    "duration_s": 3.88
+  },
+  "packer": {
+    "engine": "packer_intake",
+    "ok": true,
+    "label": "packed",
+    "score": 8,
+    "sections": [
+      {
+        "name": ".text",
+        "entropy": 7.997,
+        "raw_size": 62464,
+        "virtual_size": 163840,
+        "exec": true,
+        "writable": true
+      },
+      {
+        "name": ".rsrc",
+        "entropy": 7.277,
+        "raw_size": 4096,
+        "virtual_size": 4096,
+        "exec": true,
+        "writable": true
+      },
+      {
+        "name": ".reloc",
+        "entropy": 0.216,
+        "raw_size": 512,
+        "virtual_size": 512,
+        "exec": false,
+        "writable": true
+      }
+    ],
+    "checks": {
+      "last_section_exec": false,
+      "last_section_writable": true,
+      "first_section_writable": true,
+      "ep_in_last_section": false,
+      "ep_not_in_first_section": false,
+      "raw_vs_virtual_mismatch": true,
+      "memory_only_section": false,
+      "high_entropy_exec_section": true,
+      "few_imports": true,
+      "section_count_outlier": false
+    },
+    "embedded_payload_hint": false,
+    "entry_point": 4198400,
+    "ep_section": ".text",
+    "import_count": 1,
+    "imports_sample": [
+      "LoadLibraryA",
+      "GetProcAddress",
+      "VirtualAlloc",
+      "VirtualFree"
+    ],
+    "elapsed_s": 0.254,
+    "note": "Deterministic entropy + packer checklist; heuristic label, unpacking loop still required for non-UPX packers.",
+    "duration_s": 0.25
+  },
+  "revai_tools_sec": {
+    "format": "pe",
+    "findings": [
+      {
+        "name": "Address Space Layout Randomization",
+        "present": false,
+        "claimed": false,
+        "note": "no DYNAMIC_BASE flag",
+        "consequence": "Without ASLR the image loads at a fixed base \u2014 a predictable address for ret2libc-style exploitation and ROP gadget pivots."
+      },
+      {
+        "name": "64-bit high-entropy ASLR",
+        "present": false,
+        "claimed": false,
+        "note": "64-bit high-entropy ASLR flag not set",
+        "consequence": "Without 64-bit entropy the entropy of the address space is reduced relative to the full 64-bit layout."
+      },
+      {
+        "name": "Data Execution Prevention",
+        "present": true,
+        "claimed": true,
+        "note": "Data Execution Prevention flag set",
+        "consequence": "Without NX-compat, writable memory can be executable \u2014 classic shellcode-on-stack/heap works directly."
+      },
+      {
+        "name": "Control Flow Guard",
+        "present": false,
+        "claimed": false,
+        "note": "no GUARD_CF flag",
+        "consequence": "Without CFG, indirect calls are unvalidated \u2014 vtable and function-pointer overwrites become direct code-flow hijack."
+      },
+      {
+        "name": "Structured Exception Handling",
+        "present": true,
+        "claimed": false,
+        "note": "no NO_SEH flag \u2014 SEH handlers may exist",
+        "consequence": "The NO_SEH flag claims no SEH handlers exist; if a handler is still present the claim is false \u2014 an exception can overwrite the handler chain for control-flow hijack."
+      },
+      {
+        "name": "Signed-image enforcement",
+        "present": false,
+        "claimed": false,
+        "note": "Signed-image enforcement flag not set",
+        "consequence": "Without forced integrity, a tampered image is not rejected by the loader's integrity checks."
+      },
+      {
+        "name": "Stack cookie (/GS)",
+        "present": false,
+        "claimed": false,
+        "note": "no __security_cookie reference found",
+        "consequence": "Without a stack cookie, linear buffer overflows can overwrite the return address directly on the stack."
+      }
+    ],
+    "engine": "revai_tools_sec",
+    "source": "revai_tools",
+    "duration_s": 0.06
+  },
+  "revai_tools_sinks": {
+    "format": "pe",
+    "entry_point": "0x1000",
+    "sink_count": 0,
+    "sinks": [],
+    "engine": "revai_tools_sinks",
+    "source": "revai_tools",
+    "duration_s": 0.34
+  },
+  "_format": "pe",
+  "_timings": {
+    "capa": 3.92,
+    "pe_imports": 0.02,
+    "yara": 3.73,
+    "floss": 4.94,
+    "malcat": 3.88,
+    "packer": 0.25,
+    "revai_tools_sec": 0.06,
+    "revai_tools_sinks": 0.34
+  },
+  "_stage": "quick_scan"
+}

@@ -1,0 +1,61 @@
+{
+  "sha256": "28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb",
+  "family": "Locky",
+  "imphash": "31553623c43827d554ad9e1b7dfa6a5a",
+  "generated_at": "2026-08-12T17:53:17.651832+00:00",
+  "string_count": 24,
+  "strings": [
+    "!This program cannot be run in DOS mode.",
+    "QSSjPSSSPS",
+    "D$$PWWWW",
+    "s89D$Dw2+D$Dj",
+    "t\"SS9] u",
+    "PPPPPPPP",
+    "UQPXY]Y[",
+    "Unknown exception",
+    "CorExitProcess",
+    "HH:mm:ss",
+    "dddd, MMMM dd, yyyy",
+    "MM/dd/yy",
+    "December",
+    "November",
+    "September",
+    "February",
+    "Saturday",
+    "Thursday",
+    "Wednesday",
+    "FlsSetValue",
+    "FlsGetValue",
+    "FlsAlloc",
+    "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
+    "Complete Object Locator'"
+  ],
+  "rule_path": "/opt/samples/logs/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/rule.yar",
+  "sigma_path": "/opt/samples/logs/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/rule.yml",
+  "iocs_path": "/opt/samples/logs/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/iocs.json",
+  "yara_valid": true,
+  "yara_check": "ok",
+  "goodware_fp": {
+    "goodware_dir": "/opt/samples/goodware",
+    "fp_count": 0,
+    "fp_samples": [],
+    "skipped": "goodware corpus not staged"
+  },
+  "yargen": {
+    "skipped": true
+  },
+  "revai": true,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-12 17:53:17 UTC"
+  },
+  "publish_target": "revai_publish"
+}

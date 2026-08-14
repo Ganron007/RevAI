@@ -1,0 +1,41 @@
+{
+  "sha256": "683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96",
+  "family": "Satana ransomware",
+  "verdict": "malicious@",
+  "generated_at": "2026-08-12T20:01:58.691225+00:00",
+  "hashes": {
+    "sha256": "683a09da219918258c58a7f61f7dc4161a3a7a377cf82a31b840baabfb9a4a96",
+    "sha1": "5b063298bbd1670b4d39e1baef67f854b8dcba9d",
+    "md5": "46bfd4f1d581d7c0121d2b19a005d3df"
+  },
+  "domains": [
+    "schemas[.]microsoft[.]com"
+  ],
+  "ips": [],
+  "urls": [
+    "http[:]//schemas[.]microsoft[.]com/SMI/2005/WindowsSettings"
+  ],
+  "files": [
+    "ntdll.dll",
+    "KERNEL32.dll",
+    "USER32.dll",
+    "OPENGL32.dll"
+  ],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive).",
+  "wallets_btc": [
+    "1PfGEyRTmnmQBVGHmnNHmnFNFQ"
+  ],
+  "wallets_eth": [],
+  "revai_tools": {
+    "count": 3,
+    "source": "revai_tools_iocs"
+  }
+}

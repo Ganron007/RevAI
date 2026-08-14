@@ -1,0 +1,52 @@
+{
+  "anti_analysis": {
+    "engine": "anti_analysis_signals",
+    "signals": [
+      {
+        "category": "debugger_string",
+        "weight": 1,
+        "func_addr": "4207808",
+        "func_name": "FUN_004034c0",
+        "evidence": "refs artifact string 'x64' @ 4274884",
+        "note": "VM/sandbox/analysis-tool artifact string"
+      }
+    ],
+    "functions": {
+      "4207808": {
+        "name": "FUN_004034c0",
+        "score": 1,
+        "signals": [
+          "debugger_string"
+        ],
+        "evidence": [
+          "refs artifact string 'x64' @ 4274884"
+        ]
+      }
+    },
+    "summary": {
+      "categories": {
+        "debugger_string": 1
+      },
+      "total_signals": 1,
+      "functions_with_signals": 1,
+      "elapsed_s": 17.37,
+      "note": "Deterministic; TLS callbacks are pre-entry-point candidates."
+    }
+  },
+  "dynamic_resolve": {
+    "engine": "dynamic_resolve_detect",
+    "summary": {
+      "resolver_funcs": 0,
+      "resolve_sites": 0,
+      "peb_module_walkers": 0,
+      "ordinal_imports": 0,
+      "min_resolve_calls": 2,
+      "elapsed_s": 2.7,
+      "note": "Resolve sites are core logic of packed/stripped samples (static import dir empty)."
+    },
+    "resolver_funcs": [],
+    "resolve_sites": [],
+    "peb_module_walkers": [],
+    "ordinal_imports": []
+  }
+}

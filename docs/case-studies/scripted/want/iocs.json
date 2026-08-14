@@ -1,0 +1,32 @@
+{
+  "sha256": "d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09",
+  "family": "ransomware.lockbit",
+  "verdict": "malicious@",
+  "generated_at": "2026-08-12T19:40:37.249129+00:00",
+  "hashes": {
+    "sha256": "d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09",
+    "sha1": "20ef9057653cb710608eb632fed45d42aff0ac6c",
+    "md5": "0f890d99d7a89506db76866f4a93b771"
+  },
+  "domains": [],
+  "ips": [],
+  "urls": [],
+  "files": [
+    "kernel32.dll"
+  ],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive).",
+  "wallets_btc": [],
+  "wallets_eth": [],
+  "revai_tools": {
+    "count": 0,
+    "source": "revai_tools_iocs"
+  }
+}

@@ -1,0 +1,36 @@
+# Anti-analysis signals (deterministic render of 02-signals.json)
+
+{
+  "engine": "anti_analysis_signals",
+  "signals": [
+    {
+      "category": "debugger_string",
+      "weight": 1,
+      "func_addr": "4207808",
+      "func_name": "FUN_004034c0",
+      "evidence": "refs artifact string 'x64' @ 4274884",
+      "note": "VM/sandbox/analysis-tool artifact string"
+    }
+  ],
+  "functions": {
+    "4207808": {
+      "name": "FUN_004034c0",
+      "score": 1,
+      "signals": [
+        "debugger_string"
+      ],
+      "evidence": [
+        "refs artifact string 'x64' @ 4274884"
+      ]
+    }
+  },
+  "summary": {
+    "categories": {
+      "debugger_string": 1
+    },
+    "total_signals": 1,
+    "functions_with_signals": 1,
+    "elapsed_s": 17.37,
+    "note": "Deterministic; TLS callbacks are pre-entry-point candidates."
+  }
+}

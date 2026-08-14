@@ -1,0 +1,405 @@
+# YARA matches (deterministic render)
+
+{
+  "rule_count": 19,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IP",
+      "path": "/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe",
+      "strings": [
+        {
+          "id": "$ipv4",
+          "offset": 295772,
+          "length": 16,
+          "xor_key": null
+        },
+        {
+          "id": "$ipv6",
+          "offset": 176064,
+          "length": 6,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "contains_base64",
+      "path": "/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 162639,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IsPE32",
+      "path": "/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe",
+      "strings": []
+    },
+    {
+      "rule": "IsWindowsGUI",
+      "path": "/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe",
+      "strings": []
+    },
+    {
+      "rule": "HasRichSignature",
+      "path": "/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe",
+      "strings": [
+        {
+          "id": "$a0",
+          "offset": 216,
+          "length": 4,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "VC8_Microsoft_Corporation",
+      "path": "/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 22742,
+          "length": 10,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Microsoft_Visual_Cpp_8",
+      "path": "/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 671,
+          "length": 82,
+          "xor_key": null
+        },
+        {
+          "id": "$b",
+          "offset": 61476,
+          "length": 10,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "SEH_Save",
+      "path": "/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 76034,
+          "length": 7,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "SEH_Init",
+      "path": "/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 1244,
+          "length": 6,
+          "xor_key": null
+        },
+        {
+          "id": "$b",
+          "offset": 104575,
+          "length": 7,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "anti_dbg",
+      "path": "/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe",
+      "strings": [
+        {
+          "id": "$d1",
+          "offset": 191098,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 193100,
+          "length": 17,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "win_hook",
+      "path": "/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 175752,
+          "length": 10,
+          "xor_key": null
+        },
+        {
+          "id": "$c1",
+          "offset": 191366,
+          "length": 19,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 191278,
+          "length": 17,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 191260,
+          "length": 14,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "network_http",
+      "path": "/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 163812,
+          "length": 11,
+          "xor_key": null
+        },
+        {
+          "id": "$c1",
+          "offset": 163429,
+          "length": 15,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 191716,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c4",
+          "offset": 191806,
+          "length": 16,
+          "xor_key": null
+        },
+        {
+          "id": "$c5",
+          "offset": 191786,
+          "length": 17,
+          "xor_key": null
+        },
+        {
+          "id": "$c6",
+          "offset": 191886,
+          "length": 15,
+          "xor_key": null
+        },
+        {
+          "id": "$c7",
+          "offset": 191844,
+          "length": 15,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "screenshot",
+      "path": "/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe",
+      "strings": [
+        {
+          "id": "$d1",
+          "offset": 195402,
+          "length": 9,
+          "xor_key": null
+        },
+        {
+          "id": "$d2",
+          "offset": 175752,
+          "length": 10,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 193990,
+          "length": 5,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "keylogger",
+      "path": "/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 175752,
+          "length": 10,
+          "xor_key": null
+        },
+        {
+          "id": "$c1",
+          "offset": 191222,
+          "length": 16,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 191114,
+          "length": 11,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "win_files_operation",
+      "path": "/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 191098,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c1",
+          "offset": 191794,
+          "length": 9,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 191768,
+          "length": 14,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 191794,
+          "length": 9,
+          "xor_key": null
+        },
+        {
+          "id": "$c4",
+          "offset": 191814,
+          "length": 8,
+          "xor_key": null
+        },
+        {
+          "id": "$c5",
+          "offset": 191048,
+          "length": 11,
+          "xor_key": null
+        },
+        {
+          "id": "$c6",
+          "offset": 192324,
+          "length": 11,
+          "xor_key": null
+        },
+        {
+          "id": "$c7",
+          "offset": 192262,
+          "length": 14,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Str_Win32_Wininet_Library",
+      "path": "/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe",
+      "strings": [
+        {
+          "id": "$wininet_lib",
+          "offset": 163812,
+          "length": 11,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Str_Win32_Internet_API",
+      "path": "/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe",
+      "strings": [
+        {
+          "id": "$wininet_call_closeh",
+          "offset": 191662,
+          "length": 19,
+          "xor_key": null
+        },
+        {
+          "id": "$wininet_call_readf",
+          "offset": 191806,
+          "length": 16,
+          "xor_key": null
+        },
+        {
+          "id": "$wininet_call_connect",
+          "offset": 163429,
+          "length": 15,
+          "xor_key": null
+        },
+        {
+          "id": "$wininet_call_open",
+          "offset": 191716,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Str_Win32_Http_API",
+      "path": "/opt/samples/corpus/malware/ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98/msdsrv.exe",
+      "strings": [
+        {
+          "id": "$wininet_call_httpr",
+          "offset": 191844,
+          "length": 15,
+          "xor_key": null
+        },
+        {
+          "id": "$wininet_call_httpo",
+          "offset": 191886,
+          "length": 15,
+          "xor_key": null
+        }
+      ]
+    }
+  ],
+  "engine": "yara-x",
+  "rules_compiled": 454,
+  "compile_errors": [
+    "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+    "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+    "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+  ],
+  "incomplete": true,
+  "duration_s": 3.04
+}

@@ -1,0 +1,33 @@
+{
+  "sha256": "a59b2cb9f6c706635b4d97edc574a72ac54fba47f9a4a1eae77cf58a96ccf567",
+  "imports": {
+    "source": "ghidra",
+    "confidence": "high",
+    "reason": "All sources (Ghidra, IDA, Malcat) report 24 imports, indicating high consistency. Evidence: {source: tool_summaries, query_or_table: ghidra/ida/malcat, row_or_rule: imports_count, why: Ghidra=24, IDA=24, Malcat=24}"
+  },
+  "functions": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Ghidra and IDA report similar counts (6 vs 7), within 2x, while Malcat reports 8 which may use different criteria. Evidence: {source: tool_summaries, query_or_table: ghidra and ida, row_or_rule: funcs, why: Ghidra=6, IDA=7, Malcat=8}"
+  },
+  "strings": {
+    "source": "ida",
+    "confidence": "medium",
+    "reason": "IDA reports 96 strings, close to Malcat's 100, and higher than Ghidra's 36, suggesting better detection in this case. Evidence: {source: tool_summaries, query_or_table: ida, row_or_rule: strings_count, why: 96 strings, compared to Ghidra=36 and Malcat=100}"
+  },
+  "decompilation": {
+    "source": "ghidra",
+    "confidence": "low",
+    "reason": "No direct decompilation data in tool summaries; default to Ghidra as a common decompiler. Evidence: {source: rule_based_decision, query_or_table: existing, row_or_rule: decompilation, why: default to Ghidra}"
+  },
+  "cff": {
+    "source": "ghidra",
+    "confidence": "low",
+    "reason": "No direct cff data in tool summaries; default to Ghidra for analysis. Evidence: {source: rule_based_decision, query_or_table: existing, row_or_rule: cff, why: default to Ghidra}"
+  },
+  "static_profile": {
+    "source": "malcat",
+    "confidence": "high",
+    "reason": "Malcat provides a fast and detailed static profile including entropy, anomalies count, yara hits, and file summary. Evidence: {source: tool_summaries, query_or_table: malcat, row_or_rule: static_profile, why: includes entropy=91, anomalies_count=4, yara_hits_count=2, etc.}"
+  }
+}

@@ -1,0 +1,72 @@
+# capa rules (deterministic render)
+
+{
+  "rule_count": 3,
+  "top_rules": [
+    {
+      "name": "encode data using XOR",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Encoding-Standard Algorithm"
+          ],
+          "objective": "Defense Evasion",
+          "behavior": "Obfuscated Files or Information",
+          "method": "Encoding-Standard Algorithm",
+          "id": "E1027.m02"
+        },
+        {
+          "parts": [
+            "Data",
+            "Encode Data",
+            "XOR"
+          ],
+          "objective": "Data",
+          "behavior": "Encode Data",
+          "method": "XOR",
+          "id": "C0026.002"
+        }
+      ]
+    },
+    {
+      "name": "terminate process",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Process",
+            "Terminate Process"
+          ],
+          "objective": "Process",
+          "behavior": "Terminate Process",
+          "method": "",
+          "id": "C0018"
+        }
+      ]
+    },
+    {
+      "name": "set application hook",
+      "attack": [],
+      "mbc": []
+    }
+  ],
+  "timeout_s": 300,
+  "sample_size": 65729,
+  "duration_s": 2.19,
+  "engine": "malcat-capa",
+  "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+}

@@ -1,0 +1,47 @@
+# PE import signals (deterministic render)
+
+{
+  "engine": "pe_imports",
+  "sample_size": 328704,
+  "duration_s": 0.02,
+  "import_count": 264,
+  "signal_count": 5,
+  "signals": [
+    {
+      "label": "check_debugger",
+      "api_match": "IsDebuggerPresent",
+      "attack": [
+        "T1622"
+      ]
+    },
+    {
+      "label": "http_client",
+      "api_match": "InternetOpen",
+      "attack": [
+        "T1071.001"
+      ]
+    },
+    {
+      "label": "load_library",
+      "api_match": "LoadLibrary",
+      "attack": [
+        "T1129"
+      ]
+    },
+    {
+      "label": "get_proc_address",
+      "api_match": "GetProcAddress",
+      "attack": [
+        "T1129"
+      ]
+    },
+    {
+      "label": "allocate_memory",
+      "api_match": "VirtualAlloc",
+      "attack": [
+        "T1055"
+      ]
+    }
+  ],
+  "hint": "PE import high-signal map (pefile). Not capa."
+}

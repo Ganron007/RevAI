@@ -1,0 +1,33 @@
+{
+  "sha256": "a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395",
+  "imports": {
+    "source": "ghidra",
+    "confidence": "high",
+    "reason": "{source: 'tool_summaries', query_or_table: 'ghidra and ida', row_or_rule: 'imports count', why: 'Both Ghidra and IDA report 187 imports, showing consistency and reliability for import extraction, while Malcat's count (863) diverges significantly.'}"
+  },
+  "functions": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "{source: 'tool_summaries', query_or_table: 'ghidra and ida', row_or_rule: 'functions count', why: 'Ghidra reports 1342 functions and IDA reports 1534, within a 14% difference, making Ghidra a standard tool for function analysis, whereas Malcat's count (10) is unreliable.'}"
+  },
+  "strings": {
+    "source": "both",
+    "confidence": "high",
+    "reason": "{source: 'tool_summaries', query_or_table: 'ghidra and ida', row_or_rule: 'strings count', why: 'Ghidra and IDA have differing string counts (994 vs 1660), and Malcat's count (100) is low, so using both engines ensures comprehensive string extraction.'}"
+  },
+  "decompilation": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "{source: 'tool_capabilities', query_or_table: 'ghidra features', row_or_rule: 'decompiler', why: 'Ghidra is known for its robust decompiler, suitable for malware decompilation, while other tools lack explicit decompilation data in summaries.'}"
+  },
+  "cff": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "{source: 'existing_decision', query_or_table: 'rule-based decisions', row_or_rule: 'cff source', why: 'Defaulting to Ghidra for CFF analysis based on standard practices in malware analysis, as no specific data contradicts this.'}"
+  },
+  "static_profile": {
+    "source": "malcat",
+    "confidence": "high",
+    "reason": "{source: 'tool_summaries', query_or_table: 'malcat', row_or_rule: 'anomalies and yara hits', why: 'Malcat provides a fast static profile with anomalies (11) and YARA hits (5), ideal for initial assessment and profiling.'}"
+  }
+}

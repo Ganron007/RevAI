@@ -1,0 +1,33 @@
+{
+  "sha256": "cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a",
+  "imports": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "Ghidra and IDA report 60 imports each, while Malcat reports 163, indicating Ghidra/IDA are consistent and likely more accurate."
+  },
+  "functions": {
+    "source": "ghidra",
+    "confidence": "high",
+    "reason": "Ghidra and IDA show similar function counts (135 and 136), while Malcat reports only 10, suggesting Ghidra/IDA are reliable for function analysis."
+  },
+  "strings": {
+    "source": "both",
+    "confidence": "high",
+    "reason": "Use both engines to account for variations: Ghidra=138, IDA=147, Malcat=100, ensuring comprehensive string coverage."
+  },
+  "decompilation": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "No specific data in tool summaries; default to Ghidra for decompilation capabilities."
+  },
+  "cff": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "No specific data in tool summaries; default to Ghidra for CFF analysis."
+  },
+  "static_profile": {
+    "source": "malcat",
+    "confidence": "high",
+    "reason": "Malcat provides fast file summary with anomalies (5), detailed counts (imports, strings, functions), and other static metrics."
+  }
+}

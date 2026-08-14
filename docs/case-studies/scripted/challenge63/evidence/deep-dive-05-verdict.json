@@ -1,0 +1,90 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "This PE32 binary is a trojanized clone of the Windows Registry Editor (regedit.exe). It masquerades as the legitimate tool (contains regedit.pdb, REGEDIT4 headers, Applets\\Regedit registry references) while embedding keylogging via GetKeyState/SetTimer polling (CAPA T1056.001), screenshot capability (BitBlt/CreateCompatibleDC/GetDesktopWindow imports, YARA screenshot rules), privilege escalation (AdjustTokenPrivileges/OpenProcessToken), aggressive registry manipulation (20+ Reg* APIs including RegSetValueEx, RegDeleteKey, RegLoadKey), system policy modification (DisableRegistryTools under Policies\\System), clipboard monitoring (OpenClipboard/GetClipboardData), window surveillance (FindWindowW/GetWindowTextW), and code obfuscation (stack strings per CAPA T1027.005, functions with cyclomatic complexity up to 123 with 149 basic blocks). YARA matches: keylogger, screenshot, anti_debug, escalate_priv, win_registry, System_Tools. The DisableRegistryTools policy string under Policies\\System indicates intent to disable the real regedit to maintain its disguise. Persistence: Not observed in cited evidence; registry manipulation APIs (e.g., RegSetValueEx) could support persistence techniques like Run key modifications, but no specific persistence mechanisms are confirmed by CAPA or YARA rules. Exfiltration: Not observed; keylogging and screenshot functions indicate data collection, but no network communication or data exfiltration methods (e.g., send APIs) are cited in the analysis.",
+  "key_evidence": [
+    "YARA matches: keylogger (offset 777, 83222), screenshot (offset 767, 777, 82718), anti_dbg (offset 744, 81926), escalate_priv (offset 731, 80750), win_registry (offset 731, 80640, 85492, 85512), System_Tools (offset 92640)",
+    "CAPA: 'log keystrokes via polling' (T1056.001), 'contain obfuscated stackstrings' (T1027.005), plus 22 other capability rules",
+    "Ghidra imports: GetKeyState (USER32.dll), SetTimer (USER32.dll), FindWindowW, GetWindowTextW, GetWindowTextLengthW - keylogging/surveillance toolkit",
+    "Ghidra imports: AdjustTokenPrivileges, LookupPrivilegeValueW, OpenProcessToken (ADVAPI32.dll) - privilege escalation",
+    "Ghidra imports: BitBlt, CreateCompatibleDC, CreateCompatibleBitmap, GetDC, GetDesktopWindow, GetWindowDC, StretchBlt (GDI32.dll/USER32.dll) - screenshot capture",
+    "Ghidra imports: 20+ registry APIs (RegSetValueExW, RegCreateKeyW, RegDeleteKeyW, RegLoadKeyW, RegSaveKeyW, RegConnectRegistryW, etc.) - full registry manipulation",
+    "Ghidra imports: OpenClipboard, GetClipboardData, CloseClipboard, SetClipboardData (USER32.dll) - clipboard monitoring",
+    "Ghidra string refs: FUN_010089fb references 'DisableRegistryTools' at addr 0x01003476 and 'Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\System' at addr 0x01003520",
+    "Ghidra strings: 'regedit.pdb', 'REGEDIT', 'REGEDIT4', 'RegEdit_RegEdit', 'Software\\Microsoft\\Windows\\CurrentVersion\\Applets\\Regedit' - masquerading as legitimate regedit.exe",
+    "Ghidra function metrics: FUN_01006e46 has cyclomatic_complexity=123, 522 instructions, 149 blocks, 58 call-outs - highly obfuscated control flow",
+    "pe_import_signals: set_registry_value (T1112), load_library (T1129), get_proc_address (T1129)",
+    "FLOSS: 853 static strings extracted; binary is 134KB PE32 GUI executable"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 31,
+  "successful_non_bootstrap_tools": 17,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

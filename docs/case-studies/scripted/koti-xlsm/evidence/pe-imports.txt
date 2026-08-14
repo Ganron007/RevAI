@@ -1,0 +1,9 @@
+# PE import signals (deterministic render)
+
+{
+  "skipped": true,
+  "reason": "not_applicable:ooxml",
+  "engine": "pe_imports",
+  "signal_count": 0,
+  "signals": []
+}

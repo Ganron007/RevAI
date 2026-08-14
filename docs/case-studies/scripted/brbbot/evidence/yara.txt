@@ -1,0 +1,363 @@
+# YARA matches (deterministic render)
+
+{
+  "rule_count": 17,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/malware/f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e/brbbot.exe",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "contains_base64",
+      "path": "/opt/samples/corpus/malware/f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e/brbbot.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 4117,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Dropper_Strings",
+      "path": "/opt/samples/corpus/malware/f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e/brbbot.exe",
+      "strings": [
+        {
+          "id": "$a0",
+          "offset": 59035,
+          "length": 18,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Advapi_Hash_API",
+      "path": "/opt/samples/corpus/malware/f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e/brbbot.exe",
+      "strings": [
+        {
+          "id": "$advapi32",
+          "offset": 63816,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$CryptCreateHash",
+          "offset": 63730,
+          "length": 15,
+          "xor_key": null
+        },
+        {
+          "id": "$CryptHashData",
+          "offset": 63802,
+          "length": 13,
+          "xor_key": null
+        },
+        {
+          "id": "$CryptAcquireContext",
+          "offset": 63650,
+          "length": 19,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IsPE64",
+      "path": "/opt/samples/corpus/malware/f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e/brbbot.exe",
+      "strings": []
+    },
+    {
+      "rule": "IsWindowsGUI",
+      "path": "/opt/samples/corpus/malware/f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e/brbbot.exe",
+      "strings": []
+    },
+    {
+      "rule": "HasRichSignature",
+      "path": "/opt/samples/corpus/malware/f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e/brbbot.exe",
+      "strings": [
+        {
+          "id": "$a0",
+          "offset": 208,
+          "length": 4,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Microsoft_Visual_Cpp_80_DLL",
+      "path": "/opt/samples/corpus/malware/f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e/brbbot.exe",
+      "strings": [
+        {
+          "id": "$b",
+          "offset": 13204,
+          "length": 4,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "anti_dbg",
+      "path": "/opt/samples/corpus/malware/f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e/brbbot.exe",
+      "strings": [
+        {
+          "id": "$d1",
+          "offset": 64588,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 64758,
+          "length": 17,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "network_http",
+      "path": "/opt/samples/corpus/malware/f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e/brbbot.exe",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 64018,
+          "length": 11,
+          "xor_key": null
+        },
+        {
+          "id": "$c1",
+          "offset": 63922,
+          "length": 15,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 64004,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c4",
+          "offset": 63862,
+          "length": 16,
+          "xor_key": null
+        },
+        {
+          "id": "$c6",
+          "offset": 63964,
+          "length": 15,
+          "xor_key": null
+        },
+        {
+          "id": "$c7",
+          "offset": 63984,
+          "length": 15,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "screenshot",
+      "path": "/opt/samples/corpus/malware/f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e/brbbot.exe",
+      "strings": [
+        {
+          "id": "$d2",
+          "offset": 64610,
+          "length": 10,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 64604,
+          "length": 5,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "win_registry",
+      "path": "/opt/samples/corpus/malware/f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e/brbbot.exe",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 63816,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 63588,
+          "length": 13,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 63636,
+          "length": 11,
+          "xor_key": null
+        },
+        {
+          "id": "$c4",
+          "offset": 63570,
+          "length": 14,
+          "xor_key": null
+        },
+        {
+          "id": "$c6",
+          "offset": 63636,
+          "length": 11,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "win_files_operation",
+      "path": "/opt/samples/corpus/malware/f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e/brbbot.exe",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 64588,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c1",
+          "offset": 64132,
+          "length": 9,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 65400,
+          "length": 14,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 64132,
+          "length": 9,
+          "xor_key": null
+        },
+        {
+          "id": "$c4",
+          "offset": 63870,
+          "length": 8,
+          "xor_key": null
+        },
+        {
+          "id": "$c5",
+          "offset": 64474,
+          "length": 11,
+          "xor_key": null
+        },
+        {
+          "id": "$c6",
+          "offset": 64044,
+          "length": 11,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Str_Win32_Winsock2_Library",
+      "path": "/opt/samples/corpus/malware/f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e/brbbot.exe",
+      "strings": [
+        {
+          "id": "$ws2_lib",
+          "offset": 64030,
+          "length": 10,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Str_Win32_Wininet_Library",
+      "path": "/opt/samples/corpus/malware/f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e/brbbot.exe",
+      "strings": [
+        {
+          "id": "$wininet_lib",
+          "offset": 64018,
+          "length": 11,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Str_Win32_Internet_API",
+      "path": "/opt/samples/corpus/malware/f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e/brbbot.exe",
+      "strings": [
+        {
+          "id": "$wininet_call_closeh",
+          "offset": 63882,
+          "length": 19,
+          "xor_key": null
+        },
+        {
+          "id": "$wininet_call_readf",
+          "offset": 63862,
+          "length": 16,
+          "xor_key": null
+        },
+        {
+          "id": "$wininet_call_connect",
+          "offset": 63922,
+          "length": 15,
+          "xor_key": null
+        },
+        {
+          "id": "$wininet_call_open",
+          "offset": 64004,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Str_Win32_Http_API",
+      "path": "/opt/samples/corpus/malware/f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e/brbbot.exe",
+      "strings": [
+        {
+          "id": "$wininet_call_httpr",
+          "offset": 63984,
+          "length": 15,
+          "xor_key": null
+        },
+        {
+          "id": "$wininet_call_httpq",
+          "offset": 63904,
+          "length": 13,
+          "xor_key": null
+        },
+        {
+          "id": "$wininet_call_httpo",
+          "offset": 63964,
+          "length": 15,
+          "xor_key": null
+        }
+      ]
+    }
+  ],
+  "engine": "yara-x",
+  "rules_compiled": 454,
+  "compile_errors": [
+    "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+    "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+    "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+  ],
+  "incomplete": true,
+  "duration_s": 4.28
+}

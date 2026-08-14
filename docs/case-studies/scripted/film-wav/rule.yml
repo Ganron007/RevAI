@@ -1,0 +1,19 @@
+title: "RevAI v2: fkmb activity"
+id: fkmb_0f02beee4c93
+status: experimental
+level: high
+description: "Auto-generated Sigma rule for fkmb (sha256 prefix 0f02beee4c93)"
+author: RevAI yara_gen_v2
+date: 2026/08/13
+reference: "commit unknown · engine langgraph"
+tags:
+    - attack.execution
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+            CommandLine|contains: "*./<<IHSRXX``eeihjklloonnqqqpnnmlmmjjihggddbb``^^\\*"
+    condition: selection
+falsepositives:
+    - Review against goodware corpus

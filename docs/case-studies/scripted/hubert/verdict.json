@@ -1,0 +1,228 @@
+{
+  "verdict": "malicious",
+  "score": 95,
+  "family_guess": "Tibs",
+  "cross_engine_notes": "Ghidra and IDA agree on import DLLs (ntdll, shlwapi, wininet, shell32, kernel32, user32, advapi32, ole32) and the presence of 'Adware.dll' string. MalCat identifies high-entropy sections, XOR loops, and behavioral imports (InternetOpen, RegSetValue, CreateProcess, VirtualAlloc). Capa and YARA provide direct behavioral rules (process injection, privilege escalation, anti-VM). External TI (VirusTotal) reports 58/70 malicious detections with threat label 'trojan.tibs/gen2'.",
+  "key_evidence": [
+    {
+      "source": "malcat",
+      "query_or_table": "malcat_evidence",
+      "row_or_rule": "ProcessInjectionTargets",
+      "why": "YARA rule matching process injection targets, indicating malicious intent for code injection.",
+      "source_corrected_from": "yara"
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "malcat_evidence",
+      "row_or_rule": "ElevatePrivileges",
+      "why": "YARA rule matching privilege escalation, a common malicious behavior.",
+      "source_corrected_from": "yara"
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "anomalies",
+      "row_or_rule": "XorInLoop",
+      "why": "XOR operations in loops at addresses 7008, 7021, 7187, indicating data decryption/obfuscation."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "decompilations",
+      "row_or_rule": "sub_100027e5",
+      "why": "Decompilation shows XOR loop with key 0x5d785e, a clear decryption routine."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "top high-signal imports",
+      "row_or_rule": "wininet.InternetReadFile",
+      "why": "Network communication import for C2/beaconing."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "top high-signal imports",
+      "row_or_rule": "advapi32.AdjustTokenPrivileges",
+      "why": "Token manipulation for privilege escalation."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "top high-signal imports",
+      "row_or_rule": "kernel32.VirtualAlloc",
+      "why": "Memory allocation for code injection or shellcode."
+    },
+    {
+      "source": "capa",
+      "query_or_table": "capa rules",
+      "row_or_rule": "reference anti-VM strings targeting Xen",
+      "why": "Anti-analysis technique to evade virtualization sandboxes (T1497.001)."
+    },
+    {
+      "source": "floss",
+      "query_or_table": "strings",
+      "row_or_rule": "InternetOpenUrlA",
+      "why": "Indicates network communication capability."
+    },
+    {
+      "source": "floss",
+      "query_or_table": "strings",
+      "row_or_rule": "Software\\",
+      "why": "Registry key for persistence or configuration."
+    },
+    {
+      "source": "external_ti",
+      "query_or_table": "VirusTotal",
+      "row_or_rule": "malicious=58",
+      "why": "58/70 AV detections as malicious with threat label 'trojan.tibs/gen2'."
+    }
+  ],
+  "summary": "This DLL is a packed and obfuscated trojan downloader (Tibs family) that performs process injection, privilege escalation, and network communication via WinINet APIs. It uses XOR encryption (key 0x5d785e) and anti-VM techniques to evade analysis. Key behavioral indicators include imports for registry manipulation, process creation, memory allocation, and token adjustment, supported by YARA rules for injection and escalation. External VirusTotal reports high detection rates (58/70). The high entropy (7.99), unusual sections (.nasoc, .tlsc), and unreferenced imports suggest packing/obfuscation, but the behavioral evidence confirms malicious intent.",
+  "source": "llm_judge",
+  "model": "mimo-v2.5-pro",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 290,
+    "findings": [
+      "yara: 16 matches",
+      "capa: 3 rules"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "yara",
+      "malcat",
+      "floss",
+      "pe_imports"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "ti_enrich": {
+    "ok": true,
+    "providers": {
+      "virustotal": {
+        "ok": true,
+        "malicious": 58,
+        "suspicious": 0,
+        "harmless": 0,
+        "undetected": 12,
+        "reputation": 0,
+        "popular_threat_classification": {
+          "suggested_threat_label": "trojan.tibs/gen2",
+          "popular_threat_category": [
+            {
+              "value": "trojan",
+              "count": 29
+            },
+            {
+              "value": "fakeav",
+              "count": 11
+            },
+            {
+              "value": "downloader",
+              "count": 5
+            }
+          ],
+          "popular_threat_name": [
+            {
+              "value": "tibs",
+              "count": 5
+            },
+            {
+              "value": "gen2",
+              "count": 2
+            },
+            {
+              "value": "prodatect",
+              "count": 2
+            }
+          ]
+        },
+        "names": [
+          "hubert.dll"
+        ],
+        "tags": [
+          "long-sleeps",
+          "pedll",
+          "nxdomain",
+          "detect-debug-environment"
+        ],
+        "link": "https://www.virustotal.com/gui/file/0598e95ea5f28e3e591a8ab26bd6794e06f038282cac8ecf302009c6636cd0bc"
+      },
+      "hybrid_analysis": {
+        "ok": true,
+        "link": "https://www.hybrid-analysis.com/sample/0598e95ea5f28e3e591a8ab26bd6794e06f038282cac8ecf302009c6636cd0bc"
+      }
+    },
+    "policy": "enrichment_only_never_clears_local_yara_or_tool_gates"
+  },
+  "yara_family_hits": [
+    "win_files_operation"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 2,
+    "corrections": [
+      {
+        "from": "yara",
+        "to": "malcat",
+        "needle": "ProcessInjectionTargets",
+        "owners": [
+          "malcat"
+        ]
+      },
+      {
+        "from": "yara",
+        "to": "malcat",
+        "needle": "ElevatePrivileges",
+        "owners": [
+          "malcat"
+        ]
+      }
+    ]
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 11,
+    "hits": 11,
+    "misses": [],
+    "hit_examples": [
+      "ProcessInjectionTargets malcat_evidence YARA rule matching process injection targets, indicating malicious intent for co",
+      "ElevatePrivileges malcat_evidence YARA rule matching privilege escalation, a common malicious behavior. malcat   ",
+      "XorInLoop anomalies XOR operations in loops at addresses 7008, 7021, 7187, indicating data decryption/obfuscation. malca",
+      "sub_100027e5 decompilations Decompilation shows XOR loop with key 0x5d785e, a clear decryption routine. malcat   ",
+      "wininet.InternetReadFile top high-signal imports Network communication import for C2/beaconing. malcat   "
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 10,
+    "false_engine_citations": [],
+    "reason": ""
+  },
+  "accuracy_hold": {
+    "engine_sources_auto_corrected": 2
+  }
+}

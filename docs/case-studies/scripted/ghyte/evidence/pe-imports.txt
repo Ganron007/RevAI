@@ -1,0 +1,11 @@
+# PE import signals (deterministic render)
+
+{
+  "engine": "pe_imports",
+  "sample_size": 26624,
+  "duration_s": 0.02,
+  "import_count": 24,
+  "signal_count": 0,
+  "signals": [],
+  "hint": "PE import high-signal map (pefile). Not capa."
+}

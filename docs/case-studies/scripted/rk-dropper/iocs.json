@@ -1,0 +1,46 @@
+{
+  "sha256": "1196afa54d18ff2ddf0be7a77616657dbd286147f6705d16357239b2dd941ea0",
+  "family": "adload/fugrafa",
+  "verdict": "malicious@",
+  "generated_at": "2026-08-12T22:36:52.330917+00:00",
+  "hashes": {
+    "sha256": "1196afa54d18ff2ddf0be7a77616657dbd286147f6705d16357239b2dd941ea0",
+    "sha1": "01b5672fd4fe463b72eada09837924cb578bfd3a",
+    "md5": "97492c2392ea7404930e5499c3dcc607"
+  },
+  "domains": [
+    "ocsp.comodoca.com",
+    "secure.comodo.net",
+    "secure[.]comodo[.]net",
+    "crl[.]comodoca[.]com",
+    "crt[.]comodoca[.]com"
+  ],
+  "ips": [
+    "1.3.9.6",
+    "6[.]0[.]0[.]0"
+  ],
+  "urls": [
+    "http://crl.como..nAuthority.crl",
+    "http://ocsp.comodoca.com",
+    "https://secure.comodo.net/CPS0C",
+    "https[:]//secure[.]comodo[.]net/CPS0C\u0006\u0003U",
+    "http[:]//ocsp[.]comodoca[.]com0",
+    "http[:]//crl[.]comodoca[.]com/COMODORSACertificationAuthority[.]crl0q\u0006\b+\u0006\u0001\u0005\u0005\u0007\u0001\u0001\u0004e0c0;\u0006\b+\u0006\u0001\u0005\u0005\u00070\u0002\ufffd/http[:]//crt[.]comodoca[.]com/COMODORSAAddTrustCA[.]crt0$\u0006\b+\u0006\u0001\u0005\u0005\u00070\u0001\ufffd\u0018http[:]//ocsp[.]comodoca[.]com0"
+  ],
+  "files": [],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive).",
+  "wallets_btc": [],
+  "wallets_eth": [],
+  "revai_tools": {
+    "count": 7,
+    "source": "revai_tools_iocs"
+  }
+}

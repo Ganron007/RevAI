@@ -1,0 +1,21 @@
+title: "RevAI v2: Satana ransomware activity"
+id: satana_ransomware_683a09da2199
+status: experimental
+level: high
+description: "Auto-generated Sigma rule for Satana ransomware (sha256 prefix 683a09da2199)"
+author: RevAI yara_gen_v2
+date: 2026/08/12
+reference: "commit unknown · engine langgraph"
+tags:
+    - attack.execution
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+            CommandLine|contains: "*ZwProtectVirtualMemory*"
+            CommandLine|contains: "*ZwWriteVirtualMemory*"
+            CommandLine|contains: "*GetModuleFileNameW*"
+    condition: selection
+falsepositives:
+    - Review against goodware corpus

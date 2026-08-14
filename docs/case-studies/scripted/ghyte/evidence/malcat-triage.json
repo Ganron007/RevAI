@@ -1,0 +1,841 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/malware/a59b2cb9f6c706635b4d97edc574a72ac54fba47f9a4a1eae77cf58a96ccf567/ghyte.exe",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "ghyte.exe",
+    "file_path": "/opt/samples/corpus/malware/a59b2cb9f6c706635b4d97edc574a72ac54fba47f9a4a1eae77cf58a96ccf567/ghyte.exe",
+    "file_size": 26624,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 6.04,
+    "sha256": "a59b2cb9f6c706635b4d97edc574a72ac54fba47f9a4a1eae77cf58a96ccf567",
+    "metadata": {},
+    "entrypoint_ea": 2688,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 39
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 10752,
+        "virtual_size": 12288,
+        "rights": "RX",
+        "entropy": 137
+      },
+      {
+        "name": ".data",
+        "effective_address": 13312,
+        "physical_size": 3584,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 72
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 17408,
+        "physical_size": 11264,
+        "virtual_size": 12288,
+        "rights": "R",
+        "entropy": 52
+      }
+    ],
+    "kesakode_verdict": [],
+    "entropy_malcat_raw": 91,
+    "entropy_source": "whole_file_shannon_revai"
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "HugeGapBetweenFunctions",
+        "desc": "There is a huge gap between two functions with medium-to-high entropy, often means that data is stored there",
+        "category": "code",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "NoChecksum",
+        "desc": "PE Header checksum is not set",
+        "category": "integrity",
+        "level": 1,
+        "num_hits": 1
+      },
+      {
+        "name": "NoValidCertificate",
+        "desc": "Certificate data directory does not point to a valid certificate (maybe corrupted ?)",
+        "category": "integrity",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 1
+      }
+    ],
+    "anomaly_locations": {
+      "NoChecksum": [
+        {
+          "ea": 328,
+          "context": ""
+        }
+      ],
+      "XorInLoop": [
+        {
+          "ea": 8221,
+          "context": ""
+        }
+      ]
+    },
+    "yara_hits": [
+      {
+        "id": "MSVC_2005_linker",
+        "category": "compiler",
+        "reliability": 60,
+        "type": "INFO",
+        "description": "detects used visual studio version based on linker information",
+        "num_patterns": 0
+      },
+      {
+        "id": "MSVC_2008_rich",
+        "category": "compiler",
+        "reliability": 80,
+        "type": "INFO",
+        "description": "detects used visual studio version based on rich header information",
+        "num_patterns": 0
+      }
+    ],
+    "strings": [
+      {
+        "ea": 17712,
+        "summary": "<assembly xmlns=..fo>\r\n</assembly>"
+      },
+      {
+        "ea": 14284,
+        "summary": "DestroyWindow"
+      },
+      {
+        "ea": 14259,
+        "summary": "dip quip"
+      },
+      {
+        "ea": 16742,
+        "summary": "kernel32.dll"
+      },
+      {
+        "ea": 14272,
+        "summary": "edit"
+      },
+      {
+        "ea": 16768,
+        "summary": "gdi32.dll"
+      },
+      {
+        "ea": 14304,
+        "summary": "button"
+      },
+      {
+        "ea": 14239,
+        "summary": "summer"
+      },
+      {
+        "ea": 16676,
+        "summary": "user32.dll"
+      },
+      {
+        "ea": 14234,
+        "summary": "lunt"
+      },
+      {
+        "ea": 28252,
+        "summary": "\"\"\"DB\"\""
+      },
+      {
+        "ea": 28260,
+        "summary": "\"\"\"BB\"\""
+      },
+      {
+        "ea": 77,
+        "summary": "!This program ca..in DOS mode.\r\r\n$"
+      },
+      {
+        "ea": 16550,
+        "summary": "TranslateMessage"
+      },
+      {
+        "ea": 28199,
+        "summary": "\"\"\"\""
+      },
+      {
+        "ea": 28188,
+        "summary": "\"\"\"\"\"\"\""
+      },
+      {
+        "ea": 28292,
+        "summary": "\"\"\"\"\"\"\""
+      },
+      {
+        "ea": 28244,
+        "summary": "\"\"\"#\"\"\""
+      },
+      {
+        "ea": 16584,
+        "summary": "DispatchMessageA"
+      },
+      {
+        "ea": 16630,
+        "summary": "PostQuitMessage"
+      },
+      {
+        "ea": 16708,
+        "summary": "GetModuleHandleA"
+      },
+      {
+        "ea": 28268,
+        "summary": "\"\"$BD\"\""
+      },
+      {
+        "ea": 16464,
+        "summary": "SendMessageA"
+      },
+      {
+        "ea": 16616,
+        "summary": "GetMessageA"
+      },
+      {
+        "ea": 16728,
+        "summary": "GetLastError"
+      },
+      {
+        "ea": 16690,
+        "summary": "GetCommandLineA"
+      },
+      {
+        "ea": 16498,
+        "summary": "RegisterClassExA"
+      },
+      {
+        "ea": 13849,
+        "summary": "6Ltt"
+      },
+      {
+        "ea": 16382,
+        "summary": "KillTimer"
+      },
+      {
+        "ea": 8750,
+        "summary": "@@%@"
+      },
+      {
+        "ea": 9931,
+        "summary": "@@m\r"
+      },
+      {
+        "ea": 10163,
+        "summary": "@@%@"
+      },
+      {
+        "ea": 14150,
+        "summary": ";NNt"
+      },
+      {
+        "ea": 13874,
+        "summary": "Tqq1"
+      },
+      {
+        "ea": 28276,
+        "summary": "\"\"$\"$\"\""
+      },
+      {
+        "ea": 16570,
+        "summary": "BeginPaint"
+      },
+      {
+        "ea": 16438,
+        "summary": "LoadCursorA"
+      },
+      {
+        "ea": 16410,
+        "summary": "GetWindowRect"
+      },
+      {
+        "ea": 28284,
+        "summary": "\"\"$\"$\"\""
+      },
+      {
+        "ea": 16648,
+        "summary": "ShowWindow"
+      },
+      {
+        "ea": 9288,
+        "summary": "@%%@@"
+      },
+      {
+        "ea": 8818,
+        "summary": "pun@@"
+      },
+      {
+        "ea": 8810,
+        "summary": "0wwl?"
+      },
+      {
+        "ea": 9253,
+        "summary": "@%%@@"
+      },
+      {
+        "ea": 8580,
+        "summary": "@%%@@"
+      },
+      {
+        "ea": 488,
+        "summary": ".text"
+      },
+      {
+        "ea": 568,
+        "summary": ".rsrc"
+      },
+      {
+        "ea": 1157,
+        "summary": "qH1Hl"
+      },
+      {
+        "ea": 14277,
+        "summary": "static"
+      },
+      {
+        "ea": 527,
+        "summary": "`.data"
+      },
+      {
+        "ea": 14246,
+        "summary": "momenr"
+      },
+      {
+        "ea": 14227,
+        "summary": "terras"
+      },
+      {
+        "ea": 16370,
+        "summary": "SetTimer"
+      },
+      {
+        "ea": 16758,
+        "summary": "TextOutA"
+      },
+      {
+        "ea": 3387,
+        "summary": "`X+ww76m@@"
+      },
+      {
+        "ea": 16662,
+        "summary": "UpdateWindow"
+      },
+      {
+        "ea": 16604,
+        "summary": "EndPaint"
+      },
+      {
+        "ea": 16536,
+        "summary": "LoadBitmapA"
+      },
+      {
+        "ea": 16518,
+        "summary": "CreateWindowExA"
+      },
+      {
+        "ea": 16480,
+        "summary": "DefWindowProcA"
+      },
+      {
+        "ea": 16452,
+        "summary": "LoadIconA"
+      },
+      {
+        "ea": 16426,
+        "summary": "FillRect"
+      },
+      {
+        "ea": 16394,
+        "summary": "SetWindowPos"
+      },
+      {
+        "ea": 13830,
+        "summary": ";XZkq"
+      },
+      {
+        "ea": 10178,
+        "summary": "%@%%@"
+      },
+      {
+        "ea": 14253,
+        "summary": "Arial"
+      },
+      {
+        "ea": 8999,
+        "summary": "98Hl6"
+      },
+      {
+        "ea": 8845,
+        "summary": "KQjO:N"
+      },
+      {
+        "ea": 14298,
+        "summary": "loret"
+      },
+      {
+        "ea": 207,
+        "summary": "7Richu"
+      },
+      {
+        "ea": 1109,
+        "summary": "00N,t"
+      },
+      {
+        "ea": 7954,
+        "summary": "O8T=y"
+      },
+      {
+        "ea": 3300,
+        "summary": "8V}x8"
+      },
+      {
+        "ea": 4548,
+        "summary": "Y[\"fh"
+      },
+      {
+        "ea": 7762,
+        "summary": ")wPwm"
+      },
+      {
+        "ea": 7735,
+        "summary": "H]wyvK`"
+      },
+      {
+        "ea": 6133,
+        "summary": "@hZK"
+      },
+      {
+        "ea": 9220,
+        "summary": "%%@@"
+      },
+      {
+        "ea": 10046,
+        "summary": "]Ek\r"
+      },
+      {
+        "ea": 7934,
+        "summary": "qw4m"
+      },
+      {
+        "ea": 10202,
+        "summary": "@%@%"
+      },
+      {
+        "ea": 11252,
+        "summary": "\rXD@"
+      },
+      {
+        "ea": 13586,
+        "summary": "^j`k"
+      },
+      {
+        "ea": 13611,
+        "summary": "jh[t"
+      },
+      {
+        "ea": 14216,
+        "summary": "GjUl"
+      },
+      {
+        "ea": 8567,
+        "summary": "rvPh"
+      },
+      {
+        "ea": 5554,
+        "summary": "@hNB"
+      },
+      {
+        "ea": 5041,
+        "summary": "`mco"
+      },
+      {
+        "ea": 3513,
+        "summary": "dv?p"
+      },
+      {
+        "ea": 3319,
+        "summary": "Hep8"
+      },
+      {
+        "ea": 1360,
+        "summary": "@%@%"
+      },
+      {
+        "ea": 1310,
+        "summary": "@%%@"
+      },
+      {
+        "ea": 1118,
+        "summary": "HN\r\""
+      },
+      {
+        "ea": 248,
+        "summary": "C2^R"
+      },
+      {
+        "ea": 8869,
+        "summary": "8:[h"
+      },
+      {
+        "ea": 8592,
+        "summary": "9Lmr"
+      },
+      {
+        "ea": 8612,
+        "summary": "@xt8"
+      },
+      {
+        "ea": 8853,
+        "summary": "Wkjv"
+      },
+      {
+        "ea": 8056,
+        "summary": "y]l:"
+      },
+      {
+        "ea": 8145,
+        "summary": "<qwv"
+      }
+    ],
+    "imports": [
+      {
+        "ea": 13312,
+        "name": "gdi32.TextOutA",
+        "type": "IMPORT",
+        "num_refs": 17
+      },
+      {
+        "ea": 13320,
+        "name": "kernel32.GetModuleHandleA",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 13324,
+        "name": "kernel32.GetCommandLineA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13328,
+        "name": "kernel32.GetLastError",
+        "type": "IMPORT",
+        "num_refs": 4
+      },
+      {
+        "ea": 13336,
+        "name": "user32.LoadIconA",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 13340,
+        "name": "user32.SendMessageA",
+        "type": "IMPORT",
+        "num_refs": 14
+      },
+      {
+        "ea": 13344,
+        "name": "user32.DefWindowProcA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13348,
+        "name": "user32.RegisterClassExA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13352,
+        "name": "user32.CreateWindowExA",
+        "type": "IMPORT",
+        "num_refs": 4
+      },
+      {
+        "ea": 13356,
+        "name": "user32.LoadBitmapA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13360,
+        "name": "user32.TranslateMessage",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13364,
+        "name": "user32.LoadCursorA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13368,
+        "name": "user32.DispatchMessageA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13372,
+        "name": "user32.EndPaint",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13376,
+        "name": "user32.GetMessageA",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13380,
+        "name": "user32.PostQuitMessage",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13384,
+        "name": "user32.ShowWindow",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13388,
+        "name": "user32.UpdateWindow",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13392,
+        "name": "user32.FillRect",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13396,
+        "name": "user32.GetWindowRect",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13400,
+        "name": "user32.KillTimer",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 13404,
+        "name": "user32.SetWindowPos",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13408,
+        "name": "user32.BeginPaint",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 13412,
+        "name": "user32.SetTimer",
+        "type": "IMPORT",
+        "num_refs": 1
+      }
+    ],
+    "sections": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 39
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 10752,
+        "virtual_size": 12288,
+        "rights": "RX",
+        "entropy": 137
+      },
+      {
+        "name": ".data",
+        "effective_address": 13312,
+        "physical_size": 3584,
+        "virtual_size": 4096,
+        "rights": "RW",
+        "entropy": 72
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 17408,
+        "physical_size": 11264,
+        "virtual_size": 12288,
+        "rights": "R",
+        "entropy": 52
+      }
+    ],
+    "entropy": {
+      "file_entropy": 6.04,
+      "regions": [
+        {
+          "name": "header",
+          "entropy": 39,
+          "size": null
+        },
+        {
+          "name": ".text",
+          "entropy": 137,
+          "size": null
+        },
+        {
+          "name": ".data",
+          "entropy": 72,
+          "size": null
+        },
+        {
+          "name": ".rsrc",
+          "entropy": 52,
+          "size": null
+        }
+      ],
+      "file_entropy_malcat_raw": 91,
+      "entropy_source": "whole_file_shannon_revai"
+    },
+    "functions": [
+      {
+        "ea": 8155,
+        "name": "sub_402bdb"
+      },
+      {
+        "ea": 9297,
+        "name": "sub_403051"
+      },
+      {
+        "ea": 2694,
+        "name": "sub_401686"
+      },
+      {
+        "ea": 2688,
+        "name": "EntryPoint"
+      },
+      {
+        "ea": 3003,
+        "name": "sub_4017bb"
+      },
+      {
+        "ea": 1432,
+        "name": "sub_401198"
+      },
+      {
+        "ea": 8895,
+        "name": "sub_402ebf"
+      },
+      {
+        "ea": 7686,
+        "name": "sub_402a06"
+      }
+    ],
+    "constants": []
+  },
+  "functions": [
+    {
+      "ea": 8155,
+      "name": "sub_402bdb"
+    },
+    {
+      "ea": 9297,
+      "name": "sub_403051"
+    },
+    {
+      "ea": 2694,
+      "name": "sub_401686"
+    },
+    {
+      "ea": 2688,
+      "name": "EntryPoint"
+    },
+    {
+      "ea": 3003,
+      "name": "sub_4017bb"
+    },
+    {
+      "ea": 1432,
+      "name": "sub_401198"
+    },
+    {
+      "ea": 8895,
+      "name": "sub_402ebf"
+    },
+    {
+      "ea": 7686,
+      "name": "sub_402a06"
+    }
+  ],
+  "constants": [],
+  "anomalies": [
+    {
+      "name": "HugeGapBetweenFunctions",
+      "desc": "There is a huge gap between two functions with medium-to-high entropy, often means that data is stored there",
+      "category": "code",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "NoChecksum",
+      "desc": "PE Header checksum is not set",
+      "category": "integrity",
+      "level": 1,
+      "num_hits": 1
+    },
+    {
+      "name": "NoValidCertificate",
+      "desc": "Certificate data directory does not point to a valid certificate (maybe corrupted ?)",
+      "category": "integrity",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "XorInLoop",
+      "desc": "XOR instruction in a loop",
+      "category": "code",
+      "level": 3,
+      "num_hits": 1
+    }
+  ],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

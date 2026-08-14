@@ -1,0 +1,35 @@
+{
+  "sha256": "a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395",
+  "family": "xmrig",
+  "verdict": "malicious@",
+  "generated_at": "2026-08-13T00:57:52.673867+00:00",
+  "hashes": {
+    "sha256": "a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395",
+    "sha1": "f03c8aba3894ad205a3e8f7daa2b40306dfa8673",
+    "md5": "7cb0e1e2cf4a9bf450a350a759490057"
+  },
+  "domains": [
+    "nicehash[.]com",
+    "minergate[.]com",
+    "miner[.]fee[.]xmrig[.]com",
+    "emergency[.]fee[.]xmrig[.]com"
+  ],
+  "ips": [],
+  "urls": [],
+  "files": [],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive).",
+  "wallets_btc": [],
+  "wallets_eth": [],
+  "revai_tools": {
+    "count": 4,
+    "source": "revai_tools_iocs"
+  }
+}

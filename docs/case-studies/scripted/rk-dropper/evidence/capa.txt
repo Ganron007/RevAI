@@ -1,0 +1,278 @@
+# capa rules (deterministic render)
+
+{
+  "rule_count": 13,
+  "top_rules": [
+    {
+      "name": "contain obfuscated stackstrings",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Indicator Removal from Tools"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "Indicator Removal from Tools",
+          "id": "T1027.005"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Anti-Static Analysis",
+            "Executable Code Obfuscation",
+            "Argument Obfuscation"
+          ],
+          "objective": "Anti-Static Analysis",
+          "behavior": "Executable Code Obfuscation",
+          "method": "Argument Obfuscation",
+          "id": "B0032.020"
+        },
+        {
+          "parts": [
+            "Anti-Static Analysis",
+            "Executable Code Obfuscation",
+            "Stack Strings"
+          ],
+          "objective": "Anti-Static Analysis",
+          "behavior": "Executable Code Obfuscation",
+          "method": "Stack Strings",
+          "id": "B0032.017"
+        }
+      ]
+    },
+    {
+      "name": "accept command line arguments",
+      "attack": [
+        {
+          "parts": [
+            "Execution",
+            "Command and Scripting Interpreter"
+          ],
+          "tactic": "Execution",
+          "technique": "Command and Scripting Interpreter",
+          "subtechnique": "",
+          "id": "T1059"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Execution",
+            "Command and Scripting Interpreter"
+          ],
+          "objective": "Execution",
+          "behavior": "Command and Scripting Interpreter",
+          "method": "",
+          "id": "E1059"
+        }
+      ]
+    },
+    {
+      "name": "set file attributes",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "File and Directory Permissions Modification"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "File and Directory Permissions Modification",
+          "subtechnique": "",
+          "id": "T1222"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "File System",
+            "Set File Attributes"
+          ],
+          "objective": "File System",
+          "behavior": "Set File Attributes",
+          "method": "",
+          "id": "C0050"
+        }
+      ]
+    },
+    {
+      "name": "get disk size",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "System Information Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "System Information Discovery",
+          "subtechnique": "",
+          "id": "T1082"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "System Information Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "System Information Discovery",
+          "method": "",
+          "id": "E1082"
+        }
+      ]
+    },
+    {
+      "name": "create pipe",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Communication",
+            "Interprocess Communication",
+            "Create Pipe"
+          ],
+          "objective": "Communication",
+          "behavior": "Interprocess Communication",
+          "method": "Create Pipe",
+          "id": "C0003.001"
+        }
+      ]
+    },
+    {
+      "name": "copy file",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "File System",
+            "Copy File"
+          ],
+          "objective": "File System",
+          "behavior": "Copy File",
+          "method": "",
+          "id": "C0045"
+        }
+      ]
+    },
+    {
+      "name": "delete file",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "File System",
+            "Delete File"
+          ],
+          "objective": "File System",
+          "behavior": "Delete File",
+          "method": "",
+          "id": "C0047"
+        }
+      ]
+    },
+    {
+      "name": "get file attributes",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "File System",
+            "Get File Attributes"
+          ],
+          "objective": "File System",
+          "behavior": "Get File Attributes",
+          "method": "",
+          "id": "C0049"
+        }
+      ]
+    },
+    {
+      "name": "write file on Windows",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "File System",
+            "Writes File"
+          ],
+          "objective": "File System",
+          "behavior": "Writes File",
+          "method": "",
+          "id": "C0052"
+        }
+      ]
+    },
+    {
+      "name": "create or open mutex on Windows",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Process",
+            "Create Mutex"
+          ],
+          "objective": "Process",
+          "behavior": "Create Mutex",
+          "method": "",
+          "id": "C0042"
+        }
+      ]
+    },
+    {
+      "name": "allocate or change RWX memory",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Memory",
+            "Allocate Memory"
+          ],
+          "objective": "Memory",
+          "behavior": "Allocate Memory",
+          "method": "",
+          "id": "C0007"
+        }
+      ]
+    },
+    {
+      "name": "terminate process",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Process",
+            "Terminate Process"
+          ],
+          "objective": "Process",
+          "behavior": "Terminate Process",
+          "method": "",
+          "id": "C0018"
+        }
+      ]
+    },
+    {
+      "name": "parse PE header",
+      "attack": [
+        {
+          "parts": [
+            "Execution",
+            "Shared Modules"
+          ],
+          "tactic": "Execution",
+          "technique": "Shared Modules",
+          "subtechnique": "",
+          "id": "T1129"
+        }
+      ],
+      "mbc": []
+    }
+  ],
+  "timeout_s": 300,
+  "sample_size": 3388672,
+  "duration_s": 2.49,
+  "engine": "malcat-capa",
+  "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+}

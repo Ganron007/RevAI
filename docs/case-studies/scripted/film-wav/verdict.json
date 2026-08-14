@@ -1,0 +1,133 @@
+{
+  "verdict": "malicious",
+  "score": 85,
+  "family_guess": "trojan.fkmb",
+  "cross_engine_notes": "Ghidra analysis failed due to program not found in project; IDA detected 70,200 strings but no functions; MalCat reported high entropy (7.48) and numerous obfuscated strings; YARA matched rules for domain, IP, base64, and indirect function calls; VirusTotal flagged as malicious with 9 detections and threat label trojan.fkmb.",
+  "key_evidence": [
+    {
+      "source": "yara",
+      "query_or_table": "yara matches",
+      "row_or_rule": "domain rule",
+      "why": "File contains pattern matching domain regex at offset 0, indicating potential network communication or data reference."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "yara matches",
+      "row_or_rule": "IP rule",
+      "why": "File contains IPv6 pattern at offset 880, suggesting embedded IP address for possible C2 or exfiltration."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "yara matches",
+      "row_or_rule": "contains_base64 rule",
+      "why": "Base64-encoded string detected at offset 3750495, which may conceal commands or payloads."
+    },
+    {
+      "source": "yara",
+      "query_or_table": "yara matches",
+      "row_or_rule": "maldoc_indirect_function_call_3 rule",
+      "why": "Pattern indicative of indirect function calls at offset 1743485, commonly used in malicious documents to evade detection, though file type is WAV."
+    },
+    {
+      "source": "malcat",
+      "query_or_table": "static_profile",
+      "row_or_rule": "file_summary",
+      "why": "High entropy (7.48) and numerous obfuscated strings suggest packing or encoding, which is a neutral signal but often associated with malware."
+    }
+  ],
+  "summary": "The WAV file exhibits high entropy and contains strings matching YARA rules for domain, IP, base64, and malicious document patterns, suggesting embedded malicious content. VirusTotal corroborates with trojan detections, indicating malicious intent despite the non-standard file type.",
+  "source": "llm_judge",
+  "model": "mimo-v2.5-pro",
+  "agreement": "llm_and_v1_agree",
+  "v1_summary": {
+    "verdict": "malicious",
+    "score": 200,
+    "findings": [
+      "yara: 4 matches"
+    ]
+  },
+  "tool_gate": {
+    "ok": true,
+    "format": "unknown",
+    "required": [
+      "yara",
+      "malcat"
+    ],
+    "tools": {
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "ti_enrich": {
+    "ok": true,
+    "providers": {
+      "virustotal": {
+        "ok": true,
+        "malicious": 9,
+        "suspicious": 0,
+        "harmless": 0,
+        "undetected": 52,
+        "reputation": 0,
+        "popular_threat_classification": {
+          "popular_threat_category": [
+            {
+              "value": "trojan",
+              "count": 9
+            }
+          ],
+          "popular_threat_name": [
+            {
+              "value": "fkmb",
+              "count": 8
+            }
+          ],
+          "suggested_threat_label": "trojan.fkmb"
+        },
+        "names": [],
+        "tags": [
+          "wav"
+        ],
+        "link": "https://www.virustotal.com/gui/file/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a"
+      },
+      "hybrid_analysis": {
+        "ok": false,
+        "error": "HTTP 404: {\"message\":\"Requested hash not found\"}"
+      }
+    },
+    "policy": "enrichment_only_never_clears_local_yara_or_tool_gates"
+  },
+  "yara_family_hits": [
+    "maldoc_indirect_function_call_3"
+  ],
+  "engine_citation_corrections": {
+    "corrected": 0,
+    "corrections": []
+  },
+  "citation_grounding": {
+    "ok": true,
+    "checked": 5,
+    "hits": 5,
+    "misses": [],
+    "hit_examples": [
+      "domain rule yara matches File contains pattern matching domain regex at offset 0, indicating potential network communica",
+      "IP rule yara matches File contains IPv6 pattern at offset 880, suggesting embedded IP address for possible C2 or exfiltr",
+      "contains_base64 rule yara matches Base64-encoded string detected at offset 3750495, which may conceal commands or payloa",
+      "maldoc_indirect_function_call_3 rule yara matches Pattern indicative of indirect function calls at offset 1743485, commo",
+      "file_summary static_profile High entropy (7.48) and numerous obfuscated strings suggest packing or encoding, which is a "
+    ],
+    "reason": ""
+  },
+  "engine_citation": {
+    "ok": true,
+    "checked": 3,
+    "false_engine_citations": [],
+    "reason": ""
+  }
+}

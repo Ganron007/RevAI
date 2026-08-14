@@ -1,0 +1,313 @@
+# YARA matches (deterministic render)
+
+{
+  "rule_count": 26,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "contains_base64",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 63582,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "PECompactV2XBitsumTechnologies",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": [
+        {
+          "id": "$a0",
+          "offset": 1024,
+          "length": 27,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "PECompact2xxBitSumTechnologies",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": [
+        {
+          "id": "$a0",
+          "offset": 1024,
+          "length": 35,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "PECompactv2xx",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": [
+        {
+          "id": "$a0",
+          "offset": 1024,
+          "length": 35,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "pecompact2",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": [
+        {
+          "id": "$str1",
+          "offset": 1024,
+          "length": 27,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IsPE32",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": []
+    },
+    {
+      "rule": "IsWindowsGUI",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": []
+    },
+    {
+      "rule": "IsPacked",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": []
+    },
+    {
+      "rule": "HasRichSignature",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": [
+        {
+          "id": "$a0",
+          "offset": 208,
+          "length": 4,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "PeCompact_v208_Bitsum_Technologiessignature_by_loveboom",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 1024,
+          "length": 29,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "PECompact_2x_Jeremy_Collake",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 1024,
+          "length": 27,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "PECompact_20x_Heuristic_Mode_Jeremy_Collake",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 1024,
+          "length": 35,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "PECompact_2xx_BitSum_Technologies",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 1024,
+          "length": 35,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "PECompact_v2xx",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 1024,
+          "length": 35,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "PECompact_V2X_Bitsum_Technologies_additional",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 1024,
+          "length": 27,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "PECompact_V2X_Bitsum_Technologies",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 1024,
+          "length": 27,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "PECompact_v20_additional",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 1024,
+          "length": 29,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "PeCompact_2xx_BitSum_Technologies",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 1024,
+          "length": 35,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "PeCompact_253_DLL_BitSum_Technologies_additional",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 1024,
+          "length": 35,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "PECompact_v20",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 1024,
+          "length": 29,
+          "xor_key": null
+        },
+        {
+          "id": "$b",
+          "offset": 1024,
+          "length": 35,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "PeCompact_253_DLL_BitSum_Technologies",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 1024,
+          "length": 35,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "PECompact_v2xx_additional",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 1024,
+          "length": 35,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "suspicious_packer_section",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": []
+    },
+    {
+      "rule": "SEH_Save",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 1030,
+          "length": 7,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "SEH_Init",
+      "path": "/opt/samples/corpus/malware/d52f0647e519edcea013530a23e9e5bf871cf3bd8acb30e5c870ccc8c7b89a09/want.exe",
+      "strings": [
+        {
+          "id": "$b",
+          "offset": 1037,
+          "length": 7,
+          "xor_key": null
+        }
+      ]
+    }
+  ],
+  "engine": "yara-x",
+  "rules_compiled": 454,
+  "compile_errors": [
+    "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+    "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+    "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+  ],
+  "incomplete": true,
+  "duration_s": 3.73
+}

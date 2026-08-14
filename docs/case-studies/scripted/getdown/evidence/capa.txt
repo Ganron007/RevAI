@@ -1,0 +1,176 @@
+# capa rules (deterministic render)
+
+{
+  "rule_count": 8,
+  "top_rules": [
+    {
+      "name": "encode data using XOR",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Encoding-Standard Algorithm"
+          ],
+          "objective": "Defense Evasion",
+          "behavior": "Obfuscated Files or Information",
+          "method": "Encoding-Standard Algorithm",
+          "id": "E1027.m02"
+        },
+        {
+          "parts": [
+            "Data",
+            "Encode Data",
+            "XOR"
+          ],
+          "objective": "Data",
+          "behavior": "Encode Data",
+          "method": "XOR",
+          "id": "C0026.002"
+        }
+      ]
+    },
+    {
+      "name": "get common file path",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "File and Directory Discovery",
+          "subtechnique": "",
+          "id": "T1083"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "File and Directory Discovery",
+          "method": "",
+          "id": "E1083"
+        }
+      ]
+    },
+    {
+      "name": "receive data",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Command and Control",
+            "C2 Communication",
+            "Receive Data"
+          ],
+          "objective": "Command and Control",
+          "behavior": "C2 Communication",
+          "method": "Receive Data",
+          "id": "B0030.002"
+        }
+      ]
+    },
+    {
+      "name": "download URL",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Communication",
+            "HTTP Communication",
+            "Download URL"
+          ],
+          "objective": "Communication",
+          "behavior": "HTTP Communication",
+          "method": "Download URL",
+          "id": "C0002.006"
+        }
+      ]
+    },
+    {
+      "name": "create process on Windows",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Process",
+            "Create Process"
+          ],
+          "objective": "Process",
+          "behavior": "Create Process",
+          "method": "",
+          "id": "C0017"
+        }
+      ]
+    },
+    {
+      "name": "terminate process",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Process",
+            "Terminate Process"
+          ],
+          "objective": "Process",
+          "behavior": "Terminate Process",
+          "method": "",
+          "id": "C0018"
+        }
+      ]
+    },
+    {
+      "name": "link function at runtime on Windows",
+      "attack": [
+        {
+          "parts": [
+            "Execution",
+            "Shared Modules"
+          ],
+          "tactic": "Execution",
+          "technique": "Shared Modules",
+          "subtechnique": "",
+          "id": "T1129"
+        }
+      ],
+      "mbc": []
+    },
+    {
+      "name": "link many functions at runtime",
+      "attack": [
+        {
+          "parts": [
+            "Execution",
+            "Shared Modules"
+          ],
+          "tactic": "Execution",
+          "technique": "Shared Modules",
+          "subtechnique": "",
+          "id": "T1129"
+        }
+      ],
+      "mbc": []
+    }
+  ],
+  "timeout_s": 300,
+  "sample_size": 38912,
+  "duration_s": 1.96,
+  "engine": "malcat-capa",
+  "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+}

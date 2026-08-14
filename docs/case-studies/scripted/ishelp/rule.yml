@@ -1,0 +1,21 @@
+title: "RevAI v2: trojan.lotusblossom/explorerhijack activity"
+id: trojan_lotusblossom_explorerhijack_bf0d6cc20fa7
+status: experimental
+level: high
+description: "Auto-generated Sigma rule for trojan.lotusblossom/explorerhijack (sha256 prefix bf0d6cc20fa7)"
+author: RevAI yara_gen_v2
+date: 2026/08/12
+reference: "commit unknown · engine langgraph"
+tags:
+    - attack.execution
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+            CommandLine|contains: "*\\Internet Explorer\\iexplore.exe*"
+            CommandLine|contains: "*000A758C8FEAE5F.TMP*"
+            CommandLine|contains: "*!This program cannot be run in DOS mode.*"
+    condition: selection
+falsepositives:
+    - Review against goodware corpus

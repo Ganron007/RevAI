@@ -1,0 +1,21 @@
+title: "RevAI v2: Trioris/Cerbu trojan activity"
+id: trioris_cerbu_trojan_38b1bbc48c35
+status: experimental
+level: high
+description: "Auto-generated Sigma rule for Trioris/Cerbu trojan (sha256 prefix 38b1bbc48c35)"
+author: RevAI yara_gen_v2
+date: 2026/08/12
+reference: "commit unknown · engine langgraph"
+tags:
+    - attack.execution
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+            CommandLine|contains: "*</tq<\\tm<.um*"
+            CommandLine|contains: "*permission denied*"
+            CommandLine|contains: "*no such device*"
+    condition: selection
+falsepositives:
+    - Review against goodware corpus

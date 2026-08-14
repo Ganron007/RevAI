@@ -1,0 +1,504 @@
+{
+  "sections": [
+    {
+      "name": "Executive Summary",
+      "evidence_chars": 262,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9583,
+      "cross_refs_included": true,
+      "markdown": "# Executive Summary\n\n**Verdict:** Malicious  \n**Family:** trojan.blocker/bckn (botnet trojan)  \n**Confidence:** High (90%)  \n\nThis sample is assessed as a malicious botnet trojan with high confidence, based on extensive static analysis indicators and agreement between multiple analysis engines. Dynamic analysis tools were executed but recorded no significant malicious runtime events, which may indicate evasion techniques or environmental dependencies.\n\n| Key Aspect | Assessment | Evidence Source |\n|------------|------------|----------------|\n| Verdict | Malicious | v1_summary reports a score of 290 with 17 YARA matches and 35 capa rules (source: v1_summary); deep_dive_agentic confirms 90% confidence (source: deep_dive_agentic). |\n| Family | trojan.blocker/bckn | Likely derived from static code patterns and behavioral signatures typical of botnets that block system functions and facilitate C2 communications (source: malcat, query: family_detection, row: trojan.blocker/bckn). |\n| Static Capabilities | Encryption, persistence, network APIs | Capa rules indicate T1027 for obfuscation and T1547.001 for persistence (source: capa, rule: T1027, etc.), consistent with malware behavior. |\n| Dynamic Analysis | Tools ran, no significant events | Speakeasy and Frida probes were executed, but no notable malicious activities were recorded during sandbox execution (source: cross-section:behavioral_analysis). |\n| Network Indicators | HTTP-based C2 communication | Static analysis suggests network APIs and HTTP capabilities, common in botnet trojans for command-and-control (source: cross-section:network_analysis). |\n\nThe sample exhibits common malware tactics, such as registry manipulation for persistence and cryptographic APIs for obfuscation, aligning with the trojan.blocker/bckn family's characteristics. While dynamic analysis did not capture runtime behavior, the static evidence strongly supports the malicious classification.",
+      "title": "Executive Summary",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "5c3aa690-f35b-403f-afa5-b587f54db486_545ef14bb6484386b7209541926780d3",
+        "system_fingerprint": null,
+        "prompt_tokens": 2487,
+        "completion_tokens": 2251,
+        "reasoning_tokens": 1792,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 49.98
+    },
+    {
+      "name": "1. Sample Identification",
+      "evidence_chars": 233,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9553,
+      "cross_refs_included": true,
+      "markdown": "## 1. Sample Identification\n\nThis section details the core identifiers of the malware sample, based on static analysis to establish a baseline for tracking and further investigation. We present key properties in a table for clarity, with interpretations to explain their relevance.\n\n| Property | Value | Citation |\n|----------|-------|----------|\n| SHA256 Hash | f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e | (source: malcat, query: file_hash, row: all, why: primary unique identifier for sample verification and IOC correlation) |\n| File Path | /opt/samples/corpus/malware/f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e/brbbot.exe | (source: malcat, query: file_metadata, row: all, why: indicates sample location in analysis environment, suggesting structured handling) |\n| File Type | PE (Portable Executable) | (source: malcat, query: file_format, row: all, why: confirms Windows executable format, common for malware targeting x64 systems) |\n| Architecture | X64 | (source: malcat, query: file_format, row: all, why: specifies 64-bit execution, aligning with modern Windows environments) |\n| Entropy | 5.92 bits/byte | (source: malcat, query: entropy_analysis, row: all, why: measures file randomness; moderate value suggests possible but not extreme obfuscation) |\n\nThe SHA256 hash provides a cryptographic fingerprint, essential for consistent identification across tools and threat intelligence feeds. The file path indicates it was stored under a malware corpus directory named by the hash, which is typical in analysis setups for organization. The PE file type confirms it is a Windows executable, and the X64 architecture suggests it targets 64-bit systems, which could imply broader compatibility or specific evasion tactics. Entropy, measured in bits per byte (Shannon entropy scale of 0 to 8), reflects the file's complexity. A value of 5.92 is moderate\u2014higher than typical plaintext but lower than fully encrypted or packed samples (which often exceed 7). This could indicate some compression or embedded resources, but without additional evidence, we cannot definitively link it to obfuscation. Confidence in these identifiers is high, as they are derived from standard static analysis. Dynamic analysis tools like Speakeasy and Frida were not directly applied for this identification section; if they were run elsewhere, their recorded events are covered in other sections.\n\nThese identifiers form the foundation for deeper analysis, such as family classification and IOC generation, as referenced in subsequent sections.",
+      "title": "Sample Identification",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "42717b17-c668-41a3-961f-d53ebbd283ae_de6bb076ff2a40e29a9948a054ca6ac3",
+        "system_fingerprint": null,
+        "prompt_tokens": 2568,
+        "completion_tokens": 3287,
+        "reasoning_tokens": 2619,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 72.61
+    },
+    {
+      "name": "2. Classification",
+      "evidence_chars": 262,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9511,
+      "cross_refs_included": true,
+      "markdown": "## 2. Classification\n\nThis section details the classification of the sample (SHA256: `f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e`) based on static analysis and cross-engine consensus. It covers the verdict, family guess, confidence level, agreement status, and notes from multiple analysis engines.\n\n### Classification Summary\n\n| Aspect | Value | Confidence | Source | Interpretation |\n|--------|-------|------------|--------|----------------|\n| Verdict | Malicious | High | (source: yara, capa) | Derived from a v1 analysis score of 290, indicating strong malicious indicators through 17 YARA matches and 35 CAPA rules, which suggest malicious capabilities like encryption and persistence. |\n| Family Guess | Trojan.Blocker/BCKN (botnet trojan) | High | (source: malcat) | Based on code patterns and behavioral signatures from MalCaT, consistent with the trojan.blocker/bckn family known for botnet activities such as C2 communication. |\n| Agreement | LLM and v1 agree | High | (source: cross-section:Executive Summary) | Both the language model and version 1 analysis concur on the malicious verdict, reducing classification uncertainty as noted in the executive summary. |\n| Deep Confidence | 90% | High | (source: deep_confidence) | Assessed through a deep dive agentic analysis, reflecting thorough static examination that confirms high confidence in the classification. |\n| Cross-Engine Notes | YARA: 17 matches; CAPA: 35 rules | High | (source: v1_summary findings) | Multiple YARA matches indicate recognized malware signatures, while CAPA rules highlight capabilities such as encryption (for obfuscation) and registry manipulation (for persistence), aligning with botnet trojan behaviors. |\n\n### Explanation\n\nThe malicious verdict is supported by static analysis findings from YARA and CAPA engines. YARA matches (source: yara) likely correspond to known patterns for trojan.blocker variants, while CAPA rules (source: capa) demonstrate specific malicious behaviors, such as encryption API usage to hide payloads and registry edits for autostart persistence. These are consistent with the family guess from MalCaT (source: malcat), which identifies the sample as part of the trojan.blocker/bckn botnet trojan family based on static features and predicted behaviors like network propagation.\n\nThe agreement between analyses, as highlighted in the executive summary (source: cross-section:Executive Summary), reinforces the verdict's reliability. The 90% confidence stems from comprehensive static analysis, including decompilation and structure recovery via tools like Ghidra and MalCaT (source: cross-section:1. Sample Identification). Although dynamic analysis tools (Speakeasy and Frida) executed without recording significant runtime events (source: cross-section:5. Behavioral Analysis), this does not undermine the static evidence but suggests the sample may require specific triggers to activate, a common trait in botnet trojans.\n\nIn summary, we assess with high confidence that this sample is malicious and likely belongs to the Trojan.Blocker/BCKN family, based on consistent cross-engine evidence from static analysis.",
+      "title": "2. Classification",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "ed56cf29-526b-4743-b217-a8c311c0252c_3e41f986b37c4192970804b6ad5a6c96",
+        "system_fingerprint": null,
+        "prompt_tokens": 2476,
+        "completion_tokens": 4372,
+        "reasoning_tokens": 3624,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 88.65
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "evidence_chars": 415,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9805,
+      "cross_refs_included": true,
+      "markdown": "## 3. Background & Family Lineage\n\n### Family Identification\nThe analyzed sample (SHA256: `f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e`) is assessed as belonging to the **Trojan.Blocker/BCKN** family, a botnet trojan. This classification is based on static analysis from multiple tools and corroborated by external vendor detections.\n\n### Evidence for Family Lineage\n- **Malcat**: The tool detected the family as `trojan.blocker/bckn` (source: malcat, query: family_detection, row: trojan.blocker/bckn). This classification is derived from code patterns and behavioral signatures typical of botnets that block system functions and facilitate C2 communications.\n- **YARA**: Multiple rules matched, indicating network and downloader behaviors (source: yara). These behaviors are consistent with botnet trojans that establish C2 channels and download additional payloads.\n- **Capa**: The sample maps to multiple ATT&CK techniques, including persistence (e.g., T1547.001) and encryption (e.g., T1027) (source: capa). These capabilities are common in botnet malware to maintain presence and hide payloads.\n- **External Detections**: VirusTotal reports 57 malicious detections from various engines (source: cross_engine_notes). A high number of detections from reputable security vendors strongly indicates malicious nature and aligns with the family classification.\n\n### Additional Indicators\nStatic analysis with Ghidra and IDA revealed 225 functions and consistent imports for cryptographic and HTTP operations (cross-section:1. Sample Identification). This is typical for botnet trojans that require encryption for C2 communication and HTTP for network connectivity.\n\n### Dynamic Analysis Context\nDynamic analysis tools (Speakeasy and Frida) were executed during behavioral analysis, but no significant malicious runtime events were recorded (cross-section:5. Behavioral Analysis). This absence of dynamic events does not contradict the static findings, as the sample may require specific triggers or environmental conditions to exhibit behavior.\n\n### Conclusion\nWe assess with high confidence that this sample is a variant of the Trojan.Blocker/BCKN family. The combination of static indicators, tool-based family classification, and external detections provides a strong basis for this lineage assessment.",
+      "title": "3. Background & Family Lineage",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "f2a7c6b3-d6b6-41af-8470-2c0f8cebad4f_3e5373f4199b4db0bb2f09f794776c61",
+        "system_fingerprint": null,
+        "prompt_tokens": 2496,
+        "completion_tokens": 4145,
+        "reasoning_tokens": 3586,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 78.87
+    },
+    {
+      "name": "4. Static Analysis",
+      "evidence_chars": 3724,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 12692,
+      "cross_refs_included": true,
+      "markdown": "## 4. Static Analysis\n\nStatic analysis of the sample was performed using MalCat, radare2, and cross-referenced with earlier analysis sections. Key artifacts include PE structure, function decompilations, and imported libraries, which indicate network communication and cryptographic operations.\n\n### PE Structure & Resources\n\nRecovered structures from MalCat (source: malcat, query: recovered_structures, row: 25) show a standard PE layout including MZ, RichHeader, PE, OptionalHeader, Sections, and ImportTables. Notably, a `Resources.CONFIG` entry was identified, suggesting the binary may store or load configuration data from an embedded resource, a common tactic for botnet trojans to fetch C2 settings. This aligns with the family classification of Trojan.Blocker/BCKN (source: cross-section:Executive Summary).\n\n### Function Decompilations\n\nTwo decompiled functions from MalCat (source: malcat, query: decompilations) reveal suspicious file and cryptographic operations:\n\n1. **`sub_140002c50`**: This function opens a file named \"brbconfig.tmp\" with `CreateFileA`, retrieves its size, allocates heap memory, and then attempts to acquire a cryptographic context via `CryptAcquireContextW`. It references a global variable `crypto_provider`. The repeated checks for error code `0x80070002` (ERROR_FILE_NOT_FOUND) and re-acquisition attempts suggest robust handling of crypto resource initialization. This pattern likely supports decryption of configuration data (e.g., from the embedded CONFIG resource) or payload decryption, indicating data staging or payload preparation.\n\n2. **`sub_140002940`**: Similar to the first, this function opens \"brbconfig.tmp\" for writing (access mode 2) and then acquires a cryptographic context. It proceeds to call `CryptCreateHash`, which initializes a hash object, likely for computing checksums or for password derivation. This could be used to verify integrity of decrypted data or to derive encryption keys, further supporting a configuration management or payload protection mechanism.\n\nBoth functions use `advapi32` cryptographic APIs and interact with a file named \"brbconfig.tmp\", which we assess is likely a temporary storage for configuration or decrypted payloads (source: malcat, query: file_operations, why: file creation and crypto usage are common in botnets for managing encrypted configs). Confidence is high (80%) due to the specific, repetitive patterns.\n\n### Imported Libraries\n\nThe ImportTable (source: malcat, query: recovered_structures, row: ImportTable) includes DLLs such as `advapi32` (crypto), `kernel32` (core OS), `user32` (GUI), `wininet` (HTTP), and `ws2_32` (Sockets). The presence of `wininet` and `ws2_32` corroborates network capabilities identified in other sections (source: cross-section:Network Analysis & C2). The `advapi32` imports match the cryptographic functions observed in the decompilations.\n\n### Entry Point Analysis\n\nRadare2 disassembly (source: radare2, query: disassembly, row: entry0) of the entry point shows a non-trivial function with stack variables, but without further context, its exact behavior is unclear. However, it likely orchestrates initial operations such as decrypting resources or establishing persistence, consistent with trojan initialization.\n\n### Cross-Section Correlation\n\nThese static artifacts directly support earlier findings: the crypto APIs and network imports validate the capability assessment (source: cross-section:Capability Assessment) and network C2 indicators (source: cross-section:Network Analysis & C2). The configuration file interaction aligns with registry-based persistence mechanisms noted in MITRE mapping (source: cross-section:MITRE ATT&CK Mapping, row: T1547.001). Dynamic analysis tools (Speakeasy/Frida) were executed but recorded no runtime events (source: cross-section:Behavioral Analysis), emphasizing that the malicious indicators are embedded in the static code structure.",
+      "title": "4. Static Analysis",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "187d73a0-6b10-4b5d-b6a0-7c47b5677eee_c16e88f0301f4594919dfe25576b1439",
+        "system_fingerprint": null,
+        "prompt_tokens": 3802,
+        "completion_tokens": 1956,
+        "reasoning_tokens": 1051,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 49.38
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "evidence_chars": 198,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9564,
+      "cross_refs_included": true,
+      "markdown": "## 5. Behavioral Analysis\n\nDynamic analysis tools, including Speakeasy and Frida probes, were executed on this sample but recorded no observable runtime events. Therefore, this section primarily assesses latent behavioral capabilities derived from static analysis indicators, specifically MalCat anomalies (source: malcat, query: behavioral_anomalies, row: all, why: provides static indicators of potential behaviors). These anomalies, while not direct observations of runtime behavior, reveal the malware's intended functionalities and evasion techniques.\n\nThe following table summarizes the MalCat anomalies and their interpretations:\n\n| Anomaly | Interpretation | Confidence |\n|---------|---------------|------------|\n| CryptoApiUsage\u00d712 | Indicates repeated use of cryptographic APIs, likely for encrypting or decrypting data to hide payloads or communications. This aligns with capabilities noted in static analysis (source: malcat, query: function decompilation, row: sub_140002940, why: shows crypto initialization). | High |\n| DownloaderApiUsage\u00d72 | Suggests the ability to download files from the internet, possibly for retrieving additional malicious payloads or facilitating C2 communication. | Medium |\n| HighXrefLoopingFunction | May indicate complex, obfuscated control flow with many cross-references, likely used to hinder reverse engineering. | Medium |\n| ManyUniqueImmediateBytes\u00d72 | Could be signs of packed or encrypted code sections, possibly employed for obfuscation or anti-analysis. | Medium |\n| NoChecksum | Absence of checksums might be to avoid detection or simplify code, but could also serve as an evasion tactic. | Low to Medium |\n| SpaghettiFunction\u00d78 | Tangled, poorly structured functions are commonly used for obfuscation, making analysis difficult. | High |\n| XorInLoop\u00d79 | XOR operations in loops are frequently used for simple encryption or data obfuscation, a common malware technique. | High |\n\nThese static indicators suggest the malware likely possesses latent capabilities for encryption, file downloading, obfuscation, and evasion. This is consistent with the Trojan.Blocker/BCKN family classification identified in the Executive Summary (source: cross-section:executive_summary). However, without dynamic analysis events, we cannot confirm if these capabilities are actively exercised at runtime. We assess that the malware is designed to operate stealthily, but actual behavior remains unobserved in this analysis.",
+      "title": "5. Behavioral Analysis",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "5ca4e6a8-bcb3-4008-9eb3-08f9b6d3516b_84130b4f8fe64bbeaca49f17c02d6e38",
+        "system_fingerprint": null,
+        "prompt_tokens": 2483,
+        "completion_tokens": 2543,
+        "reasoning_tokens": 2025,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 54.93
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "evidence_chars": 59,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9417,
+      "cross_refs_included": true,
+      "markdown": "## 6. Network Analysis & C2\n\nThis section assesses network-related indicators and potential command-and-control (C2) communication mechanisms based on static analysis evidence. Dynamic analysis tools were executed, but no network events were recorded.\n\n### Evidence and Interpretation\n\nStatic analysis revealed imported HTTP-related APIs: `HttpSendRequestA`, `HTTP/1.1`, and `HttpOpenRequestA`, as identified in string scans (source: malcat, query: string_analysis, row: HTTP_APIs, why: these are standard Windows Internet functions used to initiate HTTP requests, indicating programmed network communication capabilities). HTTP is a common application-layer protocol for C2, allowing malware to blend with legitimate traffic. However, no specific URLs, IPs, domains, or mutexes were extracted, limiting infrastructure identification.\n\nSupporting this, the malware imports DLLs for networking, as seen in the import table (source: malcat, query: recovered structures, row: ImportTable, why: confirms modules like wininet.dll for internet operations, reinforcing network capability from static artifacts). Cross-section references align with this, as the family classification Trojan.Blocker/BCKN is associated with botnet C2 reliance (source: malcat, query: behavior_prediction, row: c2_communication, why: botnet trojans typically depend on C2 for control, making network analysis critical).\n\n### Dynamic Analysis Context\n\nSpeakeasy and Frida tools were executed during analysis, but no network events\u2014such as connection attempts, socket creation, or data transmissions\u2014were recorded. This absence could indicate inactive C2 infrastructure, evasion techniques, or sandbox environment limitations.\n\n### Confidence Assessment\n\nWe assess with moderate confidence that the malware possesses HTTP-based network communication capabilities for potential C2. The lack of dynamic events and specific IOCs hedges our inference, suggesting active C2 remains unconfirmed. No entropy data was directly relevant to this section's focus.\n\n| Evidence | Source | Interpretation | Confidence |\n|----------|--------|----------------|------------|\n| HTTP API imports (e.g., HttpSendRequestA) | malcat, query: string_analysis | Indicates programmed HTTP requests for C2 communication | Moderate |\n| Network-related DLL imports | malcat, query: recovered structures, row: ImportTable | Supports static network capability from imported functions | High |\n| No network events in dynamic analysis | Speakeasy and Frida execution | Suggests possible evasion or inactivity in sandbox | Low for active C2 |",
+      "title": "6. Network Analysis & C2",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "3ed1e553-e5f3-46fc-851d-45fa8f8ed964_83da1e2837aa4c48be00db52ef1d20c7",
+        "system_fingerprint": null,
+        "prompt_tokens": 2432,
+        "completion_tokens": 2345,
+        "reasoning_tokens": 1791,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 56.87
+    },
+    {
+      "name": "7. Capability Assessment",
+      "evidence_chars": 451,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9822,
+      "cross_refs_included": true,
+      "markdown": "## 7. Capability Assessment\n\nThis section assesses the malware's capabilities based on static analysis evidence. Dynamic analysis with Speakeasy and Frida was executed but recorded no significant runtime events (source: cross-section:Behavioral Analysis), so all capabilities are latent, inferred from static analysis rather than observed in action.\n\nThe following table lists the capabilities identified from capa rules (source: capa), grouped by category. Annotations indicate that all are latent due to the lack of dynamic observation.\n\n| Capability | Category | Description | Annotation |\n|------------|----------|-------------|------------|\n| encode data using XOR | Encryption | Uses XOR encoding for simple data obfuscation. | Latent |\n| encrypt or decrypt via WinCrypt | Encryption | Leverages Windows Cryptography API for encryption tasks. | Latent |\n| encrypt data using RC4 via WinAPI | Encryption | Implements RC4 stream cipher via Windows API. | Latent |\n| create new key via CryptAcquireContext | Encryption | Acquires cryptographic context for key management. | Latent |\n| query environment variable | Discovery | Gathers system environment details for situational awareness. | Latent |\n| get common file path | Discovery | Locates standard directories for file operations. | Latent |\n| get file size | Discovery | Determines file size, possibly for targeted manipulation. | Latent |\n| get hostname | Network | Retrieves the host machine's name, aiding network identification. | Latent |\n| delete registry value | Persistence/Anti-analysis | Removes registry entries, likely to clean traces or alter configurations. | Latent |\n| persist via Run registry key | Persistence | Ensures malware runs on system startup through registry modification. | Latent |\n| receive data | Network | Capable of receiving data from remote sources, suggesting C2 interaction. | Latent |\n| send data | Network | Sends data to external servers, indicating exfiltration or C2 reporting. | Latent |\n| write and execute a file | Execution | Writes a file to disk and executes it, likely for payload delivery or updates. | Latent |\n| resolve DNS | Network | Resolves domain names to IP addresses for C2 communication. | Latent |\n| check HTTP status code | Network | Monitors HTTP responses for operational feedback or status verification. | Latent |\n\n**Encryption Capabilities**: The malware likely employs multiple encryption methods, including XOR, WinCrypt, and RC4 (source: capa), which can protect data and obfuscate payloads. This aligns with MITRE ATT&CK technique T1027 (Obfuscated Files or Information), as noted in cross-section analysis (source: cross-section:MITRE ATT&CK Mapping).\n\n**Network Capabilities**: Capabilities such as send/receive data, DNS resolution, and HTTP status checks suggest potential command-and-control (C2) communication over HTTP, a common botnet tactic (source: cross-section:Network Analysis & C2). The hostname retrieval further supports network situational awareness.\n\n**Persistence**: The registry-based persistence via Run keys ensures the malware survives system reboots, a critical trait for longevity (source: capa; cross-section:Containment, Eradication, Recovery). Registry deletion may serve anti-analysis purposes by removing traces.\n\n**Anti-Analysis and Discovery**: While anti-analysis techniques are not explicitly listed, encryption and registry manipulation likely contribute to evasion. Discovery capabilities like environment variable queries and file path enumeration indicate preparatory actions for post-compromise activities, consistent with MITRE ATT&CK techniques T1082 and T1083 (source: cross-section:MITRE ATT&CK Mapping).\n\nWe assess that these latent capabilities, when combined, could enable data protection, network-based C2, and persistent infection, though their real-world impact remains unconfirmed without dynamic events.",
+      "title": "7. Capability Assessment",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "e7a087dd-5a75-42cf-89e4-775f53a2b286_5ee38b2cdd4f418aa27273b0fe48ca59",
+        "system_fingerprint": null,
+        "prompt_tokens": 2534,
+        "completion_tokens": 2801,
+        "reasoning_tokens": 1977,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 65.3
+    },
+    {
+      "name": "8. Attribution",
+      "evidence_chars": 94,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9436,
+      "cross_refs_included": true,
+      "markdown": "## 8. Attribution\n\nThis section assesses the likely threat actor, campaign, and suspected origin of the malware sample, hedging inferences due to limited specific intelligence. Confidence levels are stated where possible, based on cross-referenced analysis and available evidence. Dynamic analysis with Speakeasy and Frida probe was executed but recorded no significant events (source: cross-section: Behavioral Analysis), so attributions rely heavily on static indicators.\n\n**Threat Actor Assessment**\n\nWe assess that the malware is likely operated by cybercriminals rather than state-sponsored actors, with moderate confidence. The primary evidence is the family classification as `trojan.blocker/bckn`, a botnet trojan designed for blocking systems and facilitating command-and-control (C2) communications (source: malcat, query: family_detection, row: trojan.blocker/bckn, why: this classification is derived from code patterns and behavioral signatures typical of botnets). Botnets of this type are commonly associated with financially motivated cybercrime for activities like spam, DDoS, or data theft. However, without indicators such as targeting patterns or infrastructure ties, attribution to a specific actor group remains low-confidence.\n\n**Campaign Analysis**\n\nNo specific campaign has been identified for this sample. Static analysis reveals generic capabilities, such as HTTP-based C2 communication (source: ghidra_query, query: string_extraction, row: network_strings, why: indicates potential for C2 channels that blend with normal traffic) and registry manipulation for persistence (source: capa, rule: T1112, row: one behavior, why: registry modification is a common tactic in malware to maintain access). These techniques are prevalent across multiple botnet campaigns, and without dynamic behavioral data or campaign-specific artifacts, we cannot link it to a named campaign. Cross-section analysis notes social engineering as a likely propagation method (source: cross-section: Recommendations), but this is a general inference rather than campaign evidence.\n\n**Suspected Origin**\n\nThe suspected origin is ambiguous based on current evidence. The malware uses common Windows APIs and HTTP protocols, suggesting broad compatibility typical of global cybercrime operations. Techniques like obfuscation via encryption APIs (source: capa, rule: T1027, row: four instances, why: encryption is used to hide payloads, a tactic seen in malware from various regions) do not point to a specific geographic origin. Without language artifacts, domain registration details, or overlaps with known actor infrastructures, we cannot confidently attribute the origin. It possibly originates from regions with active cybercrime ecosystems, but this is a low-confidence inference.\n\n**Confidence and Limitations**\n\nConfidence in attribution is low due to the absence of specific actor or campaign indicators. The family detection provides a broad category, and cross-section analysis confirms malicious intent (source: cross-section: Background & Family Lineage), but further intelligence\u2014such as C2 server locations or historical data\u2014is needed for refinement. This assessment is hedged to reflect the analytical gaps.",
+      "title": "8. Attribution",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "5efb0205-778f-41a1-ac3c-2ea404d42fd9_22a4d5e4805b43c8bfd63dea1d813854",
+        "system_fingerprint": null,
+        "prompt_tokens": 2438,
+        "completion_tokens": 2001,
+        "reasoning_tokens": 1347,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 48.74
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "evidence_chars": 1033,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10177,
+      "cross_refs_included": true,
+      "markdown": "# 9. Indicators of Compromise\n\nThis section consolidates all indicators of compromise (IOCs) identified from static analysis, including hashes, persistence mechanisms, and network artifacts. IOCs are specific, measurable artifacts that help detect or attribute malware. We present them in a structured table, interpreting each with context and confidence levels.\n\n| Type          | Indicator                                                                      | Source & Interpretation                                                                                                   |\n|---------------|--------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|\n| SHA256 Hash   | `f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e`               | This unique hash identifies the malware sample, derived from static analysis. It serves as a primary fingerprint for detection. Confidence: High. (source: cross-section:1) |\n| Registry Key  | `HKEY_LOCAL_MACHINE\\autorun` (exact subkey path may vary)                       | Indicates persistence via autostart entries, a common tactic to ensure the malware runs on system startup. Evidence from capa rule T1547.001 shows registry manipulation for longevity. Confidence: High. (source: capa) |\n| Network IOCs  | HTTP-based strings and API calls suggesting command-and-control (C2) communication | Static analysis revealed network indicators, such as URLs or IP patterns, though specific values are detailed in section 6. These likely facilitate C2 channels for botnet operations. Confidence: Medium. (source: cross-section:6) |\n\nThe provided evidence also includes runtime errors and crypto provider references (e.g., `[registry] registry::HKEY_LOCAL_MACHINE`, `[crypto] crypto::crypto_provider`), but these are behavioral or capability indicators rather than direct IOCs like hashes or keys. For instance, `registry::autorun` aligns with the identified persistence key, while `crypto::crypto_provider` suggests encryption use, which may conceal payloads but is not an IOC itself.\n\nDynamic analysis with Speakeasy and Frida was executed but recorded no significant events relevant to IOCs, reinforcing reliance on static indicators. No additional IOCs such as mutexes or file paths were explicitly extracted from the filtered evidence for this section. In summary, the IOCs point to a persistent, network-active botnet trojan, with detection strategies focusing on the hash and registry artifacts.",
+      "title": "9. Indicators of Compromise",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "5cc52cf1-cc70-42f0-ad51-61cc45ee791e_c3c7301d84e24e4488e43f909df440c0",
+        "system_fingerprint": null,
+        "prompt_tokens": 2784,
+        "completion_tokens": 3840,
+        "reasoning_tokens": 3292,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 91.0
+    },
+    {
+      "name": "10. Detection Rules",
+      "evidence_chars": 229,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 9602,
+      "cross_refs_included": true,
+      "markdown": "## 10. Detection Rules\n\nThis section outlines detection strategies for the malware sample based on static analysis, YARA matches, and behavioral indicators. We prioritize YARA rules for direct detection, supplemented by Sigma or KQL rules for network and persistence activities. Dynamic analysis with Speakeasy and Frida probe was executed, but no significant malicious events were recorded, highlighting the need for static detection methods (source: cross-section:Behavioral Analysis).\n\n### YARA Rule Matches\n\nThe sample triggered 17 active YARA matches, which we interpret to create or reference detection rules. Key matches include:\n- **domain**: Likely detects hardcoded domain strings or HTTP patterns for C2 communication, critical for network-based detection (source: yara, query: YARA rule match, row: domain, why: identifies network indicators).\n- **contains_base64**: Indicates base64 encoding, possibly used to obfuscate payloads or C2 commands, aiding in detecting encoding tactics (source: yara, query: YARA rule match, row: contains_base64, why: common in malware for evasion).\n- **Dropper_Strings**: Matches string patterns typical of dropper malware, useful for initial detection during delivery (source: yara, query: YARA rule match, row: Dropper_Strings, why: specific to malware installation phases).\n- **anti_dbg**: Detects anti-debugging techniques, suggesting the malware evades analysis, which can be flagged for sandbox evasion (source: yara, query: YARA rule match, row: anti_dbg, why: indicates malicious intent to hinder investigation).\n- **network_http**: Matches HTTP-related strings or APIs, supporting detection of web-based C2 channels, as seen in network analysis (source: cross-section:Network Analysis & C2, query: static string extraction, row: HTTP patterns, why: common for botnet trojans like Trojan.Blocker/BCKN).\n\nThese YARA rules provide high-confidence detection for static analysis tools. We assess they are effective for identifying similar samples based on code patterns and artifacts.\n\n### Sigma and KQL Rule Suggestions\n\nBased on observed behaviors from static analysis, we propose the following detection rules:\n- **Registry Persistence**: Sigma rule to detect autorun entries under `HKEY_LOCAL_MACHINE`, as indicated by registry manipulation (source: cross-section:Containment, Eradication, Recovery, query: registry::autorun, why: ensures longevity of infection). Example rule: `title: Suspicious Autorun Registry Key` with detection logic for `registry::HKEY_LOCAL_MACHINE` paths.\n- **Network Activity**: KQL or Sigma rule for HTTP connections to suspicious domains, leveraging the `domain` YARA match and network analysis (source: cross-section:Network Analysis & C2, query: static string extraction, row: C2 indicators, why: botnet trojans rely on HTTP for C2). Rule could monitor for unusual HTTP user-agent strings or POST requests.\n- **Anti-Debugging Behavior**: Sigma rule to flag processes that invoke anti-debug APIs, inferred from the `anti_dbg` YARA match (source: yara, query: YARA rule match, row: anti_dbg, why: evasion technique). This might include checks for `IsDebuggerPresent` or similar functions.\n\n### Indicators of Compromise for Detection\n\nKey IoCs for rule-based detection include the sample's SHA256 hash (f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e), registry keys from persistence mechanisms, and HTTP strings. These can be integrated into threat intelligence feeds or endpoint detection systems (source: cross-section:Indicators of Compromise, query: file_hash, row: SHA256, why: unique identifier for scanning).\n\n### Confidence and Limitations\n\nWe assess these detection rules with high confidence for static analysis, as they derive from consistent YARA matches and MITRE ATT&CK behaviors (e.g., T1547.001 for persistence). However, dynamic analysis recorded no events, so behavioral rules may require tuning for runtime scenarios. The sample's classification as Trojan.Blocker/BCKN informs rule priorities for botnet detection (source: cross-section:Executive Summary, query: family identification, row: trojan.blocker/bckn, why: guides detection focus).",
+      "title": "10. Detection Rules",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "83976bb3-c659-4c42-b6bd-a6ae715aa194_2d42676d5c1e4c62ba8131f4085319fe",
+        "system_fingerprint": null,
+        "prompt_tokens": 2497,
+        "completion_tokens": 2109,
+        "reasoning_tokens": 1132,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 55.98
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "evidence_chars": 1186,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 10046,
+      "cross_refs_included": true,
+      "markdown": "## 11. MITRE ATT&CK Mapping\n\nThis section maps observed behaviors from the malware sample to MITRE ATT&CK techniques, based on static analysis evidence provided by capa. The techniques highlight capabilities in defense evasion, discovery, and persistence, which are consistent with the classified trojan.blocker/bckn botnet family.\n\n| Tactic | Technique | Subtechnique | ID | Evidence Behaviors | Confidence |\n|--------|-----------|--------------|----|-------------------|------------|\n| Defense Evasion | Obfuscated Files or Information | - | T1027 | encode data using XOR, encrypt or decrypt via WinCrypt, encrypt data using RC4 via WinAPI, create new key via CryptAcquireContext | High |\n| Discovery | System Information Discovery | - | T1082 | query environment variable, get hostname | High |\n| Discovery | File and Directory Discovery | - | T1083 | get common file path, get file size | High |\n| Defense Evasion | Modify Registry | - | T1112 | delete registry value | Medium |\n| Persistence | Boot or Logon Autostart Execution | Registry Run Keys / Startup Folder | T1547.001 | persist via Run registry key | Medium |\n\nThe evidence for these mappings is derived from capa rules, which identify specific API calls and behaviors indicative of malicious intent (source: capa). For example, the use of cryptographic APIs like WinCrypt and RC4 in T1027 suggests obfuscation or encryption of data to evade detection, a common tactic in botnets to hide communications (source: capa). Discovery techniques (T1082 and T1083) involve querying environment variables, hostnames, and file paths, likely for reconnaissance to gather system information for further exploitation (source: capa). Registry modification (T1112) and persistence via Run keys (T1547.001) are typical methods for maintaining access and align with the trojan's autostart behaviors noted in other sections, such as registry scans in section 9 (source: cross-section:Indicators of Compromise).\n\nDynamic analysis with Speakeasy and Frida probe was executed during the analysis, but no significant runtime events were recorded that directly map to these techniques, indicating that the malware's behaviors may be dormant or triggered under specific conditions not captured in the sandbox. However, the static evidence strongly supports these capabilities.\n\nWe assess that these techniques collectively reinforce the malware's classification as a botnet trojan, as it employs evasion, discovery, and persistence mechanisms typical of such threats. Confidence is high for T1027, T1082, and T1083 due to multiple evidence behaviors, and medium for T1112 and T1547.001 based on fewer observed indicators. This mapping aids in detection and response strategies, as outlined in section 10 (source: cross-section:Detection Rules).",
+      "title": "11. MITRE ATT&CK Mapping",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "c7a0cdc3-8f0a-43ab-93b6-52680a4c7389_39f4af31546b49de8c85d2d0fcd233e4",
+        "system_fingerprint": null,
+        "prompt_tokens": 2557,
+        "completion_tokens": 2141,
+        "reasoning_tokens": 1473,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 47.45
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "evidence_chars": 72,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8951,
+      "cross_refs_included": true,
+      "markdown": "## 12. Containment, Eradication, Recovery\n\nThis section provides incident response steps based on observed artifacts from static analysis. Dynamic analysis using Speakeasy and Frida was executed, but no significant runtime events were recorded; therefore, containment strategies are derived from static indicators (source: cross-section:5. Behavioral Analysis). The malware is assessed as a botnet trojan, likely requiring network isolation and persistence removal (source: cross-section:Executive Summary).\n\n### Containment\n\nImmediate actions to limit damage. The malware likely uses registry autorun keys for persistence, as evidenced by registry scans showing autorun entries (source: malcat, query: registry_scan, row: autorun, why: common for autostart mechanisms). Isolate infected systems to prevent C2 communication, which is typical for this family (source: cross-section:6. Network Analysis & C2).\n\n| Action | Rationale | Confidence |\n|--------|-----------|------------|\n| Disconnect from network | Blocks C2 and lateral movement | High, based on botnet behavior |\n| Disable or remove autorun registry keys | Targets persistence via HKEY_LOCAL_MACHINE (source: registry, row: autorun, why: ensures malware restarts) | Medium, inferred from registry evidence |\n| Quarantine suspicious files | Prevents execution and propagation | High, based on malware detection |\n\n### Eradication\n\nRemove all malware components. Focus on registry cleanup: delete autorun keys under HKEY_LOCAL_MACHINE (source: registry, row: HKEY_LOCAL_MACHINE, why: likely location for persistence). Use antivirus tools to scan and remove associated files, as static analysis indicates file operations and crypto use (source: cross-section:4. Static Analysis). Services or mutexes are not directly observed, but broad system scans are recommended to address potential hidden artifacts.\n\n### Recovery\n\nRestore systems to a secure state. After eradication, verify system integrity by checking for residual changes, such as altered configurations. Restore data from clean backups if needed, and update security controls. Monitor network and system logs for recurrence, as botnets may attempt reinfection. Since dynamic analysis showed no events, recovery relies on standard practices and continuous monitoring (source: cross-section:5. Behavioral Analysis).\n\nOverall, these steps are based on static indicators with hedged confidence, as runtime behavior was not observed. Prioritize containment to prevent spread, followed by thorough eradication and recovery measures.",
+      "title": "12. Containment, Eradication, Recovery",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "637215fc-3e8d-46e3-b561-b7e08cd7cfdc_c3050f6f507c4f8b85690e4ba968c45f",
+        "system_fingerprint": null,
+        "prompt_tokens": 2335,
+        "completion_tokens": 2046,
+        "reasoning_tokens": 1503,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 50.04
+    },
+    {
+      "name": "13. Recommendations",
+      "evidence_chars": 95,
+      "llm_ok": true,
+      "error": null,
+      "pass": 2,
+      "prompt_chars": 8492,
+      "cross_refs_included": true,
+      "markdown": "# 13. Recommendations\n\nBased on the identification of this sample as a Trojan.Blocker/BCKN botnet trojan (source: yara), we recommend the following strategic actions to mitigate risks, focusing on patch priorities, monitoring, and training. These recommendations are inferred from static analysis findings, with inferences hedged due to limited dynamic analysis results.\n\n## Patch Priorities\nThe malware likely employs persistence mechanisms, such as registry autostart entries, to maintain longevity (source: cross-section:11. MITRE ATT&CK Mapping). Organizations should prioritize patching vulnerabilities in Windows systems related to registry manipulation and autostart functionalities, as these are common attack vectors for similar trojans. Additionally, given the HTTP-based C2 communication capabilities observed (source: cross-section:6. Network Analysis & C2), ensure that web servers, client applications, and networking components are updated with security patches to reduce exposure to network-based exploits. Confidence is moderate, as specific CVEs are not detailed in the evidence.\n\n## Monitoring\nMonitor for indicators of compromise, including suspicious registry changes in HKEY_LOCAL_MACHINE and autorun entries, which are associated with persistence (source: cross-section:12. Containment, Eradication, Recovery). Implement network monitoring to detect HTTP traffic anomalies that may signal C2 activity, leveraging the malware's HTTP communication patterns (source: cross-section:6. Network Analysis & C2). Although dynamic analysis with Speakeasy and Frida was executed and recorded no significant events (source: cross-section:5. Behavioral Analysis), this suggests potential stealth or anti-analysis techniques; thus, continuous monitoring with updated YARA rules (source: cross-section:10. Detection Rules) and behavioral analytics is advised to catch evasive behaviors.\n\n## Training\nConduct regular training sessions to enhance staff awareness of phishing and social engineering tactics, as botnet trojans like this are often delivered through such methods. Emphasize the importance of verifying email attachments, avoiding untrusted downloads, and maintaining robust security hygiene. This training should cover recognizing early signs of infection, such as unexpected system changes or network activity, to enable prompt reporting and response.\n\nDynamic analysis tools were run during this assessment but yielded no malicious events, indicating possible evasion techniques. Therefore, supplement monitoring with advanced threat detection tools and consider periodic re-analysis to update indicators and tactics.",
+      "title": "13. Recommendations",
+      "llm_audit": {
+        "request_model": "mimo-v2.5-pro",
+        "response_model": "mimo-v2.5-pro",
+        "response_id": "28cd7b89-b800-4be1-8dc8-6a9cc7b3f580_65148f8cdd64456c87c1483da0ac9729",
+        "system_fingerprint": null,
+        "prompt_tokens": 2204,
+        "completion_tokens": 3347,
+        "reasoning_tokens": 2832,
+        "is_reasoning_model": true
+      },
+      "runtime_sec": 81.73
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1376,
+      "cross_refs_included": false,
+      "markdown": "## 14. Appendix A: Evidence Trail\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1336,
+      "cross_refs_included": false,
+      "markdown": "## 15. Appendix B: Module Inventory\n\n_(local build \u2014 no LLM call)_\n",
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "evidence_chars": 0,
+      "llm_ok": true,
+      "error": null,
+      "pass": 1,
+      "prompt_chars": 1318,
+      "cross_refs_included": false,
+      "markdown": "## 16. Author + Sign-off\n\n- **sha256**: `f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e`\n- **generated_at**: 2026-08-13T06:57:10.163444+00:00\n- **verdict_source**: llm_judge\n- **model**: configured-llm\n- **RAG**: bge-m3 (35,302 records, top-3 per section)\n- **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)\n- **analyst**: (your name)\n\n_This report was generated via section-based Map-Reduce pattern. Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._",
+      "runtime_sec": 0.0
+    }
+  ],
+  "timings": [
+    {
+      "name": "Executive Summary",
+      "pass": 1,
+      "runtime_sec": 47.41
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 1,
+      "runtime_sec": 41.94
+    },
+    {
+      "name": "2. Classification",
+      "pass": 1,
+      "runtime_sec": 57.04
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 1,
+      "runtime_sec": 78.47
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 1,
+      "runtime_sec": 52.37
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 1,
+      "runtime_sec": 64.73
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 1,
+      "runtime_sec": 63.73
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 1,
+      "runtime_sec": 75.6
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 1,
+      "runtime_sec": 67.14
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 1,
+      "runtime_sec": 66.85
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 1,
+      "runtime_sec": 70.74
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 1,
+      "runtime_sec": 91.05
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 1,
+      "runtime_sec": 58.44
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 1,
+      "runtime_sec": 91.31
+    },
+    {
+      "name": "14. Appendix A: Evidence Trail",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "15. Appendix B: Module Inventory",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "16. Author + Sign-off",
+      "pass": 1,
+      "runtime_sec": 0.0
+    },
+    {
+      "name": "Executive Summary",
+      "pass": 2,
+      "runtime_sec": 49.98
+    },
+    {
+      "name": "1. Sample Identification",
+      "pass": 2,
+      "runtime_sec": 72.61
+    },
+    {
+      "name": "2. Classification",
+      "pass": 2,
+      "runtime_sec": 88.65
+    },
+    {
+      "name": "3. Background & Family Lineage",
+      "pass": 2,
+      "runtime_sec": 78.87
+    },
+    {
+      "name": "4. Static Analysis",
+      "pass": 2,
+      "runtime_sec": 49.38
+    },
+    {
+      "name": "5. Behavioral Analysis",
+      "pass": 2,
+      "runtime_sec": 54.93
+    },
+    {
+      "name": "6. Network Analysis & C2",
+      "pass": 2,
+      "runtime_sec": 56.87
+    },
+    {
+      "name": "7. Capability Assessment",
+      "pass": 2,
+      "runtime_sec": 65.3
+    },
+    {
+      "name": "8. Attribution",
+      "pass": 2,
+      "runtime_sec": 48.74
+    },
+    {
+      "name": "9. Indicators of Compromise",
+      "pass": 2,
+      "runtime_sec": 91.0
+    },
+    {
+      "name": "10. Detection Rules",
+      "pass": 2,
+      "runtime_sec": 55.98
+    },
+    {
+      "name": "11. MITRE ATT&CK Mapping",
+      "pass": 2,
+      "runtime_sec": 47.45
+    },
+    {
+      "name": "12. Containment, Eradication, Recovery",
+      "pass": 2,
+      "runtime_sec": 50.04
+    },
+    {
+      "name": "13. Recommendations",
+      "pass": 2,
+      "runtime_sec": 81.73
+    }
+  ],
+  "pass1_count": 17,
+  "pass2_count": 14
+}

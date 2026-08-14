@@ -1,0 +1,375 @@
+# capa rules (deterministic render)
+
+{
+  "rule_count": 30,
+  "top_rules": [
+    {
+      "name": "contain obfuscated stackstrings",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information",
+            "Indicator Removal from Tools"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "Indicator Removal from Tools",
+          "id": "T1027.005"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Anti-Static Analysis",
+            "Executable Code Obfuscation",
+            "Argument Obfuscation"
+          ],
+          "objective": "Anti-Static Analysis",
+          "behavior": "Executable Code Obfuscation",
+          "method": "Argument Obfuscation",
+          "id": "B0032.020"
+        },
+        {
+          "parts": [
+            "Anti-Static Analysis",
+            "Executable Code Obfuscation",
+            "Stack Strings"
+          ],
+          "objective": "Anti-Static Analysis",
+          "behavior": "Executable Code Obfuscation",
+          "method": "Stack Strings",
+          "id": "B0032.017"
+        }
+      ]
+    },
+    {
+      "name": "reference Base64 string",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Obfuscated Files or Information"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Obfuscated Files or Information",
+          "subtechnique": "",
+          "id": "T1027"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Data",
+            "Encode Data",
+            "Base64"
+          ],
+          "objective": "Data",
+          "behavior": "Encode Data",
+          "method": "Base64",
+          "id": "C0026.001"
+        },
+        {
+          "parts": [
+            "Data",
+            "Check String"
+          ],
+          "objective": "Data",
+          "behavior": "Check String",
+          "method": "",
+          "id": "C0019"
+        }
+      ]
+    },
+    {
+      "name": "get common file path",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "File and Directory Discovery",
+          "subtechnique": "",
+          "id": "T1083"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "File and Directory Discovery",
+          "method": "",
+          "id": "E1083"
+        }
+      ]
+    },
+    {
+      "name": "get file size",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "File and Directory Discovery",
+          "subtechnique": "",
+          "id": "T1083"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "objective": "Discovery",
+          "behavior": "File and Directory Discovery",
+          "method": "",
+          "id": "E1083"
+        }
+      ]
+    },
+    {
+      "name": "inject thread",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Process Injection",
+            "Thread Execution Hijacking"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Process Injection",
+          "subtechnique": "Thread Execution Hijacking",
+          "id": "T1055.003"
+        },
+        {
+          "parts": [
+            "Defense Evasion",
+            "Reflective Code Loading"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Reflective Code Loading",
+          "subtechnique": "",
+          "id": "T1620"
+        }
+      ],
+      "mbc": []
+    },
+    {
+      "name": "enumerate processes",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "Process Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "Process Discovery",
+          "subtechnique": "",
+          "id": "T1057"
+        },
+        {
+          "parts": [
+            "Discovery",
+            "Software Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "Software Discovery",
+          "subtechnique": "",
+          "id": "T1518"
+        }
+      ],
+      "mbc": []
+    },
+    {
+      "name": "delete registry value",
+      "attack": [
+        {
+          "parts": [
+            "Defense Evasion",
+            "Modify Registry"
+          ],
+          "tactic": "Defense Evasion",
+          "technique": "Modify Registry",
+          "subtechnique": "",
+          "id": "T1112"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Operating System",
+            "Registry",
+            "Delete Registry Value"
+          ],
+          "objective": "Operating System",
+          "behavior": "Registry",
+          "method": "Delete Registry Value",
+          "id": "C0036.007"
+        }
+      ]
+    },
+    {
+      "name": "spawn thread to RWX shellcode",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Memory",
+            "Allocate Memory"
+          ],
+          "objective": "Memory",
+          "behavior": "Allocate Memory",
+          "method": "",
+          "id": "C0007"
+        },
+        {
+          "parts": [
+            "Process",
+            "Create Thread"
+          ],
+          "objective": "Process",
+          "behavior": "Create Thread",
+          "method": "",
+          "id": "C0038"
+        }
+      ]
+    },
+    {
+      "name": "persist via Run registry key",
+      "attack": [
+        {
+          "parts": [
+            "Persistence",
+            "Boot or Logon Autostart Execution",
+            "Registry Run Keys / Startup Folder"
+          ],
+          "tactic": "Persistence",
+          "technique": "Boot or Logon Autostart Execution",
+          "subtechnique": "Registry Run Keys / Startup Folder",
+          "id": "T1547.001"
+        }
+      ],
+      "mbc": [
+        {
+          "parts": [
+            "Persistence",
+            "Registry Run Keys / Startup Folder"
+          ],
+          "objective": "Persistence",
+          "behavior": "Registry Run Keys / Startup Folder",
+          "method": "",
+          "id": "F0012"
+        }
+      ]
+    },
+    {
+      "name": "contain an embedded PE file",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "Execution",
+            "Install Additional Program"
+          ],
+          "objective": "Execution",
+          "behavior": "Install Additional Program",
+          "method": "",
+          "id": "B0023"
+        }
+      ]
+    },
+    {
+      "name": "get Program Files directory",
+      "attack": [
+        {
+          "parts": [
+            "Discovery",
+            "File and Directory Discovery"
+          ],
+          "tactic": "Discovery",
+          "technique": "File and Directory Discovery",
+          "subtechnique": "",
+          "id": "T1083"
+        }
+      ],
+      "mbc": []
+    },
+    {
+      "name": "copy file",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "File System",
+            "Copy File"
+          ],
+          "objective": "File System",
+          "behavior": "Copy File",
+          "method": "",
+          "id": "C0045"
+        }
+      ]
+    },
+    {
+      "name": "create directory",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "File System",
+            "Create Directory"
+          ],
+          "objective": "File System",
+          "behavior": "Create Directory",
+          "method": "",
+          "id": "C0046"
+        }
+      ]
+    },
+    {
+      "name": "delete directory",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "File System",
+            "Delete Directory"
+          ],
+          "objective": "File System",
+          "behavior": "Delete Directory",
+          "method": "",
+          "id": "C0048"
+        }
+      ]
+    },
+    {
+      "name": "delete file",
+      "attack": [],
+      "mbc": [
+        {
+          "parts": [
+            "File System",
+            "Delete File"
+          ],
+          "objective": "File System",
+          "behavior": "Delete File",
+          "method": "",
+          "id": "C0047"
+        }
+      ]
+    }
+  ],
+  "timeout_s": 300,
+  "sample_size": 78848,
+  "duration_s": 3.02,
+  "engine": "malcat-capa",
+  "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+}

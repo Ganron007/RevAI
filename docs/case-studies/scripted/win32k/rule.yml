@@ -1,0 +1,21 @@
+title: "RevAI v2: trojan.dyreza/battdil activity"
+id: trojan_dyreza_battdil_8088f08a5636
+status: experimental
+level: high
+description: "Auto-generated Sigma rule for trojan.dyreza/battdil (sha256 prefix 8088f08a5636)"
+author: RevAI yara_gen_v2
+date: 2026/08/12
+reference: "commit unknown · engine langgraph"
+tags:
+    - attack.execution
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+            CommandLine|contains: "*=&&jL66Zl??A~*"
+            CommandLine|contains: "*&jL&6Zl6?A~?*"
+            CommandLine|contains: "*jL&&Zl66A~??*"
+    condition: selection
+falsepositives:
+    - Review against goodware corpus

@@ -1,0 +1,123 @@
+{
+  "schema": "v6.3.single",
+  "sha256": "28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb",
+  "started_at": "2026-08-12T17:44:13Z",
+  "pipeline_mode": "single",
+  "with_dynamic": false,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-12 17:44:13 UTC"
+  },
+  "stages": [
+    {
+      "stage": "intake",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/intake_v2.py",
+        "/opt/samples/test610/corpus/malware/day2/svchost.exe",
+        "--project-name",
+        "malware",
+        "--mode",
+        "standard"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 75.7,
+      "ts": "2026-08-12T17:45:29Z"
+    },
+    {
+      "stage": "quick_scan",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/quick_scan_v2.py",
+        "28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 110.8,
+      "ts": "2026-08-12T17:47:19Z"
+    },
+    {
+      "stage": "deep_dive",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/deep_dive_agentic.py",
+        "28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 355.2,
+      "ts": "2026-08-12T17:53:14Z"
+    },
+    {
+      "stage": "yara_gen",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/yara_gen_v2.py",
+        "28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 2.7,
+      "ts": "2026-08-12T17:53:17Z"
+    },
+    {
+      "stage": "publish_v2",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/publish_report_v2.py",
+        "28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb",
+        "--template",
+        "full"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 316.8,
+      "ts": "2026-08-12T17:58:34Z"
+    },
+    {
+      "stage": "publish_v3",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/section_publisher.py",
+        "28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb"
+      ],
+      "rc": 0,
+      "ok": true,
+      "elapsed_s": 576.6,
+      "ts": "2026-08-12T18:08:11Z"
+    },
+    {
+      "stage": "audit",
+      "cmd": [
+        "/usr/bin/python3",
+        "/opt/scripts/audit_pipeline.py",
+        "28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb",
+        "--mode",
+        "single"
+      ],
+      "rc": 1,
+      "ok": false,
+      "elapsed_s": 0.1,
+      "ts": "2026-08-12T18:08:11Z"
+    }
+  ],
+  "finished_at": "2026-08-12T18:08:11Z",
+  "elapsed_s": 1438.0,
+  "all_green": false,
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": false,
+    "yara_gen": true,
+    "publish": true
+  }
+}

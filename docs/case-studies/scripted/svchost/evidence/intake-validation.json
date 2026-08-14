@@ -1,0 +1,68 @@
+{
+  "sha256": "28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X86",
+      "file_size": 104448,
+      "entropy": 116,
+      "sha256": "28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb",
+      "dotnet_bundle": false,
+      "imports_count": 373,
+      "strings_count": 100,
+      "functions_count": 10,
+      "constants_count": 30,
+      "anomalies_count": 7,
+      "yara_hits_count": 10,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 156,
+      "import_ptrs": 96,
+      "funcs": 442,
+      "strings": 380
+    },
+    "ida": {
+      "imports": 156,
+      "funcs": 468,
+      "strings": 429
+    }
+  },
+  "warnings": [
+    "Malcat imports (373) diverge from IDA imports (156)."
+  ],
+  "source_decisions": {
+    "sha256": "28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb",
+    "imports": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra imports=156 and IDA imports=156 are within 20% tolerance, indicating consistency. Malcat imports_count=373 diverges, suggesting different analysis scope or counting method. Evidence: {tool_summary, ghidra, imports, 156}, {tool_summary, ida, imports, 156}, {tool_summary, malcat, imports_count, 373}."
+    },
+    "functions": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra funcs=442 and IDA funcs=468 are within 2x range, while malcat functions_count=10 is significantly lower, indicating malcat may not provide detailed function analysis. Evidence: {tool_summary, ghidra, funcs, 442}, {tool_summary, ida, funcs, 468}, {tool_summary, malcat, functions_count, 10}."
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "String counts vary across engines: malcat=100, ghidra=380, ida=429; using both ensures comprehensive extraction and cross-verification. Evidence: {tool_summary, malcat, strings_count, 100}, {tool_summary, ghidra, strings, 380}, {tool_summary, ida, strings, 429}."
+    },
+    "decompilation": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra is a capable decompiler with no conflicting evidence from summaries; default choice for detailed code analysis. Evidence: {tool_summary, ghidra, available for decompilation, yes}."
+    },
+    "cff": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra supports control flow graph analysis and is default for structural analysis; no specific data from other tools. Evidence: {tool_summary, ghidra, applicable for cff, yes}."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat provides fast file summary with anomalies_count=7, imports_count=373, strings_count=100, and other metrics like entropy and file_size, ideal for quick static profiling. Evidence: {tool_summary, malcat, anomalies_count, 7}, {tool_summary, malcat, imports_count, 373}, {tool_summary, malcat, strings_count, 100}."
+    },
+    "llm_revised": true
+  }
+}

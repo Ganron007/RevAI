@@ -1,0 +1,1282 @@
+{
+  "sha": "bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76",
+  "mode": "single",
+  "mode_effective": "large",
+  "strict_standard": false,
+  "audited_at": "2026-08-13T09:51:23.364631+00:00",
+  "session_pipeline_mode": "single",
+  "sample_path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+  "stages": {
+    "intake": {
+      "ok": true,
+      "checks": {
+        "intake_validation": true,
+        "has_source_decisions": true,
+        "ghidra_mentioned": true
+      },
+      "evidence": {
+        "intake_validation": {
+          "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/intake-validation.json",
+          "exists": true,
+          "bytes": 2637,
+          "mtime_iso": "2026-08-12T19:16:58.388908+00:00",
+          "sha256": "534c224a97976875bbd4deca77b93d46c5ea74b27351daff322715304b1f58fa"
+        },
+        "malcat_triage": {
+          "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/malcat-triage.json",
+          "exists": true,
+          "bytes": 36732,
+          "mtime_iso": "2026-08-13T05:04:15.257143+00:00",
+          "sha256": "a0399a135b1d9008f684969591e17a75eacb5ef96233147e79ba48848d1079d2"
+        },
+        "source_decisions": {
+          "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/source-decisions.json",
+          "exists": true,
+          "bytes": 1794,
+          "mtime_iso": "2026-08-12T19:16:58.389909+00:00",
+          "sha256": "b41b7aade1f2143f614a58cae63f465efff67143a8aa442371f7182ad1084bef"
+        },
+        "ghidra_import_log": {
+          "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/intake-analyzeHeadless.log",
+          "exists": true,
+          "bytes": 8380,
+          "mtime_iso": "2026-08-12T19:15:44.497000+00:00",
+          "sha256": "9de0cf612cacbd1bda6219bb90252e2d931f7f4c3643736d847fed9a4293aee5"
+        },
+        "ida_bootstrap_log": {
+          "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/intake-idasql.log",
+          "exists": true,
+          "bytes": 213,
+          "mtime_iso": "2026-08-12T19:15:47.529001+00:00",
+          "sha256": "e87d917d2c81c5a0629fece1c549ce27260ba8f4cce7a8b73838d46f4eb719fd"
+        },
+        "source_decisions_excerpt": "{\n  \"sha256\": \"bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76\",\n  \"imports\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"high\",\n    \"reason\": \"From tool summaries, ghidra and ida both report 88 imports, while malcat reports 113; agreement between disassemblers indicates reliability. Evidence: {ghidra, imports, 88} and {ida, imports, 88}.\"\n  },\n  \"functions\": {\n    \"source\": \"ghidra\",\n    \"confidence\": \"high\",\n    \"reason\": \"Ghidra and ida both identify 74 functions, whereas malcat only has 10; consistency between disassemblers suggests high accuracy. Evidence: {ghidra, funcs, 74} and {ida, funcs, 74}.\"\n  },\n  \"strings\": {\n    \"source\": \"both\",\n    \"confidence\": \"high\",\n    \"reason\": \"Using both engines covers more strings: ghidra has 178, ida has 253, malcat has 100; thi\n\u2026 [1017 more chars]",
+        "malcat_triage_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n  \"profile\": \"triage\",\n  \"limits\": {\n    \"strings_max\": 100,\n    \"imports_max\": 100,\n    \"functions_max\": 10,\n    \"anomaly_locations_max\": 5,\n    \"decompile_top_n\": 1\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"ishelp.dll\",\n    \"file_path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n    \"file_size\": 78848,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 6.35,\n    \"sha256\": \"bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76\",\n    \"metadata\": {\n      \"VersionInfo::FileDescription\": \"Loader Dynamic Link Library\",\n      \"VersionInfo::FileVersion\":\n\u2026 [35932 more chars]"
+      }
+    },
+    "quick_scan": {
+      "ok": true,
+      "checks": {
+        "prompt": true,
+        "verdict": true,
+        "has_capa_section": true,
+        "has_yara_section": true,
+        "has_malcat_section": true,
+        "has_floss_section": true,
+        "verdict_has_family": true,
+        "llm_source": true,
+        "tools_all_ok": true,
+        "citations_grounded": true,
+        "capa_salvage_used": false,
+        "evidence_pack_present": true,
+        "benign_blocked_if_incomplete": true,
+        "yara_family_not_cleared": true
+      },
+      "tools": {
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 30,\n  \"top_rules\": [\n    {\n      \"name\": \"contain obfuscated stackstrings\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Indicator Removal from Tools\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"Indicator Removal from Tools\",\n          \"id\": \"T1027.005\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Executable Code Obfuscation\",\n            \"Argument Obfuscation\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Executable Code Obfuscation\",\n          \"method\": \"Argument Obfuscation\",\n          \"id\": \"B0032.020\"\n        },\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Executable Code Obfuscation\",\n            \"Stack Strings\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Executable Code Obfuscation\",\n          \"method\": \"Stack Strings\",\n          \"id\": \"B0032.017\"\n        }\n      ]\n    },\n    {\n      \"name\": \"reference Base64 string\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Data\",\n            \"Encode Data\",\n            \"Base64\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Encode Data\",\n          \"method\": \"Base64\",\n          \"id\": \"C0026.001\"\n        },\n        {\n          \"parts\": [\n            \"Data\",\n            \"Check String\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Check String\",\n          \"method\": \"\",\n          \"id\": \"C0019\"\n        }\n      ]\n    },\n    {\n      \"name\": \"get common file path\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Discovery\",\n            \"File and Directory Discovery\"\n          ],\n          \"tactic\": \"Discovery\",\n          \"technique\": \"File and Directory Discovery\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1083\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Discovery\",\n            \"File and Directory Discovery\"\n          ],\n          \"objective\": \"Discovery\",\n          \"behavior\": \"File and Directory Discovery\",\n          \"method\": \"\",\n          \"id\": \"E1083\"\n        }\n      ]\n    },\n    {\n      \"name\": \"get file size\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Discovery\",\n            \"File and Directory Discovery\"\n          ],\n          \"tactic\": \"Discovery\",\n          \"technique\": \"File and Directory Discovery\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1083\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Discovery\",\n            \"File and Directory Discovery\"\n          ],\n          \"objective\": \"Discovery\",\n          \"behavior\": \"File and Directory Discovery\",\n          \"method\": \"\",\n          \"id\": \"E1083\"\n        }\n      ]\n    },\n    {\n      \"name\": \"inject thread\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Process Injection\",\n            \"Thread Execution Hijacking\"\n          ],\n          \"tactic\": \"Def\n\u2026 [5140 more chars]",
+          "present": true
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 26,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 60279,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 16611,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"System_Tools\",\n      \"path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"Dropper_Strings\",\n      \"path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 16899,\n          \"length\": 18,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Misc_Suspicious_Strings\",\n      \"path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$a4\",\n          \"offset\": 61976,\n          \"length\": 7,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"SHA512_Constants\",\n      \"path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$c1\",\n          \"offset\": 58812,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c3\",\n          \"offset\": 58820,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c5\",\n          \"offset\": 58828,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c7\",\n          \"offset\": 58836,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"BASE64_table\",\n      \"path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 58736,\n          \"length\": 64,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Emissary_APT_Malware_1\",\n      \"path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$s1\",\n          \"offset\": 61976,\n          \"length\": 18,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$s2\",\n          \"offset\": 61996,\n          \"length\": 20,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$s3\",\n          \"offset\": 17696,\n          \"length\": 25,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$s4\",\n          \"offset\": 61864,\n          \"length\": 28,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$s5\",\n          \"offset\": 60320,\n    \n\u2026 [10592 more chars]",
+          "present": true
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 619,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"\\\\Internet Explorer\\\\iexplore.exe\",\n    \"000A758C8FEAE5F.TMP\",\n    \"-3$1-$3\",\n    \"7/+.1$1\",\n    \"($7/+.1$\",\n    \"!This program cannot be run in DOS mode.\",\n    \"3 !23;\",\n    \"!23Rich\",\n    \"`.rdata\",\n    \"@.data\",\n    \"@.reloc\",\n    \"Qj&hTs\",\n    \"0SSSSS\",\n    \"0WWWWW\",\n    \"AAFFf;\",\n    \"URPQQh\",\n    \"v\\tN+D$\",\n    \"YSSSSS\",\n    \"HHtXHHt\",\n    \">If90t\",\n    \"UQPXY]Y[\",\n    \"Invalid parameter passed to C runtime function.\",\n    \"(null)\",\n    \"```hhh\",\n    \"xppwpp\",\n    \"%d/%02d/%02d %02d:%02d:%02d -\",\n    \"ReleaseFile Error->FindResource Failed[%d].\",\n    \"ReleaseFile Error->Size=0.\",\n    \"Kernel32.dll\",\n    \"ReleaseFile Error->LoadLibrary Failed[%d].\",\n    \"LoadResource\",\n    \"ReleaseFile->GetProcAddress Failed[%d].\",\n    \"ReleaseFile->ProLdRsc Failed.\",\n    \"ReleaseFile->CreateFile Failed[%d].\",\n    \"Removing...\",\n    \"\\\\LocalData\\\\\",\n    \"Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Run\",\n    \"SystemDrive\",\n    \"SeDebugPrivilege\",\n    \"FreeLibrary\",\n    \"kernel32.dll\",\n    \"A08E81B411.DAT\",\n    \"Windows Internet Explorer\",\n    \"LoadLibraryA\",\n    \"ishelp.dll\",\n    \"IE Process is running.\",\n    \"ReF(D)F.\",\n    \"_MICROSOFT_LOADER_MUTEX_\",\n    \"create snapshot failed: 0x%x.\",\n    \"process32first failed: 0x%x.\",\n    \"TID list head is NULL.\",\n    \"create tid snapshot failed: 0x%x.\",\n    \"thread32first failed: 0x%x.\",\n    \"ZwMapViewOfSection\",\n    \"XXXX.dat\",\n    \"insert.\",\n    \"get pid failed.\",\n    \"error pid.\",\n    \"create tid list failed.\",\n    \"get tid list failed.\",\n    \"open process failed: 0x%x.\",\n    \"75BD50EC.DAT\",\n    \"*SLAR_GFD Error:%d.\",\n    \"rundll32.exe \\\"%s\\\",Setting\",\n    \"*SLAR_RO Error:%d.\",\n    \"*SLAR_RS Error:%d.\",\n    \"S-1-5-21\",\n    \"Classes\",\n    \"Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Internet Settings\",\n    \"ProxyEnable\",\n    \"ProxyServer\",\n    \"_errno\",\n    \"??2@YAPAXI@Z\",\n    \"??3@YAXPAX@Z\",\n    \"malloc\",\n    \"msvcrt.dll\",\n    \"memset\",\n    \"memcpy\",\n    \"_XcptFilter\",\n    \"_initterm\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 2,\n    \"stack_strings\": 3,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 614\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 11.29,\n  \"size_bytes\": 78848,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}",
+          "present": true
+        },
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"ishelp.dll\",\n    \"file_path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n    \"file_size\": 78848,\n    \"type\": \"PE\",\n    \"architecture\": \"X86\",\n    \"entropy\": 6.35,\n    \"sha256\": \"bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76\",\n    \"metadata\": {\n      \"VersionInfo::FileDescription\": \"Loader Dynamic Link Library\",\n      \"VersionInfo::FileVersion\": \"1, 0, 0, 1\",\n      \"VersionInfo::InternalName\": \"Loader\",\n      \"VersionInfo::LegalCopyright\": \"Copyright (C) 2015\",\n      \"VersionInfo::OriginalFilename\": \"Loader.dll\",\n      \"VersionInfo::ProductName\": \"Loader Dynamic Link Library\",\n      \"VersionInfo::ProductVersion\": \"1, 0, 0, 1\",\n      \"Exports::Module name\": \"Loader.dll\",\n      \"Exports::Exports date\": \"2015-11-07 00:22:24\"\n    },\n    \"entrypoint_ea\": 10359,\n    \"layout\": [\n      {\n        \"name\": \"header\",\n        \"effective_address\": 0,\n        \"physical_size\": 1024,\n        \"virtual_size\": 0,\n        \"rights\": \"\",\n        \"entropy\": 51\n      },\n      {\n        \"name\": \".text\",\n        \"effective_address\": 1024,\n        \"physical_size\": 14848,\n        \"virtual_size\": 16384,\n        \"rights\": \"RX\",\n        \"entropy\": 126\n      },\n      {\n        \"name\": \".rdata\",\n        \"effective_address\": 17408,\n        \"physical_size\": 4608,\n        \"virtual_size\": 8192,\n        \"rights\": \"R\",\n        \"entropy\": 88\n      },\n      {\n        \"name\": \".data\",\n        \"effective_address\": 25600,\n        \"physical_size\": 2048,\n        \"virtual_size\": 4096,\n        \"rights\": \"RW\",\n        \"entropy\": 100\n      },\n      {\n        \"name\": \".rsrc\",\n        \"effective_address\": 29696,\n        \"physical_size\": 54272,\n        \"virtual_size\": 57344,\n        \"rights\": \"R\",\n        \"entropy\": 125\n      },\n      {\n        \"name\": \".reloc\",\n        \"effective_address\": 87040,\n        \"physical_size\": 2048,\n        \"virtual_size\": 4096,\n        \"rights\": \"R\",\n        \"entropy\": 90\n      }\n    ],\n    \"kesakode_verdict\": [],\n    \"entropy_malcat_raw\": 121,\n    \"entropy_source\": \"whole_file_shannon_revai\"\n  },\n  \"views\": {\n    \"anomalies\": [\n      {\n        \"name\": \"BigStringHiScore\",\n        \"desc\": \"string has more than 256 characters and high interest score\",\n        \"category\": \"strings\",\n        \"level\": 3,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"DynamicString\",\n        \"desc\": \"string is constructed dynamically\",\n        \"category\": \"strings\",\n        \"level\": 3,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"EmbeddedProgram\",\n        \"desc\": \"File embeds a program\",\n        \"category\": \"embedding\",\n        \"level\": 3,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"HugeStringBinary\",\n        \"desc\": \"string has more than 1024 characters and binary encoding\",\n        \"category\": \"strings\",\n        \"level\": 4,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"InvalidChecksum\",\n        \"desc\": \"PE Header checksum is wrong\",\n        \"category\": \"integrity\",\n        \"level\": 4,\n        \"num_hits\": 1\n      },\n      {\n        \"name\": \"ManyUniqueImmediateBytes\",\n        \"desc\": \"More than 48 \n\u2026 [64537 more chars]",
+          "present": true
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 8,
+        "hits": 8,
+        "misses": [],
+        "hit_examples": [
+          "kernel32.CreateRemoteThread Top high-signal imports API for creating remote threads in other processes, a key technique ",
+          "T1055.003 ATT&CK Rule for Thread Execution Hijacking, indicating process injection for defense evasion, a clear maliciou",
+          "FUN_100019a0 Anti Analysis Signals Function enumerates processes using CreateToolhelp32Snapshot, used for discovery and ",
+          "inject_thread matches YARA rule match for thread injection, confirming malicious injection capabilities from behavioral ",
+          "EmbeddedProgram Anomalies Anomaly indicates an embedded program, suggesting dropper or payload delivery functionality fo"
+        ],
+        "reason": ""
+      },
+      "format": "pe",
+      "required_tools": [
+        "capa",
+        "yara",
+        "floss"
+      ],
+      "verdict_preview": {
+        "verdict": "malicious",
+        "family": "Lotus Blossom",
+        "score": 95,
+        "agreement": "llm_and_v1_agree",
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "key_evidence": [
+          {
+            "source": "malcat",
+            "query_or_table": "Top high-signal imports",
+            "row_or_rule": "kernel32.CreateRemoteThread",
+            "why": "API for creating remote threads in other processes, a key technique for process injection and malicious code execution."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "ATT&CK",
+            "row_or_rule": "T1055.003",
+            "why": "Rule for Thread Execution Hijacking, indicating process injection for defense evasion, a clear malicious behavior."
+          },
+          {
+            "source": "ghidra",
+            "query_or_table": "Anti Analysis Signals",
+            "row_or_rule": "FUN_100019a0",
+            "why": "Function enumerates processes using CreateToolhelp32Snapshot, used for discovery and targeting in malicious activities."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "matches",
+            "row_or_rule": "inject_thread",
+            "why": "YARA rule match for thread injection, confirming malicious injection capabilities from behavioral patterns."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "Anomalies",
+            "row_or_rule": "EmbeddedProgram",
+            "why": "Anomaly indicates an embedded program, suggesting dropper or payload delivery functionality for malware distribution."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "Strings/registry",
+            "row_or_rule": "Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+            "why": "Registry key for autostart persistence, commonly modified by malware to ensure survival across reboots."
+          },
+          {
+            "source": "ghidra",
+            "query_or_table": "Suspicious strings (Ghidra)",
+            "row_or_rule": "cmd.exe /c %s > %s",
+            "why": "String for command execution and output redirection, indicating potential command-and-control or payload execution."
+          },
+          {
+            "source": "pe_imports",
+            "query_or_table": "signals",
+            "row_or_rule": "change_memory_protection",
+            "why": "VirtualProtect API used to alter memory permissions, enabling executable code in non-executable regions for injection."
+          }
+        ],
+        "summary": "The DLL 'ishelp.dll' exhibits malicious behavior including process injection via CreateRemoteThread, registry-based persistence, privilege escalation, and an embedded payload. It uses anti-analysis techniques and matches known malware patterns, with strong consensus from multiple analysis engines and external threat intelligence."
+      },
+      "evidence": {
+        "prompt": {
+          "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/prompt.txt",
+          "exists": true,
+          "bytes": 33514,
+          "mtime_iso": "2026-08-13T09:27:06.674001+00:00",
+          "sha256": "9e5ebb85c9aabce6d61725494d8bc775859c0840a4093987612d9f1cbaf6594b"
+        },
+        "verdict": {
+          "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/verdict.json",
+          "exists": true,
+          "bytes": 6417,
+          "mtime_iso": "2026-08-13T09:29:10.630171+00:00",
+          "sha256": "8e3500dcc48b72147f5e7fbcaeb0afd4d7f9341f875768cf82d0045dfc16cbee"
+        },
+        "prompt_excerpt": "# Triage evidence\nsha256: bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76\nsample_path: /opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\nghidra_session: ghidra-pe-bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76\nida_session: ida-bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76\n\n## Source decisions (from intake validation)\n- imports: ghidra (confidence=high) \u2014 From tool summaries, ghidra and ida both report 88 imports, while malcat reports 113; agreement between disassemblers indicates reliability. Evidence: {ghidra, imports, 88} and {ida, imports, 88}.\n- functions: ghidra (confidence=high) \u2014 Ghidra and ida both identify 74 functions, whereas malcat only has 10; consistency between disassemblers suggests high accuracy. Evidence: {ghidra, funcs, 74} and {ida, funcs, 74}.\n- strings: both (confidence=high) \u2014 Using both engines covers more strings: ghidra has 178, ida has 253, malcat has 1\n\u2026 [32461 more chars]",
+        "verdict_excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 95,\n  \"family_guess\": \"Lotus Blossom\",\n  \"cross_engine_notes\": \"Ghidra and IDA agree on 74 functions and 88 imports, indicating reliable disassembly. MalCat identifies 11 anomalies including EmbeddedProgram and high-signal imports like CreateRemoteThread. Capa and YARA rules detect process injection, privilege escalation, and persistence behaviors. External VirusTotal shows 49 malicious detections with threat names like 'lotusblossom' and 'explorerhijack'.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"Top high-signal imports\",\n      \"row_or_rule\": \"kernel32.CreateRemoteThread\",\n      \"why\": \"API for creating remote threads in other processes, a key technique for process injection and malicious code execution.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"ATT&CK\",\n      \"row_or_rule\": \"T1055.003\",\n      \"why\": \"Rule for Thread Execution Hijacking, indicating process injection for defense evasion, a \n\u2026 [5417 more chars]"
+      }
+    },
+    "deep_dive": {
+      "ok": true,
+      "checks": {
+        "01_tools_raw": true,
+        "00_sql_evidence": false,
+        "03_prompt": false,
+        "04_llm": false,
+        "05_deep": true,
+        "tools_all_ok": true,
+        "llm_source": false,
+        "citations_grounded": true,
+        "engine_citation_ok": true,
+        "upx_second_pass_ok": true,
+        "no_incomplete_tooling": true,
+        "confidence_sane": true,
+        "evidence_pack_present": true,
+        "depth_coverage": true,
+        "agentic_json": true,
+        "sql_deep_re": true,
+        "complete_verdict": true,
+        "not_incomplete": true,
+        "checklist_ok_flag": true,
+        "agentic_confidence_sane": true
+      },
+      "tools": {
+        "malcat": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        },
+        "capa": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 30,\n  \"top_rules\": [\n    {\n      \"name\": \"contain obfuscated stackstrings\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Indicator Removal from Tools\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"Indicator Removal from Tools\",\n          \"id\": \"T1027.005\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Executable Code Obfuscation\",\n            \"Argument Obfuscation\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Executable Code Obfuscation\",\n          \"method\": \"Argument Obfuscation\",\n          \"id\": \"B0032.020\"\n        },\n        {\n          \"parts\": [\n            \"Anti-Static Analysis\",\n            \"Executable Code Obfuscation\",\n            \"Stack Strings\"\n          ],\n          \"objective\": \"Anti-Static Analysis\",\n          \"behavior\": \"Executable Code Obfuscation\",\n          \"method\": \"Stack Strings\",\n          \"id\": \"B0032.017\"\n        }\n      ]\n    },\n    {\n      \"name\": \"reference Base64 string\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1027\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Data\",\n            \"Encode Data\",\n            \"Base64\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Encode Data\",\n          \"method\": \"Base64\",\n          \"id\": \"C0026.001\"\n        },\n        {\n          \"parts\": [\n            \"Data\",\n            \"Check String\"\n          ],\n          \"objective\": \"Data\",\n          \"behavior\": \"Check String\",\n          \"method\": \"\",\n          \"id\": \"C0019\"\n        }\n      ]\n    },\n    {\n      \"name\": \"get common file path\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Discovery\",\n            \"File and Directory Discovery\"\n          ],\n          \"tactic\": \"Discovery\",\n          \"technique\": \"File and Directory Discovery\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1083\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Discovery\",\n            \"File and Directory Discovery\"\n          ],\n          \"objective\": \"Discovery\",\n          \"behavior\": \"File and Directory Discovery\",\n          \"method\": \"\",\n          \"id\": \"E1083\"\n        }\n      ]\n    },\n    {\n      \"name\": \"get file size\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Discovery\",\n            \"File and Directory Discovery\"\n          ],\n          \"tactic\": \"Discovery\",\n          \"technique\": \"File and Directory Discovery\",\n          \"subtechnique\": \"\",\n          \"id\": \"T1083\"\n        }\n      ],\n      \"mbc\": [\n        {\n          \"parts\": [\n            \"Discovery\",\n            \"File and Directory Discovery\"\n          ],\n          \"objective\": \"Discovery\",\n          \"behavior\": \"File and Directory Discovery\",\n          \"method\": \"\",\n          \"id\": \"E1083\"\n        }\n      ]\n    },\n    {\n      \"name\": \"inject thread\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Process Injection\",\n            \"Thread Execution Hijacking\"\n          ],\n          \"tactic\": \"Def\n\u2026 [5139 more chars]"
+        },
+        "pe_imports": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 78848,\n  \"duration_s\": 0.03,\n  \"import_count\": 88,\n  \"signal_count\": 7,\n  \"signals\": [\n    {\n      \"label\": \"allocate_memory\",\n      \"api_match\": \"VirtualAllocEx\",\n      \"attack\": [\n        \"T1055\"\n      ]\n    },\n    {\n      \"label\": \"write_process_memory\",\n      \"api_match\": \"WriteProcessMemory\",\n      \"attack\": [\n        \"T1055\"\n      ]\n    },\n    {\n      \"label\": \"create_remote_thread\",\n      \"api_match\": \"CreateRemoteThread\",\n      \"attack\": [\n        \"T1055\"\n      ]\n    },\n    {\n      \"label\": \"create_process\",\n      \"api_match\": \"CreateProcess\",\n      \"attack\": [\n        \"T1106\"\n      ]\n    },\n    {\n      \"label\": \"load_library\",\n      \"api_match\": \"LoadLibrary\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \"get_proc_address\",\n      \"api_match\": \"GetProcAddress\",\n      \"attack\": [\n        \"T1129\"\n      ]\n    },\n    {\n      \"label\": \"change_memory_protection\",\n      \"api_match\": \"VirtualProtect\",\n      \"attack\": [\n        \"T1055\"\n      ]\n    }\n  ],\n  \"hint\": \"PE import high-signal map (pefile). Not capa.\"\n}"
+        },
+        "yara": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"rule_count\": 26,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$ipv6\",\n          \"offset\": 60279,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"contains_base64\",\n      \"path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$a\",\n          \"offset\": 16611,\n          \"length\": 12,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"System_Tools\",\n      \"path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n      \"strings\": []\n    },\n    {\n      \"rule\": \"Dropper_Strings\",\n      \"path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$a0\",\n          \"offset\": 16899,\n          \"length\": 18,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Misc_Suspicious_Strings\",\n      \"path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$a4\",\n          \"offset\": 61976,\n          \"length\": 7,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"SHA512_Constants\",\n      \"path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$c1\",\n          \"offset\": 58812,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c3\",\n          \"offset\": 58820,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c5\",\n          \"offset\": 58828,\n          \"length\": 4,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$c7\",\n          \"offset\": 58836,\n          \"length\": 4,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"BASE64_table\",\n      \"path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$c0\",\n          \"offset\": 58736,\n          \"length\": 64,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"Emissary_APT_Malware_1\",\n      \"path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$s1\",\n          \"offset\": 61976,\n          \"length\": 18,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$s2\",\n          \"offset\": 61996,\n          \"length\": 20,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$s3\",\n          \"offset\": 17696,\n          \"length\": 25,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$s4\",\n          \"offset\": 61864,\n          \"length\": 28,\n          \"xor_key\": null\n        },\n        {\n          \"id\": \"$s5\",\n          \"offset\": 60320,\n    \n\u2026 [10570 more chars]"
+        },
+        "floss": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 619,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"\\\\Internet Explorer\\\\iexplore.exe\",\n    \"000A758C8FEAE5F.TMP\",\n    \"-3$1-$3\",\n    \"7/+.1$1\",\n    \"($7/+.1$\",\n    \"!This program cannot be run in DOS mode.\",\n    \"3 !23;\",\n    \"!23Rich\",\n    \"`.rdata\",\n    \"@.data\",\n    \"@.reloc\",\n    \"Qj&hTs\",\n    \"0SSSSS\",\n    \"0WWWWW\",\n    \"AAFFf;\",\n    \"URPQQh\",\n    \"v\\tN+D$\",\n    \"YSSSSS\",\n    \"HHtXHHt\",\n    \">If90t\",\n    \"UQPXY]Y[\",\n    \"Invalid parameter passed to C runtime function.\",\n    \"(null)\",\n    \"```hhh\",\n    \"xppwpp\",\n    \"%d/%02d/%02d %02d:%02d:%02d -\",\n    \"ReleaseFile Error->FindResource Failed[%d].\",\n    \"ReleaseFile Error->Size=0.\",\n    \"Kernel32.dll\",\n    \"ReleaseFile Error->LoadLibrary Failed[%d].\",\n    \"LoadResource\",\n    \"ReleaseFile->GetProcAddress Failed[%d].\",\n    \"ReleaseFile->ProLdRsc Failed.\",\n    \"ReleaseFile->CreateFile Failed[%d].\",\n    \"Removing...\",\n    \"\\\\LocalData\\\\\",\n    \"Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Run\",\n    \"SystemDrive\",\n    \"SeDebugPrivilege\",\n    \"FreeLibrary\",\n    \"kernel32.dll\",\n    \"A08E81B411.DAT\",\n    \"Windows Internet Explorer\",\n    \"LoadLibraryA\",\n    \"ishelp.dll\",\n    \"IE Process is running.\",\n    \"ReF(D)F.\",\n    \"_MICROSOFT_LOADER_MUTEX_\",\n    \"create snapshot failed: 0x%x.\",\n    \"process32first failed: 0x%x.\",\n    \"TID list head is NULL.\",\n    \"create tid snapshot failed: 0x%x.\",\n    \"thread32first failed: 0x%x.\",\n    \"ZwMapViewOfSection\",\n    \"XXXX.dat\",\n    \"insert.\",\n    \"get pid failed.\",\n    \"error pid.\",\n    \"create tid list failed.\",\n    \"get tid list failed.\",\n    \"open process failed: 0x%x.\",\n    \"75BD50EC.DAT\",\n    \"*SLAR_GFD Error:%d.\",\n    \"rundll32.exe \\\"%s\\\",Setting\",\n    \"*SLAR_RO Error:%d.\",\n    \"*SLAR_RS Error:%d.\",\n    \"S-1-5-21\",\n    \"Classes\",\n    \"Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Internet Settings\",\n    \"ProxyEnable\",\n    \"ProxyServer\",\n    \"_errno\",\n    \"??2@YAPAXI@Z\",\n    \"??3@YAXPAX@Z\",\n    \"malloc\",\n    \"msvcrt.dll\",\n    \"memset\",\n    \"memcpy\",\n    \"_XcptFilter\",\n    \"_initterm\"\n  ],\n  \"per_category\": {\n    \"decoded_strings\": 2,\n    \"stack_strings\": 3,\n    \"tight_strings\": 0,\n    \"language_strings\": 0,\n    \"language_strings_missed\": 0,\n    \"static_strings\": 614\n  },\n  \"raw_key_total\": 3,\n  \"floss_profile\": \"full\",\n  \"floss_language\": \"none\",\n  \"duration_s\": 8.4,\n  \"size_bytes\": 78848,\n  \"static_only\": false,\n  \"size_exceeded_deobfuscate_limit\": false\n}"
+        },
+        "dotnet": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        "r2_decomp": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n  \"disassembly\": {\n    \"0x10003477\": \"\\u250c 400: entry0 (int32_t arg_8h, int32_t arg_ch, int32_t arg_10h);\\n\\u2502       \\u254e   ; arg int32_t arg_8h @ ebp+0x8\\n\\u2502       \\u254e   ; arg int32_t arg_ch @ ebp+0xc\\n\\u2502       \\u254e   ; arg int32_t arg_10h @ ebp+0x10\\n\\u2502       \\u254e   ; var int32_t var_4h @ ebp-0x4\\n\\u2502       \\u254e   ; var int32_t var_1ch @ ebp-0x1c\\n\\u2502       \\u254e   0x10003477      8bff           mov edi, edi\\n\\u2502       \\u254e   0x10003479      55             push ebp\\n\\u2502       \\u254e   0x1000347a      8bec           mov ebp, esp\\n\\u2502       \\u254e   0x1000347c      837d0c01       cmp dword [arg_ch], 1\\n\\u2502      \\u250c\\u2500\\u2500< 0x10003480      7505           jne 0x10003487\\n\\u2502      \\u2502\\u254e   0x10003482      e82b110000     call 0x100045b2\\n\\u2502      \\u2514\\u2500\\u2500> 0x10003487      5d             pop ebp\\n\\u2502       \\u2514\\u2500< 0x10003488      e98efdffff     jmp 0x1000321b\\n..\\n            ; XREFS: CALL 0x10002328  CALL 0x10002345  CALL 0x1000235f  \\n            ; XREFS: CALL 0x1000237c  CALL 0x10002399  CALL 0x100023b8  \\n            ; XREFS: CALL 0x100023d5  CALL 0x100025d2  \",\n    \"0x10002660\": \"\\u250c 10: sym.Loader.dll_Setting ();\\n\\u2502           0x10002660      55             push ebp\\n\\u2502           0x10002661      8bec           mov ebp, esp\\n\\u2502           0x10002663      e898fcffff     call fcn.10002300\\n\\u2502           0x10002668      5d             pop ebp\\n\\u2514           0x10002669      c3             ret\",\n    \"0x10002300\": \"; CALL XREF from sym.Loader.dll_Setting @ 0x10002663(x)\\n\\u250c 852: fcn.10002300 ();\\n\\u2502           ; var int32_t var_4h @ ebp-0x4\\n\\u2502           ; var int32_t var_20eh @ ebp-0x20e\\n\\u2502           ; var int32_t var_210h @ ebp-0x210\\n\\u2502           ; var int32_t var_317h @ ebp-0x317\\n\\u2502           ; var int32_t var_318h @ ebp-0x318\\n\\u2502           ; var int32_t var_31ch @ ebp-0x31c\\n\\u2502           ; var int32_t var_427h @ ebp-0x427\\n\\u2502           ; var int32_t var_428h @ ebp-0x428\\n\\u2502           ; var int32_t var_52fh @ ebp-0x52f\\n\\u2502           ; var int32_t var_530h @ ebp-0x530\\n\\u2502           ; var int32_t var_637h @ ebp-0x637\\n\\u2502           ; var int32_t var_638h @ ebp-0x638\\n\\u2502           ; var int32_t var_72eh @ ebp-0x72e\\n\\u2502           ; var int32_t var_730h @ ebp-0x730\\n\\u2502           ; var int32_t var_734h @ ebp-0x734\\n\\u2502           ; var int32_t var_738h @ ebp-0x738\\n\\u2502           ; var int32_t var_73ch @ ebp-0x73c\\n\\u2502           ; var int32_t var_73fh @ ebp-0x73f\\n\\u2502           ; var int32_t var_740h @ ebp-0x740\\n\\u2502           ; var int32_t var_773h @ ebp-0x773\\n\\u2502           ; var int32_t var_774h @ ebp-0x774\\n\\u2502           ; var int32_t var_7fch @ ebp-0x7fc\\n\\u2502           ; var int32_t var_800h @ ebp-0x800\\n\\u2502           ; var int32_t var_810h @ ebp-0x810\\n\\u2502           ; var int32_t var_814h @ ebp-0x814\\n\\u2502           0x10002300      55             push ebp\\n\\u2502           0x10002301      8bec           mov ebp, esp\\n\\u2502           0x10002303      81ec14080000   sub esp, 0x814\\n\\u2502           0x10002309      a100700010     mov eax, dword [section..data] ; [0x10007000:4]=0xbb40e64e ; \\\"N\\\\xe6@\\\\xbb\\\\xb1\\\\x19\\\\xbfD\\\"\\n\\u2502           0x1000230e      33c5           xor eax, ebp\\n\\u2502           0x10002\n\u2026 [1650 more chars]"
+        },
+        "upx": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTested 0 file\"\n}"
+        },
+        "xor": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 00000108 ........!..L.!This program cannot be r\",\n    \"Found XOR 00 position 00005908: 00000110 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 00000108 ........!..L.!This program cannot be r\\nFound XOR 00 position 00005908: 00000110 ........!..L.!This program cannot be r\\n\",\n  \"xorsearch_stderr\": \"\",\n  \"xorsearch_returncode\": 0\n}"
+        },
+        "speakeasy": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        "frida_probe": {
+          "ok": true,
+          "why": "ok",
+          "raw_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n    \"exists\": true,\n    \"hook_candidates\": [\n      \"msvcrt.dll!__badioinfo\",\n      \"msvcrt.dll!wctomb\",\n      \"msvcrt.dll!_itoa\",\n      \"msvcrt.dll!_snprintf\",\n      \"msvcrt.dll!_iob\",\n      \"KERNEL32.dll!GetProcAddress\",\n      \"KERNEL32.dll!GetSystemTimeAsFileTime\",\n      \"KERNEL32.dll!GetCurrentProcessId\",\n      \"KERNEL32.dll!GetCurrentThreadId\",\n      \"KERNEL32.dll!GetTickCount\",\n      \"ADVAPI32.dll!OpenProcessToken\",\n      \"ADVAPI32.dll!RegCloseKey\",\n      \"ADVAPI32.dll!AdjustTokenPrivileges\",\n      \"ADVAPI32.dll!LookupPrivilegeValueA\",\n      \"ADVAPI32.dll!RegOpenKeyExA\",\n      \"SHELL32.dll!SHGetSpecialFolderPathA\",\n      \"ole32.dll!CoCreateGuid\",\n      \"RPCRT4.dll!RpcStringFreeA\",\n      \"RPCRT4.dll!UuidToStringA\"\n    ]\n  }\n}"
+        },
+        "frida_trace": {
+          "ok": true,
+          "why": "not_applicable:pe",
+          "raw_excerpt": null
+        }
+      },
+      "citations": {
+        "ok": true,
+        "checked": 12,
+        "hits": 12,
+        "misses": [],
+        "hit_examples": [
+          "YARA rule 'Emissary_APT_Malware_1' matched with 8 strings at offsets 61976, 61996, 17696, 61864, 60320, 61412, 70960, 61",
+          "Imports: CreateRemoteThread, WriteProcessMemory, VirtualAllocEx, VirtualProtectEx, OpenProcess (classic DLL injection ch",
+          "Imports: AdjustTokenPrivileges, LookupPrivilegeValueA, OpenProcessToken (privilege escalation)",
+          "String refs in FUN_10002300: 'IE Process is running.' and '_MICROSOFT_LOADER_MUTEX_' (IE injection targeting + mutex)",
+          "String refs in FUN_100019a0: 'Software\\Microsoft\\Windows\\CurrentVersion\\Run', 'A08E81B411.DAT', 'SeDebugPrivilege', '\\Lo"
+        ],
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "upx_second_pass": {
+        "applicable": false,
+        "ok": true,
+        "reason": "upx_not_unpacked"
+      },
+      "depth_coverage": {
+        "ok": true,
+        "missing": [],
+        "covered": {
+          "persistence": true,
+          "c2_network": true,
+          "evasion_anti_analysis": true,
+          "exfiltration": true,
+          "defense_impairment": true,
+          "credential_access": true,
+          "encryption_obfuscation": true,
+          "entry_point": true,
+          "imports": true,
+          "strings": true
+        },
+        "domain_count": 10
+      },
+      "format_routing": "pe",
+      "required_tools": [
+        "capa",
+        "pe_imports",
+        "yara",
+        "floss",
+        "dotnet",
+        "r2_decomp",
+        "upx",
+        "xor",
+        "speakeasy",
+        "frida_probe"
+      ],
+      "deep_preview": {
+        "source": "deep_dive_agentic",
+        "confidence": 98,
+        "summary": "This is a DLL dropper/loader component of the Emissary APT malware family. YARA rule 'Emissary_APT_Malware_1' matched with 8 distinct strings. The DLL exports a 'Setting' function designed to be invoked via rundll32.exe. Its behavioral chain: (1) creates mutex '_MICROSOFT_LOADER_MUTEX_' for single-i",
+        "key_evidence": [
+          "YARA rule 'Emissary_APT_Malware_1' matched with 8 strings at offsets 61976, 61996, 17696, 61864, 60320, 61412, 70960, 61896",
+          "Imports: CreateRemoteThread, WriteProcessMemory, VirtualAllocEx, VirtualProtectEx, OpenProcess (classic DLL injection chain)",
+          "Imports: AdjustTokenPrivileges, LookupPrivilegeValueA, OpenProcessToken (privilege escalation)",
+          "String refs in FUN_10002300: 'IE Process is running.' and '_MICROSOFT_LOADER_MUTEX_' (IE injection targeting + mutex)",
+          "String refs in FUN_100019a0: 'Software\\Microsoft\\Windows\\CurrentVersion\\Run', 'A08E81B411.DAT', 'SeDebugPrivilege', '\\LocalData\\' (persistence + payload drop + priv esc)",
+          "Export 'Setting' with string 'rundll32.exe \"%s\",Setting' (autorun persistence via rundll32)",
+          "Strings: 'ProxyEnable', 'ProxyServer', 'Internet Settings' registry path (proxy credential theft)",
+          "FUN_10001820 references 'ReleaseFile Error->FindResource Failed', 'LoadLibrary Failed', 'GetProcAddress Failed', 'CreateFile Failed' (resource-based dropper with debug strings)",
+          "CAPA: obfuscated stackstrings (T1027.005), Base64 encoding (T1027), file/directory discovery (T1083)",
+          "FUN_10003853: size=2771, cyclomatic_complexity=151, 240 basic blocks (heavily obfuscated main payload logic)",
+          "Imports: CreateToolhelp32Snapshot, Process32First, Process32Next, Module32First, Module32Next (process/module enumeration for injection target)",
+          "SHA512 constants and BASE64 alphabet table detected at offsets 58812-58836 and 58736 (crypto encoding infrastructure)"
+        ],
+        "model": null,
+        "llm_audit": null
+      },
+      "evidence": {
+        "tools_raw": {
+          "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/deep_dive/01-tools-raw.json",
+          "exists": true,
+          "bytes": 119947,
+          "mtime_iso": "2026-08-13T05:04:15.263143+00:00",
+          "sha256": "833fc1a37c7449cc951e3831e14cc0ec059d907382bbd8c30ebb6e2f6ae5bca1"
+        },
+        "sql_evidence": {
+          "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/deep_dive/00-sql-evidence.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "prompt": {
+          "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/deep_dive/03-prompt.txt",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "llm_raw": {
+          "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/deep_dive/04-llm-raw.json",
+          "exists": false,
+          "bytes": 0,
+          "mtime_iso": null,
+          "sha256": null
+        },
+        "deep05": {
+          "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/deep_dive/05-deep-dive.json",
+          "exists": true,
+          "bytes": 4835,
+          "mtime_iso": "2026-08-12T19:20:56.544092+00:00",
+          "sha256": "c08e509c8307b3aa675514dd249a5a901bd5ef0950bce97a3a36579f2a0ed980"
+        },
+        "prompt_excerpt": "",
+        "llm_raw_excerpt": "{}",
+        "deep05_excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 98,\n  \"summary\": \"This is a DLL dropper/loader component of the Emissary APT malware family. YARA rule 'Emissary_APT_Malware_1' matched with 8 distinct strings. The DLL exports a 'Setting' function designed to be invoked via rundll32.exe. Its behavioral chain: (1) creates mutex '_MICROSOFT_LOADER_MUTEX_' for single-instance enforcement, (2) enables SeDebugPrivilege via AdjustTokenPrivileges for elevated process access, (3) extracts an embedded payload from PE resources to disk as 'A08E81B411.DAT' in a \\\\LocalData\\\\ directory (FindResourceW/LockResource/CreateFileA), (4) enumerates running processes using CreateToolhelp32Snapshot to locate IE (iexplore.exe) as injection target, (5) performs\n\u2026 [4035 more chars]",
+        "agentic": {
+          "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/deep_dive/agentic_deep_dive.json",
+          "exists": true,
+          "bytes": 411882,
+          "mtime_iso": "2026-08-12T19:20:56.543092+00:00",
+          "sha256": "39ba058a35eab987120dd2785df9743e7b6c42bc628e2654c12fd8664593d1c0"
+        }
+      },
+      "tools_ok_history": [
+        "yara_scan",
+        "malcat_analyze",
+        "capa_analyze",
+        "pe_import_signals",
+        "floss_extract",
+        "dotnet_analyze",
+        "r2_decompile",
+        "upx_unpack",
+        "xor_string_search",
+        "speakeasy_emulate",
+        "frida_static_probe",
+        "shellcode_extract",
+        "revai_tools_sec",
+        "revai_tools_sinks",
+        "revai_tools_audit",
+        "signal_extractors",
+        "packer_scan",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "capa_analyze",
+        "ida_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query",
+        "ghidra_query"
+      ],
+      "history_evidence": [
+        {
+          "tool": "yara_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (yara)",
+          "result_excerpt": "{\n  \"rule_count\": 26,\n  \"matches\": [\n    {\n      \"rule\": \"domain\",\n      \"path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n      \"strings\": [\n        {\n          \"id\": \"$domain_regex\",\n          \"offset\": 0,\n          \"length\": 2,\n          \"xor_key\": null\n        }\n      ]\n    },\n    {\n      \"rule\": \"IP\",\n      \"path\": \"/opt/samples\n\u2026 [13670 more chars]"
+        },
+        {
+          "tool": "malcat_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (malcat)",
+          "result_excerpt": "{\n  \"analysis_id\": 1,\n  \"path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n  \"profile\": \"deep\",\n  \"limits\": {\n    \"strings_max\": 300,\n    \"imports_max\": 300,\n    \"functions_max\": 30,\n    \"anomaly_locations_max\": 50,\n    \"decompile_top_n\": 3\n  },\n  \"file_summary\": {\n    \"analysis_id\": 1,\n    \"file_name\": \"ishelp.dll\",\n    \"file_path\": \n\u2026 [67480 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (capa)",
+          "result_excerpt": "{\n  \"rule_count\": 30,\n  \"top_rules\": [\n    {\n      \"name\": \"contain obfuscated stackstrings\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Indicator Removal from Tools\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \n\u2026 [8239 more chars]"
+        },
+        {
+          "tool": "pe_import_signals",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (pe_imports)",
+          "result_excerpt": "{\n  \"engine\": \"pe_imports\",\n  \"sample_size\": 78848,\n  \"duration_s\": 0.03,\n  \"import_count\": 88,\n  \"signal_count\": 7,\n  \"signals\": [\n    {\n      \"label\": \"allocate_memory\",\n      \"api_match\": \"VirtualAllocEx\",\n      \"attack\": [\n        \"T1055\"\n      ]\n    },\n    {\n      \"label\": \"write_process_memory\",\n      \"api_match\": \"WriteProcessMemory\",\n      \"attack\": [\n        \"T1055\"\n      ]\n    },\n    {\n \n\u2026 [697 more chars]"
+        },
+        {
+          "tool": "floss_extract",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (floss)",
+          "result_excerpt": "{\n  \"floss_ok\": true,\n  \"string_count\": 619,\n  \"strings_sampled\": 80,\n  \"strings\": [\n    \"\\\\Internet Explorer\\\\iexplore.exe\",\n    \"000A758C8FEAE5F.TMP\",\n    \"-3$1-$3\",\n    \"7/+.1$1\",\n    \"($7/+.1$\",\n    \"!This program cannot be run in DOS mode.\",\n    \"3 !23;\",\n    \"!23Rich\",\n    \"`.rdata\",\n    \"@.data\",\n    \"@.reloc\",\n    \"Qj&hTs\",\n    \"0SSSSS\",\n    \"0WWWWW\",\n    \"AAFFf;\",\n    \"URPQQh\",\n    \"v\\tN+\n\u2026 [2023 more chars]"
+        },
+        {
+          "tool": "dotnet_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (dotnet)",
+          "result_excerpt": "{\n  \"is_dotnet\": false,\n  \"runtime_version\": null,\n  \"assembly_name\": null,\n  \"module_name\": null,\n  \"language_hint\": null,\n  \"external_assembly_refs\": [],\n  \"suspicious_native_refs\": [],\n  \"suspicious_methods\": [],\n  \"interesting_pinvoke\": [],\n  \"has_suppress_ildasm\": false,\n  \"shellcode_embed_hint\": false,\n  \"il_total_lines\": 0,\n  \"il_excerpt\": \"\"\n}"
+        },
+        {
+          "tool": "r2_decompile",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (r2_decomp)",
+          "result_excerpt": "{\n  \"r2_ok\": true,\n  \"sample\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n  \"disassembly\": {\n    \"0x10003477\": \"\\u250c 400: entry0 (int32_t arg_8h, int32_t arg_ch, int32_t arg_10h);\\n\\u2502       \\u254e   ; arg int32_t arg_8h @ ebp+0x8\\n\\u2502       \\u254e   ; arg int32_t arg_ch @ ebp+0xc\\n\\u2502       \\u254e   ; arg int32_t arg_10h @\n\u2026 [4750 more chars]"
+        },
+        {
+          "tool": "upx_unpack",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (upx)",
+          "result_excerpt": "{\n  \"upx_ok\": false,\n  \"is_packed\": false,\n  \"sample\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n  \"upx_probe_stdout\": \"                       Ultimate Packer for eXecutables\\n                          Copyright (C) 1996 - 2026\\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\\n\\n\\nTested 0 file\"\n}"
+        },
+        {
+          "tool": "xor_string_search",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (xor)",
+          "result_excerpt": "{\n  \"xorsearch_ok\": true,\n  \"sample\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n  \"candidates\": [\n    \"Found XOR 00 position 00000000: 00000108 ........!..L.!This program cannot be r\",\n    \"Found XOR 00 position 00005908: 00000110 ........!..L.!This program cannot be r\"\n  ],\n  \"xorsearch_stdout\": \"Found XOR 00 position 00000000: 0000\n\u2026 [184 more chars]"
+        },
+        {
+          "tool": "speakeasy_emulate",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (speakeasy)",
+          "result_excerpt": "{\n  \"speakeasy_ok\": true,\n  \"sample\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n  \"module_base\": null,\n  \"entry_point\": null,\n  \"key_events\": [],\n  \"api_calls\": [],\n  \"strings\": []\n}"
+        },
+        {
+          "tool": "frida_static_probe",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (frida_probe)",
+          "result_excerpt": "{\n  \"frida_available\": true,\n  \"frida_version\": \"17.16.4\",\n  \"pe_probe\": {\n    \"path\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n    \"exists\": true,\n    \"hook_candidates\": [\n      \"msvcrt.dll!__badioinfo\",\n      \"msvcrt.dll!wctomb\",\n      \"msvcrt.dll!_itoa\",\n      \"msvcrt.dll!_snprintf\",\n      \"msvcrt.dll!_iob\",\n      \"KERNEL32.dll!G\n\u2026 [533 more chars]"
+        },
+        {
+          "tool": "shellcode_extract",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (shellcode)",
+          "result_excerpt": "{\n  \"shellcode_ok\": true,\n  \"sample\": \"/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll\",\n  \"sections_analyzed\": [\n    {\n      \"name\": \".text\",\n      \"size\": 14848,\n      \"entropy\": 6.2174,\n      \"executable\": true,\n      \"writable\": false\n    },\n    {\n      \"name\": \".rdata\",\n      \"size\": 4608,\n      \"entropy\": 5.3481,\n      \"executable\": fal\n\u2026 [1240 more chars]"
+        },
+        {
+          "tool": "revai_tools_sec",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (revai_tools_sec)",
+          "result_excerpt": "{\n  \"format\": \"pe\",\n  \"findings\": [\n    {\n      \"name\": \"Address Space Layout Randomization\",\n      \"present\": false,\n      \"claimed\": false,\n      \"note\": \"no DYNAMIC_BASE flag\",\n      \"consequence\": \"Without ASLR the image loads at a fixed base \\u2014 a predictable address for ret2libc-style exploitation and ROP gadget pivots.\"\n    },\n    {\n      \"name\": \"64-bit high-entropy ASLR\",\n      \"presen\n\u2026 [1762 more chars]"
+        },
+        {
+          "tool": "revai_tools_sinks",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (revai_tools_sinks)",
+          "result_excerpt": "{\n  \"format\": \"pe\",\n  \"entry_point\": \"0x1000\",\n  \"sink_count\": 12,\n  \"sinks\": [\n    {\n      \"api\": \"memcpy\",\n      \"dll\": \"msvcrt.dll\",\n      \"class\": \"unbounded_copy\",\n      \"address\": \"0x1000360c\",\n      \"function\": \"sub.msvcrt.dll_memcpy\"\n    },\n    {\n      \"api\": \"malloc\",\n      \"dll\": \"msvcrt.dll\",\n      \"class\": \"integer_overflow_size\",\n      \"address\": \"0x10003077\",\n      \"function\": \"\"\n   \n\u2026 [1684 more chars]"
+        },
+        {
+          "tool": "revai_tools_audit",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Required checklist tool (revai_tools_audit)",
+          "result_excerpt": "{\n  \"format\": \"pe\",\n  \"findings\": [\n    {\n      \"api\": \"createprocessa\",\n      \"class\": \"command_execution\",\n      \"address\": \"0x10001feb\",\n      \"function\": \"fcn.10001e80\",\n      \"patterns\": [\n        \"concat_built\"\n      ],\n      \"provenance\": {\n        \"arg1\": \"0x104                  ; 260\",\n        \"arg2\": \"ecx <- lea [var_110h]\"\n      }\n    }\n  ],\n  \"engine\": \"revai_tools_audit\",\n  \"source\": \n\u2026 [15 more chars]"
+        },
+        {
+          "tool": "signal_extractors",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Deterministic anti-analysis + dynamic-import-resolve signals",
+          "result_excerpt": "{\n  \"anti_analysis_summary\": {\n    \"categories\": {\n      \"process_scan\": 4\n    },\n    \"total_signals\": 4,\n    \"functions_with_signals\": 1,\n    \"elapsed_s\": 0.84,\n    \"note\": \"Deterministic; TLS callbacks are pre-entry-point candidates.\"\n  },\n  \"dynamic_resolve_summary\": {\n    \"resolver_funcs\": 0,\n    \"resolve_sites\": 0,\n    \"peb_module_walkers\": 0,\n    \"ordinal_imports\": 0,\n    \"min_resolve_calls\"\n\u2026 [130 more chars]"
+        },
+        {
+          "tool": "packer_scan",
+          "ok": true,
+          "error": null,
+          "checklist": true,
+          "reason": "Deterministic packer checklist (packed-context for gate)",
+          "result_excerpt": "{\n  \"label\": \"none\",\n  \"name\": null,\n  \"score\": 2\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "Auto SQL seed for large-mode deep RE gate",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_10003853\",\n      \"address\": \"268449875\",\n      \"size\": \"2771\"\n    },\n    {\n      \"name\": \"FUN_100019a0\",\n      \"address\": \"268442016\",\n      \"size\": \"1243\"\n    },\n    {\n      \"name\": \"FUN_10002300\",\n      \"address\": \"268444416\",\n      \"size\": \"852\"\n    },\n    {\n      \"name\": \"FUN_10001e80\",\n      \"addr\n\u2026 [2316 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"module\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"AdjustTokenPrivileges\",\n      \"module\": \"ADVAPI32.DLL\"\n    },\n    {\n      \"name\": \"LookupPrivilegeValueA\",\n      \"module\": \"ADVAPI32.DLL\"\n    },\n    {\n      \"name\": \"OpenProcessToken\",\n      \"module\": \"ADVAPI32.DLL\"\n    },\n    {\n      \"name\": \"RegCloseKey\",\n      \"module\": \"ADVAPI32.DLL\"\n    },\n    {\n      \"name\": \"Reg\n\u2026 [6512 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_10003853\",\n      \"address\": \"268449875\",\n      \"size\": \"2771\"\n    },\n    {\n      \"name\": \"FUN_100019a0\",\n      \"address\": \"268442016\",\n      \"size\": \"1243\"\n    },\n    {\n      \"name\": \"FUN_10002300\",\n      \"address\": \"268444416\",\n      \"size\": \"852\"\n    },\n    {\n      \"name\": \"FUN_10001e80\",\n      \"addr\n\u2026 [2772 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"%d/%02d/%02d %02d:%02d:%02d - \",\n      \"address\": \"268456552\",\n      \"length\": \"64\"\n    },\n    {\n      \"content\": \"Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Internet Settings\",\n      \"address\": \"268457912\",\n      \"length\": \"60\"\n    },\n    {\n      \"content\": \"Loader Dynamic Link Library\",\n      \n\u2026 [4478 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"module\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"_write\",\n      \"module\": \"MSVCRT.DLL\"\n    },\n    {\n      \"name\": \"GetCurrentProcessId\",\n      \"module\": \"KERNEL32.DLL\"\n    },\n    {\n      \"name\": \"GetCurrentThreadId\",\n      \"module\": \"KERNEL32.DLL\"\n    },\n    {\n      \"name\": \"TerminateProcess\",\n      \"module\": \"KERNEL32.DLL\"\n    },\n    {\n      \"name\": \"GetExitCodeThre\n\u2026 [1486 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"size\",\n    \"instruction_count\",\n    \"block_count\",\n    \"cyclomatic_complexity\",\n    \"call_in_count\",\n    \"call_out_count\",\n    \"string_ref_count\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_100010f0\",\n      \"address\": \"268439792\",\n      \"size\": \"740\",\n      \"instruction_count\": \"203\",\n      \"block_count\": \"46\",\n      \"cyclomatic_complexity\": \"28\",\n   \n\u2026 [1521 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"func_addr\",\n    \"content\",\n    \"str_addr\"\n  ],\n  \"rows\": [\n    {\n      \"func_name\": \"\",\n      \"func_addr\": \"\",\n      \"content\": \"Invalid parameter passed to C runtime function.\\n\",\n      \"str_addr\": \"268456336\"\n    },\n    {\n      \"func_name\": \"FUN_10001820\",\n      \"func_addr\": \"268441632\",\n      \"content\": \"ReleaseFile Error->FindResource Failed[%d].\",\n      \n\u2026 [1831 more chars]"
+        },
+        {
+          "tool": "ghidra_decompile",
+          "ok": false,
+          "error": "session registry not found: /opt/samples/sessions/pe-bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76.json",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"session registry not found: /opt/samples/sessions/pe-bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76.json\"\n}"
+        },
+        {
+          "tool": "ghidra_decompile",
+          "ok": false,
+          "error": "session registry not found: /opt/samples/sessions/pe-bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76.json",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"session registry not found: /opt/samples/sessions/pe-bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76.json\"\n}"
+        },
+        {
+          "tool": "ghidra_decompile",
+          "ok": false,
+          "error": "session registry not found: /opt/samples/sessions/pe-bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76.json",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"session registry not found: /opt/samples/sessions/pe-bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76.json\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"func_addr\",\n    \"content\",\n    \"str_addr\"\n  ],\n  \"rows\": [\n    {\n      \"func_name\": \"FUN_10001820\",\n      \"func_addr\": \"268441632\",\n      \"content\": \"asdasdasdasdsad\",\n      \"str_addr\": \"268456624\"\n    },\n    {\n      \"func_name\": \"FUN_10002300\",\n      \"func_addr\": \"268444416\",\n      \"content\": \"IE Process is running.\",\n      \"str_addr\": \"268457300\"\n    },\n   \n\u2026 [456 more chars]"
+        },
+        {
+          "tool": "capa_analyze",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"rule_count\": 30,\n  \"top_rules\": [\n    {\n      \"name\": \"contain obfuscated stackstrings\",\n      \"attack\": [\n        {\n          \"parts\": [\n            \"Defense Evasion\",\n            \"Obfuscated Files or Information\",\n            \"Indicator Removal from Tools\"\n          ],\n          \"tactic\": \"Defense Evasion\",\n          \"technique\": \"Obfuscated Files or Information\",\n          \"subtechnique\": \n\u2026 [8238 more chars]"
+        },
+        {
+          "tool": "ida_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"func_addr\",\n    \"string_value\"\n  ],\n  \"rows\": [\n    {\n      \"func_name\": \"sub_1000292A\",\n      \"func_addr\": \"268445994\",\n      \"string_value\": \"Invalid parameter passed to C runtime function.\\n\"\n    },\n    {\n      \"func_name\": \"sub_10001820\",\n      \"func_addr\": \"268441632\",\n      \"string_value\": \"asdasdasdasdsad\"\n    },\n    {\n      \"func_name\": \"sub_10001820\"\n\u2026 [1512 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"ReleaseFile->GetProcAddress Failed[%d].\",\n      \"address\": \"268456804\",\n      \"length\": \"40\"\n    },\n    {\n      \"content\": \"get pid failed.\",\n      \"address\": \"268457580\",\n      \"length\": \"16\"\n    },\n    {\n      \"content\": \"get tid list failed.\",\n      \"address\": \"268457632\",\n      \"length\": \"24\"\n \n\u2026 [1918 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Internet Settings\",\n      \"address\": \"268457912\"\n    },\n    {\n      \"content\": \"ProxyEnable\",\n      \"address\": \"268457972\"\n    },\n    {\n      \"content\": \"ProxyServer\",\n      \"address\": \"268457984\"\n    }\n  ],\n  \"row_count\": 3,\n  \"total_row_count\": 3,\n  \"truncated\": fa\n\u2026 [241 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"module\"\n  ],\n  \"rows\": [],\n  \"row_count\": 0,\n  \"total_row_count\": 0,\n  \"truncated\": false,\n  \"source\": \"ghidra_query\",\n  \"session_id\": \"ghidra-pe-bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76\",\n  \"audit_path\": \"/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/audit.jsonl\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"name\",\n    \"address\",\n    \"module\"\n  ],\n  \"rows\": [\n    {\n      \"name\": \"FUN_10001000\",\n      \"address\": \"268439552\",\n      \"module\": \"Global\"\n    },\n    {\n      \"name\": \"FUN_10001070\",\n      \"address\": \"268439664\",\n      \"module\": \"Global\"\n    },\n    {\n      \"name\": \"FUN_100010a0\",\n      \"address\": \"268439712\",\n      \"module\": \"Global\"\n    },\n    {\n      \"name\": \"FUN_100010f\n\u2026 [1933 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"content\",\n    \"address\",\n    \"length\"\n  ],\n  \"rows\": [\n    {\n      \"content\": \"Kernel32.dll\",\n      \"address\": \"268456728\",\n      \"length\": \"13\"\n    },\n    {\n      \"content\": \"kernel32.dll\",\n      \"address\": \"268457028\",\n      \"length\": \"13\"\n    },\n    {\n      \"content\": \"kernel32.dll\",\n      \"address\": \"268457200\",\n      \"length\": \"13\"\n    },\n    {\n      \"content\": \"ishelp.d\n\u2026 [1245 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"func_addr\",\n    \"content\"\n  ],\n  \"rows\": [\n    {\n      \"func_name\": \"FUN_100019a0\",\n      \"func_addr\": \"268442016\",\n      \"content\": \"Removing...\"\n    },\n    {\n      \"func_name\": \"FUN_100019a0\",\n      \"func_addr\": \"268442016\",\n      \"content\": \"\\\\LocalData\\\\\"\n    },\n    {\n      \"func_name\": \"FUN_100019a0\",\n      \"func_addr\": \"268442016\",\n      \"content\": \"Sof\n\u2026 [1644 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": false,
+          "error": "ghidrasql SQL error: no such column: from_func_addr",
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"error\": \"ghidrasql SQL error: no such column: from_func_addr\"\n}"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"func_addr\",\n    \"content\"\n  ],\n  \"rows\": [\n    {\n      \"func_name\": \"FUN_10002300\",\n      \"func_addr\": \"268444416\",\n      \"content\": \"IE Process is running.\"\n    },\n    {\n      \"func_name\": \"FUN_10002300\",\n      \"func_addr\": \"268444416\",\n      \"content\": \"ReF(D)F.\"\n    },\n    {\n      \"func_name\": \"FUN_10002300\",\n      \"func_addr\": \"268444416\",\n      \"content\"\n\u2026 [340 more chars]"
+        },
+        {
+          "tool": "ghidra_query",
+          "ok": true,
+          "error": null,
+          "checklist": false,
+          "reason": "langgraph tool call",
+          "result_excerpt": "{\n  \"columns\": [\n    \"func_name\",\n    \"func_addr\",\n    \"content\"\n  ],\n  \"rows\": [\n    {\n      \"func_name\": \"FUN_10001e80\",\n      \"func_addr\": \"268443264\",\n      \"content\": \"kernel32.dll\"\n    },\n    {\n      \"func_name\": \"FUN_10001e80\",\n      \"func_addr\": \"268443264\",\n      \"content\": \"LoadLibraryA\"\n    },\n    {\n      \"func_name\": \"FUN_100026a0\",\n      \"func_addr\": \"268445344\",\n      \"content\": \"%d/\n\u2026 [762 more chars]"
+        }
+      ],
+      "agentic_preview": {
+        "verdict": "malicious",
+        "confidence": 98,
+        "summary": "This is a DLL dropper/loader component of the Emissary APT malware family. YARA rule 'Emissary_APT_Malware_1' matched with 8 distinct strings. The DLL exports a 'Setting' function designed to be invoked via rundll32.exe. Its behavioral chain: (1) creates mutex '_MICROSOFT_LOADER_MUTEX_' for single-i",
+        "checklist_ok": true,
+        "sql_deep_ok": true,
+        "successful_tool_calls": 35
+      }
+    },
+    "yara_gen": {
+      "ok": true,
+      "checks": {
+        "rule_yar": true,
+        "non_empty": true,
+        "has_rule_block": true,
+        "rule_compiles": true,
+        "rule_check": "ok",
+        "meta_yara_valid": true
+      },
+      "evidence": {
+        "rule_yar": {
+          "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/rule.yar",
+          "exists": true,
+          "bytes": 1330,
+          "mtime_iso": "2026-08-12T19:20:59.426380+00:00",
+          "sha256": "8e55b8a981e0999da9280dfb42bd41003434427f5e301c75e952dd6344581e89"
+        },
+        "other_rules": [
+          "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/rule.yara.json",
+          "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/rule.yar",
+          "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/rule.yar"
+        ],
+        "excerpt": "// yara_gen_v2.py \u2014 2026-08-12T19:20:59.426679+00:00\nimport \"pe\"\nrule CADRE_v2_trojan_lotusblossom_explorerhijack_bf0d6cc20fa7 {\n    meta:\n        description = \"RevAI v2 auto rule for trojan.lotusblossom/explorerhijack\"\n        sha256 = \"bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76\"\n        family = \"trojan_lotusblossom_explorerhijack\"\n        revai = true\n        revai_commit = \"unknown\"\n        revai_engine = \"langgraph\"\n        severity = \"high\"\n        confidence = \"medium\"\n    strings:\n        $s0 = \"\\\\Internet Explorer\\\\iexplore.exe\" ascii wide\n        $s1 = \"000A758C8FEAE5F.TMP\" ascii wide\n        $s2 = \"($7/+.1$\" ascii wide\n        $s3 = \"!This program cannot be run in DOS mode.\" ascii wide\n        $s4 = \"UQPXY]Y[\" ascii wide\n        $s5 = \"Invalid parameter pa\n\u2026 [528 more chars]"
+      }
+    },
+    "publish": {
+      "ok": true,
+      "checks": {
+        "REPORT_MASTER_v2": true,
+        "REPORT_MASTER_v3": true,
+        "REPORT_v2": true,
+        "REPORT_TECHNICAL_v2": true,
+        "REPORT_TECHNICAL_v3": true,
+        "v2_min_chars": true,
+        "v3_min_chars": true,
+        "v2_heads": true,
+        "v3_heads": true,
+        "v2_fresh_vs_deep": true,
+        "v3_fresh_vs_deep": true,
+        "not_llm_env_failure_v2": true,
+        "not_llm_env_failure_v3": true,
+        "v2_no_missing_sections": true,
+        "verdict_lock_ok": true,
+        "quality_pack_ok": true,
+        "master_source_llm": true,
+        "tech2_source_llm": true,
+        "tech3_source_ok": true,
+        "tech2_no_stubs": true,
+        "no_tech2_fallback": true,
+        "quality_issues": [],
+        "engine_citation_ok": true
+      },
+      "heads_v2": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "heads_v3": {
+        "Executive Summary": true,
+        "Sample Identification": true,
+        "Classification": true,
+        "Static Analysis": true,
+        "Indicators of Compromise": true,
+        "Author + Sign-off": true
+      },
+      "report_json_source": "llm_judge",
+      "sections_missing": [],
+      "quality_pack": {
+        "ok": true,
+        "quality_green": true,
+        "sha256": "bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76",
+        "issues": [],
+        "checks": {
+          "master_v2": {
+            "ok": true,
+            "label": "master_v2",
+            "source": "llm_judge",
+            "chars": 22073,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 58,
+              "prose_ratio": 0.41,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 3,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v2": {
+            "ok": true,
+            "label": "technical_v2",
+            "source": "llm_judge",
+            "chars": 73011,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 31,
+              "prose_ratio": 0.24,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "technical_v3": {
+            "ok": true,
+            "label": "technical_v3",
+            "source": "llm_judge",
+            "chars": 56245,
+            "missing_sections": [],
+            "stub_sections": [],
+            "style": {
+              "byline_ok": true,
+              "citation_count": 78,
+              "prose_ratio": 0.65,
+              "min_prose_ratio": 0.15,
+              "dump_style": false,
+              "table_orphans": 0,
+              "tables_ok": true,
+              "bare_fence_pairs": 0,
+              "bare_fences_ok": true,
+              "min_citations": 8,
+              "citation_coverage_ok": true
+            },
+            "issues": []
+          },
+          "master_v3_present": true,
+          "tech3_file_present": true,
+          "cross_report_consistency": {
+            "ok": true,
+            "violations": [],
+            "checks": {
+              "master_dyn_negation": false,
+              "tech_dyn_evidence": true,
+              "file_entropy": 6.35142869656985,
+              "master_verdict": "malicious",
+              "tech_verdict": "malicious"
+            }
+          },
+          "deep_checklist_ok": true,
+          "deep_sql_deep_ok": true,
+          "pipeline_audit_all_green": false
+        },
+        "models": {
+          "master": "mimo-v2.5-pro",
+          "technical_v2": "mimo-v2.5-pro",
+          "technical_v3": "mimo-v2.5-pro",
+          "planner_hint": "configured via env",
+          "judgment_hint": "configured via env"
+        }
+      },
+      "verdict_lock": {
+        "ok": true,
+        "conflict": false,
+        "upstream": "malicious",
+        "publish": "malicious",
+        "reason": ""
+      },
+      "engine_citation": {
+        "ok": true,
+        "checked": 0,
+        "false_engine_citations": [],
+        "reason": "",
+        "corrections": {
+          "corrected": 0,
+          "corrections": []
+        }
+      },
+      "mtimes": {
+        "v2": 1786613555.7524016,
+        "v3": 1786614485.3312736,
+        "deep_ref": 1786562456.5440922,
+        "v2_chars": 22073,
+        "v3_chars": 47629,
+        "v2_iso": "2026-08-13T09:32:35.752402+00:00",
+        "v3_iso": "2026-08-13T09:48:05.331274+00:00"
+      },
+      "evidence": {
+        "REPORT_MASTER_v2": {
+          "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/REPORT-MASTER-v2.md",
+          "exists": true,
+          "bytes": 22080,
+          "mtime_iso": "2026-08-13T09:32:35.752402+00:00",
+          "sha256": "42c579d9aed7eb061802e7f36e706748d59498d63ece4f9e68f59abb99d34666"
+        },
+        "REPORT_MASTER_v3": {
+          "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/REPORT-MASTER-v3.md",
+          "exists": true,
+          "bytes": 47646,
+          "mtime_iso": "2026-08-13T09:48:05.331274+00:00",
+          "sha256": "3dc124e07e737ba11e6b86e9c940941c9b4b4637ac1e28abbba8a24e3cf7667a"
+        },
+        "REPORT_v2": {
+          "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/REPORT-v2.md",
+          "exists": true,
+          "bytes": 22080,
+          "mtime_iso": "2026-08-13T09:32:35.751401+00:00",
+          "sha256": "42c579d9aed7eb061802e7f36e706748d59498d63ece4f9e68f59abb99d34666"
+        },
+        "REPORT_TECHNICAL_v2": {
+          "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/REPORT-TECHNICAL-v2.md",
+          "exists": true,
+          "bytes": 73303,
+          "mtime_iso": "2026-08-13T09:37:45.400313+00:00",
+          "sha256": "a89fb62eeeba351f9de8b4f376d8c2a870d421c424c575b516d093945eb78a86"
+        },
+        "REPORT_TECHNICAL_v3": {
+          "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/REPORT-TECHNICAL-v3.md",
+          "exists": true,
+          "bytes": 56451,
+          "mtime_iso": "2026-08-13T09:51:23.313953+00:00",
+          "sha256": "e310fb6d864571c37f3e11980b9e19046a215c0d3e700bc2c27365cb27cecc9e"
+        },
+        "report_v2_json": {
+          "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/report-v2.json",
+          "exists": true,
+          "bytes": 25005,
+          "mtime_iso": "2026-08-13T09:37:45.405313+00:00",
+          "sha256": "3b609049b4cba4a45f23ae9967da28fa2533c82413b5b140aea9cda2efb92514"
+        },
+        "v2_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-13 09:32:35 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n# Malware Analysis Report: ishelp.dll (Lotus Blossom / Emissary APT Loader)\n\n## Executive Summary\n\nThe DLL sample `ishelp.dll` (SHA256: `bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76`) is a malicious dropper/loader component associated with the Emissary APT (also tracked as Lotus Blossom). The sample exhibits a clear behavioral chain: it creates a mutex for single-instance enforcement, escalates privileges via `SeDebug\n\u2026 [21173 more chars]",
+        "v3_excerpt": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-13 09:48:05 UTC\n\n# RE Report \u2014 bf0d6cc20fa7\n_Generated 2026-08-13T09:48:05.328005+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=240c | cross_refs=True | llm_ok=True | runtime=67.45s -->\n\n# Executive Summary\n\nThis section presents a top-line verdict for the malware sample with SHA256 `bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76`, summarizing its malicious nature, family association, confidence level, and key evidence.\n\n| Aspect       | Value                | Source (Citation) |\n|--------------|----------------------|--------------------|\n| Verdict      | Malicious          \n\u2026 [46729 more chars]"
+      }
+    }
+  },
+  "policy": {
+    "v3_required": true,
+    "no_optional_stages": true,
+    "tool_fail_is_fail": false,
+    "capa_salvage": "malcat capa_summary + LLM citation"
+  },
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-13 09:51:23 UTC"
+  },
+  "cross_cutting": {
+    "sample_path": "/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll",
+    "pipeline_mode": "single",
+    "llm": {
+      "triage": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "verdict": "malicious",
+        "family": "Lotus Blossom",
+        "confidence": 95,
+        "agreement": "llm_and_v1_agree",
+        "key_evidence": [
+          {
+            "source": "malcat",
+            "query_or_table": "Top high-signal imports",
+            "row_or_rule": "kernel32.CreateRemoteThread",
+            "why": "API for creating remote threads in other processes, a key technique for process injection and malicious code execution."
+          },
+          {
+            "source": "capa",
+            "query_or_table": "ATT&CK",
+            "row_or_rule": "T1055.003",
+            "why": "Rule for Thread Execution Hijacking, indicating process injection for defense evasion, a clear malicious behavior."
+          },
+          {
+            "source": "ghidra",
+            "query_or_table": "Anti Analysis Signals",
+            "row_or_rule": "FUN_100019a0",
+            "why": "Function enumerates processes using CreateToolhelp32Snapshot, used for discovery and targeting in malicious activities."
+          },
+          {
+            "source": "yara",
+            "query_or_table": "matches",
+            "row_or_rule": "inject_thread",
+            "why": "YARA rule match for thread injection, confirming malicious injection capabilities from behavioral patterns."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "Anomalies",
+            "row_or_rule": "EmbeddedProgram",
+            "why": "Anomaly indicates an embedded program, suggesting dropper or payload delivery functionality for malware distribution."
+          },
+          {
+            "source": "malcat",
+            "query_or_table": "Strings/registry",
+            "row_or_rule": "Software\\Microsoft\\Windows\\CurrentVersion\\Run",
+            "why": "Registry key for autostart persistence, commonly modified by malware to ensure survival across reboots."
+          },
+          {
+            "source": "ghidra",
+            "query_or_table": "Suspicious strings (Ghidra)",
+            "row_or_rule": "cmd.exe /c %s > %s",
+            "why": "String for command execution and output redirection, indicating potential command-and-control or payload execution."
+          },
+          {
+            "source": "pe_imports",
+            "query_or_table": "signals",
+            "row_or_rule": "change_memory_protection",
+            "why": "VirtualProtect API used to alter memory permissions, enabling executable code in non-executable regions for injection."
+          }
+        ],
+        "incomplete_tooling": null,
+        "excerpt": "{\n  \"verdict\": \"malicious\",\n  \"score\": 95,\n  \"family_guess\": \"Lotus Blossom\",\n  \"cross_engine_notes\": \"Ghidra and IDA agree on 74 functions and 88 imports, indicating reliable disassembly. MalCat identifies 11 anomalies including EmbeddedProgram and high-signal imports like CreateRemoteThread. Capa and YARA rules detect process injection, privilege escalation, and persistence behaviors. External VirusTotal shows 49 malicious detections with threat names like 'lotusblossom' and 'explorerhijack'.\",\n  \"key_evidence\": [\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"Top high-signal imports\",\n      \"row_or_rule\": \"kernel32.CreateRemoteThread\",\n      \"why\": \"API for creating remote threads in other processes, a key technique for process injection and malicious code execution.\"\n    },\n    {\n      \"source\": \"capa\",\n      \"query_or_table\": \"ATT&CK\",\n      \"row_or_rule\": \"T1055.003\",\n      \"why\": \"Rule for Thread Execution Hijacking, indicating process injection for defense evasion, a clear malicious behavior.\"\n    },\n    {\n      \"source\": \"ghidra\",\n      \"query_or_table\": \"Anti Analysis Signals\",\n      \"row_or_rule\": \"FUN_100019a0\",\n      \"why\": \"Function enumerates processes using CreateToolhelp32Snapshot, used for discovery and targeting in malicious activities.\"\n    },\n    {\n      \"source\": \"yara\",\n      \"query_or_table\": \"matches\",\n      \"row_or_rule\": \"inject_thread\",\n      \"why\": \"YARA rule match for thread injection, confirming malicious injection capabilities from behavioral patterns.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"Anomalies\",\n      \"row_or_rule\": \"EmbeddedProgram\",\n      \"why\": \"Anomaly indicates an embedded program, suggesting dropper or payload delivery functionality for malware distribution.\"\n    },\n    {\n      \"source\": \"malcat\",\n      \"query_or_table\": \"Strings/registry\",\n      \"row_or_rule\": \"Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Run\",\n      \"why\": \"Registry key for autostart persistence, commonly modified by malware to ensure survival across reboots.\"\n    },\n    {\n      \"source\": \"ghidra\",\n      \"query_or_table\": \"Suspicious strings (Ghidra)\",\n      \"row_or_rule\": \"cmd.exe /c %s > %s\",\n      \"why\": \"String for command execution and output redirection, indicating potential command-and-control or payload execution.\"\n    },\n    {\n      \"source\": \"pe_imports\",\n      \"query_or_table\": \"signals\",\n      \"row_or_rule\": \"change_memory_protection\",\n      \"why\": \"VirtualProtect API used to alter memory permissions, enabling executable code in non-executable regions for injection.\"\n    }\n  ],\n  \"summary\": \"The DLL 'ishelp.dll' exhibits malicious behavior including process injection via CreateRemoteThread, registry-based persistence, privilege escalation, and an embedded payload. It uses anti-analysis techniques and matches known malware patterns, with strong consensus from multiple analysis engines and external threat intelligence.\",\n  \"source\": \"llm_judge\",\n  \"model\": \"mimo-v2.5-pro\",\n  \"agreement\": \"llm_and_v1_agree\",\n  \"v1_summary\": {\n    \"verdict\": \"malicious\",\n    \"score\": 290,\n    \"findings\": [\n      \"yara: 26 matches\",\n      \"capa: 30 rules\"\n    ]\n  },\n  \"tool_gate\": {\n    \"ok\": true,\n    \"format\": \"pe\",\n    \"required\": [\n      \"capa\",\n      \"yara\",\n      \"malcat\",\n      \"floss\",\n      \"pe_imports\"\n    ],\n    \"tools\": {\n      \"capa\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"yara\": {\n        \"ok\": true,\n        \"why\": \"ok\"\n      },\n      \"floss\": {\n        \"ok\": true,\n\u2026 [2917 more chars]"
+      },
+      "deep_dive": {
+        "source": "deep_dive_agentic",
+        "model": null,
+        "verdict": "malicious",
+        "confidence": 98,
+        "key_evidence": [
+          "YARA rule 'Emissary_APT_Malware_1' matched with 8 strings at offsets 61976, 61996, 17696, 61864, 60320, 61412, 70960, 61896",
+          "Imports: CreateRemoteThread, WriteProcessMemory, VirtualAllocEx, VirtualProtectEx, OpenProcess (classic DLL injection chain)",
+          "Imports: AdjustTokenPrivileges, LookupPrivilegeValueA, OpenProcessToken (privilege escalation)",
+          "String refs in FUN_10002300: 'IE Process is running.' and '_MICROSOFT_LOADER_MUTEX_' (IE injection targeting + mutex)",
+          "String refs in FUN_100019a0: 'Software\\Microsoft\\Windows\\CurrentVersion\\Run', 'A08E81B411.DAT', 'SeDebugPrivilege', '\\LocalData\\' (persistence + payload drop + priv esc)",
+          "Export 'Setting' with string 'rundll32.exe \"%s\",Setting' (autorun persistence via rundll32)",
+          "Strings: 'ProxyEnable', 'ProxyServer', 'Internet Settings' registry path (proxy credential theft)",
+          "FUN_10001820 references 'ReleaseFile Error->FindResource Failed', 'LoadLibrary Failed', 'GetProcAddress Failed', 'CreateFile Failed' (resource-based dropper with debug strings)",
+          "CAPA: obfuscated stackstrings (T1027.005), Base64 encoding (T1027), file/directory discovery (T1083)",
+          "FUN_10003853: size=2771, cyclomatic_complexity=151, 240 basic blocks (heavily obfuscated main payload logic)",
+          "Imports: CreateToolhelp32Snapshot, Process32First, Process32Next, Module32First, Module32Next (process/module enumeration for injection target)",
+          "SHA512 constants and BASE64 alphabet table detected at offsets 58812-58836 and 58736 (crypto encoding infrastructure)"
+        ],
+        "incomplete_tooling": false,
+        "excerpt": "{\n  \"source\": \"deep_dive_agentic\",\n  \"engine\": \"langgraph\",\n  \"verdict\": \"malicious\",\n  \"confidence\": 98,\n  \"summary\": \"This is a DLL dropper/loader component of the Emissary APT malware family. YARA rule 'Emissary_APT_Malware_1' matched with 8 distinct strings. The DLL exports a 'Setting' function designed to be invoked via rundll32.exe. Its behavioral chain: (1) creates mutex '_MICROSOFT_LOADER_MUTEX_' for single-instance enforcement, (2) enables SeDebugPrivilege via AdjustTokenPrivileges for elevated process access, (3) extracts an embedded payload from PE resources to disk as 'A08E81B411.DAT' in a \\\\LocalData\\\\ directory (FindResourceW/LockResource/CreateFileA), (4) enumerates running processes using CreateToolhelp32Snapshot to locate IE (iexplore.exe) as injection target, (5) performs classic process injection via VirtualAllocEx + WriteProcessMemory + CreateRemoteThread into the target process, (6) establishes registry persistence under Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Run with 'rundll32.exe \\\"%s\\\",Setting', (7) reads proxy configuration from Internet Settings registry keys (ProxyEnable/ProxyServer) likely for C2 configuration. CAPA confirms stack string obfuscation (T1027.005), Base64 encoding (T1027), and file discovery (T1083). The 151-cyclomatic-complexity main function (FUN_10003853, 2771 bytes) suggests heavy obfuscation or control-flow flattening. VersionInfo metadata claiming 'Loader Dynamic Link Library' and 'Copyright (C) 2015' is irrelevant \\u2014 all functional indicators are unambiguously malicious. Exfiltration: Not observed based on YARA rule 'Emissary_APT_Malware_1' and CAPA analysis, as no data exfiltration techniques (e.g., network transmission, file transfer) were identified in the behavioral chain or tool outputs. Defense impairment: Not observed based on YARA rule 'Emissary_APT_Malware_1' and CAPA analysis, as no techniques to disable security tools, clear logs, or evade defenses were identified in the behavioral chain or tool outputs.\",\n  \"key_evidence\": [\n    \"YARA rule 'Emissary_APT_Malware_1' matched with 8 strings at offsets 61976, 61996, 17696, 61864, 60320, 61412, 70960, 61896\",\n    \"Imports: CreateRemoteThread, WriteProcessMemory, VirtualAllocEx, VirtualProtectEx, OpenProcess (classic DLL injection chain)\",\n    \"Imports: AdjustTokenPrivileges, LookupPrivilegeValueA, OpenProcessToken (privilege escalation)\",\n    \"String refs in FUN_10002300: 'IE Process is running.' and '_MICROSOFT_LOADER_MUTEX_' (IE injection targeting + mutex)\",\n    \"String refs in FUN_100019a0: 'Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Run', 'A08E81B411.DAT', 'SeDebugPrivilege', '\\\\LocalData\\\\' (persistence + payload drop + priv esc)\",\n    \"Export 'Setting' with string 'rundll32.exe \\\"%s\\\",Setting' (autorun persistence via rundll32)\",\n    \"Strings: 'ProxyEnable', 'ProxyServer', 'Internet Settings' registry path (proxy credential theft)\",\n    \"FUN_10001820 references 'ReleaseFile Error->FindResource Failed', 'LoadLibrary Failed', 'GetProcAddress Failed', 'CreateFile Failed' (resource-based dropper with debug strings)\",\n    \"CAPA: obfuscated stackstrings (T1027.005), Base64 encoding (T1027), file/directory discovery (T1083)\",\n    \"FUN_10003853: size=2771, cyclomatic_complexity=151, 240 basic blocks (heavily obfuscated main payload logic)\",\n    \"Imports: CreateToolhelp32Snapshot, Process32First, Process32Next, Module32First, Module32Next (process/module enumeration for injection target)\",\n    \"SHA512 constants and BASE6\n\u2026 [1335 more chars]"
+      },
+      "publish": {
+        "source": "llm_judge",
+        "model": "mimo-v2.5-pro",
+        "excerpt": "{\n  \"title\": \"Malware Analysis Report: ishelp.dll (Lotus Blossom / Emissary APT Loader)\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `unknown` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-13 09:32:35 UTC\\n\\n# Verdict sources (multi-source)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | malicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | malicious |\\n\\n- **Locked over publish LLM:** no\\n\\n# Malware Analysis Report: ishelp.dll (Lotus Blossom / Emissary APT Loader)\\n\\n## Executive Summary\\n\\nThe DLL sample `ishelp.dll` (SHA256: `bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76`) is a malicious dropper/loader component associated with the Emissary APT (also tracked as Lotus Blossom). The sample exhibits a clear behavioral chain: it creates a mutex for single-instance enforcement, escalates privileges via `SeDebugPrivilege`, extracts an embedded PE payload from its resources to disk, enumerates running processes to locate Internet Explorer (`iexplore.exe`) as an injection target, performs classic DLL injection via `VirtualAllocEx`/`WriteProcessMemory`/`CreateRemoteThread`, and establishes persistence through a `Run` registry key invoking `rundll32.exe`. The sample also reads proxy configuration from the registry, likely for C2 communication setup. Multiple YARA rules matched, including `Emissary_APT_Malware_1` with 8 distinct strings, and CAPA identified thread injection, obfuscated stack strings, and Base64 encoding. The verdict is **malicious** with high confidence (98%). (source: deep-dive.json, triage verdict.json)\\n\\n## 1. Sample Identification\\n\\n| Field | Value |\\n|---|---|\\n| SHA256 | `bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76` |\\n| File Path | `/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll` |\\n| File Type | PE32 DLL (x86) |\\n| Architecture | x86 (32-bit) |\\n| Entropy | 6.35 bits/byte (whole-file Shannon entropy) |\\n| Imphash | `aee2f8f6aa200110e796682791bc8758` |\\n| Packed | No (UPX probe returned 0 files tested; not packed) |\\n| .NET | Not a .NET assembly |\\n| Export | `Setting` (invoked via `rundll32.exe \\\"%s\\\",Setting`) |\\n| Compiler | Visual C++ 2008 (MSVC_2008_linker, MSVC_2008_rich YARA matches) |\\n| VersionInfo | Claims \\\"Loader Dynamic Link Library\\\", Copyright (C) 2015 -- irrelevant metadata (source: deep-dive.json) |\\n\\nThe file is a standard PE32 DLL with a single exported function named `Setting`. The entropy of 6.35 bits/byte is moderately elevated but not indicative of packing; the UPX probe confirmed no UPX packing. The import hash `aee2f8f6aa200110e796682791bc8758` can be used for cross-referencing with threat intelligence databases. (source: malcat, rule.yara.json)\\n\\n## 2. Classification\\n\\n| Field | Value |\\n|---|---|\\n| Verdict | **Malicious** |\\n| Confidence | 98% |\\n| Family | Emissary APT / Lotus Blossom (trojan.lotusblossom/explorerhijack) |\\n| Type | DLL Dropper/Loader |\\n| Triage Score | 95/100 |\\n| Agreement | LLM and v1 triage agree |\\n\\nThe classification is unambiguous. The sample exhibits multiple behavioral-intent indicators: process injection (T1055.003), privilege escalation via `SeDebugPrivilege`, registry-based persistence (T1547.001), embedded payload extraction, and mutex creation. These are \n\u2026 [21505 more chars]"
+      }
+    },
+    "artifact_inventory": {
+      "verdict.json": {
+        "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/verdict.json",
+        "exists": true,
+        "bytes": 6417,
+        "mtime_iso": "2026-08-13T09:29:10.630171+00:00",
+        "sha256": "8e3500dcc48b72147f5e7fbcaeb0afd4d7f9341f875768cf82d0045dfc16cbee"
+      },
+      "prompt.txt": {
+        "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/prompt.txt",
+        "exists": true,
+        "bytes": 33514,
+        "mtime_iso": "2026-08-13T09:27:06.674001+00:00",
+        "sha256": "9e5ebb85c9aabce6d61725494d8bc775859c0840a4093987612d9f1cbaf6594b"
+      },
+      "pipeline-audit.json": {
+        "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/pipeline-audit.json",
+        "exists": true,
+        "bytes": 120770,
+        "mtime_iso": "2026-08-13T01:18:08.457131+00:00",
+        "sha256": "5e112fb55f1d8865dcfb61ad42f6dd435e330715f2840d482056915d21e08313"
+      },
+      "AUDIT-REPORT.md": {
+        "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/AUDIT-REPORT.md",
+        "exists": true,
+        "bytes": 89681,
+        "mtime_iso": "2026-08-13T01:18:08.458131+00:00",
+        "sha256": "98d15908d91c001d178fc3e5a47b874f83179a42222b8ace101c670590fc5a83"
+      },
+      "REPORT-MASTER-v2.md": {
+        "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/REPORT-MASTER-v2.md",
+        "exists": true,
+        "bytes": 22080,
+        "mtime_iso": "2026-08-13T09:32:35.752402+00:00",
+        "sha256": "42c579d9aed7eb061802e7f36e706748d59498d63ece4f9e68f59abb99d34666"
+      },
+      "REPORT-MASTER-v3.md": {
+        "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/REPORT-MASTER-v3.md",
+        "exists": true,
+        "bytes": 47646,
+        "mtime_iso": "2026-08-13T09:48:05.331274+00:00",
+        "sha256": "3dc124e07e737ba11e6b86e9c940941c9b4b4637ac1e28abbba8a24e3cf7667a"
+      },
+      "REPORT-v2.md": {
+        "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/REPORT-v2.md",
+        "exists": true,
+        "bytes": 22080,
+        "mtime_iso": "2026-08-13T09:32:35.751401+00:00",
+        "sha256": "42c579d9aed7eb061802e7f36e706748d59498d63ece4f9e68f59abb99d34666"
+      },
+      "REPORT-TECHNICAL.md": {
+        "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/REPORT-TECHNICAL.md",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "REPORT-TECHNICAL-v3.md": {
+        "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/REPORT-TECHNICAL-v3.md",
+        "exists": true,
+        "bytes": 56451,
+        "mtime_iso": "2026-08-13T09:51:23.313953+00:00",
+        "sha256": "e310fb6d864571c37f3e11980b9e19046a215c0d3e700bc2c27365cb27cecc9e"
+      },
+      "rule.yar": {
+        "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/rule.yar",
+        "exists": true,
+        "bytes": 1330,
+        "mtime_iso": "2026-08-12T19:20:59.426380+00:00",
+        "sha256": "8e55b8a981e0999da9280dfb42bd41003434427f5e301c75e952dd6344581e89"
+      },
+      "intake-validation.json": {
+        "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/intake-validation.json",
+        "exists": true,
+        "bytes": 2637,
+        "mtime_iso": "2026-08-12T19:16:58.388908+00:00",
+        "sha256": "534c224a97976875bbd4deca77b93d46c5ea74b27351daff322715304b1f58fa"
+      },
+      "source-decisions.json": {
+        "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/source-decisions.json",
+        "exists": true,
+        "bytes": 1794,
+        "mtime_iso": "2026-08-12T19:16:58.389909+00:00",
+        "sha256": "b41b7aade1f2143f614a58cae63f465efff67143a8aa442371f7182ad1084bef"
+      },
+      "malcat-triage.json": {
+        "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/malcat-triage.json",
+        "exists": true,
+        "bytes": 36732,
+        "mtime_iso": "2026-08-13T05:04:15.257143+00:00",
+        "sha256": "a0399a135b1d9008f684969591e17a75eacb5ef96233147e79ba48848d1079d2"
+      },
+      "deep_dive/01-tools-raw.json": {
+        "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/deep_dive/01-tools-raw.json",
+        "exists": true,
+        "bytes": 119947,
+        "mtime_iso": "2026-08-13T05:04:15.263143+00:00",
+        "sha256": "833fc1a37c7449cc951e3831e14cc0ec059d907382bbd8c30ebb6e2f6ae5bca1"
+      },
+      "deep_dive/01-tools-gate.json": {
+        "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/deep_dive/01-tools-gate.json",
+        "exists": true,
+        "bytes": 921,
+        "mtime_iso": "2026-08-12T19:18:56.308367+00:00",
+        "sha256": "f3d89b0704908331fb9398585035abaf1e8cb402a81b8103612e94f26673893c"
+      },
+      "deep_dive/05-deep-dive.json": {
+        "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/deep_dive/05-deep-dive.json",
+        "exists": true,
+        "bytes": 4835,
+        "mtime_iso": "2026-08-12T19:20:56.544092+00:00",
+        "sha256": "c08e509c8307b3aa675514dd249a5a901bd5ef0950bce97a3a36579f2a0ed980"
+      },
+      "deep_dive/03-prompt.txt": {
+        "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/deep_dive/03-prompt.txt",
+        "exists": false,
+        "bytes": 0,
+        "mtime_iso": null,
+        "sha256": null
+      },
+      "quick_scan/00-tools-raw.json": {
+        "path": "/opt/samples/logs/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/quick_scan/00-tools-raw.json",
+        "exists": true,
+        "bytes": 109948,
+        "mtime_iso": "2026-08-13T09:27:05.279001+00:00",
+        "sha256": "68aadea749ec946676e02db51e1416938c87e2932272c39a9570d61e3fdec5fe"
+      }
+    },
+    "report_excerpts": {
+      "v2": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-13 09:32:35 UTC\n\n# Verdict sources (multi-source)\n\n| Source | Verdict |\n|--------|--------|\n| **Final** | **malicious** |\n| Triage upstream (quick \u222a deep) | malicious |\n| Quick scan | malicious |\n| Deep dive | malicious |\n| Publish LLM (claimed) | malicious |\n\n- **Locked over publish LLM:** no\n\n# Malware Analysis Report: ishelp.dll (Lotus Blossom / Emissary APT Loader)\n\n## Executive Summary\n\nThe DLL sample `ishelp.dll` (SHA256: `bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76`) is a malicious dropper/loader component associated with the Emissary APT (also tracked as Lotus Blossom). The sample exhibits a clear behavioral chain: it creates a mutex for single-instance enforcement, escalates privileges via `SeDebugPrivilege`, extracts an embedded PE payload from its resources to disk, enumerates running processes to locate Internet Explorer (`iexplore.exe`) as an injection target, performs classic DLL injection via `VirtualAllocEx`/`WriteProcessMemory`/`CreateRemoteThread`, and establishes persistence through a `Run` registry key invoking `rundll32.exe`. The sample also reads proxy configuration from the registry, likely for C2 communication setup. Multiple YARA rules matched, including `Emissary_APT_Malware_1` with 8 distinct strings, and CAPA identified thread injection, obfuscated stack strings, and Base64 encoding. The verdict is **malicious** with high confidence (98%). (source: deep-dive.json, triage verdict.json)\n\n## 1. Sample Identification\n\n| Field | Value |\n|---|---|\n| SHA256 | `bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76` |\n| File Path | `/opt/samples/corpus/malware/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76/ishelp.dll` |\n| File Type | PE32 DLL (x86) |\n| Architecture | x86 (32-bit) |\n| Entropy | 6.35 bits/byte (whole-file Shannon entropy) |\n| Imphash | `aee2f8f6aa200110e796682791bc8758` |\n| Packed | No (UPX probe returned 0 files tested; not packed) |\n| .NET | Not a .NET assembly |\n| Export | `Setting` (invoked via `rundll32.exe \"%s\",Setting`) |\n| Compiler | Visual C++ 2008 (MSVC_2008_linker, MSVC_2008_rich YARA matches) |\n| VersionInfo | Claims \"Loader Dynamic Link Library\", Copyright (C) 2015 -- irrelevant metadata (source: deep-dive.json) |\n\nThe file is a standard PE32 DLL with a single exported function named `Setting`. The en\n\u2026 [19573 more chars]",
+      "v3": "> **RevAI provenance** \u2014 commit `unknown` \u00b7 engine `langgraph` \u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \u00b7 generated 2026-08-13 09:48:05 UTC\n\n# RE Report \u2014 bf0d6cc20fa7\n_Generated 2026-08-13T09:48:05.328005+00:00_  \n_Pipeline: section-based Map-Reduce, 3 pass-1 LLM calls + 14 pass-2 calls with cross-section context + 2 local sections_\n\n<!-- section: Executive Summary | pass=2 | evidence=240c | cross_refs=True | llm_ok=True | runtime=67.45s -->\n\n# Executive Summary\n\nThis section presents a top-line verdict for the malware sample with SHA256 `bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76`, summarizing its malicious nature, family association, confidence level, and key evidence.\n\n| Aspect       | Value                | Source (Citation) |\n|--------------|----------------------|--------------------|\n| Verdict      | Malicious            | (source: cross-section:classification, row_or_rule: verdict assessment) |\n| Family       | Likely Lotus Blossom | (source: deep_dive_agentic, row_or_rule: family guess) |\n| Confidence   | 98%                  | (source: deep_dive_agentic, row_or_rule: confidence score) |\n| Agreement    | LLM and V1 agree     | (source: cross-section:classification, row_or_rule: agreement) |\n\nWe assess the sample as **malicious** with high confidence, supported by 26 YARA rule matches that identify malicious signatures and 30 CAPA rules mapping to capabilities like persistence and evasion, which are typical in malware (source: yara, row_or_rule: 26 matches; capa, row_or_rule: 30 rules). The family guess of Lotus Blossom is likely, based on cross-engine analysis and historical data from sources like VirusTotal, though further correlation is recommended for certainty (source: cross-section:background_and_family_lineage, evidence: VirusTotal detections). Dynamic analysis tools such as Speakeasy and Frida were executed during behavioral assessment, contributing to the overall evaluation, but static analysis provided the primary evidence for this summary (source: cross-section:behavioral_analysis, evidence: dynamic tool execution).\n\n---\n\n<!-- section: 1. Sample Identification | pass=2 | evidence=233c | cross_refs=True | llm_ok=True | runtime=71.43s -->\n\n## 1. Sample Identification\n\nThis section outlines the fundamental identifiers for the malware sample, providing a basis for further analysis. The evidence is derived from static analysis, and each identifier is explained to ensure clarity for\n\u2026 [45129 more chars]"
+    }
+  },
+  "retry_visibility": {
+    "quick_scan": [],
+    "deep_dive": [],
+    "count": 0
+  },
+  "all_green": true,
+  "stage_ok": {
+    "intake": true,
+    "quick_scan": true,
+    "deep_dive": true,
+    "yara_gen": true,
+    "publish": true
+  },
+  "layer_attribution": {
+    "ok": true,
+    "layers": {
+      "L1_tool_extraction": [],
+      "L2_evidence_prompt": [],
+      "L3_llm_interpretation": [],
+      "L4_gates": [],
+      "L5_report_authorship": []
+    },
+    "red_stages": []
+  },
+  "showcase_dir": "/opt/samples/logs/_showcase_audits/bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76"
+}

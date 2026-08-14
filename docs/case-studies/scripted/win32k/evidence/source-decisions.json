@@ -1,0 +1,33 @@
+{
+  "sha256": "8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde",
+  "imports": {
+    "source": "ghidra",
+    "confidence": "high",
+    "reason": "{malcat, imports_count, 192, same count}; {ghidra, imports, 192, same count}; {ida, imports, 192, same count} - All tools report 192 imports, indicating high consistency; Ghidra is a reliable source for detailed import analysis."
+  },
+  "functions": {
+    "source": "ghidra",
+    "confidence": "high",
+    "reason": "{ghidra, funcs, 655, high count}; {ida, funcs, 655, high count}; {malcat, functions_count, 10, low count} - Ghidra and ida report significantly higher function counts (655) compared to malcat (10), providing more comprehensive function identification; Ghidra is chosen for robust analysis."
+  },
+  "strings": {
+    "source": "both",
+    "confidence": "high",
+    "reason": "{ghidra, strings, 402, high count}; {ida, strings, 395, high count}; {malcat, strings_count, 100, lower count} - Ghidra and ida report higher string counts (402 and 395) than malcat (100); using both engines ensures comprehensive string coverage and cross-validation for thorough analysis."
+  },
+  "decompilation": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "{ghidra, type, PE, arch X64, supports decompilation}; {ida, type, disassembler, supports decompilation}; {malcat, type, static analysis tool, no decompilation} - Decompilation is a feature of disassemblers like Ghidra; no conflicting data from tools, defaulting to Ghidra for standard decompilation output."
+  },
+  "cff": {
+    "source": "ghidra",
+    "confidence": "medium",
+    "reason": "{ghidra, funcs, 655, supports control flow analysis}; {ida, funcs, 655, supports control flow}; {malcat, no specific cff data} - CFF likely refers to control flow analysis or similar; Ghidra is a standard tool for this, and no explicit data from malcat, so defaulting to Ghidra."
+  },
+  "static_profile": {
+    "source": "malcat",
+    "confidence": "high",
+    "reason": "{malcat, entropy, 167, provides file entropy}; {malcat, anomalies_count, 10, provides anomaly details}; {malcat, yara_hits_count, 12, provides YARA matches}; {malcat, imports_count, 192, and strings_count, 100, for quick summary} - Malcat offers comprehensive static profiling with entropy, anomalies, YARA hits, and file attributes, making it ideal for static analysis overview."
+  }
+}

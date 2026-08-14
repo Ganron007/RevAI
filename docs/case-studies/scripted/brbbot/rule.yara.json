@@ -1,0 +1,61 @@
+{
+  "sha256": "f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e",
+  "family": "trojan.blocker/bckn (botnet trojan)",
+  "imphash": "475b069fec5e5868caeb7d4d89236c89",
+  "generated_at": "2026-08-12T16:45:56.141645+00:00",
+  "string_count": 24,
+  "strings": [
+    "!This program cannot be run in DOS mode.",
+    "UVATAVAWH",
+    "\\$ D9d$x",
+    "0A_A^A\\^]",
+    "\\$ UVWATAUAVAWH",
+    "A_A^A]A\\_^]",
+    "UVWATAUAVAWH",
+    "\\$ UVATAUAWH",
+    "A_A]A\\^]",
+    "D8D$0u9D",
+    "D$<D9D$`t",
+    "t$\\D9D$`t",
+    "t$\\D8D$@t",
+    "t$4D8D$8t",
+    "|$ UATAUAVAWH",
+    "A_A^A]A\\]",
+    "D$DD9T$\\",
+    "t$hD+d$DD+",
+    "UVWATAUH",
+    "D$&8\\$&t-8X",
+    "@A]A\\_^]",
+    "WATAUAVAWH",
+    "@A_A^A]A\\_",
+    "t$ WATAUH"
+  ],
+  "rule_path": "/opt/samples/logs/f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e/rule.yar",
+  "sigma_path": "/opt/samples/logs/f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e/rule.yml",
+  "iocs_path": "/opt/samples/logs/f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e/iocs.json",
+  "yara_valid": true,
+  "yara_check": "ok",
+  "goodware_fp": {
+    "goodware_dir": "/opt/samples/goodware",
+    "fp_count": 0,
+    "fp_samples": [],
+    "skipped": "goodware corpus not staged"
+  },
+  "yargen": {
+    "skipped": true
+  },
+  "revai": true,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-12 16:45:56 UTC"
+  },
+  "publish_target": "revai_publish"
+}

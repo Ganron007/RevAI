@@ -1,0 +1,61 @@
+{
+  "sha256": "cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a",
+  "family": "usbles26",
+  "imphash": "a675367c6d79f8c7b7603d13cfd0a3ff",
+  "generated_at": "2026-08-12T17:05:45.473667+00:00",
+  "string_count": 24,
+  "strings": [
+    "!This program cannot be run in DOS mode.",
+    "WATAUAVAWH",
+    "@A_A^A]A\\_",
+    "t$ WATAUH",
+    "A_A^A]A\\_",
+    "x ATAUAVH",
+    "s\\HcL$HH",
+    "0A_A^A]A\\_",
+    "@SUVWATAUAVH",
+    "PA^A]A\\_^][",
+    "UVWATAUH",
+    "D$&8\\$&t-8X",
+    "@A]A\\_^]",
+    "@UATAUAVAWH",
+    "!t$(H!t$ A",
+    "A_A^A]A\\]",
+    "CorExitProcess",
+    "GetProcessWindowStation",
+    "GetUserObjectInformationW",
+    "GetLastActivePopup",
+    "GetActiveWindow",
+    "MessageBoxW",
+    "HH:mm:ss",
+    "dddd, MMMM dd, yyyy"
+  ],
+  "rule_path": "/opt/samples/logs/cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a/rule.yar",
+  "sigma_path": "/opt/samples/logs/cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a/rule.yml",
+  "iocs_path": "/opt/samples/logs/cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a/iocs.json",
+  "yara_valid": true,
+  "yara_check": "ok",
+  "goodware_fp": {
+    "goodware_dir": "/opt/samples/goodware",
+    "fp_count": 0,
+    "fp_samples": [],
+    "skipped": "goodware corpus not staged"
+  },
+  "yargen": {
+    "skipped": true
+  },
+  "revai": true,
+  "provenance": {
+    "project": "RevAI",
+    "commit": "unknown",
+    "engine": "langgraph",
+    "flags": {
+      "budget_warnings": true,
+      "redundant_nudge": true,
+      "hallucination_check": true,
+      "failure_taxonomy": true
+    },
+    "utc": "2026-08-12 17:05:45 UTC"
+  },
+  "publish_target": "revai_publish"
+}

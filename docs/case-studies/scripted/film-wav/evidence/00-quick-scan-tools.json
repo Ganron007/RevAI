@@ -1,0 +1,1408 @@
+{
+  "capa": {
+    "skipped": true,
+    "fail_open": true,
+    "reason": "not_applicable:unknown",
+    "error": "CAPA supports PE/ELF/Mach-O only (got unknown)",
+    "rule_count": 0,
+    "matched_rule_count": 0,
+    "top_rules": []
+  },
+  "pe_imports": {
+    "skipped": true,
+    "reason": "not_applicable:unknown",
+    "engine": "pe_imports",
+    "signal_count": 0,
+    "signals": []
+  },
+  "yara": {
+    "rule_count": 4,
+    "matches": [
+      {
+        "rule": "domain",
+        "path": "/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav",
+        "strings": [
+          {
+            "id": "$domain_regex",
+            "offset": 0,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IP",
+        "path": "/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav",
+        "strings": [
+          {
+            "id": "$ipv6",
+            "offset": 880,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "contains_base64",
+        "path": "/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 3750495,
+            "length": 12,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "maldoc_indirect_function_call_3",
+        "path": "/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 1743485,
+            "length": 9,
+            "xor_key": null
+          }
+        ]
+      }
+    ],
+    "engine": "yara-x",
+    "rules_compiled": 454,
+    "compile_errors": [
+      "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+      "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+      "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+    ],
+    "incomplete": true,
+    "duration_s": 6.23
+  },
+  "floss": {
+    "skipped": true,
+    "fail_open": true,
+    "reason": "not_applicable:unknown",
+    "error": "FLOSS supports PE only (got unknown)",
+    "string_count": 0,
+    "strings": []
+  },
+  "malcat": {
+    "analysis_id": 1,
+    "path": "/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav",
+    "profile": "deep",
+    "limits": {
+      "strings_max": 300,
+      "imports_max": 300,
+      "functions_max": 30,
+      "anomaly_locations_max": 50,
+      "decompile_top_n": 3
+    },
+    "file_summary": {
+      "analysis_id": 1,
+      "file_name": "film.wav",
+      "file_path": "/opt/samples/corpus/710/0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a/film.wav",
+      "file_size": 15179552,
+      "type": "?",
+      "architecture": "NONE",
+      "entropy": 7.48,
+      "sha256": "0f02beee4c93cd483befe638edd443bac7f6ccc931260613f07944f44519186a",
+      "metadata": {},
+      "entrypoint_ea": null,
+      "layout": [
+        {
+          "name": "",
+          "effective_address": 0,
+          "physical_size": 15179552,
+          "virtual_size": 15179552,
+          "rights": "",
+          "entropy": 156
+        }
+      ],
+      "kesakode_verdict": [],
+      "entropy_malcat_raw": 156,
+      "entropy_source": "whole_file_shannon_revai"
+    },
+    "views": {
+      "anomalies": [],
+      "anomaly_locations": {},
+      "yara_hits": [],
+      "strings": [
+        {
+          "ea": 252868,
+          "summary": "zzsrppnnnnllhhff..NNIIDDCC>>77..##"
+        },
+        {
+          "ea": 958048,
+          "summary": "#\"((1077;;>>@@CC..99222267AAQQcbvw"
+        },
+        {
+          "ea": 8705632,
+          "summary": "./<<IHSRXX``eeih..PPLLKKEE>?8811(("
+        },
+        {
+          "ea": 2096188,
+          "summary": "66NN^^hhjjjjffdd..89885523-,()%$! "
+        },
+        {
+          "ea": 1411328,
+          "summary": "\"\"&&+*--1144<<DE..xyvvttrrpqpptt{z"
+        },
+        {
+          "ea": 8000640,
+          "summary": "\"\"''**..2366;:=<..A@=<884501,,()\"\""
+        },
+        {
+          "ea": 2095272,
+          "summary": "xxhiYXLMKJIH==,,..bbhhfgee__QPA@./"
+        },
+        {
+          "ea": 9326666,
+          "summary": "` ^,V.P6VLj`v^jB..,H.L:D>8::4L.b&p"
+        },
+        {
+          "ea": 393167,
+          "summary": "\n,\n,\n;\n:\nH\nH\nS\nR..S\nS\nZ\nZ\nf\nf\nt\nu\n"
+        },
+        {
+          "ea": 2104968,
+          "summary": "~~{zxxxxwvsslmdd..LLFGFFLLRS_^jkzz"
+        },
+        {
+          "ea": 8706004,
+          "summary": "\"\"))..4588>>CBII..JJGGCB>?::54//&&"
+        },
+        {
+          "ea": 257100,
+          "summary": "xyaaNOBB@ABCIIPQ..;;89;;<<9922-,''"
+        },
+        {
+          "ea": 1445728,
+          "summary": "33BCIHFFDEBB==45..NOHH=<555588BB\\]"
+        },
+        {
+          "ea": 1956567,
+          "summary": "\nz\nz\nn\no\nk\nj\nl\nm..h\ni\nZ\nZ\nJ\nK\n4\n4\n"
+        },
+        {
+          "ea": 1410872,
+          "summary": "  %$'&(()(++,-....&''&''''&&''%$! "
+        },
+        {
+          "ea": 196124,
+          "summary": "%$**003298@@@@@@..VVRSLLIHCC::00$$"
+        },
+        {
+          "ea": 1323312,
+          "summary": "{znoa`SRHH@@=<;;..DDEEFGKJPQ[Zjj}|"
+        },
+        {
+          "ea": 2093028,
+          "summary": "~~wvmmbcVVLMHINN..QPOOHHAA8845..\"\""
+        },
+        {
+          "ea": 2106292,
+          "summary": "uubbTTMMLLJKFF>>..DDHIIHBC>>88,,  "
+        },
+        {
+          "ea": 2098044,
+          "summary": "  11@@MLWVccnnxy..UU__hhooqqsruuyy"
+        },
+        {
+          "ea": 2058472,
+          "summary": "  89KKWWa`kjtuxx..NNIIBB<=66./&& !"
+        },
+        {
+          "ea": 247744,
+          "summary": "rsa`QQED@ACCIHTU..``UTMMKJQQ]]kk||"
+        },
+        {
+          "ea": 9399475,
+          "summary": "/L/M/8080n0n0.0.0P2P2"
+        },
+        {
+          "ea": 2107700,
+          "summary": "~~xxpqcbSSHI@A<=..EDJJPPYYbckkrs}}"
+        },
+        {
+          "ea": 2091412,
+          "summary": "||qpii__PPFFFGGG..))01::@AHHRS^^on"
+        },
+        {
+          "ea": 2093600,
+          "summary": "||zzzzxxll``ZZZZ..jkffedaa^_^^ders"
+        },
+        {
+          "ea": 1311564,
+          "summary": "&&66CCKKOOQQOOMM..vv~~~~yymmZZ@@ !"
+        },
+        {
+          "ea": 985586,
+          "summary": "~qqbcTTHI@@==55...HHSS\\\\fglmqqttz{"
+        },
+        {
+          "ea": 2088824,
+          "summary": "));;EDNN__kjrspp..CCFGCC::23..)(!!"
+        },
+        {
+          "ea": 877372,
+          "summary": ",,@@RRcbmmqqnndd..**1198BBLLYXggvv"
+        },
+        {
+          "ea": 879984,
+          "summary": "nn^^VVRRRSRRQPONMMHHFGGFKKTTbbvv"
+        },
+        {
+          "ea": 9325780,
+          "summary": "@2JJPP^NjJrNzZz`..RfcrlydrXfXdjn~x"
+        },
+        {
+          "ea": 8290448,
+          "summary": "\"\",,==LMZZffppxx..rrpplmhh]\\ML<=,,"
+        },
+        {
+          "ea": 2099560,
+          "summary": "xyhiVVLLKKDD89,,..6789AALLVW_^hh{z"
+        },
+        {
+          "ea": 1756708,
+          "summary": "mmZ[JJ66*+&'((....::::::88::<<::00"
+        },
+        {
+          "ea": 626724,
+          "summary": "vvlliihhiikkooss..zz{{yyvwwvwvyx|}"
+        },
+        {
+          "ea": 9399667,
+          "summary": "/e/e/"
+        },
+        {
+          "ea": 8545763,
+          "summary": "/F/F/"
+        },
+        {
+          "ea": 2114692,
+          "summary": "rrff^^\\\\\\\\XXTTRS..#\"\"\"#\"$$'&*+**\"\""
+        },
+        {
+          "ea": 977340,
+          "summary": "$%/.99>?BBHHMLSS..SROOII@@::01))##"
+        },
+        {
+          "ea": 8496207,
+          "summary": "/K/K/"
+        },
+        {
+          "ea": 8496199,
+          "summary": "/s/s/"
+        },
+        {
+          "ea": 8322039,
+          "summary": "/r/r/"
+        },
+        {
+          "ea": 7843272,
+          "summary": "\"\"((./2298==>>@@..EEBB>>8922,-'& !"
+        },
+        {
+          "ea": 8901608,
+          "summary": "(#<6G?A65(4 =\"F)..TLneuk]RLD\\Vrlzt"
+        },
+        {
+          "ea": 90252,
+          "summary": "wwdd\\\\UUMMBB;;4466@@NNOO<<"
+        },
+        {
+          "ea": 9326846,
+          "summary": ":m>rZ|nwlnchd^fR..`vbrhrblNXBHVPxj"
+        },
+        {
+          "ea": 2110400,
+          "summary": "yxnocb[ZXXXXSRII..CKJTU`affiijkut~"
+        },
+        {
+          "ea": 9399675,
+          "summary": "/V0V0j/j/"
+        },
+        {
+          "ea": 9321540,
+          "summary": "*<FZT`XZPXBb4p.j..^<fHjZpfz^vPhRrV"
+        },
+        {
+          "ea": 1758396,
+          "summary": ",,66>>@@>>9822/...//..44A@PQ^_nn||"
+        },
+        {
+          "ea": 1455556,
+          "summary": "xxff^^aafggf^^PQFFOOmm"
+        },
+        {
+          "ea": 9072880,
+          "summary": " z&p>tJnJZJJN@N6..tBuDp@vF~NzLvF~N"
+        },
+        {
+          "ea": 2065228,
+          "summary": "{{ttoohhddcbbbbc`acc``\\]PPBB32"
+        },
+        {
+          "ea": 1650544,
+          "summary": "::XXkjqqmmbbTTHI??==A@JKXYjjyy"
+        },
+        {
+          "ea": 8706272,
+          "summary": "  $$((-,01547798..88664432//+*()$$"
+        },
+        {
+          "ea": 8700239,
+          "summary": "/6/7/V.V.I-I-"
+        },
+        {
+          "ea": 1883876,
+          "summary": "$$/.;;CCHHJJHICC:;321022::MMjk"
+        },
+        {
+          "ea": 605744,
+          "summary": "xxffXXONIHIIIHKJJJHI@@01"
+        },
+        {
+          "ea": 278012,
+          "summary": "{zturrpppprrrrnn..kkdd]\\SSJKBB67++"
+        },
+        {
+          "ea": 1410360,
+          "summary": "{zuuppoollffcc__..JKBB::542201()!!"
+        },
+        {
+          "ea": 2039476,
+          "summary": "utXXDE=<::@AKJVW..ppxxzztthhXXDD&&"
+        },
+        {
+          "ea": 140844,
+          "summary": "89NN[[_^^_`aa`bba`UU<<"
+        },
+        {
+          "ea": 2096976,
+          "summary": "vvjj^^UUJKDDAA=<==<<?>9900&&"
+        },
+        {
+          "ea": 8548644,
+          "summary": "$$,-5589>>CCEDFGFFDECC>>::54..&&"
+        },
+        {
+          "ea": 1482848,
+          "summary": "rr[[GG55----99QQyy"
+        },
+        {
+          "ea": 2114452,
+          "summary": "xymlcc[[TTLLHHHH..SRWVYY\\\\ccjkrs|}"
+        },
+        {
+          "ea": 8555188,
+          "summary": "((22113399AA=<9988<=>>;:22**"
+        },
+        {
+          "ea": 1120420,
+          "summary": "..>>MM]]hionpponjkdd[[FF//"
+        },
+        {
+          "ea": 628724,
+          "summary": "pp__PQGFBCCBGFML..rrwwvvyxyy{z|}~~"
+        },
+        {
+          "ea": 1040552,
+          "summary": "54RRbcllqpssqqnnhh`aOO;;-,22HIgg"
+        },
+        {
+          "ea": 630736,
+          "summary": "uuii__VVTTVV\\]bchiqqyy"
+        },
+        {
+          "ea": 2091616,
+          "summary": "utff]\\WWUUTTNNDD992310..\"\"\n\n"
+        },
+        {
+          "ea": 898172,
+          "summary": "&&44A@MLWV\\]\\\\[Z..TURRTUWW^^fgqq{z"
+        },
+        {
+          "ea": 1069872,
+          "summary": "iiMM==<<DDNOWWXXKK00\r\r"
+        },
+        {
+          "ea": 2076236,
+          "summary": "[[@@::55;:VV^^;:"
+        },
+        {
+          "ea": 220939,
+          "summary": "\n7\n7\nV\nV\n`\n`\ne\nd..O\nN\nC\nB\n<\n<\n0\n1\n"
+        },
+        {
+          "ea": 1397556,
+          "summary": "44LMZ[aaZZRSLLNN[Zjj"
+        },
+        {
+          "ea": 9011061,
+          "summary": "/i/Q/5/4/"
+        },
+        {
+          "ea": 2098196,
+          "summary": "++110110235411++..//76BBNOXXeeuu~~"
+        },
+        {
+          "ea": 981180,
+          "summary": "vvrronjjde__]]]\\..**$$   !\"\"%$%$!!"
+        },
+        {
+          "ea": 772384,
+          "summary": "sr`aSRMMQQXXbbjkpprsqpgfRR76"
+        },
+        {
+          "ea": 2095638,
+          "summary": "~wwkj`aZZ]\\eejjq..vvsrnnhh[ZFF67'&"
+        },
+        {
+          "ea": 1844680,
+          "summary": "66JJHH::66MM"
+        },
+        {
+          "ea": 1471548,
+          "summary": "\n\n44LLVVVVJJ00"
+        },
+        {
+          "ea": 340556,
+          "summary": "++88BBFFBB::..&&&&00BB\\\\vv"
+        },
+        {
+          "ea": 2094152,
+          "summary": "on\\\\SRLLKJKKQQXXddmmssyy"
+        },
+        {
+          "ea": 1453948,
+          "summary": "nnPP<<88>>HHVVTT66"
+        },
+        {
+          "ea": 2111756,
+          "summary": "}}yyjj[[QPONRR[Zggppssrrttwwzz"
+        },
+        {
+          "ea": 257620,
+          "summary": "||qqff\\]TTMLGGED..KJPQVW__ddlmrr{z"
+        },
+        {
+          "ea": 9144175,
+          "summary": "/L/0/"
+        },
+        {
+          "ea": 8964343,
+          "summary": "/G/1/"
+        },
+        {
+          "ea": 1937368,
+          "summary": "yxkk``TTJKAA??DEOOWVRRFF00"
+        },
+        {
+          "ea": 1569296,
+          "summary": "~~vvnndd[[RRMLMMPQXXdexx"
+        },
+        {
+          "ea": 335064,
+          "summary": "76XYgffg]\\KK??::DDYYuu"
+        },
+        {
+          "ea": 2103608,
+          "summary": "utkkccZZRRJKDDFGON[Zddkjww"
+        },
+        {
+          "ea": 9143627,
+          "summary": "/t/h/"
+        },
+        {
+          "ea": 9002473,
+          "summary": "/V/8/"
+        },
+        {
+          "ea": 115823,
+          "summary": "\r5\r4\rP\rP\r`\r`\r`\r`..L\rL\rD\rE\r<\r<\r/\r.\r"
+        },
+        {
+          "ea": 10156483,
+          "summary": "/J/R/"
+        },
+        {
+          "ea": 2082668,
+          "summary": ":;PPZZa`aa]]ZZ^^ggqq{{"
+        },
+        {
+          "ea": 9178043,
+          "summary": "i.iTi"
+        },
+        {
+          "ea": 4085401,
+          "summary": "/B/r/"
+        },
+        {
+          "ea": 1811232,
+          "summary": "//::=<;;??DDLLLMEEAAUT"
+        },
+        {
+          "ea": 1764728,
+          "summary": "qpNN89/.>>TTVWNNONOOBC00"
+        },
+        {
+          "ea": 247608,
+          "summary": "~~zzvvttttttrrrrrrrrrsrrwv}|"
+        },
+        {
+          "ea": 9364671,
+          "summary": "/2/R/"
+        },
+        {
+          "ea": 1235288,
+          "summary": "##54DDLLGF??>>GGJJHHMLWVbcww"
+        },
+        {
+          "ea": 2096904,
+          "summary": "##//;;EEMMUU[[^^bbhhppxx~~"
+        },
+        {
+          "ea": 340876,
+          "summary": "xxa`NNCC<<::@AJJWWaagf_^KK**"
+        },
+        {
+          "ea": 620764,
+          "summary": "\"#//==GGQQYY]][[SSGG;;))"
+        },
+        {
+          "ea": 9003943,
+          "summary": "/Q/4/"
+        },
+        {
+          "ea": 1353996,
+          "summary": "``A@@@AA.."
+        },
+        {
+          "ea": 1451519,
+          "summary": "\nl\nl\nZ\nZ\nF\nG\n;\n;..2\n2\n7\n6\nG\nG\n`\n`\n"
+        },
+        {
+          "ea": 8966839,
+          "summary": "/W/f/"
+        },
+        {
+          "ea": 2095532,
+          "summary": "\r\r$$66CBLLTTWWRRNOQPVW_^edmmxx"
+        },
+        {
+          "ea": 1479500,
+          "summary": "tuggaa]]__eemmuuyxvwjjON#\""
+        },
+        {
+          "ea": 385279,
+          "summary": "\t#\n\"\nH\nI\nd\nd\nr\nr..t\nu\ni\ni\nW\nW\n=\n=\n"
+        },
+        {
+          "ea": 208807,
+          "summary": "\r \r \r0\r0\r<\r<\rG\rF..F\rF\r=\r<\r1\r1\r \r \r"
+        },
+        {
+          "ea": 571116,
+          "summary": "$$01::??@@DEFFGFGGHINNTU\\\\hhzz"
+        },
+        {
+          "ea": 948663,
+          "summary": "\np\np\nb\nb\nX\nX\nT\nT..m\nm\nf\ng\nV\nV\n<\n=\n"
+        },
+        {
+          "ea": 8555280,
+          "summary": "88VVjjpphhTT66"
+        },
+        {
+          "ea": 9175195,
+          "summary": "O,K0KLKNK.M0M"
+        },
+        {
+          "ea": 2098428,
+          "summary": "ss\\]FF67,,*+./55==@@AA??=<<<66)("
+        },
+        {
+          "ea": 2100800,
+          "summary": "tt^^NNCB<<@@ONccww"
+        },
+        {
+          "ea": 9186373,
+          "summary": "BtC|BRC\\B.CNB"
+        },
+        {
+          "ea": 525731,
+          "summary": "\r.\r.\r=\r<\rG\rF\rK\rK..U\rT\rL\rL\r<\r<\r$\r$\r"
+        },
+        {
+          "ea": 305504,
+          "summary": "uuffccbbfgbbSR98"
+        },
+        {
+          "ea": 2044183,
+          "summary": "\n(\n(\nB\nC\nT\nU\n_\n_..n\nn\nb\nb\nJ\nJ\n*\n*\n"
+        },
+        {
+          "ea": 1796900,
+          "summary": "zz__BC=<NO_^YYGGBBLLDD\"\""
+        },
+        {
+          "ea": 7843048,
+          "summary": "'&..76<<A@EEGGFF..CC??;;7632-,'& !"
+        },
+        {
+          "ea": 1693708,
+          "summary": "uu^^TTMMA@>?LLA@"
+        },
+        {
+          "ea": 1045396,
+          "summary": "10II]]hhgg]]ONJJPPcb"
+        },
+        {
+          "ea": 12584,
+          "summary": "&&4488662244HHll"
+        },
+        {
+          "ea": 9000471,
+          "summary": "/d/M/h1J1"
+        },
+        {
+          "ea": 1763508,
+          "summary": "rsffffhi``QPIIJJCC00"
+        },
+        {
+          "ea": 1917160,
+          "summary": "IH]]\\]XX\\]kk"
+        },
+        {
+          "ea": 86140,
+          "summary": "zz^_FF9877:;<<894499DESRdd{z"
+        },
+        {
+          "ea": 1456596,
+          "summary": "00PPNN00"
+        },
+        {
+          "ea": 8422904,
+          "summary": "+*::ONddhh\\\\VWZZWVMMLLDD"
+        },
+        {
+          "ea": 122167,
+          "summary": "\n.\n/\nJ\nK\nb\nc\np\np..r\nr\nf\ng\nS\nS\n9\n9\n"
+        },
+        {
+          "ea": 2100288,
+          "summary": "||\\\\KKFFJKRR]\\edllttwwjjNO*+"
+        },
+        {
+          "ea": 1044827,
+          "summary": "\n&\n'\n>\n>\nU\nT\ne\ne..c\nb\nH\nH\n+\n*\n\n\n\n\n"
+        },
+        {
+          "ea": 254880,
+          "summary": "&&005498<=>>A@AA..BB>?::44..)($$ !"
+        },
+        {
+          "ea": 464152,
+          "summary": "89TUcc``YYNNHIFGGGAA33##"
+        },
+        {
+          "ea": 2106480,
+          "summary": "xxqqhhbb]]VVRSNNFF<<45,,$$"
+        },
+        {
+          "ea": 448960,
+          "summary": "\\\\BBA@LM]]ffihdd\\]TTRS_^||"
+        },
+        {
+          "ea": 2100712,
+          "summary": "tt``]]hhrsppddXXPQHH88! "
+        },
+        {
+          "ea": 1198003,
+          "summary": "\n8\n8\nN\nN\nL\nM\nI\nH..v\nw\nd\nd\nQ\nQ\n:\n:\n"
+        },
+        {
+          "ea": 1659695,
+          "summary": "\n2\n3\nM\nL\n`\n`\nm\nl..o\nn\n]\n]\nD\nE\n$\n$\n"
+        },
+        {
+          "ea": 1234240,
+          "summary": ",,::ML]]iinnnnhiWV=="
+        },
+        {
+          "ea": 1057888,
+          "summary": "11RRGFEEZ[ffZ[WVxx"
+        },
+        {
+          "ea": 7604467,
+          "summary": "EhF|FQF~F.ErE"
+        },
+        {
+          "ea": 519531,
+          "summary": "\nz\n{\nq\np\nh\nh\ni\ni..j\nk\n`\n`\nO\nO\n7\n7\n"
+        },
+        {
+          "ea": 1217387,
+          "summary": "\r6\r6\rK\rK\rW\rW\r\\\r]..`\r`\re\rd\rl\rm\rx\rx\r"
+        },
+        {
+          "ea": 848004,
+          "summary": ",,BCSR[ZXXUTOOKKHHJJPPZ[hi||"
+        },
+        {
+          "ea": 414103,
+          "summary": "\nq\nq\nd\nd\nV\nW\nJ\nJ..#\n\"\n$\n$\n\"\n#\n!\n!\n"
+        },
+        {
+          "ea": 693824,
+          "summary": "wwkk]]II33"
+        },
+        {
+          "ea": 1230456,
+          "summary": "sr^^PPDD::..\"\""
+        },
+        {
+          "ea": 494959,
+          "summary": "\n|\n}\np\nq\ne\ne\nY\nY..H\nI\nZ\nZ\nl\nl\n}\n|\n"
+        },
+        {
+          "ea": 2099660,
+          "summary": "qq^^MM66\"\""
+        },
+        {
+          "ea": 226023,
+          "summary": "\n7\n6\nY\nY\nn\no\nz\nz..H\nH\nH\nH\nT\nU\nq\nq\n"
+        },
+        {
+          "ea": 396147,
+          "summary": "\n,\n,\nD\nD\nW\nV\ne\nd..b\nb\nT\nU\nB\nB\n*\n*\n"
+        },
+        {
+          "ea": 1130140,
+          "summary": "AA--44FFff"
+        },
+        {
+          "ea": 941471,
+          "summary": "\r/\r.\rD\rD\rW\rV\re\re..n\rn\ro\ro\rs\rs\ry\ry\r"
+        },
+        {
+          "ea": 11033243,
+          "summary": "/H/d/T1"
+        },
+        {
+          "ea": 9326972,
+          "summary": "rzdrRjDdBdDbD`F`..\\pdt`nPZ8>*,(0(@"
+        },
+        {
+          "ea": 1102572,
+          "summary": "--88FFZZnn"
+        },
+        {
+          "ea": 637420,
+          "summary": "xxfgXXPQVVffxy"
+        },
+        {
+          "ea": 5193007,
+          "summary": "/H-./w-"
+        },
+        {
+          "ea": 1088847,
+          "summary": "\n4\n4\nE\nE\nK\nK\nJ\nK..R\nS\n]\n\\\ni\ni\nw\nw\n"
+        },
+        {
+          "ea": 9444125,
+          "summary": "[@U(Z4UNY.UZY"
+        },
+        {
+          "ea": 652024,
+          "summary": "ffLLJJXXll"
+        },
+        {
+          "ea": 1759584,
+          "summary": "$$006698;;<<;:11..\"\" !  #\"**88LMkk"
+        },
+        {
+          "ea": 1952435,
+          "summary": "\n*\n+\n?\n>\nQ\nQ\na\na..g\ng\nY\nY\nB\nC\n#\n\"\n"
+        },
+        {
+          "ea": 1062768,
+          "summary": "11:;;:88=<EDNN]\\tt"
+        },
+        {
+          "ea": 1482796,
+          "summary": "sshihhrs"
+        },
+        {
+          "ea": 535115,
+          "summary": "\n(\n(\n4\n4\n<\n<\n>\n>..2\n2\n0\n1\n.\n/\n(\n)\n"
+        },
+        {
+          "ea": 2087744,
+          "summary": "ssWWAA--"
+        },
+        {
+          "ea": 1458652,
+          "summary": "\"\"@@XXrr"
+        },
+        {
+          "ea": 815136,
+          "summary": "ttjja`SSCC00"
+        },
+        {
+          "ea": 1820996,
+          "summary": "<<ZZgfddZZUT[[no"
+        },
+        {
+          "ea": 607744,
+          "summary": "rrVV88\"\""
+        },
+        {
+          "ea": 1456979,
+          "summary": "\nB\nB\nX\nY\na\n`\n\\\n\\..P\nP\nC\nC\n3\n2\n%\n$\n"
+        },
+        {
+          "ea": 603668,
+          "summary": ">>WVeejkkkhhihnnzz"
+        },
+        {
+          "ea": 1925228,
+          "summary": "__GGOOoo"
+        },
+        {
+          "ea": 458312,
+          "summary": "yyffOO22"
+        },
+        {
+          "ea": 353848,
+          "summary": "vvXXBB.."
+        },
+        {
+          "ea": 2086112,
+          "summary": "33FFYYpp"
+        },
+        {
+          "ea": 1341428,
+          "summary": "~~qpaaQQHHHHNOUUXYcbvv"
+        },
+        {
+          "ea": 853884,
+          "summary": "55GGRRZZdess"
+        },
+        {
+          "ea": 829808,
+          "summary": "yyjjZZ@@"
+        },
+        {
+          "ea": 2058640,
+          "summary": "&&::LL]\\kjvv}|}}vvkkVV<<"
+        },
+        {
+          "ea": 2083636,
+          "summary": "mlZZNNED<<;:>>@@::,,"
+        },
+        {
+          "ea": 555016,
+          "summary": "))55>>FFMMUTZZddpp"
+        },
+        {
+          "ea": 550016,
+          "summary": "yynnbbYXPPKJFFCCA@<<9844,,! "
+        },
+        {
+          "ea": 1498428,
+          "summary": "..AAOO\\]jjxx"
+        },
+        {
+          "ea": 109388,
+          "summary": "''00444598>???55"
+        },
+        {
+          "ea": 1576752,
+          "summary": "01HH]\\kkrsttnogf[ZIH10"
+        },
+        {
+          "ea": 1759480,
+          "summary": "ttookka`TTJJ?>.."
+        },
+        {
+          "ea": 9428668,
+          "summary": "Z(Z2N0@.:2<:@F@L2D\">&L.`"
+        },
+        {
+          "ea": 695856,
+          "summary": "rr^^NNDDBCJJUTcctu"
+        },
+        {
+          "ea": 1571988,
+          "summary": "nnRSDECBFFKKJJBB:;00(("
+        },
+        {
+          "ea": 640180,
+          "summary": "66UTYYmmqq--"
+        },
+        {
+          "ea": 88760,
+          "summary": "&&BBXXiippnn\\]BB"
+        },
+        {
+          "ea": 637192,
+          "summary": "\"\"BB``xx"
+        },
+        {
+          "ea": 1355176,
+          "summary": "ttLLCBFFMLaa"
+        },
+        {
+          "ea": 947088,
+          "summary": "ss``LL77"
+        },
+        {
+          "ea": 379807,
+          "summary": "\ny\ny\n]\n]\nI\nI\n?\n?..>\n>\nJ\nJ\nZ\n[\np\nq\n"
+        },
+        {
+          "ea": 8312607,
+          "summary": "K\rN\rN\"O\"O+O+O.N...[E[EJ@J@5:5:6363"
+        },
+        {
+          "ea": 1714060,
+          "summary": "WWSSDDpp"
+        },
+        {
+          "ea": 2090230,
+          "summary": "~{{rrppttrrddNN44"
+        },
+        {
+          "ea": 656764,
+          "summary": "$$./88CBQQXYXXRSMMDD66$$"
+        },
+        {
+          "ea": 626836,
+          "summary": "pp^^HH.."
+        },
+        {
+          "ea": 9324420,
+          "summary": ":$^8h:^8\\BbLjNdBX:VF`f\\rBT \""
+        },
+        {
+          "ea": 630876,
+          "summary": "ttTT00\n\n"
+        },
+        {
+          "ea": 1628271,
+          "summary": "\rX\rY\r2\r2\r\"\r#\r*\r*..n\rn\rr\rs\rb\rb\r@\r@\r"
+        },
+        {
+          "ea": 809600,
+          "summary": "01<<CBGGOO\\\\ffdeaa[[KJ  "
+        },
+        {
+          "ea": 1323188,
+          "summary": "||utkk`aXXVWXX\\]`aeelmwv"
+        },
+        {
+          "ea": 850408,
+          "summary": "%$88ONbcrrzzzzutmlbbZ[RRQPYXlm"
+        },
+        {
+          "ea": 8290916,
+          "summary": "..RRjj"
+        },
+        {
+          "ea": 1324016,
+          "summary": "qqPP00"
+        },
+        {
+          "ea": 2078748,
+          "summary": "nngguu"
+        },
+        {
+          "ea": 7842572,
+          "summary": "\n\n@@tt"
+        },
+        {
+          "ea": 762884,
+          "summary": "kkOO55"
+        },
+        {
+          "ea": 832100,
+          "summary": "11OOll"
+        },
+        {
+          "ea": 1443168,
+          "summary": "tt__qq"
+        },
+        {
+          "ea": 1758256,
+          "summary": "dd66\n\n"
+        },
+        {
+          "ea": 1755060,
+          "summary": "\n\n88jj"
+        },
+        {
+          "ea": 182552,
+          "summary": "##(),-003276;;BB..PPWV\\\\bbkjqqvv}|"
+        },
+        {
+          "ea": 1774500,
+          "summary": "PPPPde"
+        },
+        {
+          "ea": 1738580,
+          "summary": "55ZZvv"
+        },
+        {
+          "ea": 851419,
+          "summary": "\n.\n.\n;\n:\n<\n<\n;\n:..8\n8\n=\n<\nL\nM\nh\nh\n"
+        },
+        {
+          "ea": 1876320,
+          "summary": "mmFF\"\""
+        },
+        {
+          "ea": 764240,
+          "summary": "pp]]>>"
+        },
+        {
+          "ea": 1342156,
+          "summary": "ffII00"
+        },
+        {
+          "ea": 8421796,
+          "summary": "uuWW11"
+        },
+        {
+          "ea": 1673247,
+          "summary": "\t,\t-\t<\t<\tF\tG\tL\tL..4\t4\t5\t4\t0\t1\t&\t&\t"
+        },
+        {
+          "ea": 1406400,
+          "summary": "__44\n\n"
+        },
+        {
+          "ea": 243804,
+          "summary": "llPP44"
+        },
+        {
+          "ea": 1681828,
+          "summary": "::[[xx"
+        },
+        {
+          "ea": 1178392,
+          "summary": "DD^^xx"
+        },
+        {
+          "ea": 280712,
+          "summary": "44RRpp"
+        },
+        {
+          "ea": 647940,
+          "summary": "rrggll"
+        },
+        {
+          "ea": 210016,
+          "summary": "88VVvv"
+        },
+        {
+          "ea": 632916,
+          "summary": "ddBB\"\""
+        },
+        {
+          "ea": 1692172,
+          "summary": "22JJff"
+        },
+        {
+          "ea": 1557051,
+          "summary": "\t>\n>\na\na\nf\ng\ne\nd\n`\n`\nV\nW\n<\n<\n"
+        },
+        {
+          "ea": 1220567,
+          "summary": "\t\n\n\n\n \n \n1\n1\n<\n=..T\nU\n^\n^\nk\nk\nz\n{\n"
+        },
+        {
+          "ea": 662160,
+          "summary": "vvZZ::"
+        },
+        {
+          "ea": 1228932,
+          "summary": "jj<<\r\r"
+        },
+        {
+          "ea": 1233180,
+          "summary": "\"\"HHnn"
+        },
+        {
+          "ea": 2019816,
+          "summary": "eeFF//"
+        },
+        {
+          "ea": 1162832,
+          "summary": "uuTT66"
+        },
+        {
+          "ea": 2111944,
+          "summary": "z{rrffZZTUPPLLED>>67/.\"\""
+        },
+        {
+          "ea": 545251,
+          "summary": "\rz\rz\rw\rv\ro\ro\rf\rf..L\rL\r?\r?\r2\r3\r#\r#\r"
+        },
+        {
+          "ea": 552032,
+          "summary": "ggKK33"
+        },
+        {
+          "ea": 1145152,
+          "summary": "::ddvv"
+        },
+        {
+          "ea": 2099692,
+          "summary": "88ZZxx"
+        },
+        {
+          "ea": 250984,
+          "summary": "--LLmm"
+        },
+        {
+          "ea": 1970536,
+          "summary": "LLTTJJ"
+        },
+        {
+          "ea": 2098912,
+          "summary": "GGWWFG"
+        },
+        {
+          "ea": 1613259,
+          "summary": "\t'\n'\nI\nI\nM\nM\nG\nF..7\n6\nB\nB\n\\\n\\\nx\ny\n"
+        },
+        {
+          "ea": 855852,
+          "summary": "55TTvv"
+        },
+        {
+          "ea": 1918379,
+          "summary": "\nQ\nQ\nh\ni\nj\nj\nh\ni..\\\n]\nV\nW\nE\nE\n*\n*\n"
+        },
+        {
+          "ea": 9146025,
+          "summary": "\r1\r\"\r4\rA\rN\rV\rj\rT..F\rn\rD\rj\rR\rp\rj\r|\r"
+        },
+        {
+          "ea": 479460,
+          "summary": "22HHbb"
+        },
+        {
+          "ea": 1114056,
+          "summary": "hhLL00"
+        },
+        {
+          "ea": 9149528,
+          "summary": "TTRR66"
+        },
+        {
+          "ea": 632028,
+          "summary": "\r\r88jj"
+        },
+        {
+          "ea": 146312,
+          "summary": "vvZ[KKKJUTccvw"
+        },
+        {
+          "ea": 1583480,
+          "summary": "\"\"01=<FGKJONSSVVYX[[__jj~~"
+        },
+        {
+          "ea": 693872,
+          "summary": "77WWww"
+        },
+        {
+          "ea": 1509028,
+          "summary": "PP\"\"]]"
+        },
+        {
+          "ea": 968316,
+          "summary": "44NNhh"
+        },
+        {
+          "ea": 1724448,
+          "summary": "rraaBB"
+        },
+        {
+          "ea": 863780,
+          "summary": "kkNN22"
+        },
+        {
+          "ea": 2038803,
+          "summary": "\n.\n.\n?\n>\nK\nK\nP\nQ\nP\nP\nF\nG\n6\n6\n"
+        },
+        {
+          "ea": 2033100,
+          "summary": "\n\n<<ll"
+        },
+        {
+          "ea": 962288,
+          "summary": "xxTT22"
+        },
+        {
+          "ea": 711279,
+          "summary": "\r\\\r]\rP\rQ\rO\rO\rK\rK\r@\rA\r3\r3\r"
+        },
+        {
+          "ea": 60944,
+          "summary": "ggHH//"
+        },
+        {
+          "ea": 735096,
+          "summary": "jjRR88"
+        },
+        {
+          "ea": 441260,
+          "summary": "ZZYYfgkkXX44\n"
+        },
+        {
+          "ea": 703972,
+          "summary": "llRR22"
+        },
+        {
+          "ea": 48756,
+          "summary": "\\\\44\n\n"
+        },
+        {
+          "ea": 189120,
+          "summary": "!\r!\r=\r<\rN\rN\r[\rZ\rc\rb\rf\rf\rl\rm\rw\rw\r"
+        },
+        {
+          "ea": 200928,
+          "summary": "99VVww"
+        },
+        {
+          "ea": 1048928,
+          "summary": "uuVV22"
+        },
+        {
+          "ea": 445680,
+          "summary": "33LLxx"
+        },
+        {
+          "ea": 1734524,
+          "summary": "\n\n;;ee"
+        },
+        {
+          "ea": 1853848,
+          "summary": "\"\"ZZ"
+        },
+        {
+          "ea": 2077972,
+          "summary": "\n\nJJ"
+        },
+        {
+          "ea": 1378016,
+          "summary": "ttDD"
+        },
+        {
+          "ea": 2044352,
+          "summary": "dd\n\n"
+        },
+        {
+          "ea": 2098168,
+          "summary": "mlWWDD22\"\""
+        },
+        {
+          "ea": 158276,
+          "summary": "nnBB"
+        },
+        {
+          "ea": 969936,
+          "summary": "..rr"
+        },
+        {
+          "ea": 1343288,
+          "summary": "//^^"
+        },
+        {
+          "ea": 2077248,
+          "summary": "::ll"
+        }
+      ],
+      "imports": [],
+      "sections": [
+        {
+          "name": "",
+          "effective_address": 0,
+          "physical_size": 15179552,
+          "virtual_size": 15179552,
+          "rights": "",
+          "entropy": 156
+        }
+      ],
+      "entropy": {
+        "file_entropy": 156,
+        "regions": [
+          {
+            "name": "",
+            "entropy": 156,
+            "size": null
+          }
+        ]
+      },
+      "functions": [],
+      "constants": [],
+      "carved": [],
+      "virtual_files": [],
+      "structures": []
+    },
+    "functions": [],
+    "constants": [],
+    "anomalies": [],
+    "carved_files": [],
+    "virtual_files": [],
+    "structures": [],
+    "decompilations": {},
+    "script_decompile": null,
+    "unpack_result": null,
+    "errors": [],
+    "entropy_bits": 7.48,
+    "entropy_malcat_raw": 156,
+    "duration_s": 6.57
+  },
+  "packer": {
+    "engine": "packer_intake",
+    "ok": true,
+    "not_applicable": true,
+    "reason": "not a PE (packer checklist is PE-only)",
+    "elapsed_s": 0.427,
+    "duration_s": 0.43
+  },
+  "revai_tools_sec": {
+    "skipped": true,
+    "reason": "not_applicable:unknown",
+    "engine": "revai_tools_sec"
+  },
+  "revai_tools_sinks": {
+    "skipped": true,
+    "reason": "not_applicable:unknown",
+    "engine": "revai_tools_sinks"
+  },
+  "_format": "unknown",
+  "_timings": {
+    "capa": 0.0,
+    "pe_imports": 0.0,
+    "yara": 6.23,
+    "floss": 0.0,
+    "malcat": 6.57,
+    "packer": 0.43,
+    "revai_tools_sec": 0.0,
+    "revai_tools_sinks": 0.0
+  },
+  "_stage": "quick_scan"
+}

@@ -1,16 +1,31 @@
 # RevAI — Pipeline Runs & Case Studies
 
-Real analysis reports produced by the RevAI pipeline against live malware samples. Each case study includes the full report, verdict, audit, YARA rule, and stage trace.
+Real analysis reports produced by the RevAI pipeline against live malware
+samples. Each case study includes the full report set, verdict, audit, YARA
+rules, and stage trace — plus the raw tool-extracted evidence behind every
+claim.
 
-Every case study also ships the **raw tool-extracted evidence** in its `evidence/` folder (see [`scripted/darkside-ransomware/evidence/RAW-EVIDENCE.md`](scripted/darkside-ransomware/evidence/RAW-EVIDENCE.md) for an index example):
-- full uncapped tool outputs as structured JSON (`00-quick-scan-tools.json`, `deep-dive-01-tools-raw.json`, `deep-dive-02-signals.json`, `deep-dive-03-oracle.json`, `deep-dive-agentic-history.json`, ...)
+## Evidence contract
+
+Every case study ships the **raw tool-extracted evidence** in its `evidence/`
+folder (see [`scripted/darkside-ransomware/evidence/RAW-EVIDENCE.md`](scripted/darkside-ransomware/evidence/RAW-EVIDENCE.md) for an index example):
+
+- full uncapped tool outputs as structured JSON (`00-quick-scan-tools.json`,
+  `deep-dive-01-tools-raw.json`, `deep-dive-02-signals.json`,
+  `deep-dive-03-oracle.json`, `deep-dive-agentic-history.json`, ...)
 - the complete audit trail (`audit.jsonl`, `pipeline-audit.json`)
-- engine artifacts (`malcat-triage.json`, `intake-validation.json`, `source-decisions.json`, `doc-triage.json`, `function-recovery.json`)
-- text-extract human-readable extracts: `strings.txt`, `yara.txt`, `capa.txt`, `pe-imports.txt`, `packer.txt`, `anti-analysis.txt`, `dyn-resolve.txt`, `oracle.txt`, `unpack.txt`, `recovery.txt`
+- engine artifacts (`malcat-triage.json`, `intake-validation.json`,
+  `source-decisions.json`, `doc-triage.json`, `function-recovery.json`)
+- human-readable extracts: `strings.txt`, `yara.txt`, `capa.txt`,
+  `pe-imports.txt`, `packer.txt`, `anti-analysis.txt`, `dyn-resolve.txt`,
+  `oracle.txt`, `unpack.txt`, `recovery.txt`
+- `RAW-EVIDENCE.md` — an index of exactly what was copied (and what was
+  absent) for that run
 
-This lets reviewers verify every claim in a report against the actual extracted data, per the evidence-before-claims contract.
-
-Reports are added after each verified run — every sample must pass the full quality gate (`all_green` + `quality_green`) before its report is published here.
+This lets reviewers verify every claim in a report against the actual
+extracted data, per the evidence-before-claims contract. Reports are
+published only after the sample passes the full quality gate (`all_green`
++ `quality_green`).
 
 ## Organization — grouped by pipeline mode
 
@@ -20,20 +35,54 @@ Reports are added after each verified run — every sample must pass the full qu
 | [`agentic/`](agentic/) | Agentic (`stage_orchestrator.py`) | LangGraph ReAct planner decides stage order; retries on failure; HITL before publish |
 | [`ui/`](ui/) | Web Console (manual) | Interactive per-stage runs from `http://<host>:5000` |
 
-## 16-sample feature run (2026-08-09)
+## Campaigns
+
+**54 case studies published** across three campaigns. The full feature
+inventory with env gates and per-feature status lives in
+[`../FEATURES.md`](../FEATURES.md).
+
+### #2 final release wave (2026-08-13/14) — scripted, 20-sample set
+
+Fresh 610/710 collections (16 malware + 4 benign/edge format targets) run on
+the release toolchain: ghidrasql v0.0.4, idasql v0.0.18.1, entropy ground
+truth, and the cross-report publication-quality gates. Every published
+sample passed the complete gate set (structural audit + quality checks +
+cross-report consistency).
+
+| Sample | Class | Verdict | Report | Audit |
+|--------|-------|---------|--------|-------|
+| `svchost` (Locky ransomware) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/svchost/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/svchost/AUDIT-REPORT.md) |
+| `brbbot` (botnet trojan) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/brbbot/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/brbbot/AUDIT-REPORT.md) |
+| `getdown` (trojan downloader) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/getdown/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/getdown/AUDIT-REPORT.md) |
+| `ghyte` (ZProtect-protected) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/ghyte/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/ghyte/AUDIT-REPORT.md) |
+| `win32k` (DLL, injection + HTTP) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/win32k/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/win32k/AUDIT-REPORT.md) |
+| `msdsrv` (dropper) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/msdsrv/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/msdsrv/AUDIT-REPORT.md) |
+| `ishelp` (DLL) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/ishelp/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/ishelp/AUDIT-REPORT.md) |
+| `want` (LockBit, PECompact-packed) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/want/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/want/AUDIT-REPORT.md) |
+| `drtg` (Satana dropper) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/drtg/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/drtg/AUDIT-REPORT.md) |
+| `hubert` (DLL) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/hubert/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/hubert/AUDIT-REPORT.md) |
+| `vbprop` (Armadillo-packed) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/vbprop/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/vbprop/AUDIT-REPORT.md) |
+| `raas` (WS2_32 networking) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/raas/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/raas/AUDIT-REPORT.md) |
+| `trojan-4982` (trojan) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/trojan-4982/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/trojan-4982/AUDIT-REPORT.md) |
+| `rk-dropper` (rootkit dropper, 3.3MB) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/rk-dropper/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/rk-dropper/AUDIT-REPORT.md) |
+| `koti-xlsm` (Excel macro) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/koti-xlsm/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/koti-xlsm/AUDIT-REPORT.md) |
+| `challenge63` (course challenge, asserted-unknown) | benign/edge | malicious | [REPORT-TECHNICAL-v3.md](scripted/challenge63/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/challenge63/AUDIT-REPORT.md) |
+| `film-wav` (WAVE audio, edge format) | benign/edge | malicious | [REPORT-TECHNICAL-v3.md](scripted/film-wav/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/film-wav/AUDIT-REPORT.md) |
+| `dumped-dll-bin` (raw dump, edge format) | benign/edge | malicious | [REPORT-TECHNICAL-v3.md](scripted/dumped-dll-bin/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/dumped-dll-bin/AUDIT-REPORT.md) |
+
+### 16-sample feature run (2026-08-09)
 
 All-features-on campaign (`REVAI_ENABLE_AGENTIC_RECOVERY` + `EMULATION_ORACLE` +
 `UNPACK_PASS` + `ENABLE_DEOBFUSCATION_PASS`) across packers (UPack/NSPack),
-raw shellcode, RATs (GuLoader/FlawedAmmyy), DarkSide ransomware, .NET (Sunburst),
-docs/scripts/PCAP (docm, js, ps1, Fiddler .saz), crackmes (angr/z3 targets) and a
-C2-scheduled task. 15/16 samples passed the full audit gate.
-This campaign surfaced and fixed 7 defects (capa format routing, doc-intake
-evidence, provider abort handling, packed-sample tool policy, r2 UTF-8 decode, .NET
-stub routing, gate packer context) - see commits `3a55109..508a6de`. The full
-feature inventory with env gates and per-feature status lives in
-[`../FEATURES.md`](../FEATURES.md).
+raw shellcode, RATs (GuLoader/FlawedAmmyy), DarkSide ransomware, .NET
+(Sunburst), docs/scripts/PCAP (docm, js, ps1, Fiddler .saz), crackmes
+(angr/z3 targets) and a C2-scheduled task. 15/16 samples passed the full
+audit gate. The campaign surfaced and fixed 7 defects (capa format routing,
+doc-intake evidence, provider abort handling, packed-sample tool policy,
+r2 UTF-8 decode, .NET stub routing, gate packer context) — see commits
+`3a55109..508a6de`.
 
-### Scripted - 16-sample feature run (15/15 published, all green)
+#### Scripted — 16-sample feature run (15 published, all green)
 
 | Sample | Verdict | Report | Audit |
 |--------|---------|--------|-------|
@@ -53,22 +102,17 @@ feature inventory with env gates and per-feature status lives in
 | `angr-crackme2` (angr exercise) | suspicious | [REPORT-TECHNICAL-v3.md](scripted/angr-crackme2/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/angr-crackme2/AUDIT-REPORT.md) |
 | `string-encryption` (2KB angr decryption target) | suspicious | [REPORT-TECHNICAL-v3.md](scripted/string-encryption/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/string-encryption/AUDIT-REPORT.md) |
 
-## Campaigns
-
-**36 case studies published** - 21 from the 15-run campaign below + 15 from the
-16-sample feature run (2026-08-09).
-
 ### 15-run campaign (21/21 automated runs, all green)
 
-9 virussign samples (scripted small ×3, agentic mid/large ×6) + 3 lab-pool samples
-(remcos/lumma/koi) + 3 InTheWild-pool samples. Reboot after every 2 runs.
-
+9 virussign samples (scripted small ×3, agentic mid/large ×6) + 3 lab-pool
+samples (remcos/lumma/koi) + 3 InTheWild-pool samples. Reboot after every
+2 runs.
 
 > **2026-08-06 re-run:** the 13 R1–R15 case studies were re-run on the fixed
 > pipeline (0-100 score scale, no scorecard citations, provenance-stamped
 > reports) and replaced in place. All 13 green (scores 88–95/100).
 
-### Scripted — small samples (7/7 done, all green)
+#### Scripted — small samples (7/7 done, all green)
 
 | Sample | Size | Verdict | Report | Audit |
 |--------|------|---------|--------|-------|
@@ -80,7 +124,7 @@ feature inventory with env gates and per-feature status lives in
 | `pool-small-mespinoza` (Mespinoza / Pysa ransomware) | 794K | [verdict.json](scripted/pool-small-mespinoza/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/pool-small-mespinoza/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/pool-small-mespinoza/AUDIT-REPORT.md) |
 | `pool-small-conti` (Conti ransomware) | 594K | [verdict.json](scripted/pool-small-conti/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/pool-small-conti/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/pool-small-conti/AUDIT-REPORT.md) |
 
-### Agentic — mid/large samples (13/13 done, all truly_green)
+#### Agentic — mid/large samples (13/13 done, all truly_green)
 
 | Sample | Size | Verdict | Report | Audit |
 |--------|------|---------|--------|-------|

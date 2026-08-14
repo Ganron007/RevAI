@@ -1,0 +1,68 @@
+{
+  "sha256": "cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a",
+  "tool_summaries": {
+    "malcat": {
+      "type": "PE",
+      "arch": "X64",
+      "file_size": 38912,
+      "entropy": 104,
+      "sha256": "cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a",
+      "dotnet_bundle": false,
+      "imports_count": 163,
+      "strings_count": 100,
+      "functions_count": 10,
+      "constants_count": 25,
+      "anomalies_count": 5,
+      "yara_hits_count": 4,
+      "errors": []
+    },
+    "ghidra": {
+      "imports": 60,
+      "import_ptrs": 25,
+      "funcs": 135,
+      "strings": 138
+    },
+    "ida": {
+      "imports": 60,
+      "funcs": 136,
+      "strings": 147
+    }
+  },
+  "warnings": [
+    "Malcat imports (163) diverge from IDA imports (60)."
+  ],
+  "source_decisions": {
+    "sha256": "cd78cf4af8e37b4a9de479867167027887a28527e2738c481a1c6891d707f21a",
+    "imports": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "Ghidra and IDA report 60 imports each, while Malcat reports 163, indicating Ghidra/IDA are consistent and likely more accurate."
+    },
+    "functions": {
+      "source": "ghidra",
+      "confidence": "high",
+      "reason": "Ghidra and IDA show similar function counts (135 and 136), while Malcat reports only 10, suggesting Ghidra/IDA are reliable for function analysis."
+    },
+    "strings": {
+      "source": "both",
+      "confidence": "high",
+      "reason": "Use both engines to account for variations: Ghidra=138, IDA=147, Malcat=100, ensuring comprehensive string coverage."
+    },
+    "decompilation": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "No specific data in tool summaries; default to Ghidra for decompilation capabilities."
+    },
+    "cff": {
+      "source": "ghidra",
+      "confidence": "medium",
+      "reason": "No specific data in tool summaries; default to Ghidra for CFF analysis."
+    },
+    "static_profile": {
+      "source": "malcat",
+      "confidence": "high",
+      "reason": "Malcat provides fast file summary with anomalies (5), detailed counts (imports, strings, functions), and other static metrics."
+    },
+    "llm_revised": true
+  }
+}

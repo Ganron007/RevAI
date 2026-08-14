@@ -1,0 +1,35 @@
+{
+  "sha256": "ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98",
+  "family": "trojan.graftor/skeeyah",
+  "verdict": "malicious@",
+  "generated_at": "2026-08-12T18:57:48.590647+00:00",
+  "hashes": {
+    "sha256": "ef2d290a0b2ca89c9a70011414afca3cfa7605a07912753b8b109283b4110c98",
+    "sha1": "bf72ec64682f7dbd9fa8aa629971d28be1fc23f6",
+    "md5": "75d15d4ccbe37019283c452012345074"
+  },
+  "domains": [
+    "DataABackup.lnk",
+    "tGHt.Ht"
+  ],
+  "ips": [],
+  "urls": [
+    "http[:]//\u0000\ufffdB\u0000\ufffd\ufffdB\u0000\u0618B\u0000\u0518B\u0000\u0318B\u0000\u0118B\u0000\ufffd\ufffdB\u0000\ufffd\ufffdB\u0000\u0010\u0000\u0000\u0000\ufffd\ufffd\u0000\u0000\u0000\u0000\u0000\u0000\u0004\ufffdB\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\ufffd\ufffdB\u0000D\u0000\u0000\u0000\ufffd\ufffd\u0000\u0000\u0000\u0000\u0000\u0000\ufffd\ufffdB\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\ufffd\ufffdB\u0000L\u0000\u0000\u0000\ufffd\ufffd\u0000\u0000\u0000\u0000\u0000\u0000,\ufffdB\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000x\ufffdB\u0000\u0014\u0000\u0000\u0000\ufffd\ufffd\u0000\u0000\u0000\u0000\u0000\u0000T\ufffdB\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000d\ufffdB\u0000\u0018\u0000\u0000\u0000\ufffd\ufffd\u0000\u0000\u0000\u0000\u0000\u0000T\ufffdB\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000T\ufffdB\u0000"
+  ],
+  "files": [],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive).",
+  "wallets_btc": [],
+  "wallets_eth": [],
+  "revai_tools": {
+    "count": 1,
+    "source": "revai_tools_iocs"
+  }
+}

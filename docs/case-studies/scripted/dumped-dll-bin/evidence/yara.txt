@@ -1,0 +1,475 @@
+# YARA matches (deterministic render)
+
+{
+  "rule_count": 23,
+  "matches": [
+    {
+      "rule": "domain",
+      "path": "/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin",
+      "strings": [
+        {
+          "id": "$domain_regex",
+          "offset": 0,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IP",
+      "path": "/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin",
+      "strings": [
+        {
+          "id": "$ipv4",
+          "offset": 639648,
+          "length": 7,
+          "xor_key": null
+        },
+        {
+          "id": "$ipv6",
+          "offset": 616601,
+          "length": 2,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "contains_base64",
+      "path": "/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin",
+      "strings": [
+        {
+          "id": "$a",
+          "offset": 13589,
+          "length": 12,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "SHA2_BLAKE2_IVs",
+      "path": "/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin",
+      "strings": [
+        {
+          "id": "$c0",
+          "offset": 534868,
+          "length": 4,
+          "xor_key": null
+        },
+        {
+          "id": "$c1",
+          "offset": 534890,
+          "length": 4,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 534897,
+          "length": 4,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 534904,
+          "length": 4,
+          "xor_key": null
+        },
+        {
+          "id": "$c4",
+          "offset": 534911,
+          "length": 4,
+          "xor_key": null
+        },
+        {
+          "id": "$c5",
+          "offset": 534918,
+          "length": 4,
+          "xor_key": null
+        },
+        {
+          "id": "$c6",
+          "offset": 534925,
+          "length": 4,
+          "xor_key": null
+        },
+        {
+          "id": "$c7",
+          "offset": 534933,
+          "length": 4,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "RijnDael_AES_CHAR",
+      "path": "/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin",
+      "strings": [
+        {
+          "id": "$c0",
+          "offset": 615696,
+          "length": 32,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "SHA3_constants",
+      "path": "/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin",
+      "strings": [
+        {
+          "id": "$c0",
+          "offset": 612424,
+          "length": 8,
+          "xor_key": null
+        },
+        {
+          "id": "$c1",
+          "offset": 612552,
+          "length": 8,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 612568,
+          "length": 8,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 612504,
+          "length": 8,
+          "xor_key": null
+        },
+        {
+          "id": "$c4",
+          "offset": 612408,
+          "length": 8,
+          "xor_key": null
+        },
+        {
+          "id": "$c5",
+          "offset": 612512,
+          "length": 8,
+          "xor_key": null
+        },
+        {
+          "id": "$c6",
+          "offset": 612584,
+          "length": 8,
+          "xor_key": null
+        },
+        {
+          "id": "$c7",
+          "offset": 612480,
+          "length": 8,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "IsPE64",
+      "path": "/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin",
+      "strings": []
+    },
+    {
+      "rule": "IsDLL",
+      "path": "/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin",
+      "strings": []
+    },
+    {
+      "rule": "IsConsole",
+      "path": "/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin",
+      "strings": []
+    },
+    {
+      "rule": "HasDebugData",
+      "path": "/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin",
+      "strings": []
+    },
+    {
+      "rule": "HasRichSignature",
+      "path": "/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin",
+      "strings": [
+        {
+          "id": "$a0",
+          "offset": 264,
+          "length": 4,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "DebuggerException__SetConsoleCtrl",
+      "path": "/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin",
+      "strings": [
+        {
+          "id": "$",
+          "offset": 679092,
+          "length": 21,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "anti_dbg",
+      "path": "/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin",
+      "strings": [
+        {
+          "id": "$d1",
+          "offset": 639944,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 681374,
+          "length": 17,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "network_udp_sock",
+      "path": "/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 678764,
+          "length": 10,
+          "xor_key": null
+        },
+        {
+          "id": "$c0",
+          "offset": 639632,
+          "length": 10,
+          "xor_key": null
+        },
+        {
+          "id": "$c4",
+          "offset": 678752,
+          "length": 11,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "network_tcp_listen",
+      "path": "/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 678764,
+          "length": 10,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 614200,
+          "length": 6,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "network_tcp_socket",
+      "path": "/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 678764,
+          "length": 10,
+          "xor_key": null
+        },
+        {
+          "id": "$c1",
+          "offset": 678716,
+          "length": 9,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 604574,
+          "length": 6,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 610050,
+          "length": 4,
+          "xor_key": null
+        },
+        {
+          "id": "$c4",
+          "offset": 678730,
+          "length": 7,
+          "xor_key": null
+        },
+        {
+          "id": "$c6",
+          "offset": 603920,
+          "length": 7,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "network_dns",
+      "path": "/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin",
+      "strings": [
+        {
+          "id": "$f2",
+          "offset": 678764,
+          "length": 10,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 613144,
+          "length": 11,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "escalate_priv",
+      "path": "/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin",
+      "strings": [
+        {
+          "id": "$d1",
+          "offset": 681102,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 680992,
+          "length": 21,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "keylogger",
+      "path": "/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 640304,
+          "length": 10,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 680856,
+          "length": 13,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "win_token",
+      "path": "/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 681102,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 680992,
+          "length": 21,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 680972,
+          "length": 16,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "win_files_operation",
+      "path": "/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin",
+      "strings": [
+        {
+          "id": "$f1",
+          "offset": 639944,
+          "length": 12,
+          "xor_key": null
+        },
+        {
+          "id": "$c1",
+          "offset": 679804,
+          "length": 9,
+          "xor_key": null
+        },
+        {
+          "id": "$c2",
+          "offset": 679938,
+          "length": 14,
+          "xor_key": null
+        },
+        {
+          "id": "$c3",
+          "offset": 679804,
+          "length": 9,
+          "xor_key": null
+        },
+        {
+          "id": "$c4",
+          "offset": 679776,
+          "length": 8,
+          "xor_key": null
+        },
+        {
+          "id": "$c6",
+          "offset": 679576,
+          "length": 11,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "Str_Win32_Winsock2_Library",
+      "path": "/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin",
+      "strings": [
+        {
+          "id": "$ws2_lib",
+          "offset": 678764,
+          "length": 10,
+          "xor_key": null
+        }
+      ]
+    },
+    {
+      "rule": "XMRIG_Miner",
+      "path": "/opt/samples/corpus/710/a2923d838f2d301a7c4b46ac598a3f9c08358b763b1973b4b4c9a7c6ed8b6395/dumped_dll.bin",
+      "strings": [
+        {
+          "id": "$a1",
+          "offset": 613656,
+          "length": 11,
+          "xor_key": null
+        }
+      ]
+    }
+  ],
+  "engine": "yara-x",
+  "rules_compiled": 454,
+  "compile_errors": [
+    "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+    "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+    "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+    "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+  ],
+  "incomplete": true,
+  "duration_s": 4.53
+}

@@ -1,0 +1,88 @@
+{
+  "source": "deep_dive_agentic",
+  "engine": "langgraph",
+  "verdict": "malicious",
+  "confidence": 90,
+  "summary": "This is a network downloader/dropper (getdown.exe). It imports URLDownloadToFileA from urlmon.dll to download a remote payload, GetTempPathA and GetTempFileNameA to stage it in the temp directory, CreateProcessA to execute the downloaded file, and IsDebuggerPresent for anti-debugging. CAPA confirms download URL, create process, XOR encoding, receive data (C2), and runtime dynamic linking behaviors. YARA matched network_dropper and anti_dbg rules. The main function (WinMain_0 at 0x140001000) uses strncpy/strncat string concatenation to construct the download URL and file path before calling the dropper APIs. Exfiltration capability domain: Not observed based on CAPA and YARA evidence, which focus on download, process creation, and C2 receive but not data exfiltration. Credential access capability domain: Not observed; no imports, CAPA findings, or YARA rules indicate credential theft behaviors.",
+  "key_evidence": [
+    "Import: URLDownloadToFileA from URLMON.DLL \u2014 classic dropper API for downloading files from the internet",
+    "Import: CreateProcessA from KERNEL32.DLL \u2014 executes the downloaded payload",
+    "Import: IsDebuggerPresent from KERNEL32.DLL \u2014 anti-debugging check",
+    "Import: GetTempPathA and GetTempFileNameA \u2014 stages downloaded payload in temp directory",
+    "YARA rule 'network_dropper' matched with string refs at offsets 31250 and 31270",
+    "YARA rule 'anti_dbg' matched with string refs at offsets 31200 and 31234",
+    "CAPA: 'download URL' (HTTP Communication), 'create process on Windows', 'encode data using XOR' (T1027), 'receive data' (C2), 'link function at runtime on Windows' (Shared Modules/T1129)",
+    "IDA identifies main as WinMain_0 at 0x140001000 (size 573) \u2014 Windows GUI dropper entry point",
+    "Call flow: start -> __tmainCRTStartup -> WinMain_0 (0x140001000) which calls strncpy/strncat to build URL/path strings, then invokes dropper APIs via IAT thunks (sub_0)",
+    "FLOSS static strings confirm all suspicious API names: URLDownloadToFileA, urlmon.dll, CreateProcessA, IsDebuggerPresent, GetTempPathA, GetTempFileNameA"
+  ],
+  "incomplete_tooling": false,
+  "successful_tool_calls": 43,
+  "successful_non_bootstrap_tools": 29,
+  "checklist_ok": true,
+  "sql_deep_ok": true,
+  "tool_gate": {
+    "ok": true,
+    "format": "pe",
+    "required": [
+      "capa",
+      "pe_imports",
+      "yara",
+      "floss",
+      "dotnet",
+      "r2_decomp",
+      "upx",
+      "xor",
+      "speakeasy",
+      "frida_probe"
+    ],
+    "tools": {
+      "capa": {
+        "ok": true,
+        "why": "ok"
+      },
+      "pe_imports": {
+        "ok": true,
+        "why": "ok"
+      },
+      "yara": {
+        "ok": true,
+        "why": "ok"
+      },
+      "floss": {
+        "ok": true,
+        "why": "ok"
+      },
+      "dotnet": {
+        "ok": true,
+        "why": "ok"
+      },
+      "r2_decomp": {
+        "ok": true,
+        "why": "ok"
+      },
+      "upx": {
+        "ok": true,
+        "why": "ok"
+      },
+      "xor": {
+        "ok": true,
+        "why": "ok"
+      },
+      "speakeasy": {
+        "ok": true,
+        "why": "ok"
+      },
+      "frida_probe": {
+        "ok": true,
+        "why": "ok"
+      }
+    },
+    "hard_failures": [],
+    "soft_failures": [],
+    "missing": [],
+    "not_applicable": [],
+    "large_sample": false
+  },
+  "depth_coverage": true
+}

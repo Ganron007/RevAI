@@ -1,0 +1,2079 @@
+{
+  "analysis_id": 1,
+  "path": "/opt/samples/corpus/day6/1196afa54d18ff2ddf0be7a77616657dbd286147f6705d16357239b2dd941ea0/rk-dropper.exe",
+  "profile": "triage",
+  "limits": {
+    "strings_max": 100,
+    "imports_max": 100,
+    "functions_max": 10,
+    "anomaly_locations_max": 5,
+    "decompile_top_n": 1
+  },
+  "file_summary": {
+    "analysis_id": 1,
+    "file_name": "rk-dropper.exe",
+    "file_path": "/opt/samples/corpus/day6/1196afa54d18ff2ddf0be7a77616657dbd286147f6705d16357239b2dd941ea0/rk-dropper.exe",
+    "file_size": 3388672,
+    "type": "PE",
+    "architecture": "X86",
+    "entropy": 4.67,
+    "sha256": "1196afa54d18ff2ddf0be7a77616657dbd286147f6705d16357239b2dd941ea0",
+    "metadata": {
+      "Certificate::ProgramName": "VideoFile player v0.44.223    9TqdEZ3BMHS0Gr1RQ4cXO8qnshebwP3RGTUZu0gheTajKJUHuJ7HsZonW0GlopENypY8gj3nkb7xoPK2SBeR3bcvE2AV5tA2YnqfqzsLO2WZwt165Du4UTUBmrqZuFu23N5XmhufmR1LapahkVAXyrwrEPiJwLS6YJMTwFaHAdyXajU4Iri8kX7ZeJG0etkDW",
+      "Certificate::Issuer": "COMODO RSA Code Signing CA (Organization=COMODO CA Limited / Unit=? / Country=GB)",
+      "Certificate::Subject": "Kharkiv Vagon-Remont, LLC",
+      "Certificate::Org Details": "Kharkiv Vagon-Remont, LLC / Unit=Kharkiv Vagon-Remont, LLC / State=Ukraine / Locality=Kharkiv / Country=UA / Email=?",
+      "Certificate::Validity": "from 2017-01-27 to 2017-12-05",
+      "Certificate::SerialNumber": "3caf3d81c3807174490ec459a08aacc0",
+      "Certificate::HashAlgorithm": "SHA1",
+      "Certificate::CryptAlgorithm": "RSA",
+      "VersionInfo::OriginalFilename": "getoohun.exe",
+      "VersionInfo::InternalName": "GETOOHUN.EXE",
+      "VersionInfo::LegalCopyright": "\u00a9Iofu ",
+      "VersionInfo::CompanyName": "\u00a9Iofu ",
+      "VersionInfo::ProductName": "GETOOHUN",
+      "VersionInfo::ProductVersion": "1.3.9.6",
+      "VersionInfo::FileVersion": "1.3.9.6"
+    },
+    "entrypoint_ea": 3335192,
+    "layout": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 126
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 3346432,
+        "virtual_size": 3346432,
+        "rights": "RX",
+        "entropy": 112
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 3347456,
+        "physical_size": 5120,
+        "virtual_size": 8192,
+        "rights": "R",
+        "entropy": 96
+      },
+      {
+        "name": ".data",
+        "effective_address": 3355648,
+        "physical_size": 512,
+        "virtual_size": 2662400,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 6018048,
+        "physical_size": 30208,
+        "virtual_size": 32768,
+        "rights": "R",
+        "entropy": 82
+      },
+      {
+        "name": "overlay",
+        "effective_address": 6050816,
+        "physical_size": 5376,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 0
+      }
+    ],
+    "kesakode_verdict": [],
+    "entropy_malcat_raw": 112,
+    "entropy_source": "whole_file_shannon_revai"
+  },
+  "views": {
+    "anomalies": [
+      {
+        "name": "CrossSectionJump",
+        "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+        "category": "code",
+        "level": 4,
+        "num_hits": 9
+      },
+      {
+        "name": "DynamicString",
+        "desc": "string is constructed dynamically",
+        "category": "strings",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "FewStrings",
+        "desc": "file does not have many identified strings (less than 1% of the file is composed of strings)",
+        "category": "strings",
+        "level": 2,
+        "num_hits": 0
+      },
+      {
+        "name": "GuiSubsystemNoWindowApi",
+        "desc": "A GUI windows application does not import any user32 window-related function",
+        "category": "headers",
+        "level": 2,
+        "num_hits": 1
+      },
+      {
+        "name": "HugeGapBetweenFunctions",
+        "desc": "There is a huge gap between two functions with medium-to-high entropy, often means that data is stored there",
+        "category": "code",
+        "level": 2,
+        "num_hits": 288
+      },
+      {
+        "name": "ManyUniqueImmediateBytes",
+        "desc": "More than 48 unique bytes defined across all immediate operands in the function",
+        "category": "code",
+        "level": 3,
+        "num_hits": 1
+      },
+      {
+        "name": "StackArrayInitialisationX86",
+        "desc": "An array of data is dynamically built on the stack, sometimes used to build shellcodes or strings",
+        "category": "code",
+        "level": 3,
+        "num_hits": 12
+      },
+      {
+        "name": "UnbalancedVirtualPhysicalRatio",
+        "desc": "huge difference between the physical and virtual size of a section",
+        "category": "sections",
+        "level": 1,
+        "num_hits": 1
+      },
+      {
+        "name": "UnknownRootResourceDirectoryId",
+        "desc": "A root resource directory ID is not standard",
+        "category": "resources",
+        "level": 4,
+        "num_hits": 1
+      },
+      {
+        "name": "XorInLoop",
+        "desc": "XOR instruction in a loop",
+        "category": "code",
+        "level": 3,
+        "num_hits": 8
+      }
+    ],
+    "anomaly_locations": {
+      "DynamicString": [
+        {
+          "ea": 3342854,
+          "context": ""
+        }
+      ],
+      "GuiSubsystemNoWindowApi": [
+        {
+          "ea": 324,
+          "context": ""
+        }
+      ],
+      "ManyUniqueImmediateBytes": [
+        {
+          "ea": 3343968,
+          "context": ""
+        }
+      ],
+      "XorInLoop": [
+        {
+          "ea": 1596107,
+          "context": ""
+        },
+        {
+          "ea": 1597997,
+          "context": ""
+        },
+        {
+          "ea": 1613686,
+          "context": ""
+        },
+        {
+          "ea": 3345229,
+          "context": ""
+        },
+        {
+          "ea": 3345498,
+          "context": ""
+        }
+      ]
+    },
+    "yara_hits": [
+      {
+        "id": "MSVC_2013_linker",
+        "category": "compiler",
+        "reliability": 60,
+        "type": "INFO",
+        "description": "detects used visual studio version based on linker information",
+        "num_patterns": 0
+      },
+      {
+        "id": "MSVC_2003_rich",
+        "category": "compiler",
+        "reliability": 80,
+        "type": "INFO",
+        "description": "detects used visual studio version based on rich header information",
+        "num_patterns": 0
+      },
+      {
+        "id": "msvs2013_12_0_40629_00_update_5_rich",
+        "category": "compiler",
+        "reliability": 80,
+        "type": "INFO",
+        "description": "detects used visual studio version based on rich header information",
+        "num_patterns": 0
+      },
+      {
+        "id": "visual_studio_2013_update_1__12_0__also_has_this_build_number_rich",
+        "category": "compiler",
+        "reliability": 80,
+        "type": "INFO",
+        "description": "detects used visual studio version based on rich header information",
+        "num_patterns": 0
+      },
+      {
+        "id": "msvc_uv_25",
+        "category": "compiler",
+        "reliability": 50,
+        "type": "INFO",
+        "description": "",
+        "num_patterns": 1
+      }
+    ],
+    "strings": [
+      {
+        "ea": 3342854,
+        "summary": "B801000000000000..0000000000000000"
+      },
+      {
+        "ea": 6046828,
+        "summary": "<?xml version=\"1..y>\n</assembly>\n\n"
+      },
+      {
+        "ea": 3348792,
+        "summary": "dsathahhrdddowfsntrr"
+      },
+      {
+        "ea": 3348336,
+        "summary": "ealaersairayagse"
+      },
+      {
+        "ea": 3348952,
+        "summary": "chaimnaftinfsnothcko"
+      },
+      {
+        "ea": 3348604,
+        "summary": "daoctoweeattlyaec"
+      },
+      {
+        "ea": 3349032,
+        "summary": "asadcrntsaeleheedh"
+      },
+      {
+        "ea": 3348888,
+        "summary": "ottrcvfayshjoutoyipnezimhtv"
+      },
+      {
+        "ea": 3348748,
+        "summary": "cpagdsrpuigpkogsroyo"
+      },
+      {
+        "ea": 3348044,
+        "summary": "hkonpiadtneaorsnsdo"
+      },
+      {
+        "ea": 3348268,
+        "summary": "nulmwfohcwntecottryari"
+      },
+      {
+        "ea": 3348668,
+        "summary": "oktoohtfaoboae"
+      },
+      {
+        "ea": 3348996,
+        "summary": "lonhdinotaowdedt"
+      },
+      {
+        "ea": 3348316,
+        "summary": "deheieei"
+      },
+      {
+        "ea": 3348552,
+        "summary": "oerlgeogtdoonh"
+      },
+      {
+        "ea": 3348200,
+        "summary": "sbvtftsrotferh"
+      },
+      {
+        "ea": 3348020,
+        "summary": "ssee"
+      },
+      {
+        "ea": 3348836,
+        "summary": "owoanwettkknygsb"
+      },
+      {
+        "ea": 3348372,
+        "summary": "keuwosaippaldeaa"
+      },
+      {
+        "ea": 3348492,
+        "summary": "pnhiyvmeltohtrtti"
+      },
+      {
+        "ea": 3348640,
+        "summary": "fhtwfhuwyiwna"
+      },
+      {
+        "ea": 3348104,
+        "summary": "nduivtshtshs"
+      },
+      {
+        "ea": 3348468,
+        "summary": "srrohaltawr"
+      },
+      {
+        "ea": 3348244,
+        "summary": "cretnasrar"
+      },
+      {
+        "ea": 3348528,
+        "summary": "fcoshtafess"
+      },
+      {
+        "ea": 3348148,
+        "summary": "hfooetedhgcr"
+      },
+      {
+        "ea": 3348440,
+        "summary": "ehanasdmryhce"
+      },
+      {
+        "ea": 3347992,
+        "summary": "cpsituarttcw"
+      },
+      {
+        "ea": 3348408,
+        "summary": "nbicnstn"
+      },
+      {
+        "ea": 3348584,
+        "summary": "tiasdrtt"
+      },
+      {
+        "ea": 3349072,
+        "summary": "dnrviphnr"
+      },
+      {
+        "ea": 3349116,
+        "summary": "aenuayard"
+      },
+      {
+        "ea": 3348176,
+        "summary": "dleahlohpi"
+      },
+      {
+        "ea": 3349092,
+        "summary": "eneppsalbr"
+      },
+      {
+        "ea": 3348232,
+        "summary": "phedp"
+      },
+      {
+        "ea": 3348712,
+        "summary": "ntbcrn"
+      },
+      {
+        "ea": 3348728,
+        "summary": "mmnadhie"
+      },
+      {
+        "ea": 3348132,
+        "summary": "osaehs"
+      },
+      {
+        "ea": 3348084,
+        "summary": "houhnefk"
+      },
+      {
+        "ea": 3348872,
+        "summary": "hehniw"
+      },
+      {
+        "ea": 6046696,
+        "summary": "1.3.9.6"
+      },
+      {
+        "ea": 3348700,
+        "summary": "ofpt"
+      },
+      {
+        "ea": 3348428,
+        "summary": "tdbo"
+      },
+      {
+        "ea": 3348032,
+        "summary": "rhie"
+      },
+      {
+        "ea": 3351216,
+        "summary": "KERNEL32.dll"
+      },
+      {
+        "ea": 3351244,
+        "summary": "ADVAPI32.dll"
+      },
+      {
+        "ea": 3352072,
+        "summary": "GDI32.dll"
+      },
+      {
+        "ea": 3349982,
+        "summary": "msvcrt.dll"
+      },
+      {
+        "ea": 1196686,
+        "summary": "<oc("
+      },
+      {
+        "ea": 3351506,
+        "summary": "CreatePolyPolygonRgn"
+      },
+      {
+        "ea": 6053161,
+        "summary": ";http://crl.como..nAuthority.crl0q"
+      },
+      {
+        "ea": 3351296,
+        "summary": "USER32.dll"
+      },
+      {
+        "ea": 6055693,
+        "summary": "VideoFile player..8kX7ZeJG0etkDW0\r"
+      },
+      {
+        "ea": 6051995,
+        "summary": "2http://crt.como..eSigningCA.crt0$"
+      },
+      {
+        "ea": 6051915,
+        "summary": "2http://crl.como..eSigningCA.crl0t"
+      },
+      {
+        "ea": 6053250,
+        "summary": "/http://crt.como..AddTrustCA.crt0$"
+      },
+      {
+        "ea": 3318372,
+        "summary": "lv0p"
+      },
+      {
+        "ea": 3351606,
+        "summary": "SetBoundsRect"
+      },
+      {
+        "ea": 6053312,
+        "summary": "http://ocsp.comodoca.com0\r"
+      },
+      {
+        "ea": 6052060,
+        "summary": "http://ocsp.comodoca.com0\r"
+      },
+      {
+        "ea": 6046480,
+        "summary": "GETOOHUN.EXE"
+      },
+      {
+        "ea": 6046420,
+        "summary": "getoohun.exe"
+      },
+      {
+        "ea": 6051868,
+        "summary": "https://secure.comodo.net/CPS0C"
+      },
+      {
+        "ea": 6046744,
+        "summary": "1.3.9.6"
+      },
+      {
+        "ea": 1016052,
+        "summary": "YS_r"
+      },
+      {
+        "ea": 538265,
+        "summary": "TdvA"
+      },
+      {
+        "ea": 229558,
+        "summary": "=BsW-"
+      },
+      {
+        "ea": 1607973,
+        "summary": "An<Q:"
+      },
+      {
+        "ea": 1767314,
+        "summary": "6Zwm"
+      },
+      {
+        "ea": 2329327,
+        "summary": "0JW2"
+      },
+      {
+        "ea": 563257,
+        "summary": "eiV?J"
+      },
+      {
+        "ea": 2749593,
+        "summary": "kdnJ"
+      },
+      {
+        "ea": 6044394,
+        "summary": "Sho&w Processes in All Sessions"
+      },
+      {
+        "ea": 595261,
+        "summary": "X:;3"
+      },
+      {
+        "ea": 2310528,
+        "summary": "qdBP1"
+      },
+      {
+        "ea": 1600000,
+        "summary": "X75c"
+      },
+      {
+        "ea": 3208228,
+        "summary": "(5lD"
+      },
+      {
+        "ea": 6045740,
+        "summary": "Sho&w Threads in All Sessions"
+      },
+      {
+        "ea": 1608254,
+        "summary": "-e1<i\t"
+      },
+      {
+        "ea": 6046234,
+        "summary": "VS_VERSION_INFO"
+      },
+      {
+        "ea": 478976,
+        "summary": "U4]ske"
+      },
+      {
+        "ea": 1600999,
+        "summary": "xQlD!"
+      },
+      {
+        "ea": 6044138,
+        "summary": "Find &Previous Process\tShift+F3"
+      },
+      {
+        "ea": 6046362,
+        "summary": "040904e4"
+      },
+      {
+        "ea": 1615104,
+        "summary": "hZ4Q"
+      },
+      {
+        "ea": 2356389,
+        "summary": "H^A3"
+      },
+      {
+        "ea": 6045308,
+        "summary": "&Save Tree to File...\tCtrl+S"
+      },
+      {
+        "ea": 6046386,
+        "summary": "OriginalFilename"
+      },
+      {
+        "ea": 1635411,
+        "summary": "GnH5"
+      },
+      {
+        "ea": 2618442,
+        "summary": "<4?R"
+      },
+      {
+        "ea": 6043952,
+        "summary": "&Save Tree to File...\tCtrl+S"
+      },
+      {
+        "ea": 3141120,
+        "summary": "J)h?"
+      },
+      {
+        "ea": 2953103,
+        "summary": "`(MN"
+      },
+      {
+        "ea": 6032640,
+        "summary": "/&0O"
+      },
+      {
+        "ea": 3001089,
+        "summary": "5(l:"
+      },
+      {
+        "ea": 2290827,
+        "summary": "dM!I"
+      },
+      {
+        "ea": 717145,
+        "summary": "ZzIr"
+      },
+      {
+        "ea": 6045810,
+        "summary": "&Properties...\tAlt+Enter"
+      },
+      {
+        "ea": 2549225,
+        "summary": "*@\r\n"
+      },
+      {
+        "ea": 2816970,
+        "summary": "?*_J"
+      }
+    ],
+    "imports": [
+      {
+        "ea": 3347456,
+        "name": "advapi32.RegOpenKeyW",
+        "type": "IMPORT",
+        "num_refs": 9
+      },
+      {
+        "ea": 3347464,
+        "name": "gdi32.GetWorldTransform",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 3347468,
+        "name": "gdi32.CreateMetaFileW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347472,
+        "name": "gdi32.GetCharWidthW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347476,
+        "name": "gdi32.GetKerningPairsW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347480,
+        "name": "gdi32.CreateCompatibleBitmap",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347484,
+        "name": "gdi32.CreateICW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347488,
+        "name": "gdi32.SetColorAdjustment",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347492,
+        "name": "gdi32.PlgBlt",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347496,
+        "name": "gdi32.SetTextAlign",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347500,
+        "name": "gdi32.SetArcDirection",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347504,
+        "name": "gdi32.FlattenPath",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347508,
+        "name": "gdi32.GetRegionData",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347512,
+        "name": "gdi32.CloseMetaFile",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347516,
+        "name": "gdi32.GetEnhMetaFilePaletteEntries",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347520,
+        "name": "gdi32.GetTextFaceW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347524,
+        "name": "gdi32.ExtCreatePen",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347528,
+        "name": "gdi32.CreateRectRgnIndirect",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347532,
+        "name": "gdi32.PlayEnhMetaFile",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347536,
+        "name": "gdi32.Chord",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347540,
+        "name": "gdi32.CopyEnhMetaFileW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347544,
+        "name": "gdi32.OffsetViewportOrgEx",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347548,
+        "name": "gdi32.SetStretchBltMode",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347552,
+        "name": "gdi32.FillRgn",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347556,
+        "name": "gdi32.CreatePatternBrush",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347560,
+        "name": "gdi32.ArcTo",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347564,
+        "name": "gdi32.SetMiterLimit",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347568,
+        "name": "gdi32.CreatePolyPolygonRgn",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347572,
+        "name": "gdi32.CreateDIBPatternBrushPt",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347576,
+        "name": "gdi32.CreatePenIndirect",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347580,
+        "name": "gdi32.TranslateCharsetInfo",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347584,
+        "name": "gdi32.SetTextJustification",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347588,
+        "name": "gdi32.GetWindowExtEx",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347592,
+        "name": "gdi32.StretchDIBits",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347596,
+        "name": "gdi32.GetGlyphOutlineW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347600,
+        "name": "gdi32.GetROP2",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347604,
+        "name": "gdi32.CreateEllipticRgn",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347608,
+        "name": "gdi32.AnimatePalette",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347612,
+        "name": "gdi32.InvertRgn",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347616,
+        "name": "gdi32.SetPixelFormat",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347620,
+        "name": "gdi32.PathToRegion",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347624,
+        "name": "gdi32.GetRgnBox",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347628,
+        "name": "gdi32.SetBoundsRect",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347632,
+        "name": "gdi32.SetRectRgn",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347640,
+        "name": "kernel32.VirtualFree",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 3347644,
+        "name": "kernel32.SetConsoleOutputCP",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347648,
+        "name": "kernel32.GlobalUnlock",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347652,
+        "name": "kernel32.WritePrivateProfileSectionW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347656,
+        "name": "kernel32.VirtualAlloc",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 3347660,
+        "name": "kernel32.GetCurrentProcess",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 3347664,
+        "name": "kernel32.GetCurrentProcessId",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347668,
+        "name": "kernel32.GetExitCodeProcess",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 3347672,
+        "name": "kernel32.SwitchToThread",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347676,
+        "name": "kernel32.GetCalendarInfoW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347680,
+        "name": "kernel32.GetCurrentThreadId",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 3347684,
+        "name": "kernel32.OpenThread",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 3347688,
+        "name": "kernel32.GetExitCodeThread",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 3347692,
+        "name": "kernel32.GetLastError",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 3347696,
+        "name": "kernel32.ResetEvent",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 3347700,
+        "name": "kernel32.ReleaseMutex",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 3347704,
+        "name": "kernel32.WriteFile",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 3347708,
+        "name": "kernel32.ClearCommError",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347712,
+        "name": "kernel32.GetTickCount",
+        "type": "IMPORT",
+        "num_refs": 5
+      },
+      {
+        "ea": 3347716,
+        "name": "kernel32.CreatePipe",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 3347720,
+        "name": "kernel32.OpenMutexW",
+        "type": "IMPORT",
+        "num_refs": 4
+      },
+      {
+        "ea": 3347724,
+        "name": "kernel32.CreateEventW",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 3347728,
+        "name": "kernel32.CreateSemaphoreW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347732,
+        "name": "kernel32.LoadLibraryW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347736,
+        "name": "kernel32.GetModuleFileNameW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347740,
+        "name": "kernel32.GetCommandLineW",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 3347744,
+        "name": "kernel32.GetDiskFreeSpaceW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347748,
+        "name": "kernel32.CreateFileW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347752,
+        "name": "kernel32.SetFileAttributesW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347756,
+        "name": "kernel32.GetFileAttributesW",
+        "type": "IMPORT",
+        "num_refs": 6
+      },
+      {
+        "ea": 3347760,
+        "name": "kernel32.DeleteFileW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347764,
+        "name": "kernel32.CreateNamedPipeW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347768,
+        "name": "kernel32.GetACP",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 3347772,
+        "name": "kernel32.GetOEMCP",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347776,
+        "name": "kernel32.GetThreadLocale",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347780,
+        "name": "kernel32.GetUserDefaultLCID",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347784,
+        "name": "kernel32.IsBadStringPtrW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347788,
+        "name": "kernel32.FindNextVolumeW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347792,
+        "name": "kernel32.RtlUnwind",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347796,
+        "name": "kernel32.GetStartupInfoW",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 3347800,
+        "name": "kernel32.FreeLibraryAndExitThread",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347804,
+        "name": "kernel32.GlobalFindAtomW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347808,
+        "name": "kernel32.LockResource",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347812,
+        "name": "kernel32.GetNumberOfConsoleInputEvents",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347816,
+        "name": "kernel32.VirtualAllocEx",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347820,
+        "name": "kernel32.IsProcessInJob",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347824,
+        "name": "kernel32.GetLogicalDriveStringsW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347828,
+        "name": "kernel32.FindVolumeMountPointClose",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347832,
+        "name": "kernel32.GetModuleHandleW",
+        "type": "IMPORT",
+        "num_refs": 7
+      },
+      {
+        "ea": 3347836,
+        "name": "kernel32.IsValidCodePage",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347840,
+        "name": "kernel32.SetComputerNameExW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347844,
+        "name": "kernel32.GetUserDefaultUILanguage",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347848,
+        "name": "kernel32.MapViewOfFileEx",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347852,
+        "name": "kernel32.InterlockedCompareExchange",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347856,
+        "name": "kernel32.CopyFileW",
+        "type": "IMPORT",
+        "num_refs": 4
+      },
+      {
+        "ea": 3347860,
+        "name": "kernel32.DuplicateHandle",
+        "type": "IMPORT",
+        "num_refs": 4
+      },
+      {
+        "ea": 3347864,
+        "name": "kernel32.CreateMutexW",
+        "type": "IMPORT",
+        "num_refs": 4
+      },
+      {
+        "ea": 3347868,
+        "name": "kernel32.FillConsoleOutputAttribute",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347872,
+        "name": "kernel32.IsDBCSLeadByte",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347876,
+        "name": "kernel32.SystemTimeToFileTime",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347880,
+        "name": "kernel32.FindVolumeClose",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347884,
+        "name": "kernel32.GetCurrentDirectoryW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347888,
+        "name": "kernel32.GetCurrentThread",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347896,
+        "name": "user32.DrawIcon",
+        "type": "IMPORT",
+        "num_refs": 3
+      },
+      {
+        "ea": 3347900,
+        "name": "user32.AppendMenuW",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347904,
+        "name": "user32.CharNextW",
+        "type": "IMPORT",
+        "num_refs": 4
+      },
+      {
+        "ea": 3347912,
+        "name": "msvcrt._controlfp",
+        "type": "IMPORT",
+        "num_refs": 2
+      },
+      {
+        "ea": 3347916,
+        "name": "msvcrt._except_handler3",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347920,
+        "name": "msvcrt.__set_app_type",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347924,
+        "name": "msvcrt.__p__fmode",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347928,
+        "name": "msvcrt.__p__commode",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347932,
+        "name": "msvcrt._adjust_fdiv",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347936,
+        "name": "msvcrt.__setusermatherr",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347940,
+        "name": "msvcrt._initterm",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347944,
+        "name": "msvcrt.__wgetmainargs",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347948,
+        "name": "msvcrt._wcmdln",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347952,
+        "name": "msvcrt.exit",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347956,
+        "name": "msvcrt._cexit",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347960,
+        "name": "msvcrt._XcptFilter",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347964,
+        "name": "msvcrt._exit",
+        "type": "IMPORT",
+        "num_refs": 1
+      },
+      {
+        "ea": 3347968,
+        "name": "msvcrt._c_exit",
+        "type": "IMPORT",
+        "num_refs": 6
+      }
+    ],
+    "sections": [
+      {
+        "name": "header",
+        "effective_address": 0,
+        "physical_size": 1024,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 126
+      },
+      {
+        "name": ".text",
+        "effective_address": 1024,
+        "physical_size": 3346432,
+        "virtual_size": 3346432,
+        "rights": "RX",
+        "entropy": 112
+      },
+      {
+        "name": ".rdata",
+        "effective_address": 3347456,
+        "physical_size": 5120,
+        "virtual_size": 8192,
+        "rights": "R",
+        "entropy": 96
+      },
+      {
+        "name": ".data",
+        "effective_address": 3355648,
+        "physical_size": 512,
+        "virtual_size": 2662400,
+        "rights": "RW",
+        "entropy": 0
+      },
+      {
+        "name": ".rsrc",
+        "effective_address": 6018048,
+        "physical_size": 30208,
+        "virtual_size": 32768,
+        "rights": "R",
+        "entropy": 82
+      },
+      {
+        "name": "overlay",
+        "effective_address": 6050816,
+        "physical_size": 5376,
+        "virtual_size": 0,
+        "rights": "",
+        "entropy": 0
+      }
+    ],
+    "entropy": {
+      "file_entropy": 4.67,
+      "regions": [
+        {
+          "name": "header",
+          "entropy": 126,
+          "size": null
+        },
+        {
+          "name": ".text",
+          "entropy": 112,
+          "size": null
+        },
+        {
+          "name": ".rdata",
+          "entropy": 96,
+          "size": null
+        },
+        {
+          "name": ".data",
+          "entropy": 0,
+          "size": null
+        },
+        {
+          "name": ".rsrc",
+          "entropy": 82,
+          "size": null
+        },
+        {
+          "name": "overlay",
+          "entropy": 0,
+          "size": null
+        }
+      ],
+      "file_entropy_malcat_raw": 112,
+      "entropy_source": "whole_file_shannon_revai"
+    },
+    "functions": [
+      {
+        "ea": 3343968,
+        "name": "sub_731260"
+      },
+      {
+        "ea": 1613678,
+        "name": "sub_58ab6e"
+      },
+      {
+        "ea": 1596107,
+        "name": "sub_5866cb"
+      },
+      {
+        "ea": 780487,
+        "name": "sub_4bf4c7"
+      },
+      {
+        "ea": 3340128,
+        "name": "sub_730360"
+      },
+      {
+        "ea": 1597997,
+        "name": "sub_586e2d"
+      },
+      {
+        "ea": 1610752,
+        "name": "sub_58a000"
+      },
+      {
+        "ea": 3337504,
+        "name": "sub_72f920"
+      },
+      {
+        "ea": 1598037,
+        "name": "sub_586e55"
+      },
+      {
+        "ea": 1005222,
+        "name": "sub_4f62a6"
+      }
+    ],
+    "constants": [
+      {
+        "id": "oid::signedData",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::sha1",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::spcIndirectDataContext",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::spcPEImageData",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "hash::SSH_RSA_id_sha1_OBJ_ID__oiw_14__secsig_3__algorithms_2__26__8_byt_15",
+        "category": "hash",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::sha256WithRSAEncryption",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::countryName",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 6
+      },
+      {
+        "id": "oid::localityName",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 7
+      },
+      {
+        "id": "oid::organizationName",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 6
+      },
+      {
+        "id": "oid::commonName",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 6
+      },
+      {
+        "id": "oid::postalCode",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::stateOrProvinceName",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 6
+      },
+      {
+        "id": "oid::streetAddress",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::organizationalUnitName",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::rsaEncryption",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 3
+      },
+      {
+        "id": "oid::subjectKeyIdentifier",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 3
+      },
+      {
+        "id": "oid::keyUsage",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 3
+      },
+      {
+        "id": "oid::basicConstraints",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::extKeyUsage",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::codeSigning",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::netscape-cert-type",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::certificatePolicies",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::cps",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::cRLDistributionPoints",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::authorityInfoAccess",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::caIssuers",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::ocsp",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 2
+      },
+      {
+        "id": "oid::sha384WithRSAEncryption",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 4
+      },
+      {
+        "id": "oid::authorityKeyIdentifier",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::anyPolicy",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::contentType",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::spcStatementType",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::individualCodeSigning",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::messageDigest",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      },
+      {
+        "id": "oid::spcSpOpusInfo",
+        "category": "oid",
+        "type": "data",
+        "num_hits": 1
+      }
+    ]
+  },
+  "functions": [
+    {
+      "ea": 3343968,
+      "name": "sub_731260"
+    },
+    {
+      "ea": 1613678,
+      "name": "sub_58ab6e"
+    },
+    {
+      "ea": 1596107,
+      "name": "sub_5866cb"
+    },
+    {
+      "ea": 780487,
+      "name": "sub_4bf4c7"
+    },
+    {
+      "ea": 3340128,
+      "name": "sub_730360"
+    },
+    {
+      "ea": 1597997,
+      "name": "sub_586e2d"
+    },
+    {
+      "ea": 1610752,
+      "name": "sub_58a000"
+    },
+    {
+      "ea": 3337504,
+      "name": "sub_72f920"
+    },
+    {
+      "ea": 1598037,
+      "name": "sub_586e55"
+    },
+    {
+      "ea": 1005222,
+      "name": "sub_4f62a6"
+    }
+  ],
+  "constants": [
+    {
+      "id": "oid::signedData",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::sha1",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 2
+    },
+    {
+      "id": "oid::spcIndirectDataContext",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 2
+    },
+    {
+      "id": "oid::spcPEImageData",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "hash::SSH_RSA_id_sha1_OBJ_ID__oiw_14__secsig_3__algorithms_2__26__8_byt_15",
+      "category": "hash",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::sha256WithRSAEncryption",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 2
+    },
+    {
+      "id": "oid::countryName",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 6
+    },
+    {
+      "id": "oid::localityName",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 7
+    },
+    {
+      "id": "oid::organizationName",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 6
+    },
+    {
+      "id": "oid::commonName",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 6
+    },
+    {
+      "id": "oid::postalCode",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::stateOrProvinceName",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 6
+    },
+    {
+      "id": "oid::streetAddress",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::organizationalUnitName",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::rsaEncryption",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 3
+    },
+    {
+      "id": "oid::subjectKeyIdentifier",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 3
+    },
+    {
+      "id": "oid::keyUsage",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 3
+    },
+    {
+      "id": "oid::basicConstraints",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 2
+    },
+    {
+      "id": "oid::extKeyUsage",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 2
+    },
+    {
+      "id": "oid::codeSigning",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 2
+    },
+    {
+      "id": "oid::netscape-cert-type",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::certificatePolicies",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::cps",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::cRLDistributionPoints",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::authorityInfoAccess",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 2
+    },
+    {
+      "id": "oid::caIssuers",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::ocsp",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 2
+    },
+    {
+      "id": "oid::sha384WithRSAEncryption",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 4
+    },
+    {
+      "id": "oid::authorityKeyIdentifier",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::anyPolicy",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::contentType",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::spcStatementType",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::individualCodeSigning",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::messageDigest",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    },
+    {
+      "id": "oid::spcSpOpusInfo",
+      "category": "oid",
+      "type": "data",
+      "num_hits": 1
+    }
+  ],
+  "anomalies": [
+    {
+      "name": "CrossSectionJump",
+      "desc": "Control flow jumps across section, could be a packed file, a patched file or a file infector",
+      "category": "code",
+      "level": 4,
+      "num_hits": 9
+    },
+    {
+      "name": "DynamicString",
+      "desc": "string is constructed dynamically",
+      "category": "strings",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "FewStrings",
+      "desc": "file does not have many identified strings (less than 1% of the file is composed of strings)",
+      "category": "strings",
+      "level": 2,
+      "num_hits": 0
+    },
+    {
+      "name": "GuiSubsystemNoWindowApi",
+      "desc": "A GUI windows application does not import any user32 window-related function",
+      "category": "headers",
+      "level": 2,
+      "num_hits": 1
+    },
+    {
+      "name": "HugeGapBetweenFunctions",
+      "desc": "There is a huge gap between two functions with medium-to-high entropy, often means that data is stored there",
+      "category": "code",
+      "level": 2,
+      "num_hits": 288
+    },
+    {
+      "name": "ManyUniqueImmediateBytes",
+      "desc": "More than 48 unique bytes defined across all immediate operands in the function",
+      "category": "code",
+      "level": 3,
+      "num_hits": 1
+    },
+    {
+      "name": "StackArrayInitialisationX86",
+      "desc": "An array of data is dynamically built on the stack, sometimes used to build shellcodes or strings",
+      "category": "code",
+      "level": 3,
+      "num_hits": 12
+    },
+    {
+      "name": "UnbalancedVirtualPhysicalRatio",
+      "desc": "huge difference between the physical and virtual size of a section",
+      "category": "sections",
+      "level": 1,
+      "num_hits": 1
+    },
+    {
+      "name": "UnknownRootResourceDirectoryId",
+      "desc": "A root resource directory ID is not standard",
+      "category": "resources",
+      "level": 4,
+      "num_hits": 1
+    },
+    {
+      "name": "XorInLoop",
+      "desc": "XOR instruction in a loop",
+      "category": "code",
+      "level": 3,
+      "num_hits": 8
+    }
+  ],
+  "carved_files": [],
+  "virtual_files": [],
+  "structures": [],
+  "decompilations": {},
+  "script_decompile": null,
+  "unpack_result": null,
+  "errors": []
+}

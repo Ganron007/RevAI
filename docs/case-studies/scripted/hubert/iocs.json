@@ -1,0 +1,34 @@
+{
+  "sha256": "0598e95ea5f28e3e591a8ab26bd6794e06f038282cac8ecf302009c6636cd0bc",
+  "family": "Trojan.Tibs",
+  "verdict": "malicious@",
+  "generated_at": "2026-08-12T20:23:18.327738+00:00",
+  "hashes": {
+    "sha256": "0598e95ea5f28e3e591a8ab26bd6794e06f038282cac8ecf302009c6636cd0bc",
+    "sha1": "431311048f92a0893dc1f2ced6efd698b476657e",
+    "md5": "7a4cfaedf2a98319f3418990d4f5b3f6"
+  },
+  "domains": [],
+  "ips": [],
+  "urls": [],
+  "files": [
+    "license.dat",
+    "_favdata.dat",
+    "explorer.exe"
+  ],
+  "registry_keys": [],
+  "mutexes": [],
+  "source": [
+    "verdict.key_evidence",
+    "verdict.iocs",
+    "floss/xor cache",
+    "ghidra/ida strings"
+  ],
+  "note": "Deterministic regex extraction; analyst review before sharing (incident-response practice: victim-specific data in ransom notes is sensitive).",
+  "wallets_btc": [],
+  "wallets_eth": [],
+  "revai_tools": {
+    "count": 0,
+    "source": "revai_tools_iocs"
+  }
+}

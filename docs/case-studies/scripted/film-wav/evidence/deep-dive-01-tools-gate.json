@@ -1,0 +1,64 @@
+{
+  "ok": true,
+  "format": "unknown",
+  "required": [
+    "yara",
+    "r2_decomp",
+    "xor"
+  ],
+  "tools": {
+    "yara": {
+      "ok": true,
+      "why": "ok"
+    },
+    "r2_decomp": {
+      "ok": true,
+      "why": "ok"
+    },
+    "xor": {
+      "ok": true,
+      "why": "ok"
+    },
+    "capa": {
+      "ok": true,
+      "why": "not_applicable:unknown"
+    },
+    "pe_imports": {
+      "ok": true,
+      "why": "not_applicable:unknown"
+    },
+    "floss": {
+      "ok": true,
+      "why": "not_applicable:unknown"
+    },
+    "dotnet": {
+      "ok": true,
+      "why": "not_applicable:unknown"
+    },
+    "upx": {
+      "ok": true,
+      "why": "not_applicable:unknown"
+    },
+    "speakeasy": {
+      "ok": true,
+      "why": "not_applicable:unknown"
+    },
+    "frida_probe": {
+      "ok": true,
+      "why": "not_applicable:unknown"
+    }
+  },
+  "hard_failures": [],
+  "soft_failures": [],
+  "missing": [],
+  "not_applicable": [
+    "capa",
+    "pe_imports",
+    "floss",
+    "dotnet",
+    "upx",
+    "speakeasy",
+    "frida_probe"
+  ],
+  "large_sample": false
+}
