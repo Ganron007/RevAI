@@ -35,113 +35,79 @@ published only after the sample passes the full quality gate (`all_green`
 | [`agentic/`](agentic/) | Agentic (`stage_orchestrator.py`) | LangGraph ReAct planner decides stage order; retries on failure; HITL before publish |
 | [`ui/`](ui/) | Web Console (manual) | Interactive per-stage runs from `http://<host>:5000` |
 
-## Campaigns
+## Case studies (newest first within each mode)
 
-**54 case studies published** across three campaigns. The full feature
-inventory with env gates and per-feature status lives in
-[`../FEATURES.md`](../FEATURES.md).
+**54 published.** The full feature inventory with env gates and per-feature
+status lives in [`../FEATURES.md`](../FEATURES.md).
 
-### #2 final release wave (2026-08-13/14) — scripted, 20-sample set
+### Scripted
 
-Fresh 610/710 collections (16 malware + 4 benign/edge format targets) run on
-the release toolchain: ghidrasql v0.0.4, idasql v0.0.18.1, entropy ground
-truth, and the cross-report publication-quality gates. Every published
-sample passed the complete gate set (structural audit + quality checks +
-cross-report consistency).
+| Sample | Description | Verdict | Report | Audit |
+|--------|-------------|---------|--------|-------|
+| `svchost` | Locky ransomware | malicious | [REPORT-TECHNICAL-v3.md](scripted/svchost/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/svchost/AUDIT-REPORT.md) |
+| `brbbot` | Botnet trojan (WinINet C2, RC4 config) | malicious | [REPORT-TECHNICAL-v3.md](scripted/brbbot/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/brbbot/AUDIT-REPORT.md) |
+| `getdown` | Trojan downloader (usbles26) | malicious | [REPORT-TECHNICAL-v3.md](scripted/getdown/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/getdown/AUDIT-REPORT.md) |
+| `ghyte` | ZProtect-protected PE | malicious | [REPORT-TECHNICAL-v3.md](scripted/ghyte/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/ghyte/AUDIT-REPORT.md) |
+| `win32k` | DLL — process injection, HTTP exfiltration | malicious | [REPORT-TECHNICAL-v3.md](scripted/win32k/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/win32k/AUDIT-REPORT.md) |
+| `msdsrv` | Dropper | malicious | [REPORT-TECHNICAL-v3.md](scripted/msdsrv/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/msdsrv/AUDIT-REPORT.md) |
+| `ishelp` | DLL | malicious | [REPORT-TECHNICAL-v3.md](scripted/ishelp/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/ishelp/AUDIT-REPORT.md) |
+| `want` | LockBit, PECompact-packed | malicious | [REPORT-TECHNICAL-v3.md](scripted/want/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/want/AUDIT-REPORT.md) |
+| `drtg` | Satana ransomware dropper | malicious | [REPORT-TECHNICAL-v3.md](scripted/drtg/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/drtg/AUDIT-REPORT.md) |
+| `hubert` | DLL | malicious | [REPORT-TECHNICAL-v3.md](scripted/hubert/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/hubert/AUDIT-REPORT.md) |
+| `vbprop` | Armadillo-packed PE | malicious | [REPORT-TECHNICAL-v3.md](scripted/vbprop/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/vbprop/AUDIT-REPORT.md) |
+| `raas` | WS2_32 networking malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/raas/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/raas/AUDIT-REPORT.md) |
+| `trojan-4982` | Trojan | malicious | [REPORT-TECHNICAL-v3.md](scripted/trojan-4982/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/trojan-4982/AUDIT-REPORT.md) |
+| `rk-dropper` | Rootkit dropper (3.3MB) | malicious | [REPORT-TECHNICAL-v3.md](scripted/rk-dropper/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/rk-dropper/AUDIT-REPORT.md) |
+| `koti-xlsm` | Excel macro document | malicious | [REPORT-TECHNICAL-v3.md](scripted/koti-xlsm/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/koti-xlsm/AUDIT-REPORT.md) |
+| `challenge63` | Course challenge, asserted-unknown label | malicious | [REPORT-TECHNICAL-v3.md](scripted/challenge63/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/challenge63/AUDIT-REPORT.md) |
+| `film-wav` | WAVE audio, edge format | malicious | [REPORT-TECHNICAL-v3.md](scripted/film-wav/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/film-wav/AUDIT-REPORT.md) |
+| `dumped-dll-bin` | Raw dump, edge format | malicious | [REPORT-TECHNICAL-v3.md](scripted/dumped-dll-bin/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/dumped-dll-bin/AUDIT-REPORT.md) |
+| `upack037-packed` | UPack 0.37, corrupt-header stub | malicious | [REPORT-TECHNICAL-v3.md](scripted/upack037-packed/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/upack037-packed/AUDIT-REPORT.md) |
+| `nspack-packed` | NSPack stub | malicious | [REPORT-TECHNICAL-v3.md](scripted/nspack-packed/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/nspack-packed/AUDIT-REPORT.md) |
+| `worddoc-shellcode` | Raw Cobalt-Stager shellcode | malicious | [REPORT-TECHNICAL-v3.md](scripted/worddoc-shellcode/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/worddoc-shellcode/AUDIT-REPORT.md) |
+| `darkside-ransomware` | DarkSide 1.1.x | malicious | [REPORT-TECHNICAL-v3.md](scripted/darkside-ransomware/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/darkside-ransomware/AUDIT-REPORT.md) |
+| `guloader` | GuLoader / CloudEyE | malicious | [REPORT-TECHNICAL-v3.md](scripted/guloader/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/guloader/AUDIT-REPORT.md) |
+| `space1-flawedammyy` | FlawedAmmyy RAT | malicious | [REPORT-TECHNICAL-v3.md](scripted/space1-flawedammyy/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/space1-flawedammyy/AUDIT-REPORT.md) |
+| `sunburst-dotnet` | Sunburst .NET backdoor | malicious | [REPORT-TECHNICAL-v3.md](scripted/sunburst-dotnet/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/sunburst-dotnet/AUDIT-REPORT.md) |
+| `tasksche` | C2-scheduled task PE | malicious | [REPORT-TECHNICAL-v3.md](scripted/tasksche/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/tasksche/AUDIT-REPORT.md) |
+| `vdaudio-dll` | DLL, C2 markers + anti-forensics | malicious | [REPORT-TECHNICAL-v3.md](scripted/vdaudio-dll/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/vdaudio-dll/AUDIT-REPORT.md) |
+| `3048-ps1` | PowerShell loader script | malicious | [REPORT-TECHNICAL-v3.md](scripted/3048-ps1/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/3048-ps1/AUDIT-REPORT.md) |
+| `order-docm-macro` | Word macro, VBA stomping | malicious | [REPORT-TECHNICAL-v3.md](scripted/order-docm-macro/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/order-docm-macro/AUDIT-REPORT.md) |
+| `steel-saz-pcap` | Fiddler .saz capture, C2 flow | suspicious | [REPORT-TECHNICAL-v3.md](scripted/steel-saz-pcap/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/steel-saz-pcap/AUDIT-REPORT.md) |
+| `crackme7` | angr/emulation crackme | crackme | [REPORT-TECHNICAL-v3.md](scripted/crackme7/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/crackme7/AUDIT-REPORT.md) |
+| `angr-crackme2` | angr exercise | suspicious | [REPORT-TECHNICAL-v3.md](scripted/angr-crackme2/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/angr-crackme2/AUDIT-REPORT.md) |
+| `string-encryption` | 2KB angr decryption target | suspicious | [REPORT-TECHNICAL-v3.md](scripted/string-encryption/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/string-encryption/AUDIT-REPORT.md) |
+| `virussign-01984caa` | Unicorn, VB6 info-stealer/dropper | [verdict.json](scripted/virussign-01984caa/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/virussign-01984caa/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/virussign-01984caa/AUDIT-REPORT.md) |
+| `virussign-277ba25a` | Unidentified packed/obfuscated PE | [verdict.json](scripted/virussign-277ba25a/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/virussign-277ba25a/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/virussign-277ba25a/AUDIT-REPORT.md) |
+| `virussign-780d28e3` | Darty Crypter | [verdict.json](scripted/virussign-780d28e3/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/virussign-780d28e3/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/virussign-780d28e3/AUDIT-REPORT.md) |
+| `remcos` | Remcos RAT | [verdict.json](scripted/remcos/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/remcos/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/remcos/AUDIT-REPORT.md) |
+| `pool-small-bkransomware` | BK ransomware / elex / maze / remcos tags | [verdict.json](scripted/pool-small-bkransomware/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/pool-small-bkransomware/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/pool-small-bkransomware/AUDIT-REPORT.md) |
+| `pool-small-mespinoza` | Mespinoza / Pysa ransomware | [verdict.json](scripted/pool-small-mespinoza/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/pool-small-mespinoza/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/pool-small-mespinoza/AUDIT-REPORT.md) |
+| `pool-small-conti` | Conti ransomware | [verdict.json](scripted/pool-small-conti/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/pool-small-conti/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/pool-small-conti/AUDIT-REPORT.md) |
 
-| Sample | Class | Verdict | Report | Audit |
-|--------|-------|---------|--------|-------|
-| `svchost` (Locky ransomware) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/svchost/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/svchost/AUDIT-REPORT.md) |
-| `brbbot` (botnet trojan) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/brbbot/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/brbbot/AUDIT-REPORT.md) |
-| `getdown` (trojan downloader) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/getdown/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/getdown/AUDIT-REPORT.md) |
-| `ghyte` (ZProtect-protected) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/ghyte/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/ghyte/AUDIT-REPORT.md) |
-| `win32k` (DLL, injection + HTTP) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/win32k/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/win32k/AUDIT-REPORT.md) |
-| `msdsrv` (dropper) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/msdsrv/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/msdsrv/AUDIT-REPORT.md) |
-| `ishelp` (DLL) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/ishelp/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/ishelp/AUDIT-REPORT.md) |
-| `want` (LockBit, PECompact-packed) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/want/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/want/AUDIT-REPORT.md) |
-| `drtg` (Satana dropper) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/drtg/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/drtg/AUDIT-REPORT.md) |
-| `hubert` (DLL) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/hubert/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/hubert/AUDIT-REPORT.md) |
-| `vbprop` (Armadillo-packed) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/vbprop/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/vbprop/AUDIT-REPORT.md) |
-| `raas` (WS2_32 networking) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/raas/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/raas/AUDIT-REPORT.md) |
-| `trojan-4982` (trojan) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/trojan-4982/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/trojan-4982/AUDIT-REPORT.md) |
-| `rk-dropper` (rootkit dropper, 3.3MB) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/rk-dropper/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/rk-dropper/AUDIT-REPORT.md) |
-| `koti-xlsm` (Excel macro) | malware | malicious | [REPORT-TECHNICAL-v3.md](scripted/koti-xlsm/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/koti-xlsm/AUDIT-REPORT.md) |
-| `challenge63` (course challenge, asserted-unknown) | benign/edge | malicious | [REPORT-TECHNICAL-v3.md](scripted/challenge63/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/challenge63/AUDIT-REPORT.md) |
-| `film-wav` (WAVE audio, edge format) | benign/edge | malicious | [REPORT-TECHNICAL-v3.md](scripted/film-wav/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/film-wav/AUDIT-REPORT.md) |
-| `dumped-dll-bin` (raw dump, edge format) | benign/edge | malicious | [REPORT-TECHNICAL-v3.md](scripted/dumped-dll-bin/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/dumped-dll-bin/AUDIT-REPORT.md) |
+### Agentic
 
-### 16-sample feature run (2026-08-09)
+| Sample | Description | Verdict | Report | Audit |
+|--------|-------------|---------|--------|-------|
+| `virussign-40f92672` | Packed Delphi-based loader | [verdict.json](agentic/virussign-40f92672/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/virussign-40f92672/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/virussign-40f92672/AUDIT-REPORT.md) |
+| `virussign-8264dc61` | Generic packed dropper/loader | [verdict.json](agentic/virussign-8264dc61/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/virussign-8264dc61/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/virussign-8264dc61/AUDIT-REPORT.md) |
+| `virussign-f622efa7` | UPX-packed malware/loader | [verdict.json](agentic/virussign-f622efa7/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/virussign-f622efa7/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/virussign-f622efa7/AUDIT-REPORT.md) |
+| `virussign-970b822a` | ASPack-packed loader/dropper | [verdict.json](agentic/virussign-970b822a/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/virussign-970b822a/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/virussign-970b822a/AUDIT-REPORT.md) |
+| `virussign-7edf35d0` | Themida-packed payload, T1027.002 | [verdict.json](agentic/virussign-7edf35d0/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/virussign-7edf35d0/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/virussign-7edf35d0/AUDIT-REPORT.md) |
+| `virussign-9358c2e1` | UPX-packed dropper/loader | [verdict.json](agentic/virussign-9358c2e1/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/virussign-9358c2e1/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/virussign-9358c2e1/AUDIT-REPORT.md) |
+| `lumma-stealer` | Lumma Stealer info-stealer | [verdict.json](agentic/lumma-stealer/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/lumma-stealer/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/lumma-stealer/AUDIT-REPORT.md) |
+| `koi-stealer` | Packed Delphi-based loader/dropper | [verdict.json](agentic/koi-stealer/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/koi-stealer/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/koi-stealer/AUDIT-REPORT.md) |
+| `pool-mid-quasar` | Quasar RAT | [verdict.json](agentic/pool-mid-quasar/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/pool-mid-quasar/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/pool-mid-quasar/AUDIT-REPORT.md) |
+| `pool-large-darkgate` | darkgate/elex multi-family | [verdict.json](agentic/pool-large-darkgate/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/pool-large-darkgate/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/pool-large-darkgate/AUDIT-REPORT.md) |
+| `pool-mid-vidar` | Vidar stealer, NSudo masquerade | [verdict.json](agentic/pool-mid-vidar/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/pool-mid-vidar/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/pool-mid-vidar/AUDIT-REPORT.md) |
+| `pool-mid-mespinoza` | Mespinoza/Pysa ransomware, MS masquerade | [verdict.json](agentic/pool-mid-mespinoza/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/pool-mid-mespinoza/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/pool-mid-mespinoza/AUDIT-REPORT.md) |
+| `pool-large-hive` | Hive ransomware, UPX-packed | [verdict.json](agentic/pool-large-hive/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/pool-large-hive/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/pool-large-hive/AUDIT-REPORT.md) |
+| `pool-large-sliver` | Sliver C2 implant, packed ELF | [verdict.json](agentic/pool-large-sliver/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/pool-large-sliver/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/pool-large-sliver/AUDIT-REPORT.md) |
 
-All-features-on campaign (`REVAI_ENABLE_AGENTIC_RECOVERY` + `EMULATION_ORACLE` +
-`UNPACK_PASS` + `ENABLE_DEOBFUSCATION_PASS`) across packers (UPack/NSPack),
-raw shellcode, RATs (GuLoader/FlawedAmmyy), DarkSide ransomware, .NET
-(Sunburst), docs/scripts/PCAP (docm, js, ps1, Fiddler .saz), crackmes
-(angr/z3 targets) and a C2-scheduled task. 15/16 samples passed the full
-audit gate. The campaign surfaced and fixed 7 defects (capa format routing,
-doc-intake evidence, provider abort handling, packed-sample tool policy,
-r2 UTF-8 decode, .NET stub routing, gate packer context) — see commits
-`3a55109..508a6de`.
+### UI (manual runs)
 
-#### Scripted — 16-sample feature run (15 published, all green)
-
-| Sample | Verdict | Report | Audit |
-|--------|---------|--------|-------|
-| `upack037-packed` (UPack 0.37, corrupt-header stub) | malicious | [REPORT-TECHNICAL-v3.md](scripted/upack037-packed/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/upack037-packed/AUDIT-REPORT.md) |
-| `nspack-packed` (NSPack stub) | malicious | [REPORT-TECHNICAL-v3.md](scripted/nspack-packed/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/nspack-packed/AUDIT-REPORT.md) |
-| `worddoc-shellcode` (raw Cobalt-Stager shellcode) | malicious | [REPORT-TECHNICAL-v3.md](scripted/worddoc-shellcode/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/worddoc-shellcode/AUDIT-REPORT.md) |
-| `darkside-ransomware` (DarkSide 1.1.x) | malicious | [REPORT-TECHNICAL-v3.md](scripted/darkside-ransomware/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/darkside-ransomware/AUDIT-REPORT.md) |
-| `guloader` (GuLoader / CloudEyE) | malicious | [REPORT-TECHNICAL-v3.md](scripted/guloader/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/guloader/AUDIT-REPORT.md) |
-| `space1-flawedammyy` (FlawedAmmyy RAT) | malicious | [REPORT-TECHNICAL-v3.md](scripted/space1-flawedammyy/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/space1-flawedammyy/AUDIT-REPORT.md) |
-| `sunburst-dotnet` (Sunburst .NET backdoor) | malicious | [REPORT-TECHNICAL-v3.md](scripted/sunburst-dotnet/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/sunburst-dotnet/AUDIT-REPORT.md) |
-| `tasksche` (C2-scheduled task PE) | malicious | [REPORT-TECHNICAL-v3.md](scripted/tasksche/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/tasksche/AUDIT-REPORT.md) |
-| `vdaudio-dll` (DLL, C2 markers + anti-forensics) | malicious | [REPORT-TECHNICAL-v3.md](scripted/vdaudio-dll/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/vdaudio-dll/AUDIT-REPORT.md) |
-| `3048-ps1` (PowerShell loader script) | malicious | [REPORT-TECHNICAL-v3.md](scripted/3048-ps1/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/3048-ps1/AUDIT-REPORT.md) |
-| `order-docm-macro` (Word macro, VBA stomping) | malicious | [REPORT-TECHNICAL-v3.md](scripted/order-docm-macro/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/order-docm-macro/AUDIT-REPORT.md) |
-| `steel-saz-pcap` (Fiddler .saz capture, C2 flow) | suspicious | [REPORT-TECHNICAL-v3.md](scripted/steel-saz-pcap/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/steel-saz-pcap/AUDIT-REPORT.md) |
-| `crackme7` (angr/emulation crackme) | crackme | [REPORT-TECHNICAL-v3.md](scripted/crackme7/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/crackme7/AUDIT-REPORT.md) |
-| `angr-crackme2` (angr exercise) | suspicious | [REPORT-TECHNICAL-v3.md](scripted/angr-crackme2/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/angr-crackme2/AUDIT-REPORT.md) |
-| `string-encryption` (2KB angr decryption target) | suspicious | [REPORT-TECHNICAL-v3.md](scripted/string-encryption/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/string-encryption/AUDIT-REPORT.md) |
-
-### 15-run campaign (21/21 automated runs, all green)
-
-9 virussign samples (scripted small ×3, agentic mid/large ×6) + 3 lab-pool
-samples (remcos/lumma/koi) + 3 InTheWild-pool samples. Reboot after every
-2 runs.
-
-> **2026-08-06 re-run:** the 13 R1–R15 case studies were re-run on the fixed
-> pipeline (0-100 score scale, no scorecard citations, provenance-stamped
-> reports) and replaced in place. All 13 green (scores 88–95/100).
-
-#### Scripted — small samples (7/7 done, all green)
-
-| Sample | Size | Verdict | Report | Audit |
-|--------|------|---------|--------|-------|
-| `virussign-01984caa` (Unicorn, VB6 info-stealer/dropper) | 469K | [verdict.json](scripted/virussign-01984caa/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/virussign-01984caa/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/virussign-01984caa/AUDIT-REPORT.md) |
-| `virussign-277ba25a` (unidentified packed/obfuscated PE) | 470K | [verdict.json](scripted/virussign-277ba25a/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/virussign-277ba25a/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/virussign-277ba25a/AUDIT-REPORT.md) |
-| `virussign-780d28e3` (Darty Crypter) | 521K | [verdict.json](scripted/virussign-780d28e3/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/virussign-780d28e3/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/virussign-780d28e3/AUDIT-REPORT.md) |
-| `remcos` (Remcos RAT) | 683K | [verdict.json](scripted/remcos/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/remcos/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/remcos/AUDIT-REPORT.md) |
-| `pool-small-bkransomware` (BK ransomware / elex / maze / remcos tags) | 485K | [verdict.json](scripted/pool-small-bkransomware/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/pool-small-bkransomware/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/pool-small-bkransomware/AUDIT-REPORT.md) |
-| `pool-small-mespinoza` (Mespinoza / Pysa ransomware) | 794K | [verdict.json](scripted/pool-small-mespinoza/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/pool-small-mespinoza/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/pool-small-mespinoza/AUDIT-REPORT.md) |
-| `pool-small-conti` (Conti ransomware) | 594K | [verdict.json](scripted/pool-small-conti/verdict.json) | [REPORT-TECHNICAL-v3.md](scripted/pool-small-conti/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](scripted/pool-small-conti/AUDIT-REPORT.md) |
-
-#### Agentic — mid/large samples (13/13 done, all truly_green)
-
-| Sample | Size | Verdict | Report | Audit |
-|--------|------|---------|--------|-------|
-| `virussign-40f92672` (packed Delphi-based loader) | 982K | [verdict.json](agentic/virussign-40f92672/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/virussign-40f92672/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/virussign-40f92672/AUDIT-REPORT.md) |
-| `virussign-8264dc61` (generic packed dropper/loader) | 1024K | [verdict.json](agentic/virussign-8264dc61/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/virussign-8264dc61/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/virussign-8264dc61/AUDIT-REPORT.md) |
-| `virussign-f622efa7` (UPX-packed malware/loader) | 1265K | [verdict.json](agentic/virussign-f622efa7/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/virussign-f622efa7/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/virussign-f622efa7/AUDIT-REPORT.md) |
-| `virussign-970b822a` (ASPack-packed loader/dropper) | 3075K | [verdict.json](agentic/virussign-970b822a/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/virussign-970b822a/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/virussign-970b822a/AUDIT-REPORT.md) |
-| `virussign-7edf35d0` (Themida-packed payload, T1027.002) | 3092K | [verdict.json](agentic/virussign-7edf35d0/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/virussign-7edf35d0/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/virussign-7edf35d0/AUDIT-REPORT.md) |
-| `virussign-9358c2e1` (UPX-packed dropper/loader) | 8755K | [verdict.json](agentic/virussign-9358c2e1/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/virussign-9358c2e1/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/virussign-9358c2e1/AUDIT-REPORT.md) |
-| `lumma-stealer` (Lumma Stealer info-stealer) | 1116K | [verdict.json](agentic/lumma-stealer/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/lumma-stealer/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/lumma-stealer/AUDIT-REPORT.md) |
-| `koi-stealer` (packed Delphi-based loader/dropper) | 2211K | [verdict.json](agentic/koi-stealer/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/koi-stealer/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/koi-stealer/AUDIT-REPORT.md) |
-| `pool-mid-quasar` (Quasar RAT) | 1874K | [verdict.json](agentic/pool-mid-quasar/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/pool-mid-quasar/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/pool-mid-quasar/AUDIT-REPORT.md) |
-| `pool-large-darkgate` (darkgate/elex multi-family) | 8701K | [verdict.json](agentic/pool-large-darkgate/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/pool-large-darkgate/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/pool-large-darkgate/AUDIT-REPORT.md) |
-| `pool-mid-vidar` (Vidar stealer, NSudo masquerade) | 1489K | [verdict.json](agentic/pool-mid-vidar/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/pool-mid-vidar/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/pool-mid-vidar/AUDIT-REPORT.md) |
-| `pool-mid-mespinoza` (Mespinoza/Pysa ransomware, MS masquerade) | 2019K | [verdict.json](agentic/pool-mid-mespinoza/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/pool-mid-mespinoza/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/pool-mid-mespinoza/AUDIT-REPORT.md) |
-| `pool-large-hive` (Hive ransomware, UPX-packed) | 4315K | [verdict.json](agentic/pool-large-hive/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/pool-large-hive/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/pool-large-hive/AUDIT-REPORT.md) |
-| `pool-large-sliver` (Sliver C2 implant, packed ELF) | 9282K | [verdict.json](agentic/pool-large-sliver/verdict.json) | [REPORT-TECHNICAL-v3.md](agentic/pool-large-sliver/REPORT-TECHNICAL-v3.md) | [AUDIT-REPORT.md](agentic/pool-large-sliver/AUDIT-REPORT.md) |
+| Sample | Description | Verdict | Report | Audit |
+|--------|-------------|---------|--------|-------|
 
 ### Sample pool
 
