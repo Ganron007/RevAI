@@ -201,11 +201,11 @@ Full ops: [`docs/OPERATE.md`](docs/OPERATE.md) · Install: [`docs/INSTALL.md`](d
 
 ## What's coming
 
-| Item | What it is | Why |
-|------|-----------|-----|
-| **Multi-provider matrix** | Run the pipeline across multiple configured LLM providers and benchmark verdict/report consistency | Lets operators compare providers and pick the best fit per workload |
-| **Dual-LLM verdict jury** | Verdict interpretation uses a model separate from the report author, plus an independent second-provider vote; disagreement flags a sample for human review | Checker ≠ generator — avoids correlated errors from a single model grading its own work |
-| **Deterministic deep-dive engine** (scripted mode) | Optional fixed SQL query plan with rule-based follow-ups — no LLM driving the deep dive; the LLM stays for verdict interpretation and report writing | Reproducible, low-cost deep-dive baseline; the agentic engine remains available in agentic/UI modes |
+| Item | Description |
+|------|-------------|
+| **Multi-provider matrix** | Run the pipeline across multiple configured LLM providers and benchmark verdict/report consistency — pick the best provider per workload |
+| **Dual-LLM verdict jury** | Verdict interpretation uses a model separate from the report author, plus an independent second-provider vote; disagreement flags a sample for human review — checker ≠ generator |
+| **Deterministic deep-dive engine** (scripted mode) | Optional fixed SQL query plan with rule-based follow-ups — no LLM driving the deep dive, LLM stays for verdict and report writing; the agentic engine remains available in agentic/UI modes |
 
 ---
 
