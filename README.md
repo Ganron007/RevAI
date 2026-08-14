@@ -124,15 +124,15 @@ Distinctive capabilities — the things that set RevAI apart. For the full featu
 
 | Capability | What makes it distinctive |
 | :--- | :--- |
-| **Custom CADRE PE Loader** | Own Ghidra loader — recovers import tables on packed/binder/dropper PEs where stock Ghidra returns empty — see [`docs/cadre-pe-loader.md`](docs/cadre-pe-loader.md) |
-| **Agent-loop discipline** | Budget warnings · redundant-call detection · hallucination check · failure taxonomy — the agent converges and stays evidence-grounded — see [`docs/agent-loop-discipline.md`](docs/agent-loop-discipline.md) |
-| **Malcat native capa engine** | Measured 10× faster + more reliable than Mandiant capa on hard/installer-packed samples — see [`docs/malcat-capa-engine.md`](docs/malcat-capa-engine.md) |
-| **In-process yara-x engine** | YARA scanning with no external `yr` binary — a broken scanner can never silently pass the gate — see [`docs/OPERATE.md`](docs/OPERATE.md) |
-| **Honest `truly_green` gate** | Green requires audit (`all_green`) **and** report quality (`quality_green`) **and** zero failed tools — plus engine-citation verification and a cross-stage verdict lock. A stubbed or mis-attributed report can never look green |
-| **Depth gate (capability coverage)** | Deterministic gate: before green, the deep-dive summary must address **every** capability domain (persistence, C2, evasion, exfiltration, defense impairment, credential access, encryption, entry point, imports, strings) — as evidence or explicit "not observed". A verdict over a thin pass can never go green — see [`docs/architecture.md`](docs/architecture.md#10-quality-verification-gate-truly_green) |
-| **Publication-quality gates** | Deterministic cross-report checks: the master must not claim "no dynamic analysis was performed" when the technical report carries Speakeasy/Frida execution evidence; master and technical verdict panels must agree; entropy citations are audited against the file's measured whole-file Shannon entropy. Added after the #2 campaign, where these checks caught factual defects in 15 report pairs the structural gates had passed |
-| **Agentic function recovery** | Opt-in stage (`agentic_recover_v4.py`): relevance-based triage (call-hub + string + high-value-import score, hybrid guaranteed slots for API callers/large logic) → call-graph bottom-up tiers → LLM naming (`FUN_…` → `parse_http_header`) → SQL writeback (ghidrasql/idasql, conf ≥ 0.7, never deletes) → names cited in reports |
-| **Tool Stack (28 tools)** | 28 format-aware manifest tools + 23 agent-callable tools (incl. revai-tools mitigations-with-consequence, sink-site audit, and wallet/IOC extraction — fail-open, never gates) — see [`docs/tool-stack.md`](docs/tool-stack.md) · [`docs/OPERATE.md`](docs/OPERATE.md) |
+| **Custom CADRE PE Loader** | Own Ghidra loader — recovers import tables on packed/binder PEs — see [`docs/cadre-pe-loader.md`](docs/cadre-pe-loader.md) |
+| **Agent-loop discipline** | Budget warnings · redundant-call detection · hallucination check · failure taxonomy — see [`docs/agent-loop-discipline.md`](docs/agent-loop-discipline.md) |
+| **Malcat native capa engine** | Faster + more reliable than Mandiant capa on hard samples — see [`docs/malcat-capa-engine.md`](docs/malcat-capa-engine.md) |
+| **In-process yara-x engine** | YARA scanning with no external `yr` binary — see [`docs/OPERATE.md`](docs/OPERATE.md) |
+| **Honest `truly_green` gate** | Green requires audit **and** report quality **and** zero failed tools — plus engine-citation verification and a cross-stage verdict lock |
+| **Depth gate (capability coverage)** | Deep-dive summary must address every capability domain — as evidence or explicit "not observed" — see [`docs/architecture.md`](docs/architecture.md#10-quality-verification-gate-truly_green) |
+| **Publication-quality gates** | Deterministic cross-report checks (dynamic-analysis honesty, verdict-panel agreement, entropy vs measured file entropy) |
+| **Agentic function recovery** | Opt-in relevance-based triage → LLM naming (`FUN_…` → `parse_http_header`) → SQL writeback (conf ≥ 0.7, never deletes) → names cited in reports |
+| **Tool Stack (28 tools)** | 28 format-aware manifest tools + 23 agent-callable tools (incl. revai-tools — fail-open, never gates) — see [`docs/tool-stack.md`](docs/tool-stack.md) |
 
 ---
 
