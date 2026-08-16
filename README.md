@@ -208,7 +208,7 @@ are built, tested, and published.*
 |------|-------------|--------|
 | **Multi-provider matrix** | Run the pipeline across multiple configured LLM providers and benchmark verdict/report consistency — pick the best provider per workload | In progress |
 | **Dual-LLM verdict jury** | Verdict interpretation uses a model separate from the report author, plus an independent second-provider vote; disagreement flags a sample for human review — checker ≠ generator | In progress |
-| **Deterministic deep-dive engine** (scripted mode) | Optional fixed SQL query plan with rule-based follow-ups — no LLM driving the deep dive, LLM stays for verdict and report writing; the agentic engine remains available in agentic/UI modes | In progress |
+| **Deterministic deep-dive engine** (scripted mode) | Optional fixed SQL query plan with rule-based follow-ups — no LLM driving the deep dive, LLM stays for verdict and report writing; the agentic engine remains available in agentic/UI modes | Planned |
 | **Complete behavioral model** | Systematic function-by-function walkthrough (entry point → call paths → exits) plus full control-flow/data-flow analysis, to reconstruct the executable's entire behavioral model from code analysis — beyond the current capability-level map | Planned |
 
 ---
