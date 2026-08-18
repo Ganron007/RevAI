@@ -210,6 +210,8 @@ are built, tested, and published.*
 | **Dual-LLM verdict jury** | Verdict interpretation uses a model separate from the report author, plus an independent second-provider vote; disagreement flags a sample for human review — checker ≠ generator | In progress |
 | **Deterministic deep-dive engine** (scripted mode) | Optional fixed SQL query plan with rule-based follow-ups — no LLM driving the deep dive, LLM stays for verdict and report writing; the agentic engine remains available in agentic/UI modes | Planned |
 | **Complete behavioral model** | Systematic function-by-function walkthrough (entry point → call paths → exits) plus full control-flow/data-flow analysis, to reconstruct the executable's entire behavioral model from code analysis — beyond the current capability-level map | Planned |
+| **Report fact-verification pass** | Deterministic re-verification of every claimed IoC (IPs, hashes, paths, registry keys) in reports against raw tool evidence — fact-checking via code, not LLM self-review | Planned |
+| **Verifiable artifact generation** | Pipeline stage that produces config extractors / static unpackers / deobfuscation scripts as artifacts and runs them — scripts verify themselves, unlike prose reports | Planned |
 
 ---
 
