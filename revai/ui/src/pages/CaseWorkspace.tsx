@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { NavLink, Outlet, useParams } from 'react-router-dom'
-import { getHitlPending, getSamples, orchLive, orchStart, orchStop } from '../api/client'
+import { getHitlPending, getModes, getSamples, orchLive, orchStart, orchStop } from '../api/client'
 import type { OrchLive, Sample } from '../api/types'
 import { ErrorBanner, Icon } from '../ds'
 import CaseChrome from '../layout/CaseChrome'
@@ -25,15 +25,17 @@ export default function CaseWorkspace() {
   const [pollErr, setPollErr] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
+  const [modes, setModes] = useState<string[]>([])
+  const [mode, setMode] = useState<string | null>(null)
   const runningRef = useRef(false)
   const failCount = useRef(0)
 
   const refreshLive = useCallback(async () => {
     if (!sha) return
-    const l = await orchLive(sha)
+    const l = await orchLive(sha, mode)
     setLive(l)
     runningRef.current = !!l.running
-  }, [sha])
+  }, [sha, mode])
 
   const refreshHitl = useCallback(async () => {
     if (!sha) return
@@ -52,16 +54,26 @@ export default function CaseWorkspace() {
     setHitlCount(0)
     setErr(null)
     setPollErr(null)
+    setModes([])
+    setMode(null)
     runningRef.current = false
     failCount.current = 0
     let cancelled = false
     ;(async () => {
       try {
-        const [samples, hitl] = await Promise.all([getSamples(), getHitlPending(sha)])
+        const [samples, hitl, m] = await Promise.all([getSamples(), getHitlPending(sha), getModes(sha).catch(() => [] as string[])])
         if (cancelled) return
         setSample(samples.find((s) => s.sha256 === sha) || null)
         setHitlCount(hitl.pending_count || 0)
-        await refreshLive()
+        setModes(m)
+        // prefer agentic > scripted > ui > legacy (null)
+        if (m.length) {
+          const pref = ['agentic', 'scripted', 'ui']
+          const pick = pref.find((p) => m.includes(p)) ?? m[0]
+          setMode(pick)
+        } else {
+          setMode(null)
+        }
       } catch (e) {
         if (!cancelled) setErr(e instanceof Error ? e.message : String(e))
       }
@@ -69,7 +81,7 @@ export default function CaseWorkspace() {
     return () => {
       cancelled = true
     }
-  }, [sha, refreshLive])
+  }, [sha])
 
   useEffect(() => {
     if (!sha) return
@@ -96,6 +108,11 @@ export default function CaseWorkspace() {
       if (timer) window.clearTimeout(timer)
     }
   }, [sha, refreshLive])
+
+  // refresh when mode switches
+  useEffect(() => {
+    if (sha) void refreshLive().catch(() => undefined)
+  }, [mode, refreshLive, sha])
 
   const onRun = async () => {
     setBusy(true)
@@ -125,8 +142,8 @@ export default function CaseWorkspace() {
   }
 
   const ctx = useMemo(
-    () => ({ sha, sample, live, refreshLive, refreshHitl }),
-    [sha, sample, live, refreshLive, refreshHitl],
+    () => ({ sha, sample, live, refreshLive, refreshHitl, mode, modes, setMode }),
+    [sha, sample, live, refreshLive, refreshHitl, mode, modes],
   )
 
   return (

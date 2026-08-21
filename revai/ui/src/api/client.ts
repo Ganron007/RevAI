@@ -44,31 +44,44 @@ export async function getSamples(): Promise<Sample[]> {
   return SampleSchema.array().parse(data)
 }
 
-export async function getStatus(sha: string) {
-  return raw(`/api/status/${sha}`) as Promise<Record<string, unknown>>
+export async function getModes(sha: string): Promise<string[]> {
+  const data = (await raw(`/api/modes/${sha}`)) as { modes?: string[] }
+  return data.modes ?? []
 }
 
-export async function getEvidence(sha: string): Promise<EvidenceFile[]> {
-  const data = await raw(`/api/evidence/${sha}`)
+export async function getStatus(sha: string, mode?: string | null) {
+  const q = mode ? `?mode=${encodeURIComponent(mode)}` : ''
+  return raw(`/api/status/${sha}${q}`) as Promise<Record<string, unknown>>
+}
+
+export async function getEvidence(sha: string, mode?: string | null): Promise<EvidenceFile[]> {
+  const q = mode ? `?mode=${encodeURIComponent(mode)}` : ''
+  const data = await raw(`/api/evidence/${sha}${q}`)
   return EvidenceFileSchema.array().parse(data)
 }
 
-export async function getReports(sha: string, internals = false): Promise<EvidenceFile[]> {
-  const q = internals ? '?internals=1' : ''
+export async function getReports(sha: string, internals = false, mode?: string | null): Promise<EvidenceFile[]> {
+  const params = new URLSearchParams()
+  if (internals) params.set('internals', '1')
+  if (mode) params.set('mode', mode)
+  const q = params.toString() ? `?${params}` : ''
   const data = await raw(`/api/artifacts/${sha}/reports${q}`)
   const parsed = data as { files?: unknown }
   return EvidenceFileSchema.array().parse(parsed.files ?? data)
 }
 
-export async function getFileText(sha: string, path: string) {
-  const res = await fetch(`/api/file/${sha}?path=${encodeURIComponent(path)}`)
+export async function getFileText(sha: string, path: string, mode?: string | null) {
+  const q = new URLSearchParams({ path })
+  if (mode) q.set('mode', mode)
+  const res = await fetch(`/api/file/${sha}?${q}`)
   if (!res.ok) throw new Error(`file ${res.status}`)
   return res.text()
 }
 
-export async function getRenderHtml(sha: string, path: string, type = '') {
+export async function getRenderHtml(sha: string, path: string, type = '', mode?: string | null) {
   const q = new URLSearchParams({ path })
   if (type) q.set('type', type)
+  if (mode) q.set('mode', mode)
   const res = await fetch(`/api/render/${sha}?${q}`)
   if (!res.ok) throw new Error(`render ${res.status}`)
   const ct = res.headers.get('content-type') || ''
@@ -104,25 +117,27 @@ export async function orchStop(sha: string) {
   return raw(`/api/orch/${sha}/stop`, { method: 'POST' }) as Promise<{ ok: boolean }>
 }
 
-export async function orchLive(sha: string): Promise<OrchLive> {
-  const data = await raw(`/api/orch/${sha}/live`)
+export async function orchLive(sha: string, mode?: string | null): Promise<OrchLive> {
+  const q = mode ? `?mode=${encodeURIComponent(mode)}` : ''
+  const data = await raw(`/api/orch/${sha}/live${q}`)
   const parsed = OrchLiveSchema.safeParse(data)
   if (parsed.success) return parsed.data
-  // Soft-fail: still drive UI from raw payload if schema drifts
   console.warn('orchLive schema warning', parsed.error.message)
   return data as OrchLive
 }
 
-export async function orchTrace(sha: string) {
-  return raw(`/api/orch/${sha}/trace`) as Promise<Record<string, unknown>>
+export async function orchTrace(sha: string, mode?: string | null) {
+  const q = mode ? `?mode=${encodeURIComponent(mode)}` : ''
+  return raw(`/api/orch/${sha}/trace${q}`) as Promise<Record<string, unknown>>
 }
 
 export async function orchActive() {
   return raw('/api/orch/active') as Promise<{ active: Array<{ sha: string; pid: number }> }>
 }
 
-export async function getQuality(sha: string) {
-  return raw(`/api/quality/${sha}`) as Promise<Record<string, unknown>>
+export async function getQuality(sha: string, mode?: string | null) {
+  const q = mode ? `?mode=${encodeURIComponent(mode)}` : ''
+  return raw(`/api/quality/${sha}${q}`) as Promise<Record<string, unknown>>
 }
 
 export async function getBrowse(): Promise<BrowsePayload> {

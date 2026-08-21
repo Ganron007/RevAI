@@ -519,13 +519,13 @@ def api_intake_progress(sha):
 
 # ============== state persistence ==============
 
-def get_status_path(sha: str) -> Path:
+def get_status_path(sha: str, mode: str | None = None) -> Path:
     LOGS_DIR.mkdir(parents=True, exist_ok=True)
-    return case_dir(sha) / "pipeline-status.json"
+    return case_dir(sha, mode) / "pipeline-status.json"
 
 
-def load_pipeline_state(sha: str) -> dict:
-    p = get_status_path(sha)
+def load_pipeline_state(sha: str, mode: str | None = None) -> dict:
+    p = get_status_path(sha, mode)
     if p.exists():
         try:
             return json.loads(p.read_text())
@@ -534,7 +534,7 @@ def load_pipeline_state(sha: str) -> dict:
     return {"sha": sha, "stages": {}}
 
 
-def infer_pipeline_state(sha: str) -> dict:
+def infer_pipeline_state(sha: str, mode: str | None = None) -> dict:
     """Merge pipeline-status.json with artifact existence.
 
     Returns per-stage:
@@ -542,7 +542,7 @@ def infer_pipeline_state(sha: str) -> dict:
       - source: 'pipeline-status' or 'artifact-inference'
       - started_at / finished_at from pipeline-status if available
     """
-    state = load_pipeline_state(sha)
+    state = load_pipeline_state(sha, mode)
     stages = state.get("stages", {})
     out = {"sha": sha, "stages": {}}
     for s in STAGE_ORDER:
@@ -560,12 +560,12 @@ def infer_pipeline_state(sha: str) -> dict:
         all_present = True
         for art in artifacts:
             if dir_name:
-                p = case_dir(sha) / dir_name / art
+                p = case_dir(sha, mode) / dir_name / art
             else:
                 if art == "session.json":
                     p = SESSIONS_DIR / f"{sha}.json"
                 else:
-                    p = case_dir(sha) / art
+                    p = case_dir(sha, mode) / art
             if not p.exists():
                 all_present = False
                 break
@@ -576,8 +576,8 @@ def infer_pipeline_state(sha: str) -> dict:
     return out
 
 
-def save_pipeline_state(sha: str, state: dict):
-    p = get_status_path(sha)
+def save_pipeline_state(sha: str, state: dict, mode: str | None = None):
+    p = get_status_path(sha, mode)
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(json.dumps(state, indent=2, default=str))
 
@@ -591,6 +591,16 @@ def require_sha(sha: str | None) -> str | None:
     if not sha or not _SHA_RE.fullmatch(sha):
         return None
     return sha.lower()
+
+
+def _mode_from_request() -> str | None:
+    """Read ?mode= from request, validate, return explicit mode or None (legacy)."""
+    m = (request.args.get("mode") or "").strip()
+    if not m or m == "legacy":
+        return None
+    if m not in ("scripted", "agentic", "ui"):
+        return None
+    return m
 
 
 @app.before_request
@@ -607,7 +617,7 @@ def _validate_sha_url_vars():
     return None
 
 
-def resolve_file_path(sha: str, rel_path: str) -> Path | None:
+def resolve_file_path(sha: str, rel_path: str, mode: str | None = None) -> Path | None:
     """Resolve a relative path safely, allowing session.json as a special case."""
     sha_ok = require_sha(sha)
     if not sha_ok:
@@ -617,7 +627,7 @@ def resolve_file_path(sha: str, rel_path: str) -> Path | None:
     if rel_path == "session.json":
         sess = SESSIONS_DIR / f"{sha_ok}.json"
         return sess if sess.exists() else None
-    base = (case_dir(sha_ok)).resolve()
+    base = (case_dir(sha_ok, mode)).resolve()
     full = (base / rel_path).resolve()
     try:
         full.relative_to(base)
@@ -882,15 +892,15 @@ def run_stage(sha: str, stage: str, sample_path: str, rc_snapshot: dict | None =
             "log": [f"[{now}] $ {' '.join(cmd)}"],
         }
     persist_run_config_snapshot(sha, rc_snapshot)
-    state = load_pipeline_state(sha)
+    state = load_pipeline_state(sha, "ui")
     state.setdefault("stages", {})[stage] = {
         "status": "running", "started_at": now, "returncode": None,
         "log_tail": tasks[task_id]["log"][-50:],
     }
-    save_pipeline_state(sha, state)
+    save_pipeline_state(sha, state, "ui")
 
     # persistent stage log file
-    stage_log_dir = case_dir(sha) / stage
+    stage_log_dir = case_dir(sha, "ui") / stage
     stage_log_dir.mkdir(parents=True, exist_ok=True)
     stage_log_path = stage_log_dir / "stage.log"
 
@@ -905,10 +915,10 @@ def run_stage(sha: str, stage: str, sample_path: str, rc_snapshot: dict | None =
             tasks[task_id]["log"].append(tagged)
             if len(tasks[task_id]["log"]) > 2000:
                 tasks[task_id]["log"] = tasks[task_id]["log"][-2000:]
-        st = load_pipeline_state(sha)
+        st = load_pipeline_state(sha, "ui")
         st.setdefault("stages", {}).setdefault(stage, {})
         st["stages"][stage]["log_tail"] = tasks[task_id]["log"][-50:]
-        save_pipeline_state(sha, st)
+        save_pipeline_state(sha, st, "ui")
 
     def _spawn_once(attempt: int) -> tuple[int, list[str]]:
         proc = None
@@ -993,12 +1003,12 @@ def run_stage(sha: str, stage: str, sample_path: str, rc_snapshot: dict | None =
                 tasks[task_id]["log"].append(f"[{now}] {stage} DONE rc=0")
             else:
                 tasks[task_id]["log"].append(f"[{now}] {stage} FAILED rc={rc}")
-        state = load_pipeline_state(sha)
+        state = load_pipeline_state(sha, "ui")
         state.setdefault("stages", {}).setdefault(stage, {})
         state["stages"][stage]["status"] = "done" if rc == 0 else "error"
         state["stages"][stage]["finished_at"] = now
         state["stages"][stage]["returncode"] = rc
-        save_pipeline_state(sha, state)
+        save_pipeline_state(sha, state, "ui")
 
     threading.Thread(target=_run, daemon=True).start()
     return task_id
@@ -1255,14 +1265,8 @@ def api_status(sha):
     sha = require_sha(sha)
     if not sha:
         return jsonify({"error": "invalid sha"}), 400
-    mode = (request.args.get("mode") or "").strip() or None
-    if mode:
-        os.environ["REVAI_RUN_MODE"] = mode
-    try:
-        return jsonify(infer_pipeline_state(sha))
-    finally:
-        if mode:
-            os.environ.pop("REVAI_RUN_MODE", None)
+    mode = _mode_from_request()
+    return jsonify(infer_pipeline_state(sha, mode))
 
 
 @app.route("/api/deps/<sha>")
@@ -1271,7 +1275,8 @@ def api_deps(sha):
     sha = require_sha(sha)
     if not sha:
         return jsonify({"error": "invalid sha"}), 400
-    state = load_pipeline_state(sha)
+    mode = _mode_from_request()
+    state = load_pipeline_state(sha, mode)
     done = {
         s: ((state.get("stages") or {}).get(s) or {}).get("status") in ("done", "done-inferred")
         for s in STAGE_ORDER
@@ -1392,9 +1397,9 @@ def api_reset(sha):
     })
 
 
-def _evidence_tree(sha: str) -> list[dict]:
+def _evidence_tree(sha: str, mode: str | None = None) -> list[dict]:
     """Full evidence file tree for a sample (logs + session.json)."""
-    base = case_dir(sha)
+    base = case_dir(sha, mode)
     tree = []
     sess = SESSIONS_DIR / f"{sha}.json"
     if sess.exists():
@@ -1445,9 +1450,9 @@ _REPORT_INTERNAL_HINTS = (
 )
 
 
-def curated_reports(sha: str, internals: bool = False) -> list[dict]:
+def curated_reports(sha: str, mode: str | None = None, internals: bool = False) -> list[dict]:
     """Return analyst-facing publishables; prefer root copies over stage duplicates."""
-    tree = _evidence_tree(sha)
+    tree = _evidence_tree(sha, mode)
     by_name: dict[str, dict] = {}
     for f in tree:
         path = f["path"]
@@ -1490,7 +1495,8 @@ def api_evidence(sha):
     sha = require_sha(sha)
     if not sha:
         return jsonify({"error": "invalid sha"}), 400
-    return jsonify(_evidence_tree(sha))
+    mode = _mode_from_request()
+    return jsonify(_evidence_tree(sha, mode))
 
 
 @app.route("/api/artifacts/<sha>/reports")
@@ -1499,8 +1505,9 @@ def api_artifacts_reports(sha):
     sha = require_sha(sha)
     if not sha:
         return jsonify({"error": "invalid sha"}), 400
+    mode = _mode_from_request()
     internals = request.args.get("internals", "").lower() in ("1", "true", "yes")
-    files = curated_reports(sha, internals=internals)
+    files = curated_reports(sha, mode=mode, internals=internals)
     return jsonify({"sha": sha, "mode": "reports", "internals": internals, "files": files})
 
 
@@ -1510,10 +1517,11 @@ def api_file(sha):
     sha = require_sha(sha)
     if not sha:
         return jsonify({"error": "invalid sha"}), 400
+    mode = _mode_from_request()
     rel_path = request.args.get("path", "")
     if not rel_path:
         return jsonify({"error": "path parameter required"}), 400
-    p = resolve_file_path(sha, rel_path)
+    p = resolve_file_path(sha, rel_path, mode)
     if not p:
         return jsonify({"error": f"file not found: {rel_path}"}), 404
     size = p.stat().st_size
@@ -1528,10 +1536,11 @@ def api_download(sha):
     sha = require_sha(sha)
     if not sha:
         return jsonify({"error": "invalid sha"}), 400
+    mode = _mode_from_request()
     rel_path = request.args.get("path", "")
     if not rel_path:
         return jsonify({"error": "path parameter required"}), 400
-    p = resolve_file_path(sha, rel_path)
+    p = resolve_file_path(sha, rel_path, mode)
     if not p:
         return jsonify({"error": f"file not found: {rel_path}"}), 404
     raw_name = request.args.get("name") or Path(rel_path).name
@@ -1546,11 +1555,15 @@ def api_download(sha):
 @app.route("/api/render/<sha>")
 def api_render(sha):
     """Return rendered HTML for markdown or JSON files."""
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
+    mode = _mode_from_request()
     rel_path = request.args.get("path", "")
     rtype = request.args.get("type", "")
     if not rel_path:
         return jsonify({"error": "path parameter required"}), 400
-    p = resolve_file_path(sha, rel_path)
+    p = resolve_file_path(sha, rel_path, mode)
     if not p:
         return jsonify({"error": f"file not found: {rel_path}"}), 404
     text = p.read_text(errors="replace")
@@ -1577,9 +1590,13 @@ def api_annotate_pending(sha):
     The analyst reviews these and calls /api/annotate/<sha>/apply to
     commit them (with snapshot for rollback).
     """
-    dd_path = case_dir(sha) / "deep-dive.json"
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
+    mode = _mode_from_request()
+    dd_path = case_dir(sha, mode) / "deep-dive.json"
     if not dd_path.exists():
-        dd_path = case_dir(sha) / "deep_dive" / "05-deep-dive.json"
+        dd_path = case_dir(sha, mode) / "deep_dive" / "05-deep-dive.json"
     if not dd_path.exists():
         return jsonify({"error": "deep-dive.json not found — run deep_dive first"}), 404
     try:
@@ -1592,7 +1609,7 @@ def api_annotate_pending(sha):
     ghidra_result = dd.get("ghidra_annotations", {})
 
     # Also check if any snapshots exist for this sample
-    snap_dir = case_dir(sha) / "ghidra-snapshots"
+    snap_dir = case_dir(sha, mode) / "ghidra-snapshots"
     snapshots = []
     if snap_dir.exists():
         for d in sorted(snap_dir.iterdir(), key=lambda p: p.stat().st_mtime, reverse=True):
@@ -1626,15 +1643,19 @@ def api_annotate_apply(sha):
       {"annotations": [{address, new_name, comment?}, ...]}
       If omitted, uses the annotations from deep-dive.json.
     """
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
+    mode = _mode_from_request()
     body = request.get_json(silent=True) or {}
     custom_annotations = body.get("annotations")
 
     if custom_annotations:
         annotations = custom_annotations
     else:
-        dd_path = case_dir(sha) / "deep-dive.json"
+        dd_path = case_dir(sha, mode) / "deep-dive.json"
         if not dd_path.exists():
-            dd_path = case_dir(sha) / "deep_dive" / "05-deep-dive.json"
+            dd_path = case_dir(sha, mode) / "deep_dive" / "05-deep-dive.json"
         if not dd_path.exists():
             return jsonify({"error": "deep-dive.json not found — run deep_dive first"}), 404
         dd = json.loads(dd_path.read_text())
@@ -1707,9 +1728,13 @@ def api_ida_annotate_pending(sha):
 
     The IDA pathway runs locally on Remnux via idasql (no SSH).
     """
-    dd_path = case_dir(sha) / "deep-dive.json"
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
+    mode = _mode_from_request()
+    dd_path = case_dir(sha, mode) / "deep-dive.json"
     if not dd_path.exists():
-        dd_path = case_dir(sha) / "deep_dive" / "05-deep-dive.json"
+        dd_path = case_dir(sha, mode) / "deep_dive" / "05-deep-dive.json"
     if not dd_path.exists():
         return jsonify({"error": "deep-dive.json not found - run deep_dive first"}), 404
     try:
@@ -1721,7 +1746,7 @@ def api_ida_annotate_pending(sha):
     ida_result = dd.get("ida_annotations", {})
 
     # List IDA snapshots
-    snap_dir = case_dir(sha) / "ida-snapshots"
+    snap_dir = case_dir(sha, mode) / "ida-snapshots"
     snapshots = []
     if snap_dir.exists():
         for d in sorted(snap_dir.iterdir(),
@@ -1752,15 +1777,19 @@ def api_ida_annotate_apply(sha):
     request body if provided) and applies them via ida_sql_client.
     Always takes a snapshot first so the analyst can rollback.
     """
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
+    mode = _mode_from_request()
     body = request.get_json(silent=True) or {}
     custom_annotations = body.get("annotations")
 
     if custom_annotations:
         annotations = custom_annotations
     else:
-        dd_path = case_dir(sha) / "deep-dive.json"
+        dd_path = case_dir(sha, mode) / "deep-dive.json"
         if not dd_path.exists():
-            dd_path = case_dir(sha) / "deep_dive" / "05-deep-dive.json"
+            dd_path = case_dir(sha, mode) / "deep_dive" / "05-deep-dive.json"
         if not dd_path.exists():
             return jsonify({"error": "deep-dive.json not found"}), 404
         dd = json.loads(dd_path.read_text())
@@ -1867,9 +1896,13 @@ def api_hitl_pending(sha):
     excluded — they're already in Ghidra/IDA. This endpoint is for
     HITL review: the analyst sees what NEEDS review, not what's done.
     """
-    dd_path = case_dir(sha) / "deep-dive.json"
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
+    mode = _mode_from_request()
+    dd_path = case_dir(sha, mode) / "deep-dive.json"
     if not dd_path.exists():
-        dd_path = case_dir(sha) / "deep_dive" / "05-deep-dive.json"
+        dd_path = case_dir(sha, mode) / "deep_dive" / "05-deep-dive.json"
     if not dd_path.exists():
         return jsonify({"error": "deep-dive.json not found", "pending": []}), 404
     try:
@@ -1896,12 +1929,16 @@ def api_hitl_approve(sha):
     Optional JSON body: {"address": int, "new_name": str, "comment": str, "reviewer": str}
     If omitted, approves all pending annotations.
     """
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
+    mode = _mode_from_request()
     body = request.get_json(silent=True) or {}
     reviewer = body.get("reviewer", "manual")
     target_addr = body.get("address")
-    dd_path = case_dir(sha) / "deep-dive.json"
+    dd_path = case_dir(sha, mode) / "deep-dive.json"
     if not dd_path.exists():
-        dd_path = case_dir(sha) / "deep_dive" / "05-deep-dive.json"
+        dd_path = case_dir(sha, mode) / "deep_dive" / "05-deep-dive.json"
     if not dd_path.exists():
         return jsonify({"error": "deep-dive.json not found"}), 404
     dd = json.loads(dd_path.read_text())
@@ -1961,13 +1998,17 @@ def api_hitl_reject(sha):
     Optional JSON body: {"address": int, "reason": str, "reviewer": str}
     If address is omitted, rejects all pending annotations.
     """
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
+    mode = _mode_from_request()
     body = request.get_json(silent=True) or {}
     reviewer = body.get("reviewer", "manual")
     reason = body.get("reason", "rejected by reviewer")
     target_addr = body.get("address")
-    dd_path = case_dir(sha) / "deep-dive.json"
+    dd_path = case_dir(sha, mode) / "deep-dive.json"
     if not dd_path.exists():
-        dd_path = case_dir(sha) / "deep_dive" / "05-deep-dive.json"
+        dd_path = case_dir(sha, mode) / "deep_dive" / "05-deep-dive.json"
     if not dd_path.exists():
         return jsonify({"error": "deep-dive.json not found"}), 404
     dd = json.loads(dd_path.read_text())
@@ -2113,9 +2154,9 @@ def _load_json_safe(path: Path) -> dict:
         return {}
 
 
-def _sync_pipeline_from_orch(sha: str, progress: dict) -> None:
+def _sync_pipeline_from_orch(sha: str, progress: dict, mode: str | None = None) -> None:
     """Update pipeline-status.json so existing Pipeline tab reflects orch progress."""
-    state = load_pipeline_state(sha)
+    state = load_pipeline_state(sha, mode)
     stages = state.setdefault("stages", {})
     for t in progress.get("tools") or []:
         stage = t.get("stage")
@@ -2142,21 +2183,21 @@ def _sync_pipeline_from_orch(sha: str, progress: dict) -> None:
                 "returncode": t.get("rc", 1),
                 "via": "orchestrator",
             }
-    save_pipeline_state(sha, state)
+    save_pipeline_state(sha, state, mode)
 
 
-def orch_live_payload(sha: str) -> dict:
+def orch_live_payload(sha: str, mode: str | None = None) -> dict:
     sha_ok = require_sha(sha)
     if not sha_ok:
         return {"error": "invalid sha", "running": False}
     sha = sha_ok
-    root = case_dir(sha)
+    root = case_dir(sha, mode)
     log_path = root / "orchestrator.log"
     log_lines = _tail_file(log_path, 400)
     progress = _parse_orch_progress(_orch_marker_lines(log_path) or log_lines)
     if progress.get("tools"):
         try:
-            _sync_pipeline_from_orch(sha, progress)
+            _sync_pipeline_from_orch(sha, progress, mode)
         except Exception:
             pass
     trace = _load_json_safe(root / "orchestrator_trace.json")
@@ -2292,7 +2333,7 @@ def start_orchestrator(sha: str | None, sample_path: str | None) -> dict:
 
     log_dir = LOGS_DIR / (sha or "pending_orch")
     if sha:
-        log_dir = case_dir(sha)
+        log_dir = case_dir(sha, "ui")
         log_dir.mkdir(parents=True, exist_ok=True)
         persist_run_config_snapshot(sha, rc_snapshot)
 
@@ -2430,7 +2471,8 @@ def api_orch_live(sha):
     sha = require_sha(sha)
     if not sha:
         return jsonify({"error": "invalid sha"}), 400
-    return jsonify(orch_live_payload(sha))
+    mode = _mode_from_request()
+    return jsonify(orch_live_payload(sha, mode))
 
 
 @app.route("/api/orch/<sha>/trace")
@@ -2438,7 +2480,8 @@ def api_orch_trace(sha):
     sha = require_sha(sha)
     if not sha:
         return jsonify({"error": "invalid sha"}), 400
-    p = case_dir(sha) / "orchestrator_trace.json"
+    mode = _mode_from_request()
+    p = case_dir(sha, mode) / "orchestrator_trace.json"
     if not p.is_file():
         return jsonify({"error": "no orchestrator_trace.json"}), 404
     return jsonify(_load_json_safe(p))
@@ -2449,13 +2492,14 @@ def api_quality(sha):
     sha = require_sha(sha)
     if not sha:
         return jsonify({"error": "invalid sha"}), 400
+    mode = _mode_from_request()
     sys.path.insert(0, str(SCRIPTS_DIR))
     try:
         from report_quality import evaluate_sha_publish_quality
         q = evaluate_sha_publish_quality(LOGS_DIR, sha)
     except Exception as e:
         q = {"ok": False, "error": str(e)}
-    deep = _load_json_safe(case_dir(sha) / "deep_dive" / "agentic_deep_dive.json")
+    deep = _load_json_safe(case_dir(sha, mode) / "deep_dive" / "agentic_deep_dive.json")
     q["deep_checklist_ok"] = deep.get("checklist_ok")
     q["deep_sql_deep_ok"] = deep.get("sql_deep_ok")
     q["deep_tool_calls"] = deep.get("successful_tool_calls")
@@ -2498,9 +2542,13 @@ def api_hitl_critical(sha):
     - OR its name/comment contains a critical keyword
     - OR the LLM summary mentions critical malware capabilities
     """
-    dd_path = case_dir(sha) / "deep-dive.json"
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
+    mode = _mode_from_request()
+    dd_path = case_dir(sha, mode) / "deep-dive.json"
     if not dd_path.exists():
-        dd_path = case_dir(sha) / "deep_dive" / "05-deep-dive.json"
+        dd_path = case_dir(sha, mode) / "deep_dive" / "05-deep-dive.json"
     if not dd_path.exists():
         return jsonify({"error": "deep-dive.json not found", "critical": []}), 404
     try:

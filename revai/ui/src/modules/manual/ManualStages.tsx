@@ -5,16 +5,16 @@ import { Badge, Button, ErrorBanner, Icon, LogBox, Muted, Panel } from '../../ds
 import { useCase } from '../../pages/caseContext'
 
 export default function ManualStages() {
-  const { sha } = useCase()
+  const { sha, mode: runMode } = useCase()
   const [stages, setStages] = useState<Record<string, { status?: string }>>({})
   const [busy, setBusy] = useState<string | null>(null)
   const [log, setLog] = useState('')
   const [err, setErr] = useState<string | null>(null)
 
   const refresh = useCallback(async () => {
-    const st = await getStatus(sha)
+    const st = await getStatus(sha, runMode)
     setStages((st.stages as Record<string, { status?: string }>) || {})
-  }, [sha])
+  }, [sha, runMode])
 
   useEffect(() => {
     void refresh().catch(() => undefined)

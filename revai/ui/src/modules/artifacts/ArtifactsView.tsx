@@ -24,7 +24,7 @@ function findByCanon(list: EvidenceFile[], names: string[]) {
 }
 
 export default function ArtifactsView({ initialMode = 'reports' }: { initialMode?: 'reports' | 'evidence' }) {
-  const { sha } = useCase()
+  const { sha, mode: runMode } = useCase()
   const [mode, setMode] = useState<'evidence' | 'reports'>(initialMode)
   const [internals, setInternals] = useState(false)
   const [viewMode, setViewMode] = useState<'rendered' | 'raw'>('rendered')
@@ -46,7 +46,7 @@ export default function ArtifactsView({ initialMode = 'reports' }: { initialMode
       setSel(path)
       setLoadingFile(true)
       try {
-        const t = await getFileText(sha, path)
+        const t = await getFileText(sha, path, runMode)
         if (ac.signal.aborted || seq !== seqRef.current) return
         setText(t.length > 800_000 ? `${t.slice(0, 800_000)}\n\n… truncated for preview` : t)
         setViewMode(/\.(md|markdown)$/i.test(path) ? 'rendered' : 'raw')
@@ -58,7 +58,7 @@ export default function ArtifactsView({ initialMode = 'reports' }: { initialMode
         if (seq === seqRef.current) setLoadingFile(false)
       }
     },
-    [sha],
+    [sha, runMode],
   )
 
   useEffect(() => {
@@ -68,7 +68,7 @@ export default function ArtifactsView({ initialMode = 'reports' }: { initialMode
       setSel(null)
       setText('')
       try {
-        const list = mode === 'reports' ? await getReports(sha, internals) : await getEvidence(sha)
+        const list = mode === 'reports' ? await getReports(sha, internals, runMode) : await getEvidence(sha, runMode)
         if (cancelled) return
         setFiles(list)
         if (mode === 'reports' && list.length) {
@@ -91,7 +91,7 @@ export default function ArtifactsView({ initialMode = 'reports' }: { initialMode
       cancelled = true
       abortRef.current?.abort()
     }
-  }, [sha, mode, internals, loadFile])
+  }, [sha, mode, internals, runMode, loadFile])
 
   const stages = useMemo(() => {
     const s = new Set(files.map((f) => f.stage))
@@ -143,7 +143,7 @@ export default function ArtifactsView({ initialMode = 'reports' }: { initialMode
         </Muted>
         {sel && (
           <a
-            href={`/api/download/${sha}?path=${encodeURIComponent(sel)}`}
+            href={`/api/download/${sha}?path=${encodeURIComponent(sel)}${runMode ? `&mode=${encodeURIComponent(runMode)}` : ''}`}
             style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 'var(--tx-sm)', fontWeight: 500 }}
             download
           >

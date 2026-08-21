@@ -214,14 +214,14 @@ function QualityBar({ live }: { live: OrchLive | null }) {
 
 /* ── Main ───────────────────────────────────────────────────────────── */
 export default function OrchCommandCenter() {
-  const { sha, live, refreshLive } = useCase()
+  const { sha, live, refreshLive, mode: runMode } = useCase()
   const [, setTrace] = useState<Record<string, unknown> | null>(null)
   const [jumpStage, setJumpStage] = useState<string | null>(null)
 
   useEffect(() => {
     if (!sha || live?.running || !live?.artifacts?.orchestrator_trace) return
     let cancelled = false
-    void orchTrace(sha)
+    void orchTrace(sha, runMode)
       .then((t) => {
         if (!cancelled) setTrace(t)
       })
@@ -231,7 +231,7 @@ export default function OrchCommandCenter() {
     return () => {
       cancelled = true
     }
-  }, [sha, live?.running, live?.artifacts?.orchestrator_trace])
+  }, [sha, runMode, live?.running, live?.artifacts?.orchestrator_trace])
 
   const tools = useMemo(() => live?.tools || [], [live?.tools])
   const deep = live?.deep || {}

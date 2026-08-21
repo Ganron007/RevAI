@@ -7,6 +7,9 @@ export type CaseCtx = {
   live: OrchLive | null
   refreshLive: () => Promise<void>
   refreshHitl?: () => Promise<void>
+  mode: string | null
+  modes: string[]
+  setMode: (m: string | null) => void
 }
 
 export const CaseContext = createContext<CaseCtx | null>(null)

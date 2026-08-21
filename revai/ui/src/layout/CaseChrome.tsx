@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Badge, Button, verdictTone } from '../ds'
 import type { OrchLive, Sample } from '../api/types'
+import { useCase } from '../pages/caseContext'
 
 function fmtElapsed(s?: number | null) {
   if (s == null) return null
@@ -26,6 +27,17 @@ export default function CaseChrome({
   onRun: () => void
   onStop: () => void
 }) {
+  let ctxMode: string | null = null
+  let ctxModes: string[] = []
+  let ctxSetMode: ((m: string | null) => void) | null = null
+  try {
+    const ctx = useCase()
+    ctxMode = ctx.mode ?? null
+    ctxModes = ctx.modes ?? []
+    ctxSetMode = ctx.setMode ?? null
+  } catch {
+    /* outside CaseWorkspace — no tabs */
+  }
   const [copied, setCopied] = useState(false)
   const title = sample?.display_name || sample?.sha_short || sha.slice(0, 12)
   const elapsed = fmtElapsed(live?.elapsed_s)
@@ -91,6 +103,44 @@ export default function CaseChrome({
           </span>
         )}
       </div>
+      {ctxModes.length > 0 && ctxSetMode && (
+        <div className="mode-tabs" style={{ display: 'flex', gap: 6, marginTop: 10, flexWrap: 'wrap' }}>
+          {ctxModes.map((m) => (
+            <button
+              key={m}
+              className={`mode-tab${ctxMode === m ? ' active' : ''}`}
+              onClick={() => ctxSetMode!(m)}
+              style={{
+                padding: '4px 10px',
+                borderRadius: 6,
+                border: ctxMode === m ? '1px solid var(--accent)' : '1px solid var(--border)',
+                background: ctxMode === m ? 'var(--accent-bg, #eef)' : 'transparent',
+                fontWeight: ctxMode === m ? 600 : 400,
+                cursor: 'pointer',
+                fontSize: 12,
+              }}
+            >
+              {m}
+            </button>
+          ))}
+          <button
+            className={`mode-tab${ctxMode === null ? ' active' : ''}`}
+            onClick={() => ctxSetMode!(null)}
+            title="legacy flat dir (pre-segregation)"
+            style={{
+              padding: '4px 10px',
+              borderRadius: 6,
+              border: ctxMode === null ? '1px solid var(--accent)' : '1px solid var(--border)',
+              background: ctxMode === null ? 'var(--accent-bg, #eef)' : 'transparent',
+              fontWeight: ctxMode === null ? 600 : 400,
+              cursor: 'pointer',
+              fontSize: 12,
+            }}
+          >
+            legacy
+          </button>
+        </div>
+      )}
     </div>
   )
 }
