@@ -113,8 +113,9 @@ export default function CaseChrome({
               style={{
                 padding: '4px 10px',
                 borderRadius: 6,
-                border: ctxMode === m ? '1px solid var(--accent)' : '1px solid var(--border)',
-                background: ctxMode === m ? 'var(--accent-bg, #eef)' : 'transparent',
+                border: ctxMode === m ? '1px solid var(--accent)' : '1px solid var(--line)',
+                background: ctxMode === m ? 'var(--accent-wash)' : 'var(--bg-2)',
+                color: ctxMode === m ? 'var(--accent-hi)' : 'var(--tx-1)',
                 fontWeight: ctxMode === m ? 600 : 400,
                 cursor: 'pointer',
                 fontSize: 12,
@@ -130,8 +131,9 @@ export default function CaseChrome({
             style={{
               padding: '4px 10px',
               borderRadius: 6,
-              border: ctxMode === null ? '1px solid var(--accent)' : '1px solid var(--border)',
-              background: ctxMode === null ? 'var(--accent-bg, #eef)' : 'transparent',
+              border: ctxMode === null ? '1px solid var(--accent)' : '1px solid var(--line)',
+              background: ctxMode === null ? 'var(--accent-wash)' : 'var(--bg-2)',
+              color: ctxMode === null ? 'var(--accent-hi)' : 'var(--tx-1)',
               fontWeight: ctxMode === null ? 600 : 400,
               cursor: 'pointer',
               fontSize: 12,
