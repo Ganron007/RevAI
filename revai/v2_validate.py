@@ -31,6 +31,8 @@ SCRIPTS = Path("/opt/scripts")
 LOGS = Path("/opt/samples/logs")
 SESSIONS = Path("/opt/samples/sessions")
 
+from v2_lib import case_dir  # noqa: E402
+
 SAMPLES = {
     "apt29": {
         "path": "/opt/samples/corpus/APT29 CozyBear/01468b1d3e089985a4ed255b6594d24863cfd94a647329c631e4f4e52759f8a9/TrojanCozyBear.bin",
@@ -302,7 +304,7 @@ def run_triage(key: str, info: dict, sandbox: bool = False) -> dict:
     if not ok:
         return {"sample": key, "sha256": sha, "mode": "triage", "status": "FAIL", "steps": steps}
 
-    verdict_path = LOGS / sha / "verdict.json"
+    verdict_path = case_dir(sha) / "verdict.json"
     if not verdict_path.is_file():
         return {
             "sample": key, "sha256": sha, "mode": "triage", "status": "FAIL",
@@ -349,7 +351,7 @@ def run_triage(key: str, info: dict, sandbox: bool = False) -> dict:
 
 
 def _assert_deep_dive(sha: str, depth: bool = False) -> tuple[bool, str]:
-    p = LOGS / sha / "deep-dive.json"
+    p = case_dir(sha) / "deep-dive.json"
     if not p.is_file():
         return False, "missing deep-dive.json"
     try:
@@ -373,9 +375,9 @@ def _assert_deep_dive(sha: str, depth: bool = False) -> tuple[bool, str]:
 
 
 def _assert_yara(sha: str, depth: bool = False) -> tuple[bool, str]:
-    yar = LOGS / sha / "rule.yar"
-    meta = LOGS / sha / "rule.yara.json"
-    sigma = LOGS / sha / "rule.yml"
+    yar = case_dir(sha) / "rule.yar"
+    meta = case_dir(sha) / "rule.yara.json"
+    sigma = case_dir(sha) / "rule.yml"
     if not yar.is_file():
         return False, "missing rule.yar"
     if yar.stat().st_size < 20:
@@ -395,7 +397,7 @@ def _assert_yara(sha: str, depth: bool = False) -> tuple[bool, str]:
 
 
 def _assert_report(sha: str, depth: bool = False) -> tuple[bool, str]:
-    p = LOGS / sha / "REPORT-v2.md"
+    p = case_dir(sha) / "REPORT-v2.md"
     if not p.is_file():
         return False, "missing REPORT-v2.md"
     if p.stat().st_size < 50:
@@ -431,7 +433,7 @@ def run_five_agent(key: str, info: dict, sandbox: bool = False, depth: bool = Fa
         if not ok:
             return {"sample": key, "sha256": sha, "mode": "five_agent", "status": "FAIL", "steps": steps}
 
-    verdict_path = LOGS / sha / "verdict.json"
+    verdict_path = case_dir(sha) / "verdict.json"
     if not verdict_path.is_file():
         return {
             "sample": key, "sha256": sha, "mode": "five_agent", "status": "FAIL",
@@ -517,7 +519,7 @@ def run_five_agent(key: str, info: dict, sandbox: bool = False, depth: bool = Fa
 
 
 def _assert_correlate(sha: str) -> tuple[bool, str]:
-    p = LOGS / sha / "REPORT-MASTER-v3.md"
+    p = case_dir(sha) / "REPORT-MASTER-v3.md"
     if not p.is_file():
         return False, "missing REPORT-MASTER-v3.md"
     if p.stat().st_size < 50:

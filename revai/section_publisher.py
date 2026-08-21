@@ -35,6 +35,7 @@ from v2_lib import (
     REPORT_SECTION_SPECS,
     TECHNICAL_REPORT_SECTIONS,
     LOGS_DIR,
+    case_dir,
     _sec_identity_evidence,
     _sec_classification_evidence,
     _sec_triage_evidence,
@@ -418,7 +419,7 @@ def run_section_based_publish(sha: str, tools_results: dict,
     report_markdown = provenance_block() + "\n".join(parts)
 
     # Save evidence pack + backward-compat root files
-    out_dir = LOGS_DIR / sha / "correlate"
+    out_dir = case_dir(sha) / "correlate"
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "00-tools-raw.json").write_text(
         json.dumps(tools_results, indent=2, default=str))
@@ -430,7 +431,7 @@ def run_section_based_publish(sha: str, tools_results: dict,
     (out_dir / "02-REPORT-MASTER-v3.md").write_text(report_markdown)
 
     # Backward compatibility: also write at logs root
-    root_dir = LOGS_DIR / sha
+    root_dir = case_dir(sha)
     (root_dir / "REPORT-MASTER-v3.md").write_text(report_markdown)
     (root_dir / "section-results-v3.json").write_text(
         json.dumps({"sections": section_results, "timings": section_timings,
@@ -477,7 +478,7 @@ def run_technical_publish(sha: str, tools_results: dict) -> dict:
 
     sql_evidence = tools_results.get("sql_evidence")
     if sql_evidence is None:
-        sql_path = LOGS_DIR / sha / "deep_dive" / "00-sql-evidence.json"
+        sql_path = case_dir(sha) / "deep_dive" / "00-sql-evidence.json"
         if sql_path.exists():
             try:
                 sql_evidence = json.loads(sql_path.read_text(encoding="utf-8", errors="replace"))
@@ -496,7 +497,7 @@ def run_technical_publish(sha: str, tools_results: dict) -> dict:
         speakeasy=tools_results.get("speakeasy"),
         frida_probe=tools_results.get("frida_probe"),
     )
-    (LOGS_DIR / sha / "EVIDENCE-BUNDLE.md").write_text(technical_evidence)
+    (case_dir(sha) / "EVIDENCE-BUNDLE.md").write_text(technical_evidence)
 
     sections = "\n".join(f"- {s}" for s in TECHNICAL_REPORT_SECTIONS)
     # NOTE: no scorecard — RevAI does not use the legacy run_scorecard /
@@ -620,10 +621,10 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
     )
     technical_report["quality"] = q
 
-    tech_path = LOGS_DIR / sha / "REPORT-TECHNICAL-v3.md"
+    tech_path = case_dir(sha) / "REPORT-TECHNICAL-v3.md"
     tech_path.write_text(tech_md)
-    (LOGS_DIR / sha / "correlate" / "03-REPORT-TECHNICAL-v3.md").write_text(tech_md)
-    (LOGS_DIR / sha / "report-technical-v3.json").write_text(
+    (case_dir(sha) / "correlate" / "03-REPORT-TECHNICAL-v3.md").write_text(tech_md)
+    (case_dir(sha) / "report-technical-v3.json").write_text(
         json.dumps(technical_report, indent=2, default=str)
     )
 

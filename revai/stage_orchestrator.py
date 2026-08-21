@@ -33,6 +33,7 @@ sys.path.insert(0, "/opt/scripts")
 from v2_lib import (  # noqa: E402
     LOGS_DIR,
     SESSIONS_DIR,
+    case_dir,
     ensure_pipeline_runtime_env,
     get_planner_model,
     get_verdict_model,
@@ -92,13 +93,13 @@ def _verdict_label(v: str) -> str:
 def _verdicts(sha: str) -> dict[str, str]:
     qv = dv = ""
     try:
-        p = LOGS_DIR / sha / "verdict.json"
+        p = case_dir(sha) / "verdict.json"
         if p.exists():
             qv = str(json.loads(p.read_text()).get("verdict") or "").lower()
     except Exception:
         pass
     try:
-        p = LOGS_DIR / sha / "deep_dive" / "05-deep-dive.json"
+        p = case_dir(sha) / "deep_dive" / "05-deep-dive.json"
         if p.exists():
             dv = str(json.loads(p.read_text()).get("verdict") or "").lower()
     except Exception:
@@ -120,7 +121,7 @@ class StageRunner:
         self.sha = sha
         self.sample = sample
         self.events = events
-        self.run_log = LOGS_DIR / sha / "orchestrator.log"
+        self.run_log = case_dir(sha) / "orchestrator.log"
         self.run_log.parent.mkdir(parents=True, exist_ok=True)
 
     def _run(self, name: str, cmd: list[str], timeout: int) -> dict[str, Any]:
@@ -521,6 +522,7 @@ def run_langgraph_orchestrator(sample: Path | None, sha: str | None) -> dict:
         _agent_prompt_kw = "prompt"
 
     ensure_pipeline_runtime_env()
+    os.environ["REVAI_RUN_MODE"] = "agentic"
     os.environ.setdefault("REVAI_AGENTIC_ENGINE", "langgraph")
     os.environ.setdefault("REVAI_RAG", "0")
 
@@ -651,7 +653,7 @@ Use tools. Do not claim success without check_quality.ok=true.
 
     # Deterministic finalize — never trust planner FINAL alone
     audit = {}
-    aj = LOGS_DIR / sha / "pipeline-audit.json"
+    aj = case_dir(sha) / "pipeline-audit.json"
     if aj.exists():
         try:
             audit = json.loads(aj.read_text())
@@ -665,7 +667,7 @@ Use tools. Do not claim success without check_quality.ok=true.
     # The audit hard-requires rule.yar (yara_gen stage). A planner that
     # skips run_yara_gen would fail the audit with no retry path, so we
     # run it deterministically here when missing, then re-run the gate.
-    rule_yar = LOGS_DIR / sha / "rule.yar"
+    rule_yar = case_dir(sha) / "rule.yar"
     if not rule_yar.exists() and "run_yara_gen" not in [
         e.get("tool") for e in events if e.get("type") == "tool_result"
     ]:
@@ -708,7 +710,7 @@ Use tools. Do not claim success without check_quality.ok=true.
         _ds = _strict.get(_vv.get("deep_label") or "", 0)
         if _qs > _ds:
             _reconciled_to = _vv.get("quick_label")
-            _deep_p = LOGS_DIR / sha / "deep_dive" / "05-deep-dive.json"
+            _deep_p = case_dir(sha) / "deep_dive" / "05-deep-dive.json"
             if _deep_p.exists():
                 try:
                     _deep = json.loads(_deep_p.read_text())
@@ -742,7 +744,7 @@ Use tools. Do not claim success without check_quality.ok=true.
     # Part B — mandatory publish/section enforcement (planner may skip publish;
     # the audit then fails on missing reports with no retry path). Same pattern
     # as the yara_gen enforcement above.
-    _master_md = LOGS_DIR / sha / "REPORT-MASTER-v2.md"
+    _master_md = case_dir(sha) / "REPORT-MASTER-v2.md"
     _did_publish = "run_publish" in [
         e.get("tool") for e in events if e.get("type") == "tool_result"
     ]
@@ -876,9 +878,9 @@ Use tools. Do not claim success without check_quality.ok=true.
         "stage_ok": audit.get("stage_ok"),
         "pipeline_audit_present": bool(audit),
     }
-    out = LOGS_DIR / sha / "orchestrator_trace.json"
+    out = case_dir(sha) / "orchestrator_trace.json"
     out.write_text(json.dumps(trace, indent=2, default=str))
-    (LOGS_DIR / sha / "stage_trace.json").write_text(json.dumps(trace, indent=2, default=str))
+    (case_dir(sha) / "stage_trace.json").write_text(json.dumps(trace, indent=2, default=str))
     print(
         f"[orchestrator] trace -> {out} all_green={trace['all_green']} "
         f"quality_green={quality_green} truly_green={truly_green} stages={stages_run}",

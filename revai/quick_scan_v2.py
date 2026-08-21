@@ -19,6 +19,7 @@ from pathlib import Path
 sys.path.insert(0, "/opt/scripts")
 from v2_lib import (  # noqa: E402
     LOGS_DIR,
+    case_dir,
     TOOL_MANIFEST,
     McpGhidraClient,
     audit_write,
@@ -115,7 +116,7 @@ def load_env_file(path: Path) -> None:
 
 def load_ghidra_imports_sidecar(sha: str) -> list[dict]:
     """Load the resolved Ghidra imports sidecar produced by PopulateImportsFromPTR.py."""
-    path = LOGS_DIR / sha / "ghidra_imports_resolved.json"
+    path = case_dir(sha) / "ghidra_imports_resolved.json"
     if not path.exists():
         return []
     try:
@@ -195,7 +196,7 @@ def load_intake_validation(sha: str) -> dict:
     Contains tool_summaries (Malcat/Ghidra/IDA), warnings, and LLM/rule-based
     source_decisions. Returns empty dict if missing or unreadable.
     """
-    path = LOGS_DIR / sha / "intake-validation.json"
+    path = case_dir(sha) / "intake-validation.json"
     if not path.exists():
         return {}
     try:

@@ -31,6 +31,8 @@ LOGS = Path("/opt/samples/logs")
 SESSIONS = Path("/opt/samples/sessions")
 SHOWCASE_ROOT = LOGS / "_showcase_audits"
 
+from v2_lib import case_dir  # noqa: E402
+
 # Candidate deep tools — filtered by tools_raw["_format"] + TOOL_MANIFEST applies_to
 PE_DEEP_TOOLS = [
     "malcat", "capa", "pe_imports", "yara", "floss", "dotnet", "r2_decomp",
@@ -1062,7 +1064,7 @@ def collect_cross_cutting(log: Path, sess: dict) -> dict:
 
 def pack_showcase(sha: str, report: dict) -> Path:
     """Copy full evidence pack for public audit showcase."""
-    src = LOGS / sha
+    src = case_dir(sha)
     dest = SHOWCASE_ROOT / sha
     dest.mkdir(parents=True, exist_ok=True)
     copy_names = [
@@ -1422,7 +1424,7 @@ def main():
     )
     args = ap.parse_args()
     sha = args.sha256
-    log = LOGS / sha
+    log = case_dir(sha)
     sess = _load(SESSIONS / f"{sha}.json") or {}
     mode = args.mode
     if mode == "auto":

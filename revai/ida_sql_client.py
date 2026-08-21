@@ -39,6 +39,8 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+from v2_lib import case_dir
+
 # Remnux-side config
 SESSIONS_DIR = Path("/opt/samples/sessions")
 LOGS_DIR = Path("/opt/samples/logs")
@@ -281,7 +283,7 @@ class IdaSqlClient:
         row_dicts = [dict(zip(columns, r)) for r in rows_lists]
 
         # Persist full result to audit log (NEVER truncated on disk)
-        audit_path = LOGS_DIR / sha / "audit.jsonl"
+        audit_path = case_dir(sha) / "audit.jsonl"
         audit_path.parent.mkdir(parents=True, exist_ok=True)
         audit_record = {
             "ts": time.time(),
@@ -395,7 +397,7 @@ class IdaSqlClient:
             if port > self.port + 50:
                 raise RuntimeError("no free port for idasql HTTP server")
 
-        log_path = LOGS_DIR / sha / "idasql-server.log"
+        log_path = case_dir(sha) / "idasql-server.log"
         log_path.parent.mkdir(parents=True, exist_ok=True)
         log_fh = open(log_path, "ab")
 
@@ -480,7 +482,7 @@ class IdaSqlClient:
         if not i64.exists():
             raise FileNotFoundError(f"IDA database not found: {i64}")
 
-        snap_dir = LOGS_DIR / sha / SNAPSHOT_DIR_NAME
+        snap_dir = case_dir(sha) / SNAPSHOT_DIR_NAME
         snap_dir.mkdir(parents=True, exist_ok=True)
         ts = time.strftime("%Y-%m-%dT%H-%M-%S", time.gmtime())
         snap_id = f"{ts}__ida-annotate"
@@ -618,7 +620,7 @@ class IdaSqlClient:
             self._kill_any_idasql()
 
         # Log to audit.jsonl
-        audit_path = LOGS_DIR / sha / "audit.jsonl"
+        audit_path = case_dir(sha) / "audit.jsonl"
         audit_path.parent.mkdir(parents=True, exist_ok=True)
         audit_record = {
             "ts": time.time(),
@@ -657,7 +659,7 @@ class IdaSqlClient:
         After restore, kills the running idasql (if any) so
         the next query reopens with the restored database.
         """
-        snap_dir = LOGS_DIR / sha / SNAPSHOT_DIR_NAME
+        snap_dir = case_dir(sha) / SNAPSHOT_DIR_NAME
         if not snap_dir.exists():
             raise FileNotFoundError(f"no snapshots dir for {sha}: {snap_dir}")
         if snapshot_id is None:

@@ -32,6 +32,7 @@ sys.path.insert(0, V2_SCRIPTS)
 
 from v2_lib import (  # noqa: E402
     McpGhidraClient,
+    case_dir,
     audit_write,
     ensure_pipeline_runtime_env,
     get_llm_model,
@@ -518,7 +519,7 @@ def main():
     session_id = session["session_id"]
     sample_path = session["sample_path"]
 
-    ev_dir = LOGS_DIR / sha / "agentic_recovery"
+    ev_dir = case_dir(sha) / "agentic_recovery"
     ev_dir.mkdir(parents=True, exist_ok=True)
 
     model = get_llm_model()
@@ -540,7 +541,7 @@ def main():
             "model": model,
             "generated_at": datetime.now(timezone.utc).isoformat(),
         }
-        recovery_path = LOGS_DIR / sha / "function_recovery.json"
+        recovery_path = case_dir(sha) / "function_recovery.json"
         recovery_path.write_text(json.dumps(recovery, indent=2, default=str))
         (ev_dir / "06-function_recovery.json").write_text(json.dumps(recovery, indent=2, default=str))
         audit_write(sha, {
@@ -578,7 +579,7 @@ def main():
                 "model": model,
                 "generated_at": datetime.now(timezone.utc).isoformat(),
             }
-            recovery_path = LOGS_DIR / sha / "function_recovery.json"
+            recovery_path = case_dir(sha) / "function_recovery.json"
             recovery_path.write_text(json.dumps(recovery, indent=2, default=str))
             (ev_dir / "06-function_recovery.json").write_text(
                 json.dumps(recovery, indent=2, default=str))
@@ -716,7 +717,7 @@ def main():
             "synthesis": synthesis,
             "writeback": writeback_summary,
         }
-        recovery_path = LOGS_DIR / sha / "function_recovery.json"
+        recovery_path = case_dir(sha) / "function_recovery.json"
         recovery_path.write_text(json.dumps(recovery, indent=2, default=str))
         (ev_dir / "06-function_recovery.json").write_text(json.dumps(recovery, indent=2, default=str))
 

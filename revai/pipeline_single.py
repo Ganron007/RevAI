@@ -26,6 +26,7 @@ sys.path.insert(0, "/opt/scripts")
 from v2_lib import (  # noqa: E402
     LOGS_DIR,
     SESSIONS_DIR,
+    case_dir,
     ensure_pipeline_runtime_env,
     load_session,
     revai_provenance,
@@ -70,7 +71,7 @@ def _run(cmd: list[str], log_path: Path, timeout: int) -> int:
 
 
 def _quick_verdict(sha: str) -> str:
-    p = LOGS_DIR / sha / "verdict.json"
+    p = case_dir(sha) / "verdict.json"
     if not p.exists():
         return ""
     try:
@@ -80,7 +81,7 @@ def _quick_verdict(sha: str) -> str:
 
 
 def _deep_verdict(sha: str) -> str:
-    p = LOGS_DIR / sha / "deep_dive" / "05-deep-dive.json"
+    p = case_dir(sha) / "deep_dive" / "05-deep-dive.json"
     if not p.exists():
         return ""
     try:
@@ -91,6 +92,7 @@ def _deep_verdict(sha: str) -> str:
 
 def run_single(sample: Path | None, sha: str | None, mode: str = "standard") -> dict:
     ensure_pipeline_runtime_env()
+    os.environ["REVAI_RUN_MODE"] = "scripted"
     # Scripted spine is deterministic: zero retries everywhere (stage + tool
     # level). Explicit user env (REVAI_STAGE_RETRIES=..., REVAI_TOOL_RETRIES=...)
     # still wins.
@@ -118,8 +120,8 @@ def run_single(sample: Path | None, sha: str | None, mode: str = "standard") -> 
         sample = Path(sample_path)
         intake_cmd = None
 
-    run_log = LOGS_DIR / sha / "pipeline_single.log"
-    trace_path = LOGS_DIR / sha / "stage_trace.json"
+    run_log = case_dir(sha) / "pipeline_single.log"
+    trace_path = case_dir(sha) / "stage_trace.json"
     stages = []
     if intake_cmd:
         stages.append(("intake", intake_cmd, 7200))
@@ -213,7 +215,7 @@ def run_single(sample: Path | None, sha: str | None, mode: str = "standard") -> 
     trace["finished_at"] = _utc()
     trace["elapsed_s"] = round(time.time() - t0, 1)
     audit = {}
-    aj = LOGS_DIR / sha / "pipeline-audit.json"
+    aj = case_dir(sha) / "pipeline-audit.json"
     if aj.exists():
         try:
             audit = json.loads(aj.read_text())
@@ -221,7 +223,7 @@ def run_single(sample: Path | None, sha: str | None, mode: str = "standard") -> 
             pass
     trace["all_green"] = bool(audit.get("all_green"))
     trace["stage_ok"] = audit.get("stage_ok")
-    (LOGS_DIR / sha).mkdir(parents=True, exist_ok=True)
+    case_dir(sha).mkdir(parents=True, exist_ok=True)
     trace_path.write_text(json.dumps(trace, indent=2, default=str))
     print(f"[pipeline_single] trace -> {trace_path} all_green={trace['all_green']}", flush=True)
     return trace

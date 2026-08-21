@@ -20,6 +20,7 @@ sys.path.insert(0, "/opt/scripts")
 from v2_lib import (  # noqa: E402
     McpGhidraClient,
     audit_write,
+    case_dir,
     goodware_fp_scan,
     hitl_checkpoint,
     ida_query_remote,
@@ -78,7 +79,7 @@ def collect_strings(session_id: str, ida_id: str | None, verdict: dict | None,
     # already ran; reuse, don't re-run). Gap #7: rules were SQL-strings-only.
     if sha256:
         try:
-            qs = json.loads((LOGS / sha256 / "quick_scan" / "00-tools-raw.json").read_text())
+            qs = json.loads((case_dir(sha256) / "quick_scan" / "00-tools-raw.json").read_text())
             for src_key in ("floss", "xor"):
                 rows = (qs.get(src_key) or {}).get("strings") or []
                 if isinstance(rows, list):

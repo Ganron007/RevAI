@@ -53,6 +53,8 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
+from v2_lib import case_dir
+
 # Paths (must match mcp_ghidra.py conventions)
 SESSIONS_DIR = Path("/opt/samples/sessions")
 LOGS_DIR = Path("/opt/samples/logs")
@@ -227,7 +229,7 @@ class GhidraSqlClient:
         row_dicts = [dict(zip(columns, r)) for r in rows_lists]
 
         # Persist full result to audit log (NEVER truncated on disk)
-        audit_path = LOGS_DIR / sha / "audit.jsonl"
+        audit_path = case_dir(sha) / "audit.jsonl"
         audit_path.parent.mkdir(parents=True, exist_ok=True)
         audit_record = {
             "ts": time.time(),
@@ -347,7 +349,7 @@ class GhidraSqlClient:
                 raise RuntimeError("no free port for ghidrasql HTTP server")
 
         sha = session.get("sha256") or sid.split("-", 1)[-1]
-        log_path = LOGS_DIR / sha / "ghidrasql-server.log"
+        log_path = case_dir(sha) / "ghidrasql-server.log"
         log_path.parent.mkdir(parents=True, exist_ok=True)
         log_fh = open(log_path, "ab")
 
@@ -559,7 +561,7 @@ class GhidraSqlClient:
         gpr = Path(sess["gpr_path"])
         if not gpr.exists():
             raise FileNotFoundError(f"gpr not found: {gpr}")
-        snap_dir = LOGS_DIR / sha / "ghidra-snapshots"
+        snap_dir = case_dir(sha) / "ghidra-snapshots"
         snap_dir.mkdir(parents=True, exist_ok=True)
         ts = time.strftime("%Y-%m-%dT%H-%M-%S", time.gmtime())
         snap_id = f"{ts}__annotate"
@@ -683,7 +685,7 @@ class GhidraSqlClient:
                 per_stmt_results.append({"sql": sql, "ok": True, "payload": payload})
 
         # Log to audit.jsonl (NEVER truncated on disk)
-        audit_path = LOGS_DIR / sha / "audit.jsonl"
+        audit_path = case_dir(sha) / "audit.jsonl"
         audit_path.parent.mkdir(parents=True, exist_ok=True)
         audit_record = {
             "ts": time.time(),
@@ -715,7 +717,7 @@ class GhidraSqlClient:
         After restore, kills the running ghidrasql (if any) so
         the next query reopens with the restored project.
         """
-        snap_dir = LOGS_DIR / sha / "ghidra-snapshots"
+        snap_dir = case_dir(sha) / "ghidra-snapshots"
         if not snap_dir.exists():
             raise FileNotFoundError(f"no snapshots dir for {sha}: {snap_dir}")
         if snapshot_id is None:

@@ -28,6 +28,7 @@ from v2_lib import (  # noqa: E402
     McpGhidraClient,
     EvidenceAssembler,
     LOGS_DIR,
+    case_dir,
     PIPELINE_MODE_LARGE,
     PIPELINE_MODE_STANDARD,
     audit_write,
@@ -242,7 +243,7 @@ DB_INFO_IDA = "SELECT key, value FROM db_info;"
 
 def load_intake_validation(sha: str) -> dict:
     """Load the intake-validation.json produced by intake_v2.py."""
-    path = LOGS_DIR / sha / "intake-validation.json"
+    path = case_dir(sha) / "intake-validation.json"
     if not path.exists():
         return {}
     try:
@@ -539,7 +540,7 @@ def _run_large_agentic_deep_dive(sha: str, max_steps: int = 10) -> dict:
     if proc.returncode != 0:
         raise RuntimeError(f"deep_dive_agentic failed rc={proc.returncode}")
 
-    ev_dir = LOGS_DIR / sha / "deep_dive"
+    ev_dir = case_dir(sha) / "deep_dive"
     agentic_path = ev_dir / "agentic_deep_dive.json"
     # P0.8: rc=0 alone is not success — the agentic JSON must exist and
     # must not flag incomplete tooling / failed checklist.
@@ -626,7 +627,7 @@ def main():
         _run_large_agentic_deep_dive(sha, max_steps=args.max_steps)
         return
 
-    ev_dir = LOGS_DIR / sha / "deep_dive"
+    ev_dir = case_dir(sha) / "deep_dive"
     ev_dir.mkdir(parents=True, exist_ok=True)
 
     hitl_checkpoint("deep_dive_v2", "pre_sql", {"sha256": sha, "phase": "gather_sql"})
@@ -798,7 +799,7 @@ def main():
     (ev_dir / "05-deep-dive.json").write_text(json.dumps(analysis, indent=2, default=str))
 
     # Backward-compat: also write deep-dive.json at logs root
-    root_path = LOGS_DIR / sha / "deep-dive.json"
+    root_path = case_dir(sha) / "deep-dive.json"
     root_path.write_text(json.dumps(analysis, indent=2, default=str))
 
     # --- Auto-apply Ghidra + IDA annotations (write-back) ---

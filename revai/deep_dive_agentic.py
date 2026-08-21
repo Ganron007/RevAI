@@ -23,6 +23,7 @@ sys.path.insert(0, "/opt/scripts")
 from v2_lib import (  # noqa: E402
     McpGhidraClient,
     LOGS_DIR,
+    case_dir,
     calibrate_verdict,
     capa_analyze,
     pe_import_signals,
@@ -328,7 +329,7 @@ def load_env_file(path: Path) -> None:
 
 
 def load_intake_validation(sha: str) -> dict:
-    path = LOGS_DIR / sha / "intake-validation.json"
+    path = case_dir(sha) / "intake-validation.json"
     if not path.exists():
         return {}
     try:
@@ -683,7 +684,7 @@ def _seed_signal_extractors(history: list, findings: dict, session: dict, sha: s
         try:
             aa = extract_anti_analysis(client, ghidra_sid)
             dr = extract_dynamic_resolve(client, ghidra_sid)
-            ev_dir = LOGS_DIR / sha / "deep_dive"
+            ev_dir = case_dir(sha) / "deep_dive"
             ev_dir.mkdir(parents=True, exist_ok=True)
             payload = {"anti_analysis": aa, "dynamic_resolve": dr}
 
@@ -730,7 +731,7 @@ def _seed_signal_extractors(history: list, findings: dict, session: dict, sha: s
             if unpack_enabled():
                 try:
                     qs = json.loads(
-                        (LOGS_DIR / sha / "quick_scan" / "00-tools-raw.json").read_text()
+                        (case_dir(sha) / "quick_scan" / "00-tools-raw.json").read_text()
                     )
                     pkg_label = (qs.get("packer") or {}).get("label")
                 except Exception:
@@ -738,7 +739,7 @@ def _seed_signal_extractors(history: list, findings: dict, session: dict, sha: s
                 if pkg_label in ("packed", "suspicious"):
                     unpack = run_unpack_pass(
                         str(session.get("sample_path") or ""),
-                        str(LOGS_DIR / sha / "unpack"),
+                        str(case_dir(sha) / "unpack"),
                     )
                     payload["unpack"] = unpack
                     findings["unpack_pass"] = {
@@ -937,7 +938,7 @@ def _run_standard_checklist(registry: "ToolRegistry", session: dict, sha: str) -
     # Format-aware gate (Speakeasy never required for .NET)
     gate = evaluate_tool_checklist(tools_raw)
 
-    ev_dir = LOGS_DIR / sha / "deep_dive"
+    ev_dir = case_dir(sha) / "deep_dive"
     ev_dir.mkdir(parents=True, exist_ok=True)
     (ev_dir / "01-tools-raw.json").write_text(json.dumps(tools_raw, indent=2, default=str))
     (ev_dir / "01-tools-gate.json").write_text(json.dumps(gate, indent=2, default=str))
@@ -1660,7 +1661,7 @@ def _finalize_agentic_result(
             final_answer["depth_coverage"] = False
             final_answer["depth_coverage_missing"] = _cov["missing"]
 
-    ev_dir = LOGS_DIR / sha / "deep_dive"
+    ev_dir = case_dir(sha) / "deep_dive"
     ev_dir.mkdir(parents=True, exist_ok=True)
     (ev_dir / "agentic_deep_dive.json").write_text(json.dumps(final_answer, indent=2, default=str))
     compat = {

@@ -27,6 +27,7 @@ from v2_lib import (  # noqa: E402
     append_technical_evidence_appendix,
     audit_write,
     build_technical_evidence_block,
+    case_dir,
     compact_json_for_prompt,
     align_publish_markdown_to_upstream,
     cross_stage_verdict_lock,
@@ -66,7 +67,7 @@ def load_json(path: Path) -> dict | None:
 
 
 def load_audit_tail(sha: str, limit: int = 40) -> list:
-    audit = LOGS / sha / "audit.jsonl"
+    audit = case_dir(sha) / "audit.jsonl"
     if not audit.exists():
         return []
     out = []

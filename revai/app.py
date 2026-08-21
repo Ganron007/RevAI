@@ -26,6 +26,8 @@ from flask import Flask, jsonify, render_template, request, Response, send_from_
 SESSIONS_DIR = Path("/opt/samples/sessions")
 LOGS_DIR = Path("/opt/samples/logs")
 SCRIPTS_DIR = Path("/opt/scripts")
+sys.path.insert(0, str(SCRIPTS_DIR))
+from v2_lib import case_dir  # noqa: E402
 CONFIG_PATH = Path("/opt/samples/pipeline-config.json")
 # P0.3: LLM API key lives ONLY in this chmod-600 env file — never in pipeline-config.json.
 SECRETS_PATH = Path(os.environ.get("CADRE_UI_SECRETS", "/opt/secrets/cadre-ui.env"))
@@ -245,7 +247,7 @@ def _verdict_fields(sha: str) -> dict:
         "family_guess": "",
         "score": None,
     }
-    vp = LOGS_DIR / sha / "verdict.json"
+    vp = case_dir(sha) / "verdict.json"
     if not vp.exists():
         return out
     try:
@@ -368,7 +370,7 @@ def _json_path_get(data, expr: str):
 
 def list_json_artifacts(sha: str) -> list:
     """JSON files under logs/<sha> suitable for Raw Audit."""
-    base = LOGS_DIR / sha
+    base = case_dir(sha)
     out = []
     if not base.exists():
         return out
@@ -456,7 +458,7 @@ def stage_sample(src_path: str, family: str = "unknown") -> dict:
             h.update(chunk)
     sha = h.hexdigest()
     # Initialize progress file
-    prog_dir = LOGS_DIR / sha
+    prog_dir = case_dir(sha)
     prog_dir.mkdir(parents=True, exist_ok=True)
     prog_path = prog_dir / "intake-progress.json"
     prog_path.write_text(json.dumps({
@@ -506,7 +508,7 @@ def api_intake_progress(sha):
     sha = require_sha(sha)
     if not sha:
         return jsonify({"error": "invalid sha"}), 400
-    p = LOGS_DIR / sha / "intake-progress.json"
+    p = case_dir(sha) / "intake-progress.json"
     if not p.exists():
         return jsonify({"stage": "none", "pct": 0, "msg": "no intake started"})
     try:
@@ -519,7 +521,7 @@ def api_intake_progress(sha):
 
 def get_status_path(sha: str) -> Path:
     LOGS_DIR.mkdir(parents=True, exist_ok=True)
-    return LOGS_DIR / sha / "pipeline-status.json"
+    return case_dir(sha) / "pipeline-status.json"
 
 
 def load_pipeline_state(sha: str) -> dict:
@@ -558,12 +560,12 @@ def infer_pipeline_state(sha: str) -> dict:
         all_present = True
         for art in artifacts:
             if dir_name:
-                p = LOGS_DIR / sha / dir_name / art
+                p = case_dir(sha) / dir_name / art
             else:
                 if art == "session.json":
                     p = SESSIONS_DIR / f"{sha}.json"
                 else:
-                    p = LOGS_DIR / sha / art
+                    p = case_dir(sha) / art
             if not p.exists():
                 all_present = False
                 break
@@ -615,7 +617,7 @@ def resolve_file_path(sha: str, rel_path: str) -> Path | None:
     if rel_path == "session.json":
         sess = SESSIONS_DIR / f"{sha_ok}.json"
         return sess if sess.exists() else None
-    base = (LOGS_DIR / sha_ok).resolve()
+    base = (case_dir(sha_ok)).resolve()
     full = (base / rel_path).resolve()
     try:
         full.relative_to(base)
@@ -745,6 +747,7 @@ def get_stage_env(rc: dict | None = None) -> dict[str, str]:
         # Post-opt standard defaults (S1/S4) — match CLI rebench / S2 ui_default
         "CADRE_FLOSS_PROFILE": os.environ.get("CADRE_FLOSS_PROFILE", "auto"),
         "CADRE_CAPA_ENGINE": os.environ.get("CADRE_CAPA_ENGINE", "auto"),
+        "REVAI_RUN_MODE": "ui",
     }
     # LLM backend: reads model names from env (REVAI_LLM_MODEL, REVAI_LLM_PLANNER_MODEL,
     # REVAI_LLM_VERDICT_MODEL). The env file is the single source of truth for model choice.
@@ -887,7 +890,7 @@ def run_stage(sha: str, stage: str, sample_path: str, rc_snapshot: dict | None =
     save_pipeline_state(sha, state)
 
     # persistent stage log file
-    stage_log_dir = LOGS_DIR / sha / stage
+    stage_log_dir = case_dir(sha) / stage
     stage_log_dir.mkdir(parents=True, exist_ok=True)
     stage_log_path = stage_log_dir / "stage.log"
 
@@ -1232,12 +1235,34 @@ def api_settings_post():
     return jsonify({"ok": True, "config": _settings_public(load_config())})
 
 
+@app.route("/api/modes/<sha>")
+def api_modes(sha):
+    """List available run modes (subdirectories) for a sample."""
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
+    base = LOGS_DIR / sha
+    modes = []
+    if base.is_dir():
+        for d in sorted(base.iterdir()):
+            if d.is_dir() and d.name not in ("deep_dive", "quick_scan", "publish", "correlate", "agentic_recovery", "ghidra-snapshots", "ida-snapshots"):
+                modes.append(d.name)
+    return jsonify({"sha": sha, "modes": modes})
+
+
 @app.route("/api/status/<sha>")
 def api_status(sha):
     sha = require_sha(sha)
     if not sha:
         return jsonify({"error": "invalid sha"}), 400
-    return jsonify(infer_pipeline_state(sha))
+    mode = (request.args.get("mode") or "").strip() or None
+    if mode:
+        os.environ["REVAI_RUN_MODE"] = mode
+    try:
+        return jsonify(infer_pipeline_state(sha))
+    finally:
+        if mode:
+            os.environ.pop("REVAI_RUN_MODE", None)
 
 
 @app.route("/api/deps/<sha>")
@@ -1330,7 +1355,7 @@ def api_reset(sha):
 
     # Remove the per-sample logs directory (stage outputs, reports, stage.logs).
     logs_root = LOGS_DIR.resolve()
-    log_dir = (LOGS_DIR / sha).resolve()
+    log_dir = (case_dir(sha)).resolve()
     try:
         log_dir.relative_to(logs_root)
     except ValueError:
@@ -1369,7 +1394,7 @@ def api_reset(sha):
 
 def _evidence_tree(sha: str) -> list[dict]:
     """Full evidence file tree for a sample (logs + session.json)."""
-    base = LOGS_DIR / sha
+    base = case_dir(sha)
     tree = []
     sess = SESSIONS_DIR / f"{sha}.json"
     if sess.exists():
@@ -1552,9 +1577,9 @@ def api_annotate_pending(sha):
     The analyst reviews these and calls /api/annotate/<sha>/apply to
     commit them (with snapshot for rollback).
     """
-    dd_path = LOGS_DIR / sha / "deep-dive.json"
+    dd_path = case_dir(sha) / "deep-dive.json"
     if not dd_path.exists():
-        dd_path = LOGS_DIR / sha / "deep_dive" / "05-deep-dive.json"
+        dd_path = case_dir(sha) / "deep_dive" / "05-deep-dive.json"
     if not dd_path.exists():
         return jsonify({"error": "deep-dive.json not found — run deep_dive first"}), 404
     try:
@@ -1567,7 +1592,7 @@ def api_annotate_pending(sha):
     ghidra_result = dd.get("ghidra_annotations", {})
 
     # Also check if any snapshots exist for this sample
-    snap_dir = LOGS_DIR / sha / "ghidra-snapshots"
+    snap_dir = case_dir(sha) / "ghidra-snapshots"
     snapshots = []
     if snap_dir.exists():
         for d in sorted(snap_dir.iterdir(), key=lambda p: p.stat().st_mtime, reverse=True):
@@ -1607,9 +1632,9 @@ def api_annotate_apply(sha):
     if custom_annotations:
         annotations = custom_annotations
     else:
-        dd_path = LOGS_DIR / sha / "deep-dive.json"
+        dd_path = case_dir(sha) / "deep-dive.json"
         if not dd_path.exists():
-            dd_path = LOGS_DIR / sha / "deep_dive" / "05-deep-dive.json"
+            dd_path = case_dir(sha) / "deep_dive" / "05-deep-dive.json"
         if not dd_path.exists():
             return jsonify({"error": "deep-dive.json not found — run deep_dive first"}), 404
         dd = json.loads(dd_path.read_text())
@@ -1682,9 +1707,9 @@ def api_ida_annotate_pending(sha):
 
     The IDA pathway runs locally on Remnux via idasql (no SSH).
     """
-    dd_path = LOGS_DIR / sha / "deep-dive.json"
+    dd_path = case_dir(sha) / "deep-dive.json"
     if not dd_path.exists():
-        dd_path = LOGS_DIR / sha / "deep_dive" / "05-deep-dive.json"
+        dd_path = case_dir(sha) / "deep_dive" / "05-deep-dive.json"
     if not dd_path.exists():
         return jsonify({"error": "deep-dive.json not found - run deep_dive first"}), 404
     try:
@@ -1696,7 +1721,7 @@ def api_ida_annotate_pending(sha):
     ida_result = dd.get("ida_annotations", {})
 
     # List IDA snapshots
-    snap_dir = LOGS_DIR / sha / "ida-snapshots"
+    snap_dir = case_dir(sha) / "ida-snapshots"
     snapshots = []
     if snap_dir.exists():
         for d in sorted(snap_dir.iterdir(),
@@ -1733,9 +1758,9 @@ def api_ida_annotate_apply(sha):
     if custom_annotations:
         annotations = custom_annotations
     else:
-        dd_path = LOGS_DIR / sha / "deep-dive.json"
+        dd_path = case_dir(sha) / "deep-dive.json"
         if not dd_path.exists():
-            dd_path = LOGS_DIR / sha / "deep_dive" / "05-deep-dive.json"
+            dd_path = case_dir(sha) / "deep_dive" / "05-deep-dive.json"
         if not dd_path.exists():
             return jsonify({"error": "deep-dive.json not found"}), 404
         dd = json.loads(dd_path.read_text())
@@ -1842,9 +1867,9 @@ def api_hitl_pending(sha):
     excluded — they're already in Ghidra/IDA. This endpoint is for
     HITL review: the analyst sees what NEEDS review, not what's done.
     """
-    dd_path = LOGS_DIR / sha / "deep-dive.json"
+    dd_path = case_dir(sha) / "deep-dive.json"
     if not dd_path.exists():
-        dd_path = LOGS_DIR / sha / "deep_dive" / "05-deep-dive.json"
+        dd_path = case_dir(sha) / "deep_dive" / "05-deep-dive.json"
     if not dd_path.exists():
         return jsonify({"error": "deep-dive.json not found", "pending": []}), 404
     try:
@@ -1874,9 +1899,9 @@ def api_hitl_approve(sha):
     body = request.get_json(silent=True) or {}
     reviewer = body.get("reviewer", "manual")
     target_addr = body.get("address")
-    dd_path = LOGS_DIR / sha / "deep-dive.json"
+    dd_path = case_dir(sha) / "deep-dive.json"
     if not dd_path.exists():
-        dd_path = LOGS_DIR / sha / "deep_dive" / "05-deep-dive.json"
+        dd_path = case_dir(sha) / "deep_dive" / "05-deep-dive.json"
     if not dd_path.exists():
         return jsonify({"error": "deep-dive.json not found"}), 404
     dd = json.loads(dd_path.read_text())
@@ -1940,9 +1965,9 @@ def api_hitl_reject(sha):
     reviewer = body.get("reviewer", "manual")
     reason = body.get("reason", "rejected by reviewer")
     target_addr = body.get("address")
-    dd_path = LOGS_DIR / sha / "deep-dive.json"
+    dd_path = case_dir(sha) / "deep-dive.json"
     if not dd_path.exists():
-        dd_path = LOGS_DIR / sha / "deep_dive" / "05-deep-dive.json"
+        dd_path = case_dir(sha) / "deep_dive" / "05-deep-dive.json"
     if not dd_path.exists():
         return jsonify({"error": "deep-dive.json not found"}), 404
     dd = json.loads(dd_path.read_text())
@@ -2125,7 +2150,7 @@ def orch_live_payload(sha: str) -> dict:
     if not sha_ok:
         return {"error": "invalid sha", "running": False}
     sha = sha_ok
-    root = LOGS_DIR / sha
+    root = case_dir(sha)
     log_path = root / "orchestrator.log"
     log_lines = _tail_file(log_path, 400)
     progress = _parse_orch_progress(_orch_marker_lines(log_path) or log_lines)
@@ -2267,7 +2292,7 @@ def start_orchestrator(sha: str | None, sample_path: str | None) -> dict:
 
     log_dir = LOGS_DIR / (sha or "pending_orch")
     if sha:
-        log_dir = LOGS_DIR / sha
+        log_dir = case_dir(sha)
         log_dir.mkdir(parents=True, exist_ok=True)
         persist_run_config_snapshot(sha, rc_snapshot)
 
@@ -2413,7 +2438,7 @@ def api_orch_trace(sha):
     sha = require_sha(sha)
     if not sha:
         return jsonify({"error": "invalid sha"}), 400
-    p = LOGS_DIR / sha / "orchestrator_trace.json"
+    p = case_dir(sha) / "orchestrator_trace.json"
     if not p.is_file():
         return jsonify({"error": "no orchestrator_trace.json"}), 404
     return jsonify(_load_json_safe(p))
@@ -2430,7 +2455,7 @@ def api_quality(sha):
         q = evaluate_sha_publish_quality(LOGS_DIR, sha)
     except Exception as e:
         q = {"ok": False, "error": str(e)}
-    deep = _load_json_safe(LOGS_DIR / sha / "deep_dive" / "agentic_deep_dive.json")
+    deep = _load_json_safe(case_dir(sha) / "deep_dive" / "agentic_deep_dive.json")
     q["deep_checklist_ok"] = deep.get("checklist_ok")
     q["deep_sql_deep_ok"] = deep.get("sql_deep_ok")
     q["deep_tool_calls"] = deep.get("successful_tool_calls")
@@ -2473,9 +2498,9 @@ def api_hitl_critical(sha):
     - OR its name/comment contains a critical keyword
     - OR the LLM summary mentions critical malware capabilities
     """
-    dd_path = LOGS_DIR / sha / "deep-dive.json"
+    dd_path = case_dir(sha) / "deep-dive.json"
     if not dd_path.exists():
-        dd_path = LOGS_DIR / sha / "deep_dive" / "05-deep-dive.json"
+        dd_path = case_dir(sha) / "deep_dive" / "05-deep-dive.json"
     if not dd_path.exists():
         return jsonify({"error": "deep-dive.json not found", "critical": []}), 404
     try:

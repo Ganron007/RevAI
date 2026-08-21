@@ -27,6 +27,22 @@ LOGS_DIR = Path("/opt/samples/logs")
 CADRE_ENV = Path("/opt/secrets/cadre.env")
 PIPELINE_CONFIG_PATH = Path("/opt/samples/pipeline-config.json")
 
+
+def case_dir(sha: str, mode: str | None = None) -> Path:
+    """Return the mode-keyed case directory for a sample.
+
+    If mode is None, reads REVAI_RUN_MODE env var (scripted / agentic / ui).
+    If mode is given explicitly, uses it. If neither, returns LOGS_DIR/sha.
+    """
+    if mode is None:
+        mode = os.environ.get("REVAI_RUN_MODE", "").strip()
+    base = LOGS_DIR / sha
+    if mode:
+        d = base / mode
+        d.mkdir(parents=True, exist_ok=True)
+        return d
+    return base
+
 # LLM config — clean RevAI runtime home only.
 LLM_ENV_PATH = Path("/opt/revai/config/llm.env")
 # RevAI runtime home (config / bin / hitl / extensions).
@@ -2111,7 +2127,7 @@ def resolve_pipeline_mode(
 
 
 def audit_write(sha256: str, record: dict) -> Path:
-    audit_dir = LOGS_DIR / sha256
+    audit_dir = case_dir(sha256)
     audit_dir.mkdir(parents=True, exist_ok=True)
     audit_path = audit_dir / "audit.jsonl"
     if "ts" not in record:
@@ -8136,7 +8152,7 @@ def package_stage_evidence(
     )
     pack = asm.render(header=header)
     if persist and sha:
-        stage_dir = LOGS_DIR / sha / stage
+        stage_dir = case_dir(sha) / stage
         stage_dir.mkdir(parents=True, exist_ok=True)
         (stage_dir / "evidence-pack.md").write_text(pack, encoding="utf-8")
     return pack

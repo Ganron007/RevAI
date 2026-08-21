@@ -33,6 +33,7 @@ from file_type import detect_file_type
 from ghidra_sql_client import get_ghidra_sql_client
 from ida_sql_client import get_ida_sql_client
 from v2_lib import (  # noqa: E402
+    case_dir,
     malcat_analyze,
     llm_judge,
     resolve_pipeline_mode,
@@ -89,7 +90,7 @@ def _find_doc_triage_script() -> Path | None:
 
 def run_doc_triage(sample: Path, sha: str) -> dict:
     """PDF/OLE/OOXML first-look before PE deep RE."""
-    out_json = LOGS_DIR / sha / "doc_triage.json"
+    out_json = case_dir(sha) / "doc_triage.json"
     out_json.parent.mkdir(parents=True, exist_ok=True)
     script = _find_doc_triage_script()
     if not script:
@@ -186,7 +187,7 @@ def import_into_ghidra(
         # already imported successfully (.gpr may be empty; .rep holds data)
         return gpr
 
-    log_path = LOGS_DIR / sha / "intake-analyzeHeadless.log"
+    log_path = case_dir(sha) / "intake-analyzeHeadless.log"
     log_path.parent.mkdir(parents=True, exist_ok=True)
 
     # Wipe any partial state from a previous failed import
@@ -276,7 +277,7 @@ def import_into_ida(sample: Path, sha: str) -> Path | None:
     if not shutil.which("idasql"):
         print("[intake_v2] idasql not found in PATH", flush=True)
         return None
-    log_path = LOGS_DIR / sha / "intake-idasql.log"
+    log_path = case_dir(sha) / "intake-idasql.log"
     log_path.parent.mkdir(parents=True, exist_ok=True)
     # Clean stale .i64 siblings from a previous failed run
     for ext in (".i64", ".id0", ".id1", ".id2", ".nam", ".til"):
@@ -312,7 +313,7 @@ def run_malcat_triage(sample: Path, sha: str) -> dict:
     print(f"[intake_v2] malcat triage -> {sample.name}", flush=True)
     try:
         result = malcat_analyze(str(sample), profile="triage")
-        profile_path = LOGS_DIR / sha / "malcat-triage.json"
+        profile_path = case_dir(sha) / "malcat-triage.json"
         profile_path.parent.mkdir(parents=True, exist_ok=True)
         profile_path.write_text(json.dumps(result, indent=2, default=str))
         print(f"[intake_v2] malcat triage profile -> {profile_path}", flush=True)
@@ -629,13 +630,13 @@ def decide_sources(sha: str, session: dict, validation: dict, use_llm: bool = Tr
         "warnings": validation["warnings"],
         "source_decisions": decisions,
     }
-    val_path = LOGS_DIR / sha / "intake-validation.json"
+    val_path = case_dir(sha) / "intake-validation.json"
     val_path.parent.mkdir(parents=True, exist_ok=True)
     val_path.write_text(json.dumps(full_report, indent=2, default=str))
 
     # Persist flat source-decisions.json for backward compatibility
     flat = {k: v for k, v in decisions.items() if k != "llm_revised"}
-    flat_path = LOGS_DIR / sha / "source-decisions.json"
+    flat_path = case_dir(sha) / "source-decisions.json"
     flat_path.write_text(json.dumps(flat, indent=2, default=str))
 
     return decisions
@@ -698,7 +699,7 @@ def main():
         )
         session_data = json.loads(session_path.read_text())
         session_data = update_session(sha, {
-            "doc_triage_path": str(LOGS_DIR / sha / "doc_triage.json"),
+            "doc_triage_path": str(case_dir(sha) / "doc_triage.json"),
             "doc_triage": doc,
             "pipeline_mode": "document",
             "pipeline_mode_reasons": ["file_type_document_triage"],
@@ -733,7 +734,7 @@ def main():
                     "document format: ghidra/ida skipped (doc_triage used)",
                 ],
             }
-            (LOGS_DIR / sha / "intake-validation.json").write_text(
+            (case_dir(sha) / "intake-validation.json").write_text(
                 json.dumps(_iv, indent=2, default=str)
             )
             _sd = {
@@ -760,14 +761,14 @@ def main():
                     "reason": "document format: no decompilation (doc_triage used)",
                 },
             }
-            (LOGS_DIR / sha / "source-decisions.json").write_text(
+            (case_dir(sha) / "source-decisions.json").write_text(
                 json.dumps(_sd, indent=2, default=str)
             )
         except Exception as e:
             print(f"[intake_v2] document validation stub error: {e}", flush=True)
         print(
             f"[intake_v2] document intake complete kind={fmt} "
-            f"doc_triage={LOGS_DIR / sha / 'doc_triage.json'}",
+            f"doc_triage={case_dir(sha) / 'doc_triage.json'}",
             flush=True,
         )
         print(json.dumps({
@@ -776,7 +777,7 @@ def main():
             "sample_path": str(staged),
             "file_type": session_data.get("file_type"),
             "pipeline_mode": "document",
-            "doc_triage_path": str(LOGS_DIR / sha / "doc_triage.json"),
+            "doc_triage_path": str(case_dir(sha) / "doc_triage.json"),
             "doc_triage_flags": (doc.get("triage") or {}).get("flags"),
             "analyst_next": doc.get("analyst_next") or [],
         }, indent=2, default=str))
@@ -784,13 +785,13 @@ def main():
 
     # Fast Malcat triage first: gives us file type, packer hints, .NET bundle
     # detection, import count, and anomalies before we spend time on Ghidra/IDA.
-    malcat_profile_path = str(LOGS_DIR / sha / "malcat-triage.json")
+    malcat_profile_path = str(case_dir(sha) / "malcat-triage.json")
     if Path(malcat_profile_path).exists() and args.resume_after_ghidra:
         malcat_summary = json.loads(Path(malcat_profile_path).read_text(encoding="utf-8", errors="replace"))
         print(f"[intake_v2] resume: reusing malcat triage -> {malcat_profile_path}", flush=True)
     else:
         malcat_summary = run_malcat_triage(staged, sha)
-        malcat_profile_path = str(LOGS_DIR / sha / "malcat-triage.json") if isinstance(malcat_summary, dict) else None
+        malcat_profile_path = str(case_dir(sha) / "malcat-triage.json") if isinstance(malcat_summary, dict) else None
     malcat_analysis_id = malcat_summary.get("analysis_id") if isinstance(malcat_summary, dict) else None
 
     # Early mode decision BEFORE Ghidra: large → import-only (-noanalysis);
@@ -895,7 +896,7 @@ def main():
 
     try:
         decisions = decide_sources(sha, session_data, validation)
-        print(f"[intake_v2] source decisions -> {LOGS_DIR / sha / 'source-decisions.json'}", flush=True)
+        print(f"[intake_v2] source decisions -> {case_dir(sha) / 'source-decisions.json'}", flush=True)
     except Exception as e:
         print(f"[intake_v2] source decisions error: {e}", flush=True)
         decisions = {"sha256": sha, "error": str(e)}
