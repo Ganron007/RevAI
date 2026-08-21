@@ -241,15 +241,24 @@ def _date_bucket(staged_at: str) -> str:
 
 
 def _verdict_fields(sha: str) -> dict:
-    """Lazy join verdict.json for case-card badges (best-effort)."""
+    """Lazy join verdict.json for case-card badges (best-effort).
+
+    Mode-aware: prefer the most recently written verdict.json across
+    ui/agentic/scripted mode dirs, falling back to the legacy flat dir.
+    """
     out = {
         "verdict": "",
         "family_guess": "",
         "score": None,
     }
-    vp = case_dir(sha) / "verdict.json"
-    if not vp.exists():
+    candidates = [
+        case_dir(sha, m) / "verdict.json" for m in ("ui", "agentic", "scripted")
+    ]
+    candidates.append(LOGS_DIR / sha / "verdict.json")
+    existing = [p for p in candidates if p.is_file()]
+    if not existing:
         return out
+    vp = max(existing, key=lambda p: p.stat().st_mtime)
     try:
         v = json.loads(vp.read_text(encoding="utf-8", errors="replace"))
         out["verdict"] = (v.get("verdict") or "")[:40]
@@ -508,7 +517,7 @@ def api_intake_progress(sha):
     sha = require_sha(sha)
     if not sha:
         return jsonify({"error": "invalid sha"}), 400
-    p = case_dir(sha) / "intake-progress.json"
+    p = case_dir(sha, _mode_from_request()) / "intake-progress.json"
     if not p.exists():
         return jsonify({"stage": "none", "pct": 0, "msg": "no intake started"})
     try:

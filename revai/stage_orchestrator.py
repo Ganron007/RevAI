@@ -522,7 +522,10 @@ def run_langgraph_orchestrator(sample: Path | None, sha: str | None) -> dict:
         _agent_prompt_kw = "prompt"
 
     ensure_pipeline_runtime_env()
-    os.environ["REVAI_RUN_MODE"] = "agentic"
+    # CLI default = agentic; an explicit REVAI_RUN_MODE from the caller (e.g.
+    # the UI service injects "ui") must win so artifacts land in the right
+    # mode-keyed directory instead of polluting agentic/.
+    os.environ.setdefault("REVAI_RUN_MODE", "agentic")
     os.environ.setdefault("REVAI_AGENTIC_ENGINE", "langgraph")
     os.environ.setdefault("REVAI_RAG", "0")
 

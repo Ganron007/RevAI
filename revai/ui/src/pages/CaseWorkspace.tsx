@@ -40,12 +40,12 @@ export default function CaseWorkspace() {
   const refreshHitl = useCallback(async () => {
     if (!sha) return
     try {
-      const hitl = await getHitlPending(sha)
+      const hitl = await getHitlPending(sha, mode)
       setHitlCount(hitl.pending_count || 0)
     } catch {
       /* ignore */
     }
-  }, [sha])
+  }, [sha, mode])
 
   useEffect(() => {
     if (!sha) return

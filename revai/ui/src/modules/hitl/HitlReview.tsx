@@ -7,7 +7,7 @@ import { useCase } from '../../pages/caseContext'
 const CRITICAL_TAGS = /\b(critical|destructive|exfil|ransom|wipe|inject)\b/i
 
 export default function HitlReview() {
-  const { sha, refreshHitl } = useCase()
+  const { sha, refreshHitl, mode: runMode } = useCase()
   const [data, setData] = useState<HitlPending | null>(null)
   const [err, setErr] = useState<string | null>(null)
   const [msg, setMsg] = useState<string | null>(null)
@@ -16,12 +16,12 @@ export default function HitlReview() {
   const load = useCallback(async () => {
     setErr(null)
     try {
-      setData(await getHitlPending(sha))
+      setData(await getHitlPending(sha, runMode))
       await refreshHitl?.()
     } catch (e) {
       setErr(e instanceof Error ? e.message : String(e))
     }
-  }, [sha, refreshHitl])
+  }, [sha, runMode, refreshHitl])
 
   useEffect(() => {
     void load()
@@ -31,8 +31,8 @@ export default function HitlReview() {
     setMsg(null)
     setBusy(true)
     try {
-      if (kind === 'approve') await hitlApprove(sha, address)
-      else await hitlReject(sha, address)
+      if (kind === 'approve') await hitlApprove(sha, address, runMode)
+      else await hitlReject(sha, address, runMode)
       setMsg(`${kind} ok`)
       await load()
     } catch (e) {

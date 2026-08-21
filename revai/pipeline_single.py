@@ -92,7 +92,9 @@ def _deep_verdict(sha: str) -> str:
 
 def run_single(sample: Path | None, sha: str | None, mode: str = "standard") -> dict:
     ensure_pipeline_runtime_env()
-    os.environ["REVAI_RUN_MODE"] = "scripted"
+    # CLI default = scripted; an explicit REVAI_RUN_MODE from the caller wins
+    # (mode-keyed storage contract — see v2_lib.case_dir).
+    os.environ.setdefault("REVAI_RUN_MODE", "scripted")
     # Scripted spine is deterministic: zero retries everywhere (stage + tool
     # level). Explicit user env (REVAI_STAGE_RETRIES=..., REVAI_TOOL_RETRIES=...)
     # still wins.

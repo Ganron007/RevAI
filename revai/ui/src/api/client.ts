@@ -167,9 +167,10 @@ export async function stageSample(src_path: string, family: string) {
   return StageResultSchema.parse(data)
 }
 
-export async function getHitlPending(sha: string): Promise<HitlPending> {
+export async function getHitlPending(sha: string, mode?: string | null): Promise<HitlPending> {
   try {
-    const data = await raw(`/api/hitl/${sha}/pending`)
+    const q = mode ? `?mode=${encodeURIComponent(mode)}` : ''
+    const data = await raw(`/api/hitl/${sha}/pending${q}`)
     return HitlPendingSchema.parse(data)
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e)
@@ -180,15 +181,17 @@ export async function getHitlPending(sha: string): Promise<HitlPending> {
   }
 }
 
-export async function hitlApprove(sha: string, address?: number) {
-  return raw(`/api/hitl/${sha}/approve`, {
+export async function hitlApprove(sha: string, address?: number, mode?: string | null) {
+  const q = mode ? `?mode=${encodeURIComponent(mode)}` : ''
+  return raw(`/api/hitl/${sha}/approve${q}`, {
     method: 'POST',
     body: JSON.stringify(address != null ? { address } : {}),
   })
 }
 
-export async function hitlReject(sha: string, address?: number) {
-  return raw(`/api/hitl/${sha}/reject`, {
+export async function hitlReject(sha: string, address?: number, mode?: string | null) {
+  const q = mode ? `?mode=${encodeURIComponent(mode)}` : ''
+  return raw(`/api/hitl/${sha}/reject${q}`, {
     method: 'POST',
     body: JSON.stringify(address != null ? { address } : {}),
   })
