@@ -204,14 +204,26 @@ Full ops: [`docs/OPERATE.md`](docs/OPERATE.md) · Install: [`docs/INSTALL.md`](d
 *Work-in-progress — the roadmap below is where RevAI is headed. Items land as they
 are built, tested, and published.*
 
+### Before the v1.0.0 tag
+
+| Item | Description | Status |
+|------|-------------|--------|
+| **Offline API knowledge base** | Deterministic `api_lookup` tool for the deep-dive agent — a local index of Windows API semantics and documented abuse notes (Microsoft docs / capa-rule data lineage), so API-behavior claims are grounded by lookup instead of model recall | Planned |
+| **Report fact-verification pass** | Deterministic re-verification of every claimed IoC (IPs, hashes, paths, registry keys) in reports against raw tool evidence — fact-checking via code, not LLM self-review | Planned |
+| **Verifiable artifact generation** | Pipeline stage that produces config extractors / static unpackers / deobfuscation scripts as artifacts and runs them — scripts verify themselves, unlike prose reports | Planned |
+| **Report template alignment** | Reports restructured to the community-standard malware-analysis template — component inventory with per-artifact roles, tiered IoCs (Pyramid of Pain), explicit what-we-don't-know section, analysis-environment appendix; Malware Behavior Catalog vocabulary alongside MITRE ATT&CK | Planned |
+| **Interactive steering mode** | Fourth run mode where the analyst steers mid-run — notes injected into subsequent stage prompts and pauses at human-in-the-loop checkpoints between stages; deterministic gates stay final | Planned |
+
+The `v1.0.0` release tag follows these five.
+
+### After v1
+
 | Item | Description | Status |
 |------|-------------|--------|
 | **Multi-provider matrix** | Run the pipeline across multiple configured LLM providers and benchmark verdict/report consistency — pick the best provider per workload | In progress |
 | **Dual-LLM verdict jury** | Verdict interpretation uses a model separate from the report author, plus an independent second-provider vote; disagreement flags a sample for human review — checker ≠ generator | In progress |
 | **Deterministic deep-dive engine** (scripted mode) | Optional fixed SQL query plan with rule-based follow-ups — no LLM driving the deep dive, LLM stays for verdict and report writing; the agentic engine remains available in agentic/UI modes | Planned |
 | **Complete behavioral model** | Systematic function-by-function walkthrough (entry point → call paths → exits) plus full control-flow/data-flow analysis, to reconstruct the executable's entire behavioral model from code analysis — beyond the current capability-level map | Planned |
-| **Report fact-verification pass** | Deterministic re-verification of every claimed IoC (IPs, hashes, paths, registry keys) in reports against raw tool evidence — fact-checking via code, not LLM self-review | Planned |
-| **Verifiable artifact generation** | Pipeline stage that produces config extractors / static unpackers / deobfuscation scripts as artifacts and runs them — scripts verify themselves, unlike prose reports | Planned |
 
 ---
 
