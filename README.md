@@ -27,7 +27,7 @@ Part of the [CADRE](https://github.com/Ganron007/CADRE) platform — LLM-assiste
 - **SQL-first RE** — Ghidra (required) and optional IDA Pro populate SQLite via **ghidrasql**/**idasql**; the agent queries structured evidence instead of scraping disassembly text.
 - **Honest quality gate** — `report_quality.py` computes `truly_green = all_green (audit) + quality_green (no deterministic fallbacks / narrative stubs) + zero failed tools`. Every report carries a `source` (`llm_judge` vs `deterministic_fallback`), so a stubbed report can never look green.
 
-> **Reality check.** RevAI is an analyst assistant, not a finished autonomous product. A green stage means the tooling and quality gate passed — it is **not** a guarantee that the analysis is malware-analyst-accurate. Always review the evidence and the report.
+> **Reality check.** RevAI is an analyst assistant, not a finished autonomous product. LLM-assisted analysis is inherently probabilistic: results can vary between runs, and a green stage means the tooling and quality gate passed — **not** that the analysis is malware-analyst-accurate or the verdict objectively correct. Models can misread evidence, and tool limits (packing, obfuscation, emulation) leave gaps the gates cannot fully close. Always review the evidence and the report — treat it as a starting point for analyst review, never as ground truth.
 
 ---
 
@@ -40,6 +40,13 @@ Part of the [CADRE](https://github.com/Ganron007/CADRE) platform — LLM-assiste
 >
 > **Retrieval Contamination in LLM-Assisted Malware Triage: An Empirical Evaluation and an Evidence-Grounded Baseline** (2026)
 > Zenodo · DOI [10.5281/zenodo.21613150](https://doi.org/10.5281/zenodo.21613150) · [zenodo.org/records/21613150](https://zenodo.org/records/21613150)
+
+---
+
+## The Console
+
+RevAI runs as a local service on REMnux. The Flask app (`app.py`) serves the
+React Console and drives the stage scripts under `/opt/scripts/`.
 
 <p align="center">
   <img src="docs/img/ui-screenshot_v2.png" alt="RevAI Console — landing / lab overview" width="100%">
@@ -57,7 +64,7 @@ All modes run the same 7 stages (+1 optional function-recovery stage), the same 
 | **Agentic** | `stage_orchestrator.py` | • LangGraph ReAct planner (LLM) in policy-pinned order<br>• Observes verdicts/evidence between stages<br>• HITL stop before publish if quick/deep verdicts disagree | **1 bounded retry** *(default)*<br>Handles transient failures (timeouts, connection loss, OOM). Calibrated via `REVAI_*` env / console panel (retries, budget, recursion limit, timeout scale). |
 | **Web Console** | `http://<host>:5000` | • Manual stage buttons (human-paced)<br>• **Run orch** button (full agentic path) | **UI-configured**<br>Run config panel sets retries, budget profile (*standard* / *generous* / *unlimited*), and timeout scale before execution. |
 
-All three modes share the same tool stack, the same LLM backend, and the same stage spine — sequencing and failure handling are the only differences (table above). The full tool list:
+The shared tool stack across all three modes:
 
 - **Static analysis** — Ghidra (SQL-first, required), IDA Pro (SQL, optional), Malcat (optional), radare2, capa, YARA, FLOSS, revai-tools (mitigations-with-consequence, sink-site + provenance audit, wallet/IOC extraction)
 - **Dynamic / emulation** — Speakeasy, scdbg
@@ -65,8 +72,6 @@ All three modes share the same tool stack, the same LLM backend, and the same st
 - **Format-specific** — LIEF, diec, GoReSym, FindCrypt, ilspycmd, RIFT, pycdc
 
 The deep dive always runs through the LangGraph ReAct agent.
-
-> **LLM-assisted analysis is inherently probabilistic.** Results can vary between runs, and green means every deterministic gate passed — not that the verdict is objectively correct. Models can misread evidence, and tool limits (packing, obfuscation, emulation) leave gaps the gates cannot fully close. Treat reports as a starting point for analyst review, never as ground truth.
 
 > [!NOTE]
 > **Malware RE Reports**
@@ -77,9 +82,15 @@ The deep dive always runs through the LangGraph ReAct agent.
 
 ## Architecture
 
-RevAI runs as a local service on REMnux. The Flask app (`app.py`) serves the React Console and drives the stage scripts under `/opt/scripts/`. Ghidra (required) and optional IDA Pro / Malcat feed structured SQL evidence into the agentic deep dive, and the LLM authors the verdict and report from the evidence pack. The quality gate (`report_quality.py`) decides `truly_green`.
+Deterministic tools gather evidence; the LLM only interprets. Ghidra (required)
+plus optional IDA Pro and Malcat expose the binary as structured SQL, the agentic
+deep dive queries those databases directly, and the LLM authors the verdict and
+report from the assembled evidence pack. The quality gate (`report_quality.py`)
+has the final say on `truly_green`.
 
-> **Detailed Architecture Guide:** For a full breakdown of component layering, the 7-stage spine, Evidence Pack grounding (no RAG), and Human-in-the-Loop approval gate, see [`docs/architecture.md`](docs/architecture.md).
+For a full breakdown of component layering, the 7-stage spine, Evidence Pack
+grounding (no RAG), and the Human-in-the-Loop approval gate, see
+[`docs/architecture.md`](docs/architecture.md).
 
 <p align="center">
   <img src="docs/img/architecture_v2.svg" alt="RevAI architecture — agentic pipeline with evidence-pack grounding and truly_green gate" width="100%">
