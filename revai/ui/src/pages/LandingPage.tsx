@@ -61,7 +61,6 @@ export default function LandingPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
                 <LogoMark size={56} />
                 <h1 className="landing-title" style={{ margin: 0 }}>
-                  CADRE<span style={{ color: 'var(--tx-2)', fontWeight: 400 }}>//</span>
                   <span className="accent">RevAI</span>
                 </h1>
               </div>

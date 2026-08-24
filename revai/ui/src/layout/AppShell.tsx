@@ -42,7 +42,7 @@ export default function AppShell() {
       <header className="topbar">
         <NavLink to="/" className="topbar-brand">
           <LogoMark size={22} />
-          CADRE<span style={{ color: 'var(--tx-2)', fontWeight: 400 }}>//</span>RevAI
+          RevAI
           <span className="sub">Console</span>
         </NavLink>
         <nav className="topbar-nav">

@@ -1,5 +1,5 @@
 /**
- * CADRE//RevAI brand mark — "dissection reticle".
+ * RevAI brand mark — "dissection reticle".
  * A hexagonal sample held in a targeting reticle, inner layer + core node:
  * drilling down to the truth. Scales 16px → 120px.
  */
@@ -48,7 +48,7 @@ export function Logo({
       <LogoMark size={size} />
       <span style={{ display: 'inline-flex', flexDirection: 'column', lineHeight: 1.1 }}>
         <span style={{ fontWeight: 600, letterSpacing: '0.01em', color: 'var(--tx-0)', fontSize: size * 0.72 }}>
-          CADRE<span style={{ color: 'var(--tx-2)', fontWeight: 400 }}>//</span>RevAI
+          RevAI
         </span>
         {sub && (
           <span
