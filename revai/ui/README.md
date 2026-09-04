@@ -4,7 +4,7 @@ Enterprise product UI for the Remnux static-RE + LangGraph pipeline.
 
 ```bash
 npm install
-npm run dev      # Vite proxy → http://192.168.77.41:5000
+npm run dev      # Vite proxy → http://192.168.77.43:5000
 npm run build
 ```
 

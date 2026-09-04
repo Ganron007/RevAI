@@ -9,11 +9,11 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://192.168.77.41:5000',
+        target: 'http://192.168.77.43:5000',
         changeOrigin: true,
       },
       '/legacy': {
-        target: 'http://192.168.77.41:5000',
+        target: 'http://192.168.77.43:5000',
         changeOrigin: true,
       },
     },
