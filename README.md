@@ -19,12 +19,12 @@
 
 **RevAI** is an LLM-assisted malware reverse-engineering pipeline for REMnux. It is **deterministic-first**: format-aware RE tools run deterministically and produce the evidence; the LLM interprets that evidence into verdicts and reports — never the other way around:
 
-**Optional dynamic companion — [WinRE](https://github.com/Ganron007/WinRE).** RevAI itself is static-first; when live behavior is needed, WinRE (FlareVM-based Windows analysis, static + dynamic, with a remote driver for RevAI) detonates the sample on an isolated Windows VM and returns a versioned artifact pack that RevAI reads for corroboration (`load_dynamic_pack()`). Dynamic evidence corroborates static findings — it never overrides them.
-
 - **Deterministic-first analysis** — RE tools produce a stage-tagged evidence pack; an OpenAI-compatible LLM interprets the evidence into the verdict and report. Everything the LLM can claim must trace back to real tool output.
 - **Agentic deep dive** — a LangGraph ReAct agent searches SQL-first RE tools (Ghidra/IDA via ghidrasql/idasql, capa, Malcat, FLOSS, YARA, radare2, …) on top of a deterministic checklist and signal extractors (emulation oracle, anti-analysis, dynamic-resolve, unpack pass) that run first.
 - **SQL-first RE** — Ghidra (required) and optional IDA Pro populate SQLite via **ghidrasql**/**idasql**; the agent queries structured evidence instead of scraping disassembly text.
 - **Honest quality gate** — `report_quality.py` computes `truly_green = all_green (audit) + quality_green (no deterministic fallbacks / narrative stubs) + zero failed tools`. Every report carries a `source` (`llm_judge` vs `deterministic_fallback`), so a stubbed report can never look green.
+
+**Optional dynamic companion — [WinRE](https://github.com/Ganron007/WinRE).** RevAI itself is static-first; when live behavior is needed, WinRE (FlareVM-based Windows analysis, static + dynamic, with a remote driver for RevAI) detonates the sample on an isolated Windows VM and returns a versioned artifact pack that RevAI reads for corroboration (`load_dynamic_pack()`). Dynamic evidence corroborates static findings — it never overrides them.
 
 > **Reality check.** RevAI is an analyst assistant, not a finished autonomous product. LLM-assisted analysis is inherently probabilistic: results can vary between runs, and a green stage means the tooling and quality gate passed — **not** that the analysis is malware-analyst-accurate or the verdict objectively correct. Models can misread evidence, and tool limits (packing, obfuscation, emulation) leave gaps the gates cannot fully close. Always review the evidence and the report — treat it as a starting point for analyst review, never as ground truth.
 
