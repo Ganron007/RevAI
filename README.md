@@ -19,6 +19,8 @@
 
 **RevAI** is an LLM-assisted malware reverse-engineering pipeline for REMnux. It is **deterministic-first**: format-aware RE tools run deterministically and produce the evidence; the LLM interprets that evidence into verdicts and reports — never the other way around:
 
+**Optional dynamic companion — [WinRE](https://github.com/Ganron007/WinRE).** RevAI itself is static-first; when live behavior is needed, WinRE (FlareVM-based Windows analysis, static + dynamic, with a remote driver for RevAI) detonates the sample on an isolated Windows VM and returns a versioned artifact pack that RevAI reads for corroboration (`load_dynamic_pack()`). Dynamic evidence corroborates static findings — it never overrides them.
+
 - **Deterministic-first analysis** — RE tools produce a stage-tagged evidence pack; an OpenAI-compatible LLM interprets the evidence into the verdict and report. Everything the LLM can claim must trace back to real tool output.
 - **Agentic deep dive** — a LangGraph ReAct agent searches SQL-first RE tools (Ghidra/IDA via ghidrasql/idasql, capa, Malcat, FLOSS, YARA, radare2, …) on top of a deterministic checklist and signal extractors (emulation oracle, anti-analysis, dynamic-resolve, unpack pass) that run first.
 - **SQL-first RE** — Ghidra (required) and optional IDA Pro populate SQLite via **ghidrasql**/**idasql**; the agent queries structured evidence instead of scraping disassembly text.
