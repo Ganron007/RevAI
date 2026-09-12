@@ -40,11 +40,6 @@ def slugify(text: str) -> str:
     return (text[:48] or "rule")
 
 
-def hex_to_yara_bytes(hex_str: str) -> str:
-    pairs = [hex_str[i : i + 2] for i in range(0, len(hex_str), 2)]
-    return " ".join(p.upper() for p in pairs)
-
-
 def compute_imphash(sample_path: Path) -> str | None:
     """Imphash as a detection anchor. pefile, failure-safe."""
     try:
@@ -128,54 +123,133 @@ def collect_strings(session_id: str, ida_id: str | None, verdict: dict | None,
     return out[:24]
 
 
-def derive_hex_signatures(sample_path: Path) -> list[str]:
-    sigs = []
-    try:
-        with sample_path.open("rb") as f:
-            head = f.read(256)
-        if head[:2] == b"MZ" and len(head) >= 8:
-            sigs.append(head[:8].hex())
-        elif head[:4] == b"\x7fELF" and len(head) >= 16:
-            # ELF identity + class/endian/version — stable first bytes
-            sigs.append(head[:16].hex())
-    except Exception:
-        pass
-    return sigs[:2]
+# Strings effectively universal across PE/CRT binaries — they must never
+# carry a detection condition on their own. WinRE flagged near-universal
+# CADRE_v2 rules caused by counting the DOS-header hex signature plus one
+# generic API string toward "2 of them".
+_GENERIC_TOKENS = {
+    "kernel32", "kernel32.dll", "user32", "user32.dll", "advapi32",
+    "advapi32.dll", "ntdll", "ntdll.dll", "msvcrt", "msvcrt.dll",
+    "gdi32", "gdi32.dll", "ole32", "ole32.dll", "shell32", "shell32.dll",
+    "ws2_32", "ws2_32.dll", "vcruntime140.dll", "ucrtbase.dll",
+    "exitprocess", "loadlibrarya", "loadlibraryw", "loadlibraryexa",
+    "loadlibraryexw", "getprocaddress", "virtualalloc", "virtualprotect",
+    "virtualfree", "createthread", "createprocessa", "createprocessw",
+    "createfilea", "createfilew", "writefile", "readfile", "closehandle",
+    "getlasterror", "getmodulehandlea", "getmodulehandlew",
+    "getmodulefilenamea", "getmodulefilenamew", "setunhandledexceptionfilter",
+    "unhandledexceptionfilter", "initializecriticalsection",
+    "initializecriticalsectionex", "entercriticalsection",
+    "leavecriticalsection", "deletecriticalsection",
+    "interlockedpushentryslist", "interlockedpopentryslist",
+    "expandenvironmentstringsw", "getsystemwindowsdirectoryw",
+    "changewindowmessagefilter", "changewindowmessagefilterex",
+    "isprocessorfeaturepresent", "gettickcount", "queryperformancecounter",
+    "heapalloc", "heapfree", "getprocessheap", "widechartomultibyte",
+    "multibytetowidechar", "lstrlena", "lstrlenw", "comparestringa",
+    "comparestringw", "regopenkeyexa", "regopenkeyexw", "regcreatekeyexa",
+    "regcreatekeyexw", "regsetvalueexa", "regsetvalueexw", "regqueryvalueexa",
+    "regqueryvalueexw", "regclosekey", "regdeletevaluea", "regdeletevaluew",
+    "gettemppatha", "gettemppathw", "getwindowscurrentdirectory",
+    "setfileattributesa", "setfileattributesw", "getfileattributesa",
+    "getfileattributesw", "deletefilea", "deletefilew", "sleep",
+}
+
+_GENERIC_MARKERS = (
+    "this program cannot be run in dos mode", "<?xml", "manifestversion",
+    "assemblyidentity", "requestedexecutionlevel", "urn:schemas-microsoft-com",
+    "mscoree", ".net framework", "all rights reserved",
+)
+
+# Single CamelCase token with an optional A/W/Ex suffix: the shape of a
+# Windows API / runtime function name. Bare API names are import-surface
+# boilerplate, not detection material (WinRE FP finding).
+_API_NAME_RE = re.compile(r"^[A-Z][A-Za-z0-9]{4,39}(ExA|ExW|Ex|A|W)?$")
 
 
-def build_yara_rule(family: str, sha256: str, strings: list[str], hex_sigs: list[str],
-                    imphash: str | None = None, sample_path: Path | None = None) -> str:
+def is_generic_rule_string(s: str) -> bool:
+    """True for strings too common to support a detection condition."""
+    t = s.strip().lower()
+    if not t:
+        return True
+    if t in _GENERIC_TOKENS:
+        return True
+    if s.strip().startswith("?"):  # MSVC-mangled C++ symbols (?...@@ / ??...@@)
+        return True
+    if t.startswith(("api-ms-win-", "ext-ms-win-")):
+        return True
+    if _API_NAME_RE.match(s.strip()):  # AllocateAndInitializeSid, SleepEx, ...
+        return True
+    return any(m in t for m in _GENERIC_MARKERS)
+
+
+def distinctive_strings(strings: list[str], limit: int = 12) -> list[str]:
+    out: list[str] = []
+    seen: set[str] = set()
+    for s in strings:
+        if s in seen or is_generic_rule_string(s):
+            continue
+        seen.add(s)
+        out.append(s)
+    return out[:limit]
+
+
+def build_yara_rule(family: str, sha256: str, strings: list[str],
+                    imphash: str | None = None,
+                    sample_path: Path | None = None) -> str:
     name = f"CADRE_v2_{slugify(family)}_{sha256[:12]}"
     _prov = revai_provenance()
+    chosen = distinctive_strings(strings)
+    degraded = False
+    if not chosen and not imphash:
+        # No distinctive strings and no imphash: keep an honest weak rule
+        # rather than silently emitting a near-universal one.
+        chosen = strings[:12]
+        degraded = True
+    is_elf = False
+    if sample_path is not None and sample_path.is_file():
+        try:
+            with sample_path.open("rb") as f:
+                is_elf = f.read(4) == b"\x7fELF"
+        except Exception:
+            is_elf = False
     lines = [
         f"// yara_gen_v2.py — {datetime.now(timezone.utc).isoformat()}",
     ]
     if imphash:
         # yara-x validates pe.imphash() only with the module imported (verified 2026-08-09)
         lines.append('import "pe"')
+    desc = f"RevAI v2 auto rule for {family}"
+    if degraded:
+        desc += " (low-confidence: no distinctive strings)"
     lines += [
         f"rule {name} {{",
         "    meta:",
-        f'        description = "RevAI v2 auto rule for {family}"',
+        f'        description = "{desc}"',
         f'        sha256 = "{sha256}"',
         f'        family = "{slugify(family)}"',
         "        revai = true",
         f'        revai_commit = "{_prov["commit"]}"',
         f'        revai_engine = "{_prov["engine"]}"',
         '        severity = "high"',
-        '        confidence = "medium"',
+        '        confidence = "low"' if degraded else '        confidence = "medium"',
         "    strings:",
     ]
-    for i, s in enumerate(strings[:12]):
+    for i, s in enumerate(chosen[:12]):
         esc = s.replace("\\", "\\\\").replace('"', '\\"')
         lines.append(f'        $s{i} = "{esc}" ascii wide')
-    for j, sig in enumerate(hex_sigs):
-        lines.append(f"        $h{j} = {{ {hex_to_yara_bytes(sig)} }}")
-    conds = ["uint16(0) == 0x5A4D and 2 of them"]
-    if any(sig.startswith("7f454c46") for sig in hex_sigs):
-        conds.append("uint32(0) == 0x464C457F and 2 of ($s*)")
+    # Condition: file-type gate + distinctive strings only ($s* — no header
+    # bytes), with imphash as an independent exact fingerprint branch.
+    conds: list[str] = []
+    if chosen:
+        n = len(chosen)
+        k = 2 if n >= 2 else 1
+        fmt = "uint32(0) == 0x464C457F" if is_elf else "uint16(0) == 0x5A4D"
+        conds.append(f"{fmt} and {k} of ($s*)")
     if imphash:
         conds.append(f'pe.imphash() == "{imphash}"')
+    if not conds:
+        conds.append("uint16(0) == 0x5A4D or uint32(0) == 0x464C457F")
     lines += [
         "    condition:",
         "        " + " or ".join(conds),
@@ -315,7 +389,12 @@ def main():
     args = ap.parse_args()
 
     session = load_session(args.sha256)
-    verdict_path = LOGS / args.sha256 / "verdict.json"
+    # Mode-aware paths: prefer the run's mode section (scripted/agentic/ui),
+    # fall back to the legacy flat dir for pre-mode runs.
+    case = case_dir(args.sha256)
+    verdict_path = case / "verdict.json"
+    if not verdict_path.is_file():
+        verdict_path = LOGS / args.sha256 / "verdict.json"
     verdict = json.loads(verdict_path.read_text()) if verdict_path.is_file() else None
 
     # Gap #7: family auto-propagates from the verdict when not given explicitly.
@@ -326,17 +405,20 @@ def main():
     strings = collect_strings(session["session_id"], session.get("ida_session_id"),
                               verdict, args.sha256)
     sample_path = Path(session["sample_path"])
-    hex_sigs = derive_hex_signatures(sample_path) if sample_path.is_file() else []
     imphash = compute_imphash(sample_path) if sample_path.is_file() else None
 
     hitl_checkpoint("yara_gen_v2", "pre_emit", {"string_count": len(strings), "family": family})
 
-    rule = build_yara_rule(family, args.sha256, strings, hex_sigs, imphash=imphash)
+    rule = build_yara_rule(family, args.sha256, strings,
+                           imphash=imphash, sample_path=sample_path)
     sigma = build_sigma_rule(family, args.sha256, strings)
 
     yargen_meta = run_yargen(sample_path, family) if args.yargen else {"skipped": True}
 
-    out_dir = LOGS / args.sha256
+    # Mode-aware output: rules + IOC pack land in the run's mode section so
+    # audit_pipeline (case_dir-based) finds them; legacy flat only when no
+    # REVAI_RUN_MODE is set.
+    out_dir = case
     out_dir.mkdir(parents=True, exist_ok=True)
     yar_path = out_dir / "rule.yar"
     sigma_path = out_dir / "rule.yml"

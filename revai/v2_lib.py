@@ -2297,7 +2297,12 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3) -> di
         return str((data.get("choices") or [{}])[0].get("finish_reason") or "")
 
     last_error: Exception | None = None
-    timeout_s = 180
+    # Long report prompts can legitimately exceed 2-3 min at reasoning=max.
+    # Default 300s; override with REVAI_LLM_TIMEOUT (seconds).
+    try:
+        timeout_s = max(30, int(os.environ.get("REVAI_LLM_TIMEOUT", "300")))
+    except (TypeError, ValueError):
+        timeout_s = 300
     current_reasoning = reasoning
     last_aborted: dict | None = None
     for attempt in range(1, max_retries + 1):
@@ -2344,12 +2349,20 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3) -> di
             else:
                 break
 
-    # Final fallback: provider aborts even at reasoning=low. One last attempt
-    # with thinking fully disabled (completes long report prompts only
-    # without thinking). Truncated content is never returned if avoidable.
-    if last_aborted is not None and (current_reasoning or "").lower() != "disabled":
+    # Final fallback: provider aborts even at reasoning=low, or long report
+    # prompts time out. One last attempt with thinking fully disabled
+    # (completes long report prompts: no thinking tokens means a shorter
+    # response window). Truncated content is never returned if avoidable.
+    err_is_timeout = last_error is not None and (
+        isinstance(last_error, TimeoutError)
+        or "timed out" in str(last_error).lower()
+        or "timeout" in str(last_error).lower()
+    )
+    if (last_aborted is not None or err_is_timeout) and (current_reasoning or "").lower() != "disabled":
         print(
-            "[llm_judge] all retries aborted; final attempt with thinking disabled",
+            "[llm_judge] retries exhausted"
+            f"{' (timeout)' if err_is_timeout else ''}; final attempt with "
+            "thinking disabled",
             flush=True,
         )
         body.update({"thinking": {"type": "disabled"}})

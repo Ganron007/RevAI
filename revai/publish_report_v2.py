@@ -622,17 +622,27 @@ def main():
     ap.add_argument("--template", choices=("full", "triage", "ir"), default="full")
     args = ap.parse_args()
 
+    # Mode-aware paths: reports + reads live in the run's mode section
+    # (scripted/agentic/ui) so audit_pipeline (case_dir-based) finds them.
+    # Reads prefer the mode section and fall back to the legacy flat dir.
+    case = case_dir(args.sha256)
+    flat = LOGS / args.sha256
+
+    def _pref(rel: str) -> Path:
+        p = case / rel
+        return p if p.exists() else (flat / rel)
+
     session = load_session(args.sha256)
-    verdict = load_json(LOGS / args.sha256 / "verdict.json")
-    deep = load_json(LOGS / args.sha256 / "deep-dive.json")
+    verdict = load_json(_pref("verdict.json"))
+    deep = load_json(_pref("deep-dive.json"))
     if not deep:
-        deep = load_json(LOGS / args.sha256 / "deep_dive" / "05-deep-dive.json")
-    yara_meta = load_json(LOGS / args.sha256 / "rule.yara.json")
+        deep = load_json(_pref("deep_dive/05-deep-dive.json"))
+    yara_meta = load_json(_pref("rule.yara.json"))
     sample_path = session.get("sample_path", "")
 
     # Deep-dive tools raw evidence: prefer already-saved pack, else run now
-    tools_raw_deep = load_json(LOGS / args.sha256 / "deep_dive" / "01-tools-raw.json")
-    tools_raw_quick = load_json(LOGS / args.sha256 / "quick_scan" / "00-tools-raw.json")
+    tools_raw_deep = load_json(_pref("deep_dive/01-tools-raw.json"))
+    tools_raw_quick = load_json(_pref("quick_scan/00-tools-raw.json"))
     tools_results = tools_raw_deep or tools_raw_quick or {}
 
     dotnet_result = tools_results.get("dotnet") or dotnet_analyze(sample_path)
@@ -663,7 +673,7 @@ def main():
 
     # Optional v4 function-recovery evidence (recovered names for reports)
     recovery_evidence = ""
-    fr_path = LOGS / args.sha256 / "function_recovery.json"
+    fr_path = _pref("function_recovery.json")
     if fr_path.exists():
         try:
             fr = json.loads(fr_path.read_text())
@@ -698,7 +708,7 @@ def main():
         prompt = build_prompt_ir(session, verdict, deep)
 
     # Evidence directory
-    ev_dir = LOGS / args.sha256 / "publish"
+    ev_dir = case / "publish"
     ev_dir.mkdir(parents=True, exist_ok=True)
     (ev_dir / "00-prompt.txt").write_text(prompt)
 
@@ -892,14 +902,14 @@ def main():
     report["provenance"] = revai_provenance()
     md = provenance_block() + md
     report["markdown"] = md
-    md_path = LOGS / args.sha256 / "REPORT-v2.md"
+    md_path = case / "REPORT-v2.md"
     md_path.write_text(md)
     (ev_dir / "02-REPORT-MASTER-v2.md").write_text(md)
     if args.template == "full":
-        master_path = LOGS / args.sha256 / "REPORT-MASTER-v2.md"
+        master_path = case / "REPORT-MASTER-v2.md"
         master_path.write_text(md)
 
-    json_path = LOGS / args.sha256 / "report-v2.json"
+    json_path = case / "report-v2.json"
     json_path.write_text(json.dumps(report, indent=2))
     audit_write(
         args.sha256,
@@ -918,7 +928,7 @@ def main():
     # ============================================================
     tech_missing: list[str] = []
     if args.template == "full":
-        sql_evidence = load_json(LOGS / args.sha256 / "deep_dive" / "00-sql-evidence.json")
+        sql_evidence = load_json(_pref("deep_dive/00-sql-evidence.json"))
         technical_evidence = build_technical_evidence_block(
             session, verdict, deep, yara_meta, tools_results, audit,
             dotnet_result=dotnet_result, r2_decomp=r2_decomp,
@@ -932,7 +942,7 @@ def main():
         )
         (ev_dir / "03-technical-evidence.md").write_text(technical_evidence)
         # Standalone filled evidence bundle (V5.16.6)
-        (LOGS / args.sha256 / "EVIDENCE-BUNDLE.md").write_text(technical_evidence)
+        (case / "EVIDENCE-BUNDLE.md").write_text(technical_evidence)
         # NOTE: no scorecard — RevAI does not use the legacy run_scorecard /
         # RAG verification harness. Tool I/O truth is enforced by
         # audit_pipeline.py (tools_all_ok, engine_citation_ok, ...).
@@ -1119,10 +1129,10 @@ def main():
         )
         technical_report["quality"] = q_tech
 
-        tech_md_path = LOGS / args.sha256 / "REPORT-TECHNICAL-v2.md"
+        tech_md_path = case / "REPORT-TECHNICAL-v2.md"
         tech_md_path.write_text(tech_md)
         (ev_dir / "06-REPORT-TECHNICAL-v2.md").write_text(tech_md)
-        tech_json_path = LOGS / args.sha256 / "report-technical-v2.json"
+        tech_json_path = case / "report-technical-v2.json"
         tech_json_path.write_text(json.dumps(technical_report, indent=2))
         audit_write(args.sha256, {"source": "publish_report_v2_technical",
                                    "paths": [str(tech_md_path), str(tech_json_path)],
