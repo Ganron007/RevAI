@@ -10,6 +10,7 @@
 - [`cadre-pe-loader.md`](cadre-pe-loader.md) — custom Ghidra PE loader extension (import fixup for packed/binder PEs).
 - [`agent-loop-discipline.md`](agent-loop-discipline.md) — budget warnings, redundant-call detection, hallucination check, failure taxonomy.
 - [`tool-stack.md`](tool-stack.md) — the 28-tool manifest + agent-callable ToolRegistry (incl. revai-tools sec/sinks/audit).
+- [`WINRE-REMOTE.md`](WINRE-REMOTE.md) — optional Windows dynamic analysis: drive WinRE (static + detonation + debugger passes) from the RevAI host.
 - [`malcat-capa-engine.md`](malcat-capa-engine.md) — why Malcat's native capa engine is primary (measured benchmark).
 - [`case-studies/`](case-studies/) — real analysis reports produced by the pipeline against live malware samples (published after each verified batch run).
 
