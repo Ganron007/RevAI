@@ -51,6 +51,7 @@ from v2_lib import (
     _sec_containment_evidence,
     _sec_recommendations_evidence,
     append_technical_evidence_appendix,
+    attach_dynamic_corroboration,
     build_technical_evidence_block,
     ensure_pipeline_runtime_env,
     format_malcat_evidence,
@@ -497,6 +498,8 @@ def run_technical_publish(sha: str, tools_results: dict) -> dict:
         speakeasy=tools_results.get("speakeasy"),
         frida_probe=tools_results.get("frida_probe"),
     )
+    # WinRE dynamic corroboration (presence-gated: no-op without a pack)
+    technical_evidence = attach_dynamic_corroboration(technical_evidence, sha)
     (case_dir(sha) / "EVIDENCE-BUNDLE.md").write_text(technical_evidence)
 
     sections = "\n".join(f"- {s}" for s in TECHNICAL_REPORT_SECTIONS)

@@ -4451,15 +4451,116 @@ def append_technical_evidence_appendix(narrative_md: str, technical_evidence: st
     return f"{body}{marker}\n{evidence}\n"
 
 
-def load_dynamic_pack(sha: str, logs_dir: Path | None = None) -> dict | None:
-    """Load Flare/ELF dynamic pack from logs/<sha>/dynamic/ (research helpers).
+def _resolve_dynamic_dir(sha: str, logs_dir: Path | None = None,
+                         winre_root: Path | None = None) -> tuple[Path | None, dict]:
+    """Locate a sample's dynamic pack dir across RevAI and WinRE layouts.
 
-    NOT used by core publish/section spine (2026-07-23). Analyst-optional tooling
-    under the dynamic helpers may still call this. Returns None when missing.
+    Search order (first dir containing a META or any file wins):
+      1. RevAI mode sections: <revai>/<sha>/{agentic,scripted,ui}/dynamic, flat
+      2. WinRE mode sections: <winre>/<sha>/{agentic,static,ui}/dynamic, flat
+
+    WinRE root comes from the ``winre_root`` arg, ``REVAI_WINRE_LOGS`` env, or
+    the conventional ``/opt/winre/logs`` when present. Returns
+    (dynamic_dir, {"section_root": ..., "source": ...}).
     """
-    root = Path(logs_dir) if logs_dir else LOGS_DIR
-    dyn = root / sha / "dynamic"
-    if not dyn.is_dir():
+    revai_root = Path(logs_dir) if logs_dir else LOGS_DIR
+    if winre_root is None:
+        env_root = os.environ.get("REVAI_WINRE_LOGS", "").strip()
+        if env_root:
+            winre_root = Path(env_root)
+    if winre_root is None:
+        default_winre = Path("/opt/winre/logs")
+        winre_root = default_winre if default_winre.is_dir() else None
+
+    mode_env = os.environ.get("REVAI_RUN_MODE", "").strip()
+    revai_sections: list[str] = []
+    if mode_env:
+        revai_sections.append(mode_env)
+    for m in ("agentic", "scripted", "ui"):
+        if m not in revai_sections:
+            revai_sections.append(m)
+
+    candidates: list[tuple[Path, str]] = []
+    for m in revai_sections:
+        candidates.append((revai_root / sha / m / "dynamic", f"revai:{m}"))
+    candidates.append((revai_root / sha / "dynamic", "revai:flat"))
+    if winre_root is not None:
+        for m in ("agentic", "static", "ui"):
+            candidates.append((winre_root / sha / m / "dynamic", f"winre:{m}"))
+        candidates.append((winre_root / sha / "dynamic", "winre:flat"))
+
+    for dyn, source in candidates:
+        if not dyn.is_dir():
+            continue
+        try:
+            has_files = any(dyn.iterdir())
+        except OSError:
+            has_files = False
+        if (dyn / "META.json").is_file() or has_files:
+            return dyn, {"section_root": dyn.parent, "source": source}
+    return None, {}
+
+
+def _find_unpack_artifact(section_root: Path | str | None) -> tuple[dict | None, dict]:
+    """Locate the agentic-dbg unpack artifact + its prepass record.
+
+    WinRE layout: ``<section>/deep/x64dbg/<name>_unpacked.exe`` with the prepass
+    (dump_source / dump_kind / imports / rebuild_hint) in
+    ``<section>/deep/deep.json -> agent.unpack_prepass``.
+    """
+    if not section_root:
+        return None, {}
+    root = Path(section_root)
+    if not root.is_dir():
+        return None, {}
+    prepass: dict = {}
+    deep_json = root / "deep" / "deep.json"
+    if deep_json.is_file():
+        try:
+            d = json.loads(deep_json.read_text(encoding="utf-8", errors="replace"))
+            prepass = ((d.get("agent") or {}).get("unpack_prepass")
+                       or d.get("unpack_prepass") or {})
+        except Exception:
+            prepass = {}
+    art: dict | None = None
+    for cand_dir in (root / "deep" / "x64dbg", root / "x64dbg" / "unpack",
+                     root / "x64dbg"):
+        if not cand_dir.is_dir():
+            continue
+        files = [p for p in cand_dir.iterdir() if p.is_file()]
+        if not files:
+            continue
+        files.sort(key=lambda p: (0 if p.suffix.lower() in (".exe", ".dll") else 1,
+                                  p.name))
+        p = files[0]
+        art = {"path": str(p), "name": p.name}
+        try:
+            art["bytes"] = p.stat().st_size
+        except Exception:
+            pass
+        break
+    if art:
+        art.setdefault("dump_source", prepass.get("dump_source"))
+        art.setdefault("dump_kind", prepass.get("dump_kind"))
+        art.setdefault("rebuild_hint", prepass.get("rebuild_hint"))
+        pa = prepass.get("artifact")
+        if isinstance(pa, dict):
+            art.setdefault("parses", pa.get("parses"))
+            art.setdefault("imports", pa.get("imports"))
+            art.setdefault("machine", pa.get("machine"))
+    return art, prepass
+
+
+def load_dynamic_pack(sha: str, logs_dir: Path | None = None, *,
+                      winre_root: Path | None = None) -> dict | None:
+    """Load a sample's dynamic pack (WinRE sections or legacy Flare/ELF layout).
+
+    Presence-gated: returns None when no pack exists, so callers without WinRE
+    keep byte-identical behaviour. Adds detonation window, verdict policy, and
+    the agentic-dbg unpack artifact when present.
+    """
+    dyn, info = _resolve_dynamic_dir(sha, logs_dir=logs_dir, winre_root=winre_root)
+    if dyn is None:
         return None
 
     def _j(name: str):
@@ -4491,11 +4592,30 @@ def load_dynamic_pack(sha: str, logs_dir: Path | None = None) -> dict | None:
     pcap_dir = dyn / "network_raw"
     pcaps = sorted(p.name for p in pcap_dir.glob("*.pcap")) if pcap_dir.is_dir() else []
 
+    meta = _j("META.json") or {}
+    job_meta = _j("META.job.json") or {}
+
+    # Detonation window (WinRE adaptive/capped). May live in either META.
+    window = job_meta.get("window") or meta.get("window") or {}
+    if not window:
+        window = {
+            "requested_s": meta.get("max_seconds", job_meta.get("max_seconds")),
+            "adaptive": False,
+            "effective_s": meta.get("elapsed_s", job_meta.get("elapsed_s")),
+        }
+
+    section_root = info.get("section_root") or dyn.parent
+    unpack_artifact, unpack_prepass = _find_unpack_artifact(section_root)
+
     return {
         "path": str(dyn),
+        "section_root": str(section_root),
+        "source": info.get("source"),
         "present": True,
-        "meta": _j("META.json") or {},
-        "job_meta": _j("META.job.json") or {},
+        "meta": meta,
+        "job_meta": job_meta,
+        "window": window,
+        "verdict_policy": meta.get("verdict_policy") or {},
         "frida_summary": _j("frida_summary.json"),
         "procmon_summary": _j("procmon_summary.json"),
         "network": _j("network.json"),
@@ -4503,6 +4623,8 @@ def load_dynamic_pack(sha: str, logs_dir: Path | None = None) -> dict | None:
         "process_snapshot": _j("process_snapshot.json"),
         "analyst_next": _j("analyst_next.json"),
         "analyst_next_md": analyst_md,
+        "unpack_artifact": unpack_artifact,
+        "unpack_prepass": unpack_prepass,
         "memory_files": mem_files,
         "pcaps": pcaps,
         "has_procmon_csv": (dyn / "procmon.csv").is_file(),
@@ -4511,77 +4633,231 @@ def load_dynamic_pack(sha: str, logs_dir: Path | None = None) -> dict | None:
     }
 
 
-def format_flare_dynamic_evidence(pack: dict | None) -> str:
-    """Markdown card for Flare/ELF dynamic artifacts (research — not core publish)."""
-    if not pack or not pack.get("present"):
-        return "(no Flare/ELF dynamic pack — run dynamic_run_v2 or skip)"
+def _frida_dropped_paths(pack: dict) -> list[str]:
+    fs = pack.get("frida_summary") or {}
+    out: list[str] = []
+    for p in (fs.get("decoded_paths") or []):
+        s = str(p)
+        if any(t in s.lower() for t in ("appdata", "\\temp\\", "/tmp/", "programdata")):
+            if s not in out:
+                out.append(s)
+    return out[:15]
 
-    lines: list[str] = ["## Flare / Sandbox Dynamic (analyst-optional)", ""]
+
+def _net_iocs(pack: dict) -> dict:
+    ni = pack.get("network_intel") or {}
+    caps = (ni.get("captures") or [{}])[0] if isinstance(ni, dict) else {}
+    dns = caps.get("dns_queries") or []
+    http = caps.get("http_requests") or []
+    sni = caps.get("tls_sni") or []
+    nw = pack.get("network") or {}
+    if not dns and isinstance(nw, dict):
+        dns = nw.get("domains_guess") or []
+    return {"dns": dns, "http": http, "sni": sni}
+
+
+def analyze_unpack_artifact(path: str | Path, *, capa_timeout: int = 420) -> dict:
+    """Deterministic static pass over a debugger unpack artifact.
+
+    pefile parse first (machine/imports); capa attempted when binary + rule /
+    signature dirs exist. Fail-open: never raises, never gates. Used only as
+    corroborating evidence for the agentic-dbg dump.
+    """
+    out: dict = {"ok": False, "path": str(path)}
+    p = Path(path)
+    if not p.is_file():
+        out["error"] = "artifact missing"
+        return out
+    try:
+        import pefile  # installed on the analysis VM; fail-open elsewhere
+        pe = pefile.PE(str(p), fast_load=True)
+        pe.parse_data_directories()
+        out["parses"] = True
+        out["machine"] = hex(pe.FILE_HEADER.Machine)
+        out["imports"] = sum(
+            len(e.imports) for e in getattr(pe, "DIRECTORY_ENTRY_IMPORT", [])
+        )
+        out["sections"] = len(pe.sections)
+        pe.close()
+    except Exception as e:
+        out["parses"] = False
+        out["error"] = f"pefile: {e}"[:200]
+        return out
+
+    out["ok"] = True
+    rules_dir = Path(os.environ.get("REVAI_CAPA_RULES", "/opt/capa-rules"))
+    sig_dir = Path(os.environ.get("REVAI_CAPA_SIGNATURES", "/opt/capa-signatures"))
+    capa = shutil.which("capa")
+    if not capa:
+        out["capa"] = {"ok": False, "error": "capa not on PATH"}
+        return out
+    # JSON mode: fixed keys are the matched capability rules (table parsing of
+    # the quick view misleadingly returns header/tactic rows).
+    cmd = [capa, "-j"]
+    if rules_dir.is_dir():
+        cmd += ["-r", str(rules_dir)]
+    if sig_dir.is_dir():
+        cmd += ["-s", str(sig_dir)]
+    cmd.append(str(p))
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=capa_timeout)
+    except Exception as e:
+        out["capa"] = {"ok": False, "error": str(e)[:200]}
+        return out
+    caps: list[str] = []
+    try:
+        data = json.loads(r.stdout or "{}")
+        rules = data.get("rules") if isinstance(data, dict) else None
+        if isinstance(rules, dict):
+            caps = sorted(rules.keys())
+    except Exception as e:
+        out["capa"] = {"ok": False, "error": f"capa json: {e}"[:200],
+                       "stderr": (r.stderr or "")[:200]}
+        return out
+    out["capa"] = {"ok": r.returncode == 0, "rules": len(caps),
+                   "capabilities": caps[:25], "stderr": (r.stderr or "")[:200]}
+    return out
+
+
+def format_flare_dynamic_evidence(pack: dict | None) -> str:
+    """Markdown dynamic-corroboration block for a dynamic pack.
+
+    Presence-gated by the caller: emitted only when a pack exists. Corroborates
+    static findings; never overrides them (`static_yara_wins`). Lab hosts/IPs
+    are never printed (public-report hygiene).
+    """
+    if not pack or not pack.get("present"):
+        return ""
     meta = pack.get("meta") or {}
     job = pack.get("job_meta") or {}
+    window = pack.get("window") or {}
+    policy = pack.get("verdict_policy") or {}
+    src = pack.get("source") or "winre"
+
+    lines: list[str] = ["## Dynamic Corroboration (WinRE detonation)", ""]
+    lines.append(f"- **source**: `{src}`")
     lines.append(f"- **ok**: {meta.get('ok', job.get('ok', '?'))}")
-    lines.append(f"- **schema**: {meta.get('schema_version', '?')}")
-    lines.append(f"- **skipped**: {meta.get('skipped', False)}")
+    if meta.get("schema_version"):
+        lines.append(f"- **schema**: {meta.get('schema_version')}")
     if meta.get("error"):
         lines.append(f"- **error**: {meta.get('error')}")
+
+    req = window.get("requested_s")
+    eff = window.get("effective_s")
+    if req is not None or eff is not None:
+        wline = f"- **detonation window**: requested={req}s effective={eff}s"
+        if window.get("adaptive") is not None:
+            wline += f" adaptive={window.get('adaptive')}"
+        if window.get("idle_stop_s"):
+            wline += f" idle_stop={window.get('idle_stop_s')}s"
+        if window.get("stop_reason"):
+            wline += f" stop_reason={window.get('stop_reason')}"
+        lines.append(wline)
+        lines.append(
+            "- **coverage caveat**: dynamic evidence covers only activity observed "
+            "inside the window; delayed or long-timer behavior may be missed."
+        )
     lines.append(
-        f"- **pe_sieve_requested**: {meta.get('pe_sieve_requested', job.get('pe_sieve_enabled', False))}"
+        "- **policy**: dynamic corroborates, never clears static YARA "
+        f"(`static_yara_wins`={policy.get('static_yara_wins', True)})"
     )
-    lines.append(f"- **pe_sieve_ran**: {meta.get('pe_sieve_ran', job.get('pe_sieve_ran', False))}")
-    lines.append(
-        f"- **snapshot_restore_required**: "
-        f"{meta.get('snapshot_restore_required', job.get('snapshot_restore_required', True))}"
-    )
-    lines.append(
-        "- **policy**: Dynamic is analyst-optional — not merged into core RE reports"
-    )
-    lines.append("")
 
-    fs = pack.get("frida_summary")
-    if isinstance(fs, dict):
-        lines.append("### Frida summary")
-        for k in ("status", "api_count", "unique_apis", "call_count", "top_apis", "error"):
-            if k in fs and fs[k] not in (None, "", [], {}):
-                lines.append(f"- **{k}**: `{json.dumps(fs[k], default=str)[:300]}`")
-        # common alternate shapes
-        apis = fs.get("apis") or fs.get("top_calls") or fs.get("by_api")
-        if apis and "top_apis" not in fs:
-            lines.append(f"- **apis**: `{json.dumps(apis, default=str)[:800]}`")
-        lines.append("")
+    iocs = _net_iocs(pack)
+    dns, http, sni = iocs["dns"], iocs["http"], iocs["sni"]
+    if dns or http or sni:
+        lines += ["", "### Network observed at runtime", ""]
+        if dns:
+            biz = [d for d in dns if str(d).endswith(".biz")]
+            lines.append(
+                f"- **DNS queries** ({len(dns)}; DGA-shaped `.biz`: {len(biz)}): "
+                + ", ".join(f"`{d}`" for d in dns[:20])
+            )
+        if sni:
+            lines.append(f"- **TLS SNI** ({len(sni)}): "
+                         + ", ".join(f"`{s}`" for s in sni[:12]))
+        if http:
+            hosts: list[str] = []
+            for h in http:
+                host = str(h).split("\t")[0]
+                if host and host not in hosts:
+                    hosts.append(host)
+            lines.append(f"- **HTTP requests**: {len(http)} to {len(hosts)} host(s): "
+                         + ", ".join(f"`{h}`" for h in hosts[:12]))
 
-    ps = pack.get("procmon_summary")
-    if isinstance(ps, dict):
-        lines.append("### Procmon summary")
-        for k in ("status", "row_count", "process_count", "top_operations", "interesting", "error"):
-            if k in ps and ps[k] not in (None, "", [], {}):
-                lines.append(f"- **{k}**: `{json.dumps(ps[k], default=str)[:400]}`")
-        lines.append(f"- **procmon.csv present**: {pack.get('has_procmon_csv')}")
-        lines.append("")
+    drops = _frida_dropped_paths(pack)
+    if drops:
+        lines += ["", "### Runtime file activity (Frida-decoded paths)", ""]
+        for d in drops:
+            lines.append(f"- `{d}`")
 
-    net = pack.get("network")
-    if isinstance(net, dict):
-        lines.append("### Network (FakeNet / capture summary)")
-        lines.append(f"```json\n{json.dumps(net, indent=2, default=str)[:2500]}\n```")
-        lines.append("")
+    art = pack.get("unpack_artifact") or {}
+    if art:
+        lines += ["", "### Debugger unpack artifact (agentic-dbg)", ""]
+        size = f" ({art.get('bytes')} bytes)" if art.get("bytes") else ""
+        lines.append(f"- **artifact**: `{art.get('name')}`{size}")
+        if art.get("dump_kind"):
+            lines.append(f"- **dump kind**: {art.get('dump_kind')}")
+        if art.get("dump_source"):
+            lines.append(f"- **dump source**: {art.get('dump_source')}")
+        if art.get("rebuild_hint"):
+            lines.append(f"- **rebuild hint**: {art.get('rebuild_hint')}")
+        if art.get("path"):
+            try:
+                analysis = analyze_unpack_artifact(art["path"])
+            except Exception as e:  # pragma: no cover
+                analysis = {"ok": False, "error": str(e)[:150]}
+            if analysis.get("parses"):
+                lines.append(
+                    f"- **static re-analysis**: parses=true machine={analysis.get('machine')} "
+                    f"imports={analysis.get('imports')} sections={analysis.get('sections')}"
+                )
+                capa = analysis.get("capa") or {}
+                if capa.get("ok"):
+                    lines.append(f"- **capa on unpacked image**: {capa.get('rules')} rule(s)")
+                    for c in (capa.get("capabilities") or [])[:12]:
+                        lines.append(f"  - {c}")
+                elif capa:
+                    lines.append(f"- **capa on unpacked image**: unavailable "
+                                 f"({capa.get('error')})")
+            else:
+                lines.append(f"- **static re-analysis**: not PE-parsable "
+                             f"({analysis.get('error')}) — artifact is raw memory")
 
-    ni = pack.get("network_intel")
-    if isinstance(ni, dict):
-        lines.append("### network_intel (tshark enrich)")
-        for k in ("dns", "http_hosts", "tls_sni", "pcap_count", "note", "status"):
-            if k in ni and ni[k] not in (None, "", [], {}):
-                lines.append(f"- **{k}**: `{json.dumps(ni[k], default=str)[:500]}`")
-        lines.append("")
-
-    if pack.get("pcaps"):
-        lines.append(f"- **pcaps**: {', '.join(pack['pcaps'][:10])}")
+    extras: list[str] = []
     if pack.get("memory_files"):
-        lines.append(f"- **memory dumps** ({len(pack['memory_files'])}):")
-        for mf in pack["memory_files"][:25]:
-            lines.append(f"  - `{mf}`")
-    else:
-        lines.append("- **memory dumps**: none (see ANALYST-NEXT Memory To-Do)")
-    lines.append("")
+        extras.append(f"{len(pack['memory_files'])} memory artifact(s)")
+    if pack.get("pcaps"):
+        extras.append(f"{len(pack['pcaps'])} pcap(s)")
+    if extras:
+        lines.append("- **artifacts**: " + ", ".join(extras))
+
+    lines += ["", "_Corroboration only — static evidence and verdict gates remain "
+              "authoritative._", ""]
     return "\n".join(lines)
+
+
+def attach_dynamic_corroboration(technical_evidence: str, sha: str, *,
+                                 logs_dir: Path | None = None,
+                                 winre_root: Path | None = None) -> str:
+    """Append the dynamic-corroboration block to a technical evidence pack.
+
+    Presence-gated: returns the input unchanged when no dynamic pack exists, so
+    users without WinRE get identical reports. Opt out with
+    ``REVAI_DISABLE_DYNAMIC_CORROBORATION=1``. Never alters verdicts.
+    """
+    if os.environ.get("REVAI_DISABLE_DYNAMIC_CORROBORATION", "").strip().lower() in (
+            "1", "true", "yes", "on"):
+        return technical_evidence
+    try:
+        pack = load_dynamic_pack(sha, logs_dir=logs_dir, winre_root=winre_root)
+        if not pack:
+            return technical_evidence
+        block = format_flare_dynamic_evidence(pack)
+        if not block:
+            return technical_evidence
+        return (technical_evidence or "").rstrip() + "\n\n" + block
+    except Exception:
+        return technical_evidence
 
 
 def append_analyst_next_appendix(narrative_md: str, pack: dict | None) -> str:

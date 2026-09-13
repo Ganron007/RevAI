@@ -25,6 +25,7 @@ from v2_lib import (  # noqa: E402
     TECHNICAL_REPORT_SECTIONS,
     EvidenceAssembler,
     append_technical_evidence_appendix,
+    attach_dynamic_corroboration,
     audit_write,
     build_technical_evidence_block,
     case_dir,
@@ -940,6 +941,9 @@ def main():
             speakeasy=tools_results.get("speakeasy"),
             frida_probe=tools_results.get("frida_probe"),
         )
+        # WinRE dynamic corroboration (presence-gated: no-op without a pack)
+        technical_evidence = attach_dynamic_corroboration(
+            technical_evidence, args.sha256)
         (ev_dir / "03-technical-evidence.md").write_text(technical_evidence)
         # Standalone filled evidence bundle (V5.16.6)
         (case / "EVIDENCE-BUNDLE.md").write_text(technical_evidence)
