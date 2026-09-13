@@ -169,6 +169,23 @@ Tunables (all optional, defaults shown):
 
 All of the above are exposed in the web console **Run configuration** panel (Settings → run config), so they can be toggled per run without shell env. CLI runs set them explicitly.
 
+**Optional dynamic corroboration (WinRE companion — config, not a run-config toggle):**
+
+When a sample has been detonated with the optional [WinRE](https://github.com/Ganron007/WinRE)
+companion, reports gain a deterministic "Dynamic Corroboration (WinRE detonation)"
+block: the window actually used (with a coverage caveat), runtime network
+indicators, dropped file paths, and the agentic-dbg unpack artifact (with a
+pefile + capa static pass when PE-valid). The block is **presence-gated** — no
+pack for the sample means reports are byte-identical to a WinRE-less install —
+and corroborates only (`static_yara_wins` never yields).
+
+| Env | Default | Meaning |
+|---|---|---|
+| `REVAI_WINRE_LOGS` | `/opt/winre/logs` | root scanned for WinRE packs (mode-keyed sections) |
+| `REVAI_DISABLE_DYNAMIC_CORROBORATION` | unset | set to `1` to suppress the block entirely |
+
+Setup and modes: [`WINRE-REMOTE.md`](WINRE-REMOTE.md).
+
 **Behavior contract (never breaks a run):** results are written to
 `function_recovery.json`; only confidence ≥ 0.7 names are written back to the
 Ghidra/IDA SQL database (lower-confidence results stay `NEEDS_HUMAN_REVIEW`, never

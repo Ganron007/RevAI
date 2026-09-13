@@ -14,7 +14,7 @@ controls it, where it runs, what artifact it produces, and its status in the
 | G4 | **Dynamic-resolve detector** | Finds API-resolve sites (callgraph + runtime-resolved imports from the emulation oracle on packed code) | always on | quick_scan + deep_dive seeds | `deep_dive/02-signals.json` (`dynamic_resolve`, `runtime_resolved_imports`) |
 | G5 | **Shellcode/scdbg path** | scdbg emulation of raw shellcode; shellcode checklist tool | always on | deep_dive checklist + agent | agent history `deep-dive-agentic-history.json` |
 | G6 | **String extraction** | FLOSS (PE) + Malcat strings with ref counts | always on (format-gated) | quick_scan | `quick_scan/00-tools-raw.json` (`floss`/`malcat`) + `evidence/strings.txt` |
-| G7 | **YARA rule gen (imphash)** | Auto rule from strings/imphash/hex sigs; validation + goodware FP scan | always on | yara_gen | `rule.yar`, `rule.yara.json`, `rule.yml` |
+| G7 | **YARA rule gen** | Auto rule from distinctive strings + imphash; generic API/DLL/CRT strings and header bytes filtered (near-universal-condition guard); validation + goodware FP scan | always on | yara_gen | `rule.yar`, `rule.yara.json`, `rule.yml` |
 | G8 | **Packer checklist** | Deterministic packer_intake scoring (entropy/sections/imports) | always on | quick_scan + deep_dive | `packer.txt`, gate context for packed policy |
 | G9 | **Signals → agent prompt** | Seeds G1–G4 findings into the agent's evidence so it cites them | always on | deep_dive seeds | findings + agent history |
 | G10 | **IOC export** | Structured pack: hashes/domains/ips/urls/files/registry/mutexes | always on | yara_gen | `iocs.json` |
@@ -43,7 +43,7 @@ controls it, where it runs, what artifact it produces, and its status in the
 | capa format routing | capa only runs on PE/ELF/Mach-O/.NET; raw/scripts/docs skip+fail-open (was aborting on `format=unknown`) | Live |
 | Packed-sample policy | packer-flagged stubs: capa clean-0-rule accepted as `packed_stub`; floss/dotnet incomplete = documented soft-fail (recorded, never hidden) | Live |
 | r2 UTF-8 decode | r2 output decoded with `errors=replace` (was crashing on non-UTF8 bytes) | Live |
-| provider abort handling | `llm_judge` validates `finish_reason`; retries with reasoning downgrade then no-thinking fallback (was accepting truncated output) | Live |
+| provider abort handling | `llm_judge` validates `finish_reason`; retries with reasoning downgrade then no-thinking fallback (was accepting truncated output); read timeout is `REVAI_LLM_TIMEOUT` (default 300s) and the no-thinking fallback also fires on timeout | Live |
 | Doc-intake evidence | doc formats now write intake-validation + source-decisions stubs (was failing audit forever) | Live |
 | Deep-dive packer context | checklist adds deterministic packer scan so gates share the packed policy | Live |
 | Goodware fingerprint | known-good SHA short-circuit → clean verdict, skips LLM | always on |
@@ -58,6 +58,7 @@ controls it, where it runs, what artifact it produces, and its status in the
 | Feature | Gate | Status |
 |---------|------|--------|
 | **TI-enrich (VirusTotal + Hybrid Analysis hash lookup)** | `REVAI_TI_ENRICH=1` + `VT_API_KEY` + `HA_API_KEY` in `/opt/secrets/cadre.env` | **Live** — both providers returning lookups (enrichment-only, never clears local gates). |
+| **WinRE dynamic corroboration (optional)** | `REVAI_WINRE_LOGS` (default `/opt/winre/logs`); disable with `REVAI_DISABLE_DYNAMIC_CORROBORATION=1` | **Live** — presence-gated: when a WinRE detonation pack exists for the sample, reports gain a deterministic "Dynamic Corroboration (WinRE detonation)" block (detonation window + coverage caveat, runtime network IoCs, dropped paths, agentic-dbg unpack artifact). No pack → reports byte-identical. Corroboration only (`static_yara_wins`). |
 | LLM (OpenRouter-compatible) | `REVAI_LLM_MODEL` / `REVAI_LLM_API_URL` / `REVAI_LLM_API_KEY` / `REVAI_LLM_REASONING` in `/opt/revai/config/llm.env` | configured-llm — live |
 
 ## Run status (2026-08-09, 16 samples, all features on)

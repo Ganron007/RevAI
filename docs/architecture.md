@@ -197,6 +197,7 @@ truly_green = all_green (per-stage audit) AND quality_green (no fallback stubs)
 * **Style gates**: provenance byline present, citation coverage in narrative, no dump-style code blocks without interpretation, no orphaned tables, healthy prose ratio. Evaluated on the narrative body only (raw evidence appendices are exempt).
 * **Publication-quality gates (`cross_report_consistency`, 2026-08-12)**: deterministic fact checks over the published report pair — the master must not claim "no dynamic analysis was performed" when the technical report carries Speakeasy/Frida execution evidence; master and technical verdict panels must agree; entropy citations are checked against the file's measured whole-file Shannon entropy (section-scoped citations and raw evidence appendices are exempt). Added after the #2 campaign: the structural gates passed 15 report pairs that these checks caught carrying factual defects.
 * **Source Tagging**: every report carries explicit provenance (`source: llm_judge` vs `source: deterministic_fallback`), preventing stubbed or partial runs from appearing green.
+* **Optional dynamic corroboration (WinRE companion)**: when a detonation pack exists for the sample (`load_dynamic_pack()`), the technical evidence pack and reports gain a deterministic, presence-gated "Dynamic Corroboration (WinRE detonation)" block — window actually used + coverage caveat, runtime network indicators, dropped paths, and the agentic-dbg unpack artifact (pefile + capa pass when PE-valid). No pack → reports byte-identical to a WinRE-less install; dynamic evidence corroborates only (`static_yara_wins`). Setup: [`WINRE-REMOTE.md`](WINRE-REMOTE.md).
 
 ---
 
@@ -208,3 +209,4 @@ truly_green = all_green (per-stage audit) AND quality_green (no fallback stubs)
 * [`agent-loop-discipline.md`](agent-loop-discipline.md) — Loop discipline, budget warnings, hallucination checks, failure taxonomy.
 * [`cadre-pe-loader.md`](cadre-pe-loader.md) — Custom Ghidra PE loader for packed/binder samples.
 * [`malcat-capa-engine.md`](malcat-capa-engine.md) — Malcat-native capa engine integration.
+* [`WINRE-REMOTE.md`](WINRE-REMOTE.md) — optional Windows dynamic companion: drive WinRE (static, detonation, debugger passes) from the RevAI host, and the presence-gated dynamic-corroboration reporting contract.
