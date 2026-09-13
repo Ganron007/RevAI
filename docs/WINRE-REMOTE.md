@@ -120,6 +120,26 @@ Results land in the driver's evidence directory (`/opt/winre/logs/<sha>/<mode>/`
 Detonation artifacts are corroborating evidence only: high-signal static YARA
 cannot be cleared by dynamic findings (`static_yara_wins`).
 
+## Reporting integration (RevAI side)
+
+RevAI discovers WinRE packs automatically: `load_dynamic_pack()` scans
+`REVAI_WINRE_LOGS` (default `/opt/winre/logs`, mode-keyed sections) and the
+RevAI case directory. When a pack exists for the sample, the technical report
+and evidence bundle gain a deterministic **"Dynamic Corroboration (WinRE
+detonation)"** block:
+
+- detonation window actually used, with a coverage caveat (activity outside the
+  window may be missed);
+- runtime network indicators (DNS/SNI/HTTP) and dropped file paths;
+- the agentic-dbg unpack artifact, with a static pass (pefile + `capa`) when the
+  dump is PE-valid;
+- an explicit `static_yara_wins` policy line — dynamic evidence corroborates,
+  never overrides, static findings or the verdict gates.
+
+The block is **presence-gated**: samples analyzed without WinRE produce exactly
+the same reports as before (no empty sections). Disable it explicitly with
+`REVAI_DISABLE_DYNAMIC_CORROBORATION=1`.
+
 ## Safety
 
 - The Windows VM runs malware: restore its clean snapshot after every
