@@ -71,11 +71,22 @@ fi
 
 # ---------------------------------------------------------------------------
 # Deploy the offline Windows-API lookup index (api_lookup)
+#
+# The bundled index is the small malapi default. A VM may instead carry a
+# full-corpus index built from MicrosoftDocs/sdk-api (tens of MB) that is
+# deliberately kept out of git - its presence must survive a deploy, so the
+# default is only installed when no index exists (force with
+# REVAI_FORCE_API_INDEX=1).
 # ---------------------------------------------------------------------------
+API_INDEX_DST=/opt/revai/api_index/api_index.db
+sudo mkdir -p /opt/revai/api_index
 if [[ -f "$REPO_ROOT/assets/api_index/api_index.db" ]]; then
-    ok "Deploying API lookup index to /opt/revai/api_index/ ..."
-    sudo mkdir -p /opt/revai/api_index
-    sudo cp -a "$REPO_ROOT/assets/api_index/api_index.db" /opt/revai/api_index/
+    if [[ ! -f "$API_INDEX_DST" || "${REVAI_FORCE_API_INDEX:-0}" == "1" ]]; then
+        ok "Deploying bundled API lookup index to /opt/revai/api_index/ ..."
+        sudo cp -a "$REPO_ROOT/assets/api_index/api_index.db" "$API_INDEX_DST"
+    else
+        warn "Keeping existing $API_INDEX_DST (set REVAI_FORCE_API_INDEX=1 to replace it with the bundled default)"
+    fi
     sudo cp -a "$REPO_ROOT/assets/api_index/malapi.json" /opt/revai/api_index/
     sudo cp -a "$REPO_ROOT/assets/api_index/NOTICE.md" /opt/revai/api_index/
 else

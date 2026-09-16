@@ -28,6 +28,7 @@ import json
 import os
 import re
 import sqlite3
+import zlib
 from pathlib import Path
 
 INDEX_PATH_ENV = "REVAI_API_INDEX"
@@ -255,6 +256,31 @@ def _strip_html(text: str | None) -> str:
     return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", text)).strip()
 
 
+def _text_flag(conn: sqlite3.Connection) -> bool:
+    """True when documentation fields are zlib-compressed (index meta key)."""
+    try:
+        row = conn.execute(
+            "SELECT value FROM meta WHERE key = 'text_compression'").fetchone()
+    except sqlite3.Error:
+        return False
+    return bool(row) and str(row[0]).lower() == "zlib"
+
+
+def _text(value, compressed: bool) -> str | None:
+    """Decode a stored documentation field (plain TEXT or zlib BLOB)."""
+    if value is None:
+        return None
+    if isinstance(value, str):
+        return value or None
+    raw = bytes(value)
+    if compressed:
+        try:
+            raw = zlib.decompress(raw)
+        except zlib.error:
+            return None
+    return raw.decode("utf-8", "replace") or None
+
+
 def _resolve(symbol: str):
     """Resolve a raw symbol to an API row (exact spellings first, then folded)."""
     parsed = parse_symbol(symbol)
@@ -350,6 +376,7 @@ def lookup(symbol: str) -> dict:
 
         intent = _malapi_intent(conn, row)
         syntax, syntax_name = _syntax_for(conn, row)
+        compressed = _text_flag(conn)
         params = conn.execute(
             "SELECT name, desc_text FROM api_param WHERE api_id = ? ORDER BY ord",
             (row["id"],),
@@ -363,10 +390,11 @@ def lookup(symbol: str) -> dict:
             "header": row["header"],
             "source": row["source"],
             "doc_url": row["doc_url"],
-            "doc": row["doc_text"],
-            "returns": row["return_text"],
+            "doc": _text(row["doc_text"], compressed),
+            "returns": _text(row["return_text"], compressed),
             "params": [
-                {"name": p["name"], "description": _strip_html(p["desc_text"])}
+                {"name": p["name"],
+                 "description": _strip_html(_text(p["desc_text"], compressed))}
                 for p in params
             ],
         }

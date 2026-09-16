@@ -154,6 +154,111 @@ def test_index_info(env):
     assert info["attribution"]
 
 
+# --- sdk-api ingestion (synthetic pages, same shape as MicrosoftDocs) ------
+
+
+def _write_sdk_page(root: Path, namespace: str, stem: str, names: list[str],
+                    description: str, dll: str = "Kernel32.dll",
+                    header: str = "fakeapi.h") -> None:
+    directory = root / namespace
+    directory.mkdir(parents=True, exist_ok=True)
+    name_list = "".join(f" - {n}\n" for n in names)
+    body = f"""---
+UID: NF:{namespace}.{names[0]}
+req.header: {header}
+req.dll: {dll}
+api_name:
+{name_list}---
+
+# {names[0]} function
+
+## -description
+
+{description}
+
+## -parameters
+
+### -param hObject
+
+The handle to operate on.
+
+### -param dwFlags
+
+Flags controlling the operation.
+
+## -returns
+
+Zero on success; a Win32 error code otherwise.
+
+## -syntax
+
+```C
+BOOL {names[0]}(
+  [in] HANDLE hObject,
+  [in] DWORD  dwFlags
+);
+```
+"""
+    (directory / f"{stem}.md").write_text(body, encoding="utf-8")
+
+
+def test_build_with_sdk_api_merges_and_extends(tmp_path, monkeypatch):
+    root = tmp_path / "content"
+    _write_sdk_page(root, "fakeapi", "nf-fakeapi-dofake",
+                    ["DoFake", "DoFakeW"], "DoFake does a fake thing for testing.")
+    # A name malapi already covers, to prove Microsoft's docs win while the
+    # malicious-use write-up survives.
+    _write_sdk_page(root, "processthreadsapi", "nf-processthreadsapi-createremotethread",
+                    ["CreateRemoteThread"], "Microsoft's canonical description.")
+
+    out = tmp_path / "api_index.db"
+    summary = api_index_build.build(MALAPI, out, sdk_api_roots=[root])
+    assert summary["apis"] == 369 + 2  # DoFake + DoFakeW new, CreateRemoteThread merged
+    assert summary["sources"] == "malapi+sdk-api"
+
+    monkeypatch.setenv(api_lookup.INDEX_PATH_ENV, str(out))
+
+    new = api_lookup.lookup("DoFakeW")
+    assert new["available"] and new["found"]
+    assert new["source"] == "sdk-api"
+    assert new["name"] == "DoFakeW"
+    assert "fake thing" in (new["doc"] or "")
+    assert new["syntax"] and "DoFake" in new["syntax"]
+    assert [p["name"] for p in new["params"]] == ["hObject", "dwFlags"]
+    assert new["malicious_use"] is None
+
+    merged = api_lookup.lookup("CreateRemoteThread")
+    assert merged["found"]
+    assert "canonical description" in (merged["doc"] or "")
+    # malapi's intent layer is preserved through the merge.
+    assert "Injection" in merged["malicious_use"]["categories"]
+
+    info = api_lookup.index_info()
+    assert info["sources"] == "malapi+sdk-api"
+    assert any("Microsoft" in v for v in info["attribution"].values())
+
+
+def test_documentation_is_stored_compressed(index):
+    """The built index compresses doc fields and the runtime decodes them."""
+    import sqlite3
+    import zlib
+
+    conn = sqlite3.connect(str(index))
+    try:
+        meta = dict(conn.execute("SELECT key, value FROM meta"))
+        assert meta.get("text_compression") == "zlib"
+        blob = conn.execute(
+            "SELECT doc_text FROM api WHERE name = 'CreateRemoteThread'"
+        ).fetchone()[0]
+        # malapi rows carry no reference prose; parameters always do.
+        params = conn.execute(
+            "SELECT desc_text FROM api_param LIMIT 1").fetchone()
+        assert params is not None
+        assert zlib.decompress(bytes(params[0])).decode("utf-8")
+    finally:
+        conn.close()
+
+
 def test_render_smoke(env):
     text = api_lookup.render(api_lookup.lookup("CreateRemoteThread"))
     assert "CreateRemoteThread" in text

@@ -34,6 +34,7 @@ import json
 import re
 import sqlite3
 import sys
+import zlib
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -231,6 +232,19 @@ def _first_token(value: object) -> str | None:
     return value.split(",")[0].strip() or None
 
 
+def _maybe_compress(text: str | None) -> bytes | None:
+    """zlib-compress a documentation field (stored compressed, read by the runtime).
+
+    Plain text at 46k documented APIs is tens of megabytes; per-row zlib with no
+    dictionary keeps the artifact small and the runtime trivial
+    (`zlib.decompress`). Uniform: every non-empty field is compressed, so the
+    reader has one path, signalled by the index's `text_compression` meta key.
+    """
+    if not text:
+        return None
+    return zlib.compress(text.encode("utf-8"), 9)
+
+
 def load_sdk_api(root: Path, limit: int | None = None) -> list[dict]:
     """Read ``nf-*.md`` function pages into plain rows (one per declared name)."""
     rows: list[dict] = []
@@ -245,7 +259,7 @@ def load_sdk_api(root: Path, limit: int | None = None) -> list[dict]:
         fields, body = parse_frontmatter(text)
         if not _FUNCTION_UID_RE.match(str(fields.get("UID") or "")):
             continue
-        names = _pick_names(fields)
+        names, is_interface = _pick_names(fields, str(fields.get("UID") or ""))
         if not names:
             continue
         sections = split_sections(body)
@@ -270,13 +284,21 @@ def load_sdk_api(root: Path, limit: int | None = None) -> list[dict]:
                 "return_text": returns,
                 "doc_url": doc_url,
                 "params": params,
+                "interface_method": is_interface,
             })
             if limit and len(rows) >= limit:
                 return rows
     return rows
 
 
-def _pick_names(fields: dict[str, object]) -> list[str]:
+def _pick_names(fields: dict[str, object], uid: str) -> tuple[list[str], bool]:
+    """Function names a document declares, plus whether they are interface methods.
+
+    Most pages carry plain Win32 names. A large minority describe COM interface
+    methods as ``IThing.Method`` (or ``IThing::Method``); those yield the method
+    name alone, flagged so that on a name collision a real function always wins
+    over an interface method of the same name (``Next``, ``Reset``, ...).
+    """
     api_name = fields.get("api_name")
     if isinstance(api_name, list):
         candidates = api_name
@@ -284,14 +306,33 @@ def _pick_names(fields: dict[str, object]) -> list[str]:
         candidates = [api_name]
     else:
         candidates = []
-    names: list[str] = []
+
+    plain: list[str] = []
+    interface: list[str] = []
     for candidate in candidates:
-        candidate = str(candidate).strip()
-        if "::" in candidate:
-            candidate = candidate.rsplit("::", 1)[-1].strip()
-        if candidate and _IDENTIFIER_RE.match(candidate) and candidate not in names:
-            names.append(candidate)
-    return names
+        raw = str(candidate).strip()
+        derived = "::" in raw or "." in raw
+        name = raw
+        if "::" in name:
+            name = name.rsplit("::", 1)[-1].strip()
+        if "." in name:
+            name = name.rsplit(".", 1)[-1].strip()
+        if not name or not _IDENTIFIER_RE.match(name):
+            continue
+        target = interface if derived else plain
+        if name not in target:
+            target.append(name)
+
+    if plain:
+        return plain, False
+    if interface:
+        return interface, True
+
+    # UID looks like "NF:memoryapi.VirtualAllocEx": keep the last segment.
+    tail = uid.split(":", 1)[-1].rsplit(".", 1)[-1].strip()
+    if tail and _IDENTIFIER_RE.match(tail):
+        return [tail], True
+    return [], True
 
 
 def load_malapi(path: Path) -> list[dict]:
@@ -338,9 +379,17 @@ def load_malapi(path: Path) -> list[dict]:
     return out
 
 
-def build(malapi_path: Path, out_path: Path, sdk_api_root: Path | None = None,
+def build(malapi_path: Path, out_path: Path,
+          sdk_api_root: Path | None = None,
+          sdk_api_roots: list[Path] | None = None,
           limit: int | None = None) -> dict:
     """Build the index. Returns a summary dict (also written to stdout by main)."""
+    roots: list[Path] = []
+    for root in ([] if sdk_api_roots is None else list(sdk_api_roots)) + (
+            [] if sdk_api_root is None else [sdk_api_root]):
+        if root is not None and root not in roots:
+            roots.append(root)
+
     malapi_rows = load_malapi(malapi_path)
     if limit:
         malapi_rows = malapi_rows[:limit]
@@ -353,8 +402,10 @@ def build(malapi_path: Path, out_path: Path, sdk_api_root: Path | None = None,
         merged[row["name"]] = row
 
     sdk_count = 0
-    if sdk_api_root is not None:
-        for row in load_sdk_api(sdk_api_root, limit=limit):
+    interface_kept = 0
+    interface_shadowed = 0
+    for root in roots:
+        for row in load_sdk_api(root, limit=limit):
             sdk_count += 1
             row["source"] = "sdk-api"
             row["malapi_info"] = None
@@ -362,6 +413,12 @@ def build(malapi_path: Path, out_path: Path, sdk_api_root: Path | None = None,
             existing = merged.get(row["name"])
             if existing is None:
                 merged[row["name"]] = row
+                interface_kept += 1 if row.get("interface_method") else 0
+                continue
+            # A COM interface method must never displace a real function or a
+            # malapi entry that happens to share the method's name.
+            if row.get("interface_method") and not existing.get("interface_method"):
+                interface_shadowed += 1
                 continue
             # Merge: Microsoft's documentation wins where it exists; malapi's
             # intent layer and any signature it alone carries are preserved.
@@ -388,14 +445,17 @@ def build(malapi_path: Path, out_path: Path, sdk_api_root: Path | None = None,
                 " doc_text, return_text, doc_url, source)"
                 " VALUES (?,?,?,?,?,?,?,?,?,?)",
                 (api_id, row["name"], canonical(row["name"]), row.get("dll"),
-                 row.get("header"), row.get("syntax"), row.get("doc_text"),
-                 row.get("return_text"), row.get("doc_url"), row["source"]),
+                 row.get("header"), row.get("syntax"),
+                 _maybe_compress(row.get("doc_text")),
+                 _maybe_compress(row.get("return_text")),
+                 row.get("doc_url"), row["source"]),
             )
             for ord_, param in enumerate(row.get("params") or ()):
                 conn.execute(
                     "INSERT INTO api_param (api_id, ord, name, desc_text)"
                     " VALUES (?,?,?,?)",
-                    (api_id, ord_, param.get("name") or "", param.get("description")),
+                    (api_id, ord_, param.get("name") or "",
+                     _maybe_compress(param.get("description"))),
                 )
             if row.get("malapi_info"):
                 info = row["malapi_info"]
@@ -418,25 +478,30 @@ def build(malapi_path: Path, out_path: Path, sdk_api_root: Path | None = None,
                     "INSERT OR IGNORE INTO api_attack (api_id, attack_id) VALUES (?,?)",
                     (api_id, attack_id),
                 )
+            # FTS holds a plain-text excerpt only: the full text is compressed in
+            # `api`, and duplicating all 46k documents into the FTS index would
+            # double the artifact for no lookup benefit.
             body = row.get("doc_text") or (row.get("malapi_info") or {}).get(
                 "description") or ""
             conn.execute(
                 "INSERT INTO api_fts (rowid, name, body) VALUES (?,?,?)",
-                (api_id, row["name"], body),
+                (api_id, row["name"], body[:600]),
             )
 
-        sources = "malapi" if sdk_api_root is None else "malapi+sdk-api"
+        sources = "malapi" if not roots else "malapi+sdk-api"
         meta = {
             "schema_version": str(SCHEMA_VERSION),
             "built_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "generator": "revai/api_index_build.py",
             "sources": sources,
+            "text_compression": "zlib",
             "api_count": str(len(api_rows)),
             "malapi_count": str(sum(1 for r in api_rows if r.get("malapi_info"))),
             "sdk_api_count": str(sdk_count),
+            "interface_method_count": str(interface_kept),
             "attribution.malapi": ATTRIBUTION_MALAPI,
         }
-        if sdk_api_root is not None:
+        if roots:
             meta["attribution.sdk-api"] = ATTRIBUTION_SDK_API
         conn.executemany("INSERT INTO meta (key, value) VALUES (?,?)",
                          sorted(meta.items()))
@@ -449,9 +514,11 @@ def build(malapi_path: Path, out_path: Path, sdk_api_root: Path | None = None,
         "out": str(out_path),
         "apis": len(merged),
         "sdk_api_pages": sdk_count,
+        "interface_methods": interface_kept,
+        "interface_shadowed": interface_shadowed,
         "attacks": attacks_seen,
         "size_bytes": out_path.stat().st_size,
-        "sources": "malapi" if sdk_api_root is None else "malapi+sdk-api",
+        "sources": "malapi" if not roots else "malapi+sdk-api",
     }
 
 
@@ -460,8 +527,9 @@ def main(argv: list[str] | None = None) -> int:
         description="Build the offline Windows-API lookup index.")
     parser.add_argument("--malapi", type=Path, default=_DEFAULT_MALAPI,
                         help="malapi.json snapshot (required source)")
-    parser.add_argument("--sdk-api", type=Path, default=None,
-                        help="sdk-api content root containing nf-*.md pages")
+    parser.add_argument("--sdk-api", type=Path, action="append", default=None,
+                        help="sdk-api content root containing nf-*.md pages "
+                             "(repeatable: sdk-api + windows-driver-docs-ddi)")
     parser.add_argument("--out", type=Path, default=_DEFAULT_OUT,
                         help="output SQLite index path")
     parser.add_argument("--limit", type=int, default=None,
@@ -472,15 +540,18 @@ def main(argv: list[str] | None = None) -> int:
         print(f"api_index_build: malapi source not found: {args.malapi}",
               file=sys.stderr)
         return 2
-    if args.sdk_api is not None and not args.sdk_api.is_dir():
-        print(f"api_index_build: --sdk-api is not a directory: {args.sdk_api}",
-              file=sys.stderr)
-        return 2
+    for root in args.sdk_api or []:
+        if not root.is_dir():
+            print(f"api_index_build: --sdk-api is not a directory: {root}",
+                  file=sys.stderr)
+            return 2
 
-    summary = build(args.malapi, args.out, sdk_api_root=args.sdk_api,
+    summary = build(args.malapi, args.out, sdk_api_roots=args.sdk_api,
                     limit=args.limit)
     print(f"api_index_build: {summary['apis']} APIs "
-          f"({summary['sdk_api_pages']} sdk-api pages) -> {summary['out']} "
+          f"({summary['sdk_api_pages']} sdk-api pages, "
+          f"{summary['interface_methods']} interface methods, "
+          f"{summary['interface_shadowed']} shadowed) -> {summary['out']} "
           f"({summary['size_bytes'] / 1024:.0f} KB, sources={summary['sources']})")
     for name, count in sorted(summary["attacks"].items()):
         print(f"  {name}: {count}")
