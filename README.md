@@ -231,11 +231,11 @@ Full ops: [`docs/OPERATE.md`](docs/OPERATE.md) · Install: [`docs/INSTALL.md`](d
 
 | Item | Description |
 |------|-------------|
-| **Offline API knowledge base** | Deterministic `api_lookup` tool for the deep-dive agent — a local index of Windows API semantics and documented abuse notes (Microsoft docs / capa-rule data lineage), so API-behavior claims are grounded by lookup instead of model recall |
-| **Report fact-verification pass** | Deterministic re-verification of every claimed IoC (IPs, hashes, paths, registry keys) in reports against raw tool evidence — fact-checking via code, not LLM self-review |
-| **Verifiable artifact generation** | Pipeline stage that produces config extractors / static unpackers / deobfuscation scripts as artifacts and runs them — scripts verify themselves, unlike prose reports |
-| **Report template alignment** | Reports restructured to the community-standard malware-analysis template — component inventory with per-artifact roles, tiered IoCs (Pyramid of Pain), explicit what-we-don't-know section, analysis-environment appendix; Malware Behavior Catalog vocabulary alongside MITRE ATT&CK |
-| **Interactive steering mode** | Fourth run mode where the analyst steers mid-run — notes injected into subsequent stage prompts and pauses at human-in-the-loop checkpoints between stages; deterministic gates stay final |
+| **Report fact-verification pass** | Re-check every claimed IoC in reports against raw tool evidence — fact-checking by code, not LLM self-review |
+| **Verifiable artifact generation** | A stage that writes config extractors / unpackers / deobfuscation scripts for the sample and runs them — the artifact verifies itself |
+| **Report template alignment** | Restructure reports to the community-standard template — component inventory, tiered IoCs, explicit unknowns, environment appendix, MBC vocabulary |
+| **Interactive steering mode** | A fourth run mode: analyst notes injected mid-run with HITL pause points; deterministic gates stay final |
+| **`v1.0.0` release tag** | Versioned first release once the four items above land and the release gate passes |
 
 ---
 
