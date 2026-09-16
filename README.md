@@ -231,7 +231,7 @@ Full ops: [`docs/OPERATE.md`](docs/OPERATE.md) · Install: [`docs/INSTALL.md`](d
 
 | Item | Description |
 |------|-------------|
-| **Report fact-verification pass** | Re-check every claimed IoC in reports against raw tool evidence — fact-checking by code, not LLM self-review |
+| **Claimed-IOC gate promotion** | Finish the advisory report fact-verification pass: review the published-corpus residual, then make a mismatch turn the quality gate red |
 | **Verifiable artifact generation** | A stage that writes config extractors / unpackers / deobfuscation scripts for the sample and runs them — the artifact verifies itself |
 | **Report template alignment** | Restructure reports to the community-standard template — component inventory, tiered IoCs, explicit unknowns, environment appendix, MBC vocabulary |
 | **Interactive steering mode** | A fourth run mode: analyst notes injected mid-run with HITL pause points; deterministic gates stay final |
