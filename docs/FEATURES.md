@@ -22,6 +22,7 @@ controls it, where it runs, what artifact it produces, and its status in the
 | G12 | **revai-tools sink sites** (`revai_tools_sinks`) | Dangerous-API call sites located inside named functions (radare2-backed); honest 0-site results recorded | always on (PE/ELF/dotnet, fail-open) | quick_scan phase-A + deep-dive checklist + agent | `quick_scan/00-tools-raw.json`, agent history |
 | G13 | **revai-tools sink audit** (`revai_tools_audit`) | Sink sites with exploitable argument provenance (constant vs subtraction/register-source) + entry-reachability | always on (PE/ELF/dotnet, fail-open) | deep-dive checklist + agent | deep-dive evidence pack, agent history |
 | G14 | **revai-tools IOC extension** (`revai_tools_iocs`) | Crypto wallets (BTC/ETH) + defanged IOC merge into the structured pack | always on (fail-open) | yara_gen | `iocs.json` (`revai_tools` provenance block) |
+| G15 | **API lookup index** (`api_lookup`) | Offline Windows-API grounding: reference text, curated malicious-use notes and malapi.io attack categories for any symbol a disassembler shows (A/W, Nt/Zw, `__imp_`, `@N` fold), plus FTS search. Knowledge lookup only — never verdicts, never capability matching (capa owns that) | agent-callable (index presence-gated, fail-open) | deep_dive agent | agent history `deep-dive-agentic-history.json` |
 | — | **angr / z3 probes** | Symbolic execution + SMT solving via `extensions/deobfuscation` | `ENABLE_DEOBFUSCATION_PASS=1` | deep_dive checklist (`z3_solve`, `angr_analyze`) | agent history + deep verdict |
 
 ## Analysis stages

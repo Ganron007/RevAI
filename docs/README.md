@@ -9,7 +9,7 @@
 - [`OPERATE.md`](OPERATE.md) — daily use: staging samples, running stages, optional function-recovery stage + env, depth gate, tests.
 - [`cadre-pe-loader.md`](cadre-pe-loader.md) — custom Ghidra PE loader extension (import fixup for packed/binder PEs).
 - [`agent-loop-discipline.md`](agent-loop-discipline.md) — budget warnings, redundant-call detection, hallucination check, failure taxonomy.
-- [`tool-stack.md`](tool-stack.md) — the 28-tool manifest + agent-callable ToolRegistry (incl. revai-tools sec/sinks/audit).
+- [`tool-stack.md`](tool-stack.md) — the 28-tool manifest + agent-callable ToolRegistry (incl. revai-tools sec/sinks/audit and the offline Windows-API lookup index).
 - [`WINRE-REMOTE.md`](WINRE-REMOTE.md) — optional Windows dynamic analysis: drive WinRE (static + detonation + debugger passes) from the RevAI host.
 - [`malcat-capa-engine.md`](malcat-capa-engine.md) — why Malcat's native capa engine is primary (measured benchmark).
 - [`case-studies/`](case-studies/) — real analysis reports produced by the pipeline against live malware samples (published after each verified batch run).
@@ -24,6 +24,7 @@ different, and the install/deploy scripts translate between them.
 | `revai/*.py` | → | `/opt/scripts/` (flat) | `scripts/deploy.sh` |
 | `revai/hitl/` | → | `/opt/revai/hitl/` | `scripts/deploy.sh` |
 | `revai/ui/` | → | `/opt/scripts/ui/` (npm build) | `scripts/deploy.sh` |
+| `assets/api_index/` | → | `/opt/revai/api_index/` | `scripts/deploy.sh` |
 | `config/llm.env.template` | → | `/opt/revai/config/llm.env` (user fills) | manual copy |
 | `extensions/cadre-pe-loader/` | → | `/opt/ghidra/Ghidra/Extensions/CADRE/` | `install/setup-remnux.sh` |
 | `extensions/deobfuscation/` | → | `/opt/revai/deobfuscation/` | `install/setup-remnux.sh` |

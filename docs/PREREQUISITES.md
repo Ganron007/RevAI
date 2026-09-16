@@ -81,6 +81,7 @@ These tools are wired into `TOOL_MANIFEST` and run automatically per file format
 | **scdbg** | PE (shellcode) | x86 shellcode emulation via Wine console exe |
 | **ELF wrapper** | ELF | readelf/objdump/nm structural summary |
 | **signature_match** | agent-callable | Function matching vs crypto/stdlib/winapi DBs |
+| **api_lookup** | agent-callable (sample not required) | Offline Windows-API knowledge index (reference + malicious-use notes + attack categories); index at `/opt/revai/api_index/api_index.db` |
 | **z3 / angr** | agent-callable | MBA deobfuscation / CFF deflatten (extensions/deobfuscation) |
 
 **Install notes:**
@@ -89,6 +90,7 @@ These tools are wired into `TOOL_MANIFEST` and run automatically per file format
 - `RIFT`: clone [microsoft/RIFT](https://github.com/microsoft/RIFT) to `/opt/rift/`, `pip install ar lief Requests`, create `rift_config_linux.cfg` with Linux paths
 - `FindCrypt`: clone [d3v1l401/FindCrypt-Ghidra](https://github.com/d3v1l401/FindCrypt-Ghidra), copy `FindCrypt.java` to `/opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts/`, `findcrypt_ghidra/` DB to `~/`
 - `signature_match` DBs: `crypto.json` / `stdlib.json` / `winapi.json` under `/opt/revai/signatures/`
+- `api_lookup` index: built from the bundled `assets/api_index/malapi.json` (stdlib only, no network) and deployed to `/opt/revai/api_index/` by `scripts/deploy.sh`; rebuild or extend with `python3 revai/api_index_build.py --malapi assets/api_index/malapi.json [--sdk-api <checkout>] --out assets/api_index/api_index.db`
 
 ## Optional
 

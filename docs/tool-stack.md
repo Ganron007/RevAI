@@ -1,6 +1,6 @@
 # Tool Stack (28 tools)
 
-The pipeline runs **28 tools automatically** via `TOOL_MANIFEST`, plus **agent-callable
+The pipeline runs **28 tools automatically** via `TOOL_MANIFEST`, plus **24 agent-callable
 tools** in the deep-dive `ToolRegistry`. All tools are format-aware — each runs only
 when it applies to the sample's file type.
 
@@ -44,6 +44,7 @@ when it applies to the sample's file type.
 | **unpack_oracle** (`unpack_oracle.py`) | PE (packed) | Emulation-assisted generic unpacking: detects memory-only executable sections, polls the emulated PC for the OEP transition, and carves the unpacked image from emulated memory (FixDump-style raw=virtual rebuild). Output: `unpacked_<name>` payload + OEP + in-memory import/IAT readout. Env-gated (`REVAI_ENABLE_UNPACK_PASS=1`), runs in deep-dive when the packer checklist flags the sample; artifacts under `logs/<sha>/unpack/` |
 | **ELF wrapper** | ELF | readelf/objdump/nm structural summary |
 | **signature_match** | agent-callable | Function matching vs crypto/stdlib/winapi DBs |
+| **api_lookup** (`api_lookup.py`) | agent-callable (sample not required) | Offline Windows-API knowledge index: reference text, curated malicious-use notes and malapi.io attack categories for a symbol as a disassembler shows it (A/W, Nt/Zw, `__imp_`, `@N` decoration all fold), plus full-text search. Grounding only — never verdicts, never capability matching (capa owns that); fail-open when the index is absent |
 | **z3 / angr** | agent-callable | MBA deobfuscation / CFF deflatten |
 
 ## Agent-callable tools (deep-dive ToolRegistry)
@@ -52,7 +53,19 @@ ghidra_query · ida_query · ghidra_decompile · signature_match · z3_solve · 
 · malcat_analyze · capa_analyze · pe_import_signals · yara_scan · floss_extract ·
 dotnet_analyze · speakeasy_emulate · frida_static_probe · r2_decompile · upx_unpack ·
 xor_string_search · olevba_analyze · peepdf_analyze · revai_tools_sec ·
-revai_tools_sinks · revai_tools_audit
+revai_tools_sinks · revai_tools_audit · api_lookup
+
+### API lookup index
+
+`api_lookup` answers "what is this API and how is it abused?" from a local SQLite
+index, so API claims are grounded instead of recalled. The index is built by
+`api_index_build.py` from `assets/api_index/malapi.json` (369 curated APIs: reference
+text, malicious-use notes, attack categories, signatures, parameters), optionally
+extended to the full Win32 reference with `--sdk-api <checkout>`. It is deployed to
+`/opt/revai/api_index/`; override the location with `REVAI_API_INDEX`. Attribution
+for the bundled data lives in `assets/api_index/NOTICE.md` and inside the index's
+`meta` table. The upstream asset's capa-combination layer is deliberately not
+ingested — capability matching is already the pipeline's own `capa` stage.
 
 ## Format-aware routing
 

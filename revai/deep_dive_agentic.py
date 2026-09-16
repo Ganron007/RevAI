@@ -61,6 +61,7 @@ from v2_lib import (  # noqa: E402
 )
 from packer_intake import run_packer_scan  # noqa: E402
 from report_quality import VERDICT_CALIBRATION_CONTRACT  # noqa: E402
+import api_lookup  # noqa: E402
 
 MAX_STEPS = int(os.environ.get("REVAI_DEEP_MAX_STEPS") or "16")
 MAX_TOOL_RESULT_CHARS = 2000
@@ -311,6 +312,7 @@ TOOL_DESCRIPTIONS = {
     "xor_string_search": "Run xorsearch XOR string search. Args: sample_path",
     "olevba_analyze": "Run olevba Office VBA analysis. Args: sample_path",
     "peepdf_analyze": "Run peepdf PDF analysis. Args: sample_path",
+    "api_lookup": "Offline Windows-API knowledge lookup (grounding). Args: api (symbol as a disassembler shows it, e.g. 'ZwOpenProcess' or '__imp_CreateFileW'), OR query (full-text search, e.g. 'process hollowing'). Returns reference text, curated malicious-use description, and malapi.io attack categories. Call this BEFORE describing any Windows API's behaviour or abuse potential.",
 }
 
 
@@ -451,6 +453,11 @@ IMPORTANT:
   imports, strings — each as evidence or explicit "not observed". Missing domains
   fail the depth gate; do not stop at the first verdict.
 - Do not claim high confidence without citing tool/SQL evidence already in findings.
+- API GROUNDING: before describing what a Windows API does or how malware abuses it,
+  call api_lookup for that symbol (api_lookup accepts the spelling a disassembler
+  shows — A/W, Nt/Zw, __imp_, @N decoration all fold). The index carries curated
+  malicious-use notes and attack categories that are not reliably known from memory.
+  If api_lookup reports no entry, say it was not found instead of recalling.
 - MASQUERADE AWARENESS: VersionInfo / product / company metadata (e.g. "Microsoft",
   "Adobe", "Skype") is trivially forged and is NOT evidence of legitimacy. A sample
   whose deterministic tools (Malcat obfuscation anomalies, YARA family/keylogger
@@ -491,7 +498,23 @@ class ToolRegistry:
             "revai_tools_sec": self._revai_tools_sec,
             "revai_tools_sinks": self._revai_tools_sinks,
             "revai_tools_audit": self._revai_tools_audit,
+            "api_lookup": self._api_lookup,
         }
+
+    def _api_lookup(self, args, session):
+        """Offline Windows-API grounding: named lookup or full-text search.
+
+        Knowledge lookup only -- no verdict input, no capability matching (capa
+        owns that). Fail-open: an absent index returns an explicit
+        ``available: False`` rather than raising into the agent loop.
+        """
+        name = str(args.get("api") or args.get("name") or "").strip()
+        query = str(args.get("query") or "").strip()
+        if name:
+            return api_lookup.lookup(name)
+        if query:
+            return api_lookup.search(query, limit=args.get("limit") or 10)
+        return {"error": "api_lookup requires args.api or args.query"}
 
     def _revai_tools_sec(self, args, session):
         return revai_tools_sec(session["sample_path"])

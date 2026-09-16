@@ -69,6 +69,19 @@ if [[ -d "$REPO_ROOT/tests" ]]; then
     sudo cp -a "$REPO_ROOT/tests"/test_*.py /opt/scripts/tests/ 2>/dev/null || true
 fi
 
+# ---------------------------------------------------------------------------
+# Deploy the offline Windows-API lookup index (api_lookup)
+# ---------------------------------------------------------------------------
+if [[ -f "$REPO_ROOT/assets/api_index/api_index.db" ]]; then
+    ok "Deploying API lookup index to /opt/revai/api_index/ ..."
+    sudo mkdir -p /opt/revai/api_index
+    sudo cp -a "$REPO_ROOT/assets/api_index/api_index.db" /opt/revai/api_index/
+    sudo cp -a "$REPO_ROOT/assets/api_index/malapi.json" /opt/revai/api_index/
+    sudo cp -a "$REPO_ROOT/assets/api_index/NOTICE.md" /opt/revai/api_index/
+else
+    warn "assets/api_index/api_index.db missing - api_lookup will be unavailable. Build it with: python3 revai/api_index_build.py --malapi assets/api_index/malapi.json --out assets/api_index/api_index.db"
+fi
+
 # Fix ownership
 sudo chown -R remnux:remnux /opt/scripts /opt/revai /opt/samples
 

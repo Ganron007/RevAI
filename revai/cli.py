@@ -23,6 +23,7 @@ import r2backend
 import elf as elf_mod
 import elf_macho
 import pe as pe_mod
+import api_lookup as api_lookup_mod
 from output import render
 
 PLANNED = ("paths", "xrefs", "funcs", "dis")
@@ -178,6 +179,21 @@ def _cmd_map(args) -> dict:
     return map_mod.entropy_map(data)
 
 
+def _cmd_api_lookup(args) -> dict:
+    """Offline Windows-API knowledge lookup (no sample required)."""
+    if args.info:
+        return api_lookup_mod.index_info()
+    if args.categories:
+        return api_lookup_mod.attack_categories()
+    if args.category:
+        return api_lookup_mod.apis_by_attack(args.category, limit=args.limit)
+    if args.search:
+        return api_lookup_mod.search(args.search, limit=args.limit)
+    if args.api:
+        return api_lookup_mod.lookup(args.api)
+    raise ValueError("provide an API name, --search, --category, --categories or --info")
+
+
 def _add_json(parser) -> None:
     parser.add_argument("--json", action="store_true", help="machine-readable output")
 
@@ -239,6 +255,16 @@ def main(argv: list[str] | None = None) -> int:
     _add_json(p)
     p.set_defaults(func=_cmd_audit)
 
+    p = sub.add_parser("api_lookup", help="offline Windows-API knowledge lookup")
+    p.add_argument("api", nargs="?", help="API symbol, e.g. CreateRemoteThread")
+    p.add_argument("--search", metavar="QUERY", help="full-text search instead")
+    p.add_argument("--category", metavar="NAME", help="APIs in one malapi.io category")
+    p.add_argument("--categories", action="store_true", help="list attack categories")
+    p.add_argument("--info", action="store_true", help="index provenance and coverage")
+    p.add_argument("--limit", type=int, default=25)
+    _add_json(p)
+    p.set_defaults(func=_cmd_api_lookup)
+
     for name in PLANNED:
         p = sub.add_parser(name, help="planned — requires disasm backend (milestone 2)")
         p.add_argument("file", nargs="?")
@@ -257,6 +283,12 @@ def main(argv: list[str] | None = None) -> int:
     except pe_mod.PEParseError as e:
         print(f"revai-tools: parse error: {e}", file=sys.stderr)
         return 1
+    except ValueError as e:
+        print(f"revai-tools: {e}", file=sys.stderr)
+        return 2
+    if args.command == "api_lookup" and not args.json:
+        print(api_lookup_mod.render(result))
+        return 0 if result.get("available") else 2
     print(render(result, args.json))
     return 0
 
