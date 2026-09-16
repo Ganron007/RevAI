@@ -155,6 +155,7 @@ Distinctive capabilities — the things that set RevAI apart. For the full featu
 * **Ghidra + ghidrasql** (required) · **Malcat** (optional — pipeline soft-fails without it): see [`docs/PREREQUISITES.md`](docs/PREREQUISITES.md). ghidrasql is by Elias Bachaalany (github.com/0xeb/ghidrasql), used under the Human-Origin Source License v1.0  
 * **Optional**: IDA Pro 9.x at `/opt/ida` (otherwise Ghidra-only)  
 * **Node.js ≥ 18**: to build the React Console UI (`scripts/deploy.sh` builds it via npm)  
+* **Optional**: full Windows-API index for `api_lookup` (~46k APIs) — you build it once from Microsoft's documentation and copy it to the VM: [`docs/api-index.md`](docs/api-index.md)  
 
 ---
 
@@ -165,7 +166,7 @@ Distinctive capabilities — the things that set RevAI apart. For the full featu
 ```bash
 git clone https://github.com/Ganron007/RevAI.git
 cd RevAI
-sudo chmod +x install/*.sh scripts/deploy.sh
+sudo chmod +x install/*.sh scripts/*.sh
 sudo ./install/setup-remnux.sh
 ```
 
@@ -197,6 +198,19 @@ python3 /opt/scripts/v2_validate.py --smoke-only
 ```
 
 Expected: verify `Result: PASS` and `V2_SMOKE_OK` (preflight — no malware sample required).
+
+### 5. Optional: full Windows-API index
+
+The pipeline ships a small bundled index (369 malapi.io-catalogued APIs). For full
+Win32 + kernel coverage (~46k APIs) build it once on a machine with internet and
+copy it to the VM:
+
+```bash
+./scripts/build-api-index.sh
+scp api_index_full.db <user>@<vm>:/opt/revai/api_index/api_index.db
+```
+
+Details, licences and troubleshooting: [`docs/api-index.md`](docs/api-index.md).
 
 Full ops: [`docs/OPERATE.md`](docs/OPERATE.md) · Install: [`docs/INSTALL.md`](docs/INSTALL.md) · Prerequisites: [`docs/PREREQUISITES.md`](docs/PREREQUISITES.md).
 

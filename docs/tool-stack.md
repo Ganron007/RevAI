@@ -62,13 +62,14 @@ index, so API claims are grounded instead of recalled. The index is built by
 `api_index_build.py` from `assets/api_index/malapi.json` (369 curated malapi.io
 APIs: malicious-use notes, attack categories, signatures, parameters).
 
-Coverage is expandable to the full Win32 reference with
-`--sdk-api <MicrosoftDocs/sdk-api checkout>` — ~38k APIs, with Microsoft's prose
-rendered to plain text (no HTML renderer needed) and COM interface methods kept
-as a fallback that can never shadow a real function of the same name. Documentation
-columns are zlib-compressed per row; the default 369-API index is ~0.7 MB, the
-full corpus ~45 MB. The full build is deployed to the VM but deliberately not
-committed (see [`PREREQUISITES.md`](PREREQUISITES.md)).
+Coverage is expandable to the full Win32 reference plus kernel DDI with
+`--sdk-api <MicrosoftDocs/sdk-api checkout> --sdk-api <windows-driver-docs-ddi checkout>`
+— ~46k APIs, with Microsoft's prose rendered to plain text (no HTML renderer
+needed) and COM interface methods kept as a fallback that can never shadow a real
+function of the same name. Documentation columns are zlib-compressed per row; the
+default 369-API index is ~0.7 MB, the full corpus ~55 MB. The full build is
+deployed to the VM but deliberately not committed — build it with
+`scripts/build-api-index.sh`, full guide in [`api-index.md`](api-index.md).
 
 Attribution for the bundled data lives in `assets/api_index/NOTICE.md` and inside
 the index's `meta` table. The upstream asset's capa-combination layer is

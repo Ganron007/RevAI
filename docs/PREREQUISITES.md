@@ -90,16 +90,7 @@ These tools are wired into `TOOL_MANIFEST` and run automatically per file format
 - `RIFT`: clone [microsoft/RIFT](https://github.com/microsoft/RIFT) to `/opt/rift/`, `pip install ar lief Requests`, create `rift_config_linux.cfg` with Linux paths
 - `FindCrypt`: clone [d3v1l401/FindCrypt-Ghidra](https://github.com/d3v1l401/FindCrypt-Ghidra), copy `FindCrypt.java` to `/opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts/`, `findcrypt_ghidra/` DB to `~/`
 - `signature_match` DBs: `crypto.json` / `stdlib.json` / `winapi.json` under `/opt/revai/signatures/`
-- `api_lookup` index: the bundled default (`assets/api_index/api_index.db`, 369 malapi.io APIs) is built offline from `assets/api_index/malapi.json` and installed to `/opt/revai/api_index/` by `scripts/deploy.sh`. An index already present on the VM is preserved — force the bundled default with `REVAI_FORCE_API_INDEX=1`.
-- Full Win32 coverage (optional, ~38k APIs): clone Microsoft's reference markdown on a machine with internet, build once, then ship the file to the VM. The built index (tens of MB) is deliberately **not** committed:
-  ```
-  git clone --depth 1 --filter=blob:none --sparse https://github.com/MicrosoftDocs/sdk-api.git
-  git -C sdk-api sparse-checkout set sdk-api-src/content
-  python3 revai/api_index_build.py --malapi assets/api_index/malapi.json \
-      --sdk-api sdk-api/sdk-api-src/content --out api_index_full.db
-  scp api_index_full.db <vm>:/opt/revai/api_index/api_index.db
-  ```
-  Repeat `--sdk-api` with a `windows-driver-docs-ddi` checkout for kernel DDI coverage. Documentation text is zlib-compressed per row; attribution is written into the index `meta` table and must travel with any copy.
+- `api_lookup` index: the bundled default (`assets/api_index/api_index.db`, 369 malapi.io APIs) is built offline from `assets/api_index/malapi.json` and installed to `/opt/revai/api_index/` by `scripts/deploy.sh`. An index already present on the VM is preserved — force the bundled default with `REVAI_FORCE_API_INDEX=1`. Full Win32 + kernel coverage (~46k APIs) is an optional user-run prerequisite: build it once with `scripts/build-api-index.sh` and copy it to the VM — full recipe, licences and troubleshooting in [`api-index.md`](api-index.md).
 
 ## Optional
 
