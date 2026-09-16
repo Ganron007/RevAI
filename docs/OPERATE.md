@@ -205,6 +205,29 @@ point, imports, strings) must be addressed — as evidence or an explicit
 (`depth_coverage` check) and the run goes red. No env switch needed — it is always
 on; the deep-dive prompts tell the agent to cover all domains before final_answer.
 
+## Deep-dive observability
+
+Two endpoints expose what the deep-dive agent is doing while it runs:
+
+* `GET /api/orch/<sha>/live?mode=<scripted|agentic|ui>` — includes `deep_dive_progress`,
+  the tail of `deep_dive/deep-dive-progress.jsonl`: one JSON object per tool start,
+  tool end and LLM turn (tool name, input excerpt, output size, token usage). The
+  file is rewritten fresh for each deep dive; writing is best-effort and can never
+  fail a run.
+* `GET /api/graph` — the agent graph as Mermaid plus its tool inventory and an
+  explicit caveat: the prebuilt ReAct graph is a two-node loop, so the diagram shows
+  *what executes*, not what the model decides. Fail-open.
+
+## Claimed-IOC fact verification (advisory)
+
+`report_quality.py` re-checks every literal indicator a report claims against the
+raw tool evidence by code (both fanged and defanged forms) and records the result
+in the quality payload (`advisory.claimed_ioc_verification`) and in
+`pipeline-audit.json` checks. Calibration over the 56 published case studies:
+175 literal claims, 157 verified (89.7%), 9 unverified, 9 excluded vendor domains.
+It is **advisory** — it does not turn a run red. Reports that cite offsets or
+knowledge outside the evidence pack are the expected source of unverified entries.
+
 ## Reset outputs
 
 UI **Reset outputs**, or:

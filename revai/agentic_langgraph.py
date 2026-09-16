@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import time
 from pathlib import Path
 from typing import Any, Callable
 
@@ -24,6 +25,7 @@ from langgraph.prebuilt import create_react_agent
 from pydantic import BaseModel, Field
 
 from v2_lib import (  # noqa: E402
+    case_dir,
     ensure_pipeline_runtime_env,
     get_planner_model,
     get_verdict_model,
@@ -34,10 +36,27 @@ from v2_lib import (  # noqa: E402
 
 
 class _UsageCallback(BaseCallbackHandler):
-    """Journal planner-loop LLM usage (tokens/cost) for the benchmark."""
+    """Journal planner-loop LLM usage and stream tool progress as JSONL.
 
-    def __init__(self, model: str) -> None:
+    Progress is what makes the ReAct loop observable while it runs: one line per
+    tool start/end and LLM turn, tailed by the Console's live poller. Writing is
+    best-effort - a progress failure must never break a run.
+    """
+
+    def __init__(self, model: str, progress_path: Path | None = None) -> None:
         self.model = model
+        self.progress_path = progress_path
+        self._run_names: dict[str, str] = {}
+
+    def _progress(self, entry: dict) -> None:
+        if self.progress_path is None:
+            return
+        try:
+            entry["ts"] = time.time()
+            with self.progress_path.open("a", encoding="utf-8") as fh:
+                fh.write(json.dumps(entry, default=str) + "\n")
+        except Exception:
+            pass
 
     def on_llm_end(self, response, **kwargs) -> None:  # noqa: ARG002
         try:
@@ -57,6 +76,28 @@ class _UsageCallback(BaseCallbackHandler):
                     stage="deep_dive_planner",
                     note="langgraph-chatopenai",
                 )
+            self._progress({"event": "llm_end", "model": self.model,
+                            "tokens": usage or {}})
+        except Exception:
+            pass
+
+    def on_tool_start(self, serialized, input_str, **kwargs) -> None:
+        try:
+            name = (serialized or {}).get("name") if isinstance(serialized, dict) else None
+            run_id = str(kwargs.get("run_id") or "")
+            if run_id:
+                self._run_names[run_id] = name or "?"
+            self._progress({"event": "tool_start", "tool": name,
+                            "input": str(input_str)[:300]})
+        except Exception:
+            pass
+
+    def on_tool_end(self, output, **kwargs) -> None:
+        try:
+            run_id = str(kwargs.get("run_id") or "")
+            self._progress({"event": "tool_end",
+                            "tool": self._run_names.pop(run_id, None),
+                            "output_chars": len(str(output))})
         except Exception:
             pass
 
@@ -76,6 +117,8 @@ AGENT_TOOL_NAMES = [
     "r2_decompile",
     "z3_solve",
     "angr_analyze",
+    "api_lookup",
+    "compare_files",
 ]
 
 
@@ -109,6 +152,17 @@ class AngrAnalyzeArgs(BaseModel):
     timeout: int = Field(120, description="Timeout in seconds")
 
 
+class ApiLookupArgs(BaseModel):
+    api: str = Field("", description="API symbol as a disassembler shows it, e.g. ZwOpenProcess")
+    query: str = Field("", description="Free-text search instead of a symbol, e.g. 'process hollowing'")
+    limit: int = Field(10, description="Max search results")
+
+
+class CompareFilesArgs(BaseModel):
+    b: str = Field(..., description="Path to the second file (e.g. an extracted payload)")
+    a: str = Field("", description="Reference file; defaults to the analyzed sample")
+
+
 _ARG_MODELS: dict[str, type[BaseModel]] = {
     "ghidra_query": GhidraQueryArgs,
     "ida_query": IdaQueryArgs,
@@ -116,6 +170,25 @@ _ARG_MODELS: dict[str, type[BaseModel]] = {
     "malcat_analyze": MalcatArgs,
     "z3_solve": Z3SolveArgs,
     "angr_analyze": AngrAnalyzeArgs,
+    "api_lookup": ApiLookupArgs,
+    "compare_files": CompareFilesArgs,
+}
+
+#: Model-facing descriptions where the generic "Run tool X" text is not enough.
+_TOOL_DOC = {
+    "api_lookup": (
+        "Offline Windows-API grounding: what an API does and how malware abuses it "
+        "(reference text, curated malicious-use notes, malapi.io attack categories). "
+        "Args: api (symbol as a disassembler shows it - A/W, Nt/Zw, __imp_, @N all fold) "
+        "OR query (free-text search). Call this before describing any Windows API's "
+        "behaviour; if it reports no entry, say it was not found."
+    ),
+    "compare_files": (
+        "Compare two binaries structurally (loader vs payload, packed vs unpacked): "
+        "sizes, imphash equality, shared/unique sections with entropy deltas, import "
+        "overlap, exact 64-byte chunk containment. Args: b (second file path); a "
+        "defaults to the analyzed sample. Facts only - do not claim a family from it."
+    ),
 }
 
 
@@ -199,7 +272,7 @@ def _build_lc_tools(registry: Any, session: dict, history: list, findings: dict,
             return _truncate(json.dumps(result, default=str), max_chars) + _budget_note()
 
         _runner.__name__ = name
-        _runner.__doc__ = f"Run tool `{name}` on the current sample/session."
+        _runner.__doc__ = _TOOL_DOC.get(name) or f"Run tool `{name}` on the current sample/session."
         return StructuredTool.from_function(
             func=_runner,
             name=name,
@@ -239,6 +312,58 @@ def _extract_verdict_from_messages(messages: list, coerce_fn: Callable) -> dict 
         except Exception:
             continue
     return None
+
+
+#: What the ReAct diagram can honestly say. The prebuilt ReAct graph is a
+#: two-node loop, so the picture shows *what executes*, not what the model
+#: reasons about - the UI states this rather than implying more.
+GRAPH_CAVEAT = (
+    "Topology only: the prebuilt ReAct graph is a two-node loop "
+    "(agent <-> tools). It shows what executes, not what the model decides."
+)
+
+
+def agent_graph_mermaid() -> dict:
+    """Return the deep-dive agent graph as Mermaid, plus its tool inventory.
+
+    Built from the same ``create_react_agent`` call the pipeline uses, with a
+    placeholder tool and a non-calling model client, so no session, sample or
+    LLM request is needed. Fail-open: if LangGraph cannot build the graph the
+    caller still gets the tool inventory and the static node names.
+    """
+    static_nodes = ["agent", "tools"]
+    base = {
+        "engine": "langgraph",
+        "tools": list(AGENT_TOOL_NAMES),
+        "node_names": static_nodes,
+        "caveat": GRAPH_CAVEAT,
+    }
+    try:
+        from langchain_core.tools import StructuredTool
+
+        placeholder = StructuredTool.from_function(
+            func=lambda: "noop",
+            name="topology_placeholder",
+            description="Placeholder so the graph includes its tools node.",
+        )
+        model = ChatOpenAI(**{
+            "model": os.environ.get("REVAI_LLM_MODEL") or "configured-llm",
+            "api_key": os.environ.get("REVAI_LLM_API_KEY") or "not-used",
+            "base_url": (os.environ.get("REVAI_LLM_API_URL") or "http://127.0.0.1").rstrip("/"),
+            "temperature": 0.0,
+        })
+        agent = create_react_agent(model, tools=[placeholder], prompt="")
+        graph = agent.get_graph()
+        nodes = [getattr(n, "id", None) or getattr(n, "name", None)
+                 for n in graph.nodes.values()]
+        return {
+            **base,
+            "ok": True,
+            "mermaid": graph.draw_mermaid(),
+            "node_names": [n for n in nodes if n] or static_nodes,
+        }
+    except Exception as exc:  # fail-open: the endpoint must answer regardless
+        return {**base, "ok": False, "error": f"{type(exc).__name__}: {exc}"}
 
 
 def run_langgraph_deep_dive(sha: str, max_steps: int = 10, helpers: dict | None = None) -> dict:
@@ -313,13 +438,21 @@ def run_langgraph_deep_dive(sha: str, max_steps: int = 10, helpers: dict | None 
     if api_url.endswith("/chat/completions"):
         api_url = api_url[: -len("/chat/completions")]
 
+    # Progress stream (observability): fresh JSONL per run, tailed by /live.
+    progress_path: Path | None = case_dir(sha) / "deep_dive" / "deep-dive-progress.jsonl"
+    try:
+        progress_path.parent.mkdir(parents=True, exist_ok=True)
+        progress_path.write_text("", encoding="utf-8")
+    except Exception:
+        progress_path = None
+
     llm = ChatOpenAI(
         model=planner_model,
         api_key=api_key,
         base_url=api_url,
         temperature=0.0,
         max_tokens=4096,
-        callbacks=[_UsageCallback(planner_model)],
+        callbacks=[_UsageCallback(planner_model, progress_path)],
     )
 
     findings_preview = _truncate(json.dumps(findings, default=str), 3500)
@@ -357,6 +490,10 @@ is NOT evidence of legitimacy. If deterministic tools (Malcat obfuscation anomal
 YARA family/keylogger rules, capa persistence/injection, high-signal imports) fire
 maliciously, the verdict MUST be malicious even if strings/product names look
 legitimate. Never call a tool-flagged sample benign on brand metadata alone.
+API GROUNDING: before describing what a Windows API does or how malware abuses it,
+call api_lookup for that symbol (it accepts the spelling a disassembler shows - A/W,
+Nt/Zw, __imp_, @N decoration all fold). If api_lookup reports no entry, say it was
+not found instead of recalling an answer.
 """
 
     agent = create_react_agent(llm, tools=lc_tools, prompt=system_prompt)

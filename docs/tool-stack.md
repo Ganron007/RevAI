@@ -1,6 +1,6 @@
 # Tool Stack (28 tools)
 
-The pipeline runs **28 tools automatically** via `TOOL_MANIFEST`, plus **24 agent-callable
+The pipeline runs **28 tools automatically** via `TOOL_MANIFEST`, plus **25 agent-callable
 tools** in the deep-dive `ToolRegistry`. All tools are format-aware — each runs only
 when it applies to the sample's file type.
 
@@ -45,6 +45,7 @@ when it applies to the sample's file type.
 | **ELF wrapper** | ELF | readelf/objdump/nm structural summary |
 | **signature_match** | agent-callable | Function matching vs crypto/stdlib/winapi DBs |
 | **api_lookup** (`api_lookup.py`) | agent-callable (sample not required) | Offline Windows-API knowledge index: reference text, curated malicious-use notes and malapi.io attack categories for a symbol as a disassembler shows it (A/W, Nt/Zw, `__imp_`, `@N` decoration all fold), plus full-text search. Grounding only — never verdicts, never capability matching (capa owns that); fail-open when the index is absent |
+| **compare_files** (`binary_diff.py`) | agent-callable (needs a second path) | Structural comparison of two binaries (loader vs payload, packed vs unpacked): sizes and hashes, imphash equality, shared/unique sections with entropy deltas, import overlap, and exact 64-byte chunk containment. Facts only — no similarity score, no family or authorship claim |
 | **z3 / angr** | agent-callable | MBA deobfuscation / CFF deflatten |
 
 ## Agent-callable tools (deep-dive ToolRegistry)
@@ -53,7 +54,7 @@ ghidra_query · ida_query · ghidra_decompile · signature_match · z3_solve · 
 · malcat_analyze · capa_analyze · pe_import_signals · yara_scan · floss_extract ·
 dotnet_analyze · speakeasy_emulate · frida_static_probe · r2_decompile · upx_unpack ·
 xor_string_search · olevba_analyze · peepdf_analyze · revai_tools_sec ·
-revai_tools_sinks · revai_tools_audit · api_lookup
+revai_tools_sinks · revai_tools_audit · api_lookup · compare_files
 
 ### API lookup index
 
@@ -75,6 +76,15 @@ Attribution for the bundled data lives in `assets/api_index/NOTICE.md` and insid
 the index's `meta` table. The upstream asset's capa-combination layer is
 deliberately not ingested — capability matching is already the pipeline's own
 `capa` stage.
+
+### Binary comparison
+
+`compare_files` answers "is B the payload of A?" with measured facts rather than a
+score: container metadata, imphash equality, section-name overlap with entropy
+deltas, import overlap, and exact 64-byte chunk containment between the two files
+as given. Non-PE inputs fall back to the byte-level comparison, and the output
+states plainly that containment is alignment-sensitive and says nothing about
+authorship. Standalone: `python3 cli.py compare <a> <b> [--json]`.
 
 ## Format-aware routing
 

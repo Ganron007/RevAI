@@ -2064,6 +2064,22 @@ def _tail_file(path: Path, max_lines: int = 200) -> list[str]:
         return []
 
 
+def _deep_dive_progress(path: Path, max_entries: int = 60) -> list[dict]:
+    """Tail the deep-dive progress stream (one JSON object per line)."""
+    entries: list[dict] = []
+    for line in _tail_file(path, max_entries):
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            obj = json.loads(line)
+        except Exception:
+            continue
+        if isinstance(obj, dict):
+            entries.append(obj)
+    return entries
+
+
 def _orch_marker_lines(path: Path) -> list[str]:
     """Scan full orchestrator.log for progress markers (publish stdout is huge)."""
     if not path.is_file():
@@ -2276,6 +2292,9 @@ def orch_live_payload(sha: str, mode: str | None = None) -> dict:
         "current_stage": current_stage,
         "current_detail": cur if isinstance(cur, dict) else None,
         "tools": progress.get("tools") or [],
+        # Deep-dive ReAct progress stream (observability): tool start/end + LLM turns.
+        "deep_dive_progress": _deep_dive_progress(
+            root / "deep_dive" / "deep-dive-progress.jsonl"),
         "log_tail": log_lines[-120:],
         "task_id": task_id,
         "task_status": task_status,
@@ -2482,6 +2501,21 @@ def api_orch_live(sha):
         return jsonify({"error": "invalid sha"}), 400
     mode = _mode_from_request()
     return jsonify(orch_live_payload(sha, mode))
+
+
+@app.route("/api/graph")
+def api_graph():
+    """Deep-dive agent graph topology (Mermaid) plus its tool inventory.
+
+    Topology only: the prebuilt ReAct graph is a two-node loop, so this shows
+    what executes, not what the model decides. Fail-open.
+    """
+    sys.path.insert(0, str(SCRIPTS_DIR))
+    try:
+        from agentic_langgraph import agent_graph_mermaid
+        return jsonify(agent_graph_mermaid())
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)})
 
 
 @app.route("/api/orch/<sha>/trace")

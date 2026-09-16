@@ -17,6 +17,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, "/opt/scripts")
+from ioc_confidence import annotate as annotate_ioc_confidence  # noqa: E402
 from v2_lib import (  # noqa: E402
     McpGhidraClient,
     audit_write,
@@ -452,6 +453,9 @@ def main():
             iocs["revai_tools"] = {"error": str(rt.get("error")), "source": "revai_tools_iocs"}
     except Exception as e:
         iocs["revai_tools"] = {"error": str(e), "source": "revai_tools_iocs"}
+    # Gap #14a: deterministic per-IOC confidence tiers (additive; the per-type
+    # lists above are unchanged so existing consumers keep working).
+    iocs["confidence"] = annotate_ioc_confidence(iocs)
     ioc_path.write_text(json.dumps(iocs, indent=2))
 
     valid, vmsg = yara_rule_validate(yar_path)

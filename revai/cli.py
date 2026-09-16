@@ -24,6 +24,8 @@ import elf as elf_mod
 import elf_macho
 import pe as pe_mod
 import api_lookup as api_lookup_mod
+import binary_diff
+import ioc_confidence
 from output import render
 
 PLANNED = ("paths", "xrefs", "funcs", "dis")
@@ -166,7 +168,10 @@ def _cmd_audit(args) -> dict:
 
 def _cmd_iocs(args) -> dict:
     data = Path(args.file).read_bytes()
-    return iocs_mod.extract_iocs(data)
+    out: dict = dict(iocs_mod.extract_iocs(data))
+    if getattr(args, "confidence", False):
+        out["confidence"] = ioc_confidence.annotate(out)
+    return out
 
 
 def _cmd_scan(args) -> dict:
@@ -177,6 +182,11 @@ def _cmd_scan(args) -> dict:
 def _cmd_map(args) -> dict:
     data = Path(args.file).read_bytes()
     return map_mod.entropy_map(data)
+
+
+def _cmd_compare(args) -> dict:
+    """Structural comparison of two binaries (loader vs payload, packed vs unpacked)."""
+    return binary_diff.compare(args.a, args.b)
 
 
 def _cmd_api_lookup(args) -> dict:
@@ -232,6 +242,8 @@ def main(argv: list[str] | None = None) -> int:
 
     p = sub.add_parser("iocs", help="IOC extraction (defanged)")
     p.add_argument("file")
+    p.add_argument("--confidence", action="store_true",
+                   help="add deterministic per-IOC confidence tiers")
     _add_json(p)
     p.set_defaults(func=_cmd_iocs)
 
@@ -254,6 +266,12 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("file")
     _add_json(p)
     p.set_defaults(func=_cmd_audit)
+
+    p = sub.add_parser("compare", help="structural compare of two binaries (loader vs payload)")
+    p.add_argument("a", help="reference file (e.g. the loader/sample)")
+    p.add_argument("b", help="file to compare (e.g. the dropped payload)")
+    _add_json(p)
+    p.set_defaults(func=_cmd_compare)
 
     p = sub.add_parser("api_lookup", help="offline Windows-API knowledge lookup")
     p.add_argument("api", nargs="?", help="API symbol, e.g. CreateRemoteThread")

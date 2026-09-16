@@ -62,6 +62,7 @@ from v2_lib import (  # noqa: E402
 from packer_intake import run_packer_scan  # noqa: E402
 from report_quality import VERDICT_CALIBRATION_CONTRACT  # noqa: E402
 import api_lookup  # noqa: E402
+import binary_diff  # noqa: E402
 
 MAX_STEPS = int(os.environ.get("REVAI_DEEP_MAX_STEPS") or "16")
 MAX_TOOL_RESULT_CHARS = 2000
@@ -313,6 +314,7 @@ TOOL_DESCRIPTIONS = {
     "olevba_analyze": "Run olevba Office VBA analysis. Args: sample_path",
     "peepdf_analyze": "Run peepdf PDF analysis. Args: sample_path",
     "api_lookup": "Offline Windows-API knowledge lookup (grounding). Args: api (symbol as a disassembler shows it, e.g. 'ZwOpenProcess' or '__imp_CreateFileW'), OR query (full-text search, e.g. 'process hollowing'). Returns reference text, curated malicious-use description, and malapi.io attack categories. Call this BEFORE describing any Windows API's behaviour or abuse potential.",
+    "compare_files": "Structural comparison of two binaries (loader vs payload, packed vs unpacked): sizes, hashes, imphash equality, shared/unique section names with entropy deltas, shared/unique imports, and exact 64-byte chunk containment. Args: b (path to the second file; required). The first file defaults to the analyzed sample. Facts only - no family or authorship claim.",
 }
 
 
@@ -499,7 +501,26 @@ class ToolRegistry:
             "revai_tools_sinks": self._revai_tools_sinks,
             "revai_tools_audit": self._revai_tools_audit,
             "api_lookup": self._api_lookup,
+            "compare_files": self._compare_files,
         }
+
+    def _compare_files(self, args, session):
+        """Structural comparison against a second file (e.g. an extracted payload).
+
+        Facts only: sizes/hashes, imphash equality, sections with entropy deltas,
+        import overlap and exact chunk containment. Fail-open: a missing or
+        unreadable file returns an error dict instead of raising.
+        """
+        other = str(args.get("b") or args.get("other") or args.get("path") or "").strip()
+        if not other:
+            return {"error": "compare_files requires args.b (the second file path)"}
+        first = str(args.get("a") or session.get("sample_path") or "").strip()
+        if not first:
+            return {"error": "compare_files: no reference file (args.a or session sample)"}
+        try:
+            return binary_diff.compare(first, other)
+        except Exception as e:
+            return {"error": str(e), "first": first, "second": other}
 
     def _api_lookup(self, args, session):
         """Offline Windows-API grounding: named lookup or full-text search.

@@ -142,7 +142,7 @@ Distinctive capabilities — the things that set RevAI apart. For the full featu
 | **Depth gate (capability coverage)** | Deep-dive summary must address every capability domain — as evidence or explicit "not observed" — see [`docs/architecture.md`](docs/architecture.md#10-quality-verification-gate-truly_green) |
 | **Publication-quality gates** | Deterministic cross-report checks (dynamic-analysis honesty, verdict-panel agreement, entropy vs measured file entropy) |
 | **Agentic function recovery** | Opt-in relevance-based triage → LLM naming (`FUN_…` → `parse_http_header`) → SQL writeback (conf ≥ 0.7, never deletes) → names cited in reports |
-| **Tool Stack (28 tools)** | 28 format-aware manifest tools + 24 agent-callable tools (incl. revai-tools and the offline Windows-API lookup index — fail-open, never gates) — see [`docs/tool-stack.md`](docs/tool-stack.md) |
+| **Tool Stack (28 tools)** | 28 format-aware manifest tools + 25 agent-callable tools (incl. revai-tools, the offline Windows-API lookup index and structural binary comparison — fail-open, never gates) — see [`docs/tool-stack.md`](docs/tool-stack.md) |
 | **Offline API grounding** | `api_lookup` answers what a Windows API does and how it is abused from a local SQLite index (reference text + curated malicious-use notes + malapi.io attack categories + FTS search), so the deep-dive agent grounds API claims instead of recalling them — A/W, Nt/Zw, `__imp_`, `@N` spellings all fold. Knowledge only: never verdicts, never capability matching |
 
 ---

@@ -82,6 +82,7 @@ These tools are wired into `TOOL_MANIFEST` and run automatically per file format
 | **ELF wrapper** | ELF | readelf/objdump/nm structural summary |
 | **signature_match** | agent-callable | Function matching vs crypto/stdlib/winapi DBs |
 | **api_lookup** | agent-callable (sample not required) | Offline Windows-API knowledge index (reference + malicious-use notes + attack categories); index at `/opt/revai/api_index/api_index.db` |
+| **compare_files** | agent-callable (needs a second path) | Structural comparison of two binaries (loader vs payload): imphash, section/import overlap, chunk containment |
 | **z3 / angr** | agent-callable | MBA deobfuscation / CFF deflatten (extensions/deobfuscation) |
 
 **Install notes:**

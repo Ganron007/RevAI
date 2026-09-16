@@ -208,7 +208,7 @@
 
     <!-- Sub-bullets -->
     <g transform="translate(24, 52)">
-      <text x="0" y="16" font-family="sans-serif" font-size="13.5" font-weight="600" fill="#dcfce7">• <strong>LangGraph ReAct Loop:</strong> Cognitive LLM executes `Plan ➔ Act ➔ Observe` with 24 agent-callable tools</text>
+      <text x="0" y="16" font-family="sans-serif" font-size="13.5" font-weight="600" fill="#dcfce7">• <strong>LangGraph ReAct Loop:</strong> Cognitive LLM executes `Plan ➔ Act ➔ Observe` with 25 agent-callable tools</text>
       <text x="0" y="39" font-family="sans-serif" font-size="13.5" font-weight="600" fill="#dcfce7">• <strong>Evidence-Pack Grounding:</strong> Direct SQL queries on disassembled functions, call trees &amp; cross-refs</text>
       <text x="0" y="62" font-family="sans-serif" font-size="13.5" font-weight="800" fill="#4ade80">• <strong>Deobfuscation &amp; Protocol Extraction:</strong> Decodes C2 endpoints, crypto keys, and persistence logic</text>
       <text x="0" y="85" font-family="sans-serif" font-size="13" font-weight="600" fill="#86efac">• Bounded agentic recovery loops resolve decompilation gaps without open-ended recursion</text>

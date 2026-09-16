@@ -718,6 +718,19 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str) -> dict[str, Any]:
     pa = _load(root / "pipeline-audit.json")
     checks["pipeline_audit_all_green"] = bool(pa.get("all_green")) if pa else False
 
+    # Plan #10, advisory phase: re-verify report-claimed indicators against the
+    # raw evidence by code (never by LLM self-review). Recorded in checks and the
+    # advisory block; deliberately NOT folded into `issues` until calibrated
+    # against the published corpus shows an acceptable false-positive rate.
+    try:
+        _evidence_text, _evidence_files = collect_evidence_text(root)
+        _report_for_claims = tech3_md or tech2_md or master_md
+        _claims = verify_claimed_iocs(_report_for_claims, _evidence_text)
+        _claims["evidence_files"] = _evidence_files
+        checks["claimed_ioc_verification"] = _claims
+    except Exception as exc:  # advisory must never break the gate
+        checks["claimed_ioc_verification"] = {"advisory": True, "error": str(exc)}
+
     ok = not issues
     return {
         "ok": ok,
@@ -725,6 +738,9 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str) -> dict[str, Any]:
         "sha256": sha,
         "issues": issues,
         "checks": checks,
+        "advisory": {
+            "claimed_ioc_verification": checks.get("claimed_ioc_verification", {}),
+        },
         "models": {
             "master": master_j.get("model"),
             "technical_v2": tech2_j.get("model"),
@@ -733,6 +749,143 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str) -> dict[str, Any]:
             "judgment_hint": os.environ.get("REVAI_LLM_VERDICT_MODEL", "configured via env"),
         },
     }
+
+
+# --- claimed-IOC fact verification (plan #10; advisory until calibrated) ---
+
+_CLAIM_URL_RE = re.compile(r"(?i)\b(?:hxxps?|https?|ftp)(?:\[:\]|:)?//[^\s\"'<>()\[\]{}\\]+")
+_CLAIM_IP_RE = re.compile(r"\b(?:\d{1,3}(?:\[\.\]|\.)){3}\d{1,3}\b")
+_CLAIM_DOMAIN_RE = re.compile(
+    r"(?<![\w.-])(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\[\.\]|\.))+[a-z]{2,}(?![\w.-])",
+    re.IGNORECASE)
+_CLAIM_HASH_RE = re.compile(r"\b[a-fA-F0-9]{32,64}\b")
+_CLAIM_REGKEY_RE = re.compile(r"(?i)\bHK(?:LM|CU|CR|U|EY_[A-Z_]+)\\[^\s\"'<>|]+")
+_CLAIM_EMAIL_RE = re.compile(r"\b[\w.+-]+(?:\[@\]|@)[\w-]+(?:(?:\[\.\]|\.)[\w-]+)+\b")
+
+#: Only indicators whose final label is a real TLD count as domain claims.
+#: Without this, prose and code identifiers ("powershell.exe",
+#: "capability.attack.execution") parse as domains and inflate the unverified set.
+_KNOWN_TLDS = frozenset("""
+com net org edu gov mil int io co ai app dev me us uk de fr nl it es pl ru ua
+tr cn jp kr in br mx ca au nz ch se no fi dk be at cz gr pt ro hu bg hr sk si
+rs lt lv ee il sa ae eg za ng ke gh pk bd vn th sg my id ph hk tw
+info biz top xyz site online live club shop store tech space website world
+cc tv pw su tk ml ga cf gq ws to fm am nu la sh st ws
+""".split())
+
+
+def _looks_like_domain(value: str) -> bool:
+    plain = _plain_claim(value).strip(".")
+    if plain.count(".") < 1:
+        return False
+    tld = plain.rsplit(".", 1)[-1].lower()
+    return tld in _KNOWN_TLDS
+
+#: Evidence files worth searching, most specific first. Anything absent is
+#: skipped, so a scripted run without a dynamic pack still verifies statically.
+_EVIDENCE_FILES = (
+    "deep_dive/05-deep-dive.json",
+    "deep_dive/01-tools-raw.json",
+    "deep_dive/02-signals.json",
+    "deep_dive/agentic_deep_dive.json",
+    "quick_scan/00-tools-raw.json",
+    "iocs.json",
+    "verdict.json",
+    "evidence-pack.md",
+    "deep-dive-agentic-history.json",
+    "evidence/strings.txt",
+    "evidence/raw-strings.txt",
+)
+
+
+def _plain_claim(value: str) -> str:
+    """Undefang a claimed indicator for matching (the original is kept for output)."""
+    for token in ("[.]", "[dot]", "(.)"):
+        value = value.replace(token, ".")
+    value = value.replace("[:]", ":").replace("[@]", "@").replace("[at]", "@")
+    return re.sub(r"^hxxps?", "http", value, flags=re.IGNORECASE)
+
+
+def verify_claimed_iocs(markdown: str, evidence_text: str) -> dict:
+    """Check every indicator a report claims against the raw tool evidence.
+
+    Deterministic and code-based: no LLM re-reading of the report. A claim is
+    *verified* when its plain (re-fanged) value appears in the concatenated raw
+    evidence, *unverified* otherwise. Unverified is not automatically wrong - an
+    analyst may cite knowledge outside the evidence pack - which is why this is
+    recorded as advisory rather than folded into the gate until calibrated.
+    """
+    evidence = (evidence_text or "").lower()
+    claims: dict[tuple[str, str], str] = {}
+    for kind, regex in (
+        ("url", _CLAIM_URL_RE),
+        ("ip", _CLAIM_IP_RE),
+        ("domain", _CLAIM_DOMAIN_RE),
+        ("hash", _CLAIM_HASH_RE),
+        ("registry_key", _CLAIM_REGKEY_RE),
+        ("email", _CLAIM_EMAIL_RE),
+    ):
+        for m in regex.finditer(markdown or ""):
+            raw = m.group(0).strip().strip(".,;:()[]{}'\"`\\")
+            if len(raw) < 4:
+                continue
+            if kind == "domain" and not _looks_like_domain(raw):
+                continue
+            if kind == "url" and "." not in _plain_claim(raw).split("//", 1)[-1]:
+                continue
+            claims.setdefault((kind, _plain_claim(raw).lower()), raw)
+
+    verified: list[dict[str, str]] = []
+    unverified: list[dict[str, str]] = []
+    excluded: list[dict[str, str]] = []
+    for (kind, plain), raw in sorted(claims.items()):
+        if kind == "domain":
+            try:
+                from ioc_confidence import is_benign_domain
+                if is_benign_domain(plain):
+                    excluded.append({"type": kind, "value": raw,
+                                     "reason": "well-known vendor/telemetry domain"})
+                    continue
+            except Exception:
+                pass
+        if plain in evidence or raw.lower() in evidence:
+            verified.append({"type": kind, "value": raw})
+        else:
+            unverified.append({"type": kind, "value": raw})
+
+    return {
+        "advisory": True,
+        "claims": len(claims),
+        "verified": len(verified),
+        "unverified": len(unverified),
+        "excluded": len(excluded),
+        "unverified_items": unverified[:40],
+        "excluded_items": excluded[:10],
+        "method": ("case-insensitive substring match of the plain value against "
+                   "concatenated raw tool evidence (both fanged and defanged forms)"),
+    }
+
+
+def collect_evidence_text(root: Path, max_bytes: int = 40 * 1024 * 1024) -> tuple[str, list[str]]:
+    """Concatenate a case's raw evidence for claim verification (bounded)."""
+    chunks: list[str] = []
+    used: list[str] = []
+    total = 0
+    for rel in _EVIDENCE_FILES:
+        path = root / rel
+        if not path.is_file():
+            continue
+        try:
+            text = path.read_text(encoding="utf-8", errors="replace")
+        except Exception:
+            continue
+        remaining = max_bytes - total
+        if remaining <= 0:
+            break
+        chunks.append(text[:remaining])
+        used.append(rel)
+        total += len(chunks[-1])
+    return "\n".join(chunks), used
 
 
 OUTPUT_FORMAT_CONTRACT = """
