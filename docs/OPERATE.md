@@ -168,6 +168,10 @@ Tunables (all optional, defaults shown):
 | `REVAI_AGENTIC_RECOVERY_TIER_CAP` | 20 | per-tier function cap (bottom-up tiers) |
 | `REVAI_API_INDEX` | unset | override the offline API lookup index path (default: `assets/api_index/api_index.db` in the repo, `/opt/revai/api_index/api_index.db` on the VM). The bundled index covers the 369 malapi.io-catalogued APIs; a full-corpus index (~46k APIs, built from Microsoft's sdk-api + driver-ddi documentation) can be deployed over it — see [`api-index.md`](api-index.md). Absent index degrades `api_lookup` to `available:false` — the pipeline is unaffected |
 | `REVAI_FORCE_API_INDEX` | 0 | deploy-time only: `scripts/deploy.sh` keeps an existing VM index (so a full-corpus build survives a deploy); set to 1 to overwrite it with the bundled default |
+| `REVAI_IOC_FACTCHECK` | enforce | unverified report IOC claims fail the quality gate; `advisory` records them without failing (escape hatch for a report citing sources outside the evidence pack) |
+| `REVAI_DISABLE_IOC_CONFIDENCE` | off | skip the deterministic "Indicator confidence" section in the technical reports |
+| `REVAI_DEEP_STREAM` | off | consume the deep-dive agent graph as a stream instead of one blocking invoke (identical messages; steps observable as they happen) |
+| `REVAI_PROGRESS_STREAM_SECONDS` | 300 | duration of the SSE progress feed (`/api/orch/<sha>/progress/stream`) |
 
 All of the above are exposed in the web console **Run configuration** panel (Settings → run config), so they can be toggled per run without shell env. CLI runs set them explicitly.
 
@@ -218,15 +222,32 @@ Two endpoints expose what the deep-dive agent is doing while it runs:
   explicit caveat: the prebuilt ReAct graph is a two-node loop, so the diagram shows
   *what executes*, not what the model decides. Fail-open.
 
-## Claimed-IOC fact verification (advisory)
+## Claimed-IOC fact verification (enforced) and behavior prerequisites (advisory)
 
 `report_quality.py` re-checks every literal indicator a report claims against the
-raw tool evidence by code (both fanged and defanged forms) and records the result
-in the quality payload (`advisory.claimed_ioc_verification`) and in
-`pipeline-audit.json` checks. Calibration over the 56 published case studies:
-175 literal claims, 157 verified (89.7%), 9 unverified, 9 excluded vendor domains.
-It is **advisory** — it does not turn a run red. Reports that cite offsets or
-knowledge outside the evidence pack are the expected source of unverified entries.
+raw tool evidence by code (both fanged and defanged forms). An unverified claim
+fails the quality gate (`report:unverified_iocs:<n>`); `REVAI_IOC_FACTCHECK=advisory`
+records it without failing. Known non-claims are excluded rather than counted:
+generic hive keys without a subkey, vendor/telemetry hosts, prose/code identifiers.
+
+Calibration over the 56 published case studies (post-fix): 175 literal claims,
+148 verified, **6 unverified** (4 QQ-family domains in the darkgate case, 2
+`HKCU\...\Run` claims), 21 excluded artifacts. Three historical cases would now
+flag — they were published before the gate existed.
+
+The same pass records **behavior prerequisites** (advisory): a report claiming
+injection, persistence or credential access with none of that behavior's defining
+APIs in the import surface is listed as unsupported, and for a packed sample it is
+stated as "analysis incomplete" instead of a negative. Result:
+`advisory.behavior_prerequisites` in the quality payload.
+
+## Deep-dive progress stream
+
+`/api/orch/<sha>/progress/stream` streams the deep-dive progress as server-sent
+events (one JSON object per tool start/end and LLM turn), for
+`REVAI_PROGRESS_STREAM_SECONDS` seconds. With `REVAI_DEEP_STREAM=1` the agent
+consumes its graph as a stream, so steps appear as they happen rather than at the
+end of one blocking invoke; the produced messages are identical either way.
 
 ## Reset outputs
 

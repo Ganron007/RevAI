@@ -366,6 +366,23 @@ def agent_graph_mermaid() -> dict:
         return {**base, "ok": False, "error": f"{type(exc).__name__}: {exc}"}
 
 
+def messages_from_stream_chunks(chunks) -> list:
+    """Flatten ``stream(stream_mode="updates")`` chunks into one message list.
+
+    Each chunk is ``{node_name: {"messages": [...]}}``; the final message list is
+    identical to what ``invoke`` would have returned, so downstream verdict
+    extraction does not care which path ran.
+    """
+    messages: list = []
+    for chunk in chunks or []:
+        if not isinstance(chunk, dict):
+            continue
+        for payload in chunk.values():
+            if isinstance(payload, dict):
+                messages.extend(payload.get("messages") or [])
+    return messages
+
+
 def run_langgraph_deep_dive(sha: str, max_steps: int = 10, helpers: dict | None = None) -> dict:
     helpers = helpers or {}
     ensure_pipeline_runtime_env()
@@ -504,21 +521,34 @@ not found instead of recalling an answer.
     )
 
     final_answer = None
+    agent_input = {
+        "messages": [
+            HumanMessage(
+                content=(
+                    f"Analyze sample {sha}. SQL seed status sql_ok={sql_ok}. "
+                    "Run at least one useful SQL or decompile query if needed, "
+                    "then produce the final flat JSON verdict."
+                )
+            )
+        ]
+    }
+    # REVAI_DEEP_STREAM=1 (plan #19c) consumes the graph as a stream instead of a
+    # single invoke, so steps are observable as they happen. The emitted messages
+    # are identical, and `invoke` remains the default because it is the proven path.
+    stream_mode = os.environ.get("REVAI_DEEP_STREAM", "").strip().lower() in (
+        "1", "true", "yes", "on")
     try:
-        result = agent.invoke(
-            {
-                "messages": [
-                    HumanMessage(
-                        content=(
-                            f"Analyze sample {sha}. SQL seed status sql_ok={sql_ok}. "
-                            "Run at least one useful SQL or decompile query if needed, "
-                            "then produce the final flat JSON verdict."
-                        )
-                    )
-                ]
-            },
-            config={"recursion_limit": recursion_limit},
-        )
+        if stream_mode:
+            messages: list = []
+            messages = messages_from_stream_chunks(agent.stream(
+                agent_input,
+                config={"recursion_limit": recursion_limit},
+                stream_mode="updates",
+            ))
+            result = {"messages": messages}
+        else:
+            result = agent.invoke(
+                agent_input, config={"recursion_limit": recursion_limit})
         messages = result.get("messages") or []
         # Record AI/tool turns lightly for audit
         for msg in messages:

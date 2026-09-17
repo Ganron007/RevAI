@@ -2530,6 +2530,48 @@ def api_orch_trace(sha):
     return jsonify(_load_json_safe(p))
 
 
+@app.route("/api/orch/<sha>/progress/stream")
+def api_orch_progress_stream(sha):
+    """Server-sent events over the deep-dive progress stream (plan #19c).
+
+    Tails deep-dive-progress.jsonl and emits each JSON line as it appears, for up
+    to five minutes. Backend-only: the JSONL field on /live keeps working whether
+    or not anything consumes this.
+    """
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
+    mode = _mode_from_request()
+    progress_path = case_dir(sha, mode) / "deep_dive" / "deep-dive-progress.jsonl"
+    try:
+        stream_seconds = int(os.environ.get("REVAI_PROGRESS_STREAM_SECONDS") or 300)
+    except ValueError:
+        stream_seconds = 300
+
+    def _events():
+        offset = 0
+        deadline = time.time() + stream_seconds
+        yield ": open\n\n"
+        while time.time() < deadline:
+            try:
+                if progress_path.is_file():
+                    if progress_path.stat().st_size < offset:
+                        offset = 0  # file rewritten for a new run
+                    with progress_path.open("r", encoding="utf-8", errors="replace") as fh:
+                        fh.seek(offset)
+                        for line in fh:
+                            line = line.strip()
+                            if line:
+                                yield f"data: {line}\n\n"
+                        offset = fh.tell()
+            except Exception:
+                pass
+            time.sleep(1.0)
+
+    return Response(_events(), mimetype="text/event-stream",
+                    headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
+
+
 @app.route("/api/quality/<sha>")
 def api_quality(sha):
     sha = require_sha(sha)

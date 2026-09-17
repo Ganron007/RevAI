@@ -92,3 +92,51 @@ def test_api_graph_endpoint():
     data = resp.get_json()
     assert "tools" in data
     assert data.get("engine") == "langgraph"
+
+
+# --- #19c stream mode + SSE -----------------------------------------------
+
+
+def test_messages_from_stream_chunks_flattens_updates():
+    from langchain_core.messages import AIMessage, ToolMessage
+
+    tool_msg = ToolMessage(content="result", tool_call_id="1")
+    ai_msg = AIMessage(content="done")
+    chunks = [
+        {"agent": {"messages": [ai_msg]}},
+        {"tools": {"messages": [tool_msg]}},
+        {"agent": {"messages": []}},
+        "not-a-dict",
+    ]
+    messages = alg.messages_from_stream_chunks(chunks)
+    assert messages == [ai_msg, tool_msg]
+
+
+def test_messages_from_stream_chunks_handles_empty():
+    assert alg.messages_from_stream_chunks([]) == []
+    assert alg.messages_from_stream_chunks(None) == []
+
+
+def test_progress_sse_endpoint_emits_existing_lines(tmp_path, monkeypatch):
+    try:
+        import app as app_mod
+        import v2_lib
+    except Exception as exc:  # pragma: no cover
+        pytest.skip(f"app/v2_lib import unavailable: {exc}")
+
+    monkeypatch.setattr(v2_lib, "LOGS_DIR", tmp_path)
+    monkeypatch.delenv("REVAI_RUN_MODE", raising=False)
+    monkeypatch.setenv("REVAI_PROGRESS_STREAM_SECONDS", "1")
+    sha = "c" * 64
+    case = tmp_path / sha / "deep_dive"
+    case.mkdir(parents=True)
+    (case / "deep-dive-progress.jsonl").write_text(
+        '{"event": "tool_start", "tool": "api_lookup"}\n'
+        '{"event": "tool_end", "tool": "api_lookup", "output_chars": 12}\n')
+
+    client = app_mod.app.test_client()
+    resp = client.get(f"/api/orch/{sha}/progress/stream", buffered=False)
+    assert resp.status_code == 200
+    body = b"".join(resp.response).decode("utf-8", "replace")
+    assert 'data: {"event": "tool_start", "tool": "api_lookup"}' in body
+    assert body.count("data: ") >= 2

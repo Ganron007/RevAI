@@ -31,7 +31,8 @@ _SCORES = {"high": 85, "medium": 60, "low": 30}
 BENIGN_DOMAIN_SUFFIXES = (
     "microsoft.com", "windows.com", "windowsupdate.com", "msftncsi.com",
     "msn.com", "bing.com", "live.com", "office.com", "office365.com",
-    "w3.org", "xmlsoap.org", "schemas.xmlsoap.org", "ietf.org", "rfc-editor.org",
+    "w3.org", "xmlsoap.org", "schemas.xmlsoap.org", "xml.org", "purl.org",
+    "openxmlformats.org", "ietf.org", "rfc-editor.org",
     "verisign.com", "digicert.com", "globalsign.com", "sectigo.com",
     "adobe.com", "google.com", "gstatic.com", "mozilla.org", "apple.com",
     "apache.org", "openssl.org", "python.org", "gnu.org", "kernel.org",

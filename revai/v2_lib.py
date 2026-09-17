@@ -4860,6 +4860,72 @@ def attach_dynamic_corroboration(technical_evidence: str, sha: str, *,
         return technical_evidence
 
 
+def format_ioc_confidence_block(iocs: dict, limit: int = 40) -> str:
+    """Render the deterministic per-IOC confidence tiers as a report section.
+
+    Pure formatter: takes the `confidence` block written into iocs.json by
+    yara_gen and returns markdown (empty string when there is nothing to show).
+    """
+    block = (iocs or {}).get("confidence") or {}
+    items = block.get("items") or []
+    if not items:
+        return ""
+    order = {"high": 0, "medium": 1, "low": 2}
+    items = sorted(items, key=lambda i: (order.get(i.get("tier"), 3),
+                                         -(i.get("score") or 0),
+                                         str(i.get("value") or "").lower()))
+    counts = block.get("counts") or {}
+    lines = [
+        "## Indicator confidence (deterministic)",
+        "",
+        "Tiers are derived from how each indicator was extracted and the context it "
+        "appears in — not from any behavioural claim. High: structurally complete "
+        "evidence (URL host, full registry path, strict-format wallet). Medium: a "
+        "well-formed but context-free string match. Low: weak structure, a private "
+        "or reserved address, or a well-known vendor/telemetry domain.",
+        "",
+        f"Counts: high {counts.get('high', 0)}, medium {counts.get('medium', 0)}, "
+        f"low {counts.get('low', 0)}.",
+        "",
+        "| Type | Indicator | Tier | Score | Reasons |",
+        "|---|---|---|---|---|",
+    ]
+    for item in items[:limit]:
+        reasons = "; ".join(item.get("reasons") or []) or "-"
+        value = str(item.get("value") or "").replace("|", "\\|")
+        lines.append(
+            f"| {item.get('type', '-')} | {value} | {item.get('tier', '-')} | "
+            f"{item.get('score', '-')} | {reasons} |"
+        )
+    remaining = len(items) - limit
+    if remaining > 0:
+        lines.append(f"| ... | {remaining} more indicators | | | |")
+    return "\n".join(lines)
+
+
+def attach_ioc_confidence(technical_md: str, sha: str) -> str:
+    """Append the IOC-confidence section to a technical report.
+
+    Presence-gated: returns the input unchanged when the case has no iocs.json
+    confidence block, so runs without yara_gen output are untouched. Opt out with
+    ``REVAI_DISABLE_IOC_CONFIDENCE=1``. Never alters verdicts.
+    """
+    if os.environ.get("REVAI_DISABLE_IOC_CONFIDENCE", "").strip().lower() in (
+            "1", "true", "yes", "on"):
+        return technical_md
+    try:
+        path = case_dir(sha) / "iocs.json"
+        if not path.is_file():
+            return technical_md
+        iocs = json.loads(path.read_text(encoding="utf-8", errors="replace"))
+        block = format_ioc_confidence_block(iocs)
+        if not block:
+            return technical_md
+        return (technical_md or "").rstrip() + "\n\n" + block + "\n"
+    except Exception:
+        return technical_md
+
+
 def append_analyst_next_appendix(narrative_md: str, pack: dict | None) -> str:
     """Append ANALYST-NEXT.md (research helper — not core publish)."""
     marker = "\n## Appendix: Analyst next actions\n"

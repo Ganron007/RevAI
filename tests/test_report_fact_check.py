@@ -64,3 +64,79 @@ def test_collect_evidence_text_is_bounded(tmp_path):
     (tmp_path / "iocs.json").write_text("x" * 5000)
     text, _used = rq.collect_evidence_text(tmp_path, max_bytes=1000)
     assert len(text) <= 1000
+
+
+# --- artifact exclusions + promotion --------------------------------------
+
+
+def test_generic_hive_keys_are_excluded():
+    md = "Persistence via HKEY_CURRENT_USER\\Run and HKLM\\Run."
+    result = rq.verify_claimed_iocs(md, "")
+    assert result["unverified"] == 0
+    assert result["excluded"] == 2
+    assert all("specific subkey" in i["reason"] for i in result["excluded_items"])
+
+
+def test_benign_url_host_is_excluded():
+    md = "Namespace: http://xml.org/schemas/xml/lexical-handler"
+    result = rq.verify_claimed_iocs(md, "")
+    assert result["unverified"] == 0
+    assert result["excluded"] >= 1
+
+
+def test_prose_identifiers_are_not_claims():
+    md = "The `powershell.exe` path uses capability.attack.execution telemetry."
+    result = rq.verify_claimed_iocs(md, "")
+    assert result["claims"] == 0
+
+
+def test_ioc_factcheck_issue_modes(monkeypatch):
+    monkeypatch.delenv("REVAI_IOC_FACTCHECK", raising=False)
+    assert rq._ioc_factcheck_issue({"unverified": 2}) == "report:unverified_iocs:2"
+    assert rq._ioc_factcheck_issue({"unverified": 0}) is None
+    monkeypatch.setenv("REVAI_IOC_FACTCHECK", "advisory")
+    assert rq._ioc_factcheck_issue({"unverified": 2}) is None
+
+
+# --- behavior prerequisites (#14d) ----------------------------------------
+
+
+MD_BEHAVIOR = ("The sample performs process injection and establishes persistence "
+               "through a Run key.")
+
+
+def test_behavior_prerequisites_flags_unsupported():
+    surface = "createremotethread\nwriteprocessmemory"
+    result = rq.verify_behavior_prerequisites(MD_BEHAVIOR, surface)
+    assert result["advisory"] is True
+    behaviors = {i["behavior"] for i in result["unsupported_items"]}
+    assert behaviors == {"persistence"}
+    assert result["analysis_incomplete"] is False
+
+
+def test_behavior_prerequisites_supported_is_clean():
+    surface = "createremotethread\nregsetvalueex"
+    result = rq.verify_behavior_prerequisites(MD_BEHAVIOR, surface)
+    assert result["unsupported"] == 0
+    assert result["checked"] == 2
+
+
+def test_behavior_prerequisites_packed_reads_incomplete():
+    result = rq.verify_behavior_prerequisites(MD_BEHAVIOR, "", packed=True)
+    assert result["analysis_incomplete"] is True
+    assert result["packed"] is True
+
+
+def test_behavior_prerequisites_empty_report():
+    result = rq.verify_behavior_prerequisites("", "anything")
+    assert result["checked"] == 0
+    assert result["unsupported_items"] == []
+
+
+def test_collect_import_surface_prefers_structured(tmp_path):
+    (tmp_path / "quick_scan").mkdir()
+    (tmp_path / "quick_scan" / "00-tools-raw.json").write_text(
+        '{"pe_imports": {"signals": [{"api_match": "CreateRemoteThread"}]}}')
+    surface, sources = rq.collect_import_surface(tmp_path)
+    assert "createremotethread" in surface
+    assert any("00-tools-raw.json" in s for s in sources)

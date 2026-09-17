@@ -728,8 +728,23 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str) -> dict[str, Any]:
         _claims = verify_claimed_iocs(_report_for_claims, _evidence_text)
         _claims["evidence_files"] = _evidence_files
         checks["claimed_ioc_verification"] = _claims
+        _ioc_issue = _ioc_factcheck_issue(_claims)
+        if _ioc_issue:
+            issues.append(_ioc_issue)
     except Exception as exc:  # advisory must never break the gate
         checks["claimed_ioc_verification"] = {"advisory": True, "error": str(exc)}
+
+    # Plan #14d, advisory phase: behavioural claims the import surface does not
+    # support. Conservative rules only; packed samples report "analysis
+    # incomplete" instead of a negative. Recorded, not gate-failing yet.
+    try:
+        _surface, _surface_sources = collect_import_surface(root)
+        _behavior = verify_behavior_prerequisites(
+            tech3_md or tech2_md or master_md, _surface, packed=_is_packed(root))
+        _behavior["import_surface_sources"] = _surface_sources
+        checks["behavior_prerequisites"] = _behavior
+    except Exception as exc:  # advisory must never break the gate
+        checks["behavior_prerequisites"] = {"advisory": True, "error": str(exc)}
 
     ok = not issues
     return {
@@ -740,6 +755,7 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str) -> dict[str, Any]:
         "checks": checks,
         "advisory": {
             "claimed_ioc_verification": checks.get("claimed_ioc_verification", {}),
+            "behavior_prerequisites": checks.get("behavior_prerequisites", {}),
         },
         "models": {
             "master": master_j.get("model"),
@@ -839,15 +855,22 @@ def verify_claimed_iocs(markdown: str, evidence_text: str) -> dict:
     unverified: list[dict[str, str]] = []
     excluded: list[dict[str, str]] = []
     for (kind, plain), raw in sorted(claims.items()):
-        if kind == "domain":
+        if kind in ("domain", "url"):
             try:
-                from ioc_confidence import is_benign_domain
-                if is_benign_domain(plain):
+                from ioc_confidence import is_benign_domain, url_host
+                host = url_host(raw) if kind == "url" else plain
+                if host and is_benign_domain(host):
                     excluded.append({"type": kind, "value": raw,
                                      "reason": "well-known vendor/telemetry domain"})
                     continue
             except Exception:
                 pass
+        if kind == "registry_key" and _plain_claim(raw).count("\\") < 2:
+            # "HKEY_CURRENT_USER\Run" is a hive name, not a specific path - there
+            # is nothing referenceable to verify.
+            excluded.append({"type": kind, "value": raw,
+                             "reason": "generic hive key without a specific subkey"})
+            continue
         if plain in evidence or raw.lower() in evidence:
             verified.append({"type": kind, "value": raw})
         else:
@@ -864,6 +887,19 @@ def verify_claimed_iocs(markdown: str, evidence_text: str) -> dict:
         "method": ("case-insensitive substring match of the plain value against "
                    "concatenated raw tool evidence (both fanged and defanged forms)"),
     }
+
+
+def _ioc_factcheck_issue(claims: dict) -> str | None:
+    """Gate message for unverified claims, or None when clean/advisory.
+
+    Promoted 2026-09-16 (plan #10). ``REVAI_IOC_FACTCHECK=advisory`` records the
+    result without failing, for a run whose report legitimately cites sources
+    outside the evidence pack.
+    """
+    if os.environ.get("REVAI_IOC_FACTCHECK", "enforce").strip().lower() == "advisory":
+        return None
+    count = int(claims.get("unverified") or 0)
+    return f"report:unverified_iocs:{count}" if count else None
 
 
 def collect_evidence_text(root: Path, max_bytes: int = 40 * 1024 * 1024) -> tuple[str, list[str]]:
@@ -886,6 +922,142 @@ def collect_evidence_text(root: Path, max_bytes: int = 40 * 1024 * 1024) -> tupl
         used.append(rel)
         total += len(chunks[-1])
     return "\n".join(chunks), used
+
+
+# --- behavior prerequisites vs import surface (plan #14d; advisory) --------
+
+#: Conservative behaviour -> required import surface. Only rules whose import
+#: requirement is essentially definitional are listed: a behaviour reached
+#: through an unlisted API would otherwise be reported as unsupported, which is
+#: exactly the false negative this check exists to avoid. Keep this list short
+#: and high-precision; anything ambiguous belongs in review, not here.
+_BEHAVIOR_IMPORT_RULES = (
+    (
+        "process injection",
+        ("process injection", "code injection", "dll injection", "process hollowing",
+         "reflective load", "thread injection", "process doppelganging"),
+        ("createremotethread", "ntcreatethreadex", "writeprocessmemory",
+         "ntwritevirtualmemory", "queueuserapc", "setthreadcontext",
+         "wow64setthreadcontext", "mapviewofsection", "ntmapviewofsection",
+         "virtualallocex", "ntallocatevirtualmemory", "rtlmovememory"),
+    ),
+    (
+        "persistence",
+        ("persistence", "autostart", "run key", "registry run", "startup folder",
+         "create a service", "installs itself"),
+        ("regsetvalueex", "regsetvalue", "regcreatekeyex", "regcreatekey",
+         "createservice", "openscmanager", "changeserviceconfig", "schtasks"),
+    ),
+    (
+        "credential access",
+        ("credential", "credential dumping", "stolen credentials", "browser password",
+         "password stealer", "harvest passwords"),
+        ("credread", "credenumerate", "cryptunprotectdata", "lsaopenpolicy",
+         "samconnect", "minidumpwritedump", "ntquerysysteminformation"),
+    ),
+)
+
+
+def _harvest_import_surface(node, out: set[str]) -> None:
+    """Collect API-ish strings from import-bearing structures anywhere in the JSON."""
+    if isinstance(node, dict):
+        for key, value in node.items():
+            if key in ("api_match", "function", "name", "api") and isinstance(value, str):
+                out.add(value.lower())
+            elif key in ("imports", "imported_functions", "signals", "functions",
+                         "top_rules", "dlls"):
+                _harvest_import_surface(value, out)
+            elif isinstance(value, (dict, list)):
+                _harvest_import_surface(value, out)
+    elif isinstance(node, list):
+        for item in node:
+            _harvest_import_surface(item, out)
+
+
+def collect_import_surface(root: Path) -> tuple[str, list[str]]:
+    """Build the import surface for behaviour checks.
+
+    Prefers structured import evidence (pe_import_signals, tool import tables).
+    Falls back to the broader evidence text when no structured imports exist, and
+    says which one was used, because the fallback is a weaker gate.
+    """
+    names: set[str] = set()
+    used: list[str] = []
+    for rel in ("quick_scan/00-tools-raw.json", "deep_dive/01-tools-raw.json",
+                "deep_dive/02-signals.json"):
+        path = root / rel
+        if not path.is_file():
+            continue
+        try:
+            data = json.loads(path.read_text(encoding="utf-8", errors="replace"))
+        except Exception:
+            continue
+        before = len(names)
+        _harvest_import_surface(data, names)
+        if len(names) > before:
+            used.append(rel)
+    if names:
+        return "\n".join(sorted(names)), used
+    text, evidence_used = collect_evidence_text(root)
+    return text.lower(), [f"{u} (evidence-text fallback)" for u in evidence_used]
+
+
+def _is_packed(root: Path) -> bool:
+    for rel in ("packer.txt", "quick_scan/packer.txt"):
+        path = root / rel
+        if not path.is_file():
+            continue
+        try:
+            text = path.read_text(encoding="utf-8", errors="replace").lower()
+        except Exception:
+            continue
+        if "packed" in text and "not packed" not in text:
+            return True
+        if "suspicious" in text or "high entropy" in text:
+            return True
+    return False
+
+
+def verify_behavior_prerequisites(markdown: str, import_surface: str,
+                                  packed: bool = False) -> dict:
+    """Flag behavioral claims the import surface does not support.
+
+    Advisory: a claim phrased in the report whose required APIs are absent from
+    the import surface is recorded as unsupported. For a packed sample the same
+    finding is reported as *analysis incomplete* rather than as a negative, since
+    the imports may simply not be visible yet.
+    """
+    surface = (import_surface or "").lower()
+    text = (markdown or "").lower()
+    checked: list[dict] = []
+    unsupported: list[dict] = []
+
+    for behavior, phrases, required in _BEHAVIOR_IMPORT_RULES:
+        matched = [p for p in phrases if p in text]
+        if not matched:
+            continue
+        present = [api for api in required if api in surface]
+        entry = {
+            "behavior": behavior,
+            "matched_phrases": matched,
+            "required_any": list(required),
+            "present": present,
+        }
+        checked.append(entry)
+        if not present:
+            unsupported.append(entry)
+
+    return {
+        "advisory": True,
+        "checked": len(checked),
+        "unsupported": len(unsupported),
+        "unsupported_items": unsupported,
+        "packed": bool(packed),
+        "analysis_incomplete": bool(packed and unsupported),
+        "method": ("report phrases are matched against the sample's import surface; "
+                   "a behaviour with no matching API is recorded unsupported, and "
+                   "for a packed sample that becomes 'analysis incomplete'"),
+    }
 
 
 OUTPUT_FORMAT_CONTRACT = """

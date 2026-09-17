@@ -26,6 +26,7 @@ from v2_lib import (  # noqa: E402
     EvidenceAssembler,
     append_technical_evidence_appendix,
     attach_dynamic_corroboration,
+    attach_ioc_confidence,
     audit_write,
     build_technical_evidence_block,
     case_dir,
@@ -1119,6 +1120,9 @@ def main():
         # Provenance banner BEFORE quality eval — byline_ok gate reads it
         technical_report["provenance"] = revai_provenance()
         tech_md = provenance_block() + tech_md
+        # Deterministic per-IOC confidence tiers (plan #14e) — presence-gated on
+        # iocs.json, appended before quality eval so the gate sees the final text.
+        tech_md = attach_ioc_confidence(tech_md, args.sha256)
         technical_report["markdown"] = tech_md
         technical_report["evidence_appendix"] = True
         technical_report["sections_missing"] = tech_missing

@@ -231,10 +231,10 @@ Full ops: [`docs/OPERATE.md`](docs/OPERATE.md) · Install: [`docs/INSTALL.md`](d
 
 | Item | Description |
 |------|-------------|
-| **Claimed-IOC gate promotion** | Finish the advisory report fact-verification pass: review the published-corpus residual, then make a mismatch turn the quality gate red |
 | **Verifiable artifact generation** | A stage that writes config extractors / unpackers / deobfuscation scripts for the sample and runs them — the artifact verifies itself |
 | **Report template alignment** | Restructure reports to the community-standard template — component inventory, tiered IoCs, explicit unknowns, environment appendix, MBC vocabulary |
 | **Interactive steering mode** | A fourth run mode: analyst notes injected mid-run with HITL pause points; deterministic gates stay final |
+| **Behavior-prerequisite gate promotion** | Move the advisory claim-vs-import check (G20) to a gate once its residual is reviewed |
 | **`v1.0.0` release tag** | Versioned first release once the four items above land and the release gate passes |
 
 ---
