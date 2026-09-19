@@ -232,10 +232,10 @@ Full ops: [`docs/OPERATE.md`](docs/OPERATE.md) · Install: [`docs/INSTALL.md`](d
 | Item | Description |
 |------|-------------|
 | **Verifiable artifact generation** | A stage that writes config extractors / unpackers / deobfuscation scripts for the sample and runs them — the artifact verifies itself |
-| **Report template alignment** | Restructure reports to the community-standard template — component inventory, tiered IoCs, explicit unknowns, environment appendix, MBC vocabulary |
+| **Report template alignment** | Restructure reports to the community-standard template — dynamic-analysis section, tiered IoCs, explicit unknowns, component inventory, environment appendix, MBC vocabulary (deterministic sections landed; prose half in progress) |
 | **Interactive steering mode** | A fourth run mode: analyst notes injected mid-run with HITL pause points; deterministic gates stay final |
 | **Behavior-prerequisite gate promotion** | Move the advisory claim-vs-import check (G20) to a gate once its residual is reviewed |
-| **`v1.0.0` release tag** | Versioned first release once the four items above land and the release gate passes |
+| **`v1.0.0` release tag** | Versioned first release once the items above land, including a clean-install deployment rehearsal of the setup scripts on a fresh VM |
 
 ---
 

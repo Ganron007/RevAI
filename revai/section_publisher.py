@@ -52,7 +52,9 @@ from v2_lib import (
     _sec_recommendations_evidence,
     append_technical_evidence_appendix,
     attach_dynamic_corroboration,
+    attach_dynamic_analysis_section,
     attach_ioc_confidence,
+    attach_what_we_dont_know,
     build_technical_evidence_block,
     ensure_pipeline_runtime_env,
     format_malcat_evidence,
@@ -611,9 +613,13 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
     tech_md = append_technical_evidence_appendix(tech_md, technical_evidence)
     technical_report["provenance"] = revai_provenance()
     tech_md = provenance_block() + tech_md
-    # Deterministic per-IOC confidence tiers (plan #14e) — presence-gated on
-    # iocs.json, appended before the quality eval so the gate sees the final text.
+    # Deterministic alignment sections (plan #12) — IOC tiers, dynamic analysis,
+    # explicit gaps — appended before quality eval. The gap scan uses the report
+    # as the LLM wrote it, so it cannot quote our own caveats.
+    _report_scan_text = tech_md
     tech_md = attach_ioc_confidence(tech_md, sha)
+    tech_md = attach_dynamic_analysis_section(tech_md, sha)
+    tech_md = attach_what_we_dont_know(tech_md, sha, scan_text=_report_scan_text)
     technical_report["markdown"] = tech_md
     technical_report["evidence_appendix"] = True
     technical_report["sections_missing"] = missing

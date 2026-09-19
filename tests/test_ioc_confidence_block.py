@@ -43,10 +43,11 @@ def test_formatter_orders_tiers_and_caps():
     assert "Indicator confidence (deterministic)" in text
     assert "Counts: high 1, medium 1, low 1." in text
     lines = [ln for ln in text.splitlines() if ln.startswith("| ")]
-    # header row, then data rows in tier order (high before medium)
-    assert lines[0].startswith("| Type |")
-    assert lines[1].startswith("| domain | evil-c2[.]biz | high |")
-    assert lines[2].startswith("| file | dropper.exe | medium |")
+    # header row, then data rows in tier order (high before medium), grouped by
+    # Pyramid-of-Pain tier so the table reads worst-first for a defender.
+    assert lines[0].startswith("| Pyramid | Type |")
+    assert lines[1].startswith("| 3. Domain names | domain | evil-c2[.]biz | high |")
+    assert lines[2].startswith("| 6. Host artifacts | file | dropper.exe | medium |")
     assert "1 more indicators" in text
     # low tier is pushed out by the cap
     assert "10[.]0[.]0[.]5" not in text

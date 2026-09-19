@@ -170,6 +170,8 @@ Tunables (all optional, defaults shown):
 | `REVAI_FORCE_API_INDEX` | 0 | deploy-time only: `scripts/deploy.sh` keeps an existing VM index (so a full-corpus build survives a deploy); set to 1 to overwrite it with the bundled default |
 | `REVAI_IOC_FACTCHECK` | enforce | unverified report IOC claims fail the quality gate; `advisory` records them without failing (escape hatch for a report citing sources outside the evidence pack) |
 | `REVAI_DISABLE_IOC_CONFIDENCE` | off | skip the deterministic "Indicator confidence" section in the technical reports |
+| `REVAI_DISABLE_DYNAMIC_SECTION` | off | skip the deterministic "Dynamic Analysis (WinRE detonation)" section |
+| `REVAI_DISABLE_GAP_SECTION` | off | skip the deterministic "What We Don't Know" section |
 | `REVAI_DEEP_STREAM` | off | consume the deep-dive agent graph as a stream instead of one blocking invoke (identical messages; steps observable as they happen) |
 | `REVAI_PROGRESS_STREAM_SECONDS` | 300 | duration of the SSE progress feed (`/api/orch/<sha>/progress/stream`) |
 
@@ -248,6 +250,23 @@ events (one JSON object per tool start/end and LLM turn), for
 `REVAI_PROGRESS_STREAM_SECONDS` seconds. With `REVAI_DEEP_STREAM=1` the agent
 consumes its graph as a stream, so steps appear as they happen rather than at the
 end of one blocking invoke; the produced messages are identical either way.
+
+## Deterministic report sections (plan #12 alignment)
+
+Three sections are appended by code after the LLM writes the report, so they are
+guaranteed present and cannot be paraphrased away (each opt-out above):
+
+1. **Indicator confidence (deterministic)** — the per-indicator tiers from
+   `iocs.json`, grouped by Pyramid-of-Pain tier (hashes → IPs → domains → network
+   → host artifacts) so the table reads worst-first.
+2. **Dynamic Analysis (WinRE detonation)** — presence-gated on a WinRE pack:
+   detonation window and coverage caveat, runtime DNS/SNI/HTTP, dropped or written
+   files, Frida/Procmon summaries, the agentic-dbg unpack artifact with its
+   honesty flags (`static_yara_wins`, raw-memory note when the dump is not
+   PE-parsable). Observed behaviour is stated as corroboration only.
+3. **What We Don't Know** — built only from structural gaps (dynamic not run,
+   window-bounded coverage, unpack image not statically analyzable) plus the
+   report's own explicit negations. Nothing is inferred.
 
 ## Reset outputs
 

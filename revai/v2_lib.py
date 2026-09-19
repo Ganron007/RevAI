@@ -4860,6 +4860,21 @@ def attach_dynamic_corroboration(technical_evidence: str, sha: str, *,
         return technical_evidence
 
 
+#: Pyramid-of-Pain grouping for the confidence table, so the tiers an analyst
+#: already filters on line up with the community-standard indicator ordering.
+_PYRAMID_TIERS = {
+    "hash": "1. Hashes",
+    "ip": "2. IP addresses",
+    "domain": "3. Domain names",
+    "url": "4. Network artifacts",
+    "email": "4. Network artifacts",
+    "file": "6. Host artifacts",
+    "registry_key": "6. Host artifacts",
+    "mutex": "6. Host artifacts",
+    "wallet": "6. Host artifacts",
+}
+
+
 def format_ioc_confidence_block(iocs: dict, limit: int = 40) -> str:
     """Render the deterministic per-IOC confidence tiers as a report section.
 
@@ -4887,19 +4902,23 @@ def format_ioc_confidence_block(iocs: dict, limit: int = 40) -> str:
         f"Counts: high {counts.get('high', 0)}, medium {counts.get('medium', 0)}, "
         f"low {counts.get('low', 0)}.",
         "",
-        "| Type | Indicator | Tier | Score | Reasons |",
-        "|---|---|---|---|---|",
+        "Pyramid-of-Pain grouping is shown per indicator so the table can be read "
+        "worst-first for defenders.",
+        "",
+        "| Pyramid | Type | Indicator | Tier | Score | Reasons |",
+        "|---|---|---|---|---|---|",
     ]
     for item in items[:limit]:
         reasons = "; ".join(item.get("reasons") or []) or "-"
         value = str(item.get("value") or "").replace("|", "\\|")
+        pyramid = _PYRAMID_TIERS.get(str(item.get("type") or ""), "-")
         lines.append(
-            f"| {item.get('type', '-')} | {value} | {item.get('tier', '-')} | "
-            f"{item.get('score', '-')} | {reasons} |"
+            f"| {pyramid} | {item.get('type', '-')} | {value} | "
+            f"{item.get('tier', '-')} | {item.get('score', '-')} | {reasons} |"
         )
     remaining = len(items) - limit
     if remaining > 0:
-        lines.append(f"| ... | {remaining} more indicators | | | |")
+        lines.append(f"| | ... | {remaining} more indicators | | | |")
     return "\n".join(lines)
 
 
@@ -4922,6 +4941,233 @@ def attach_ioc_confidence(technical_md: str, sha: str) -> str:
         if not block:
             return technical_md
         return (technical_md or "").rstrip() + "\n\n" + block + "\n"
+    except Exception:
+        return technical_md
+
+
+_DYNAMIC_SECTION_ENV = "REVAI_DISABLE_DYNAMIC_SECTION"
+_GAP_SECTION_ENV = "REVAI_DISABLE_GAP_SECTION"
+
+#: Explicit-gap vocabulary. Used only to collect statements the report already
+#: makes; nothing is inferred, so the section cannot invent a gap.
+_NEGATION_PHRASES = (
+    "not observed", "not established", "no evidence", "not performed",
+    "not analysed", "not analyzed", "could not be", "unable to",
+)
+
+
+def format_dynamic_analysis_section(pack: dict | None) -> str:
+    """Report-facing dynamic-analysis section for a WinRE detonation pack.
+
+    Presence-gated by the caller. Everything here is read from the pack; nothing
+    is inferred, and the closing line states the authority relationship so a
+    reader cannot mistake observed behaviour for the verdict driver.
+    """
+    if not pack or not pack.get("present"):
+        return ""
+    meta = pack.get("meta") or {}
+    job = pack.get("job_meta") or {}
+    window = pack.get("window") or {}
+    policy = pack.get("verdict_policy") or {}
+
+    lines = ["## Dynamic Analysis (WinRE detonation)", ""]
+    ok = meta.get("ok", job.get("ok"))
+    lines.append(f"- **status**: {'ran' if ok else (meta.get('error') or 'recorded')}")
+    lines.append(f"- **source**: `{pack.get('source') or 'winre'}`")
+    if meta.get("schema_version"):
+        lines.append(f"- **schema**: {meta.get('schema_version')}")
+
+    req, eff = window.get("requested_s"), window.get("effective_s")
+    if req is not None or eff is not None:
+        wline = f"- **detonation window**: requested={req}s effective={eff}s"
+        if window.get("adaptive") is not None:
+            wline += f" adaptive={window.get('adaptive')}"
+        if window.get("idle_stop_s"):
+            wline += f" idle_stop={window.get('idle_stop_s')}s"
+        if window.get("stop_reason"):
+            wline += f" stop_reason={window.get('stop_reason')}"
+        lines.append(wline)
+        lines.append("- **coverage**: observed activity is bounded by that window; "
+                     "delayed or long-timer behaviour may be absent.")
+    lines.append("- **verdict policy**: dynamic corroborates only; static evidence wins "
+                 f"(`static_yara_wins`={policy.get('static_yara_wins', True)})")
+
+    iocs = _net_iocs(pack)
+    dns, http, sni = iocs["dns"], iocs["http"], iocs["sni"]
+    if dns or http or sni:
+        lines += ["", "### Runtime network", ""]
+        if dns:
+            biz = [d for d in dns if str(d).endswith(".biz")]
+            lines.append(f"- **DNS queries** ({len(dns)}; DGA-shaped `.biz`: {len(biz)}): "
+                         + ", ".join(f"`{d}`" for d in dns[:20]))
+        if sni:
+            lines.append(f"- **TLS SNI** ({len(sni)}): "
+                         + ", ".join(f"`{s}`" for s in sni[:12]))
+        if http:
+            hosts: list[str] = []
+            for h in http:
+                host = str(h).split("\t")[0]
+                if host and host not in hosts:
+                    hosts.append(host)
+            lines.append(f"- **HTTP requests**: {len(http)} to {len(hosts)} host(s): "
+                         + ", ".join(f"`{h}`" for h in hosts[:12]))
+
+    drops = _frida_dropped_paths(pack)
+    if drops:
+        lines += ["", "### Dropped or written files (runtime)", ""]
+        lines += [f"- `{d}`" for d in drops]
+
+    fs = pack.get("frida_summary") or {}
+    if isinstance(fs, dict):
+        scalars = [(k, v) for k, v in fs.items() if isinstance(v, (int, float, str))]
+        if scalars:
+            lines.append("- **Frida instrumentation**: "
+                         + ", ".join(f"{k}={v}" for k, v in scalars[:6]))
+        for key, value in fs.items():
+            if isinstance(value, list) and value and "api" in key.lower():
+                lines.append(f"- **Frida {key}** ({len(value)}): "
+                             + ", ".join(f"`{str(v)[:60]}`" for v in value[:8]))
+
+    proc = pack.get("procmon_summary") or {}
+    if isinstance(proc, dict) and proc:
+        lines += ["", "### Process behaviour (Procmon summary)", ""]
+        for key, value in list(proc.items()):
+            if isinstance(value, (int, float, str)):
+                lines.append(f"- **{key}**: {value}")
+            elif isinstance(value, list) and value and any(
+                    t in key.lower() for t in ("persist", "registry", "mutex", "service")):
+                lines.append(f"- **{key}** ({len(value)}): "
+                             + ", ".join(f"`{str(v)[:80]}`" for v in value[:8]))
+
+    art = pack.get("unpack_artifact") or {}
+    if art:
+        lines += ["", "### Unpacked image (agentic-dbg)", ""]
+        size = f" ({art.get('bytes')} bytes)" if art.get("bytes") else ""
+        lines.append(f"- **artifact**: `{art.get('name')}`{size}")
+        for field in ("dump_kind", "dump_source", "rebuild_hint"):
+            if art.get(field):
+                lines.append(f"- **{field.replace('_', ' ')}**: {art.get(field)}")
+        analysis = analyze_unpack_artifact(art["path"]) if art.get("path") else {}
+        if analysis.get("parses"):
+            lines.append(f"- **static re-analysis**: parses=true machine={analysis.get('machine')} "
+                         f"imports={analysis.get('imports')}")
+            capa = analysis.get("capa") or {}
+            if capa.get("ok"):
+                lines.append(f"- **capa on the unpacked image**: {capa.get('rules')} rule(s)")
+        elif analysis:
+            lines.append(f"- **static re-analysis**: not PE-parsable "
+                         f"({analysis.get('error') or 'raw memory region'})")
+
+    extras = []
+    if pack.get("memory_files"):
+        extras.append(f"{len(pack['memory_files'])} memory artifact(s)")
+    if pack.get("pcaps"):
+        extras.append(f"{len(pack['pcaps'])} pcap(s)")
+    if extras:
+        lines.append("- **artifacts**: " + ", ".join(extras))
+
+    lines += ["", "_Observed behaviour corroborates the static assessment and never "
+              "overrides it._", ""]
+    return "\n".join(lines)
+
+
+def attach_dynamic_analysis_section(technical_md: str, sha: str, *,
+                                    logs_dir: Path | None = None,
+                                    winre_root: Path | None = None) -> str:
+    """Append the dynamic-analysis section to a technical report.
+
+    Presence-gated on a WinRE pack (unchanged without one); opt out with
+    ``REVAI_DISABLE_DYNAMIC_SECTION=1``. Never alters verdicts.
+    """
+    if os.environ.get(_DYNAMIC_SECTION_ENV, "").strip().lower() in (
+            "1", "true", "yes", "on"):
+        return technical_md
+    try:
+        pack = load_dynamic_pack(sha, logs_dir=logs_dir, winre_root=winre_root)
+        block = format_dynamic_analysis_section(pack)
+        if not block:
+            return technical_md
+        return (technical_md or "").rstrip() + "\n\n" + block
+    except Exception:
+        return technical_md
+
+
+def format_what_we_dont_know(scan_text: str, pack: dict | None,
+                             limit: int = 12) -> str:
+    """Deterministic "What We Don't Know" section.
+
+    Two ingredients only: structural gaps we can read from the run (no dynamic
+    pack; window-bounded coverage; an unpacked image that is not statically
+    analyzable) and the report's own explicit negations. Nothing is inferred.
+    """
+    items: list[str] = []
+
+    if not (pack and pack.get("present")):
+        items.append("Dynamic behaviour: not performed in this run "
+                     "(no detonation pack present).")
+    else:
+        window = pack.get("window") or {}
+        if window.get("effective_s") is not None:
+            reason = window.get("stop_reason")
+            items.append(
+                f"Dynamic coverage is window-bounded (effective {window.get('effective_s')}s"
+                + (f", stop_reason={reason}" if reason else "")
+                + "): activity outside the window is not represented.")
+        art = pack.get("unpack_artifact") or {}
+        if art:
+            analysis = analyze_unpack_artifact(art["path"]) if art.get("path") else {}
+            if analysis and not analysis.get("parses"):
+                items.append("The debugger-unpacked image could not be statically "
+                             "re-analyzed (raw memory region; imports unavailable).")
+
+    if scan_text:
+        seen: set[str] = set()
+        for line in scan_text.splitlines():
+            text = line.strip(" -*\t#")
+            low = text.lower()
+            if len(text) < 8 or not any(p in low for p in _NEGATION_PHRASES):
+                continue
+            key = low[:80]
+            if key in seen:
+                continue
+            seen.add(key)
+            if text in items:
+                continue
+            items.append(text[:220])
+            if len(items) >= limit:
+                break
+
+    if not items:
+        return ""
+    out = ["## What We Don't Know", "",
+           "Gaps recorded deterministically from this run's evidence and the report's "
+           "own explicit negations. Nothing here is inferred.", ""]
+    out += [f"- {item}" for item in items]
+    out.append("")
+    return "\n".join(out)
+
+
+def attach_what_we_dont_know(technical_md: str, sha: str, *,
+                             scan_text: str | None = None,
+                             pack: dict | None = None,
+                             logs_dir: Path | None = None,
+                             winre_root: Path | None = None) -> str:
+    """Append the "What We Don't Know" section to a technical report.
+
+    ``scan_text`` should be the report *before* our other deterministic sections
+    are appended, so the negation scan cannot quote our own caveat wording.
+    Opt out with ``REVAI_DISABLE_GAP_SECTION=1``.
+    """
+    if os.environ.get(_GAP_SECTION_ENV, "").strip().lower() in (
+            "1", "true", "yes", "on"):
+        return technical_md
+    try:
+        if pack is None:
+            pack = load_dynamic_pack(sha, logs_dir=logs_dir, winre_root=winre_root)
+        block = format_what_we_dont_know(scan_text or technical_md, pack)
+        if not block:
+            return technical_md
+        return (technical_md or "").rstrip() + "\n\n" + block
     except Exception:
         return technical_md
 
