@@ -24,8 +24,10 @@ from pathlib import Path
 _VERSION_RE = re.compile(r"\b\d+\.\d+(?:\.\d+){0,3}\b")
 #: Tool-result keys whose value is a version-ish string (kept narrow on purpose -
 #: sizes, durations and counts must not be mistaken for versions).
-_VERSION_KEYS = ("version", "engine", "capa_bin", "tool_version", "build",
-                 "yara_version", "r2_version")
+_VERSION_KEYS = ("version", "tool_version", "yara_version", "r2_version")
+#: Keys that name the engine/backend used, not its version.
+_ENGINE_KEYS = ("engine",)
+_BACKEND_KEYS = ("capa_bin",)
 _INSTALL_VERSIONS = Path("/opt/revai/config/tool-versions.json")
 
 
@@ -164,8 +166,15 @@ def _entry_section(parsed) -> str | None:
 
 def format_analysis_environment(case_root: Path | None,
                                 provenance: dict | None = None) -> str:
-    """Tool versions reported by this run (plus an optional install-time capture)."""
+    """Tool versions reported by this run (plus an optional install-time capture).
+
+    Versions, engine names and backends are kept apart on purpose: an engine
+    string such as ``malcat-capa`` is not a version, and a backend path is not
+    either, so neither goes in the version table.
+    """
     versions: dict[str, str] = {}
+    engines: dict[str, str] = {}
+    backends: dict[str, str] = {}
 
     install = _load(_INSTALL_VERSIONS)
     if install:
@@ -178,17 +187,22 @@ def format_analysis_environment(case_root: Path | None,
         if not isinstance(result, dict):
             continue
         for key, value in result.items():
-            if key.lower() in _VERSION_KEYS and isinstance(value, str) and value.strip():
-                versions.setdefault(f"{tool}.{key}", value.strip())
-        # Version-looking strings under version-ish keys only.
-        for key, value in list(result.items()):
-            if isinstance(value, str) and any(
-                    t in key.lower() for t in ("version", "build")):
+            low = key.lower()
+            if not isinstance(value, str) or not value.strip():
+                continue
+            value = value.strip()
+            if low in _BACKEND_KEYS:
+                backends.setdefault(f"{tool}.{key}", value)
+                continue
+            if low in _ENGINE_KEYS:
+                engines.setdefault(f"{tool}.{key}", value)
+                continue
+            if low in _VERSION_KEYS or any(t in low for t in ("version", "build")):
                 match = _VERSION_RE.search(value)
                 if match:
                     versions.setdefault(f"{tool}.{key}", match.group(0))
 
-    if not versions and not provenance:
+    if not versions and not engines and not backends and not provenance:
         return ""
 
     lines = ["## Appendix: Analysis Environment", ""]
@@ -199,6 +213,12 @@ def format_analysis_environment(case_root: Path | None,
     if install:
         lines.append("- **capture**: install-time manifest "
                      f"(`{_INSTALL_VERSIONS}`)")
+    if engines:
+        lines.append("- **tool engines**: "
+                     + ", ".join(f"{k.split('.', 1)[0]}={v}" for k, v in sorted(engines.items())))
+    if backends:
+        lines.append("- **capa backend**: "
+                     + ", ".join(sorted(backends.values())))
     if versions:
         lines += ["", "| Component | Version |", "|---|---|"]
         for key in sorted(versions):

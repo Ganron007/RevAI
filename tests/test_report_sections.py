@@ -59,8 +59,12 @@ def test_analysis_environment_renders_versions_and_provenance(tmp_path):
 
     assert "## Appendix: Analysis Environment" in text
     assert "RevAI commit" in text and "abc1234" in text
-    assert "capa.capa_bin" in text and "/opt/capa/capa" in text
-    assert "malcat.version" in text and "3.1.0" in text
+    # Engine names and backend paths are not versions: they get their own lines.
+    assert "**tool engines**" in text and "capa=capa-rs" in text
+    assert "**capa backend**" in text and "/opt/capa/capa" in text
+    # True versions stay in the version table.
+    assert "| malcat.version | 3.1.0 |" in text
+    assert "/opt/capa/capa |" not in text
     assert "duration_s" not in text
     assert "not a full environment manifest" in text
 

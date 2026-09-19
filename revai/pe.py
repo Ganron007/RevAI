@@ -165,26 +165,24 @@ def parse_pe(path: str | Path) -> PE:
     if not is_64 and magic != IMAGE_NT_OPTIONAL_HDR32_MAGIC:
         raise PEParseError(f"unknown optional-header magic 0x{magic:x}")
 
-    if is_64:
-        # +16: entry(4) baseofcode(4) imagebase(8) sectalign(4) filealign(4)
-        #      versions(6x2) win32ver(4) sizeimage(4) sizeheaders(4)
-        #      checksum(4) subsystem(2) dllchars(2)
-        (
-            _, entry_point, _, image_base, section_alignment,
-            file_alignment, _, _, _, _, _, _, _, _, _, subsystem,
-            dll_characteristics,
-        ) = struct.unpack_from("<IIQIIHHHHHHIIIIHH", data, opt_off + 16)
-    else:
-        # +16: entry(4) baseofcode(4) basedata(4) imagebase(4) sectalign(4)
-        #      filealign(4) versions(6x2) win32ver(4) sizeimage(4)
-        #      sizeheaders(4) checksum(4) subsystem(2) dllchars(2)
-        (
-            _, entry_point, _, _, image_base, section_alignment,
-            file_alignment, _, _, _, _, _, _, _, _, _, subsystem,
-            dll_characteristics,
-        ) = struct.unpack_from("<IIIIIIHHHHHHIIIIHH", data, opt_off + 16)
+    # Read the fields that are used by explicit offset rather than one wide
+    # unpack: PE32 and PE32+ lay these out differently (PE32+ widens ImageBase to
+    # u64 and drops BaseOfData), and a positional mapping silently shifted every
+    # field after ImageBase on 64-bit images.
+    entry_point = struct.unpack_from("<I", data, opt_off + 16)[0]
+    image_base = struct.unpack_from("<Q" if is_64 else "<I",
+                                    data, opt_off + (24 if is_64 else 28))[0]
+    section_alignment = struct.unpack_from("<I", data, opt_off + 32)[0]
+    file_alignment = struct.unpack_from("<I", data, opt_off + 36)[0]
+    subsystem = struct.unpack_from("<H", data, opt_off + 68)[0]
+    dll_characteristics = struct.unpack_from("<H", data, opt_off + 70)[0]
     checksum = struct.unpack_from("<I", data, opt_off + 64)[0]
-    num_dirs = struct.unpack_from("<I", data, opt_off + 92)[0]
+    # PE32+ keeps LoaderFlags/NumberOfRvaAndSizes 16 bytes further out than PE32
+    # (the four stack/heap size fields widen from u32 to u64), so the data
+    # directory starts at +112 instead of +96. Reading the PE32 offset for a
+    # 64-bit image returned LoaderFlags (usually 0) as the directory count and
+    # silently produced zero imports.
+    num_dirs = struct.unpack_from("<I", data, opt_off + (108 if is_64 else 92))[0]
 
     size_of_opt = struct.unpack_from("<H", data, coff + 16)[0]
     sec_off = opt_off + size_of_opt
@@ -207,7 +205,7 @@ def parse_pe(path: str | Path) -> PE:
         sections.append(Section(name, vaddr, vsize, rsize, rptr, chars))
 
     imports: list[Import] = []
-    dirs_off = opt_off + 96
+    dirs_off = opt_off + (112 if is_64 else 96)
     if num_dirs > IMAGE_DIRECTORY_ENTRY_IMPORT:
         import_rva, import_size = struct.unpack_from("<II", data, dirs_off + IMAGE_DIRECTORY_ENTRY_IMPORT * 8)
         guard_cf_rva = guard_cf_size = 0
