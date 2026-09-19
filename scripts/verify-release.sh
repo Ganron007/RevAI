@@ -15,9 +15,14 @@
 
 set -uo pipefail
 
-REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# Layout-aware: works in a source checkout (revai/ + tests/) and on the VM's flat
+# runtime directory (/opt/scripts). Override with REVAI_ROOT if needed.
+REPO_ROOT="${REVAI_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}"
 cd "$REPO_ROOT"
 STATUS=0
+
+HARNESS="revai/verify_pipeline.py"
+[ -f "$HARNESS" ] || HARNESS="verify_pipeline.py"
 
 # Interpreters are overridable because environments differ: the analysis VM runs
 # tests from its own venv (/tmp/rtvenv/bin/python), a source checkout may use the
@@ -29,7 +34,7 @@ step() { echo; echo "=== $1 ==="; }
 fail() { echo "  -> FAILED: $1"; STATUS=1; }
 
 step "1/4 wiring + coherence"
-"$PYTHON" revai/verify_pipeline.py || fail "verify_pipeline"
+"$PYTHON" "$HARNESS" || fail "verify_pipeline"
 
 step "2/4 unit + regression tests"
 $PYTEST tests/ -q || fail "pytest"
