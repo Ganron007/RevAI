@@ -27,12 +27,37 @@ import subprocess
 import time
 from pathlib import Path
 
+import pytest
+
 LOGS_DIR = Path("/opt/samples/logs")
 SESSIONS_DIR = Path("/opt/samples/sessions")
 SCRIPTS_DIR = Path("/opt/scripts")
 
 # Default sample: Farfli (verified end-to-end on 2026-07-03)
 DEFAULT_SHA = "85a4ea1b8db25c259fc6c208954ebb3c3a939bddb4856a942fd844be5ac16966"
+
+
+@pytest.fixture(scope="module")
+def sha() -> str:
+    """Case under test for pytest collection.
+
+    This module is a script-style end-to-end smoke test (see the CLI usage in the
+    docstring); collected by pytest it needs an explicit case, otherwise there is
+    nothing to assert against. Set ``REVAI_PIPELINE_TEST_SHA`` to a completed
+    case in ``/opt/samples/logs`` to run it under pytest.
+    """
+    value = os.environ.get("REVAI_PIPELINE_TEST_SHA", "").strip()
+    if not value:
+        pytest.skip("set REVAI_PIPELINE_TEST_SHA=<sha256> to run the pipeline "
+                    "smoke tests under pytest (or run this file directly)")
+    if not (LOGS_DIR / value).is_dir():
+        pytest.skip(f"case {value} not present under {LOGS_DIR}")
+    return value
+
+
+@pytest.fixture(scope="module")
+def stage() -> str:
+    return os.environ.get("REVAI_PIPELINE_TEST_STAGE", "quick_scan")
 
 STAGES = [
     ("intake",     "intake_v2.py",     []),

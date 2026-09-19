@@ -315,6 +315,12 @@ TOOL_DESCRIPTIONS = {
     "peepdf_analyze": "Run peepdf PDF analysis. Args: sample_path",
     "api_lookup": "Offline Windows-API knowledge lookup (grounding). Args: api (symbol as a disassembler shows it, e.g. 'ZwOpenProcess' or '__imp_CreateFileW'), OR query (full-text search, e.g. 'process hollowing'). Returns reference text, curated malicious-use description, and malapi.io attack categories. Call this BEFORE describing any Windows API's behaviour or abuse potential.",
     "compare_files": "Structural comparison of two binaries (loader vs payload, packed vs unpacked): sizes, hashes, imphash equality, shared/unique section names with entropy deltas, shared/unique imports, and exact 64-byte chunk containment. Args: b (path to the second file; required). The first file defaults to the analyzed sample. Facts only - no family or authorship claim.",
+    "revai_tools_sec": "Deterministic mitigations-with-consequence from the sample's own headers (ASLR/DEP/CFG/GS/SEH), each with an exploitation consequence note. Args: (none - uses session sample_path). Marker level only; never a verdict input.",
+    "revai_tools_sinks": "Dangerous-API call sites (memcpy, recv, system, ...) located inside named functions via radare2. Args: (none - uses session sample_path). Honest 0-site results are recorded; fail-open.",
+    "revai_tools_audit": "Sink sites with exploitable argument provenance (constant-length vs subtraction/register-source patterns) plus entry reachability. Args: (none - uses session sample_path). Deeper than revai_tools_sinks; fail-open.",
+    "signature_match": "Match a function against the crypto/stdlib/winapi signature DBs. Args: func_name, imports (list), strings (list), constants (list), size (int). Use to name an unidentified routine before claiming what it does.",
+    "z3_solve": "Verify an MBA / opaque-predicate identity with z3 (e.g. 'x^y + 2*(x&y) == x+y'). Args: claim_text (the identity as written in code), timeout (default 60). Use before asserting an obfuscated expression's meaning.",
+    "angr_analyze": "Control-flow-flattening deflatten via angr, when cff_detect flagged candidates. Args: timeout (default 120). CPU-hungry: run only on flagged functions, and treat a timeout as honest not_applicable.",
 }
 
 

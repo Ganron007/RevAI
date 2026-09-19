@@ -156,6 +156,12 @@ Tunables (all optional, defaults shown):
 | `REVAI_AGENTIC_RECOVERY_MIN_SIZE` | 200 | size floor (bytes) for `SIZE_SLOTS` |
 | `REVAI_AGENTIC_RECOVERY_RESOLVE_SLOTS` | 3 | guaranteed pool slots for dynamic-import-resolve sites |
 | `REVAI_AGENTIC_RECOVERY_ORACLE_SLOTS` | 3 | guaranteed pool slots for emulation-oracle executed functions |
+| `REVAI_AGENTIC_RECOVERY_CONF_THRESHOLD` | 0.7 | minimum confidence for a recovered name to be written back |
+| `REVAI_AGENTIC_RECOVERY_SIG_THRESHOLD` | 0.80 | similarity threshold for the signature-DB naming pass |
+| `REVAI_AUTO_WRITEBACK` | 0 | `1` lets standard-mode deep dives write recovered names into the Ghidra/IDA DB automatically |
+| `REVAI_AGENTIC_RECOVERY_CONF_THRESHOLD` | 0.7 | minimum confidence for a recovered name to be written back |
+| `REVAI_AGENTIC_RECOVERY_SIG_THRESHOLD` | 0.80 | similarity threshold for the signature-DB naming pass |
+| `REVAI_AUTO_WRITEBACK` | 0 | `1` lets standard-mode deep dives write recovered names into the Ghidra/IDA DB automatically |
 
 **Analysis-stage extras (all off by default, all opt-in):**
 
@@ -164,8 +170,18 @@ Tunables (all optional, defaults shown):
 | `REVAI_ENABLE_EMULATION_ORACLE` | off | bounded Speakeasy emulation pass in deep-dive: dynamically resolved imports + executed functions (persisted `deep_dive/03-oracle.json`, surfaced to the agent); oracle-only, never verdicts |
 | `REVAI_ENABLE_UNPACK_PASS` | off | emulation-assisted unpacking for samples the packer checklist flags: OEP detection, carved `unpacked_<name>` payload under `logs/<sha>/unpack/`, in-memory IAT readout |
 | `ENABLE_DEOBFUSCATION_PASS` | off | angr/z3 verification of MBA/CFF/opaque-predicate claims during deep-dive (angr via pipx venv) |
-| `REVAI_AGENTIC_RECOVERY_MAX_FUNCS` | 200 | analysis budget — top-N candidates (relevance + hybrid slots) |
-| `REVAI_AGENTIC_RECOVERY_TIER_CAP` | 20 | per-tier function cap (bottom-up tiers) |
+| `REVAI_CAPA_RULES` | `/opt/capa-rules` | capa rule directory (override for a custom ruleset) |
+| `REVAI_CAPA_SIGNATURES` | `/opt/capa-signatures` | capa signature directory (override) |
+| `REVAI_RUN_MODE` | set by the entry point | case-directory key: `scripted` (pipeline_single), `agentic` (stage_orchestrator), `ui` (Console). Set it explicitly only when driving a stage script by hand |
+| `REVAI_STRICT_MD_ENGINE_CITE` | 0 | `1` makes every engine citation in a report mandatory (used for research audits; stricter than the default quality gate) |
+| `REVAI_OLLAMA_URL` | `http://127.0.0.1:11434` | endpoint for the optional r2ai decompilation helper |
+| `REVAI_SAMPLES` | `/opt/samples` | sample root used by document triage when the corpus lives elsewhere |
+| `REVAI_SCRIPTS_DIR` | `/opt/scripts` | pipeline script directory used by the orchestrator when the flat layout differs |
+| `REVAI_IDA_QUERY_TIMEOUT` | 120 | per-query timeout for IDA SQL queries (seconds) |
+| `REVAI_LLM_PLANNER_REASONING` | disabled | reasoning effort override for the deep-dive planner only |
+| `REVAI_LLM_USAGE_JOURNAL` | unset | path to a JSONL file; when set, every LLM call is journalled (used by the provider benchmark) |
+| `REVAI_CAPA_RULES` | `/opt/capa-rules` | capa rule directory (override for a custom ruleset) |
+| `REVAI_CAPA_SIGNATURES` | `/opt/capa-signatures` | capa signature directory (override) |
 | `REVAI_API_INDEX` | unset | override the offline API lookup index path (default: `assets/api_index/api_index.db` in the repo, `/opt/revai/api_index/api_index.db` on the VM). The bundled index covers the 369 malapi.io-catalogued APIs; a full-corpus index (~46k APIs, built from Microsoft's sdk-api + driver-ddi documentation) can be deployed over it — see [`api-index.md`](api-index.md). Absent index degrades `api_lookup` to `available:false` — the pipeline is unaffected |
 | `REVAI_FORCE_API_INDEX` | 0 | deploy-time only: `scripts/deploy.sh` keeps an existing VM index (so a full-corpus build survives a deploy); set to 1 to overwrite it with the bundled default |
 | `REVAI_IOC_FACTCHECK` | enforce | unverified report IOC claims fail the quality gate; `advisory` records them without failing (escape hatch for a report citing sources outside the evidence pack) |
@@ -275,6 +291,42 @@ guaranteed present and cannot be paraphrased away (each opt-out above):
 6. **What We Don't Know** — built only from structural gaps (dynamic not run,
    window-bounded coverage, unpack image not statically analyzable) plus the
    report's own explicit negations. Nothing is inferred.
+
+## Verification and release gates
+
+Two layers, both deterministic and safe to run any time:
+
+**1. Wiring/coherence harness** — `python3 revai/verify_pipeline.py` (stdlib only):
+
+* every Python file compiles;
+* `TOOL_MANIFEST` entries resolve to real functions, every `ToolRegistry` tool has
+  a model-facing description, no description points at a tool that does not exist,
+  the LangGraph tool list only names registry tools, and agent-only tools
+  (`api_lookup`, `compare_files`) are reachable in the default engine;
+* README / architecture / tool-stack / SVG tool counts match the code;
+* no private-repo references, lab IPs, model names or literal secrets in published
+  files (local-only, gitignored files are excluded by design);
+* every `REVAI_*` variable read by code is documented in `docs/` (or allowlisted as
+  internal).
+
+The same checks run inside pytest (`tests/test_wiring_coherence.py`), so registry
+drift fails the suite instead of waiting for review.
+
+**2. One-command release gate** — `./scripts/verify-release.sh`:
+
+1. the harness above;
+2. `pytest tests/` (all unit + regression tests; `test_pipeline.py` skips unless
+   `REVAI_PIPELINE_TEST_SHA` names a completed case);
+3. parser parity against pefile when `REVAI_PE_PARITY_SAMPLE` points at a real PE;
+4. VM harness + smoke + `/api/graph` when `REVAI_VM_SSH` is set.
+
+Interpreters are overridable for the analysis VM:
+
+```bash
+REVAI_PYTHON=/tmp/rtvenv/bin/python \
+REVAI_PE_PARITY_SAMPLE=/opt/samples/.../sample \
+REVAI_VM_SSH=remnux@<vm> ./scripts/verify-release.sh
+```
 
 ## Reset outputs
 
