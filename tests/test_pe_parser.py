@@ -13,9 +13,12 @@ Three offsets were wrong in `pe.py` and silently degraded every 64-bit sample
 These tests pin the correct layout with a hand-built PE32+ fixture.
 """
 
+import os
 import struct
 import sys
 from pathlib import Path
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "revai"))
 
@@ -102,3 +105,35 @@ def test_pe32_still_parses(tmp_path):
     assert parsed.sections[0].name == ".text"
     assert parsed.sections[0].executable is True
     assert parsed.imports and parsed.imports[0].dll
+
+
+#: Optional whole-parser parity guard. Point it at any real PE on the machine
+#: (on the analysis VM, e.g. a corpus sample) and it cross-checks our parser
+#: against pefile - the reference implementation whose output the reports and
+#: YARA rules already rely on. Skipped when pefile or the sample is unavailable,
+#: so the local suite stays self-contained.
+_PARITY_SAMPLE = os.environ.get("REVAI_PE_PARITY_SAMPLE", "")
+
+
+@pytest.mark.skipif(not _PARITY_SAMPLE or not Path(_PARITY_SAMPLE).is_file(),
+                    reason="set REVAI_PE_PARITY_SAMPLE to a real PE to run parity")
+def test_pefile_parity_on_real_sample():
+    pefile = pytest.importorskip("pefile")
+    parsed = pe_mod.parse_pe(_PARITY_SAMPLE)
+    ref = pefile.PE(_PARITY_SAMPLE, fast_load=True)
+
+    assert parsed.entry_point == ref.OPTIONAL_HEADER.AddressOfEntryPoint
+    assert parsed.image_base == ref.OPTIONAL_HEADER.ImageBase
+    assert parsed.section_alignment == ref.OPTIONAL_HEADER.SectionAlignment
+    assert parsed.file_alignment == ref.OPTIONAL_HEADER.FileAlignment
+    assert len(parsed.sections) == len(ref.sections)
+
+    for ours, theirs in zip(parsed.sections, ref.sections):
+        assert ours.name == theirs.Name.rstrip(b"\x00").decode("latin-1")
+        assert ours.characteristics == theirs.Characteristics, ours.name
+
+    ref.parse_data_directories(
+        directories=[pefile.DIRECTORY_ENTRY["IMAGE_DIRECTORY_ENTRY_IMPORT"]])
+    expected = sum(len(e.imports) for e in
+                   getattr(ref, "DIRECTORY_ENTRY_IMPORT", []) or [])
+    assert sum(len(i.functions) for i in parsed.imports) == expected
