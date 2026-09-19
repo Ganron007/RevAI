@@ -140,6 +140,20 @@ The block is **presence-gated**: samples analyzed without WinRE produce exactly
 the same reports as before (no empty sections). Disable it explicitly with
 `REVAI_DISABLE_DYNAMIC_CORROBORATION=1`.
 
+## Console options (RevAI side)
+
+WinRE is optional in the Console, and its state is visible before a run:
+
+| Where | What |
+|---|---|
+| Settings -> Run configuration -> **Dynamic corroboration** | `On` (default) uses detonation packs when present; `Off` writes static-only reports. The toggle drives both halves — the evidence-pack corroboration block and the deterministic "Dynamic Analysis (WinRE detonation)" report section |
+| Run configuration -> pack root override | point a case at packs that live outside `/opt/winre/logs` (`REVAI_WINRE_LOGS`) |
+| Orchestrator panel -> **winre dynamic** chip | `pack · N DNS` when a pack exists for the open case, `no pack` when the root is reachable but this sample has none, `not configured` when the root is absent, `off` when the toggle is disabled |
+| `GET /api/winre/status/<sha>?mode=<scripted|agentic|ui>` | the same status for scripts: `pack_present`, `source`, `dns`/`http`/`sni`/`dropped` counts, `unpack_artifact`, `section_renders` |
+
+The chip and endpoint are read-only and fail open; with no WinRE install the
+pipeline behaves exactly as without it.
+
 ## Safety
 
 - The Windows VM runs malware: restore its clean snapshot after every

@@ -25,6 +25,7 @@ const DEFAULT_RUN_CONFIG: RunConfig = {
   emulation_oracle: false,
   unpack_pass: false,
   deobfuscation_pass: false,
+  winre_dynamic: true,
   recovery_max_funcs: 40,
   recovery_tier_cap: 5,
 }
@@ -77,6 +78,7 @@ export default function SettingsPage() {
           emulation_oracle: Boolean(rc.emulation_oracle),
           unpack_pass: Boolean(rc.unpack_pass),
           deobfuscation_pass: Boolean(rc.deobfuscation_pass),
+          winre_dynamic: Boolean(rc.winre_dynamic ?? true),
           recovery_max_funcs: Number(rc.recovery_max_funcs ?? 40),
           recovery_tier_cap: Number(rc.recovery_tier_cap ?? 5),
         },
@@ -301,6 +303,21 @@ export default function SettingsPage() {
               >
                 <option value="1">On — symbolic deobfuscation</option>
                 <option value="0">Off (default)</option>
+              </Select>
+            </Field>
+            <div style={{ marginTop: 'var(--sp-2)' }}>
+              <Muted>WinRE companion (optional): Windows detonation evidence</Muted>
+            </div>
+            <Field
+              label="Dynamic corroboration"
+              hint="include WinRE detonation evidence — runtime network, dropped files, unpack artifact — as a corroboration block and a deterministic report section. Requires packs under the WinRE logs root; absent packs are reported as not present"
+            >
+              <Select
+                value={rc.winre_dynamic ? '1' : '0'}
+                onChange={(e) => setRc({ ...rc, winre_dynamic: e.target.value === '1' })}
+              >
+                <option value="1">On (default) — use packs when present</option>
+                <option value="0">Off — static-only reports</option>
               </Select>
             </Field>
             <Field label="Recovery max functions" hint="candidate budget for function recovery (default 40)">

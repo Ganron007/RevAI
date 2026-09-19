@@ -27,7 +27,7 @@ SESSIONS_DIR = Path("/opt/samples/sessions")
 LOGS_DIR = Path("/opt/samples/logs")
 SCRIPTS_DIR = Path("/opt/scripts")
 sys.path.insert(0, str(SCRIPTS_DIR))
-from v2_lib import case_dir  # noqa: E402
+from v2_lib import case_dir, winre_dynamic_status  # noqa: E402
 CONFIG_PATH = Path("/opt/samples/pipeline-config.json")
 # P0.3: LLM API key lives ONLY in this chmod-600 env file — never in pipeline-config.json.
 SECRETS_PATH = Path(os.environ.get("CADRE_UI_SECRETS", "/opt/secrets/cadre-ui.env"))
@@ -828,6 +828,16 @@ def get_stage_env(rc: dict | None = None) -> dict[str, str]:
         env["REVAI_AGENTIC_RECOVERY_MAX_FUNCS"] = str(int(rc["recovery_max_funcs"]))
     if rc.get("recovery_tier_cap") is not None:
         env["REVAI_AGENTIC_RECOVERY_TIER_CAP"] = str(int(rc["recovery_tier_cap"]))
+    # WinRE dynamic corroboration (optional; ON by default so existing behaviour is
+    # unchanged). The Console toggle controls both halves together: the evidence-pack
+    # corroboration block and the deterministic report section. An explicit logs
+    # root lets a case pull its pack from somewhere other than /opt/winre/logs.
+    if "winre_dynamic" in rc:
+        _off = "1" if not rc["winre_dynamic"] else "0"
+        env["REVAI_DISABLE_DYNAMIC_CORROBORATION"] = _off
+        env["REVAI_DISABLE_DYNAMIC_SECTION"] = _off
+    if rc.get("winre_logs"):
+        env["REVAI_WINRE_LOGS"] = str(rc["winre_logs"])
     return env
 
 
@@ -2299,6 +2309,9 @@ def orch_live_payload(sha: str, mode: str | None = None) -> dict:
         "task_id": task_id,
         "task_status": task_status,
         "task_log_tail": task_log_tail,
+        # WinRE dynamic corroboration status (optional companion): pack presence
+        # and what it contributes, so the Console can show it before a run.
+        "winre": winre_dynamic_status(sha, mode),
         "truly_green": trace.get("truly_green"),
         "quality_green": trace.get("quality_green") if trace else quality.get("quality_green"),
         "all_green": audit.get("all_green"),
@@ -2501,6 +2514,24 @@ def api_orch_live(sha):
         return jsonify({"error": "invalid sha"}), 400
     mode = _mode_from_request()
     return jsonify(orch_live_payload(sha, mode))
+
+
+@app.route("/api/winre/status/<sha>")
+def api_winre_status(sha):
+    """WinRE dynamic-corroboration status for a case (optional integration).
+
+    Reports whether a dynamic pack exists for this sample, what it contributes
+    (network/dropped/artifact counts) and whether the Console toggle will let it
+    into the reports. Read-only and fail-open.
+    """
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
+    mode = _mode_from_request()
+    try:
+        return jsonify(winre_dynamic_status(sha, mode))
+    except Exception as e:
+        return jsonify({"error": str(e), "pack_present": False})
 
 
 @app.route("/api/graph")

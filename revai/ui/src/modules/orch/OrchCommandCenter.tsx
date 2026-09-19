@@ -272,6 +272,29 @@ export default function OrchCommandCenter() {
         />
         <Kpi label="engine" value={deep.engine || '—'} tone="accent" />
         <Kpi
+          label="winre dynamic"
+          value={
+            !live?.winre
+              ? '—'
+              : !live.winre.corroboration_enabled
+                ? 'off'
+                : live.winre.pack_present
+                  ? `pack · ${live.winre.dns ?? 0} DNS`
+                  : live.winre.root_present
+                    ? 'no pack'
+                    : 'not configured'
+          }
+          tone={live?.winre?.pack_present ? 'ok' : undefined}
+          tip={
+            live?.winre
+              ? `root=${live.winre.logs_root} present=${live.winre.pack_present} ` +
+                `source=${live.winre.source ?? '—'} http=${live.winre.http ?? 0} ` +
+                `sni=${live.winre.sni ?? 0} dropped=${live.winre.dropped ?? 0} ` +
+                `artifact=${live.winre.unpack_artifact ?? '—'} section=${live.winre.section_renders}`
+              : 'WinRE dynamic corroboration status unavailable'
+          }
+        />
+        <Kpi
           label="elapsed"
           value={live?.elapsed_s != null ? fmtDur(live.elapsed_s) : '—'}
         />

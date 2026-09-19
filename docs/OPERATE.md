@@ -193,19 +193,24 @@ Tunables (all optional, defaults shown):
 
 All of the above are exposed in the web console **Run configuration** panel (Settings → run config), so they can be toggled per run without shell env. CLI runs set them explicitly.
 
-**Optional dynamic corroboration (WinRE companion — config, not a run-config toggle):**
+**Optional dynamic corroboration (WinRE companion — run-config toggle):**
 
 When a sample has been detonated with the optional [WinRE](https://github.com/Ganron007/WinRE)
 companion, reports gain a deterministic "Dynamic Corroboration (WinRE detonation)"
 block: the window actually used (with a coverage caveat), runtime network
 indicators, dropped file paths, and the agentic-dbg unpack artifact (with a
 pefile + capa static pass when PE-valid). The block is **presence-gated** — no
-pack for the sample means reports are byte-identical to a WinRE-less install —
+pack for the sample means reports are byte-identical to a WinRE-less install. The
+Console shows the state for the open case: the orchestrator panel's **winre
+dynamic** chip (`pack · N DNS` / `no pack` / `not configured` / `off`) and
+`GET /api/winre/status/<sha>` for scripts. —
 and corroborates only (`static_yara_wins` never yields).
 
 | Env | Default | Meaning |
 |---|---|---|
 | `REVAI_WINRE_LOGS` | `/opt/winre/logs` | root scanned for WinRE packs (mode-keyed sections) |
+| `winre_dynamic` (Console) | on | Run configuration -> WinRE companion: `On` (default) uses packs when present, `Off` writes static-only reports. Maps to `REVAI_DISABLE_DYNAMIC_CORROBORATION` and `REVAI_DISABLE_DYNAMIC_SECTION` together |
+| `winre_logs` (Console) | unset | optional pack root override, for a case whose packs live elsewhere |
 | `REVAI_DISABLE_DYNAMIC_CORROBORATION` | unset | set to `1` to suppress the block entirely |
 
 Setup and modes: [`WINRE-REMOTE.md`](WINRE-REMOTE.md).

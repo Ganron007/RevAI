@@ -4719,6 +4719,56 @@ def analyze_unpack_artifact(path: str | Path, *, capa_timeout: int = 420) -> dic
     return out
 
 
+def winre_dynamic_status(sha: str, mode: str | None = None) -> dict:
+    """Compact WinRE dynamic-corroboration status for the Console (read-only).
+
+    Answers the three questions an operator has before a run: is dynamic analysis
+    configured, is there a pack for this sample, and what does it contribute. Never
+    raises; a missing root or pack is reported as such.
+    """
+    root = Path(os.environ.get("REVAI_WINRE_LOGS") or "/opt/winre/logs")
+    disabled = os.environ.get("REVAI_DISABLE_DYNAMIC_CORROBORATION", "").strip().lower() in (
+        "1", "true", "yes", "on")
+    section_disabled = os.environ.get("REVAI_DISABLE_DYNAMIC_SECTION", "").strip().lower() in (
+        "1", "true", "yes", "on")
+    out: dict = {
+        "logs_root": str(root),
+        "root_present": root.is_dir(),
+        "mirror_present": (LOGS_DIR / sha / (mode or os.environ.get("REVAI_RUN_MODE", "").strip()) / "dynamic").is_dir()
+        if (mode or os.environ.get("REVAI_RUN_MODE", "").strip()) else False,
+        "pack_present": False,
+        "source": None,
+        "dns": 0,
+        "http": 0,
+        "sni": 0,
+        "dropped": 0,
+        "unpack_artifact": None,
+        "corroboration_enabled": not disabled,
+        "section_enabled": not section_disabled,
+    }
+    try:
+        pack = load_dynamic_pack(sha, winre_root=root) if root.is_dir() else None
+    except Exception:
+        pack = None
+    if pack and pack.get("present"):
+        try:
+            iocs = _net_iocs(pack)
+            art = pack.get("unpack_artifact") or {}
+            out.update({
+                "pack_present": True,
+                "source": pack.get("source"),
+                "dns": len(iocs.get("dns") or []),
+                "http": len(iocs.get("http") or []),
+                "sni": len(iocs.get("sni") or []),
+                "dropped": len(_frida_dropped_paths(pack)),
+                "unpack_artifact": art.get("name") or None,
+            })
+        except Exception:
+            pass
+    out["section_renders"] = bool(out["pack_present"] and out["section_enabled"])
+    return out
+
+
 def format_flare_dynamic_evidence(pack: dict | None) -> str:
     """Markdown dynamic-corroboration block for a dynamic pack.
 

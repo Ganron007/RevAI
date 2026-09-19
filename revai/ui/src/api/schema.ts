@@ -109,6 +109,23 @@ export const OrchLiveSchema = z
     stages_run: z.array(z.string()).nullish(),
     elapsed_s: optNum,
     artifacts: z.record(z.string(), z.boolean()).nullish(),
+    winre: z
+      .object({
+        logs_root: optStr,
+        root_present: optBool,
+        pack_present: optBool,
+        source: optStr,
+        dns: optNum,
+        http: optNum,
+        sni: optNum,
+        dropped: optNum,
+        unpack_artifact: optStr,
+        corroboration_enabled: optBool,
+        section_enabled: optBool,
+        section_renders: optBool,
+      })
+      .passthrough()
+      .nullish(),
   })
   .passthrough()
 
@@ -209,6 +226,8 @@ export const LlmSettingsSchema = z
         deobfuscation_pass: optBool,
         recovery_max_funcs: optNum,
         recovery_tier_cap: optNum,
+        winre_dynamic: optBool,
+        winre_logs: optStr,
       })
       .optional(),
   })
