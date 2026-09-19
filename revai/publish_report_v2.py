@@ -50,6 +50,8 @@ from v2_lib import (  # noqa: E402
     r2_ai_decompile,
     revai_provenance,
 )
+
+from report_sections import attach_alignment_sections  # noqa: E402
 from report_quality import (  # noqa: E402
     OUTPUT_FORMAT_CONTRACT,
     REPORT_STYLE_CONTRACT,
@@ -1128,6 +1130,9 @@ def main():
         _report_scan_text = tech_md
         tech_md = attach_ioc_confidence(tech_md, args.sha256)
         tech_md = attach_dynamic_analysis_section(tech_md, args.sha256)
+        tech_md = attach_alignment_sections(
+            tech_md, case_root=case, sample_path=sample_path,
+            provenance=technical_report.get("provenance"))
         tech_md = attach_what_we_dont_know(tech_md, args.sha256,
                                            scan_text=_report_scan_text)
         technical_report["markdown"] = tech_md

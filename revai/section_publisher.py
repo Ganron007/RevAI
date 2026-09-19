@@ -68,6 +68,8 @@ from v2_lib import (
     _categorize_string,
 )
 
+from report_sections import attach_alignment_sections  # noqa: E402
+
 
 def _section_prompt(section_name: str, description: str, evidence: str,
                     prior_sections_summary: str,
@@ -619,6 +621,10 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
     _report_scan_text = tech_md
     tech_md = attach_ioc_confidence(tech_md, sha)
     tech_md = attach_dynamic_analysis_section(tech_md, sha)
+    tech_md = attach_alignment_sections(
+        tech_md, case_root=case_dir(sha),
+        sample_path=tools_results.get("sample_path"),
+        provenance=technical_report.get("provenance"))
     tech_md = attach_what_we_dont_know(tech_md, sha, scan_text=_report_scan_text)
     technical_report["markdown"] = tech_md
     technical_report["evidence_appendix"] = True

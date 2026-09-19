@@ -264,7 +264,15 @@ guaranteed present and cannot be paraphrased away (each opt-out above):
    files, Frida/Procmon summaries, the agentic-dbg unpack artifact with its
    honesty flags (`static_yara_wins`, raw-memory note when the dump is not
    PE-parsable). Observed behaviour is stated as corroboration only.
-3. **What We Don't Know** — built only from structural gaps (dynamic not run,
+3. **Component Inventory** — PE structure with per-section structural roles
+   (read from flags and names, never behaviour), imports by module, overlay size and
+   the entry-point section.
+4. **MBC Vocabulary** — the Malware Behavior Catalog objective/behavior/method
+   entries that capa's own rule metadata carries, alongside the ATT&CK mapping.
+5. **Appendix: Analysis Environment** — tool versions as reported by this run,
+   plus the RevAI provenance; an install-time capture at
+   `/opt/revai/config/tool-versions.json` is included when present.
+6. **What We Don't Know** — built only from structural gaps (dynamic not run,
    window-bounded coverage, unpack image not statically analyzable) plus the
    report's own explicit negations. Nothing is inferred.
 

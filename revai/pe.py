@@ -196,7 +196,14 @@ def parse_pe(path: str | Path) -> PE:
         off = sec_off + i * 40
         raw_name = data[off:off + IMAGE_SIZEOF_SHORT_NAME].rstrip(b"\x00")
         name = raw_name.decode("latin-1", errors="replace")
-        vsize, vaddr, rsize, rptr, _, _, chars = struct.unpack_from("<IIIIIIH", data, off + 8)
+        # Section header layout after the 8-byte name: VirtualSize, VirtualAddress,
+        # SizeOfRawData, PointerToRawData, PointerToRelocations,
+        # PointerToLinenumbers, NumberOfRelocations (u16), NumberOfLinenumbers
+        # (u16), Characteristics (u32). Reading a short prefix here silently took
+        # NumberOfRelocations as Characteristics, so every section's
+        # executable/writable flag was wrong.
+        (vsize, vaddr, rsize, rptr, _prel, _plineno,
+         _nrel, _nlineno, chars) = struct.unpack_from("<IIIIIIHHI", data, off + 8)
         sections.append(Section(name, vaddr, vsize, rsize, rptr, chars))
 
     imports: list[Import] = []
