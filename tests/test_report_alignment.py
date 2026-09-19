@@ -10,9 +10,11 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "revai"))
+TESTS_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(TESTS_DIR))
+sys.path.insert(0, str(TESTS_DIR.parent / "revai"))
 
-from test_dynamic_pack import SHA, _make_pack  # tests dir is on sys.path
+from test_dynamic_pack import SHA, _make_pack  # noqa: E402
 
 import v2_lib  # noqa: E402
 from v2_lib import (  # noqa: E402
@@ -25,6 +27,27 @@ from v2_lib import (  # noqa: E402
 
 
 # --- dynamic section ------------------------------------------------------
+
+
+def test_dynamic_section_window_and_frida_formatting():
+    """A pack without an effective window must not print 'effective=None', and
+    Frida API pairs must render as name=count, not as raw JSON lists."""
+    pack = {
+        "present": True,
+        "source": "winre:agentic",
+        "meta": {"ok": True},
+        "job_meta": {},
+        "verdict_policy": {},
+        "window": {"requested_s": 150, "effective_s": None, "adaptive": False},
+        "frida_summary": {"status": "ok", "calls": 5000,
+                          "top_apis": [["VirtualAlloc", 2539], ["ReadFile", 1988]]},
+    }
+    text = format_dynamic_analysis_section(pack)
+    assert "requested=150s" in text
+    assert "effective=None" not in text
+    assert "adaptive=False" in text
+    assert "`VirtualAlloc`=2539" in text
+    assert "`ReadFile`=1988" in text
 
 
 def test_dynamic_section_absent_pack_is_empty():

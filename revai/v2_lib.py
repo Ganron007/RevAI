@@ -4979,7 +4979,9 @@ def format_dynamic_analysis_section(pack: dict | None) -> str:
 
     req, eff = window.get("requested_s"), window.get("effective_s")
     if req is not None or eff is not None:
-        wline = f"- **detonation window**: requested={req}s effective={eff}s"
+        wline = f"- **detonation window**: requested={req}s"
+        if eff is not None:
+            wline += f" effective={eff}s"
         if window.get("adaptive") is not None:
             wline += f" adaptive={window.get('adaptive')}"
         if window.get("idle_stop_s"):
@@ -5025,8 +5027,13 @@ def format_dynamic_analysis_section(pack: dict | None) -> str:
                          + ", ".join(f"{k}={v}" for k, v in scalars[:6]))
         for key, value in fs.items():
             if isinstance(value, list) and value and "api" in key.lower():
-                lines.append(f"- **Frida {key}** ({len(value)}): "
-                             + ", ".join(f"`{str(v)[:60]}`" for v in value[:8]))
+                pairs = []
+                for item in value[:8]:
+                    if isinstance(item, (list, tuple)) and len(item) >= 2:
+                        pairs.append(f"`{item[0]}`={item[1]}")
+                    else:
+                        pairs.append(f"`{str(item)[:60]}`")
+                lines.append(f"- **Frida {key}** ({len(value)}): " + ", ".join(pairs))
 
     proc = pack.get("procmon_summary") or {}
     if isinstance(proc, dict) and proc:
