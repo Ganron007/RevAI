@@ -2317,11 +2317,14 @@ def _llm_response_has_usable_content(data: dict) -> bool:
                 and isinstance(v, str)
             ]
             if content_like:
+                # A report body must actually be a report: "placeholder"/"x"
+                # stubs are non-empty but hollow (rehearsal 2026-09-22).
                 return any(
-                    v.strip() and not _looks_degenerate(v) for v in content_like
+                    len(v.strip()) >= 200 and not _looks_degenerate(v)
+                    for v in content_like
                 )
             for v in parsed.values():
-                if isinstance(v, str) and v.strip():
+                if isinstance(v, str) and len(v.strip()) >= 3:
                     if _looks_degenerate(v):
                         continue
                     return True

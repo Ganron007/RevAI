@@ -9,6 +9,7 @@ them; these tests pin the shapes the detector must catch and must allow.
 """
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -39,18 +40,24 @@ def test_empty_content_is_not_usable():
     assert not _llm_response_has_usable_content({"choices": [{"message": {}}]})
 
 
+_REAL_BODY = (
+    "## Executive Summary\n"
+    "We assess the sample as suspicious based on the protection-only evidence; "
+    "no C2, persistence or injection was observed (source: capa). " * 4
+)
+
+
 def test_markdown_object_is_usable():
     assert _llm_response_has_usable_content(
-        _resp('{"markdown":"## Executive Summary\\nbody","source":"llm_judge"}')
+        _resp(json.dumps({"markdown": _REAL_BODY, "source": "llm_judge"}))
     )
 
 
 def test_corrupted_key_but_real_markdown_is_still_usable():
     # Observed master-report shape: a junk key "," with an empty value next to a
     # populated markdown field (valid JSON, salvageable).
-    assert _llm_response_has_usable_content(
-        _resp('{","  :"","markdown":"## Executive Summary\\nbody","source":"llm_judge"}')
-    )
+    payload = json.dumps({",": "", "markdown": _REAL_BODY, "source": "llm_judge"})
+    assert _llm_response_has_usable_content(_resp(payload))
 
 
 def test_raw_markdown_is_usable():
@@ -155,11 +162,28 @@ def test_json_with_empty_report_body_is_not_usable():
 def test_json_with_real_body_is_usable():
     import json as _json
     payload = _json.dumps({
-        "markdown": "## Executive Summary\nWe assess the sample as suspicious.",
+        "markdown": _REAL_BODY,
         "sections_present": ["Executive Summary"],
         "source": "llm_judge",
     })
     assert _llm_response_has_usable_content(_resp(payload))
+
+
+def test_placeholder_stub_bodies_are_not_usable():
+    """Rehearsal regression (2026-09-22): the provider stubbed the technical
+    report with {"markdown":"placeholder"} and {"":"x"}."""
+    import json as _json
+    assert not _llm_response_has_usable_content(
+        _resp(_json.dumps({"markdown": "placeholder"}))
+    )
+    assert not _llm_response_has_usable_content(_resp(_json.dumps({"": "x"})))
+
+
+def test_short_verdict_answers_still_usable():
+    import json as _json
+    assert _llm_response_has_usable_content(
+        _resp(_json.dumps({"verdict": "unknown"}))
+    )
 
 
 def test_timeout_skips_ladder_to_no_thinking(monkeypatch):
