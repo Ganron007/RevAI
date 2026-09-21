@@ -626,6 +626,24 @@ def test_verdict_calibration() -> None:
     check("'network' does not match the 'etw' signal",
           out8.get("verdict") == "suspicious", str(out8.get("verdict")))
 
+    # Data-fragment guard (2026-09-22): malcat string/structured-data dumps
+    # ('"c2^r"') and generic technique prose ("shellcode-on-stack/heap") are not
+    # behavioral-intent evidence; rule-name vocabulary still is.
+    frag = ('{"structured_data": [{"summary": "c2^r"}, {"summary": "8:[h"}]} '
+            'writable memory executes — classic shellcode-on-stack/heap works. '
+            'packed, xor, entropy')
+    out9 = calibrate_verdict({"verdict": "malicious", "score": 80}, frag)
+    check("data fragments + technique prose do not defeat the ceiling",
+          out9.get("verdict") == "suspicious", str(out9.get("verdict")))
+
+    out10 = calibrate_verdict({"verdict": "malicious", "score": 80},
+                              'capa: "c2 beacon" detected; packed')
+    check("c2 rule-name vocabulary still keeps malicious",
+          out10.get("verdict") == "malicious", str(out10.get("verdict")))
+    check("intent signals recorded for audit",
+          "c2" in (out10.get("verdict_intent_signals") or []),
+          str(out10.get("verdict_intent_signals")))
+
 
 # ---------------------------------------------------------------------------
 # 14. Function-recovery port (plan #6): gate + package sanity.

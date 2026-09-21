@@ -4381,26 +4381,51 @@ _NEGATION_RE = re.compile(
     r"lacking|ruled out|zero|no evidence of|no sign of|no signs of)(?![a-z])"
 )
 
+# Characters that mark a whitespace-delimited token as a data fragment rather
+# than a claim. Malcat string/structured-data dumps emit fragments like
+# '"c2^r"' or '"hn\r\""'; generic technique prose writes "shellcode-on-stack".
+# Genuine rule-name vocabulary (contains_c2_url, win_token, process injection)
+# contains none of these.
+_FRAGMENT_CHARS = frozenset("^\\@%~|/")
 
-def _signal_matches(text: str, signals) -> bool:
-    """Word-boundary signal search with a negation guard.
+
+def _signal_hits(text: str, signals, limit: int = 50) -> list[str]:
+    """Matched signals (whole words/phrases), negation- and fragment-guarded.
 
     Signals match as whole words/phrases — a raw substring search flagged the
-    model's own disclaimers ("no persistence", "no process injection") and
-    unrelated words ("network" contains "etw", hex digits contain "c2"),
-    which let narrative prose defeat the calibration ceiling (rehearsal
-    2026-09-21). A match whose preceding ~60 characters contain a negation is
-    ignored.
+    model's own disclaimers ("no persistence") and unrelated words ("network"
+    contains "etw", hex digits contain "c2"). A match whose preceding ~60
+    characters contain a negation is ignored, and a match inside a
+    data-fragment token (see _FRAGMENT_CHARS) is ignored too — calibration
+    input includes raw tool findings, where such fragments are abundant
+    (rehearsal 2026-09-21/22).
     """
     t = " " + re.sub(r"\s+", " ", (text or "").lower()) + " "
+    hits: list[str] = []
     for sig in signals:
         pat = r"(?<![a-z0-9_])" + re.escape(sig) + r"(?![a-z0-9_])"
         for m in re.finditer(pat, t):
             window = t[max(0, m.start() - 60):m.start()]
             if _NEGATION_RE.search(window):
                 continue
-            return True
-    return False
+            start = m.start()
+            while start > 0 and not t[start - 1].isspace():
+                start -= 1
+            end = m.end()
+            while end < len(t) and not t[end].isspace():
+                end += 1
+            if any(ch in _FRAGMENT_CHARS for ch in t[start:end]):
+                continue
+            hits.append(sig)
+            break
+        if len(hits) >= limit:
+            break
+    return hits
+
+
+def _signal_matches(text: str, signals) -> bool:
+    """True when any signal matches (see _signal_hits for the guards)."""
+    return bool(_signal_hits(text, signals, limit=1))
 
 
 def calibrate_verdict(verdict: dict, evidence_text: str) -> dict:
@@ -4435,8 +4460,13 @@ def calibrate_verdict(verdict: dict, evidence_text: str) -> dict:
     text = str(evidence_text or "").lower()
     # CEILING: malicious claimed but no behavioral intent anywhere in evidence
     if "malicious" in label:
-        if _signal_matches(text, _BEHAVIORAL_INTENT_SIGNALS_STRICT):
-            return verdict
+        hits = _signal_hits(text, _BEHAVIORAL_INTENT_SIGNALS_STRICT)
+        if hits:
+            # Keep the verdict; record WHICH signals justified it so a later
+            # audit (or the user) can see why the ceiling did not engage.
+            out = dict(verdict)
+            out.setdefault("verdict_intent_signals", hits[:8])
+            return out
         has_protection = any(s in text for s in _PROTECTION_SIGNALS)
         if not has_protection:
             return verdict
@@ -4453,9 +4483,10 @@ def calibrate_verdict(verdict: dict, evidence_text: str) -> dict:
         )
         return out
     # FLOOR: benign/legitimate claimed but behavioral-intent evidence exists
-    if label in ("benign", "clean", "legitimate", "likely_legitimate") and _signal_matches(
-        text, _BEHAVIORAL_INTENT_SIGNALS
-    ):
+    if label in ("benign", "clean", "legitimate", "likely_legitimate"):
+        hits = _signal_hits(text, _BEHAVIORAL_INTENT_SIGNALS)
+        if not hits:
+            return verdict
         out = dict(verdict)
         out["verdict"] = "suspicious"
         try:
@@ -4463,6 +4494,7 @@ def calibrate_verdict(verdict: dict, evidence_text: str) -> dict:
         except (TypeError, ValueError):
             out["score"] = 50
         out["verdict_raised"] = True
+        out["verdict_intent_signals"] = hits[:8]
         out["calibration_reason"] = (
             "behavioral-intent signals present in tool evidence (YARA/capa/"
             "imports); benign/legitimate cannot stand — raised to suspicious "
