@@ -835,7 +835,26 @@ def _plain_claim(value: str) -> str:
     return re.sub(r"^hxxps?", "http", value, flags=re.IGNORECASE)
 
 
-def verify_claimed_iocs(markdown: str, evidence_text: str) -> dict:
+def _provenance_commit() -> str:
+    """The deployed pipeline commit (as shown in the provenance banner), or ''.
+
+    Same lookup as v2_lib.revai_provenance: REVAI_COMMIT env or
+    /opt/revai/config/REVAI_COMMIT (written by scripts/deploy.sh). The
+    `-dirty` suffix is stripped so only the hash itself is compared.
+    """
+    commit = (os.environ.get("REVAI_COMMIT") or "").strip()
+    if not commit:
+        try:
+            commit = Path("/opt/revai/config/REVAI_COMMIT").read_text(
+                encoding="utf-8"
+            ).strip()
+        except Exception:
+            return ""
+    return commit.lower().removesuffix("-dirty")
+
+
+def verify_claimed_iocs(markdown: str, evidence_text: str, *,
+                        provenance_commit: str | None = None) -> dict:
     """Check every indicator a report claims against the raw tool evidence.
 
     Deterministic and code-based: no LLM re-reading of the report. A claim is
@@ -843,7 +862,14 @@ def verify_claimed_iocs(markdown: str, evidence_text: str) -> dict:
     evidence, *unverified* otherwise. Unverified is not automatically wrong - an
     analyst may cite knowledge outside the evidence pack - which is why this is
     recorded as advisory rather than folded into the gate until calibrated.
+
+    Hash claims equal to the pipeline's own provenance commit are excluded:
+    the provenance banner is build metadata, not a sample indicator
+    (rehearsal 2026-09-21: REVAI_COMMIT in the banner was flagged as an
+    "unverified sha256").
     """
+    prov = ((provenance_commit if provenance_commit is not None
+             else _provenance_commit()) or "").lower()
     evidence = (evidence_text or "").lower()
     claims: dict[tuple[str, str], str] = {}
     for kind, regex in (
@@ -868,6 +894,12 @@ def verify_claimed_iocs(markdown: str, evidence_text: str) -> dict:
     unverified: list[dict[str, str]] = []
     excluded: list[dict[str, str]] = []
     for (kind, plain), raw in sorted(claims.items()):
+        if kind == "hash" and prov and (
+            plain == prov or (len(plain) >= 8 and prov.startswith(plain))
+        ):
+            excluded.append({"type": kind, "value": raw,
+                             "reason": "pipeline provenance commit, not a sample indicator"})
+            continue
         if kind in ("domain", "url"):
             try:
                 from ioc_confidence import is_benign_domain, url_host

@@ -49,6 +49,37 @@ def test_empty_inputs_are_safe():
     assert result["unverified_items"] == []
 
 
+PROV = "52d7c4523f5df47cc6baf2666b407788a2b1cf9a"
+
+
+def test_provenance_commit_is_excluded_not_unverified():
+    """Rehearsal regression (2026-09-21): the provenance banner carries the
+    pipeline commit (64-hex) — build metadata, not a sample indicator."""
+    banner = REPORT + (
+        f"\n> **RevAI provenance** — commit `{PROV}` · engine langgraph\n"
+    )
+    result = rq.verify_claimed_iocs(banner, EVIDENCE, provenance_commit=PROV)
+    assert all(i["value"] != PROV for i in result["unverified_items"])
+    reasons = [i["reason"] for i in result["excluded_items"]]
+    assert any("provenance" in r for r in reasons)
+
+
+def test_provenance_commit_from_env(monkeypatch):
+    monkeypatch.setenv("REVAI_COMMIT", PROV)
+    result = rq.verify_claimed_iocs(REPORT + f"\ncommit `{PROV}`\n", EVIDENCE)
+    assert all(i["value"] != PROV for i in result["unverified_items"])
+    reasons = [i["reason"] for i in result["excluded_items"]]
+    assert any("provenance" in r for r in reasons)
+
+
+def test_other_64hex_hashes_are_still_flagged():
+    # The exclusion is limited to the pipeline's own commit; an unrelated
+    # 64-hex claim must still be reported unverified.
+    result = rq.verify_claimed_iocs(REPORT, EVIDENCE, provenance_commit=PROV)
+    values = {i["value"] for i in result["unverified_items"]}
+    assert "5f4dcc3b5aa765d61d8327deb882cf995f4dcc3b5aa765d61d8327deb882cf99" in values
+
+
 def test_collect_evidence_text_reads_known_files(tmp_path):
     (tmp_path / "deep_dive").mkdir()
     (tmp_path / "deep_dive" / "01-tools-raw.json").write_text('{"a": "evil-c2.biz"}')

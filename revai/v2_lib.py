@@ -2298,7 +2298,11 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3) -> di
     if "flash" in effective_model.lower():
         reasoning = os.environ.get("REVAI_LLM_PLANNER_REASONING") or "disabled"
     else:
-        reasoning = get_llm_reasoning() or "max"
+        # Default effort: "high". Providers commonly support low/medium/high
+        # (step-5-preview's own metadata lists exactly that, 2026-09-21);
+        # "max" was the old default but is not universally supported and this
+        # endpoint silently accepts unsupported values.
+        reasoning = get_llm_reasoning() or "high"
 
     body = {
         "model": effective_model,
