@@ -717,16 +717,46 @@ def main():
     model = get_llm_model()
     llm_verdict: dict = {}
     llm_ok = False
-    try:
-        resp = llm_judge(prompt, model=model)
-        llm_verdict = normalize_llm_json(resp["choices"][0]["message"]["content"])
-        llm_verdict["source"] = "llm_judge"
-        llm_verdict["model"] = model
-        # Normalize score to a consistent 0-100 scale (see v2_lib.normalize_verdict_score).
-        normalize_verdict_score(llm_verdict)
-        llm_ok = True
-    except Exception as e:
-        print(f"[quick_scan_v2] LLM failed: {e}; using v1 fallback only", flush=True)
+    # Provider degeneration guard (2026-09-22 rehearsal): a corrupted response
+    # (e.g. {"+": ...}) parsed to a dict without a verdict label and was used as
+    # the primary verdict. Validate the contract (verdict label + family_guess)
+    # and run ONE bounded completeness retry with thinking disabled.
+    for _attempt, _reasoning in ((1, None), (2, "disabled")):
+        try:
+            if _reasoning is None:
+                resp = llm_judge(prompt, model=model)
+            else:
+                resp = llm_judge(prompt, model=model, reasoning=_reasoning)
+            cand = normalize_llm_json(resp["choices"][0]["message"]["content"])
+            cand["source"] = "llm_judge"
+            cand["model"] = model
+            # Normalize score to a consistent 0-100 scale (v2_lib.normalize_verdict_score).
+            normalize_verdict_score(cand)
+            if str(cand.get("verdict") or "").strip() and str(
+                cand.get("family_guess") or ""
+            ).strip():
+                llm_verdict = cand
+                llm_ok = True
+                if _attempt == 2:
+                    print(
+                        "[quick_scan_v2] verdict completeness retry recovered a usable verdict",
+                        flush=True,
+                    )
+                break
+            print(
+                f"[quick_scan_v2] LLM verdict incomplete on attempt {_attempt} "
+                "(missing verdict/family_guess); "
+                + ("retrying with thinking disabled" if _attempt == 1 else "giving up"),
+                flush=True,
+            )
+        except Exception as e:
+            print(
+                f"[quick_scan_v2] LLM attempt {_attempt} failed: "
+                f"{type(e).__name__}: {e}",
+                flush=True,
+            )
+    if not llm_ok:
+        print("[quick_scan_v2] LLM verdict unusable; using v1 fallback only", flush=True)
     # ALWAYS run the v1 secondary opinion (rule-based, structured).
     v1_verdict = synthesize_verdict_v1({"capa": capa, "yara": yara})
     v1_verdict["source"] = "fallback_v1"
