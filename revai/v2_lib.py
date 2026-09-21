@@ -2275,22 +2275,31 @@ def _looks_degenerate(text: str) -> bool:
 def _llm_response_has_usable_content(data: dict) -> bool:
     """True when a chat-completions response carries usable text.
 
-    Observed failure modes (deployment rehearsal 2026-09-21):
-    - the provider returns finish_reason=stop with a *valid* JSON object whose
-      only value is an empty string (e.g. '{"<report title>":""}') — no error,
-      no content;
-    - the provider returns repeated-token garbage (huge runs of one placeholder
-      token) at high reasoning effort.
-    Callers then see an empty/garbage report. Detect both here so llm_judge can
-    retry (downgrading thinking effort) instead of silently returning them.
+    Observed failure modes (deployment rehearsal 2026-09-21/22):
+    - finish_reason=stop with a valid JSON object whose only value is empty
+      (e.g. '{"<report title>":""}') — no error, no content;
+    - repeated-token garbage (huge runs of one placeholder token);
+    - finish_reason=length with 64k whitespace tokens after a '{"' prefix
+      (the model degenerated into whitespace until the token cap) — the
+      whitespace is invisible to token-frequency checks;
+    - any truncated (finish_reason=length) response: never accept silently.
+    Detect all of them here so llm_judge retries (step-down + no-thinking
+    fallback) instead of returning them.
     """
     try:
-        msg = ((data.get("choices") or [{}])[0].get("message") or {})
+        choice = (data.get("choices") or [{}])[0]
+        if str(choice.get("finish_reason") or "") == "length":
+            return False
+        msg = choice.get("message") or {}
         content = msg.get("content") or ""
         if isinstance(content, (list, dict)):
             content = json.dumps(content)
         if not isinstance(content, str) or not content.strip():
             return False
+        if len(content) > 2000:
+            non_ws = sum(1 for ch in content if not ch.isspace())
+            if non_ws / len(content) < 0.2:
+                return False
         if _looks_degenerate(content):
             return False
         try:

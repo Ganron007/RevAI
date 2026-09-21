@@ -88,6 +88,19 @@ def test_normally_repeated_prose_is_still_usable():
     assert _llm_response_has_usable_content(_resp(prose))
 
 
+def test_whitespace_dominated_content_is_not_usable():
+    """Rehearsal regression (2026-09-22): the model degenerated into 64k
+    whitespace tokens after a '{"' prefix (finish_reason=length)."""
+    assert not _llm_response_has_usable_content(_resp('{"' + " \t\n" * 3000))
+
+
+def test_length_truncation_is_not_usable():
+    payload = '{"markdown":"' + "long report text " * 200
+    resp = _resp(payload)
+    resp["choices"][0]["finish_reason"] = "length"
+    assert not _llm_response_has_usable_content(resp)
+
+
 def test_timeout_skips_ladder_to_no_thinking(monkeypatch):
     """A hung thinking-path call must jump straight to the disabled attempt
     (each effort level would otherwise burn the full read window)."""
