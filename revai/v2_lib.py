@@ -15,6 +15,7 @@ import os
 import re
 import shutil
 import subprocess
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 import sys
 import time
@@ -2243,14 +2244,45 @@ def _build_reasoning_body(reasoning: str | None) -> dict:
     }
 
 
+def _looks_degenerate(text: str) -> bool:
+    """True for provider degeneration: one token repeated until it dominates.
+
+    Observed 2026-09-21 (rehearsal, REVAI_LLM_REASONING=high): a section call
+    returned ~275 KB of the single token "final_placeholder" repeated. The
+    content was non-empty, so the hollow-response check accepted it and the
+    section was written verbatim. Detect dominating repetition: one token
+    covering >=70% of the tokens (count >=80), adjacent-identical pairs
+    dominating, or one absurdly long whitespace-free run.
+    """
+    s = (text or "").strip()
+    if not s:
+        return True
+    if len(s) > 20000 and " " not in s and "\n" not in s:
+        return True
+    toks = s.split()
+    if len(toks) < 60:
+        return False
+    toks = toks[:20000]
+    top, n = Counter(toks).most_common(1)[0]
+    if len(top) >= 3 and n >= 80 and n / len(toks) >= 0.7:
+        return True
+    same_pairs = sum(
+        1 for a, b in zip(toks, toks[1:]) if a == b and len(a) >= 3
+    )
+    return same_pairs / max(1, len(toks) - 1) >= 0.5
+
+
 def _llm_response_has_usable_content(data: dict) -> bool:
     """True when a chat-completions response carries usable text.
 
-    Observed failure mode (deployment rehearsal 2026-09-21): the provider returns
-    finish_reason=stop with a *valid* JSON object whose only value is an empty
-    string (e.g. '{"<report title>":""}') — no error, no content. Callers then
-    see an empty report. Detect it here so llm_judge can retry (downgrading
-    thinking effort) instead of silently returning a hollow response.
+    Observed failure modes (deployment rehearsal 2026-09-21):
+    - the provider returns finish_reason=stop with a *valid* JSON object whose
+      only value is an empty string (e.g. '{"<report title>":""}') — no error,
+      no content;
+    - the provider returns repeated-token garbage (huge runs of one placeholder
+      token) at high reasoning effort.
+    Callers then see an empty/garbage report. Detect both here so llm_judge can
+    retry (downgrading thinking effort) instead of silently returning them.
     """
     try:
         msg = ((data.get("choices") or [{}])[0].get("message") or {})
@@ -2259,6 +2291,8 @@ def _llm_response_has_usable_content(data: dict) -> bool:
             content = json.dumps(content)
         if not isinstance(content, str) or not content.strip():
             return False
+        if _looks_degenerate(content):
+            return False
         try:
             parsed = json.loads(content)
         except Exception:
@@ -2266,9 +2300,12 @@ def _llm_response_has_usable_content(data: dict) -> bool:
         if isinstance(parsed, dict):
             for v in parsed.values():
                 if isinstance(v, str) and v.strip():
+                    if _looks_degenerate(v):
+                        continue
                     return True
                 if isinstance(v, (list, dict)) and len(v) > 0:
-                    return True
+                    if not _looks_degenerate(json.dumps(v)):
+                        return True
             return False
         if isinstance(parsed, list):
             return len(parsed) > 0
@@ -2395,6 +2432,22 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3) -> di
                 return data
         except Exception as e:
             last_error = e
+            _timeout_err = (
+                isinstance(e, TimeoutError)
+                or "timed out" in str(e).lower()
+                or "timeout" in str(e).lower()
+            )
+            if _timeout_err:
+                # A hung thinking-path call burns the whole read window per
+                # effort level; skip the step-down ladder and go straight to
+                # the no-thinking fallback (rehearsal 2026-09-21: 600s
+                # timeouts at high/medium/low burned ~27 min in one stage).
+                print(
+                    f"[llm_judge] attempt {attempt}/{max_retries} timed out — "
+                    "skipping to the no-thinking fallback",
+                    flush=True,
+                )
+                break
             if attempt < max_retries:
                 sleep_s = 2 ** attempt
                 print(f"[llm_judge] attempt {attempt}/{max_retries} failed ({type(e).__name__}: {e}); retrying in {sleep_s}s...", flush=True)

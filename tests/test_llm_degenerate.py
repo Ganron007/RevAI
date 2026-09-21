@@ -66,3 +66,71 @@ def test_verdict_json_is_usable():
 def test_json_list_usable_only_when_non_empty():
     assert _llm_response_has_usable_content(_resp('[{"name":"a"}]'))
     assert not _llm_response_has_usable_content(_resp("[]"))
+
+
+def test_repeated_token_garbage_is_not_usable():
+    """Rehearsal regression (2026-09-21): the provider returned ~275 KB of one
+    repeated placeholder token at high reasoning effort."""
+    assert not _llm_response_has_usable_content(_resp("final_placeholder " * 500))
+
+
+def test_json_with_degenerate_markdown_is_not_usable():
+    import json as _json
+    garbage = _json.dumps({"markdown": "final_placeholder " * 500, "source": "llm_judge"})
+    assert not _llm_response_has_usable_content(_resp(garbage))
+
+
+def test_normally_repeated_prose_is_still_usable():
+    prose = (
+        "The sample resolves APIs dynamically (source: capa, top_rules), which "
+        "indicates packed execution flow (source: pe_imports). "
+    ) * 40
+    assert _llm_response_has_usable_content(_resp(prose))
+
+
+def test_timeout_skips_ladder_to_no_thinking(monkeypatch):
+    """A hung thinking-path call must jump straight to the disabled attempt
+    (each effort level would otherwise burn the full read window)."""
+    import json as _json
+    import urllib.request
+
+    import v2_lib as _v2
+
+    calls = []
+
+    class _FakeResp:
+        def __init__(self, payload):
+            self._payload = payload
+
+        def read(self):
+            return self._payload
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+    def fake_urlopen(req, timeout=None):
+        body = _json.loads(req.data.decode())
+        calls.append(body)
+        if len(calls) == 1:
+            raise TimeoutError("The read operation timed out")
+        return _FakeResp(_json.dumps({
+            "choices": [{"message": {
+                "role": "assistant",
+                "content": '{"verdict":"suspicious","score":45}',
+            }}],
+            "usage": {},
+        }).encode())
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setenv("REVAI_LLM_API_KEY", "test-key")
+    monkeypatch.setenv("REVAI_LLM_API_URL", "http://localhost/v1/chat/completions")
+    monkeypatch.setenv("REVAI_LLM_MODEL", "step-5-preview")
+    monkeypatch.setenv("REVAI_LLM_REASONING", "high")
+
+    out = _v2.llm_judge("probe")
+    assert len(calls) == 2, f"expected one timeout then the fallback, got {len(calls)} calls"
+    assert calls[1].get("thinking") == {"type": "disabled"}
+    assert out["choices"][0]["message"]["content"]
