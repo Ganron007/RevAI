@@ -216,18 +216,54 @@ def run_single(sample: Path | None, sha: str | None, mode: str = "standard") -> 
 
     trace["finished_at"] = _utc()
     trace["elapsed_s"] = round(time.time() - t0, 1)
-    audit = {}
-    aj = case_dir(sha) / "pipeline-audit.json"
-    if aj.exists():
-        try:
-            audit = json.loads(aj.read_text())
-        except Exception:
-            pass
-    trace["all_green"] = bool(audit.get("all_green"))
-    trace["stage_ok"] = audit.get("stage_ok")
+    trace = finalize_trace(trace)
     case_dir(sha).mkdir(parents=True, exist_ok=True)
     trace_path.write_text(json.dumps(trace, indent=2, default=str))
     print(f"[pipeline_single] trace -> {trace_path} all_green={trace['all_green']}", flush=True)
+    return trace
+
+
+def finalize_trace(trace: dict, audit_path: Path | None = None) -> dict:
+    """Set all_green/stage_ok from THIS run's audit stage only.
+
+    Never trust artifacts left by a previous run: a run that aborts before its
+    audit stage must be reported red even when a stale pipeline-audit.json
+    exists on disk (rehearsal 2026-09-22: an aborted run reported
+    all_green=True and exited 0 while reading the previous run's audit).
+    """
+    audit_entry = next(
+        (s for s in trace.get("stages", []) if s.get("stage") == "audit"), None
+    )
+    audit_ok = audit_entry is not None and audit_entry.get("ok")
+    audit: dict = {}
+    if audit_ok:
+        if audit_path is None:
+            sha = trace.get("sha256") or ""
+            audit_path = case_dir(sha) / "pipeline-audit.json"
+        try:
+            if audit_path.exists():
+                audit = json.loads(audit_path.read_text())
+        except Exception:
+            audit = {}
+    if audit_ok and audit:
+        trace["all_green"] = bool(audit.get("all_green"))
+        trace["stage_ok"] = audit.get("stage_ok")
+        return trace
+    trace["all_green"] = False
+    trace["stage_ok"] = {
+        s.get("stage"): bool(s.get("ok")) for s in trace.get("stages", [])
+    }
+    if audit_entry is None:
+        failed = [
+            s.get("stage") for s in trace.get("stages", []) if not s.get("ok")
+        ]
+        trace["aborted"] = True
+        trace["aborted_reason"] = (
+            f"stage failed: {failed[0]}" if failed else "audit stage did not run"
+        )
+    else:
+        trace["aborted"] = True
+        trace["aborted_reason"] = f"audit stage rc={audit_entry.get('rc')}"
     return trace
 
 

@@ -454,6 +454,52 @@ def test_report_style_gates() -> None:
 # ---------------------------------------------------------------------------
 # 11. G2 — deep-dive transparent tool retry (fake registry, both directions).
 # ---------------------------------------------------------------------------
+def test_final_answer_completeness_retry() -> None:
+    """Rehearsal regression (2026-09-22): when the agent's final answer lacks
+    verdict/summary (provider degeneration at high effort), one bounded retry
+    with thinking disabled must recover a complete answer."""
+    print("[agentic] final-answer completeness retry (thinking disabled)")
+    import sys as _sys
+
+    _sys.path.insert(0, str(ROOT / "revai"))
+    import deep_dive_agentic as dd
+
+    calls = {}
+
+    def fake_judge(prompt, model=None, reasoning=None, max_retries=3):
+        calls["reasoning"] = reasoning
+        return {"choices": [{"message": {"content": json.dumps({
+            "verdict": "suspicious",
+            "confidence": 45,
+            "summary": "packed sample, no behavioral intent observed",
+            "key_evidence": ["yara: ZProtect protector match"],
+        })}}]}
+
+    orig = dd.llm_judge
+    dd.llm_judge = fake_judge
+    try:
+        out = dd._complete_final_answer_retry(
+            {"verdict": "unknown"}, {"a": 1}, "m", "test"
+        )
+    finally:
+        dd.llm_judge = orig
+    check("retry uses thinking disabled", calls.get("reasoning") == "disabled",
+          str(calls.get("reasoning")))
+    check("retry returns a complete answer",
+          bool(out.get("verdict")) and bool(out.get("summary")), str(out))
+
+    calls.clear()
+    dd.llm_judge = fake_judge
+    try:
+        same = dd._complete_final_answer_retry(
+            {"verdict": "malicious", "summary": "complete"}, {}, "m", "test"
+        )
+    finally:
+        dd.llm_judge = orig
+    check("complete answer skips the retry",
+          "reasoning" not in calls and same.get("verdict") == "malicious", str(calls))
+
+
 def test_deep_dive_tool_retry() -> None:
     print("[G2] deep-dive transparent tool retry")
     import os as _os
@@ -748,6 +794,7 @@ def main() -> int:
         test_hitl_checkpoint_resilience,
         test_report_style_gates,
         test_deep_dive_tool_retry,
+        test_final_answer_completeness_retry,
         test_retry_visibility_collector,
         test_verdict_calibration,
         test_recovery_gate_and_package,

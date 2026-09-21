@@ -101,6 +101,45 @@ def test_length_truncation_is_not_usable():
     assert not _llm_response_has_usable_content(resp)
 
 
+def test_llm_judge_reasoning_override(monkeypatch):
+    """llm_judge must honor an explicit reasoning override for one call."""
+    import json as _json
+    import urllib.request
+
+    import v2_lib as _v2
+
+    calls = []
+
+    class _FakeResp:
+        def __init__(self, payload):
+            self._payload = payload
+
+        def read(self):
+            return self._payload
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+    def fake_urlopen(req, timeout=None):
+        calls.append(_json.loads(req.data.decode()))
+        return _FakeResp(_json.dumps({
+            "choices": [{"message": {"role": "assistant", "content": '{"verdict":"unknown"}'}}],
+            "usage": {},
+        }).encode())
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setenv("REVAI_LLM_API_KEY", "k")
+    monkeypatch.setenv("REVAI_LLM_API_URL", "http://localhost/v1/chat/completions")
+    monkeypatch.setenv("REVAI_LLM_MODEL", "step-5-preview")
+    monkeypatch.setenv("REVAI_LLM_REASONING", "high")
+
+    _v2.llm_judge("probe", reasoning="disabled")
+    assert calls[0]["thinking"] == {"type": "disabled"}
+
+
 def test_timeout_skips_ladder_to_no_thinking(monkeypatch):
     """A hung thinking-path call must jump straight to the disabled attempt
     (each effort level would otherwise burn the full read window)."""

@@ -2323,7 +2323,8 @@ def _llm_response_has_usable_content(data: dict) -> bool:
         return True
 
 
-def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3) -> dict:
+def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
+              reasoning: str | None = None) -> dict:
     """Call the configured LLM chat API with retries. Returns the FULL response dict.
 
     Configuration is read from environment at runtime (no hardcoded defaults):
@@ -2331,6 +2332,9 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3) -> di
       - REVAI_LLM_API_URL  (required)
       - REVAI_LLM_API_KEY  (required; falls back to REVAI_LLM_API_KEY in cadre.env)
       - REVAI_LLM_REASONING (optional: 'max', 'high', 'low', 'disabled', etc.)
+
+    Pass `reasoning` to override the configured effort for this one call (used
+    for bounded completeness retries with thinking disabled).
     """
     import time
     import urllib.request
@@ -2341,14 +2345,15 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3) -> di
     api_url = get_llm_api_url()
     # Pro judgment: use REVAI_LLM_REASONING (max/high). Flash agentic: no Pro reasoning
     # unless REVAI_LLM_PLANNER_REASONING is set.
-    if "flash" in effective_model.lower():
-        reasoning = os.environ.get("REVAI_LLM_PLANNER_REASONING") or "disabled"
-    else:
-        # Default effort: "high". Providers commonly support low/medium/high
-        # (step-5-preview's own metadata lists exactly that, 2026-09-21);
-        # "max" was the old default but is not universally supported and this
-        # endpoint silently accepts unsupported values.
-        reasoning = get_llm_reasoning() or "high"
+    if reasoning is None:
+        if "flash" in effective_model.lower():
+            reasoning = os.environ.get("REVAI_LLM_PLANNER_REASONING") or "disabled"
+        else:
+            # Default effort: "high". Providers commonly support low/medium/high
+            # (step-5-preview's own metadata lists exactly that, 2026-09-21);
+            # "max" was the old default but is not universally supported and this
+            # endpoint silently accepts unsupported values.
+            reasoning = get_llm_reasoning() or "high"
 
     body = {
         "model": effective_model,

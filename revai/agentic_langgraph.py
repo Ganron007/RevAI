@@ -392,6 +392,7 @@ def run_langgraph_deep_dive(sha: str, max_steps: int = 10, helpers: dict | None 
     _history_has_sql_deep = helpers["_history_has_sql_deep"]
     _tool_call_ok = helpers["_tool_call_ok"]
     _coerce_final_answer = helpers["_coerce_final_answer"]
+    _complete_final_answer_retry = helpers.get("_complete_final_answer_retry")
     _finalize_agentic_result = helpers["_finalize_agentic_result"]
     load_intake_validation = helpers["load_intake_validation"]
     GHIDRA_SCHEMA = helpers["GHIDRA_SCHEMA"]
@@ -636,6 +637,11 @@ not found instead of recalling an answer.
                     final_answer = corrected
             except Exception as e:
                 print(f"[agentic_langgraph] hallucination correction pass failed: {e}", flush=True)
+
+    if _complete_final_answer_retry is not None:
+        final_answer = _complete_final_answer_retry(
+            final_answer, findings, verdict_model, label="langgraph"
+        )
 
     return _finalize_agentic_result(
         sha=sha,

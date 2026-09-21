@@ -173,6 +173,51 @@ def _final_answer_complete(ans: dict | None) -> bool:
     return bool(verdict) and bool(summary)
 
 
+def _complete_final_answer_retry(
+    final_answer: dict | None,
+    findings: dict | None,
+    verdict_model: str,
+    label: str = "agentic",
+) -> dict | None:
+    """One bounded retry when the agent's final answer is incomplete.
+
+    The provider can degenerate on the verdict call at higher reasoning effort
+    (hollow JSON at high/medium) so the surviving answer may lack verdict or
+    summary — the stage then hard-fails as `final_answer_incomplete`
+    (rehearsal 2026-09-22). Re-ask ONCE with thinking disabled and a strict
+    flat-JSON contract; keep the original answer when the retry does not
+    improve it.
+    """
+    if _final_answer_complete(final_answer if isinstance(final_answer, dict) else {}):
+        return final_answer
+    prompt = (
+        "Return ONLY a flat JSON object with keys: verdict (one of: malicious, "
+        "suspicious, benign, unknown), confidence (0-100 integer), summary "
+        "(string), key_evidence (list of strings). No markdown, no nested "
+        "objects.\n\n"
+        f"findings:\n{_truncate(json.dumps(findings or {}, default=str), 6000)}\n"
+    )
+    try:
+        resp = llm_judge(prompt, model=verdict_model, reasoning="disabled")
+        content = resp["choices"][0]["message"]["content"]
+        start, end = content.find("{"), content.rfind("}")
+        raw = json.loads(content[start : end + 1]) if start >= 0 and end > start else {}
+        retried = _coerce_final_answer(raw) or raw
+        if _final_answer_complete(retried if isinstance(retried, dict) else {}):
+            print(
+                f"[deep_dive_agentic] {label} completeness retry produced a complete answer",
+                flush=True,
+            )
+            return retried
+    except Exception as e:
+        print(
+            f"[deep_dive_agentic] {label} completeness retry failed: "
+            f"{type(e).__name__}: {e}",
+            flush=True,
+        )
+    return final_answer
+
+
 def _coerce_final_answer(data: dict | None) -> dict | None:
     """Unwrap nested / planner-shaped LLM JSON into a flat final_answer dict.
 
@@ -1436,6 +1481,10 @@ def _custom_loop_body(sha: str, max_steps: int = MAX_STEPS) -> dict:
                 "source": "error",
             }
 
+    final_answer = _complete_final_answer_retry(
+        final_answer, findings, verdict_model, label="custom"
+    )
+
     return _finalize_agentic_result(
         sha=sha,
         session=session,
@@ -1764,6 +1813,7 @@ def agentic_deep_dive(sha: str, max_steps: int = MAX_STEPS) -> dict:
                     "_tool_call_ok": _tool_call_ok,
                     "_coerce_final_answer": _coerce_final_answer,
                     "_final_answer_complete": _final_answer_complete,
+                    "_complete_final_answer_retry": _complete_final_answer_retry,
                     "_finalize_agentic_result": _finalize_agentic_result,
                     "_normalize_confidence": _normalize_confidence,
                     # agent-loop discipline helpers (shared with custom engine)
