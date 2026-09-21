@@ -595,7 +595,7 @@ def test_retry_visibility_collector() -> None:
 # ---------------------------------------------------------------------------
 def test_verdict_calibration() -> None:
     print("[calibration] obfuscation-neutral gate")
-    from v2_lib import calibrate_verdict  # noqa: E402
+    from v2_lib import calibrate_publish_claim, calibrate_verdict  # noqa: E402
 
     prot_only = {
         "verdict": "malicious",
@@ -689,6 +689,27 @@ def test_verdict_calibration() -> None:
     check("intent signals recorded for audit",
           "c2" in (out10.get("verdict_intent_signals") or []),
           str(out10.get("verdict_intent_signals")))
+
+    # Publish-claim calibration (2026-09-22): the publish LLM used to UPGRADE a
+    # capped upstream verdict back to malicious and become final.
+    pcal = calibrate_publish_claim(
+        "malicious",
+        quick_verdict={"verdict": "suspicious"},
+        deep_verdict={"verdict": "suspicious"},
+        evidence_text="protected by ZProtect, xor loop, high entropy, packed",
+    )
+    check("publish claim capped when protection-only",
+          pcal.get("verdict") == "suspicious" and pcal.get("changed") is True,
+          str(pcal))
+    pcal2 = calibrate_publish_claim(
+        "malicious",
+        quick_verdict={"verdict": "suspicious"},
+        deep_verdict={"verdict": "suspicious"},
+        evidence_text="capa: process injection via WriteProcessMemory; packed",
+    )
+    check("publish claim kept when behavioral evidence exists",
+          pcal2.get("verdict") == "malicious" and pcal2.get("changed") is False,
+          str(pcal2))
 
 
 # ---------------------------------------------------------------------------

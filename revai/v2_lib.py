@@ -4522,8 +4522,42 @@ def calibrate_verdict(verdict: dict, evidence_text: str) -> dict:
     return verdict
 
 
-# --- T4 helpers: emulation, HITL, sandbox, goodware, report template ---
+def calibrate_publish_claim(
+    pub_claimed: str | None,
+    *,
+    quick_verdict: dict | None = None,
+    deep_verdict: dict | None = None,
+    evidence_text: str = "",
+) -> dict:
+    """Calibrate the publish LLM's claimed verdict with the symmetric contract.
 
+    `cross_stage_verdict_lock` only flags DOWNGRADES of the upstream verdict, so
+    the publish claim could UPGRADE a calibrated protection-only verdict back to
+    malicious and become final (rehearsal 2026-09-22: ghyte.exe final=malicious
+    while quick and deep were both suspicious). Returns
+    {verdict, changed, reason, raw, signals}.
+    """
+    raw = str(pub_claimed or "").strip()
+    if not raw:
+        return {"verdict": "", "changed": False, "reason": "", "raw": "",
+                "signals": None}
+    payload = json.dumps({
+        "quick_verdict": quick_verdict or {},
+        "deep_verdict": deep_verdict or {},
+        "evidence": evidence_text,
+    }, default=str)
+    out = calibrate_verdict({"verdict": raw, "score": 0}, payload)
+    new = str(out.get("verdict") or raw)
+    return {
+        "verdict": new,
+        "changed": new != raw,
+        "reason": str(out.get("calibration_reason") or ""),
+        "raw": raw,
+        "signals": out.get("verdict_intent_signals"),
+    }
+
+
+# --- T4 helpers: emulation, HITL, sandbox, goodware, report template ---
 SPEAKEASY_TIMEOUT = int(os.environ.get("CADRE_SPEAKEASY_TIMEOUT", "180"))
 GOODWARE_DIR = Path("/opt/samples/goodware")
 HITL_DIR = Path("/tmp/cadre-hitl")

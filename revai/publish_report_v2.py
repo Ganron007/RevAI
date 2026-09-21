@@ -34,6 +34,7 @@ from v2_lib import (  # noqa: E402
     case_dir,
     compact_json_for_prompt,
     align_publish_markdown_to_upstream,
+    calibrate_publish_claim,
     cross_stage_verdict_lock,
     infer_publish_verdict_from_markdown,
     strip_accuracy_hold_banner,
@@ -841,6 +842,24 @@ def main():
     quick_v = (verdict or {}).get("verdict") if isinstance(verdict, dict) else None
     deep_v = (deep or {}).get("verdict") if isinstance(deep, dict) else None
     pub_claimed = report.get("verdict") or infer_publish_verdict_from_markdown(md)
+    # Calibrate the publish claim BEFORE the lock: the lock only flags
+    # downgrades, so an upgrade back to malicious could re-instate a verdict the
+    # ceiling already capped (2026-09-22 rehearsal: deep=suspicious,
+    # publish=malicious, final=malicious).
+    _pcal = calibrate_publish_claim(
+        pub_claimed,
+        quick_verdict=verdict if isinstance(verdict, dict) else None,
+        deep_verdict=deep if isinstance(deep, dict) else None,
+        evidence_text=json.dumps(tools_results, default=str)[:200000],
+    )
+    if _pcal.get("changed"):
+        print(
+            f"[publish_report_v2] publish claim calibrated: "
+            f"{_pcal.get('raw')} -> {_pcal.get('verdict')} ({_pcal.get('reason')})",
+            flush=True,
+        )
+        report["publish_llm_verdict_raw"] = _pcal.get("raw")
+        pub_claimed = _pcal.get("verdict")
     lock = cross_stage_verdict_lock(pub_claimed, quick_verdict=quick_v, deep_verdict=deep_v)
     report["quick_verdict"] = quick_v
     report["deep_verdict"] = deep_v
