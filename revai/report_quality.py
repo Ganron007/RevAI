@@ -279,6 +279,8 @@ def evaluate_report_markdown(
         in_fence = False
         prose = 0
         table = 0
+        prose_chars = 0
+        table_chars = 0
         for l in content:
             if l.lstrip().startswith("```"):
                 in_fence = not in_fence
@@ -287,18 +289,27 @@ def evaluate_report_markdown(
                 continue
             if l.lstrip().startswith("|"):
                 table += 1
+                table_chars += len(l.rstrip())
                 continue
             if l.lstrip().startswith("#"):
                 continue  # headings are structure, not prose
             prose += 1
+            prose_chars += len(l.rstrip())
         total = max(1, prose + table)
-        style["prose_ratio"] = round(prose / total, 2)
+        total_chars = max(1, prose_chars + table_chars)
+        style["prose_ratio"] = round(prose / total, 2)  # per line (legacy)
+        style["prose_ratio_chars"] = round(prose_chars / total_chars, 3)
         # Last-resort backstop only: pure dumps run 0-5% prose; table-heavy but
         # interpreted narratives run 15-30%. Precise gates (orphan_tables,
         # bare_fences) carry the real detection weight.
-        min_ratio = 0.15 if "technical" in label else 0.15
+        # Measured by CHARACTER volume: markdown paragraphs are single long
+        # lines while tables are one line per row, so a line-based ratio
+        # mis-flags table-heavy but well-explained reports (rehearsal
+        # 2026-09-21: master v2 = 0.14 per line but 0.41 per char, 27 long
+        # paragraphs, 0 orphan tables).
+        min_ratio = 0.15
         style["min_prose_ratio"] = min_ratio
-        style["dump_style"] = prose / total < min_ratio
+        style["dump_style"] = prose_chars / total_chars < min_ratio
         # Table-orphan check: a table block with NO interpretation paragraph
         # after it (before the next table or heading) is a dump-style orphan.
         # This is the precise signal — global ratio alone is too blunt for
@@ -351,7 +362,9 @@ def evaluate_report_markdown(
             issues.append(f"{label}:no_byline")
         if style["dump_style"]:
             issues.append(
-                f"{label}:dump_style:prose_ratio={style['prose_ratio']}<{min_ratio}"
+                f"{label}:dump_style:prose_ratio_chars="
+                f"{style.get('prose_ratio_chars')}<{min_ratio} "
+                f"(per-line {style['prose_ratio']})"
             )
         if not style["tables_ok"]:
             issues.append(f"{label}:orphan_tables:{orphan}")

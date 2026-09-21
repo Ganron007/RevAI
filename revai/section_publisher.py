@@ -673,18 +673,31 @@ if __name__ == "__main__":
     # Build tools_results from disk artifacts (for standalone use)
     sha = args.sha
     sha_log = Path(f"/opt/samples/logs/{sha}")
+    mode_dir = case_dir(sha)  # mode-keyed (REVAI_RUN_MODE); flat when unset
+
+    def _first_existing(paths: list[Path]) -> Path | None:
+        for p in paths:
+            if p.exists():
+                return p
+        return None
+
     tools_results: dict = {"sample_path": "?"}
     session_path = Path(f"/opt/samples/sessions/{sha}.json")
     if session_path.exists():
         session = json.loads(session_path.read_text())
         tools_results["sample_path"] = session.get("sample_path", "?")
-    v = sha_log / "verdict.json"
-    if v.exists():
+    v = _first_existing([mode_dir / "verdict.json", sha_log / "verdict.json"])
+    if v is not None:
         tools_results["verdict"] = json.loads(v.read_text())
     # P0.7: agentic/large runs write deep evidence under deep_dive/, not the
     # root deep-dive.json — resolve in preference order so MASTER-v3 never
-    # silently publishes with empty deep evidence.
+    # silently publishes with empty deep evidence. Mode-keyed runs (#15/R1)
+    # write under logs/<sha>/<mode>/ — check that first, then the flat legacy
+    # layout.
     dd_candidates = [
+        mode_dir / "deep-dive.json",
+        mode_dir / "deep_dive" / "05-deep-dive.json",
+        mode_dir / "deep_dive" / "agentic_deep_dive.json",
         sha_log / "deep-dive.json",
         sha_log / "deep_dive" / "05-deep-dive.json",
         sha_log / "deep_dive" / "agentic_deep_dive.json",
@@ -695,14 +708,21 @@ if __name__ == "__main__":
             tools_results["deep_source_path"] = str(dd)
             break
     if "deep" not in tools_results:
-        print("  WARNING: no deep-dive evidence found (checked root + deep_dive/) — "
+        print("  WARNING: no deep-dive evidence found (checked mode dir + root + deep_dive/) — "
               "sections will lack deep context")
-    # Load raw tool packs if available
-    quick_tools = sha_log / "quick_scan" / "00-tools-raw.json"
-    deep_tools = sha_log / "deep_dive" / "01-tools-raw.json"
-    if quick_tools.exists():
+    # Load raw tool packs if available (quick triage is mode-independent: flat;
+    # deep tools are mode-keyed with a flat legacy fallback)
+    quick_tools = _first_existing([
+        sha_log / "quick_scan" / "00-tools-raw.json",
+        mode_dir / "quick_scan" / "00-tools-raw.json",
+    ])
+    deep_tools = _first_existing([
+        mode_dir / "deep_dive" / "01-tools-raw.json",
+        sha_log / "deep_dive" / "01-tools-raw.json",
+    ])
+    if quick_tools is not None:
         tools_results.update(json.loads(quick_tools.read_text()))
-    if deep_tools.exists():
+    if deep_tools is not None:
         tools_results.update(json.loads(deep_tools.read_text()))
     # For real evidence cards, need to call the tools — load from existing logs
     print(f"Running section-based publish for {sha[:12]}")

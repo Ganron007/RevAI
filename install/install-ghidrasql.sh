@@ -46,10 +46,16 @@ fi
 hdr "Install LibGhidraHost extension into Ghidra"
 cd "$BUILD_ROOT/libghidra/ghidra-extension"
 # Use Ghidra's bundled Gradle wrapper (system gradle 4.x is too old for spread operator syntax)
-if [[ -x "$GHIDRA_INSTALL_DIR/support/gradle/gradlew" ]]; then
-  "$GHIDRA_INSTALL_DIR/support/gradle/gradlew" installExtension "-PGHIDRA_INSTALL_DIR=$GHIDRA_INSTALL_DIR"
-else
-  gradle installExtension "-PGHIDRA_INSTALL_DIR=$GHIDRA_INSTALL_DIR"
+_run_gradle_install() {
+  if [[ -x "$GHIDRA_INSTALL_DIR/support/gradle/gradlew" ]]; then
+    "$GHIDRA_INSTALL_DIR/support/gradle/gradlew" installExtension "-PGHIDRA_INSTALL_DIR=$GHIDRA_INSTALL_DIR"
+  else
+    gradle installExtension "-PGHIDRA_INSTALL_DIR=$GHIDRA_INSTALL_DIR"
+  fi
+}
+if ! _run_gradle_install; then
+  warn "gradle installExtension failed — retrying once (first run also downloads the Gradle distribution)"
+  _run_gradle_install || fail "gradle installExtension failed twice — check network access to services.gradle.org"
 fi
 if [[ ! -d "$GHIDRA_INSTALL_DIR/Ghidra/Extensions/LibGhidraHost" ]]; then
   fail "LibGhidraHost missing after gradle installExtension"

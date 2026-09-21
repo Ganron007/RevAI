@@ -11,8 +11,9 @@ You can also override settings per run through the React Console **Settings** ta
 | `REVAI_LLM_MODEL` | Yes | OpenAI-compatible model name — use whatever your provider exposes. |
 | `REVAI_LLM_API_URL` | Yes | OpenAI-compatible **base URL** (not the full endpoint). The pipeline appends `/chat/completions` internally. |
 | `REVAI_LLM_API_KEY` | Yes | API key for the above endpoint. |
-| `REVAI_LLM_REASONING` | No | Reasoning effort (`low` / `medium` / `high` / `max`), if your model supports it. |
+| `REVAI_LLM_REASONING` | No | Reasoning effort (`low` / `medium` / `high` / `max` / `disabled`), if your model supports it. Aborts, timeouts and empty responses retry with a step-down through the effort levels and a final no-thinking attempt, so a flaky thinking mode degrades gracefully. |
 | `REVAI_LLM_TEMPERATURE` | No | Override temperature for LLM judge calls. Default `0.2`. |
+| `REVAI_LLM_TIMEOUT` | No | Read timeout (seconds) for LLM judge calls. Default `300`; raise it for very long report prompts at high reasoning effort. |
 | `REVAI_LLM_PLANNER_MODEL` | No | Agentic planner model (defaults to `REVAI_LLM_MODEL`). |
 | `REVAI_LLM_VERDICT_MODEL` | No | Verdict / report model (defaults to `REVAI_LLM_MODEL`). |
 

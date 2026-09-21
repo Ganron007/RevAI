@@ -70,6 +70,14 @@ if [[ -d "$REPO_ROOT/tests" ]]; then
 fi
 
 # ---------------------------------------------------------------------------
+# Deploy the release gate (layout-aware: source checkout or flat VM runtime)
+# ---------------------------------------------------------------------------
+if [[ -f "$REPO_ROOT/scripts/verify-release.sh" ]]; then
+    ok "Deploying release gate to /opt/scripts/ ..."
+    sudo cp "$REPO_ROOT/scripts/verify-release.sh" /opt/scripts/
+fi
+
+# ---------------------------------------------------------------------------
 # Deploy the offline Windows-API lookup index (api_lookup)
 #
 # The bundled index is the small malapi default. A VM may instead carry a
@@ -91,6 +99,22 @@ if [[ -f "$REPO_ROOT/assets/api_index/api_index.db" ]]; then
     sudo cp -a "$REPO_ROOT/assets/api_index/NOTICE.md" /opt/revai/api_index/
 else
     warn "assets/api_index/api_index.db missing - api_lookup will be unavailable. Build it with: python3 revai/api_index_build.py --malapi assets/api_index/malapi.json --out assets/api_index/api_index.db"
+fi
+
+# ---------------------------------------------------------------------------
+# Record the deployed commit for report provenance banners
+# (revai_provenance reads /opt/revai/config/REVAI_COMMIT; "-dirty" when the
+# working tree differs from HEAD, e.g. a hot-patched deploy)
+# ---------------------------------------------------------------------------
+if command -v git >/dev/null 2>&1 && git -C "$REPO_ROOT" rev-parse --verify HEAD >/dev/null 2>&1; then
+    _revai_commit="$(git -C "$REPO_ROOT" rev-parse HEAD)"
+    if [[ -n "$(git -C "$REPO_ROOT" status --porcelain 2>/dev/null)" ]]; then
+        _revai_commit="${_revai_commit}-dirty"
+    fi
+    printf '%s\n' "$_revai_commit" | sudo tee /opt/revai/config/REVAI_COMMIT >/dev/null
+    ok "Recorded REVAI_COMMIT=$_revai_commit"
+else
+    warn "git metadata unavailable - report provenance will show commit unknown"
 fi
 
 # Fix ownership

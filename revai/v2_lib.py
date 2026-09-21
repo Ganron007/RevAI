@@ -2243,6 +2243,40 @@ def _build_reasoning_body(reasoning: str | None) -> dict:
     }
 
 
+def _llm_response_has_usable_content(data: dict) -> bool:
+    """True when a chat-completions response carries usable text.
+
+    Observed failure mode (deployment rehearsal 2026-09-21): the provider returns
+    finish_reason=stop with a *valid* JSON object whose only value is an empty
+    string (e.g. '{"<report title>":""}') — no error, no content. Callers then
+    see an empty report. Detect it here so llm_judge can retry (downgrading
+    thinking effort) instead of silently returning a hollow response.
+    """
+    try:
+        msg = ((data.get("choices") or [{}])[0].get("message") or {})
+        content = msg.get("content") or ""
+        if isinstance(content, (list, dict)):
+            content = json.dumps(content)
+        if not isinstance(content, str) or not content.strip():
+            return False
+        try:
+            parsed = json.loads(content)
+        except Exception:
+            return True  # raw text (e.g. markdown) — usable
+        if isinstance(parsed, dict):
+            for v in parsed.values():
+                if isinstance(v, str) and v.strip():
+                    return True
+                if isinstance(v, (list, dict)) and len(v) > 0:
+                    return True
+            return False
+        if isinstance(parsed, list):
+            return len(parsed) > 0
+        return True
+    except Exception:
+        return True
+
+
 def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3) -> dict:
     """Call the configured LLM chat API with retries. Returns the FULL response dict.
 
@@ -2305,6 +2339,7 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3) -> di
         timeout_s = 300
     current_reasoning = reasoning
     last_aborted: dict | None = None
+    last_empty: dict | None = None
     for attempt in range(1, max_retries + 1):
         body.update(_build_reasoning_body(current_reasoning))
         try:
@@ -2339,6 +2374,20 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3) -> di
                     # Last attempt aborted — break to the no-thinking fallback.
                     last_aborted = data
                     break
+                if not _llm_response_has_usable_content(data):
+                    if attempt < max_retries:
+                        nxt = _next_lower_effort(current_reasoning)
+                        print(
+                            f"[llm_judge] attempt {attempt}/{max_retries} returned "
+                            f"no usable content (reasoning={current_reasoning}); "
+                            f"retrying with reasoning={nxt}",
+                            flush=True,
+                        )
+                        current_reasoning = nxt
+                        time.sleep(2 ** attempt)
+                        continue
+                    last_empty = data
+                    break
                 return data
         except Exception as e:
             last_error = e
@@ -2358,10 +2407,15 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3) -> di
         or "timed out" in str(last_error).lower()
         or "timeout" in str(last_error).lower()
     )
-    if (last_aborted is not None or err_is_timeout) and (current_reasoning or "").lower() != "disabled":
+    if (
+        last_aborted is not None or last_empty is not None or err_is_timeout
+    ) and (current_reasoning or "").lower() != "disabled":
+        _why = (
+            "timeout" if err_is_timeout
+            else ("empty response" if last_empty is not None else "abort")
+        )
         print(
-            "[llm_judge] retries exhausted"
-            f"{' (timeout)' if err_is_timeout else ''}; final attempt with "
+            f"[llm_judge] retries exhausted ({_why}); final attempt with "
             "thinking disabled",
             flush=True,
         )
@@ -4245,6 +4299,43 @@ _PROTECTION_SIGNALS = (
     "encrypt data", "high entropy", "import table", "packing", "crypter",
 )
 
+# Role-word narratives the model itself emits ("packed PE32 loader",
+# "dropper-style stub") describe a hypothesis, not evidence. They stay in the
+# broad list for the benign/legitimate floor but must NOT defeat the
+# malicious -> suspicious ceiling (keygenme contract; rehearsal 2026-09-21
+# ghyte.exe: "packed PE32 loader" alone kept a protection-only sample at
+# malicious).
+_CEILING_ROLE_WORDS = frozenset({"loader", "dropper", "downloader"})
+_BEHAVIORAL_INTENT_SIGNALS_STRICT = tuple(
+    s for s in _BEHAVIORAL_INTENT_SIGNALS if s not in _CEILING_ROLE_WORDS
+)
+
+_NEGATION_RE = re.compile(
+    r"(?<![a-z])(?:no|not|without|absent|none|neither|nor|never|lacks?|"
+    r"lacking|ruled out|zero|no evidence of|no sign of|no signs of)(?![a-z])"
+)
+
+
+def _signal_matches(text: str, signals) -> bool:
+    """Word-boundary signal search with a negation guard.
+
+    Signals match as whole words/phrases — a raw substring search flagged the
+    model's own disclaimers ("no persistence", "no process injection") and
+    unrelated words ("network" contains "etw", hex digits contain "c2"),
+    which let narrative prose defeat the calibration ceiling (rehearsal
+    2026-09-21). A match whose preceding ~60 characters contain a negation is
+    ignored.
+    """
+    t = " " + re.sub(r"\s+", " ", (text or "").lower()) + " "
+    for sig in signals:
+        pat = r"(?<![a-z0-9_])" + re.escape(sig) + r"(?![a-z0-9_])"
+        for m in re.finditer(pat, t):
+            window = t[max(0, m.start() - 60):m.start()]
+            if _NEGATION_RE.search(window):
+                continue
+            return True
+    return False
+
 
 def calibrate_verdict(verdict: dict, evidence_text: str) -> dict:
     """Verdict calibration gate — symmetric, evidence-owned (2026-08-07).
@@ -4263,15 +4354,22 @@ def calibrate_verdict(verdict: dict, evidence_text: str) -> dict:
 
     Both directions are recorded (`verdict_calibrated`/`verdict_raised` +
     reason) for audit transparency. Returns a NEW dict when changed.
+
+    Matching (2026-09-21 rehearsal fix): signals match as whole words/phrases
+    with a negation guard, so disclaimer prose cannot fake intent; the
+    CEILING (malicious -> suspicious) additionally ignores role-word
+    narratives ("loader"/"dropper"/"downloader") — a malice claim must be
+    backed by tool/rule vocabulary or explicit behavior. The FLOOR keeps the
+    broad list: a benign/legitimate verdict cannot stand while ANY behavioral
+    signal — including role words — appears in the evidence.
     """
     if not isinstance(verdict, dict):
         return verdict
     label = str(verdict.get("verdict") or "").strip().lower()
     text = str(evidence_text or "").lower()
-    has_intent = any(s in text for s in _BEHAVIORAL_INTENT_SIGNALS)
     # CEILING: malicious claimed but no behavioral intent anywhere in evidence
     if "malicious" in label:
-        if has_intent:
+        if _signal_matches(text, _BEHAVIORAL_INTENT_SIGNALS_STRICT):
             return verdict
         has_protection = any(s in text for s in _PROTECTION_SIGNALS)
         if not has_protection:
@@ -4289,7 +4387,9 @@ def calibrate_verdict(verdict: dict, evidence_text: str) -> dict:
         )
         return out
     # FLOOR: benign/legitimate claimed but behavioral-intent evidence exists
-    if label in ("benign", "clean", "legitimate", "likely_legitimate") and has_intent:
+    if label in ("benign", "clean", "legitimate", "likely_legitimate") and _signal_matches(
+        text, _BEHAVIORAL_INTENT_SIGNALS
+    ):
         out = dict(verdict)
         out["verdict"] = "suspicious"
         try:

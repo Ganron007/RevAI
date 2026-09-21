@@ -23,12 +23,12 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 export GHIDRA_INSTALL_DIR="${GHIDRA_INSTALL_DIR:-/opt/ghidra}"
 
 # =========================================================================
-hdr "Step 1/9 — apt packages"
+hdr "Step 1/12 — apt packages"
 # =========================================================================
 apt-get update -qq
 apt-get install -y --no-install-recommends \
   nmap foremost dcfldd stegsnow testdisk pdfid oledump poppler-utils \
-  dex2jar curl wget git build-essential cmake ninja-build pkg-config \
+  dex2jar curl wget git unzip build-essential cmake ninja-build pkg-config \
   libssl-dev libffi-dev zlib1g-dev python3-dev \
   python3-venv python3-pip python3-olefile python3-oletools python3-requests python3-yaml \
   radare2 yara openjdk-21-jdk gradle \
@@ -37,7 +37,7 @@ apt-get install -y --no-install-recommends \
 ok "apt packages installed"
 
 # =========================================================================
-hdr "Step 2/9 — Locate / normalize Ghidra → /opt/ghidra"
+hdr "Step 2/12 — Locate / normalize Ghidra → /opt/ghidra"
 # =========================================================================
 if [[ ! -x /opt/ghidra/support/analyzeHeadless ]]; then
   FOUND=""
@@ -72,7 +72,7 @@ EOF
 fi
 
 # =========================================================================
-hdr "Step 3/9 — Python packages (LLM-only core)"
+hdr "Step 3/12 — Python packages (LLM-only core)"
 # =========================================================================
 PIP_FLAGS=""
 if pip install --help 2>&1 | grep -q "break-system-packages"; then
@@ -82,7 +82,31 @@ pip install $PIP_FLAGS -r "$REPO_ROOT/requirements.txt"
 ok "Python packages from requirements.txt"
 
 # =========================================================================
-hdr "Step 4/9 — capa rules + YARA flat rules"
+hdr "Step 4/12 — pipx + angr (deobfuscation / symbolic execution)"
+# =========================================================================
+# The deobfuscation wrapper (extensions/deobfuscation/invoke_z3_or_angr.py)
+# invokes angr through its pipx venv:
+#   /home/remnux/.local/share/pipx/venvs/angr/bin/python
+if ! command -v pipx >/dev/null 2>&1; then
+  apt-get install -y --no-install-recommends pipx >/dev/null 2>&1 || true
+fi
+if command -v pipx >/dev/null 2>&1; then
+  if [[ -x /home/remnux/.local/share/pipx/venvs/angr/bin/python ]]; then
+    ok "angr already installed (pipx venv)"
+  else
+    warn "Installing angr via pipx (heavy; may take several minutes)..."
+    if sudo -u remnux -H bash -lc 'pipx install angr' >/tmp/revai-angr-install.log 2>&1; then
+      ok "angr installed for remnux (pipx)"
+    else
+      warn "angr install failed — see /tmp/revai-angr-install.log (deobfuscation pass degrades honestly)"
+    fi
+  fi
+else
+  warn "pipx unavailable — angr not installed (deobfuscation pass degrades honestly)"
+fi
+
+# =========================================================================
+hdr "Step 5/12 — capa rules + YARA flat rules"
 # =========================================================================
 if [[ ! -d /opt/capa-rules ]]; then
   git clone --depth 1 https://github.com/mandiant/capa-rules.git /opt/capa-rules
@@ -107,7 +131,7 @@ fi
 chown -R remnux:remnux /opt/samples/rules 2>/dev/null || true
 
 # =========================================================================
-hdr "Step 5/9 — Lab directories"
+hdr "Step 6/12 — Lab directories"
 # =========================================================================
 mkdir -p /opt/samples/incoming/{manual-drop,vr-hunt-pull,cadre-push}
 mkdir -p /opt/samples/{corpus,shortlist,logs,sessions}
@@ -118,7 +142,7 @@ chown -R remnux:remnux /opt/samples /opt/scripts /opt/revai 2>/dev/null || true
 ok "lab dirs ready"
 
 # =========================================================================
-hdr "Step 6/10 — Build and install ghidrasql"
+hdr "Step 7/12 — Build and install ghidrasql"
 # =========================================================================
 if command -v ghidrasql >/dev/null 2>&1 || [[ -x /usr/local/bin/ghidrasql ]]; then
   ok "ghidrasql already installed: $(command -v ghidrasql || echo /usr/local/bin/ghidrasql)"
@@ -129,7 +153,7 @@ else
 fi
 
 # =========================================================================
-hdr "Step 7/10 — Extensions and tools"
+hdr "Step 8/12 — Extensions and tools"
 # =========================================================================
 # deobfuscation / CFF-deflatten / force_pe_imports / capa-signatures / CADRE PE Loader
 REPO_EXT="$REPO_ROOT/extensions"
@@ -208,7 +232,156 @@ else
 fi
 
 # =========================================================================
-hdr "Step 8/10 — Malcat (vendor — OPTIONAL, soft-fail)"
+hdr "Step 9/12 — Extended RE tool stack (optional, soft-fail)"
+# =========================================================================
+# GoReSym (Go symbol recovery) → /opt/goresym/GoReSym
+if [[ -x /opt/goresym/GoReSym ]]; then
+  ok "GoReSym already installed"
+else
+  _tmp="$(mktemp -d)"
+  if curl -fsSL -o "$_tmp/goresym.zip" \
+      https://github.com/mandiant/GoReSym/releases/download/v3.4.1/GoReSym-linux.zip \
+     && echo "a557124857f95a589f8ce3525119c2d18c7c7fc7c4225c92ff94e3effb38748d  $_tmp/goresym.zip" | sha256sum -c - >/dev/null 2>&1
+  then
+    unzip -o -q "$_tmp/goresym.zip" -d "$_tmp/x" 2>/dev/null || true
+    _bin="$(find "$_tmp/x" -type f -name 'GoReSym*' -print -quit 2>/dev/null || true)"
+    if [[ -n "$_bin" ]]; then
+      mkdir -p /opt/goresym
+      install -m 0755 "$_bin" /opt/goresym/GoReSym
+      ok "GoReSym installed to /opt/goresym/GoReSym"
+    else
+      warn "GoReSym archive layout unexpected — install manually to /opt/goresym/"
+    fi
+  else
+    warn "GoReSym download/verify failed (optional) — skipping"
+  fi
+  rm -rf "$_tmp"
+fi
+
+# RIFT (Rust metadata) → /opt/rift/rift_cli.py
+if [[ -f /opt/rift/rift_cli.py ]]; then
+  ok "RIFT already installed"
+else
+  if git clone --depth 1 https://github.com/microsoft/RIFT.git /opt/rift >/dev/null 2>&1; then
+    pip install $PIP_FLAGS ar lief Requests >/dev/null 2>&1 || warn "RIFT python deps install failed"
+    cat > /opt/rift/rift_config_linux.cfg <<'CFG'
+[Default]
+PcfPath = /opt/ida/pcf
+SigmakePath = /opt/ida/sigmake
+WorkFolder = /opt/rift/work
+CargoProjFolder = /opt/rift/tmp
+RustcHashes = /opt/rift/data/rustc_hashes.json
+StringsTool = /usr/bin/strings
+
+[RiftServer]
+server_mode = local
+Ip = 127.0.0.1
+Port = 5001
+flirt_dir = /opt/rift/ServerStorage
+ApiKey =
+TlsCert =
+TlsKey =
+CFG
+    mkdir -p /opt/rift/work /opt/rift/tmp /opt/rift/ServerStorage
+    chown -R remnux:remnux /opt/rift 2>/dev/null || true
+    ok "RIFT installed to /opt/rift (metadata mode; FLIRT gen needs IDA pcf/sigmake)"
+  else
+    warn "RIFT clone failed (optional) — skipping"
+  fi
+fi
+
+# FindCrypt (crypto constants via a Ghidra postScript) — script + signature DB
+_FC_SCRIPTS="${GHIDRA_INSTALL_DIR:-/opt/ghidra}/Ghidra/Features/BytePatterns/ghidra_scripts"
+if [[ -f "$_FC_SCRIPTS/FindCrypt.java" && -d /home/remnux/findcrypt_ghidra ]]; then
+  ok "FindCrypt already installed"
+else
+  _tmp="$(mktemp -d)"
+  if git clone --depth 1 https://github.com/d3v1l401/FindCrypt-Ghidra.git "$_tmp/fc" >/dev/null 2>&1; then
+    if [[ -d "$_FC_SCRIPTS" ]]; then
+      if cp "$_tmp/fc/FindCrypt.java" "$_FC_SCRIPTS/"; then
+        ok "FindCrypt.java installed to Ghidra scripts"
+      else
+        warn "FindCrypt.java copy failed ($_FC_SCRIPTS)"
+      fi
+    else
+      warn "Ghidra scripts dir not found ($_FC_SCRIPTS) — FindCrypt skipped"
+    fi
+    if cp -r "$_tmp/fc/findcrypt_ghidra" /home/remnux/ 2>/dev/null; then
+      chown -R remnux:remnux /home/remnux/findcrypt_ghidra 2>/dev/null || true
+      ok "FindCrypt signature DB at /home/remnux/findcrypt_ghidra"
+    else
+      warn "FindCrypt DB copy failed (optional)"
+    fi
+  else
+    warn "FindCrypt clone failed (optional) — skipping"
+  fi
+  rm -rf "$_tmp"
+fi
+
+# =========================================================================
+hdr "Step 10/12 — IDA Pro (optional): idasql CLI + plugin"
+# =========================================================================
+# Only when IDA Pro is installed. idasql is by Elias Bachaalany
+# (github.com/allthingsida/idasql), Human-Origin Source License v1.0.
+# The pipeline uses the CLI alongside ghidrasql; absence is a documented
+# soft-fail (Ghidra SQL only).
+if [[ ! -d /opt/ida ]]; then
+  ok "IDA Pro not installed — Ghidra SQL only (documented soft-fail)"
+elif command -v idasql >/dev/null 2>&1; then
+  ok "idasql already installed: $(command -v idasql)"
+else
+  _ida_ver=""
+  for _f in /opt/ida/Uninstall*Professional*.desktop; do
+    if [[ -e "$_f" ]]; then
+      _ida_ver="${_f##*Professional }"
+      _ida_ver="${_ida_ver%.desktop}"
+      break
+    fi
+  done
+  case "${_ida_ver:-}" in
+    9.2) _tag=ida92; _sha=a8d06205867fbd2eb89d2e9e5909bcb9ef67eff6c8fe35e4cd0cee512fed4fe0 ;;
+    9.3) _tag=ida93; _sha=aedb99178ad83351a63616cff00d5e41b2aa5295dec1e55ac13e4a350fbe476a ;;
+    9.4) _tag=ida94; _sha=5a6f2f15c6604f8d54f510ce92a35ea93fbab9a6162152e7c56b18f8bce9e8cc ;;
+    *)   _tag=ida93; _sha=aedb99178ad83351a63616cff00d5e41b2aa5295dec1e55ac13e4a350fbe476a
+         warn "IDA version '${_ida_ver:-unknown}' not in the idasql build matrix — defaulting to the IDA 9.3 build" ;;
+  esac
+  _tmp="$(mktemp -d)"
+  if curl -fsSL -o "$_tmp/idasql.zip" \
+      "https://github.com/allthingsida/idasql/releases/download/v0.0.18.1/idasql-v0.0.18.1-${_tag}.zip" \
+     && echo "$_sha  $_tmp/idasql.zip" | sha256sum -c - >/dev/null 2>&1
+  then
+    unzip -o -q "$_tmp/idasql.zip" -d "$_tmp/x" 2>/dev/null || true
+    _cli="$(find "$_tmp/x" -type f -path '*linux-x86_64/cli/idasql' -print -quit 2>/dev/null || true)"
+    if [[ -n "$_cli" ]]; then
+      # The CLI has RUNPATH $ORIGIN and NEEDS libida.so/libidalib.so — keep the
+      # real binary next to the IDA install and expose it on PATH via symlink.
+      install -m 0755 "$_cli" /opt/ida/idasql
+      ln -sfn /opt/ida/idasql /usr/local/bin/idasql
+      if idasql --version >/dev/null 2>&1; then
+        ok "idasql CLI installed (/usr/local/bin/idasql -> /opt/ida/idasql, ${_tag})"
+      else
+        warn "idasql installed but 'idasql --version' failed — check libida.so in /opt/ida"
+      fi
+    else
+      warn "idasql CLI not found in the archive — install manually (docs/PREREQUISITES.md)"
+    fi
+    if [[ -d /opt/ida/plugins ]]; then
+      _plug="$(find "$_tmp/x" -type f -path '*linux-x86_64/plugin/idasql.so' -print -quit 2>/dev/null || true)"
+      _pj="$(find "$_tmp/x" -type f -path '*linux-x86_64/plugin/ida-plugin.json' -print -quit 2>/dev/null || true)"
+      if [[ -n "$_plug" ]]; then
+        cp "$_plug" /opt/ida/plugins/
+        if [[ -n "$_pj" ]]; then cp "$_pj" /opt/ida/plugins/; fi
+        ok "idasql IDA plugin installed to /opt/ida/plugins/"
+      fi
+    fi
+  else
+    warn "idasql download/verify failed — install manually (docs/PREREQUISITES.md)"
+  fi
+  rm -rf "$_tmp"
+fi
+
+# =========================================================================
+hdr "Step 11/12 — Malcat (vendor — OPTIONAL, soft-fail)"
 # =========================================================================
 # Malcat is optional. The pipeline soft-fails (falls back to Mandiant capa +
 # FLOSS + pe_imports) when it is absent. If a Malcat archive ships with the
@@ -217,6 +390,22 @@ hdr "Step 8/10 — Malcat (vendor — OPTIONAL, soft-fail)"
 # GUI once after install).
 if [[ -f /opt/malcat/bin/malcat.mcp.py ]]; then
   ok "Malcat present at /opt/malcat (native capa engine available)"
+  # Ensure python deps + module registration even for an existing install
+  # (idempotent; a manually extracted package may lack either).
+  if [[ -f /opt/malcat/requirements.txt ]]; then
+    if pip install $PIP_FLAGS -q -r /opt/malcat/requirements.txt >/dev/null 2>&1; then
+      ok "Malcat python deps present"
+    else
+      warn "Malcat python deps install failed — check /opt/malcat/requirements.txt"
+    fi
+  fi
+  if [[ -f /usr/lib/python3/dist-packages/malcat.pth ]]; then
+    ok "Malcat module registered (malcat.pth)"
+  else
+    echo "/opt/malcat/bin" > /usr/lib/python3/dist-packages/malcat.pth 2>/dev/null || true
+    ok "Malcat registered via malcat.pth"
+  fi
+  ok "Activate the Malcat license once via the GUI if not already done"
 elif [[ -f "$REPO_ROOT/internal/malcat.zip" ]]; then
   MALCAT_ZIP="$REPO_ROOT/internal/malcat.zip"
   warn "Malcat archive found ($MALCAT_ZIP) — installing (optional)..."
@@ -249,7 +438,7 @@ else
 fi
 
 # =========================================================================
-hdr "Step 9/10 — Core Python import check"
+hdr "Step 12/12 — Core Python import check"
 # =========================================================================
 python3 - <<'PY' || fail "core Python imports failed"
 import flask, requests, yaml, pefile, lief, frida, capa, speakeasy, oletools, yara_x
@@ -259,7 +448,7 @@ PY
 ok "core imports OK (including z3)"
 
 # =========================================================================
-hdr "Step 10/10 — Next steps"
+hdr "Setup summary"
 # =========================================================================
 cat <<EOF
 
@@ -270,9 +459,11 @@ cat <<EOF
 Installed:
   - Ghidra + ghidrasql + CADRE PE Loader extension
   - LibGhidraHost patch (external symbols for VB6/packed PE)
-  - Deobfuscation tools (z3 MBA, angr CFF, force_pe_imports)
+  - Deobfuscation tools (z3 MBA, angr via pipx, force_pe_imports)
+  - Extended tool stack: GoReSym, RIFT, FindCrypt (soft-fail)
   - capa rules + empty capa-signatures (standalone capa ready)
   - LLM stack (flask, langgraph, langchain-openai)
+  - idasql + IDA plugin (only when IDA Pro is installed)
   - Malcat optional (pipeline degrades gracefully)
 
 Next:

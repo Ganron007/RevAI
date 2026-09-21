@@ -82,6 +82,18 @@ if command -v idasql >/dev/null 2>&1; then ok "idasql present"; else warn "idasq
 if command -v capa >/dev/null 2>&1 || python3 -c "import capa" 2>/dev/null; then ok "capa present"; else warn "capa missing"; fi
 if command -v floss >/dev/null 2>&1 || python3 -c "import floss" 2>/dev/null; then ok "floss present"; else warn "floss missing"; fi
 if command -v speakeasy >/dev/null 2>&1 || python3 -c "import speakeasy" 2>/dev/null; then ok "speakeasy present"; else warn "speakeasy missing"; fi
+if [[ -x /home/remnux/.local/share/pipx/venvs/angr/bin/python ]]; then
+  ok "angr pipx venv present (deobfuscation pass)"
+else
+  warn "angr pipx venv missing — deobfuscation pass degrades (run: pipx install angr)"
+fi
+if [[ -x /opt/goresym/GoReSym ]]; then ok "GoReSym present"; else warn "GoReSym missing (Go symbol recovery off)"; fi
+if [[ -f /opt/rift/rift_cli.py ]]; then ok "RIFT present"; else warn "RIFT missing (Rust metadata off)"; fi
+if [[ -f /opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts/FindCrypt.java ]]; then
+  ok "FindCrypt present (crypto constants)"
+else
+  warn "FindCrypt missing (crypto-constant detection off)"
+fi
 
 echo ""
 echo "--- Core Python imports (LLM-only product) ---"

@@ -30,6 +30,9 @@ different, and the install/deploy scripts translate between them.
 | `extensions/cadre-pe-loader/` | → | `/opt/ghidra/Ghidra/Extensions/CADRE/` | `install/setup-remnux.sh` |
 | `extensions/deobfuscation/` | → | `/opt/revai/deobfuscation/` | `install/setup-remnux.sh` |
 | `extensions/cff-deflatten/` | → | `/opt/revai/cff-deflatten/` | `install/setup-remnux.sh` |
+| upstream downloads (GoReSym, RIFT, FindCrypt) | → | `/opt/goresym/`, `/opt/rift/`, Ghidra `ghidra_scripts/` | `install/setup-remnux.sh` |
+| pipx `angr` | → | `/home/remnux/.local/share/pipx/venvs/angr` | `install/setup-remnux.sh` |
+| idasql (when IDA Pro present) | → | `/usr/local/bin/idasql` + `/opt/ida/plugins/` | `install/setup-remnux.sh` |
 | `extensions/libghidra-patch/` | → | patches `LibGhidraHost.jar` in place | `install/setup-remnux.sh` |
 | `ghidra_scripts/` | → | `/opt/ghidra/Ghidra/.../ghidra_scripts/` | `install/setup-remnux.sh` |
 | `install/revai.service` | → | `/etc/systemd/system/revai.service` | `scripts/deploy.sh` |

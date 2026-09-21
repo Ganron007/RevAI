@@ -14,8 +14,14 @@
 - System RE packages (radare2, yara, ghidra, python3-*, build tools, common utilities).
 - Python deps from `requirements.txt` (Flask UI, triage wrappers, LangGraph + `langchain-openai` for large mode).
 - **ghidrasql** via `install/install-ghidrasql.sh` (builds [0xeb/libghidra](https://github.com/0xeb/libghidra) + [0xeb/ghidrasql](https://github.com/0xeb/ghidrasql) when Ghidra is present; uses Ghidra's bundled Gradle wrapper — system Gradle is not required).
+- **angr** via `pipx` (deobfuscation / symbolic execution; the wrapper runs it from its pipx venv).
+- Extended static stack: **GoReSym**, **RIFT**, **FindCrypt** — downloaded and installed to their expected paths when absent.
+- **idasql** CLI + IDA plugin — only when IDA Pro is installed (version-matched 9.2/9.3/9.4 build of v0.0.18.1).
 - capa-rules + flattened YARA under `/opt/samples/rules/flat/`.
 - Lab dirs: `/opt/samples/`, `/opt/scripts/`, `/opt/revai/`.
+
+Every optional step soft-fails with a warning: the pipeline reports honestly and
+degrades to the remaining engines.
 
 **Malcat** is not auto-downloaded (vendor license). Place it at `/opt/malcat` so `/opt/malcat/bin/malcat.mcp.py` exists before audited runs. The pipeline runs without Malcat (`--skip-malcat`); only audited runs require it.
 
@@ -53,7 +59,7 @@ sudo ./install/install-ghidrasql.sh
 If you own IDA Pro 9.x for Linux:
 
 1. Install to `/opt/ida`.
-2. Ensure `idasql --version` works.
+2. Run `install/setup-remnux.sh` — it installs the matching **idasql** CLI (`/usr/local/bin/idasql`) and IDA plugin automatically (v0.0.18.1 build for the detected IDA 9.2/9.3/9.4). Verify with `idasql --version`.
 3. Pipeline uses IDA SQL alongside Ghidra; otherwise Ghidra-only.
 
 Do not commit IDA installers or licenses.

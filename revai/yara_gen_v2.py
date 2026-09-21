@@ -234,11 +234,12 @@ def build_yara_rule(family: str, sha256: str, strings: list[str],
         f'        revai_engine = "{_prov["engine"]}"',
         '        severity = "high"',
         '        confidence = "low"' if degraded else '        confidence = "medium"',
-        "    strings:",
     ]
-    for i, s in enumerate(chosen[:12]):
-        esc = s.replace("\\", "\\\\").replace('"', '\\"')
-        lines.append(f'        $s{i} = "{esc}" ascii wide')
+    if chosen:
+        lines.append("    strings:")
+        for i, s in enumerate(chosen[:12]):
+            esc = s.replace("\\", "\\\\").replace('"', '\\"')
+            lines.append(f'        $s{i} = "{esc}" ascii wide')
     # Condition: file-type gate + distinctive strings only ($s* — no header
     # bytes), with imphash as an independent exact fingerprint branch.
     conds: list[str] = []

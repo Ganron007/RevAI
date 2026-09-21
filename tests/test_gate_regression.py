@@ -414,6 +414,36 @@ def test_report_style_gates() -> None:
     check("good report byline ok", q.get("style", {}).get("byline_ok") is True, str(q.get("style"))[:150])
     check("good report citations ok", q.get("style", {}).get("citation_coverage_ok") is True, str(q.get("style"))[:150])
 
+    # Rehearsal regression (2026-09-21): a table-heavy but interpreted report
+    # (long prose paragraphs + wide evidence tables) measured 0.14 prose per
+    # LINE but 0.41 per CHARACTER — the line metric mis-flagged it as a dump.
+    table_heavy = (
+        "> **RevAI provenance** — commit abc · engine langgraph\n\n"
+        "# 1. Executive Summary\n\n"
+        + ("We observed the sample resolving APIs dynamically (source: capa, "
+           "top_rules), consistent with a packed loader whose import table is "
+           "minimal; the section layout explains the entropy (source: malcat, "
+           "anomalies) and the protector stub is documented below. ") * 5
+        + "\n\n# 2. Sample Metadata\n\n"
+        + ("The binary is a 32-bit PE with a suspicious import table "
+           "(source: pe_imports, imports) and a single writable+executable "
+           "section (source: malcat, static_profile). ") * 4
+        + "\n\n| addr | name | why |\n|------|------|-----|\n"
+        + "".join(
+            f"| 0x4010{i:02x} | sub_4010{i:02x} | resolves APIs dynamically "
+            f"(source: ghidra_query) |\n"
+            for i in range(25)
+        )
+    )
+    q = evaluate_report_markdown(
+        table_heavy, required_sections=required, source="llm_judge",
+        min_total_chars=10, label="technical_test",
+    )
+    check("table-heavy interpreted report not flagged dump_style",
+          "dump_style" not in " ".join(q.get("issues", [])),
+          "style=" + str(q.get("style", {}).get("prose_ratio_chars"))
+          + " issues=" + str(q.get("issues"))[:160])
+
     fb = evaluate_report_markdown(
         dump_md, required_sections=required, source="deterministic_fallback",
         min_total_chars=10, label="technical_test",
@@ -570,6 +600,31 @@ def test_verdict_calibration() -> None:
     check("floor: no behavioral -> untouched", floor3.get("verdict") == "benign", str(floor3))
     floor4 = calibrate_verdict({"verdict": "benign"}, "xor encryption, high entropy, packed")
     check("floor: protection-only benign untouched", floor4.get("verdict") == "benign", str(floor4))
+
+    # ---- Rehearsal regression (2026-09-21, ghyte.exe): the ceiling must not
+    # be defeated by disclaimer prose, unrelated substrings, or role words.
+    disclaimers = (
+        "YARA: ZProtect protector match. Malcat anomalies: XorInLoop. The "
+        "summary notes there is no persistence, no process injection, no C2 "
+        "strings, and no credential access. Ghidra recovered a packed PE32 "
+        "loader stub."
+    )
+    out6 = calibrate_verdict({"verdict": "malicious", "score": 80}, disclaimers)
+    check("disclaimers + role words do not defeat the ceiling",
+          out6.get("verdict") == "suspicious" and out6.get("verdict_calibrated") is True,
+          str(out6.get("verdict")) + "/" + str(out6.get("verdict_calibrated")))
+
+    genuine = ("capa: process injection via CreateRemoteThread and "
+               "WriteProcessMemory; YARA win_token matched.")
+    out7 = calibrate_verdict({"verdict": "malicious", "score": 80}, genuine)
+    check("genuine tool intent keeps malicious",
+          out7.get("verdict") == "malicious" and out7.get("verdict_calibrated") is None,
+          str(out7.get("verdict")))
+
+    out8 = calibrate_verdict({"verdict": "malicious", "score": 80},
+                             "strings mention a network endpoint; packed with UPX")
+    check("'network' does not match the 'etw' signal",
+          out8.get("verdict") == "suspicious", str(out8.get("verdict")))
 
 
 # ---------------------------------------------------------------------------

@@ -94,3 +94,34 @@ def test_elf_condition_uses_dollar_s_only():
         assert "2 of them" not in rule
     finally:
         p.unlink(missing_ok=True)
+
+
+def test_imphash_only_rule_omits_empty_strings_section():
+    """Deployment-rehearsal regression (2026-09-21): when every string is generic
+    but the sample has an imphash, the rule was emitted with an empty
+    `strings:` block -> yara-x E001 syntax error -> yara_gen stage red."""
+    rule = build_yara_rule(
+        "protected_gui_application_potential_keygen_or_cr", "c" * 64,
+        ["KERNEL32.dll", "ExitProcess", "This program cannot be run in DOS mode"],
+        imphash="a3e8b5e80d5f9f266119a4ac18211954",
+    )
+    assert "    strings:" not in rule          # empty block must not be emitted
+    assert "$s0" not in rule
+    assert 'import "pe"' in rule
+    assert 'pe.imphash() == "a3e8b5e80d5f9f266119a4ac18211954"' in rule
+
+
+def test_imphash_only_rule_compiles():
+    """The imphash-only shape must compile with the real engine."""
+    import pytest
+
+    try:
+        import yara_x
+    except ImportError:  # pragma: no cover - engine optional in some checkouts
+        pytest.skip("yara_x not installed")
+    rule = build_yara_rule(
+        "protected_gui_application_potential_keygen_or_cr", "c" * 64,
+        ["KERNEL32.dll", "ExitProcess"],
+        imphash="a3e8b5e80d5f9f266119a4ac18211954",
+    )
+    yara_x.compile(rule)  # must not raise E001/E000

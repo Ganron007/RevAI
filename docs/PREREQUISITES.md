@@ -86,10 +86,12 @@ These tools are wired into `TOOL_MANIFEST` and run automatically per file format
 | **z3 / angr** | agent-callable | MBA deobfuscation / CFF deflatten (extensions/deobfuscation) |
 
 **Install notes:**
-- `diec`, `pdfid`, `pycdc`, `ilspycmd`, `scdbg`: available via apt / pip (`pdfid`) on REMnux
-- `GoReSym`: download `GoReSym-linux.zip` from [mandiant/GoReSym releases](https://github.com/mandiant/GoReSym/releases), extract to `/opt/goresym/`
-- `RIFT`: clone [microsoft/RIFT](https://github.com/microsoft/RIFT) to `/opt/rift/`, `pip install ar lief Requests`, create `rift_config_linux.cfg` with Linux paths
-- `FindCrypt`: clone [d3v1l401/FindCrypt-Ghidra](https://github.com/d3v1l401/FindCrypt-Ghidra), copy `FindCrypt.java` to `/opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts/`, `findcrypt_ghidra/` DB to `~/`
+- `diec`, `pdfid`, `pycdc`, `ilspycmd`, `scdbg`, wine: present on REMnux (`pdfid` also via pip)
+- `GoReSym`, `RIFT`, `FindCrypt`: installed automatically by `install/setup-remnux.sh` (network required; each step soft-fails with a warning). Manual fallback:
+  - `GoReSym`: download `GoReSym-linux.zip` from [mandiant/GoReSym releases](https://github.com/mandiant/GoReSym/releases), place the binary at `/opt/goresym/GoReSym`
+  - `RIFT`: clone [microsoft/RIFT](https://github.com/microsoft/RIFT) to `/opt/rift/`, `pip install ar lief Requests`, create `/opt/rift/rift_config_linux.cfg` with Linux paths
+  - `FindCrypt`: clone [d3v1l401/FindCrypt-Ghidra](https://github.com/d3v1l401/FindCrypt-Ghidra), copy `FindCrypt.java` to `/opt/ghidra/Ghidra/Features/BytePatterns/ghidra_scripts/`, `findcrypt_ghidra/` DB to `~/`
+- `angr`: installed automatically via `pipx` (deobfuscation pass)
 - `signature_match` DBs: `crypto.json` / `stdlib.json` / `winapi.json` under `/opt/revai/signatures/`
 - `api_lookup` index: the bundled default (`assets/api_index/api_index.db`, 369 malapi.io APIs) is built offline from `assets/api_index/malapi.json` and installed to `/opt/revai/api_index/` by `scripts/deploy.sh`. An index already present on the VM is preserved — force the bundled default with `REVAI_FORCE_API_INDEX=1`. Full Win32 + kernel coverage (~46k APIs) is an optional user-run prerequisite: build it once with `scripts/build-api-index.sh` and copy it to the VM — full recipe, licences and troubleshooting in [`api-index.md`](api-index.md).
 
@@ -97,7 +99,7 @@ These tools are wired into `TOOL_MANIFEST` and run automatically per file format
 
 | Component | Notes |
 |-----------|--------|
-| **IDA Pro 9.x** | `/opt/ida` + `idasql` on PATH — used alongside Ghidra when present. idasql v0.0.18.1 (IDA 9.3 build) by Elias Bachaalany, used under the Human-Origin Source License v1.0 |
+| **IDA Pro 9.x** | `/opt/ida` + `idasql` on PATH — used alongside Ghidra when present. `install/setup-remnux.sh` installs idasql v0.0.18.1 (version-matched 9.2/9.3/9.4 build) by Elias Bachaalany, used under the Human-Origin Source License v1.0 |
 | **Ghidra Function ID** | FIDB files ship with Ghidra (`Ghidra/Features/FunctionID/data/`); applied automatically during analysis |
 
 ## Verify
