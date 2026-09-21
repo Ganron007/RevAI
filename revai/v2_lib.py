@@ -2307,6 +2307,19 @@ def _llm_response_has_usable_content(data: dict) -> bool:
         except Exception:
             return True  # raw text (e.g. markdown) — usable
         if isinstance(parsed, dict):
+            # Report-shaped responses are decided by their content key: an empty
+            # body with a populated sections_present list is still hollow
+            # (rehearsal 2026-09-22: {"markdown":"", "sections_present":[...]}
+            # was accepted because the section list is non-empty).
+            content_like = [
+                v for k, v in parsed.items()
+                if isinstance(k, str) and k.strip().lower() in LLM_CONTENT_KEYS
+                and isinstance(v, str)
+            ]
+            if content_like:
+                return any(
+                    v.strip() and not _looks_degenerate(v) for v in content_like
+                )
             for v in parsed.values():
                 if isinstance(v, str) and v.strip():
                     if _looks_degenerate(v):

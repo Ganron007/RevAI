@@ -140,6 +140,28 @@ def test_llm_judge_reasoning_override(monkeypatch):
     assert calls[0]["thinking"] == {"type": "disabled"}
 
 
+def test_json_with_empty_report_body_is_not_usable():
+    """Rehearsal regression (2026-09-22): {"markdown":"", "sections_present":
+    [...]} was accepted as usable because the section list is non-empty."""
+    import json as _json
+    payload = _json.dumps({
+        "markdown": "",
+        "sections_present": ["1. Executive Summary", "2. Sample Metadata"],
+        "source": "llm_judge",
+    })
+    assert not _llm_response_has_usable_content(_resp(payload))
+
+
+def test_json_with_real_body_is_usable():
+    import json as _json
+    payload = _json.dumps({
+        "markdown": "## Executive Summary\nWe assess the sample as suspicious.",
+        "sections_present": ["Executive Summary"],
+        "source": "llm_judge",
+    })
+    assert _llm_response_has_usable_content(_resp(payload))
+
+
 def test_timeout_skips_ladder_to_no_thinking(monkeypatch):
     """A hung thinking-path call must jump straight to the disabled attempt
     (each effort level would otherwise burn the full read window)."""
