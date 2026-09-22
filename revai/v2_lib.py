@@ -4577,9 +4577,16 @@ def calibrate_publish_claim(
     if not raw:
         return {"verdict": "", "changed": False, "reason": "", "raw": "",
                 "signals": None}
+    # Only the triage *labels* go into the payload: the verdicts' narrative prose
+    # belongs to the LLM, and using it as "evidence" let the model's own
+    # C2/persistence vocabulary defeat the cap (rehearsal 2026-09-22: the agentic
+    # quick verdict argued "RC4 ... used by C2 beacons" -> the publish claim
+    # stayed malicious while quick/deep were suspicious).
     payload = json.dumps({
-        "quick_verdict": quick_verdict or {},
-        "deep_verdict": deep_verdict or {},
+        "quick_label": (quick_verdict or {}).get("verdict")
+        if isinstance(quick_verdict, dict) else None,
+        "deep_label": (deep_verdict or {}).get("verdict")
+        if isinstance(deep_verdict, dict) else None,
         "evidence": evidence_text,
     }, default=str)
     out = calibrate_verdict({"verdict": raw, "score": 0}, payload)

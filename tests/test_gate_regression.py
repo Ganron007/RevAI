@@ -747,6 +747,23 @@ def test_verdict_calibration() -> None:
           pcal2.get("verdict") == "malicious" and pcal2.get("changed") is False,
           str(pcal2))
 
+    # Triage LLM prose must not defeat the cap (2026-09-22): the quick verdict's
+    # narrative argued "RC4 ... used by C2 beacons"; only labels + deterministic
+    # evidence are scanned.
+    pcal3 = calibrate_publish_claim(
+        "malicious",
+        quick_verdict={
+            "verdict": "suspicious",
+            "cross_engine_notes": "RC4 PRGA is used by C2 beacons for exfiltration; "
+                                  "no persistence observed",
+        },
+        deep_verdict={"verdict": "suspicious", "summary": "packed; C2 not observed"},
+        evidence_text="packed, xor, high entropy",
+    )
+    check("triage LLM prose does not defeat the publish-claim cap",
+          pcal3.get("verdict") == "suspicious" and pcal3.get("changed") is True,
+          str(pcal3))
+
     # JSON-key guard (2026-09-22): '"shellcode": {"shellcode_ok": false}' is a
     # tool-schema field name in machine-readable output, not intent evidence.
     out11 = calibrate_verdict(
