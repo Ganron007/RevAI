@@ -598,6 +598,21 @@ def _cross_report_consistency(
 def evaluate_sha_publish_quality(logs_dir: Path, sha: str) -> dict[str, Any]:
     """Disk-level quality gate used by audit + orchestrator."""
     root = Path(logs_dir) / sha
+    # Mode-keyed runs write their artifacts under logs/<sha>/<mode>/ — prefer that
+    # dir when it carries publish artifacts so the orchestrator's quality gate
+    # evaluates the run it just made (rehearsal 2026-09-22: an agentic run
+    # reported 0-length/missing reports while its mode dir held complete ones).
+    try:
+        from v2_lib import case_dir
+
+        mode_root = case_dir(sha)
+        if mode_root != root and any(
+            (mode_root / n).exists()
+            for n in ("REPORT-MASTER-v2.md", "REPORT-TECHNICAL-v2.md", "report-v2.json")
+        ):
+            root = mode_root
+    except Exception:
+        pass
     issues: list[str] = []
     checks: dict[str, Any] = {}
 

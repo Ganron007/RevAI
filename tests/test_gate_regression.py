@@ -455,6 +455,41 @@ def test_report_style_gates() -> None:
 # ---------------------------------------------------------------------------
 # 11. G2 — deep-dive transparent tool retry (fake registry, both directions).
 # ---------------------------------------------------------------------------
+def test_quality_gate_reads_mode_dir() -> None:
+    """Rehearsal regression (2026-09-22): the orchestrator's publish quality gate
+    read flat paths and saw 0-length/missing reports while the run's mode dir
+    (agentic/) held complete reports -> quality_green false on a good run."""
+    print("[quality] publish quality resolves the mode dir")
+    import sys as _sys
+    import tempfile
+    from pathlib import Path as _Path
+
+    _sys.path.insert(0, str(ROOT / "revai"))
+    import report_quality as rq
+    import v2_lib
+
+    sha = "b" * 64
+    q = {}
+    with tempfile.TemporaryDirectory() as td:
+        mode_dir = _Path(td) / "logs" / sha / "agentic"
+        mode_dir.mkdir(parents=True)
+        (mode_dir / "REPORT-MASTER-v2.md").write_text(
+            "# Executive Summary\n\n" + "We assess the sample (source: capa). " * 200
+        )
+        orig_case_dir = v2_lib.case_dir
+        v2_lib.case_dir = lambda s, mode=None: mode_dir
+        try:
+            q = rq.evaluate_sha_publish_quality(_Path(td) / "logs", sha)
+        finally:
+            v2_lib.case_dir = orig_case_dir
+    issues = q.get("issues") or []
+    check("mode-dir master read (no too_short)",
+          "master_v2:too_short" not in issues, str(issues[:4]))
+    check("mode-dir master read (chars > 2000)",
+          int(((q.get("checks") or {}).get("master_v2") or {}).get("chars") or 0) > 2000,
+          str(((q.get("checks") or {}).get("master_v2") or {}).get("chars")))
+
+
 def test_final_answer_completeness_retry() -> None:
     """Rehearsal regression (2026-09-22): when the agent's final answer lacks
     verdict/summary (provider degeneration at high effort), one bounded retry
@@ -855,6 +890,7 @@ def main() -> int:
         test_hitl_checkpoint_resilience,
         test_report_style_gates,
         test_deep_dive_tool_retry,
+        test_quality_gate_reads_mode_dir,
         test_final_answer_completeness_retry,
         test_retry_visibility_collector,
         test_verdict_calibration,

@@ -543,9 +543,14 @@ def run_langgraph_orchestrator(sample: Path | None, sha: str | None) -> dict:
         if not sp:
             raise SystemExit("session missing sample_path — pass sample path for intake")
         sample = Path(sp)
+        # A resume in a fresh mode dir must re-run intake so this mode's artifacts
+        # are self-contained: the audit resolves intake evidence inside the mode
+        # dir (rehearsal 2026-09-22: the agentic resume inherited the scripted
+        # intake, so the audit reported intake=False -> all_green false).
+        need_intake = not (case_dir(sha) / "intake-validation.json").exists()
 
     events: list[dict[str, Any]] = []
-    runner = StageRunner(sha, sample if need_intake else sample, events)
+    runner = StageRunner(sha, sample, events)
     lc_tools = _build_lc_tools(runner, need_intake=need_intake)
 
     api_key = os.environ.get("REVAI_LLM_API_KEY")
