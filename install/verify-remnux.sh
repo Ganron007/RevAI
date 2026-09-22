@@ -56,6 +56,19 @@ else
 fi
 
 echo ""
+echo "--- Console service (primary interface) ---"
+if systemctl is-enabled revai >/dev/null 2>&1; then
+  ok "revai service enabled at boot"
+else
+  warn "revai service not enabled — run: sudo systemctl enable revai"
+fi
+if systemctl is-active revai >/dev/null 2>&1; then
+  ok "revai service active"
+else
+  fail "revai service not running — run: sudo systemctl restart revai"
+fi
+
+echo ""
 echo "--- Malcat (optional — pipeline runs with --skip-malcat) ---"
 if [[ -f /opt/malcat/bin/malcat.mcp.py ]]; then
   ok "Malcat MCP at /opt/malcat/bin/malcat.mcp.py"

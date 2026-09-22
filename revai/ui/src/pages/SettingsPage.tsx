@@ -36,7 +36,6 @@ export default function SettingsPage() {
   const [msg, setMsg] = useState<string | null>(null)
   const [err, setErr] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
-  const [keyDraft, setKeyDraft] = useState('')
 
   useEffect(() => {
     void (async () => {
@@ -44,7 +43,6 @@ export default function SettingsPage() {
         const s = await getSettings()
         setCfg(s)
         setRc({ ...DEFAULT_RUN_CONFIG, ...(s.run_config || {}) })
-        setKeyDraft('') // never bind masked *** into the controlled input
       } catch (e) {
         setErr(e instanceof Error ? e.message : String(e))
       }
@@ -59,7 +57,6 @@ export default function SettingsPage() {
       const res = await saveSettings({
         llm_model: cfg.llm_model || '',
         llm_api_url: cfg.llm_api_url || '',
-        llm_api_key: keyDraft, // empty / *** skipped server-side → keep existing
         llm_reasoning: cfg.llm_reasoning || '',
         use_rag: false,
         run_config: {
@@ -84,7 +81,6 @@ export default function SettingsPage() {
         },
       })
       setCfg(res.config)
-      setKeyDraft('')
       setMsg('Saved · LLM + run configuration')
     } catch (e) {
       setErr(e instanceof Error ? e.message : String(e))
@@ -117,16 +113,14 @@ export default function SettingsPage() {
               />
             </Field>
             <Field
-              label={`API key${cfg.llm_api_key_set ? ' (set)' : ''}`}
-              hint="stored in chmod-600 /opt/secrets/cadre-ui.env, never in pipeline-config.json"
+              label="API key"
+              hint="read by the service from /opt/revai/config/llm.env — the console never stores secrets"
             >
-              <Input
-                type="password"
-                value={keyDraft}
-                onChange={(e) => setKeyDraft(e.target.value)}
-                placeholder={cfg.llm_api_key_set ? '•••••••• (leave blank to keep)' : 'stored server-side'}
-                autoComplete="off"
-              />
+              <div style={{ padding: '6px 0', color: 'var(--fg-dim)' }}>
+                {cfg.llm_api_key_set
+                  ? `configured (source: ${cfg.llm_key_source || '/opt/revai/config/llm.env'})`
+                  : 'not configured — create /opt/revai/config/llm.env and set REVAI_LLM_API_KEY'}
+              </div>
             </Field>
             <Field label="Reasoning">
               <Input

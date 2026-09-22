@@ -180,6 +180,7 @@ Tunables (all optional, defaults shown):
 | `REVAI_IDA_QUERY_TIMEOUT` | 120 | per-query timeout for IDA SQL queries (seconds) |
 | `REVAI_LLM_PLANNER_REASONING` | disabled | reasoning effort override for the deep-dive planner only |
 | `REVAI_LLM_USAGE_JOURNAL` | unset | path to a JSONL file; when set, every LLM call is journalled (used by the provider benchmark) |
+| `REVAI_LLM_ENV` | `/opt/revai/config/llm.env` | path of the LLM env file the Console reads the API key from (override for tests/alternate installs) |
 | `REVAI_CAPA_RULES` | `/opt/capa-rules` | capa rule directory (override for a custom ruleset) |
 | `REVAI_CAPA_SIGNATURES` | `/opt/capa-signatures` | capa signature directory (override) |
 | `REVAI_API_INDEX` | unset | override the offline API lookup index path (default: `assets/api_index/api_index.db` in the repo, `/opt/revai/api_index/api_index.db` on the VM). The bundled index covers the 369 malapi.io-catalogued APIs; a full-corpus index (~46k APIs, built from Microsoft's sdk-api + driver-ddi documentation) can be deployed over it — see [`api-index.md`](api-index.md). Absent index degrades `api_lookup` to `available:false` — the pipeline is unaffected |

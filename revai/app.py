@@ -29,8 +29,9 @@ SCRIPTS_DIR = Path("/opt/scripts")
 sys.path.insert(0, str(SCRIPTS_DIR))
 from v2_lib import case_dir, winre_dynamic_status  # noqa: E402
 CONFIG_PATH = Path("/opt/samples/pipeline-config.json")
-# P0.3: LLM API key lives ONLY in this chmod-600 env file — never in pipeline-config.json.
-SECRETS_PATH = Path(os.environ.get("CADRE_UI_SECRETS", "/opt/secrets/cadre-ui.env"))
+# The LLM API key comes ONLY from the service environment / this env file (the
+# same file the systemd unit loads). The UI never stores secrets.
+LLM_ENV_PATH = Path(os.environ.get("REVAI_LLM_ENV", "/opt/revai/config/llm.env"))
 # P0.2: HTTP staging/orch only accepts samples under these roots (realpath-checked).
 STAGE_ALLOWED_ROOTS = (
     Path("/opt/samples/incoming"),
@@ -663,9 +664,15 @@ def stage_path_allowed(src_path: str) -> bool:
 
 
 def _read_llm_key() -> str:
-    """P0.3: Read the LLM API key from the chmod-600 secrets env file."""
+    """LLM API key from the process environment (systemd EnvironmentFile) or
+    the LLM env file. Used to build the stage environment and to report
+    configured/not-configured to the SPA — the UI never stores secrets and the
+    raw value is never sent to the browser."""
+    key = (os.environ.get("REVAI_LLM_API_KEY") or "").strip()
+    if key:
+        return key
     try:
-        for line in SECRETS_PATH.read_text().splitlines():
+        for line in LLM_ENV_PATH.read_text().splitlines():
             line = line.strip()
             if line.startswith("REVAI_LLM_API_KEY="):
                 return line.split("=", 1)[1].strip().strip('"').strip("'")
@@ -674,29 +681,20 @@ def _read_llm_key() -> str:
     return ""
 
 
-def _write_llm_key(key: str) -> None:
-    """P0.3: Persist the LLM API key to the secrets file with 0600 perms."""
-    SECRETS_PATH.parent.mkdir(parents=True, exist_ok=True)
-    lines = []
-    if SECRETS_PATH.exists():
-        try:
-            lines = [l for l in SECRETS_PATH.read_text().splitlines()
-                     if not l.strip().startswith("REVAI_LLM_API_KEY=")]
-        except Exception:
-            lines = []
-    lines.append(f"REVAI_LLM_API_KEY={key}")
-    SECRETS_PATH.write_text("\n".join(lines) + "\n")
-    try:
-        os.chmod(SECRETS_PATH, 0o600)
-    except Exception:
-        pass
+def _llm_key_source() -> str:
+    """Where the configured key comes from (for the Settings page hint)."""
+    if (os.environ.get("REVAI_LLM_API_KEY") or "").strip():
+        return "environment"
+    if LLM_ENV_PATH.is_file():
+        return str(LLM_ENV_PATH)
+    return ""
 
 
 def load_config() -> dict:
     """Load pipeline UI settings from persistent JSON, merging with defaults.
 
-    P0.3 migration: if an older config still carries a plaintext llm_api_key,
-    move it to the secrets file and rewrite the config without it.
+    Secrets are never stored: any legacy plaintext `llm_api_key` in the JSON is
+    scrubbed, and the key is read from the environment / LLM env file.
     """
     cfg = dict(DEFAULT_CONFIG)
     if CONFIG_PATH.exists():
@@ -706,7 +704,6 @@ def load_config() -> dict:
             pass
     legacy_key = (cfg.get("llm_api_key") or "").strip()
     if legacy_key and legacy_key != "***":
-        _write_llm_key(legacy_key)
         cfg["llm_api_key"] = ""
         try:
             scrubbed = {k: v for k, v in cfg.items() if k != "llm_api_key"}
@@ -783,7 +780,9 @@ def get_stage_env(rc: dict | None = None) -> dict[str, str]:
         env["REVAI_LLM_REASONING"] = llm_reasoning
     else:
         env.setdefault("REVAI_LLM_REASONING", "max")
-    llm_api_key = cfg.get("llm_api_key", "").strip()
+    # Key: always from the service environment / LLM env file — never from the
+    # UI config (the UI cannot store secrets).
+    llm_api_key = _read_llm_key()
     if llm_api_key:
         env["REVAI_LLM_API_KEY"] = llm_api_key
     # Run configuration (budget / retries / timeout scale) — per-run snapshot
@@ -1212,14 +1211,19 @@ def api_browse():
 
 
 def _settings_public(cfg: dict) -> dict:
-    """LLM-only surface for SPA (+ run_config for the Run-config panel)."""
+    """LLM-only surface for SPA (+ run_config for the Run-config panel).
+
+    Never echoes the API key: the browser only learns whether a key is
+    configured and where it is read from (the key itself lives in
+    /opt/revai/config/llm.env / the service environment).
+    """
     out = {k: cfg.get(k, DEFAULT_CONFIG.get(k, "")) for k in LLM_SETTINGS_KEYS}
     out["product_mode"] = cfg.get("product_mode") or DEFAULT_CONFIG["product_mode"]
     out["run_config"] = cfg.get("run_config") or {}
-    # Never echo API key to browser (mask if set)
     key = out.get("llm_api_key") or ""
-    out["llm_api_key"] = ("***" if key and key != "***" else "") if key else ""
+    out["llm_api_key"] = ""
     out["llm_api_key_set"] = bool(key and key != "***")
+    out["llm_key_source"] = _llm_key_source()
     return out
 
 
@@ -1248,9 +1252,9 @@ def api_settings_post():
         if key not in data:
             continue
         if key == "llm_api_key":
-            # P0.3: key goes to chmod-600 secrets file only, never pipeline-config.json
-            if data[key] not in ("", "***"):
-                _write_llm_key(str(data[key]).strip())
+            # The UI never stores secrets: key submissions are ignored here.
+            # Configure the key in /opt/revai/config/llm.env (read by the
+            # service via systemd EnvironmentFile).
             continue
         cfg[key] = data[key]
     if isinstance(data.get("run_config"), dict):

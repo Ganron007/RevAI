@@ -124,6 +124,12 @@ sudo chown -R remnux:remnux /opt/scripts /opt/revai /opt/samples
 ok "Installing systemd service ..."
 sudo cp "$REPO_ROOT/install/revai.service" /etc/systemd/system/revai.service
 sudo systemctl daemon-reload
+# The Console UI is the primary interface — it must come back after a reboot.
+if sudo systemctl enable revai >/dev/null 2>&1; then
+    ok "revai service enabled at boot"
+else
+    warn "could not enable revai service (run: sudo systemctl enable revai)"
+fi
 
 if [[ "$RESTART" -eq 1 ]]; then
     ok "Restarting revai service ..."
