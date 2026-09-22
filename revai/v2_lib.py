@@ -419,10 +419,27 @@ def align_publish_markdown_to_upstream(
 
 
 def infer_publish_verdict_from_markdown(markdown: str) -> str | None:
-    """Infer publish-claimed verdict from report body (never from hold banner)."""
+    """Infer publish-claimed verdict from report body (never from hold banner).
+
+    Explicit verdict statements win over keyword heuristics: a report that
+    declares "**Verdict: SUSPICIOUS (score 30)**" must not be read as
+    'malicious' just because the word appears in prose (rehearsal 2026-09-22:
+    that flipped the master claim and tripped the master/technical mismatch
+    gate).
+    """
     import re as _re
 
-    body = strip_accuracy_hold_banner(markdown or "").lower()
+    body = strip_accuracy_hold_banner(markdown or "")
+    decl = _re.search(
+        r"(?im)^[^a-z0-9]{0,8}(?:final\s+|overall\s+)?verdict\s*[:\-]\s*"
+        r"\*{0,2}_{0,2}\s*([a-z][a-z_\- ]{2,30})",
+        body[:8000],
+    )
+    if decl:
+        label = normalize_verdict_label(decl.group(1))
+        if label != "unknown":
+            return label
+    body = body.lower()
     head = body[:2500]
     clearance = any(
         x in head
@@ -4490,10 +4507,13 @@ def calibrate_verdict(verdict: dict, evidence_text: str) -> dict:
     """
     if not isinstance(verdict, dict):
         return verdict
-    label = str(verdict.get("verdict") or "").strip().lower()
+    raw_label = str(verdict.get("verdict") or "").strip()
+    # Normalize free-text labels ("Malware", "trojan", "likely_malicious", ...)
+    # so the ceiling/floor apply to any wording (2026-09-22).
+    label = normalize_verdict_label(raw_label) if raw_label else ""
     text = str(evidence_text or "").lower()
     # CEILING: malicious claimed but no behavioral intent anywhere in evidence
-    if "malicious" in label:
+    if label == "malicious":
         hits = _signal_hits(text, _BEHAVIORAL_INTENT_SIGNALS_STRICT)
         if hits:
             # Keep the verdict; record WHICH signals justified it so a later
@@ -4517,7 +4537,7 @@ def calibrate_verdict(verdict: dict, evidence_text: str) -> dict:
         )
         return out
     # FLOOR: benign/legitimate claimed but behavioral-intent evidence exists
-    if label in ("benign", "clean", "legitimate", "likely_legitimate"):
+    if label == "benign":
         hits = _signal_hits(text, _BEHAVIORAL_INTENT_SIGNALS)
         if not hits:
             return verdict

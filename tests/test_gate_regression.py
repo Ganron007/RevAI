@@ -30,6 +30,7 @@ from v2_lib import (  # noqa: E402
     agentic_confidence_sane,
     cross_stage_verdict_lock,
     hitl_checkpoint,
+    infer_publish_verdict_from_markdown,
     is_transient_failure,
     normalize_verdict_score,
     run_profile,
@@ -725,6 +726,30 @@ def test_verdict_calibration() -> None:
                               "the sample drops shellcode into ntdll, packed")
     check("prose shellcode claim still counts as intent",
           out12.get("verdict") == "malicious", str(out12.get("verdict")))
+
+    # Label normalization + explicit-verdict scraping (2026-09-22): "Malware"
+    # must be capped like "malicious", and a report declaring
+    # "**Verdict: SUSPICIOUS**" must not be read as malicious from prose.
+    out13 = calibrate_verdict({"verdict": "Malware", "score": 80},
+                              "packed, xor, high entropy")
+    check("'Malware' label capped like 'malicious'",
+          out13.get("verdict") == "suspicious", str(out13.get("verdict")))
+
+    pending_md = (
+        "# Executive Summary\n\n"
+        "The sample is a protected GUI stub; no evidence of malicious intent "
+        "(source: capa).\n\n"
+        "**Verdict: SUSPICIOUS (score 30).**\n"
+    )
+    check("explicit Verdict statement wins over prose keyword",
+          infer_publish_verdict_from_markdown(pending_md) == "suspicious",
+          str(infer_publish_verdict_from_markdown(pending_md)))
+    check("explicit malicious statement still reads malicious",
+          infer_publish_verdict_from_markdown(
+              "# Report\n\n**Verdict: MALICIOUS (score 90).**"
+          ) == "malicious",
+          str(infer_publish_verdict_from_markdown(
+              "# Report\n\n**Verdict: MALICIOUS (score 90).**")))
 
 
 # ---------------------------------------------------------------------------
