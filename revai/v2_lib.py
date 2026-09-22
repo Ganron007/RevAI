@@ -4437,6 +4437,19 @@ def _signal_hits(text: str, signals, limit: int = 50) -> list[str]:
                 end += 1
             if any(ch in _FRAGMENT_CHARS for ch in t[start:end]):
                 continue
+            # JSON-key guard: a quoted field name in machine-readable tool output
+            # ('"shellcode": {"shellcode_ok": false, ...}') is a schema label,
+            # not an evidence claim (rehearsal 2026-09-22: the shellcode tool's
+            # result key defeated the calibration ceiling).
+            tok = t[start:end]
+            if tok.startswith('"'):
+                if '":' in tok:
+                    continue
+                j = end
+                while j < len(t) and t[j] == " ":
+                    j += 1
+                if j < len(t) and t[j] == ":":
+                    continue
             hits.append(sig)
             break
         if len(hits) >= limit:

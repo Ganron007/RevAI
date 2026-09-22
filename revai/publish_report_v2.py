@@ -280,7 +280,8 @@ Return JSON: {{"title": "...", "markdown": "..."}}"""
 def build_prompt_technical(session: dict, verdict: dict | None, deep: dict | None,
                            yara_meta: dict | None, audit: list,
                            technical_evidence: str,
-                           recovery_evidence: str = "") -> str:
+                           recovery_evidence: str = "",
+                           final_verdict: str | None = None) -> str:
     """Build a prompt for a technical analyst-grade report with evidence snippets."""
     lines = [
         "# Technical Malware Analysis Report v2",
@@ -318,6 +319,19 @@ def build_prompt_technical(session: dict, verdict: dict | None, deep: dict | Non
         technical_evidence,
         "",
         "## High-level verdict context",
+    ]
+    if final_verdict:
+        # Consistency by construction: the master report's locked (calibrated)
+        # verdict is authoritative — the technical narrative must match it or
+        # state an explicit disagreement (audit gate: master_tech mismatch).
+        lines += [
+            f"- LOCKED final verdict: {final_verdict}",
+            "- Write every verdict statement consistently with that label. If the "
+            "evidence suggests otherwise, note the disagreement explicitly in the "
+            "relevant section instead of using a different verdict label.",
+            "",
+        ]
+    lines += [
         f"verdict.json: {json.dumps(verdict or {}, indent=2)[:4000]}",
         "",
         f"deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}",
@@ -978,6 +992,7 @@ def main():
         prompt_tech = build_prompt_technical(
             session, verdict, deep, yara_meta, audit, tech_evidence_for_prompt,
             recovery_evidence=recovery_evidence,
+            final_verdict=report.get("final_verdict"),
         )
         (ev_dir / "04-prompt-technical.txt").write_text(prompt_tech)
 

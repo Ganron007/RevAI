@@ -711,6 +711,21 @@ def test_verdict_calibration() -> None:
           pcal2.get("verdict") == "malicious" and pcal2.get("changed") is False,
           str(pcal2))
 
+    # JSON-key guard (2026-09-22): '"shellcode": {"shellcode_ok": false}' is a
+    # tool-schema field name in machine-readable output, not intent evidence.
+    out11 = calibrate_verdict(
+        {"verdict": "malicious", "score": 80},
+        '"shellcode": {"shellcode_ok": false, "error": "no high-entropy '
+        'executable/writable shellcode-size section found"}, packed, xor, entropy',
+    )
+    check("JSON result keys do not defeat the ceiling",
+          out11.get("verdict") == "suspicious", str(out11.get("verdict")))
+
+    out12 = calibrate_verdict({"verdict": "malicious", "score": 80},
+                              "the sample drops shellcode into ntdll, packed")
+    check("prose shellcode claim still counts as intent",
+          out12.get("verdict") == "malicious", str(out12.get("verdict")))
+
 
 # ---------------------------------------------------------------------------
 # 14. Function-recovery port (plan #6): gate + package sanity.
