@@ -4873,6 +4873,9 @@ def load_dynamic_pack(sha: str, logs_dir: Path | None = None, *,
             for p in mem_dir.rglob("*")
             if p.is_file()
         )[:80]
+    # Real dumps only (.dmp): a pe-sieve report/stdout in memory/ must never be
+    # counted as a captured dump (observed on a no-dump run: 3 "artifacts").
+    mem_dumps = [f for f in mem_files if f.lower().endswith(".dmp")]
 
     analyst_md = ""
     an_path = dyn / "ANALYST-NEXT.md"
@@ -4919,6 +4922,7 @@ def load_dynamic_pack(sha: str, logs_dir: Path | None = None, *,
         "unpack_artifact": unpack_artifact,
         "unpack_prepass": unpack_prepass,
         "memory_files": mem_files,
+        "memory_dumps": mem_dumps,
         "pcaps": pcaps,
         "has_procmon_csv": (dyn / "procmon.csv").is_file(),
         "has_frida_trace": (dyn / "frida_trace.json").is_file()
@@ -4947,6 +4951,31 @@ def _net_iocs(pack: dict) -> dict:
     if not dns and isinstance(nw, dict):
         dns = nw.get("domains_guess") or []
     return {"dns": dns, "http": http, "sni": sni}
+
+
+def dynamic_pack_counts(pack: dict | None) -> dict:
+    """Stable counts for status surfaces (Console chip, runner winre-run.json).
+
+    Single source of truth so the Console, winre-run.json and the published
+    corroboration block can never disagree about what a pack contributes.
+    `.dmp` files only are reported as dumps (a pe-sieve report/stdout in
+    memory/ is not a captured dump).
+    """
+    base = {"present": False, "dns": 0, "http": 0, "sni": 0, "dropped": 0,
+            "dumps": 0, "unpack_artifact": None}
+    if not pack or not pack.get("present"):
+        return base
+    iocs = _net_iocs(pack)
+    art = pack.get("unpack_artifact") or {}
+    return {
+        "present": True,
+        "dns": len(iocs.get("dns") or []),
+        "http": len(iocs.get("http") or []),
+        "sni": len(iocs.get("sni") or []),
+        "dropped": len(_frida_dropped_paths(pack)),
+        "dumps": len(pack.get("memory_dumps") or []),
+        "unpack_artifact": (art.get("name") if isinstance(art, dict) else str(art)) or None,
+    }
 
 
 def analyze_unpack_artifact(path: str | Path, *, capa_timeout: int = 420) -> dict:
@@ -5035,6 +5064,7 @@ def winre_dynamic_status(sha: str, mode: str | None = None) -> dict:
         "http": 0,
         "sni": 0,
         "dropped": 0,
+        "dumps": 0,
         "unpack_artifact": None,
         "corroboration_enabled": not disabled,
         "section_enabled": not section_disabled,
@@ -5045,16 +5075,16 @@ def winre_dynamic_status(sha: str, mode: str | None = None) -> dict:
         pack = None
     if pack and pack.get("present"):
         try:
-            iocs = _net_iocs(pack)
-            art = pack.get("unpack_artifact") or {}
+            counts = dynamic_pack_counts(pack)
             out.update({
                 "pack_present": True,
                 "source": pack.get("source"),
-                "dns": len(iocs.get("dns") or []),
-                "http": len(iocs.get("http") or []),
-                "sni": len(iocs.get("sni") or []),
-                "dropped": len(_frida_dropped_paths(pack)),
-                "unpack_artifact": art.get("name") or None,
+                "dns": counts["dns"],
+                "http": counts["http"],
+                "sni": counts["sni"],
+                "dropped": counts["dropped"],
+                "dumps": counts["dumps"],
+                "unpack_artifact": counts["unpack_artifact"],
             })
         except Exception:
             pass
@@ -5167,8 +5197,11 @@ def format_flare_dynamic_evidence(pack: dict | None) -> str:
                              f"({analysis.get('error')}) — artifact is raw memory")
 
     extras: list[str] = []
-    if pack.get("memory_files"):
-        extras.append(f"{len(pack['memory_files'])} memory artifact(s)")
+    dumps = pack.get("memory_dumps") or []
+    if dumps:
+        extras.append(f"{len(dumps)} memory dump(s)")
+    elif pack.get("memory_files"):
+        extras.append("pe-sieve output only (no dumps)")
     if pack.get("pcaps"):
         extras.append(f"{len(pack['pcaps'])} pcap(s)")
     if extras:

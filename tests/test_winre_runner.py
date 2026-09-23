@@ -145,3 +145,30 @@ def test_child_env_mapping():
     assert env["WINRE_SNAPSHOT_GATE"] == "enforce"
     # WinRE must write its evidence where RevAI reads packs from.
     assert env["WINRE_PIPELINE_LOGS"] == "/data/winre-logs"
+
+
+def test_summarize_pack_counts(tmp_path):
+    """winre-run.json's pack summary uses the same counts as the report block."""
+    sha = "b" * 64
+    dyn = tmp_path / sha / "static" / "dynamic"
+    dyn.mkdir(parents=True)
+    (dyn / "META.json").write_text(json.dumps({"ok": True}))
+    (dyn / "META.job.json").write_text(json.dumps({
+        "window": {"requested_s": 150, "effective_s": 10.5, "stop_reason": "idle"}}))
+    (dyn / "network_intel.json").write_text(json.dumps({
+        "captures": [{"dns_queries": ["a.example", "b.example"],
+                      "http_requests": ["a.example\tGET\t/"], "tls_sni": []}]}))
+    (dyn / "frida_summary.json").write_text(json.dumps({
+        "decoded_paths": ["C:\\Users\\FLARE-VM\\AppData\\Local\\Temp\\x.bin"]}))
+    mem = dyn / "memory"
+    mem.mkdir()
+    (mem / "pe_sieve.stdout.txt").write_text("out")
+    (mem / "dump.dmp").write_bytes(b"d")
+    s = wr.summarize_pack(sha, tmp_path)
+    assert s["pack_present"] is True
+    p = s["pack"]
+    assert p["dns"] == 2 and p["http"] == 1 and p["sni"] == 0
+    assert p["dropped"] == 1 and p["dumps"] == 1
+    assert p["window"]["effective_s"] == 10.5
+    # absent pack -> not present, no exception
+    assert wr.summarize_pack("c" * 64, tmp_path)["pack_present"] is False

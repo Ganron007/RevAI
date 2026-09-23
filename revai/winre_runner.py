@@ -286,6 +286,35 @@ def sample_path_for(sha: str) -> str | None:
         return None
 
 
+def summarize_pack(sha: str, logs_root: Path | str) -> dict:
+    """What the pack for this case contributes (counts mirror the report block).
+
+    Uses v2_lib's shared counter so winre-run.json, the Console chip and the
+    published corroboration block can never disagree. Fail-open.
+    """
+    try:
+        from v2_lib import dynamic_pack_counts, load_dynamic_pack
+
+        pack = load_dynamic_pack(sha, winre_root=Path(logs_root))
+        if not pack:
+            return {"pack_present": False, "pack": {}}
+        counts = dynamic_pack_counts(pack)
+        return {
+            "pack_present": True,
+            "pack": {
+                "window": pack.get("window"),
+                "dns": counts["dns"],
+                "http": counts["http"],
+                "sni": counts["sni"],
+                "dropped": counts["dropped"],
+                "dumps": counts["dumps"],
+                "unpack_artifact": counts["unpack_artifact"],
+            },
+        }
+    except Exception as e:
+        return {"pack_present": False, "pack": {"pack_error": f"{type(e).__name__}: {e}"}}
+
+
 def run_dynamic(
     sha: str,
     *,
@@ -363,23 +392,9 @@ def run_dynamic(
         error = f"winre_error: {type(e).__name__}: {e}"
 
     duration = round(time.time() - t0, 1)
-    pack_present = False
-    pack_info: dict[str, Any] = {}
-    try:
-        from v2_lib import load_dynamic_pack
-
-        pack = load_dynamic_pack(sha, winre_root=Path(cfg["logs_root"]))
-        if pack:
-            pack_present = True
-            pack_info = {
-                "window": pack.get("window") or pack.get("detonation_window"),
-                "dns": len(pack.get("dns") or pack.get("dns_queries") or []),
-                "http": len(pack.get("http") or pack.get("http_requests") or []),
-                "dropped": len(pack.get("dropped") or pack.get("dropped_files") or []),
-                "unpack_artifact": pack.get("unpack_artifact"),
-            }
-    except Exception as e:
-        pack_info = {"pack_error": f"{type(e).__name__}: {e}"}
+    summary = summarize_pack(sha, cfg["logs_root"])
+    pack_present = bool(summary["pack_present"])
+    pack_info: dict[str, Any] = summary["pack"] or {}
 
     payload = {
         "state": "ok" if rc == 0 and pack_present else ("ok_no_pack" if rc == 0 else "failed"),

@@ -19,6 +19,7 @@ sys.path.insert(0, str(ROOT / "revai"))
 
 from v2_lib import (  # noqa: E402
     attach_dynamic_corroboration,
+    dynamic_pack_counts,
     format_flare_dynamic_evidence,
     load_dynamic_pack,
 )
@@ -26,7 +27,8 @@ from v2_lib import (  # noqa: E402
 SHA = "a" * 64
 
 
-def _make_pack(root: Path, sha: str = SHA, *, with_artifact: bool = True) -> Path:
+def _make_pack(root: Path, sha: str = SHA, *, with_artifact: bool = True,
+               with_dumps: bool = True) -> Path:
     dyn = root / sha / "agentic" / "dynamic"
     dyn.mkdir(parents=True)
     (dyn / "META.json").write_text(json.dumps({
@@ -51,6 +53,12 @@ def _make_pack(root: Path, sha: str = SHA, *, with_artifact: bool = True) -> Pat
         "decoded_paths": ["C:\\Users\\FLARE-VM\\AppData\\Roaming\\3cf8b057.bin",
                           "C:\\Windows\\System32\\ntdll.dll"],
     }))
+    mem = dyn / "memory"
+    mem.mkdir()
+    (mem / "pe_sieve.stdout.txt").write_text("pe-sieve output")
+    (mem / "pe_sieve_report.json").write_text(json.dumps({"ok": False}))
+    if with_dumps:
+        (mem / "6604_ghyte.dmp").write_bytes(b"dump")
     if with_artifact:
         deep = root / sha / "agentic" / "deep"
         (deep / "x64dbg").mkdir(parents=True)
@@ -84,6 +92,32 @@ def test_load_pack_absent(tmp_path):
     assert load_dynamic_pack(SHA, winre_root=tmp_path) is None
 
 
+def test_dynamic_pack_counts(tmp_path):
+    """Shared counter (Console chip / winre-run.json / report) mirrors the pack."""
+    _make_pack(tmp_path)
+    pack = load_dynamic_pack(SHA, winre_root=tmp_path)
+    counts = dynamic_pack_counts(pack)
+    assert counts["present"] is True
+    assert counts["dns"] == 2 and counts["http"] == 1 and counts["sni"] == 1
+    assert counts["dropped"] == 1            # only the AppData path counts
+    assert counts["dumps"] == 1              # .dmp only, not the pe-sieve logs
+    assert counts["unpack_artifact"] == "x64_demo_unpacked.exe"
+    # absent pack -> all zeros, never raises
+    assert dynamic_pack_counts(None) == {
+        "present": False, "dns": 0, "http": 0, "sni": 0, "dropped": 0,
+        "dumps": 0, "unpack_artifact": None}
+
+
+def test_no_dump_run_is_reported_honestly(tmp_path):
+    """A pe-sieve report without dumps must not read as captured memory."""
+    _make_pack(tmp_path, with_dumps=False)
+    pack = load_dynamic_pack(SHA, winre_root=tmp_path)
+    assert dynamic_pack_counts(pack)["dumps"] == 0
+    md = format_flare_dynamic_evidence(pack)
+    assert "pe-sieve output only (no dumps)" in md
+    assert "memory dump" not in md
+
+
 def test_block_content_and_hygiene(tmp_path):
     _make_pack(tmp_path)
     pack = load_dynamic_pack(SHA, winre_root=tmp_path)
@@ -96,6 +130,7 @@ def test_block_content_and_hygiene(tmp_path):
     assert "pywolwnvd.biz" in md and ".biz" in md        # DGA-shaped IoCs surfaced
     assert "3cf8b057.bin" in md                          # dropped path surfaced
     assert "x64_demo_unpacked.exe" in md                 # artifact surfaced
+    assert "1 memory dump(s)" in md                       # dumps counted (.dmp only)
     assert "not PE-parsable" in md                       # honest raw-blob path
     assert "Corroboration only" in md
     assert "192.168." not in md                          # lab IP never printed
