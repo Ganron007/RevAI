@@ -4789,7 +4789,20 @@ def _resolve_dynamic_dir(sha: str, logs_dir: Path | None = None,
             has_files = any(dyn.iterdir())
         except OSError:
             has_files = False
-        if (dyn / "META.json").is_file() or has_files:
+        meta = dyn / "META.json"
+        stage = dyn / "STAGE.json"
+        # A static-only WinRE run records a skip marker in dynamic/ (and clears the
+        # previous pack). That directory is NOT a pack: counting it as one reports
+        # "pack present" with zero evidence (observed 2026-09-24 after a static run
+        # followed a detonation). Skip it and keep looking.
+        skipped_only = False
+        if stage.is_file() and not meta.is_file():
+            try:
+                s = json.loads(stage.read_text(encoding="utf-8-sig"))
+                skipped_only = bool(s.get("skipped")) or s.get("ran") is False
+            except Exception:
+                skipped_only = False
+        if meta.is_file() or (has_files and not skipped_only):
             return dyn, {"section_root": dyn.parent, "source": source}
     return None, {}
 

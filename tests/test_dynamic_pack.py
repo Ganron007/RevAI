@@ -92,6 +92,22 @@ def test_load_pack_absent(tmp_path):
     assert load_dynamic_pack(SHA, winre_root=tmp_path) is None
 
 
+def test_static_only_run_marker_is_not_a_pack(tmp_path):
+    """A WinRE static-only run's skip marker must not read as a pack."""
+    dyn = tmp_path / SHA / "static" / "dynamic"
+    dyn.mkdir(parents=True)
+    (dyn / "STAGE.json").write_text(json.dumps({
+        "stage": "dynamic", "ok": True, "ran": False,
+        "skipped": "not requested", "summary": "dynamic not requested (static-only run)"}))
+    assert load_dynamic_pack(SHA, winre_root=tmp_path) is None
+    # With a real pack in another mode section, that one is selected instead.
+    real = tmp_path / SHA / "agentic" / "dynamic"
+    real.mkdir(parents=True)
+    (real / "META.json").write_text(json.dumps({"ok": True}))
+    pack = load_dynamic_pack(SHA, winre_root=tmp_path)
+    assert pack and pack["source"] == "winre:agentic"
+
+
 def test_dynamic_pack_counts(tmp_path):
     """Shared counter (Console chip / winre-run.json / report) mirrors the pack."""
     _make_pack(tmp_path)
