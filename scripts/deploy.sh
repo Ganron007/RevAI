@@ -52,6 +52,9 @@ if [[ -d "$REPO_ROOT/revai/ui" ]]; then
         (npm ci || npm install) >/dev/null 2>&1
         npm run build
         popd >/dev/null
+        # Replace the UI dir wholesale: stale hashed bundles must not linger
+        # (deploy copies but never deletes elsewhere).
+        sudo rm -rf /opt/scripts/ui
         sudo mkdir -p /opt/scripts/ui
         sudo cp -a "$REPO_ROOT/revai/ui/dist/." /opt/scripts/ui/
         ok "Console UI deployed to /opt/scripts/ui"
