@@ -167,6 +167,17 @@ cannot be cleared by dynamic findings (`static_yara_wins`).
 `install/verify-remnux.sh` reports the WinRE state (install/venv/.env/FlareVM
 address) as warnings when WinRE is absent — a static-only install always passes.
 
+## Troubleshooting
+
+| Symptom | Check |
+|---|---|
+| `winre_disabled` / availability `ok=false` | enable Settings → Dynamic analysis (WinRE); availability reasons are returned verbatim by `GET /api/winre/status/<sha>` |
+| `flare_key_missing` | the SSH key path must exist on the RevAI host (mode 600, readable by the service user); the path is the only thing the Console stores |
+| SSH probe fails | `ssh -i <key> -p <port> <user>@<flare-host> echo ok` from the RevAI host; the Windows VM's OpenSSH server must be running |
+| Detonation ran but WinRE logs `dynamic=not-run` / `no fresh META from this run` | clock skew: the analysis host and the Windows VM must agree on time. Check `timedatectl` on the RevAI host and enable NTP (`sudo timedatectl set-ntp true`). A skewed control-plane clock fails WinRE's freshness check; the pack is still ingested by RevAI and the corroboration block still renders |
+| `no dumps captured`, no unpack artifact | pe-sieve had nothing to dump (sample exited early or unpacked nothing) — expected for small samples; the run is still valid evidence, reported honestly |
+| Reports unchanged after a detonation | corroboration is presence-gated: re-run publish + section for the case with the same mode (`REVAI_RUN_MODE=<mode> python3 publish_report_v2.py <sha> --template full`, then `section_publisher.py <sha>`) |
+
 ## Reporting integration (RevAI side)
 
 RevAI discovers WinRE packs automatically: `load_dynamic_pack()` scans
@@ -195,7 +206,7 @@ the same reports as before (no empty sections). Disable it explicitly with
 | Settings → Run configuration → **Dynamic corroboration** | `On` (default) uses detonation packs when present; `Off` writes static-only reports (drives both the evidence block and the report section) |
 | Settings → Run configuration → **Detonate with WinRE before publish** | opt-in per-run detonation stage |
 | Case view → **Run WinRE** | operator-triggered detonation for the selected case |
-| Orchestrator panel → **winre dynamic** chip | `pack · N DNS` when a pack exists, `no pack`, `not configured`, `off` |
+| Orchestrator panel → **winre dynamic** chip | `running…` during a detonation, `pack · N DNS` when a pack exists, `no pack`, `not configured`, `off` (failed runs show `failed` with the reason in the tooltip) |
 | `GET /api/winre/status/<sha>?mode=…` | pack status + last run (`run`) + availability (`available`) |
 | `POST /api/winre/test` | SSH probe with the saved settings |
 | `POST /api/winre/run/<sha>` | start a detonation (202; 409 while running; 400 with the reason when unavailable) |
