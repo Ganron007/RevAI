@@ -865,7 +865,11 @@ def audit_publish(log: Path, deep_mtime: float) -> dict:
     qpack: dict = {}
     try:
         from report_quality import evaluate_sha_publish_quality, source_is_fallback
-        qpack = evaluate_sha_publish_quality(log.parent, log.name)
+        # log is the exact case dir (flat or mode-keyed); pin it so the reported
+        # sha stays correct (it was labelled with the mode dir name before).
+        _sha_quality = log.name if re.fullmatch(r"[0-9a-fA-F]{64}", log.name or "") \
+            else log.parent.name
+        qpack = evaluate_sha_publish_quality(log.parent, _sha_quality, case_root=log)
         checks["quality_pack_ok"] = bool(qpack.get("ok"))
         src = str(j.get("source") or "")
         checks["master_source_llm"] = (not source_is_fallback(src)) and src in (

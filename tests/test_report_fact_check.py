@@ -1,5 +1,6 @@
 """Tests for the advisory claimed-IOC fact-verification pass (plan #10)."""
 
+import json
 import sys
 from pathlib import Path
 
@@ -95,6 +96,34 @@ def test_collect_evidence_text_is_bounded(tmp_path):
     (tmp_path / "iocs.json").write_text("x" * 5000)
     text, _used = rq.collect_evidence_text(tmp_path, max_bytes=1000)
     assert len(text) <= 1000
+
+
+def _write_winre_pack(winre_root, sha, dns):
+    dyn = winre_root / sha / "static" / "dynamic"
+    dyn.mkdir(parents=True)
+    (dyn / "META.json").write_text(json.dumps({"ok": True}))
+    (dyn / "network_intel.json").write_text(json.dumps({
+        "captures": [{"dns_queries": dns, "tls_sni": [], "http_requests": []}]}))
+    (dyn / "frida_summary.json").write_text(json.dumps({"decoded_paths": []}))
+
+
+def test_dynamic_pack_iocs_verify(tmp_path, monkeypatch):
+    """A report citing the dynamic block's IoCs verifies against the pack."""
+    sha = "b" * 64
+    case = tmp_path / sha
+    case.mkdir()
+    winre_root = tmp_path / "winre-logs"
+    monkeypatch.setenv("REVAI_WINRE_LOGS", str(winre_root))
+    # No pack yet -> the dynamic-only domains are unverified (presence gating).
+    md = "DNS: `talonstamed.com` and `pywolwnvd.biz` observed."
+    text, _used = rq.collect_evidence_text(case)
+    assert rq.verify_claimed_iocs(md, text)["unverified"] == 2
+    # With the pack, the same claims are backed by raw evidence.
+    _write_winre_pack(winre_root, sha, ["talonstamed.com", "pywolwnvd.biz"])
+    text, used = rq.collect_evidence_text(case)
+    res = rq.verify_claimed_iocs(md, text)
+    assert res["unverified"] == 0
+    assert any("winre:" in u for u in used)
 
 
 # --- artifact exclusions + promotion --------------------------------------

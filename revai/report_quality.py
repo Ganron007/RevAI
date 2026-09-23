@@ -595,24 +595,32 @@ def _cross_report_consistency(
     return {"ok": not violations, "violations": violations, "checks": checks}
 
 
-def evaluate_sha_publish_quality(logs_dir: Path, sha: str) -> dict[str, Any]:
-    """Disk-level quality gate used by audit + orchestrator."""
-    root = Path(logs_dir) / sha
-    # Mode-keyed runs write their artifacts under logs/<sha>/<mode>/ — prefer that
-    # dir when it carries publish artifacts so the orchestrator's quality gate
-    # evaluates the run it just made (rehearsal 2026-09-22: an agentic run
-    # reported 0-length/missing reports while its mode dir held complete ones).
-    try:
-        from v2_lib import case_dir
+def evaluate_sha_publish_quality(logs_dir: Path, sha: str, *,
+                                 case_root: Path | None = None) -> dict[str, Any]:
+    """Disk-level quality gate used by audit + orchestrator.
 
-        mode_root = case_dir(sha)
-        if mode_root != root and any(
-            (mode_root / n).exists()
-            for n in ("REPORT-MASTER-v2.md", "REPORT-TECHNICAL-v2.md", "report-v2.json")
-        ):
-            root = mode_root
-    except Exception:
-        pass
+    ``case_root`` pins the exact directory to evaluate (the audit already knows
+    it: logs/<sha> or logs/<sha>/<mode>) and keeps the reported sha correct.
+    Without it, the mode-keyed dir is preferred when it carries publish
+    artifacts.
+    """
+    root = Path(case_root) if case_root else Path(logs_dir) / sha
+    if case_root is None:
+        # Mode-keyed runs write their artifacts under logs/<sha>/<mode>/ — prefer
+        # that dir when it carries publish artifacts so the orchestrator's quality
+        # gate evaluates the run it just made (rehearsal 2026-09-22: an agentic run
+        # reported 0-length/missing reports while its mode dir held complete ones).
+        try:
+            from v2_lib import case_dir
+
+            mode_root = case_dir(sha)
+            if mode_root != root and any(
+                (mode_root / n).exists()
+                for n in ("REPORT-MASTER-v2.md", "REPORT-TECHNICAL-v2.md", "report-v2.json")
+            ):
+                root = mode_root
+        except Exception:
+            pass
     issues: list[str] = []
     checks: dict[str, Any] = {}
 
@@ -981,7 +989,52 @@ def collect_evidence_text(root: Path, max_bytes: int = 40 * 1024 * 1024) -> tupl
         chunks.append(text[:remaining])
         used.append(rel)
         total += len(chunks[-1])
+    # WinRE dynamic pack (optional companion): the corroboration block's network
+    # intel and Frida-decoded paths are raw evidence, so a report citing them
+    # must verify. Presence-gated: no pack -> byte-identical corpus (users
+    # without WinRE keep the exact previous behavior).
+    try:
+        dyn_text, dyn_files = _dynamic_pack_evidence_text(root)
+    except Exception:
+        dyn_text, dyn_files = "", []
+    if dyn_text:
+        remaining = max_bytes - total
+        if remaining > 0:
+            chunks.append(dyn_text[:remaining])
+            used.extend(dyn_files)
     return "\n".join(chunks), used
+
+
+def _dynamic_pack_evidence_text(root: Path) -> tuple[str, list[str]]:
+    """Evidence text contributed by the case's WinRE dynamic pack, if any.
+
+    Values come from v2_lib's pack loader, so a report that cites the dynamic
+    block verifies against the same numbers the block rendered.
+    """
+    sha = root.name if re.fullmatch(r"[0-9a-fA-F]{64}", root.name or "") else root.parent.name
+    if not re.fullmatch(r"[0-9a-fA-F]{64}", sha or ""):
+        return "", []
+    winre_root = Path(os.environ.get("REVAI_WINRE_LOGS") or "/opt/winre/logs")
+    if not winre_root.is_dir():
+        return "", []
+    from v2_lib import load_dynamic_pack
+
+    pack = load_dynamic_pack(sha, winre_root=winre_root)
+    if not pack or not pack.get("present"):
+        return "", []
+    ni = pack.get("network_intel") or {}
+    caps = ((ni.get("captures") or [{}])[0] if isinstance(ni, dict) else {}) or {}
+    values: list[str] = []
+    for key in ("dns_queries", "tls_sni", "http_requests"):
+        values.extend(str(x) for x in (caps.get(key) or []))
+    for p in (pack.get("frida_summary") or {}).get("decoded_paths") or []:
+        values.append(str(p))
+    art = pack.get("unpack_artifact") or {}
+    if isinstance(art, dict) and art.get("name"):
+        values.append(str(art["name"]))
+    src = pack.get("source") or "pack"
+    return "\n".join(values), [f"winre:{src}:network_intel.json",
+                               f"winre:{src}:frida_summary.json"]
 
 
 # --- behavior prerequisites vs import surface (plan #14d; advisory) --------
