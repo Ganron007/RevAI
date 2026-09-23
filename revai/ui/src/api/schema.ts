@@ -123,6 +123,20 @@ export const OrchLiveSchema = z
         corroboration_enabled: optBool,
         section_enabled: optBool,
         section_renders: optBool,
+        run: z
+          .object({
+            state: optStr,
+            rc: optNum,
+            duration_s: optNum,
+            pack_present: optBool,
+            error: optStr,
+          })
+          .passthrough()
+          .nullish(),
+        available: z
+          .object({ ok: z.boolean(), reason: optStr })
+          .partial()
+          .nullish(),
       })
       .passthrough()
       .nullish(),

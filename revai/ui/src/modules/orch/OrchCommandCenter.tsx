@@ -299,21 +299,33 @@ export default function OrchCommandCenter() {
           value={
             !live?.winre
               ? '—'
-              : !live.winre.corroboration_enabled
-                ? 'off'
-                : live.winre.pack_present
-                  ? `pack · ${live.winre.dns ?? 0} DNS`
-                  : live.winre.root_present
-                    ? 'no pack'
-                    : 'not configured'
+              : live.winre.run?.state === 'running'
+                ? 'running…'
+                : !live.winre.corroboration_enabled
+                  ? 'off'
+                  : live.winre.pack_present
+                    ? `pack · ${live.winre.dns ?? 0} DNS`
+                    : live.winre.root_present
+                      ? 'no pack'
+                      : 'not configured'
           }
-          tone={live?.winre?.pack_present ? 'ok' : undefined}
+          tone={
+            live?.winre?.run?.state === 'running'
+              ? 'info'
+              : live?.winre?.run?.state === 'failed'
+                ? 'danger'
+                : live?.winre?.pack_present
+                  ? 'ok'
+                  : undefined
+          }
           tip={
             live?.winre
               ? `root=${live.winre.logs_root} present=${live.winre.pack_present} ` +
                 `source=${live.winre.source ?? '—'} http=${live.winre.http ?? 0} ` +
                 `sni=${live.winre.sni ?? 0} dropped=${live.winre.dropped ?? 0} ` +
-                `artifact=${live.winre.unpack_artifact ?? '—'} section=${live.winre.section_renders}`
+                `artifact=${live.winre.unpack_artifact ?? '—'} section=${live.winre.section_renders} ` +
+                `run=${live.winre.run?.state ?? '—'}${live.winre.run?.error ? ` (${live.winre.run.error})` : ''} ` +
+                `available=${live.winre.available?.ok ? 'yes' : (live.winre.available?.reason ?? '—')}`
               : 'WinRE dynamic corroboration status unavailable'
           }
         />

@@ -238,6 +238,9 @@ def _child_env(cfg: dict) -> dict:
     env["FLARE_SSH_PORT"] = str(cfg["flare_ssh_port"])
     env["FLARE_SSH_KEY"] = cfg["flare_ssh_key"]
     env["WINRE_SNAPSHOT_GATE"] = cfg["snapshot_gate"]
+    # Keep WinRE's evidence root in sync with the root RevAI reads packs from
+    # (default /opt/winre/logs); a Console override must land where we look.
+    env["WINRE_PIPELINE_LOGS"] = str(cfg["logs_root"])
     return env
 
 

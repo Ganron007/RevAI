@@ -2265,6 +2265,28 @@ def _sync_pipeline_from_orch(sha: str, progress: dict, mode: str | None = None) 
     save_pipeline_state(sha, state, mode)
 
 
+def _winre_live(sha: str, mode: str | None) -> dict:
+    """WinRE live block: pack status + last detonation run + availability.
+
+    Fail-open: any error degrades to the pack status alone (never breaks the
+    Console).
+    """
+    try:
+        base = dict(winre_dynamic_status(sha, mode))
+    except Exception:
+        base = {"pack_present": False}
+    try:
+        from winre_runner import availability, read_run_status
+
+        base["run"] = read_run_status(sha)
+        ok, reason = availability()
+        base["available"] = {"ok": ok, "reason": reason}
+    except Exception as e:
+        base["run"] = None
+        base["available"] = {"ok": False, "reason": f"winre_runner unavailable: {e}"}
+    return base
+
+
 def orch_live_payload(sha: str, mode: str | None = None) -> dict:
     sha_ok = require_sha(sha)
     if not sha_ok:
@@ -2354,8 +2376,9 @@ def orch_live_payload(sha: str, mode: str | None = None) -> dict:
         "task_status": task_status,
         "task_log_tail": task_log_tail,
         # WinRE dynamic corroboration status (optional companion): pack presence
-        # and what it contributes, so the Console can show it before a run.
-        "winre": winre_dynamic_status(sha, mode),
+        # and what it contributes, plus the last detonation run and whether the
+        # trigger is currently able to start one.
+        "winre": _winre_live(sha, mode),
         "truly_green": trace.get("truly_green"),
         "quality_green": trace.get("quality_green") if trace else quality.get("quality_green"),
         "all_green": audit.get("all_green"),

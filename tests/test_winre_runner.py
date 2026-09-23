@@ -135,6 +135,7 @@ def test_child_env_mapping():
     cfg = {
         "flare_host": "10.0.0.9", "flare_user": "FLARE-VM", "flare_ssh_port": 2222,
         "flare_ssh_key": "/tmp/k", "snapshot_gate": "enforce",
+        "logs_root": "/data/winre-logs",
     }
     env = wr._child_env(cfg)
     assert env["FLARE_HOST"] == "10.0.0.9"
@@ -142,3 +143,5 @@ def test_child_env_mapping():
     assert env["FLARE_SSH_PORT"] == "2222"
     assert env["FLARE_SSH_KEY"] == "/tmp/k"
     assert env["WINRE_SNAPSHOT_GATE"] == "enforce"
+    # WinRE must write its evidence where RevAI reads packs from.
+    assert env["WINRE_PIPELINE_LOGS"] == "/data/winre-logs"
