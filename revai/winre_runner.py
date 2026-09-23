@@ -83,6 +83,10 @@ _ENV_KEYS = {
 _BOOL_TRUE = ("1", "true", "yes", "on")
 _BOOL_FALSE = ("0", "false", "no", "off")
 
+#: Control-plane vs FlareVM clock tolerance (seconds). Beyond this, WinRE's
+#: dynamic freshness check can reject a good detonation as stale.
+CLOCK_SKEW_WARN_S = 120.0
+
 
 def _as_bool(value: Any, default: bool = False) -> bool:
     if isinstance(value, bool):
@@ -175,6 +179,48 @@ def _ssh_base(cfg: dict) -> list[str]:
     ]
 
 
+def remote_clock_skew(cfg: dict, timeout: int = 20) -> dict:
+    """Control-plane clock vs the FlareVM clock, over the same SSH we detonate on.
+
+    WinRE's dynamic freshness check compares its META timestamps (FlareVM clock)
+    with the control plane's clock; a skewed control plane therefore makes a good
+    detonation read as `dynamic=not-run` (observed 2026-09-24 after a reverted VM
+    booted with NTP off and ~5h forward). This makes the skew visible up-front.
+    Fail-open: any error reports ok=False and never blocks a run.
+    """
+    out: dict[str, Any] = {"ok": False, "skew_s": None, "warn": False}
+    cmd = _ssh_base(cfg) + [
+        "powershell -NoProfile -Command \"[DateTime]::UtcNow.ToString('o')\"",
+    ]
+    try:
+        r = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+        raw = (r.stdout or "").strip().splitlines()
+        if r.returncode != 0 or not raw:
+            out["detail"] = (r.stderr or r.stdout or f"rc={r.returncode}").strip()[:160]
+            return out
+        stamp = raw[-1].strip()
+        # PowerShell 'o' has 7 fractional digits; fromisoformat wants <=6.
+        if "." in stamp:
+            head, _, frac = stamp.partition(".")
+            digits = "".join(c for c in frac if c.isdigit())[:6].ljust(6, "0")
+            tail = frac[len("".join(c for c in frac if c.isdigit())):]
+            stamp = f"{head}.{digits}{tail}"
+        remote = datetime.fromisoformat(stamp)
+        if remote.tzinfo is None:
+            remote = remote.replace(tzinfo=timezone.utc)
+        skew = round((remote - datetime.now(timezone.utc)).total_seconds(), 1)
+        out.update({
+            "ok": True,
+            "skew_s": skew,
+            "remote_utc": remote.astimezone(timezone.utc).isoformat(),
+            "control_plane_utc": datetime.now(timezone.utc).isoformat(),
+            "warn": abs(skew) > CLOCK_SKEW_WARN_S,
+        })
+    except Exception as e:
+        out["detail"] = f"{type(e).__name__}: {e}"[:160]
+    return out
+
+
 def probe(timeout: int = 15, s: dict | None = None) -> dict:
     """Test the FlareVM connection (no detonation). Used by the Console button."""
     cfg = s or settings()
@@ -209,6 +255,13 @@ def probe(timeout: int = 15, s: dict | None = None) -> dict:
             out["ok"] = True
     except Exception as e:
         out["error"] = f"ssh_error: {type(e).__name__}: {e}"
+    # Clock agreement (advisory): a skewed control plane makes WinRE reject a
+    # good detonation as stale, so surface it on the Test connection dialog.
+    try:
+        out["clock"] = remote_clock_skew(cfg)
+    except Exception as e:
+        out["clock"] = {"ok": False, "skew_s": None, "warn": False,
+                        "detail": f"{type(e).__name__}: {e}"[:160]}
     return out
 
 
@@ -392,6 +445,7 @@ def run_dynamic(
     log_path = case / "winre-run.log"
     limit = int(timeout or cfg["timeout"])
     started = datetime.now(timezone.utc)
+    clock = remote_clock_skew(cfg)
     _write_status(sha, {
         "state": "running",
         "host": cfg["flare_host"],
@@ -404,7 +458,12 @@ def run_dynamic(
         "started_at": started.isoformat(),
         "log": str(log_path),
         "sample": sp,
+        "clock": clock,
     })
+    if clock.get("warn"):
+        print(f"[winre_runner] WARNING clock skew vs {cfg['flare_host']}: "
+              f"{clock.get('skew_s')}s (WinRE freshness may reject the pack)",
+              flush=True)
     print(f"[winre_runner] detonation -> {' '.join(cmd)}", flush=True)
     t0 = time.time()
     rc: int | None = None
@@ -446,6 +505,7 @@ def run_dynamic(
         "log": str(log_path),
         "pack_present": pack_present,
         "pack": pack_info,
+        "clock": clock,
         "error": error,
         "finished_at": datetime.now(timezone.utc).isoformat(),
     }

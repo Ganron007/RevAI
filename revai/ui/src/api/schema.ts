@@ -130,6 +130,10 @@ export const OrchLiveSchema = z
             duration_s: optNum,
             pack_present: optBool,
             error: optStr,
+            clock: z
+              .object({ ok: z.boolean(), skew_s: optNum, warn: z.boolean(), detail: optStr })
+              .partial()
+              .nullish(),
           })
           .passthrough()
           .nullish(),

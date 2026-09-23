@@ -325,6 +325,7 @@ export default function OrchCommandCenter() {
                 `sni=${live.winre.sni ?? 0} dropped=${live.winre.dropped ?? 0} ` +
                 `artifact=${live.winre.unpack_artifact ?? '—'} section=${live.winre.section_renders} ` +
                 `run=${live.winre.run?.state ?? '—'}${live.winre.run?.error ? ` (${live.winre.run.error})` : ''} ` +
+                `${live.winre.run?.clock?.skew_s != null ? `clock_skew=${live.winre.run.clock.skew_s}s${live.winre.run.clock.warn ? '!' : ''} ` : ''}` +
                 `available=${live.winre.available?.ok ? 'yes' : (live.winre.available?.reason ?? '—')}`
               : 'WinRE dynamic corroboration status unavailable'
           }

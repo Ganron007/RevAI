@@ -147,6 +147,41 @@ def test_child_env_mapping():
     assert env["WINRE_PIPELINE_LOGS"] == "/data/winre-logs"
 
 
+def test_clock_skew_check_flags_a_skewed_control_plane(monkeypatch):
+    """A fast control plane must be reported (advisory) before a detonation."""
+    from datetime import datetime, timedelta, timezone
+
+    cfg = {"flare_host": "10.0.0.1", "flare_user": "FLARE-VM", "flare_ssh_port": 22,
+           "flare_ssh_key": "/tmp/k"}
+
+    def _fake(cmd, **kwargs):
+        stamp = (datetime.now(timezone.utc) - timedelta(hours=5))
+        return type("R", (), {"returncode": 0, "stdout": stamp.isoformat(timespec="microseconds") + "\n",
+                              "stderr": ""})()
+
+    monkeypatch.setattr(wr.subprocess, "run", _fake)
+    out = wr.remote_clock_skew(cfg)
+    assert out["ok"] is True
+    assert abs(out["skew_s"] + 18000) < 30      # control plane ~5h ahead
+    assert out["warn"] is True                   # > CLOCK_SKEW_WARN_S
+
+    def _ok(cmd, **kwargs):
+        stamp = datetime.now(timezone.utc)
+        return type("R", (), {"returncode": 0, "stdout": stamp.isoformat(timespec="microseconds") + "\n",
+                              "stderr": ""})()
+
+    monkeypatch.setattr(wr.subprocess, "run", _ok)
+    out2 = wr.remote_clock_skew(cfg)
+    assert out2["ok"] is True and abs(out2["skew_s"]) < 5 and out2["warn"] is False
+
+    def _fail(cmd, **kwargs):
+        return type("R", (), {"returncode": 255, "stdout": "", "stderr": "connection refused"})()
+
+    monkeypatch.setattr(wr.subprocess, "run", _fail)
+    out3 = wr.remote_clock_skew(cfg)
+    assert out3["ok"] is False and out3["warn"] is False   # fail-open, never blocks
+
+
 def test_read_run_status_sees_pipeline_triggered_runs(tmp_path, monkeypatch):
     """A pipeline (mode-dir) status must be visible from the Console (flat)."""
     import v2_lib
