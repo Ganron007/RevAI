@@ -257,14 +257,52 @@ def run_status_path(sha: str) -> Path:
     return _case_dir(sha) / "winre-run.json"
 
 
-def read_run_status(sha: str) -> dict | None:
-    p = run_status_path(sha)
-    if not p.is_file():
-        return None
+def _status_candidates(sha: str) -> list[Path]:
+    """Where a run status may live: this run's case dir, then the other mode
+    dirs, then the flat case dir.
+
+    Pipeline/CLI runs write into their mode-keyed dir (REVAI_RUN_MODE), while the
+    Console service has no run mode set - so both locations are legitimate.
+    """
+    primary = _case_dir(sha)
+    out = [primary / "winre-run.json"]
     try:
-        return json.loads(p.read_text(encoding="utf-8"))
+        from v2_lib import LOGS_DIR
     except Exception:
-        return None
+        return out
+    base = Path(LOGS_DIR) / sha
+    for m in ("scripted", "agentic", "ui"):
+        p = base / m / "winre-run.json"
+        if p not in out:
+            out.append(p)
+    flat = base / "winre-run.json"
+    if flat not in out:
+        out.append(flat)
+    return out
+
+
+def read_run_status(sha: str) -> dict | None:
+    """The most recent recorded detonation for a case, whichever mode wrote it.
+
+    Status timestamps are all UTC isoformat strings (same shape), so the newest
+    wins; a pipeline-triggered run is therefore visible from the Console, and a
+    Console-triggered run stays visible from a later pipeline run.
+    """
+    best: dict | None = None
+    best_ts = ""
+    for p in _status_candidates(sha):
+        if not p.is_file():
+            continue
+        try:
+            d = json.loads(p.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        if not isinstance(d, dict):
+            continue
+        ts = str(d.get("finished_at") or d.get("started_at") or d.get("ts") or "")
+        if best is None or ts >= best_ts:
+            best, best_ts = d, ts
+    return best
 
 
 def _write_status(sha: str, payload: dict) -> None:

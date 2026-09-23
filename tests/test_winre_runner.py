@@ -147,6 +147,28 @@ def test_child_env_mapping():
     assert env["WINRE_PIPELINE_LOGS"] == "/data/winre-logs"
 
 
+def test_read_run_status_sees_pipeline_triggered_runs(tmp_path, monkeypatch):
+    """A pipeline (mode-dir) status must be visible from the Console (flat)."""
+    import v2_lib
+
+    monkeypatch.setattr(v2_lib, "LOGS_DIR", tmp_path / "logs")
+    monkeypatch.delenv("REVAI_RUN_MODE", raising=False)
+    sha = "d" * 64
+    base = tmp_path / "logs" / sha
+    scripted = base / "scripted"
+    scripted.mkdir(parents=True)
+    (scripted / "winre-run.json").write_text(json.dumps(
+        {"state": "ok", "finished_at": "2026-09-23T18:46:17+00:00"}))
+    (base / "winre-run.json").write_text(json.dumps(
+        {"state": "skipped", "finished_at": "2026-09-23T17:00:00+00:00"}))
+    st = wr.read_run_status(sha)
+    assert st and st["state"] == "ok"
+    # A newer Console-triggered run still wins over an older pipeline one.
+    (base / "winre-run.json").write_text(json.dumps(
+        {"state": "ok", "finished_at": "2026-09-24T09:00:00+00:00"}))
+    assert wr.read_run_status(sha)["finished_at"] == "2026-09-24T09:00:00+00:00"
+
+
 def test_summarize_pack_counts(tmp_path):
     """winre-run.json's pack summary uses the same counts as the report block."""
     sha = "b" * 64
