@@ -4,6 +4,8 @@ RevAI is fully environment-driven. No LLM model, API key, endpoint, or reasoning
 
 The Console (Flask UI) reads the LLM key from that same file through the service environment — **the UI never stores or accepts secrets**. The Settings page only manages non-secret options (model, base URL, reasoning, run configuration); the API key is reported as configured / not configured and must be set in `/opt/revai/config/llm.env`.
 
+The same rule covers the optional **Dynamic analysis (WinRE)** panel: it stores the FlareVM address, SSH user/port, the SSH key **path**, detonation window, mode and snapshot gate — never key material. The runner exports those values as `FLARE_*` for the WinRE invocation (`docs/WINRE-REMOTE.md`).
+
 You can also override settings per run through the React Console **Settings** tab; these are persisted to `/opt/samples/pipeline-config.json` and injected into every stage subprocess.
 
 ## LLM configuration (`llm.env`)

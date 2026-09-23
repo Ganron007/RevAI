@@ -77,6 +77,30 @@ else
 fi
 
 echo ""
+echo "--- Dynamic companion (WinRE — optional) ---"
+if [[ -f /opt/winre/winre/pipeline.py ]]; then
+  ok "WinRE installed at /opt/winre"
+  if [[ -x /opt/winre/venv/bin/python ]]; then
+    ok "WinRE venv present"
+  else
+    warn "WinRE venv missing — python3 -m venv --system-site-packages /opt/winre/venv"
+  fi
+  if [[ -f /opt/winre/.env ]]; then
+    ok "WinRE .env present (/opt/winre/.env)"
+  else
+    warn "WinRE .env missing — cp /opt/winre/.env.template /opt/winre/.env (fill, never commit)"
+  fi
+  if grep -qE "^FLARE_HOST=.+" /opt/winre/.env 2>/dev/null; then
+    ok "FlareVM address configured in /opt/winre/.env"
+  else
+    warn "FlareVM address not in /opt/winre/.env — set it in Console Settings (Dynamic analysis) or FLARE_HOST"
+  fi
+else
+  warn "WinRE not installed (optional) — static-only reports"
+  warn "Enable with: REVAI_WITH_WINRE=1 sudo -E ./install/setup-remnux.sh (see docs/WINRE-REMOTE.md)"
+fi
+
+echo ""
 echo "--- YARA engine (required for quick_scan) ---"
 if python3 -c "import yara_x" >/dev/null 2>&1; then
   ok "yara_x Python module present (in-process scan engine)"

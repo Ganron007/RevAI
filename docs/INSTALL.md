@@ -17,6 +17,7 @@
 - **angr** via `pipx` (deobfuscation / symbolic execution; the wrapper runs it from its pipx venv).
 - Extended static stack: **GoReSym**, **RIFT**, **FindCrypt** — downloaded and installed to their expected paths when absent.
 - **idasql** CLI + IDA plugin — only when IDA Pro is installed (version-matched 9.2/9.3/9.4 build of v0.0.18.1).
+- **WinRE (optional dynamic companion)** — off by default: `REVAI_WITH_WINRE=1 sudo -E ./install/setup-remnux.sh` clones the public [WinRE](https://github.com/Ganron007/WinRE) repo to `/opt/winre`, creates its venv and scaffolds `.env`. Without it, RevAI stays static-only (reports byte-identical) and the step just warns.
 - capa-rules + flattened YARA under `/opt/samples/rules/flat/`.
 - Lab dirs: `/opt/samples/`, `/opt/scripts/`, `/opt/revai/`.
 

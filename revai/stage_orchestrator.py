@@ -281,6 +281,47 @@ class StageRunner:
             1800,
         )
 
+    def run_winre_dynamic(self) -> dict:
+        """Optional: detonate the sample on the WinRE FlareVM, pull the pack.
+
+        Runs only when REVAI_WINRE_RUN=1 AND WinRE is installed + configured
+        (Console Settings -> Dynamic analysis (WinRE)); skips (rc=0) otherwise.
+        Flare-side failures are recorded in winre-run.json and never gate the
+        pipeline — the static run and its presence-gated reports are unchanged.
+        """
+        run_enabled = os.environ.get("REVAI_WINRE_RUN", "").strip().lower() in (
+            "1", "true", "yes",
+        )
+        if not run_enabled:
+            print(
+                "[orchestrator] run_winre_dynamic skipped (REVAI_WINRE_RUN not set)",
+                flush=True,
+            )
+            return {
+                "ok": True, "rc": 0, "skipped": True,
+                "tool": "run_winre_dynamic",
+                "reason": "REVAI_WINRE_RUN not set",
+            }
+        try:
+            from winre_runner import availability, run_dynamic
+        except Exception as e:
+            print(f"[orchestrator] run_winre_dynamic unavailable: {e}", flush=True)
+            return {"ok": True, "rc": 0, "skipped": True, "tool": "run_winre_dynamic",
+                    "reason": f"winre_runner import failed: {e}"}
+        ok, reason = availability()
+        if not ok:
+            print(f"[orchestrator] run_winre_dynamic skipped: {reason}", flush=True)
+            return {"ok": True, "rc": 0, "skipped": True, "tool": "run_winre_dynamic",
+                    "reason": reason}
+        out = run_dynamic(self.sha, sample_path=str(self.sample) if self.sample else None)
+        self.events.append({
+            "type": "tool_result", "tool": "run_winre_dynamic",
+            "rc": out.get("rc"), "ok": True, "state": out.get("state"),
+            "pack_present": out.get("pack_present"), "ts": _utc(),
+        })
+        # Soft by design: a failed detonation is recorded, not gated.
+        return {"ok": True, "rc": 0, "soft": True, "tool": "run_winre_dynamic", **out}
+
     def run_publish(self) -> dict:
         hitl = os.environ.get("REVAI_HITL_VERDICT", "").strip().lower() in ("1", "true", "yes")
         v = _verdicts(self.sha)
@@ -471,6 +512,16 @@ def _build_lc_tools(runner: StageRunner, need_intake: bool) -> list:
         "Stage 4: generate YARA/Sigma rules from evidence",
     )
     _add(
+        "run_winre_dynamic",
+        runner.run_winre_dynamic,
+        "Optional dynamic corroboration: detonate the sample on the WinRE FlareVM "
+        "(remote driver) and pull the detonation pack so publish attaches the "
+        "presence-gated dynamic-analysis block. Call it after run_deep_dive_agentic "
+        "and BEFORE run_publish. Skips itself (rc=0) unless REVAI_WINRE_RUN=1 and the "
+        "Console's Dynamic analysis (WinRE) settings are configured; Flare-side "
+        "failures are recorded in winre-run.json and never block the pipeline.",
+    )
+    _add(
         "run_publish",
         runner.run_publish,
         "Stage 5: REPORT-MASTER v2 publish (static evidence only). Respects HITL if quick≠deep.",
@@ -571,7 +622,9 @@ def run_langgraph_orchestrator(sample: Path | None, sha: str | None) -> dict:
     order = (
         "run_intake → " if need_intake else ""
     ) + (
-        "run_quick_scan → run_deep_dive_agentic → run_yara_gen → read_verdicts → "
+        "run_quick_scan → run_deep_dive_agentic → "
+        + ("run_winre_dynamic → " if os.environ.get("REVAI_WINRE_RUN", "").strip().lower() in ("1", "true", "yes") else "")
+        + "run_yara_gen → read_verdicts → "
         "run_publish → run_section_publish → run_audit → check_quality"
     )
 

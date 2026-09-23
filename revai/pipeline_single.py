@@ -144,6 +144,16 @@ def run_single(sample: Path | None, sha: str | None, mode: str = "standard") -> 
             [sys.executable, str(SCRIPTS / "agentic_recover_v4.py"), sha],
             3600,
         ))
+    # Optional WinRE detonation stage (opt-in, between deep dive and publish).
+    # Gated by REVAI_WINRE_RUN=1; the runner skips itself when WinRE is not
+    # installed/configured (Console Settings -> Dynamic analysis (WinRE)).
+    # A Flare-side failure is recorded and never blocks the static run.
+    if os.environ.get("REVAI_WINRE_RUN", "").strip().lower() in ("1", "true", "yes"):
+        stages.append((
+            "winre_dynamic",
+            [sys.executable, str(SCRIPTS / "winre_runner.py"), sha],
+            7200,
+        ))
     stages.extend([
         ("yara_gen", [sys.executable, str(SCRIPTS / "yara_gen_v2.py"), sha], 1800),
         ("publish_v2", [sys.executable, str(SCRIPTS / "publish_report_v2.py"), sha, "--template", "full"], 3600),

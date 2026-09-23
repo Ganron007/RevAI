@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { orchTrace } from '../../api/client'
+import { orchTrace, runWinre } from '../../api/client'
 import { STAGE_LABELS, STAGE_ORDER } from '../../api/schema'
 import { Badge, Button, EmptyState, Icon, Kpi, Panel, SourceBadge } from '../../ds'
 import { useCase } from '../../pages/caseContext'
@@ -217,6 +217,29 @@ export default function OrchCommandCenter() {
   const { sha, live, refreshLive, mode: runMode } = useCase()
   const [, setTrace] = useState<Record<string, unknown> | null>(null)
   const [jumpStage, setJumpStage] = useState<string | null>(null)
+  const [winreBusy, setWinreBusy] = useState(false)
+  const [winreMsg, setWinreMsg] = useState<string | null>(null)
+
+  const runWinreDetonation = async () => {
+    if (!sha) return
+    const ok = window.confirm(
+      'Detonate this sample on the configured WinRE FlareVM now?\n\n' +
+        'This runs the remote driver and may take several minutes. ' +
+        'A Flare-side failure is recorded and never blocks the static run.',
+    )
+    if (!ok) return
+    setWinreBusy(true)
+    setWinreMsg(null)
+    try {
+      const r = await runWinre(sha)
+      setWinreMsg(r.ok ? 'detonation started — watch the winre dynamic chip' : `failed: ${r.error}`)
+      void refreshLive()
+    } catch (e) {
+      setWinreMsg(`failed: ${e instanceof Error ? e.message : String(e)}`)
+    } finally {
+      setWinreBusy(false)
+    }
+  }
 
   useEffect(() => {
     if (!sha || live?.running || !live?.artifacts?.orchestrator_trace) return
@@ -299,9 +322,21 @@ export default function OrchCommandCenter() {
           value={live?.elapsed_s != null ? fmtDur(live.elapsed_s) : '—'}
         />
         <span style={{ marginLeft: 'auto', alignSelf: 'center' }}>
+          <Button
+            size="sm"
+            tone="ghost"
+            disabled={!sha || winreBusy}
+            onClick={() => void runWinreDetonation()}
+            title="Run the optional WinRE detonation on the configured FlareVM (Settings → Dynamic analysis)"
+          >
+            {winreBusy ? 'winre…' : 'Run WinRE'}
+          </Button>
           <Button size="sm" tone="ghost" icon={<Icon.refresh size={12} />} onClick={() => void refreshLive()}>
             Refresh
           </Button>
+          {winreMsg && (
+            <span style={{ marginLeft: 'var(--sp-2)', fontSize: 11, opacity: 0.8 }}>{winreMsg}</span>
+          )}
         </span>
       </div>
 

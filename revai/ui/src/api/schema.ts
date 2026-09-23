@@ -228,7 +228,25 @@ export const LlmSettingsSchema = z
         recovery_tier_cap: optNum,
         winre_dynamic: optBool,
         winre_logs: optStr,
+        winre_run: optBool,
       })
+      .optional(),
+    // Optional dynamic companion (WinRE) — non-secret; key is a path only.
+    winre_enabled: optBool,
+    flare_host: optStr,
+    flare_user: optStr,
+    flare_ssh_port: optNum,
+    flare_ssh_key: optStr,
+    winre_logs: optStr,
+    winre_mode: optStr,
+    winre_window: optNum,
+    winre_adaptive: optBool,
+    winre_pesieve: optBool,
+    winre_agentic_dbg: optBool,
+    winre_snapshot_gate: optStr,
+    winre_available: z
+      .object({ ok: z.boolean(), reason: optStr })
+      .partial()
       .optional(),
   })
   .passthrough()

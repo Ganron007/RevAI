@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getSettings, saveSettings } from '../api/client'
+import { getSettings, saveSettings, testWinre } from '../api/client'
 import type { LlmSettings, RunConfig } from '../api/types'
 import { Button, ErrorBanner, Field, Icon, Input, Muted, NoteBanner, PageHeader, Panel, Select } from '../ds'
 
@@ -36,6 +36,25 @@ export default function SettingsPage() {
   const [msg, setMsg] = useState<string | null>(null)
   const [err, setErr] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  const [winreTesting, setWinreTesting] = useState(false)
+  const [winreTestMsg, setWinreTestMsg] = useState<string | null>(null)
+
+  const testConnection = async () => {
+    setWinreTesting(true)
+    setWinreTestMsg(null)
+    try {
+      const r = await testWinre()
+      setWinreTestMsg(
+        r.ok
+          ? `connected to ${r.user}@${r.host}:${r.port}`
+          : `failed: ${r.error || 'unknown error'}`,
+      )
+    } catch (e) {
+      setWinreTestMsg(`failed: ${e instanceof Error ? e.message : String(e)}`)
+    } finally {
+      setWinreTesting(false)
+    }
+  }
 
   useEffect(() => {
     void (async () => {
@@ -59,6 +78,19 @@ export default function SettingsPage() {
         llm_api_url: cfg.llm_api_url || '',
         llm_reasoning: cfg.llm_reasoning || '',
         use_rag: false,
+        // Optional dynamic companion (WinRE) — non-secret; key is a path only.
+        winre_enabled: Boolean(cfg.winre_enabled),
+        flare_host: cfg.flare_host || '',
+        flare_user: cfg.flare_user || 'FLARE-VM',
+        flare_ssh_port: Number(cfg.flare_ssh_port ?? 22),
+        flare_ssh_key: cfg.flare_ssh_key || '~/.ssh/winre-flare',
+        winre_logs: cfg.winre_logs || '/opt/winre/logs',
+        winre_mode: cfg.winre_mode || 'agentic',
+        winre_window: Number(cfg.winre_window ?? 150),
+        winre_adaptive: Boolean(cfg.winre_adaptive ?? true),
+        winre_pesieve: Boolean(cfg.winre_pesieve ?? true),
+        winre_agentic_dbg: Boolean(cfg.winre_agentic_dbg),
+        winre_snapshot_gate: cfg.winre_snapshot_gate || 'observe',
         run_config: {
           profile: rc.profile || 'standard',
           stage_retries: Number(rc.stage_retries ?? 1),
@@ -78,6 +110,7 @@ export default function SettingsPage() {
           winre_dynamic: Boolean(rc.winre_dynamic ?? true),
           recovery_max_funcs: Number(rc.recovery_max_funcs ?? 40),
           recovery_tier_cap: Number(rc.recovery_tier_cap ?? 5),
+          winre_run: Boolean(rc.winre_run),
         },
       })
       setCfg(res.config)
@@ -132,6 +165,109 @@ export default function SettingsPage() {
             <Muted>
               Product mode: {cfg.product_mode || 'LLM-only · static RE · LangGraph orch'} · use_rag=false
             </Muted>
+          </div>
+        </Panel>
+
+        <Panel title="Dynamic analysis (WinRE — optional)" style={{ marginTop: 'var(--sp-4)' }}>
+          <Muted>
+            WinRE detonates the sample on an isolated FlareVM and returns a pack the reports
+            cite as corroboration. Install it with the optional setup step (docs/WINRE-REMOTE.md).
+            These settings are non-secret — the SSH key is stored as a path only; key material
+            never leaves disk.
+          </Muted>
+          <div style={{ display: 'grid', gap: 'var(--sp-3)', marginTop: 'var(--sp-3)' }}>
+            <Field
+              label="Enable dynamic analysis"
+              hint="master switch — off means no detonation and static-only reports"
+            >
+              <Select
+                value={cfg.winre_enabled ? '1' : '0'}
+                onChange={(e) => setCfg({ ...cfg, winre_enabled: e.target.value === '1' })}
+              >
+                <option value="0">Off (default)</option>
+                <option value="1">On</option>
+              </Select>
+            </Field>
+            <Field label="FlareVM address" hint="host-only IP of the Windows analysis VM (e.g. 192.168.77.42)">
+              <Input
+                value={cfg.flare_host || ''}
+                onChange={(e) => setCfg({ ...cfg, flare_host: e.target.value })}
+                placeholder="192.168.77.42"
+              />
+            </Field>
+            <Field label="SSH user">
+              <Input
+                value={cfg.flare_user || ''}
+                onChange={(e) => setCfg({ ...cfg, flare_user: e.target.value })}
+                placeholder="FLARE-VM"
+              />
+            </Field>
+            <Field label="SSH port">
+              <Input
+                type="number"
+                min={1}
+                value={cfg.flare_ssh_port ?? 22}
+                onChange={(e) => setCfg({ ...cfg, flare_ssh_port: Number(e.target.value) })}
+              />
+            </Field>
+            <Field
+              label="SSH key path"
+              hint="path on this VM, chmod 600 — the Console never stores key material"
+            >
+              <Input
+                value={cfg.flare_ssh_key || ''}
+                onChange={(e) => setCfg({ ...cfg, flare_ssh_key: e.target.value })}
+                placeholder="~/.ssh/winre-flare"
+              />
+            </Field>
+            <Field
+              label="Detonation window (seconds)"
+              hint="WinRE --max-seconds; delayed C2 needs a longer window"
+            >
+              <Input
+                type="number"
+                min={30}
+                value={cfg.winre_window ?? 150}
+                onChange={(e) => setCfg({ ...cfg, winre_window: Number(e.target.value) })}
+              />
+            </Field>
+            <Field label="Mode">
+              <Select
+                value={cfg.winre_mode || 'agentic'}
+                onChange={(e) => setCfg({ ...cfg, winre_mode: e.target.value })}
+              >
+                <option value="agentic">agentic (default)</option>
+                <option value="static">static</option>
+              </Select>
+            </Field>
+            <Field
+              label="Snapshot gate"
+              hint="enforce blocks detonation without a clean FlareVM snapshot marker"
+            >
+              <Select
+                value={cfg.winre_snapshot_gate || 'observe'}
+                onChange={(e) => setCfg({ ...cfg, winre_snapshot_gate: e.target.value })}
+              >
+                <option value="observe">observe (default, advisory)</option>
+                <option value="enforce">enforce</option>
+                <option value="off">off</option>
+              </Select>
+            </Field>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-2)' }}>
+              <Button
+                tone="ghost"
+                disabled={winreTesting}
+                onClick={() => void testConnection()}
+                icon={<Icon.check size={13} />}
+              >
+                {winreTesting ? 'Testing…' : 'Test connection'}
+              </Button>
+              {winreTestMsg && <Muted>{winreTestMsg}</Muted>}
+            </div>
+            <Muted>Test uses the saved settings — press Save first after editing.</Muted>
+            {cfg.winre_available && !cfg.winre_available.ok && (
+              <Muted>state: {cfg.winre_available.reason}</Muted>
+            )}
           </div>
         </Panel>
 
@@ -312,6 +448,18 @@ export default function SettingsPage() {
               >
                 <option value="1">On (default) — use packs when present</option>
                 <option value="0">Off — static-only reports</option>
+              </Select>
+            </Field>
+            <Field
+              label="Detonate with WinRE before publish"
+              hint="optional: run the WinRE remote driver on the FlareVM during this run, then publish with the fresh pack. Requires the dynamic settings below + REVAI_WINRE_RUN for CLI runs. A Flare-side failure is recorded and never blocks the static run"
+            >
+              <Select
+                value={rc.winre_run ? '1' : '0'}
+                onChange={(e) => setRc({ ...rc, winre_run: e.target.value === '1' })}
+              >
+                <option value="0">Off (default) — use an existing pack</option>
+                <option value="1">On — detonate first</option>
               </Select>
             </Field>
             <Field label="Recovery max functions" hint="candidate budget for function recovery (default 40)">

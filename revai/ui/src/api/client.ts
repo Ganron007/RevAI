@@ -209,3 +209,26 @@ export async function saveSettings(body: Partial<LlmSettings>) {
   })
   return data as { ok: boolean; config: LlmSettings }
 }
+
+// ---- Optional dynamic companion (WinRE on a FlareVM) ----------------------
+
+export async function testWinre() {
+  return raw('/api/winre/test', { method: 'POST' }) as Promise<{
+    ok: boolean
+    host?: string
+    user?: string
+    port?: number
+    key?: string
+    ssh_ok?: boolean
+    detail?: string
+    error?: string
+  }>
+}
+
+export async function runWinre(sha: string) {
+  return raw(`/api/winre/run/${sha}`, { method: 'POST' }) as Promise<{
+    ok: boolean
+    started?: boolean
+    error?: string
+  }>
+}

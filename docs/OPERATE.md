@@ -213,6 +213,16 @@ and corroborates only (`static_yara_wins` never yields).
 | `winre_dynamic` (Console) | on | Run configuration -> WinRE companion: `On` (default) uses packs when present, `Off` writes static-only reports. Maps to `REVAI_DISABLE_DYNAMIC_CORROBORATION` and `REVAI_DISABLE_DYNAMIC_SECTION` together |
 | `winre_logs` (Console) | unset | optional pack root override, for a case whose packs live elsewhere |
 | `REVAI_DISABLE_DYNAMIC_CORROBORATION` | unset | set to `1` to suppress the block entirely |
+| `REVAI_WINRE_ENABLED` | off | master switch for the optional WinRE detonation integration (Console Settings -> Dynamic analysis) |
+| `winre_run` (Console) | off | Run configuration -> **Detonate with WinRE before publish**: runs the optional detonation stage; maps to `REVAI_WINRE_RUN` |
+| `REVAI_WINRE_RUN` | off | CLI opt-in: run a detonation as an optional pipeline stage before publish (orchestrator / scripted) |
+| `FLARE_HOST` / `FLARE_USER` / `FLARE_SSH_PORT` / `FLARE_SSH_KEY` | unset / `FLARE-VM` / `22` / `~/.ssh/winre-flare` | FlareVM address + SSH access. `FLARE_SSH_KEY` is a **path**; env overrides the Console config and WinRE's `.env` |
+| `REVAI_WINRE_MODE` / `REVAI_WINRE_WINDOW` | `agentic` / `150` | WinRE driver mode (`agentic`/`static`) and detonation window (`--max-seconds`) |
+| `REVAI_WINRE_ADAPTIVE` / `REVAI_WINRE_PESIEVE` / `REVAI_WINRE_AGENTIC_DBG` | `1` / `1` / `0` | WinRE driver flags for a run |
+| `REVAI_WINRE_SNAPSHOT_GATE` | `observe` | `observe` (advisory) / `enforce` (block without a clean snapshot marker) / `off` |
+| `REVAI_WINRE_ROOT` / `REVAI_WINRE_PY` / `REVAI_WINRE_TIMEOUT` | `/opt/winre` / `<root>/venv/bin/python` / `3600` | install + venv locations, subprocess timeout seconds |
+| `REVAI_WITH_WINRE` / `REVAI_WINRE_REPO` / `REVAI_WINRE_REF` | off / `https://github.com/Ganron007/WinRE.git` / `master` | install-time only: the optional WinRE step in `setup-remnux.sh` |
+| `REVAI_PIPELINE_CONFIG` | `/opt/samples/pipeline-config.json` | path of the Console settings file (override for tests / alternate installs) |
 
 Setup and modes: [`WINRE-REMOTE.md`](WINRE-REMOTE.md).
 

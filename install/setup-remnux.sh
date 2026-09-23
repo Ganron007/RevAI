@@ -23,7 +23,7 @@ REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 export GHIDRA_INSTALL_DIR="${GHIDRA_INSTALL_DIR:-/opt/ghidra}"
 
 # =========================================================================
-hdr "Step 1/12 — apt packages"
+hdr "Step 1/13 — apt packages"
 # =========================================================================
 apt-get update -qq
 apt-get install -y --no-install-recommends \
@@ -37,7 +37,7 @@ apt-get install -y --no-install-recommends \
 ok "apt packages installed"
 
 # =========================================================================
-hdr "Step 2/12 — Locate / normalize Ghidra → /opt/ghidra"
+hdr "Step 2/13 — Locate / normalize Ghidra → /opt/ghidra"
 # =========================================================================
 if [[ ! -x /opt/ghidra/support/analyzeHeadless ]]; then
   FOUND=""
@@ -72,7 +72,7 @@ EOF
 fi
 
 # =========================================================================
-hdr "Step 3/12 — Python packages (LLM-only core)"
+hdr "Step 3/13 — Python packages (LLM-only core)"
 # =========================================================================
 PIP_FLAGS=""
 if pip install --help 2>&1 | grep -q "break-system-packages"; then
@@ -82,7 +82,7 @@ pip install $PIP_FLAGS -r "$REPO_ROOT/requirements.txt"
 ok "Python packages from requirements.txt"
 
 # =========================================================================
-hdr "Step 4/12 — pipx + angr (deobfuscation / symbolic execution)"
+hdr "Step 4/13 — pipx + angr (deobfuscation / symbolic execution)"
 # =========================================================================
 # The deobfuscation wrapper (extensions/deobfuscation/invoke_z3_or_angr.py)
 # invokes angr through its pipx venv:
@@ -106,7 +106,7 @@ else
 fi
 
 # =========================================================================
-hdr "Step 5/12 — capa rules + YARA flat rules"
+hdr "Step 5/13 — capa rules + YARA flat rules"
 # =========================================================================
 if [[ ! -d /opt/capa-rules ]]; then
   git clone --depth 1 https://github.com/mandiant/capa-rules.git /opt/capa-rules
@@ -131,7 +131,7 @@ fi
 chown -R remnux:remnux /opt/samples/rules 2>/dev/null || true
 
 # =========================================================================
-hdr "Step 6/12 — Lab directories"
+hdr "Step 6/13 — Lab directories"
 # =========================================================================
 mkdir -p /opt/samples/incoming/{manual-drop,vr-hunt-pull,cadre-push}
 mkdir -p /opt/samples/{corpus,shortlist,logs,sessions}
@@ -142,7 +142,7 @@ chown -R remnux:remnux /opt/samples /opt/scripts /opt/revai 2>/dev/null || true
 ok "lab dirs ready"
 
 # =========================================================================
-hdr "Step 7/12 — Build and install ghidrasql"
+hdr "Step 7/13 — Build and install ghidrasql"
 # =========================================================================
 if command -v ghidrasql >/dev/null 2>&1 || [[ -x /usr/local/bin/ghidrasql ]]; then
   ok "ghidrasql already installed: $(command -v ghidrasql || echo /usr/local/bin/ghidrasql)"
@@ -153,7 +153,7 @@ else
 fi
 
 # =========================================================================
-hdr "Step 8/12 — Extensions and tools"
+hdr "Step 8/13 — Extensions and tools"
 # =========================================================================
 # deobfuscation / CFF-deflatten / force_pe_imports / capa-signatures / CADRE PE Loader
 REPO_EXT="$REPO_ROOT/extensions"
@@ -232,7 +232,7 @@ else
 fi
 
 # =========================================================================
-hdr "Step 9/12 — Extended RE tool stack (optional, soft-fail)"
+hdr "Step 9/13 — Extended RE tool stack (optional, soft-fail)"
 # =========================================================================
 # GoReSym (Go symbol recovery) → /opt/goresym/GoReSym
 if [[ -x /opt/goresym/GoReSym ]]; then
@@ -319,7 +319,7 @@ else
 fi
 
 # =========================================================================
-hdr "Step 10/12 — IDA Pro (optional): idasql CLI + plugin"
+hdr "Step 10/13 — IDA Pro (optional): idasql CLI + plugin"
 # =========================================================================
 # Only when IDA Pro is installed. idasql is by Elias Bachaalany
 # (github.com/allthingsida/idasql), Human-Origin Source License v1.0.
@@ -381,7 +381,55 @@ else
 fi
 
 # =========================================================================
-hdr "Step 11/12 — Malcat (vendor — OPTIONAL, soft-fail)"
+hdr "Step 11/13 — Dynamic companion (WinRE — OPTIONAL, soft-fail)"
+# =========================================================================
+# RevAI is static-first. WinRE (github.com/Ganron007/WinRE) adds optional
+# Windows detonation on an isolated FlareVM; without it the pipeline and the
+# reports are unchanged (dynamic corroboration is presence-gated). Install it
+# here with:
+#     REVAI_WITH_WINRE=1 sudo -E ./install/setup-remnux.sh
+# or drop a WinRE archive at internal/winre.zip (air-gapped installs).
+WINRE_DIR="${REVAI_WINRE_DIR:-/opt/winre}"
+if [[ -f "$WINRE_DIR/winre/pipeline.py" ]]; then
+  ok "WinRE present at $WINRE_DIR"
+elif [[ "${REVAI_WITH_WINRE:-0}" != "1" && ! -f "$REPO_ROOT/internal/winre.zip" ]]; then
+  warn "WinRE not installed (optional) — static-only reports"
+  warn "Enable dynamic analysis with: REVAI_WITH_WINRE=1 sudo -E ./install/setup-remnux.sh"
+else
+  _winre_ok=0
+  if [[ -f "$REPO_ROOT/internal/winre.zip" ]]; then
+    mkdir -p "$WINRE_DIR"
+    if unzip -o -q "$REPO_ROOT/internal/winre.zip" -d "$WINRE_DIR"; then _winre_ok=1; fi
+  elif command -v git >/dev/null 2>&1; then
+    if git clone --depth 1 --branch "${REVAI_WINRE_REF:-master}" \
+        "${REVAI_WINRE_REPO:-https://github.com/Ganron007/WinRE.git}" "$WINRE_DIR" >/dev/null 2>&1; then
+      _winre_ok=1
+    fi
+  fi
+  if [[ "$_winre_ok" == "1" ]]; then
+    # System-site-packages so WinRE reuses the RevAI-installed deps (pefile, ...).
+    python3 -m venv --system-site-packages "$WINRE_DIR/venv" >/dev/null 2>&1 || true
+    if [[ -x "$WINRE_DIR/venv/bin/pip" ]]; then
+      "$WINRE_DIR/venv/bin/pip" install -q langgraph langchain-openai \
+        langchain-core pydantic >/dev/null 2>&1 || warn "WinRE venv dependency install failed"
+    fi
+    if [[ ! -f "$WINRE_DIR/.env" && -f "$WINRE_DIR/.env.template" ]]; then
+      cp "$WINRE_DIR/.env.template" "$WINRE_DIR/.env"
+      chmod 600 "$WINRE_DIR/.env" 2>/dev/null || true
+      ok "WinRE .env scaffolded ($WINRE_DIR/.env) — fill in your own values, never commit"
+    fi
+    chown -R remnux:remnux "$WINRE_DIR" 2>/dev/null || true
+    ok "WinRE installed at $WINRE_DIR (control plane)"
+    warn "Next: set up the FlareVM side (WinRE install/setup-flarevm.ps1), then"
+    warn "      Console -> Settings -> Dynamic analysis (WinRE): address, user, SSH key"
+    warn "      (or env: FLARE_HOST / FLARE_USER / FLARE_SSH_KEY)"
+  else
+    warn "WinRE install failed (optional) — static-only; see docs/WINRE-REMOTE.md"
+  fi
+fi
+
+# =========================================================================
+hdr "Step 12/13 — Malcat (vendor — OPTIONAL, soft-fail)"
 # =========================================================================
 # Malcat is optional. The pipeline soft-fails (falls back to Mandiant capa +
 # FLOSS + pe_imports) when it is absent. If a Malcat archive ships with the
@@ -438,7 +486,7 @@ else
 fi
 
 # =========================================================================
-hdr "Step 12/12 — Core Python import check"
+hdr "Step 13/13 — Core Python import check"
 # =========================================================================
 python3 - <<'PY' || fail "core Python imports failed"
 import flask, requests, yaml, pefile, lief, frida, capa, speakeasy, oletools, yara_x
@@ -465,6 +513,7 @@ Installed:
   - LLM stack (flask, langgraph, langchain-openai)
   - idasql + IDA plugin (only when IDA Pro is installed)
   - Malcat optional (pipeline degrades gracefully)
+  - WinRE dynamic companion optional (statics unchanged without it)
 
 Next:
   1. source \$HOME/.cadre-env   (or add to ~/.bashrc)
@@ -472,5 +521,9 @@ Next:
   3. ./scripts/deploy.sh --restart
   4. ./install/verify-remnux.sh
   5. Open http://<host>:5000
+     - Dynamic analysis (optional): install WinRE with
+       REVAI_WITH_WINRE=1 sudo -E ./install/setup-remnux.sh
+       then set the FlareVM address/key in Settings -> Dynamic analysis (WinRE)
+       (docs/WINRE-REMOTE.md has the full two-machine guide)
 
 EOF

@@ -56,10 +56,31 @@ DEFAULT_CONFIG = {
     "llm_api_key": "",
     "llm_reasoning": "",
     "product_mode": "LLM-only · static RE · LangGraph orch",
+    # Optional dynamic companion (WinRE on a FlareVM). Non-secret only: the SSH
+    # key is stored as a PATH; key material never enters the Console.
+    "winre_enabled": False,
+    "flare_host": "",
+    "flare_user": "FLARE-VM",
+    "flare_ssh_port": 22,
+    "flare_ssh_key": "~/.ssh/winre-flare",
+    "winre_logs": "/opt/winre/logs",
+    "winre_mode": "agentic",
+    "winre_window": 150,
+    "winre_adaptive": True,
+    "winre_pesieve": True,
+    "winre_agentic_dbg": False,
+    "winre_snapshot_gate": "observe",
 }
 
 # Settings keys exposed to SPA (no RAG URLs / toggles on the wire).
 LLM_SETTINGS_KEYS = ("llm_model", "llm_api_url", "llm_api_key", "llm_reasoning", "product_mode")
+
+# Optional WinRE integration settings (non-secret; SSH key is a path only).
+WINRE_SETTINGS_KEYS = (
+    "winre_enabled", "flare_host", "flare_user", "flare_ssh_port", "flare_ssh_key",
+    "winre_logs", "winre_mode", "winre_window", "winre_adaptive", "winre_pesieve",
+    "winre_agentic_dbg", "winre_snapshot_gate",
+)
 
 # Core spine (static RE + LLM). Dynamic analysis is analyst-optional only.
 # CLI: pipeline_single.py / stage_orchestrator.py (no Flare in spine).
@@ -837,6 +858,11 @@ def get_stage_env(rc: dict | None = None) -> dict[str, str]:
         env["REVAI_DISABLE_DYNAMIC_SECTION"] = _off
     if rc.get("winre_logs"):
         env["REVAI_WINRE_LOGS"] = str(rc["winre_logs"])
+    # Optional WinRE detonation stage (opt-in per run): when set, the orchestrator
+    # (or pipeline_single) calls winre_runner before publish; it skips itself when
+    # WinRE is not installed/configured.
+    if "winre_run" in rc:
+        env["REVAI_WINRE_RUN"] = "1" if rc["winre_run"] else "0"
     return env
 
 
@@ -1224,6 +1250,15 @@ def _settings_public(cfg: dict) -> dict:
     out["llm_api_key"] = ""
     out["llm_api_key_set"] = bool(key and key != "***")
     out["llm_key_source"] = _llm_key_source()
+    # Optional WinRE integration (non-secret settings + availability state).
+    out.update({k: cfg.get(k, DEFAULT_CONFIG.get(k)) for k in WINRE_SETTINGS_KEYS})
+    try:
+        from winre_runner import availability
+
+        ok, reason = availability()
+        out["winre_available"] = {"ok": ok, "reason": reason}
+    except Exception as e:
+        out["winre_available"] = {"ok": False, "reason": f"winre_runner unavailable: {e}"}
     return out
 
 
@@ -1234,6 +1269,7 @@ _RUN_CONFIG_KEYS = (
     "failure_taxonomy", "agentic_recovery",
     "emulation_oracle", "unpack_pass", "deobfuscation_pass",
     "recovery_max_funcs", "recovery_tier_cap",
+    "winre_dynamic", "winre_logs", "winre_run",
 )
 
 
@@ -1257,6 +1293,10 @@ def api_settings_post():
             # service via systemd EnvironmentFile).
             continue
         cfg[key] = data[key]
+    # Optional WinRE integration settings (non-secret; the SSH key is a path).
+    for key in WINRE_SETTINGS_KEYS:
+        if key in data:
+            cfg[key] = data[key]
     if isinstance(data.get("run_config"), dict):
         rc = {}
         for key in _RUN_CONFIG_KEYS:
@@ -2525,17 +2565,69 @@ def api_winre_status(sha):
     """WinRE dynamic-corroboration status for a case (optional integration).
 
     Reports whether a dynamic pack exists for this sample, what it contributes
-    (network/dropped/artifact counts) and whether the Console toggle will let it
-    into the reports. Read-only and fail-open.
+    (network/dropped/artifact counts), whether the Console toggle will let it
+    into the reports, and the last detonation run for this case (if any).
+    Read-only and fail-open.
     """
     sha = require_sha(sha)
     if not sha:
         return jsonify({"error": "invalid sha"}), 400
     mode = _mode_from_request()
     try:
-        return jsonify(winre_dynamic_status(sha, mode))
+        out = dict(winre_dynamic_status(sha, mode))
     except Exception as e:
-        return jsonify({"error": str(e), "pack_present": False})
+        out = {"error": str(e), "pack_present": False}
+    try:
+        from winre_runner import availability, read_run_status
+
+        out["run"] = read_run_status(sha)
+        ok, reason = availability()
+        out["available"] = {"ok": ok, "reason": reason}
+    except Exception as e:
+        out["available"] = {"ok": False, "reason": f"winre_runner unavailable: {e}"}
+    return jsonify(out)
+
+
+@app.route("/api/winre/test", methods=["POST"])
+def api_winre_test():
+    """Test the FlareVM connection with the configured settings (no detonation)."""
+    try:
+        from winre_runner import probe
+
+        return jsonify(probe())
+    except Exception as e:
+        return jsonify({"ok": False, "error": f"{type(e).__name__}: {e}"})
+
+
+@app.route("/api/winre/run/<sha>", methods=["POST"])
+def api_winre_run(sha):
+    """Start an optional WinRE detonation for this case (background).
+
+    Refuses when the switch is off / WinRE is unavailable, and when a run is
+    already in flight. Status is read back from the case's winre-run.json.
+    """
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
+    try:
+        from winre_runner import availability, read_run_status, run_dynamic
+    except Exception as e:
+        return jsonify({"ok": False, "error": f"winre_runner unavailable: {e}"}), 500
+    status = read_run_status(sha) or {}
+    if status.get("state") == "running":
+        return jsonify({"ok": False, "error": "winre_run_already_running", "status": status}), 409
+    ok, reason = availability()
+    if not ok:
+        return jsonify({"ok": False, "error": reason}), 400
+
+    def _run() -> None:
+        try:
+            run_dynamic(sha)
+        except Exception as e:  # recorded in winre-run.json by the runner
+            print(f"[winre] run failed: {type(e).__name__}: {e}", flush=True)
+
+    threading.Thread(target=_run, daemon=True).start()
+    return jsonify({"ok": True, "started": True, "sha": sha}), 202
 
 
 @app.route("/api/graph")

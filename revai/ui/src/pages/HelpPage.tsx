@@ -109,6 +109,35 @@ export default function HelpPage() {
           </div>
         </Section>
 
+        <Section id="winre" title="Optional: Windows detonation (WinRE)">
+          <p>
+            Static analysis is always on. If you also run the optional
+            <strong> WinRE</strong> companion on an isolated FlareVM, its detonation packs are
+            ingested automatically and cited in the reports as a corroboration block. Nothing runs
+            on the Windows VM without a trigger.
+          </p>
+          <ul style={{ margin: 0, paddingLeft: '1.2em' }}>
+            <li>
+              <strong>Configure</strong> — <em>Settings → Dynamic analysis (WinRE)</em>: FlareVM
+              address, SSH user/port, SSH key <em>path</em> (the Console never stores key
+              material), window, mode, snapshot gate. Use <em>Test connection</em> to verify.
+            </li>
+            <li>
+              <strong>Run it</strong> — per case with <em>Run WinRE</em> on the stage page, or per
+              run with <em>Settings → Run configuration → Detonate with WinRE before publish</em>.
+            </li>
+            <li>
+              <strong>Status</strong> — the stage page&apos;s <em>winre dynamic</em> tile shows
+              <em> pack · N DNS</em>, <em>no pack</em>, <em>not configured</em> or <em>off</em>.
+              Failures are recorded in the case log and never block the static run.
+            </li>
+          </ul>
+          <p className="muted" style={{ fontSize: 'var(--tx-sm)' }}>
+            Setup (both machines), modes and the full settings reference:
+            <span className="mono"> docs/WINRE-REMOTE.md</span>.
+          </p>
+        </Section>
+
         <Section id="gates" title="Quality gates & verdicts">
           <p>
             A green stage is not the same as a correct report. The console surfaces the gates below and the{' '}
