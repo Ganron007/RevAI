@@ -114,9 +114,13 @@ WINRE_LLM_REASONING=high
 WINRE_SNAPSHOT_GATE=observe
 ```
 
-Same key across RevAI and WinRE, or per-project keys: both are supported. The
-authoritative wiring contract (resolution order, spawn-site mapping,
-troubleshooting) lives in the WinRE repository:
+Same key across RevAI and WinRE, or per-project keys: both are supported. Note
+that they are **two independent files**: RevAI never reads WinRE's key and WinRE
+never reads RevAI's, so "the same key" means the same values are written in both
+files (`REVAI_LLM_*` in `/opt/revai/config/llm.env`, `WINRE_LLM_*` in
+`/opt/winre/.env`). The FlareVM never holds LLM configuration. The authoritative
+wiring contract (resolution order, spawn-site mapping, troubleshooting) lives in
+the WinRE repository:
 [`docs/REVAI-BRIDGE.md`](https://github.com/Ganron007/WinRE/blob/master/docs/REVAI-BRIDGE.md).
 
 ## Running it from RevAI (optional, three ways)
