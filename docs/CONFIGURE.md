@@ -27,6 +27,38 @@ If `REVAI_LLM_API_KEY` is not set, the fallback chain is:
 1. `REVAI_LLM_API_KEY` from the process environment
 2. `/opt/secrets/cadre.env` (legacy lab secrets file)
 
+### Optional: WinRE (the dynamic companion)
+
+WinRE is an optional second product on this same host (`/opt/winre`), and its
+agentic passes need an LLM too. **The model is written in one place by default:**
+WinRE inherits `llm.env` above, so an operator who filled that file has a working
+agentic WinRE with nothing extra to configure. Resolution order, first match wins
+per variable:
+
+1. the process environment (`WINRE_LLM_*`),
+2. `/opt/winre/.env` — set these to give WinRE its **own** model or provider,
+3. `/opt/revai/config/llm.env` (`REVAI_LLM_API_URL` maps to `WINRE_LLM_BASE_URL`,
+   plus model, key and reasoning).
+
+| Where | What to write |
+|---|---|
+| `/opt/revai/config/llm.env` | required for RevAI; also WinRE's default source |
+| `/opt/winre/.env` (chmod 600, never commit) | `WINRE_LLM_BASE_URL`, `WINRE_LLM_MODEL`, `WINRE_LLM_API_KEY`, `WINRE_LLM_REASONING` — any value set here wins |
+| FlareVM | **nothing** — the Windows VM never holds LLM configuration; all LLM calls happen in the driver process on this host |
+
+Switch it off entirely with **Settings → Dynamic analysis → Share RevAI LLM
+config** = `WinRE .env only` (or `REVAI_WINRE_LLM_SOURCE=winre_env`). An agentic
+pass with nothing resolved is refused up front with `winre_llm_unset` instead of
+failing mid-run, and **Test connection** reports which source is in effect
+without echoing the key. Running WinRE's CLI directly instead of through RevAI:
+
+```bash
+/opt/scripts/winre-llm-env.sh --check     # what would be used
+eval "$(/opt/scripts/winre-llm-env.sh)"   # export into this shell
+```
+
+Full guide: [`WINRE-REMOTE.md`](WINRE-REMOTE.md).
+
 ## Optional: IDA Pro
 
 If you have a licensed IDA Pro 9.3 for Linux installed at `/opt/ida` with `idasql` on `PATH`, the pipeline will use it in addition to Ghidra. If not, the pipeline falls back to Ghidra SQL only.
