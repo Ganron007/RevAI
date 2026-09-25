@@ -114,13 +114,35 @@ WINRE_LLM_REASONING=high
 WINRE_SNAPSHOT_GATE=observe
 ```
 
-Same key across RevAI and WinRE, or per-project keys: both are supported. Note
-that they are **two independent files**: RevAI never reads WinRE's key and WinRE
-never reads RevAI's, so "the same key" means the same values are written in both
-files (`REVAI_LLM_*` in `/opt/revai/config/llm.env`, `WINRE_LLM_*` in
-`/opt/winre/.env`). The FlareVM never holds LLM configuration. The authoritative
-wiring contract (resolution order, spawn-site mapping, troubleshooting) lives in
-the WinRE repository:
+Same key across RevAI and WinRE, or per-project keys: both are supported, and the
+model is written in **one place** by default. When RevAI drives WinRE, the runner
+passes the LLM variables to the child process, resolved in this order:
+
+1. the process environment,
+2. an explicit `WINRE_LLM_*` in `/opt/winre/.env` — so WinRE can deliberately run
+   on its own model,
+3. RevAI's shared config `/opt/revai/config/llm.env`
+   (`REVAI_LLM_API_URL` → `WINRE_LLM_BASE_URL`, plus model, key and reasoning).
+
+Set **Settings → Dynamic analysis → Share RevAI LLM config** to `WinRE .env only`
+to turn step 3 off. `Test connection` reports which source is in effect (and
+whether an agentic pass could run) without ever echoing the key. An agentic pass
+with no LLM resolved is refused up front with `winre_llm_unset` instead of dying
+mid-run.
+
+WinRE's own CLI is not spawned by RevAI, so it gets the same resolution through
+a helper:
+
+```bash
+cd /opt/winre
+/opt/scripts/winre-llm-env.sh --check        # what would be used
+eval "$(/opt/scripts/winre-llm-env.sh)"      # exports for this shell
+/opt/scripts/winre-llm-env.sh --run venv/bin/python -m winre.pipeline <sample> --mode agentic
+```
+
+The FlareVM never holds LLM configuration. The authoritative wiring contract
+(resolution order, spawn-site mapping, troubleshooting) lives in the WinRE
+repository:
 [`docs/REVAI-BRIDGE.md`](https://github.com/Ganron007/WinRE/blob/master/docs/REVAI-BRIDGE.md).
 
 ## Running it from RevAI (optional, three ways)

@@ -74,6 +74,7 @@ def test_availability_reasons(tmp_path, monkeypatch):
     key = tmp_path / "k"
     key.write_text("k")
     s["flare_ssh_key"] = str(key)
+    s["mode"] = "static"   # agentic additionally needs an LLM (own test below)
     ok, reason = wr.availability(s)
     assert ok, reason
 
@@ -145,6 +146,94 @@ def test_child_env_mapping():
     assert env["WINRE_SNAPSHOT_GATE"] == "enforce"
     # WinRE must write its evidence where RevAI reads packs from.
     assert env["WINRE_PIPELINE_LOGS"] == "/data/winre-logs"
+
+
+def _llm_env(tmp_path, monkeypatch, shared: dict, winre: dict | None = None):
+    shared_path = tmp_path / "llm.env"
+    shared_path.write_text("\n".join(f"{k}={v}" for k, v in shared.items()))
+    monkeypatch.setattr(wr, "SHARED_LLM_ENV", shared_path)
+    root = tmp_path / "winre"
+    (root / "winre").mkdir(parents=True, exist_ok=True)
+    (root / ".env").write_text("\n".join(f"{k}={v}" for k, v in (winre or {}).items()))
+    return {"root": root, "mode": "agentic", "llm_source": "inherit"}
+
+
+def test_llm_inherits_from_the_shared_config(tmp_path, monkeypatch):
+    """One place: RevAI's llm.env supplies WinRE's four variables."""
+    for key in ("WINRE_LLM_BASE_URL", "WINRE_LLM_MODEL", "WINRE_LLM_API_KEY"):
+        monkeypatch.delenv(key, raising=False)
+    cfg = _llm_env(tmp_path, monkeypatch, {
+        "REVAI_LLM_API_URL": "https://provider/v1", "REVAI_LLM_MODEL": "m-1",
+        "REVAI_LLM_API_KEY": "k-1", "REVAI_LLM_REASONING": "high",
+    })
+    values, meta = wr.resolve_winre_llm(cfg)
+    assert values["WINRE_LLM_BASE_URL"] == "https://provider/v1"
+    assert values["WINRE_LLM_MODEL"] == "m-1"
+    assert values["WINRE_LLM_API_KEY"] == "k-1"
+    assert values["WINRE_LLM_REASONING"] == "high"
+    assert meta["source"] == "shared" and meta["configured"] is True
+    # The key never leaves the resolver: meta is what the Console sees.
+    assert "k-1" not in json.dumps(meta)
+    env = wr._child_env({**cfg, "flare_host": "h", "flare_user": "u",
+                         "flare_ssh_port": 22, "flare_ssh_key": "/tmp/k",
+                         "snapshot_gate": "observe", "logs_root": "/opt/winre/logs"})
+    assert env["WINRE_LLM_MODEL"] == "m-1"
+
+
+def test_winre_own_env_wins_over_the_shared_config(tmp_path, monkeypatch):
+    for key in ("WINRE_LLM_BASE_URL", "WINRE_LLM_MODEL", "WINRE_LLM_API_KEY"):
+        monkeypatch.delenv(key, raising=False)
+    cfg = _llm_env(tmp_path, monkeypatch,
+                   {"REVAI_LLM_MODEL": "shared-model", "REVAI_LLM_API_KEY": "sk",
+                    "REVAI_LLM_API_URL": "https://shared/v1"},
+                   winre={"WINRE_LLM_MODEL": "winre-model", "WINRE_LLM_API_KEY": "wk",
+                          "WINRE_LLM_BASE_URL": "https://winre/v1"})
+    values, meta = wr.resolve_winre_llm(cfg)
+    assert values["WINRE_LLM_MODEL"] == "winre-model"
+    assert values["WINRE_LLM_API_KEY"] == "wk"
+    assert meta["source"] == "winre_env"
+
+
+def test_llm_source_winre_env_disables_inheritance(tmp_path, monkeypatch):
+    for key in ("WINRE_LLM_BASE_URL", "WINRE_LLM_MODEL", "WINRE_LLM_API_KEY"):
+        monkeypatch.delenv(key, raising=False)
+    cfg = _llm_env(tmp_path, monkeypatch, {
+        "REVAI_LLM_MODEL": "shared-model", "REVAI_LLM_API_KEY": "sk",
+        "REVAI_LLM_API_URL": "https://shared/v1"})
+    cfg["llm_source"] = "winre_env"
+    values, meta = wr.resolve_winre_llm(cfg)
+    assert values == {} and meta["configured"] is False
+    env = wr._child_env({**cfg, "flare_host": "h", "flare_user": "u",
+                         "flare_ssh_port": 22, "flare_ssh_key": "/tmp/k",
+                         "snapshot_gate": "observe", "logs_root": "/opt/winre/logs"})
+    assert "WINRE_LLM_MODEL" not in env
+
+
+def test_availability_refuses_agentic_without_an_llm(tmp_path, monkeypatch):
+    for key in ("WINRE_LLM_BASE_URL", "WINRE_LLM_MODEL", "WINRE_LLM_API_KEY"):
+        monkeypatch.delenv(key, raising=False)
+    root = tmp_path / "winre"
+    (root / "winre").mkdir(parents=True)
+    (root / "winre" / "pipeline.py").write_text("")
+    (root / "venv" / "bin").mkdir(parents=True)
+    (root / "venv" / "bin" / "python").write_text("")
+    key_file = tmp_path / "k"
+    key_file.write_text("k")
+    (root / ".env").write_text("")
+    cfg = {
+        "enabled": True, "root": root, "python": root / "venv" / "bin" / "python",
+        "flare_host": "10.0.0.1", "flare_ssh_key": str(key_file),
+        "mode": "agentic", "snapshot_gate": "observe", "llm_source": "inherit",
+    }
+    monkeypatch.setattr(wr, "SHARED_LLM_ENV", tmp_path / "absent.env")
+    ok, reason = wr.availability(cfg)
+    assert not ok and "winre_llm_unset" in reason
+    # static mode needs no LLM at all
+    ok2, reason2 = wr.availability({**cfg, "mode": "static"})
+    assert ok2, reason2
+    # ... and a bad knob is rejected by name
+    ok3, reason3 = wr.availability({**cfg, "mode": "static", "llm_source": "bogus"})
+    assert not ok3 and "winre_llm_source_invalid" in reason3
 
 
 def test_clock_skew_check_flags_a_skewed_control_plane(monkeypatch):

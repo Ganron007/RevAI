@@ -46,6 +46,18 @@ CONFIG_PATH = Path(os.environ.get("REVAI_PIPELINE_CONFIG", "/opt/samples/pipelin
 DEFAULT_ROOT = Path("/opt/winre")
 DEFAULT_LOGS = Path("/opt/winre/logs")
 
+#: RevAI's own LLM config: the single place the model/provider is written. WinRE
+#: inherits from it unless its own `.env` defines a WINRE_LLM_* value.
+SHARED_LLM_ENV = Path(os.environ.get("REVAI_LLM_ENV", "/opt/revai/config/llm.env"))
+
+#: WINRE variable -> RevAI variables to inherit from, in order.
+_LLM_INHERITANCE = {
+    "WINRE_LLM_BASE_URL": ("REVAI_LLM_API_URL", "REVAI_LLM_BASE_URL"),
+    "WINRE_LLM_MODEL": ("REVAI_LLM_MODEL",),
+    "WINRE_LLM_API_KEY": ("REVAI_LLM_API_KEY",),
+    "WINRE_LLM_REASONING": ("REVAI_LLM_REASONING",),
+}
+
 # Config JSON keys (non-secret; the Console Settings panel writes these).
 _CONFIG_KEYS = {
     "enabled": "winre_enabled",
@@ -60,6 +72,7 @@ _CONFIG_KEYS = {
     "pesieve": "winre_pesieve",
     "agentic_dbg": "winre_agentic_dbg",
     "snapshot_gate": "winre_snapshot_gate",
+    "llm_source": "winre_llm_source",
     "timeout": "winre_timeout",
 }
 
@@ -77,6 +90,7 @@ _ENV_KEYS = {
     "pesieve": "REVAI_WINRE_PESIEVE",
     "agentic_dbg": "REVAI_WINRE_AGENTIC_DBG",
     "snapshot_gate": "REVAI_WINRE_SNAPSHOT_GATE",
+    "llm_source": "REVAI_WINRE_LLM_SOURCE",
     "timeout": "REVAI_WINRE_TIMEOUT",
 }
 
@@ -144,8 +158,72 @@ def settings() -> dict:
         "pesieve": _as_bool(pick("pesieve", "1"), True),
         "agentic_dbg": _as_bool(pick("agentic_dbg", "0"), False),
         "snapshot_gate": (str(pick("snapshot_gate", "observe")).strip().lower() or "observe"),
+        "llm_source": (str(pick("llm_source", "inherit")).strip().lower() or "inherit"),
         "timeout": _as_int(pick("timeout", 3600), 3600),
     }
+
+
+def _read_env_file(path: Path) -> dict:
+    """Parse a KEY=VALUE env file (no expansion, no execution). Fail-open."""
+    out: dict[str, str] = {}
+    try:
+        for line in Path(path).read_text(encoding="utf-8", errors="replace").splitlines():
+            s = line.strip()
+            if not s or s.startswith("#") or "=" not in s:
+                continue
+            key, _, val = s.partition("=")
+            key = key.strip()
+            val = val.strip().strip('"').strip("'")
+            if key:
+                out[key] = val
+    except Exception:
+        pass
+    return out
+
+
+def _winre_env_path(cfg: dict) -> Path:
+    """WinRE's own env file: $WINRE_ENV if set, else <root>/.env (its default)."""
+    override = os.environ.get("WINRE_ENV", "").strip()
+    if override:
+        return Path(override)
+    return Path(str(cfg.get("root") or DEFAULT_ROOT)) / ".env"
+
+
+def resolve_winre_llm(cfg: dict) -> tuple[dict, dict]:
+    """Resolve WinRE's four LLM variables for a spawned process.
+
+    Precedence: process environment > an explicit `WINRE_LLM_*` in WinRE's own
+    `.env` > RevAI's shared LLM config (`llm.env`, the one place the model and
+    provider are written). `llm_source=winre_env` disables the last step, so
+    WinRE can be pointed at its own model deliberately.
+
+    Returns `(values, meta)`. `meta` never carries the key - it is what the
+    Console and `winre-run.json` show.
+    """
+    meta: dict = {"source": "none", "configured": False, "model": None,
+                  "mode": cfg.get("mode"), "inherit": cfg.get("llm_source", "inherit")}
+    winre_env = _read_env_file(_winre_env_path(cfg))
+    shared = _read_env_file(SHARED_LLM_ENV)
+    values: dict[str, str] = {}
+    source = "none"
+    for winre_key, shared_keys in _LLM_INHERITANCE.items():
+        val = os.environ.get(winre_key) or winre_env.get(winre_key)
+        if val:
+            values[winre_key] = val
+            source = "process" if os.environ.get(winre_key) else "winre_env"
+            continue
+        if cfg.get("llm_source", "inherit") != "inherit":
+            continue
+        for shared_key in shared_keys:
+            if shared.get(shared_key):
+                values[winre_key] = shared[shared_key]
+                source = "shared"
+                break
+    meta["source"] = source
+    meta["model"] = values.get("WINRE_LLM_MODEL")
+    meta["configured"] = all(values.get(k) for k in
+                             ("WINRE_LLM_BASE_URL", "WINRE_LLM_MODEL", "WINRE_LLM_API_KEY"))
+    return values, meta
 
 
 def availability(s: dict | None = None) -> tuple[bool, str]:
@@ -167,6 +245,18 @@ def availability(s: dict | None = None) -> tuple[bool, str]:
         return False, f"winre_mode_invalid: {cfg['mode']}"
     if cfg["snapshot_gate"] not in ("observe", "enforce", "off"):
         return False, f"winre_snapshot_gate_invalid: {cfg['snapshot_gate']}"
+    if cfg.get("llm_source", "inherit") not in ("inherit", "winre_env"):
+        return False, f"winre_llm_source_invalid: {cfg['llm_source']}"
+    if cfg["mode"] == "agentic":
+        # An agentic pass without an LLM dies minutes in; refuse it now, with a
+        # reason that names both ways to fix it.
+        _values, meta = resolve_winre_llm(cfg)
+        if not meta.get("configured"):
+            return False, (
+                "winre_llm_unset: agentic mode needs WINRE_LLM_BASE_URL/MODEL/API_KEY "
+                "in /opt/winre/.env, or a shared RevAI llm.env to inherit from "
+                "(Settings -> Dynamic analysis -> Share RevAI LLM config)"
+            )
     return True, "ok"
 
 
@@ -262,6 +352,14 @@ def probe(timeout: int = 15, s: dict | None = None) -> dict:
     except Exception as e:
         out["clock"] = {"ok": False, "skew_s": None, "warn": False,
                         "detail": f"{type(e).__name__}: {e}"[:160]}
+    # LLM resolution (redacted - the key is never returned): shows whether an
+    # agentic pass can run and where the configuration came from.
+    try:
+        _values, meta = resolve_winre_llm(cfg)
+        out["llm"] = meta
+    except Exception as e:
+        out["llm"] = {"source": "none", "configured": False, "model": None,
+                      "error": f"{type(e).__name__}: {e}"[:160]}
     return out
 
 
@@ -294,6 +392,11 @@ def _child_env(cfg: dict) -> dict:
     # Keep WinRE's evidence root in sync with the root RevAI reads packs from
     # (default /opt/winre/logs); a Console override must land where we look.
     env["WINRE_PIPELINE_LOGS"] = str(cfg["logs_root"])
+    # One-place LLM config: WinRE inherits RevAI's model/provider/key unless its
+    # own .env (or the process env) already defines them.
+    if cfg.get("llm_source", "inherit") == "inherit":
+        values, _meta = resolve_winre_llm(cfg)
+        env.update(values)
     return env
 
 
@@ -446,6 +549,7 @@ def run_dynamic(
     limit = int(timeout or cfg["timeout"])
     started = datetime.now(timezone.utc)
     clock = remote_clock_skew(cfg)
+    _llm_values, llm_meta = resolve_winre_llm(cfg)
     _write_status(sha, {
         "state": "running",
         "host": cfg["flare_host"],
@@ -459,6 +563,7 @@ def run_dynamic(
         "log": str(log_path),
         "sample": sp,
         "clock": clock,
+        "llm": llm_meta,
     })
     if clock.get("warn"):
         print(f"[winre_runner] WARNING clock skew vs {cfg['flare_host']}: "
@@ -506,6 +611,7 @@ def run_dynamic(
         "pack_present": pack_present,
         "pack": pack_info,
         "clock": clock,
+        "llm": llm_meta,
         "error": error,
         "finished_at": datetime.now(timezone.utc).isoformat(),
     }

@@ -91,6 +91,7 @@ export default function SettingsPage() {
         winre_pesieve: Boolean(cfg.winre_pesieve ?? true),
         winre_agentic_dbg: Boolean(cfg.winre_agentic_dbg),
         winre_snapshot_gate: cfg.winre_snapshot_gate || 'observe',
+        winre_llm_source: cfg.winre_llm_source || 'inherit',
         run_config: {
           profile: rc.profile || 'standard',
           stage_retries: Number(rc.stage_retries ?? 1),
@@ -251,6 +252,18 @@ export default function SettingsPage() {
                 <option value="observe">observe (default, advisory)</option>
                 <option value="enforce">enforce</option>
                 <option value="off">off</option>
+              </Select>
+            </Field>
+            <Field
+              label="Share RevAI LLM config"
+              hint="agentic passes inherit the model/provider from /opt/revai/config/llm.env; a WINRE_LLM_* value in /opt/winre/.env always wins"
+            >
+              <Select
+                value={cfg.winre_llm_source || 'inherit'}
+                onChange={(e) => setCfg({ ...cfg, winre_llm_source: e.target.value })}
+              >
+                <option value="inherit">inherit (one place)</option>
+                <option value="winre_env">WinRE .env only</option>
               </Select>
             </Field>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-2)' }}>

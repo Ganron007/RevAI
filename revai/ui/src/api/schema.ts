@@ -262,6 +262,7 @@ export const LlmSettingsSchema = z
     winre_pesieve: optBool,
     winre_agentic_dbg: optBool,
     winre_snapshot_gate: optStr,
+    winre_llm_source: optStr,
     winre_available: z
       .object({ ok: z.boolean(), reason: optStr })
       .partial()

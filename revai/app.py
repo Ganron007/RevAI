@@ -70,6 +70,9 @@ DEFAULT_CONFIG = {
     "winre_pesieve": True,
     "winre_agentic_dbg": False,
     "winre_snapshot_gate": "observe",
+    # LLM config source: inherit RevAI's llm.env for WinRE's agentic passes
+    # (one place to write the model), or keep WinRE on its own .env only.
+    "winre_llm_source": "inherit",
 }
 
 # Settings keys exposed to SPA (no RAG URLs / toggles on the wire).
@@ -79,7 +82,7 @@ LLM_SETTINGS_KEYS = ("llm_model", "llm_api_url", "llm_api_key", "llm_reasoning",
 WINRE_SETTINGS_KEYS = (
     "winre_enabled", "flare_host", "flare_user", "flare_ssh_port", "flare_ssh_key",
     "winre_logs", "winre_mode", "winre_window", "winre_adaptive", "winre_pesieve",
-    "winre_agentic_dbg", "winre_snapshot_gate",
+    "winre_agentic_dbg", "winre_snapshot_gate", "winre_llm_source",
 )
 
 # Core spine (static RE + LLM). Dynamic analysis is analyst-optional only.

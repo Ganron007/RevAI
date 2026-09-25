@@ -220,6 +220,8 @@ and corroborates only (`static_yara_wins` never yields).
 | `REVAI_WINRE_MODE` / `REVAI_WINRE_WINDOW` | `agentic` / `150` | WinRE driver mode (`agentic`/`static`) and detonation window (`--max-seconds`) |
 | `REVAI_WINRE_ADAPTIVE` / `REVAI_WINRE_PESIEVE` / `REVAI_WINRE_AGENTIC_DBG` | `1` / `1` / `0` | WinRE driver flags for a run |
 | `REVAI_WINRE_SNAPSHOT_GATE` | `observe` | `observe` (advisory) / `enforce` (block without a clean snapshot marker) / `off` |
+| `REVAI_WINRE_LLM_SOURCE` | `inherit` | `inherit` (WinRE's agentic passes take the model/provider/key from `/opt/revai/config/llm.env` unless `/opt/winre/.env` defines `WINRE_LLM_*`) / `winre_env` (never inherit) |
+| `REVAI_LLM_ENV` | `/opt/revai/config/llm.env` | the shared LLM config WinRE inherits from (path only; the key is never echoed or stored in the Console) |
 | `REVAI_WINRE_ROOT` / `REVAI_WINRE_PY` / `REVAI_WINRE_TIMEOUT` | `/opt/winre` / `<root>/venv/bin/python` / `3600` | install + venv locations, subprocess timeout seconds |
 | `REVAI_WITH_WINRE` / `REVAI_WINRE_REPO` / `REVAI_WINRE_REF` | off / `https://github.com/Ganron007/WinRE.git` / `master` | install-time only: the optional WinRE step in `setup-remnux.sh` |
 | `REVAI_PIPELINE_CONFIG` | `/opt/samples/pipeline-config.json` | path of the Console settings file (override for tests / alternate installs) |
