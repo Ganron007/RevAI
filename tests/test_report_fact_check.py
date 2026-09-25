@@ -98,6 +98,36 @@ def test_documentation_ips_are_excluded():
     assert result["excluded"] == 2
 
 
+def test_fenced_code_placeholders_are_not_claims():
+    """A code snippet with a placeholder hash is an illustration, not a claim."""
+    md = ("## 9. Indicators of Compromise\n\n"
+          "```python\n"
+          'pe.imphash() == "5f2c4f85f614392e3d2e4f6a8b7c9d0e"  # placeholder, compute actual\n'
+          "```\n\n"
+          "No indicators were established.\n")
+    result = rq.verify_claimed_iocs(md, "")
+    assert result["unverified"] == 0
+    # The same hash in prose is still a claim and must be flagged.
+    result2 = rq.verify_claimed_iocs("MD5: 5f2c4f85f614392e3d2e4f6a8b7c9d0e", "")
+    assert result2["unverified"] == 1
+
+
+def test_canonical_run_key_target_is_excluded_but_observed_verifies():
+    run = r"HKCU\Software\Microsoft\Windows\CurrentVersion\Run"
+    unobserved = ("| File (registry) | RegSetValue under "
+                  f"{run} (or equivalent) | not observed in 10.5 s window |")
+    result = rq.verify_claimed_iocs(unobserved, "")
+    assert result["unverified"] == 0
+    assert any("canonical persistence template" in i["reason"]
+               for i in result["excluded_items"])
+    # If a tool did observe the key, the evidence match verifies it normally.
+    result2 = rq.verify_claimed_iocs(unobserved, f"procmon: {run} -> value Foo")
+    assert result2["verified"] == 1
+    # A sample-specific key is still a claim and must be verifiable.
+    result3 = rq.verify_claimed_iocs(r"Key: HKCU\Software\ZProtect\Run", "")
+    assert result3["unverified"] == 1
+
+
 def test_collect_evidence_text_reads_known_files(tmp_path):
     (tmp_path / "deep_dive").mkdir()
     (tmp_path / "deep_dive" / "01-tools-raw.json").write_text('{"a": "evil-c2.biz"}')
