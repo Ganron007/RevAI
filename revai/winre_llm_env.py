@@ -36,7 +36,8 @@ def main() -> int:
 
     cfg = settings()
     values, meta = resolve_winre_llm(cfg)
-    if args.check or not args.run:
+    running = bool(args.run)
+    if args.check or not running:
         print(f"# source={meta['source']} configured={meta['configured']} "
               f"model={meta['model']} mode={cfg.get('mode')}")
     if not meta.get("configured"):
@@ -45,13 +46,16 @@ def main() -> int:
         return 1
     if args.check:
         return 0
-    for key, val in values.items():
-        print(f"export {key}={shlex.quote(val)}")
-    if args.run:
-        cmd = args.run[1:] if args.run and args.run[0] == "--" else args.run
+    if running:
+        # Never print exports on the exec path: the key would land in the caller's
+        # stdout, a log file, or a terminal scrollback.
+        cmd = args.run[1:] if args.run[0] == "--" else args.run
         env = os.environ.copy()
         env.update(values)
         return subprocess.run(cmd, env=env).returncode
+    # Eval path: the whole point is to hand the variables to the shell.
+    for key, val in values.items():
+        print(f"export {key}={shlex.quote(val)}")
     return 0
 
 

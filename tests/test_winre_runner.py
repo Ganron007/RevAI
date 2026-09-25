@@ -236,6 +236,41 @@ def test_availability_refuses_agentic_without_an_llm(tmp_path, monkeypatch):
     assert not ok3 and "winre_llm_source_invalid" in reason3
 
 
+def test_helper_exec_path_never_prints_the_key(tmp_path, monkeypatch, capsys):
+    """Regression: --run must put the key in the child env, never on stdout."""
+    import sys
+
+    import winre_llm_env as envmod
+
+    shared = tmp_path / "llm.env"
+    shared.write_text("REVAI_LLM_API_URL=https://p/v1\nREVAI_LLM_MODEL=m-1\n"
+                      "REVAI_LLM_API_KEY=secret-key\n")
+    root = tmp_path / "winre"
+    (root / "winre").mkdir(parents=True)
+    (root / ".env").write_text("")
+    monkeypatch.setattr(wr, "SHARED_LLM_ENV", shared)
+    monkeypatch.setattr(envmod, "settings", lambda: {
+        "root": root, "mode": "agentic", "llm_source": "inherit"})
+    seen: dict = {}
+
+    def _fake_run(cmd, env=None):
+        seen["cmd"] = cmd
+        seen["env"] = env
+        return type("R", (), {"returncode": 0})()
+
+    monkeypatch.setattr(envmod.subprocess, "run", _fake_run)
+    monkeypatch.setattr(sys, "argv", ["winre_llm_env.py", "--run", "true"])
+    assert envmod.main() == 0
+    assert "secret-key" not in capsys.readouterr().out
+    assert seen["env"]["WINRE_LLM_API_KEY"] == "secret-key"
+    assert seen["cmd"] == ["true"]
+
+    # The eval path still hands the variables to the shell - that is its purpose.
+    monkeypatch.setattr(sys, "argv", ["winre_llm_env.py"])
+    assert envmod.main() == 0
+    assert "export WINRE_LLM_MODEL=m-1" in capsys.readouterr().out
+
+
 def test_clock_skew_check_flags_a_skewed_control_plane(monkeypatch):
     """A fast control plane must be reported (advisory) before a detonation."""
     from datetime import datetime, timedelta, timezone
