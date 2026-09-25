@@ -73,12 +73,15 @@ if [[ -d "$REPO_ROOT/tests" ]]; then
 fi
 
 # ---------------------------------------------------------------------------
-# Deploy the release gate (layout-aware: source checkout or flat VM runtime)
+# Deploy the operator entry points from scripts/ (layout-aware helpers the docs
+# reference by their deployed path, e.g. /opt/scripts/verify-release.sh).
 # ---------------------------------------------------------------------------
-if [[ -f "$REPO_ROOT/scripts/verify-release.sh" ]]; then
-    ok "Deploying release gate to /opt/scripts/ ..."
-    sudo cp "$REPO_ROOT/scripts/verify-release.sh" /opt/scripts/
-fi
+for _op_script in verify-release.sh winre-llm-env.sh; do
+    if [[ -f "$REPO_ROOT/scripts/$_op_script" ]]; then
+        ok "Deploying $_op_script to /opt/scripts/ ..."
+        sudo cp -a "$REPO_ROOT/scripts/$_op_script" /opt/scripts/
+    fi
+done
 
 # ---------------------------------------------------------------------------
 # Deploy the offline Windows-API lookup index (api_lookup)
