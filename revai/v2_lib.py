@@ -12,9 +12,11 @@ import base64
 import hashlib
 import json
 import os
+import random
 import re
 import shutil
 import subprocess
+import threading
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 import sys
@@ -2384,6 +2386,159 @@ def _llm_response_has_usable_content(data: dict) -> bool:
         return True
 
 
+# --- client-side LLM budget (2026-09-28) -----------------------------------
+#
+# Our own execution was tripping the provider's rate limiter. Measured during the
+# six-sample campaign: total request volume is single-digit per minute (the
+# provider allows 1000 RPM), but two stages fire calls in PARALLEL with prompts of
+# tens of thousands of tokens - `section_publisher` runs 4 report-section calls at
+# a time (17 then 13 sections, twice when pass 2 regenerates) and
+# `agentic_recover_v4` runs 8 function-naming calls at a time (a case had 165
+# candidates). The limiter was therefore hit by concurrency x tokens-per-request,
+# not by request count, and the fixed `2 ** attempt` backoff with no jitter made it
+# worse: N throttled threads all re-fired at the same instant.
+#
+# This token bucket makes stage-level concurrency safe by construction: whatever
+# the caller does, the process stays inside the configured RPM/TPM budget. Set
+# REVAI_LLM_BUDGET=0 to disable (tests); the defaults are deliberately well under
+# the provider's published limit, with ~6x headroom over our measured usage.
+_LLM_BUDGET_LOCK = threading.Lock()
+_LLM_BUDGET_CALLS: list[float] = []          # request timestamps (sliding 60s)
+_LLM_BUDGET_TOKENS: list[tuple[float, int]] = []  # (timestamp, estimated tokens)
+_LLM_BUDGET_WAITED_S = 0.0                   # diagnostics: total time spent waiting
+_LLM_BUDGET_WINDOW_S = 60.0
+_CHARS_PER_TOKEN = 3.5                       # conservative English/code estimate
+_COMPLETION_ALLOWANCE = 4096                 # assumed output tokens per call
+
+
+def _llm_budget_enabled() -> bool:
+    return (os.environ.get("REVAI_LLM_BUDGET") or "1").strip().lower() not in (
+        "0", "false", "no", "off",
+    )
+
+
+def _llm_rpm_limit() -> int:
+    """Requests/min we allow ourselves.
+
+    Our account's published limits for the models we use (step-3.7-flash,
+    step-5-preview) are concurrency 100 / RPM 1000 / TPM 20,000,000, and our
+    measured usage is ~5 calls/min at up to 8-way parallelism, ~150K tokens/min
+    - roughly two orders of magnitude below those numbers. The HTTP 429s seen on
+    2026-09-27 therefore do NOT come from the tier table; the endpoint is
+    `step_plan`, whose quota is the subscribed plan's monthly credit allowance
+    rather than the top-up tiers. These defaults are a client-side guard rail
+    (bound bursts, keep the audit trail honest), not a quota mirror: raise them
+    if your plan allows more, and read the logged 429 body to see what the
+    provider actually objected to.
+    """
+    try:
+        return max(1, int(os.environ.get("REVAI_LLM_RPM", "120") or 120))
+    except ValueError:
+        return 120
+
+
+def _llm_tpm_limit() -> int:
+    """Tokens/min we allow ourselves (estimate from prompt size, not an accounting claim)."""
+    try:
+        return max(1000, int(os.environ.get("REVAI_LLM_TPM", "1000000") or 1000000))
+    except ValueError:
+        return 1000000
+
+
+def _llm_concurrency_limit() -> int:
+    """Max LLM requests in flight in this process, whatever the caller's pool size.
+
+    Our largest pool is `agentic_recover_v4` at 8 workers (one case had 165
+    candidates); the section map-reduce uses 4. Capping in-flight requests makes
+    stage-level parallelism safe regardless of what a stage spawns, and the slot
+    is held for the request only - never across a backoff sleep, so a throttled
+    thread cannot starve the others.
+    """
+    try:
+        return max(1, int(os.environ.get("REVAI_LLM_CONCURRENCY", "6") or 6))
+    except ValueError:
+        return 6
+
+
+_LLM_SEMAPHORE: threading.Semaphore | None = None
+_LLM_SEMAPHORE_VALUE: int | None = None
+
+
+def llm_semaphore():
+    """Process-wide in-flight cap (recreated if the configured value changes)."""
+    global _LLM_SEMAPHORE, _LLM_SEMAPHORE_VALUE
+    limit = _llm_concurrency_limit() if _llm_budget_enabled() else 10 ** 6
+    with _LLM_BUDGET_LOCK:
+        if _LLM_SEMAPHORE is None or _LLM_SEMAPHORE_VALUE != limit:
+            _LLM_SEMAPHORE = threading.Semaphore(limit)
+            _LLM_SEMAPHORE_VALUE = limit
+        return _LLM_SEMAPHORE
+
+
+def estimate_llm_tokens(prompt: str) -> int:
+    """Prompt-size estimate for budgeting (never an accounting claim)."""
+    return int(len(prompt or "") / _CHARS_PER_TOKEN) + _COMPLETION_ALLOWANCE
+
+
+def llm_budget_acquire(est_tokens: int) -> float:
+    """Block until one more call fits the budget. Returns seconds waited.
+
+    Thread-safe: the lock is held only while inspecting/updating the window, never
+    while sleeping, so parallel callers queue instead of deadlocking.
+    """
+    global _LLM_BUDGET_WAITED_S
+    if not _llm_budget_enabled():
+        return 0.0
+    rpm = _llm_rpm_limit()
+    tpm = _llm_tpm_limit()
+    waited = 0.0
+    while True:
+        with _LLM_BUDGET_LOCK:
+            now = time.time()
+            cutoff = now - _LLM_BUDGET_WINDOW_S
+            while _LLM_BUDGET_CALLS and _LLM_BUDGET_CALLS[0] < cutoff:
+                _LLM_BUDGET_CALLS.pop(0)
+            while _LLM_BUDGET_TOKENS and _LLM_BUDGET_TOKENS[0][0] < cutoff:
+                _LLM_BUDGET_TOKENS.pop(0)
+            used_tokens = sum(t for _, t in _LLM_BUDGET_TOKENS)
+            over_rpm = len(_LLM_BUDGET_CALLS) + 1 > rpm
+            over_tpm = used_tokens + est_tokens > tpm
+            if not over_rpm and not over_tpm:
+                _LLM_BUDGET_CALLS.append(now)
+                _LLM_BUDGET_TOKENS.append((now, est_tokens))
+                _LLM_BUDGET_WAITED_S += waited
+                return waited
+            # Sleep until the oldest entry leaves the window (capped so a changed
+            # env or a big window cannot park a thread for a minute).
+            oldest = min(
+                _LLM_BUDGET_CALLS[0] if over_rpm else _LLM_BUDGET_TOKENS[0][0],
+                now,
+            )
+            delay = max(0.2, min(5.0, (oldest + _LLM_BUDGET_WINDOW_S) - now))
+        time.sleep(delay)
+        waited += delay
+
+
+def llm_budget_state() -> dict:
+    """Budget snapshot for diagnostics/tests (no secrets)."""
+    with _LLM_BUDGET_LOCK:
+        return {
+            "enabled": _llm_budget_enabled(),
+            "rpm_limit": _llm_rpm_limit(),
+            "tpm_limit": _llm_tpm_limit(),
+            "calls_in_window": len(_LLM_BUDGET_CALLS),
+            "tokens_in_window": sum(t for _, t in _LLM_BUDGET_TOKENS),
+            "waited_s_total": round(_LLM_BUDGET_WAITED_S, 1),
+        }
+
+
+def llm_budget_reset() -> None:
+    """Test helper: clear the sliding window."""
+    with _LLM_BUDGET_LOCK:
+        _LLM_BUDGET_CALLS.clear()
+        _LLM_BUDGET_TOKENS.clear()
+
+
 def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
               reasoning: str | None = None) -> dict:
     """Call the configured LLM chat API with retries. Returns the FULL response dict.
@@ -2458,6 +2613,14 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
     last_empty: dict | None = None
     for attempt in range(1, max_retries + 1):
         body.update(_build_reasoning_body(current_reasoning))
+        # Stay inside the client-side budget before every attempt: this is what
+        # keeps parallel stages (section map-reduce, function recovery) from
+        # throttling each other. 2026-09-28: a 4-way x 17-section burst against
+        # 30-60K-token prompts produced HTTP 429 on 4 of 5 campaign cases.
+        waited = llm_budget_acquire(estimate_llm_tokens(prompt))
+        if waited >= 1.0:
+            print(f"[llm_budget] waited {waited:.1f}s to stay inside "
+                  f"{_llm_rpm_limit()} RPM / {_llm_tpm_limit()} TPM", flush=True)
         try:
             req = urllib.request.Request(
                 api_url,
@@ -2468,45 +2631,84 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                 },
                 method="POST",
             )
-            with urllib.request.urlopen(req, timeout=timeout_s) as resp:
-                data = json.loads(resp.read().decode())
-                llm_usage_journal(model=effective_model, response=data,
-                                  note=f"attempt={attempt}")
-                if _finish_reason(data) == "abort" and attempt < max_retries:
-                    # Provider aborted mid-reasoning (e.g. on long
-                    # prompts): downgrade reasoning effort one notch and
-                    # retry. Never silently return truncated content.
+            # In-flight cap: hold a slot only for the request itself, never across
+            # a backoff sleep, so a throttled thread cannot starve the others.
+            sem = llm_semaphore()
+            sem.acquire()
+            try:
+                with urllib.request.urlopen(req, timeout=timeout_s) as resp:
+                    raw_body = resp.read()
+            finally:
+                sem.release()
+            data = json.loads(raw_body.decode())
+            llm_usage_journal(model=effective_model, response=data,
+                              note=f"attempt={attempt}")
+            if _finish_reason(data) == "abort" and attempt < max_retries:
+                # Provider aborted mid-reasoning (e.g. on long prompts): downgrade
+                # reasoning effort one notch and retry. Never silently return
+                # truncated content.
+                nxt = _next_lower_effort(current_reasoning)
+                print(
+                    f"[llm_judge] attempt {attempt}/{max_retries} "
+                    f"finish_reason=abort (reasoning={current_reasoning}); "
+                    f"retrying with reasoning={nxt}",
+                    flush=True,
+                )
+                current_reasoning = nxt
+                time.sleep(2 ** attempt + random.uniform(0, 1.0))  # jitter
+                continue
+            if _finish_reason(data) == "abort":
+                # Last attempt aborted — break to the no-thinking fallback.
+                last_aborted = data
+                break
+            if not _llm_response_has_usable_content(data):
+                if attempt < max_retries:
                     nxt = _next_lower_effort(current_reasoning)
                     print(
-                        f"[llm_judge] attempt {attempt}/{max_retries} "
-                        f"finish_reason=abort (reasoning={current_reasoning}); "
+                        f"[llm_judge] attempt {attempt}/{max_retries} returned "
+                        f"no usable content (reasoning={current_reasoning}); "
                         f"retrying with reasoning={nxt}",
                         flush=True,
                     )
                     current_reasoning = nxt
-                    time.sleep(2 ** attempt)
+                    time.sleep(2 ** attempt + random.uniform(0, 1.0))  # jitter
                     continue
-                if _finish_reason(data) == "abort":
-                    # Last attempt aborted — break to the no-thinking fallback.
-                    last_aborted = data
-                    break
-                if not _llm_response_has_usable_content(data):
-                    if attempt < max_retries:
-                        nxt = _next_lower_effort(current_reasoning)
-                        print(
-                            f"[llm_judge] attempt {attempt}/{max_retries} returned "
-                            f"no usable content (reasoning={current_reasoning}); "
-                            f"retrying with reasoning={nxt}",
-                            flush=True,
-                        )
-                        current_reasoning = nxt
-                        time.sleep(2 ** attempt)
-                        continue
-                    last_empty = data
-                    break
-                return data
+                last_empty = data
+                break
+            return data
         except Exception as e:
             last_error = e
+            # HTTP 429: the provider is throttling us. Log what it says (limit type,
+            # Retry-After) and back off accordingly - honouring Retry-After and
+            # adding jitter, so N throttled threads do not re-fire in lockstep
+            # (2026-09-28: fixed 2s/4s backoff with no jitter turned one throttle
+            # into a self-inflicted retry storm).
+            if getattr(e, "code", None) == 429:
+                retry_after = ""
+                detail = ""
+                try:
+                    retry_after = (e.headers or {}).get("Retry-After", "")  # type: ignore[union-attr]
+                    raw = e.read()  # type: ignore[union-attr]
+                    detail = raw.decode("utf-8", "replace")[:200] if raw else ""
+                except Exception:
+                    pass
+                if attempt < max_retries:
+                    base = 2 ** attempt
+                    if retry_after:
+                        try:
+                            base = max(base, float(retry_after))
+                        except ValueError:
+                            pass
+                    sleep_s = base + random.uniform(0, 1.5)
+                    print(
+                        f"[llm_judge] attempt {attempt}/{max_retries} HTTP 429 "
+                        f"(retry_after={retry_after or 'n/a'}"
+                        f"{', body=' + detail if detail else ''}); "
+                        f"retrying in {sleep_s:.1f}s",
+                        flush=True,
+                    )
+                    time.sleep(sleep_s)
+                    continue
             _timeout_err = (
                 isinstance(e, TimeoutError)
                 or "timed out" in str(e).lower()
