@@ -20,8 +20,11 @@ RevAI deploys to a single REMnux VM. The `revai/` package is copied to `/opt/scr
    REVAI_LLM_API_URL=<provider-base-url>
    REVAI_LLM_API_KEY=<REDACTED_API_KEY>
    REVAI_LLM_REASONING=<low|medium|high|max>
-   REVAI_LLM_PLANNER_MODEL=<your-model-name>
-   REVAI_LLM_VERDICT_MODEL=<your-model-name>
+   # Optional role pins - each falls back to REVAI_LLM_MODEL when blank.
+   # The planner drives the agentic tool loop; the verdict pin drives the
+   # agentic final judge only.
+   REVAI_LLM_PLANNER_MODEL=<tool-loop-model>
+   REVAI_LLM_VERDICT_MODEL=<judgment-model>
    ```
    Note: `REVAI_LLM_API_URL` is the **base URL** — the pipeline appends `/chat/completions` internally. Do not include the full endpoint path.
 

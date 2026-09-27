@@ -37,6 +37,7 @@ from v2_lib import (  # noqa: E402
     ensure_pipeline_runtime_env,
     get_planner_model,
     get_verdict_model,
+    get_llm_model,
     is_transient_failure,
     load_session,
     revai_provenance,
@@ -412,6 +413,7 @@ class StageRunner:
             "deep_checklist_ok": deep.get("checklist_ok"),
             "deep_sql_deep_ok": deep.get("sql_deep_ok"),
             "models": {
+                "default": get_llm_model(),
                 "planner": get_planner_model(),
                 "judgment": get_verdict_model(),
                 **(q.get("models") or {}),

@@ -2189,15 +2189,39 @@ def load_api_key() -> str:
 _DEFAULT_MODEL = os.environ.get("REVAI_LLM_MODEL", "")
 
 
+# Three independently resolvable LLM roles (the env file is authoritative):
+#   REVAI_LLM_MODEL          default - the agentic tool loop and every call that
+#                            does not ask for a specific role (triage, deep dive,
+#                            function recovery, reports, section map-reduce)
+#   REVAI_LLM_PLANNER_MODEL  the agentic tool loop only (defaults to the default)
+#   REVAI_LLM_VERDICT_MODEL  the judgment role only - the agentic final judge
+#                            (defaults to the default)
+# Until 2026-09-27 get_llm_model() returned the judgment model, so pinning
+# REVAI_LLM_VERDICT_MODEL also dragged every triage / report / section call onto
+# it and the default model became dead config.
+
+
+def get_default_model() -> str:
+    """Default model: the tool loop plus every non-role pipeline call."""
+    for var in ("REVAI_LLM_MODEL", "REVAI_LLM_VERDICT_MODEL", "REVAI_LLM_PLANNER_MODEL"):
+        val = (os.environ.get(var) or "").strip()
+        if val:
+            return val
+    return _DEFAULT_MODEL
+
+
 def get_planner_model() -> str:
-    """Agentic RE planner / tool loop (fast, low-latency)."""
-    return (
-        os.environ.get("REVAI_LLM_PLANNER_MODEL") or _DEFAULT_MODEL
-    ).strip() or _DEFAULT_MODEL
+    """Agentic RE planner / tool loop (fast, low-latency by convention)."""
+    return (os.environ.get("REVAI_LLM_PLANNER_MODEL") or "").strip() or get_default_model()
 
 
 def get_verdict_model() -> str:
-    """Verdict / validation / report judges (highest quality available).
+    """Judgment role: the agentic final judge (highest quality available).
+
+    This is the only role REVAI_LLM_VERDICT_MODEL drives. Triage, the scripted
+    deep dive, function recovery, the reports and the v3 sections deliberately
+    use the default model instead (get_llm_model), so a heavy judgment pin no
+    longer moves the whole pipeline.
 
     Env priority:
       REVAI_LLM_VERDICT_MODEL → REVAI_LLM_MODEL (if not flash) → REVAI_LLM_MODEL
@@ -2213,8 +2237,12 @@ def get_verdict_model() -> str:
 
 
 def get_llm_model() -> str:
-    """Default judgment model for pipeline LLM calls → Pro (not agentic planner)."""
-    return get_verdict_model()
+    """Default model for pipeline LLM calls: triage, deep dive, reports.
+
+    Deliberately not the judgment model - role separation is the operator's
+    call, expressed with REVAI_LLM_PLANNER_MODEL / REVAI_LLM_VERDICT_MODEL.
+    """
+    return get_default_model()
 
 
 def get_llm_api_url() -> str:

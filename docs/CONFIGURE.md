@@ -12,14 +12,21 @@ You can also override settings per run through the React Console **Settings** ta
 
 | Variable | Required | Description |
 |---|---|---|
-| `REVAI_LLM_MODEL` | Yes | OpenAI-compatible model name — use whatever your provider exposes. |
+| `REVAI_LLM_MODEL` | Yes | OpenAI-compatible model name — use whatever your provider exposes. This is the **default** model: the agentic tool loop plus every call that does not ask for a specific role (triage verdict, scripted deep dive, function recovery, reports, v3 sections). |
 | `REVAI_LLM_API_URL` | Yes | OpenAI-compatible **base URL** (not the full endpoint). The pipeline appends `/chat/completions` internally. |
 | `REVAI_LLM_API_KEY` | Yes | API key for the above endpoint. |
 | `REVAI_LLM_REASONING` | No | Reasoning effort (`low` / `medium` / `high` / `max` / `disabled`), if your model supports it. Aborts, timeouts and empty responses retry with a step-down through the effort levels and a final no-thinking attempt, so a flaky thinking mode degrades gracefully. |
 | `REVAI_LLM_TEMPERATURE` | No | Override temperature for LLM judge calls. Default `0.2`. |
 | `REVAI_LLM_TIMEOUT` | No | Read timeout (seconds) for LLM judge calls. Default `300`; raise it for very long report prompts at high reasoning effort. |
-| `REVAI_LLM_PLANNER_MODEL` | No | Agentic planner model (defaults to `REVAI_LLM_MODEL`). |
-| `REVAI_LLM_VERDICT_MODEL` | No | Verdict / report model (defaults to `REVAI_LLM_MODEL`). |
+| `REVAI_LLM_PLANNER_MODEL` | No | The **agentic tool loop** (the ReAct planner bound to the deep-dive tool registry) — the call-heavy role. Defaults to `REVAI_LLM_MODEL`. |
+| `REVAI_LLM_VERDICT_MODEL` | No | The **judgment role** only: the agentic final judge. Defaults to `REVAI_LLM_MODEL`. It does not move triage, the deep dive or the reports, so pinning the strongest model here costs one call per agentic run. |
+
+> **Role separation.** All three names are resolved independently (`v2_lib.get_default_model` /
+> `get_planner_model` / `get_verdict_model`) and each role pin falls back to `REVAI_LLM_MODEL`, so a
+> single-model setup only needs the one value. Every report records the model it was produced with, and
+> the run gate plus the quality pack carry the resolved `default` / `planner` / `judgment` names, so the
+> routing can be verified per case instead of trusted. The Console can override the default model for
+> console-started runs; it never overrides the two role pins.
 
 > **Provider-agnostic.** RevAI works with any OpenAI-compatible chat-completions API — no provider, model, or endpoint is hardcoded. The pipeline normalizes LLM output regardless of the JSON key the model returns for report content (`markdown`, `mark`, `content`, `body`, `text`, `report`, or `output`) via `v2_lib.normalize_llm_json`. Fenced JSON, prose-wrapped JSON, and raw markdown are all tolerated.
 
