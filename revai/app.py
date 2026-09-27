@@ -789,13 +789,19 @@ def get_stage_env(rc: dict | None = None) -> dict[str, str]:
         "CADRE_CAPA_ENGINE": os.environ.get("CADRE_CAPA_ENGINE", "auto"),
         "REVAI_RUN_MODE": "ui",
     }
-    # LLM backend: reads model names from env (REVAI_LLM_MODEL, REVAI_LLM_PLANNER_MODEL,
-    # REVAI_LLM_VERDICT_MODEL). The env file is the single source of truth for model choice.
+    # LLM backend: the env file is the single source of truth for model choice.
+    # The Console may set the DEFAULT model, but role separation is the file's
+    # call: setting REVAI_LLM_VERDICT_MODEL here collapsed planner / judgment /
+    # reporting onto one model for every console-started run (observed
+    # 2026-09-27). So: set only the default, and carry the file's role pins
+    # through unchanged.
     llm_model = (cfg.get("llm_model") or "").strip()
     if llm_model:
         env["REVAI_LLM_MODEL"] = llm_model
-        env["REVAI_LLM_VERDICT_MODEL"] = llm_model
         env["REVAI_LLM_MODEL_REQUESTED"] = llm_model
+    for _role in ("REVAI_LLM_PLANNER_MODEL", "REVAI_LLM_VERDICT_MODEL"):
+        if (os.environ.get(_role) or "").strip():
+            env[_role] = os.environ[_role]
     llm_api_url = cfg.get("llm_api_url", "").strip()
     if llm_api_url:
         env["REVAI_LLM_API_URL"] = llm_api_url

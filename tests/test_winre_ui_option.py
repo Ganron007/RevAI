@@ -71,6 +71,32 @@ def _app():
     return app_mod
 
 
+def test_console_model_keeps_the_files_planner_and_verdict_pins(monkeypatch):
+    """The Console may set the default model; the file owns role separation.
+
+    Regression (2026-09-27): the Console used to export REVAI_LLM_VERDICT_MODEL
+    too, which silently collapsed planner / judgment / reporting onto one model
+    for every console-started run.
+    """
+    app_mod = _app()
+    monkeypatch.setattr(app_mod, "load_config", lambda: {"llm_model": "console-default"})
+    monkeypatch.setenv("REVAI_LLM_PLANNER_MODEL", "file-planner")
+    monkeypatch.setenv("REVAI_LLM_VERDICT_MODEL", "file-judge")
+    env = app_mod.get_stage_env({})
+    assert env["REVAI_LLM_MODEL"] == "console-default"
+    assert env["REVAI_LLM_PLANNER_MODEL"] == "file-planner"
+    assert env["REVAI_LLM_VERDICT_MODEL"] == "file-judge"
+
+    # With no role pins anywhere, the Console sets only the default and the
+    # pipeline's own fallback (verdict -> REVAI_LLM_MODEL) applies.
+    monkeypatch.delenv("REVAI_LLM_PLANNER_MODEL", raising=False)
+    monkeypatch.delenv("REVAI_LLM_VERDICT_MODEL", raising=False)
+    env2 = app_mod.get_stage_env({})
+    assert env2["REVAI_LLM_MODEL"] == "console-default"
+    assert "REVAI_LLM_VERDICT_MODEL" not in env2
+    assert "REVAI_LLM_PLANNER_MODEL" not in env2
+
+
 def test_run_config_maps_toggle_to_both_envs(monkeypatch):
     app_mod = _app()
     monkeypatch.delenv("REVAI_DISABLE_DYNAMIC_CORROBORATION", raising=False)
