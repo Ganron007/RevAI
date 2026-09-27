@@ -171,26 +171,27 @@ Tunables (all optional, defaults shown):
 | `REVAI_ENABLE_UNPACK_PASS` | off | emulation-assisted unpacking for samples the packer checklist flags: OEP detection, carved `unpacked_<name>` payload under `logs/<sha>/unpack/`, in-memory IAT readout |
 | `REVAI_LLM_RPM` | 300 | client-side request budget per process (sliding 60 s window). Inert for a Step Plan key (concurrency-only); a backstop for pay-as-you-go |
 | `REVAI_LLM_TPM` | 1500000 | client-side token budget per process, estimated from prompt size. Same caveat: inert for Step Plan, backstop otherwise |
-| `REVAI_LLM_CONCURRENCY` | 4 | **the limit that actually binds on a Step Plan key**: maximum LLM requests in flight per process, whatever a stage's thread pool size is. Held for the request only, never across a backoff |
+| `REVAI_LLM_CONCURRENCY` | 6 | **the limit that actually binds on a Step Plan key**: maximum LLM requests in flight per process, whatever a stage's thread pool size is. Measured ceiling is **8**; the default leaves headroom. Held for the request only, never across a backoff |
 | `REVAI_LLM_BUDGET` | 1 | `0` disables all three client-side limits (for tests and for deliberately unthrottled batch runs) |
 
-> **Why RevAI throttles itself.** Two stages issue several large-prompt LLM calls in
-> parallel: the report section map-reduce (4 at a time) and function recovery (8 worker
-> threads; one case had 165 candidates). On a **Step Plan** key the provider enforces a
-> **concurrency limit only** — its published RPM/TPM tier table explicitly excludes
-> Step Plan — so in-flight parallelism is the only thing that can be throttled. A
-> six-sample campaign saw HTTP 429 on 4 of 5 samples at a request rate of ~5/min, which
-> is consistent with a plan concurrency ceiling being exceeded by our own pools and not
-> with any request-rate limit. The guard rail above therefore bounds in-flight requests
-> centrally: any number of worker threads now share one budget, and the default (4)
-> matches the pool we would have used anyway, so nothing slows down today.
+> **Why RevAI throttles itself.** On a **Step Plan** key the provider enforces a
+> **concurrency limit only** — its published RPM/TPM tier table explicitly excludes Step
+> Plan. Ramping concurrent requests against the plan (2026-09-28) puts the ceiling at
+> **8**, reported by the provider as
+> `{"error":{"message":"concurrency reached, current: 9, limit: 8","type":"rate_limited"}}`.
+> The pipeline was tripping it on its own: function recovery runs 8 worker threads (one
+> case had 165 candidates), so the pool alone consumed the whole allowance and the next
+> call from the main thread made it 9. Every HTTP 429 in a six-sample campaign was in
+> that stage or in the 4-way report section map-reduce — all on the fast model, none on
+> the judgment model. The guard rail now bounds in-flight requests centrally, so any
+> number of worker threads share one budget; `REVAI_LLM_CONCURRENCY` defaults to 6 to
+> stay under the measured ceiling. If the provider changes the ceiling, the 429 log line
+> carries the model, the `Retry-After` value and the provider's own body — that line,
+> not this document, is the authority.
 >
-> When the provider does throttle, the response body and `Retry-After` are logged
-> (`[llm_judge] ... HTTP 429 (retry_after=..., body=...)`) — that line, not the
-> client-side limits, is the authoritative answer to *why*, and it is how to learn the
-> plan's real concurrency ceiling. Note also that provider limits are usually per
-> **account**, not per key: another product on the same account consumes the same
-> budget, which a per-process guard rail cannot see.
+> Note also that provider limits are usually per **account**, not per key: another
+> product on the same account consumes the same budget, which a per-process guard rail
+> cannot see.
 | `REVAI_ENABLE_ARTIFACT_GEN` | off | plan #11: generate a sample-specific extraction script, run it in a bounded sandbox, and re-derive every claimed value from the sample bytes (Console: run config → Analysis scripts). Opt-in; self-skips with rc=0 when off; never gates the verdict |
 | `REVAI_ARTIFACT_GEN_TIMEOUT` | 180 | seconds allowed for the generation LLM call in the artifact-generation stage |
 | `REVAI_ARTIFACT_GEN_RUN_TIMEOUT` | 60 | seconds allowed for the *generated script* to run before it is killed and recorded as `timed_out` |

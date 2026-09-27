@@ -2448,23 +2448,26 @@ def _llm_tpm_limit() -> int:
 def _llm_concurrency_limit() -> int:
     """Max LLM requests in flight in this process, whatever the caller's pool size.
 
-    This is the only limit that applies to us. Our endpoint is the provider's
-    **Step Plan** API, which - per its usage-limits page - enforces a concurrency
-    limit only (the published RPM/TPM tier table explicitly excludes Step Plan).
-    Measured 2026-09-27: HTTP 429 on 4 of 5 samples of a six-sample campaign whose
-    request rate was ~5/min. The plausible cause is our own parallelism against a
-    plan concurrency ceiling: `agentic_recover_v4` runs 8 worker threads (one case
-    had 165 candidates) and the report section map-reduce runs 4.
+    This is the only limit that applies to us: our endpoint is the provider's
+    **Step Plan** API, which enforces concurrency only (its published RPM/TPM tier
+    table explicitly excludes Step Plan). **Measured 2026-09-28 by ramping
+    concurrent requests: the plan's limit is 8**, and the provider says so itself -
+    `{"error":{"message":"concurrency reached, current: 9, limit: 8",
+    "type":"rate_limited"}}`.
 
-    Default 4 = the largest pool we would have allowed anyway, so nothing slows
-    down today; it becomes a guard the moment a stage is parallelised further.
-    Raise it once the provider tells us the real number - the response body and
-    Retry-After are logged on every 429 for exactly that reason.
+    That is precisely how the pipeline was tripping it: `agentic_recover_v4` runs 8
+    worker threads (one case had 165 candidates), so the pool alone consumed the
+    whole allowance and the main thread's next call made it 9. Every HTTP 429 in
+    the six-sample campaign was in that stage or in the 4-way section map-reduce,
+    all on the flash model - not the judgment model.
+
+    Default 6 leaves headroom under the measured ceiling of 8 for the main thread
+    and any straggler, without serialising the pools.
     """
     try:
-        return max(1, int(os.environ.get("REVAI_LLM_CONCURRENCY", "4") or 4))
+        return max(1, int(os.environ.get("REVAI_LLM_CONCURRENCY", "6") or 6))
     except ValueError:
-        return 4
+        return 6
 
 
 _LLM_SEMAPHORE: threading.Semaphore | None = None
@@ -2709,6 +2712,7 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                     sleep_s = base + random.uniform(0, 1.5)
                     print(
                         f"[llm_judge] attempt {attempt}/{max_retries} HTTP 429 "
+                        f"model={effective_model} "
                         f"(retry_after={retry_after or 'n/a'}"
                         f"{', body=' + detail if detail else ''}); "
                         f"retrying in {sleep_s:.1f}s",
