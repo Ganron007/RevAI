@@ -204,43 +204,107 @@ def test_ioc_factcheck_issue_modes(monkeypatch):
     monkeypatch.setenv("REVAI_IOC_FACTCHECK", "advisory")
     assert rq._ioc_factcheck_issue({"unverified": 2}) is None
 
-
 # --- behavior prerequisites (#14d) ----------------------------------------
+#
+# Calibration 2026-09-27 (56-case published corpus) REJECTED promotion to a
+# blocking gate; the check stays advisory. These tests pin the fixed classifier,
+# a positive control, and the three real false-positive classes the calibration
+# found (see tests/test_behavior_prereq_calibration.py for the full set).
+
+MD_CLAIM = "The sample performs process injection and establishes persistence."
+MD_DENIAL = "There is no registry manipulation and no process injection in this sample."
 
 
-MD_BEHAVIOR = ("The sample performs process injection and establishes persistence "
-               "through a Run key.")
-
-
-def test_behavior_prerequisites_flags_unsupported():
-    surface = "createremotethread\nwriteprocessmemory"
-    result = rq.verify_behavior_prerequisites(MD_BEHAVIOR, surface)
+def test_claim_without_supporting_api_is_uncorroborated_not_unsupported():
+    """Absence from a curated import map is not evidence of absence."""
+    surface = "createremotethread\nwriteprocessmemory"  # injection only
+    result = rq.verify_behavior_prerequisites(MD_CLAIM, surface)
     assert result["advisory"] is True
-    behaviors = {i["behavior"] for i in result["unsupported_items"]}
-    assert behaviors == {"persistence"}
-    assert result["analysis_incomplete"] is False
+    assert result["uncorroborated"] == 1          # persistence has no API here
+    assert result["unsupported"] == 0             # ... and that is NOT a gate failure
 
 
-def test_behavior_prerequisites_supported_is_clean():
+def test_claim_with_supporting_api_is_not_flagged():
     surface = "createremotethread\nregsetvalueex"
-    result = rq.verify_behavior_prerequisites(MD_BEHAVIOR, surface)
+    result = rq.verify_behavior_prerequisites(MD_CLAIM, surface)
     assert result["unsupported"] == 0
+    assert result["uncorroborated"] == 0
     assert result["checked"] == 2
 
 
-def test_behavior_prerequisites_packed_reads_incomplete():
-    result = rq.verify_behavior_prerequisites(MD_BEHAVIOR, "", packed=True)
+def test_contradiction_is_detected_positive_control():
+    """The detector CAN fire: a denial whose behaviour the map shows."""
+    surface = "createservice\nopenscmanager"
+    md = "The sample does not use persistence mechanisms."
+    result = rq.verify_behavior_prerequisites(md, surface)
+    assert result["unsupported"] == 1
+    assert result["contradictions"][0]["behavior"] == "persistence"
+    assert "createservice" in result["contradictions"][0]["present"]
+
+
+def test_contradiction_does_not_fail_the_gate():
+    """The decision under test: advisory stays advisory, so issues stay clean."""
+    surface = "createservice\nopenscmanager"
+    md = "The sample does not use persistence mechanisms."
+    result = rq.verify_behavior_prerequisites(md, surface)
+    assert result["advisory"] is True
+    assert "promotion" in result and "rejected" in result["promotion"]
+
+
+def test_corroborated_absence_is_not_a_contradiction():
+    """A denial the evidence agrees with (ghyte: pe_imports signal_count 0)."""
+    md = "There are no registry-based persistence mechanisms in this sample."
+    result = rq.verify_behavior_prerequisites(md, "")   # empty import map
+    assert result["unsupported"] == 0
+    assert result["negated_mentions"] >= 1
+
+
+def test_packed_sample_reads_incomplete():
+    result = rq.verify_behavior_prerequisites(MD_CLAIM, "", packed=True)
     assert result["analysis_incomplete"] is True
     assert result["packed"] is True
+    assert result["unsupported"] == 0
 
 
-def test_behavior_prerequisites_empty_report():
+def test_empty_report():
     result = rq.verify_behavior_prerequisites("", "anything")
     assert result["checked"] == 0
     assert result["unsupported_items"] == []
 
 
-def test_collect_import_surface_prefers_structured(tmp_path):
+def test_collect_import_surface_reads_the_high_signal_map(tmp_path):
+    (tmp_path / "pe-imports.txt").write_text(
+        '{"engine": "pe_imports", "signal_count": 2,'
+        ' "signals": [{"api_match": "CreateRemoteThread"},'
+        ' {"api_match": "RegSetValueExA"}]}')
+    surface, sources = rq.collect_import_surface(tmp_path)
+    assert "createremotethread" in surface
+    assert "regsetvalueexa" in surface
+    assert sources == ["pe-imports.txt"]
+
+
+def test_collect_import_surface_reads_the_bare_list_shape(tmp_path):
+    (tmp_path / "pe-imports.txt").write_text(
+        '[{"api_match": "CreateServiceA", "attack": ["T1543"]}]')
+    surface, _ = rq.collect_import_surface(tmp_path)
+    assert "createservicea" in surface
+
+
+def test_collect_import_surface_rejects_capa_titles(tmp_path):
+    """The noise filter: finding titles are not API names (was 0/27 usable)."""
+    (tmp_path / "pe-imports.txt").write_text(
+        '{"engine": "pe_imports", "signals": [{"api_match": "RegSetValueExA"}]}')
+    (tmp_path / "quick_scan").mkdir()
+    (tmp_path / "quick_scan" / "00-tools-raw.json").write_text(
+        '{"top_rules": [{"name": "encrypt data using rc4 prga"},'
+        ' {"name": ".text"}, {"name": "gdi32.OFT"}]}')
+    surface, _ = rq.collect_import_surface(tmp_path)
+    assert "regsetvalueexa" in surface
+    assert "encrypt data using rc4 prga" not in surface
+    assert ".text" not in surface
+
+
+def test_collect_import_surface_falls_back_to_structured(tmp_path):
     (tmp_path / "quick_scan").mkdir()
     (tmp_path / "quick_scan" / "00-tools-raw.json").write_text(
         '{"pe_imports": {"signals": [{"api_match": "CreateRemoteThread"}]}}')

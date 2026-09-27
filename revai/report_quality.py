@@ -770,16 +770,21 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str, *,
     except Exception as exc:  # advisory must never break the gate
         checks["claimed_ioc_verification"] = {"advisory": True, "error": str(exc)}
 
-    # Plan #14d, advisory phase: behavioural claims the import surface does not
-    # support. Conservative rules only; packed samples report "analysis
-    # incomplete" instead of a negative. Recorded, not gate-failing yet.
+    # Plan #14d, calibrated 2026-09-27 on the 56-case published corpus: behaviour
+    # statements are cross-checked against the deterministic pe_imports high-signal
+    # map, and the promotion to a blocking gate was REJECTED on the evidence
+    # (54/54 flags were false positives; the 11-candidate contradiction form was
+    # 11/11 specificity or dynamic-observation denials). Recorded, never gating.
     try:
         _surface, _surface_sources = collect_import_surface(root)
         _behavior = verify_behavior_prerequisites(
             tech3_md or tech2_md or master_md, _surface, packed=_is_packed(root))
         _behavior["import_surface_sources"] = _surface_sources
+        _map_names, _map_used, _map_meta = _load_high_signal_map(root)
+        _behavior["import_map"] = _map_meta
+        _behavior["import_map_names"] = len(_map_names)
         checks["behavior_prerequisites"] = _behavior
-    except Exception as exc:  # advisory must never break the gate
+    except Exception as exc:  # a check error must never break the gate
         checks["behavior_prerequisites"] = {"advisory": True, "error": str(exc)}
 
     ok = not issues
@@ -1146,15 +1151,106 @@ def _harvest_import_surface(node, out: set[str]) -> None:
             _harvest_import_surface(item, out)
 
 
-def collect_import_surface(root: Path) -> tuple[str, list[str]]:
-    """Build the import surface for behaviour checks.
+# A plausible Win32 API identifier. The JSON harvest above also returns capa
+# finding titles ("encrypt data using rc4 prga"), section names (".text") and
+# Ghidra function names, which made the surface useless: the #14d calibration on
+# 2026-09-27 found 0/27 behaviour APIs "present" in a real Win32 GUI sample purely
+# because the surface was noise. Only identifier-shaped tokens count now, and the
+# rejected count is recorded so the filter is auditable rather than silent.
+_API_NAME_RE = re.compile(r"^[a-z_][a-z0-9_]{2,}$")
+_REJECT_SAMPLE = (" ", ".", "/", "\\", "-")
 
-    Prefers structured import evidence (pe_import_signals, tool import tables).
-    Falls back to the broader evidence text when no structured imports exist, and
-    says which one was used, because the fallback is a weaker gate.
+
+def _accept_api_name(name: str) -> str:
+    """Return the usable API name from a harvested token, or "" to reject it."""
+    token = (name or "").strip().lower()
+    if not token:
+        return ""
+    # module-qualified forms (gdi32.OFT) contribute the function part
+    if "." in token:
+        tail = token.rsplit(".", 1)[-1]
+        token = tail if _API_NAME_RE.match(tail) else ""
+    if not token or not _API_NAME_RE.match(token):
+        return ""
+    if any(ch in token for ch in _REJECT_SAMPLE):
+        return ""
+    return token
+
+
+def _load_high_signal_map(root: Path) -> tuple[set[str], list[str], dict]:
+    """Read the deterministic ``pe_imports`` high-signal map.
+
+    Important property, established by the #14d calibration (2026-09-27): this
+    artifact is a *curated* map of security-relevant imports (``{"engine":
+    "pe_imports", "signal_count": n, "signals": [{"api_match": ...}]}``), NOT the
+    full import table. Nothing in the evidence pack holds the full table, so the
+    absence of an API here is not evidence of absence - which is why the check
+    reports contradictions (provable) and keeps bare absence advisory.
     """
     names: set[str] = set()
     used: list[str] = []
+    meta: dict = {"kind": "none", "signal_count": None}
+    for rel in ("pe-imports.txt", "quick_scan/pe-imports.txt", "deep_dive/pe-imports.txt"):
+        path = root / rel
+        if not path.is_file():
+            continue
+        try:
+            raw = path.read_text(encoding="utf-8", errors="replace")
+        except Exception:
+            continue
+        data: object = None
+        try:
+            data = json.loads(raw)
+        except Exception:
+            data = None
+        before = len(names)
+        if isinstance(data, dict):
+            meta = {"kind": "pe_imports_high_signal_map",
+                    "signal_count": data.get("signal_count")}
+            signals = data.get("signals") or []
+            for sig in signals:
+                if isinstance(sig, dict):
+                    for key in ("api_match", "api", "name", "function"):
+                        token = _accept_api_name(str(sig.get(key) or ""))
+                        if token:
+                            names.add(token)
+                else:
+                    token = _accept_api_name(str(sig))
+                    if token:
+                        names.add(token)
+        elif isinstance(data, list):
+            meta = {"kind": "pe_imports_high_signal_map", "signal_count": len(data)}
+            for sig in data:
+                if isinstance(sig, dict):
+                    token = _accept_api_name(
+                        str(sig.get("api_match") or sig.get("api") or sig.get("name") or ""))
+                else:
+                    token = _accept_api_name(str(sig))
+                if token:
+                    names.add(token)
+        else:
+            # Plain-text dump: one API per line.
+            for line in raw.splitlines():
+                token = _accept_api_name(line)
+                if token:
+                    names.add(token)
+        if len(names) > before:
+            used.append(rel)
+        break
+    return names, used, meta
+
+
+def collect_import_surface(root: Path) -> tuple[str, list[str]]:
+    """Build the import surface used by the behaviour cross-check.
+
+    Authority order: the deterministic ``pe_imports`` high-signal map, then
+    structured import evidence from the tool JSONs, then - only if both are empty
+    - the broader evidence text, which is a weaker source and is labelled as such.
+    """
+    names, used, _meta = _load_high_signal_map(root)
+    if names:
+        return "\n".join(sorted(names)), used
+    structured: set[str] = set()
     for rel in ("quick_scan/00-tools-raw.json", "deep_dive/01-tools-raw.json",
                 "deep_dive/02-signals.json"):
         path = root / rel
@@ -1164,12 +1260,17 @@ def collect_import_surface(root: Path) -> tuple[str, list[str]]:
             data = json.loads(path.read_text(encoding="utf-8", errors="replace"))
         except Exception:
             continue
-        before = len(names)
-        _harvest_import_surface(data, names)
-        if len(names) > before:
+        raw: set[str] = set()
+        _harvest_import_surface(data, raw)
+        before = len(structured)
+        for token in raw:
+            clean = _accept_api_name(token)
+            if clean:
+                structured.add(clean)
+        if len(structured) > before:
             used.append(rel)
-    if names:
-        return "\n".join(sorted(names)), used
+    if structured:
+        return "\n".join(sorted(structured)), used
     text, evidence_used = collect_evidence_text(root)
     return text.lower(), [f"{u} (evidence-text fallback)" for u in evidence_used]
 
@@ -1190,45 +1291,177 @@ def _is_packed(root: Path) -> bool:
     return False
 
 
+# A behaviour phrase only counts as a *claim* when the sentence asserting it is
+# not negated and not a legend/catalogue mention. Calibration 2026-09-27: on the
+# ghyte report, 6/6 flags were false positives - the report said "no registry or
+# service imports", "not a persistence or exfil timer", "There is no mapping for
+# ... persistence (T1547)" and a Maldev catalogue note. A report that correctly
+# denies a behaviour was being recorded as claiming it.
+_NEGATION_MARKERS = (
+    "no ", "not ", "no.", "none", "never", "absent", "unsupported",
+    "does not", "doesn't", "isn't", "cannot", "can't", "lacks", "lack of",
+    "neither", "nor ", "unconfirmed", "no evidence", "not observed",
+    "not recovered", "not reconstructed", "not supported",
+)
+# Hypothetical projection ("in a real-world scenario without analysis tools, it
+# would likely ... establish persistence") affirms the behaviour; the negation in
+# it modifies the *situation*, not the behaviour. Classifying that as a denial was
+# the last of the three false-positive classes found in the 2026-09-27
+# calibration, so the check stays advisory.
+_AFFIRMATION_MARKERS = (
+    "would likely", "would proceed", "would then", "in a real-world scenario",
+    "it would", "would attempt", "likely establish", "expected to",
+)
+_CATALOGUE_MARKERS = (
+    "catalog", "catalogue", "cheat sheet", "timeline_events", "capability map",
+    "capability table", "no mapping for", "tactic list",
+)
+# A denial that is about *specificity or observation*, not about the behaviour's
+# existence. Calibration 2026-09-27: every remaining candidate contradiction on the
+# published corpus was one of these ("no specific registry keys ... were
+# identified", "no persistence actions were observed" - in a report that claims
+# persistence from static evidence). Counting them as denials of the behaviour
+# produced 11 false flags across 56 human-reviewed case studies.
+_DETAIL_QUALIFIERS = (
+    "specific", "exact", "precise", "detail", "which key", "what key", "key path",
+    "at runtime", "were observed", "was observed", "observed", "identified",
+    "extracted", "recovered", "reconstructed", "injected into", "of the",
+)
+
+
+def _classify_sentence(sentence: str) -> str:
+    """claim | negated | detail | catalogue - what a matched phrase is doing here.
+
+    ``negated`` is only used when the sentence denies the behaviour's *existence*;
+    a denial carrying a specificity/observation qualifier is ``detail`` and never
+    counts as a contradiction.
+    """
+    low = sentence.lower()
+    if any(marker in low for marker in _CATALOGUE_MARKERS):
+        return "catalogue"
+    if any(marker in low for marker in _AFFIRMATION_MARKERS):
+        return "claim"
+    if any(marker in low for marker in _NEGATION_MARKERS):
+        if any(qualifier in low for qualifier in _DETAIL_QUALIFIERS):
+            return "detail"
+        return "negated"
+    return "claim"
+
+
+def _sentences(markdown: str) -> list[str]:
+    """Line- and sentence-split, so a negation binds to the phrase it denies."""
+    out: list[str] = []
+    for line in (markdown or "").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        # Keep the table-row and bullet context: split on sentence enders only.
+        parts = re.split(r"(?<=[.!?])\s+", line)
+        for part in parts:
+            part = part.strip()
+            if part:
+                out.append(part)
+    return out
+
+
 def verify_behavior_prerequisites(markdown: str, import_surface: str,
                                   packed: bool = False) -> dict:
-    """Flag behavioral claims the import surface does not support.
+    """Cross-check the report's behaviour statements against the PE import map.
 
-    Advisory: a claim phrased in the report whose required APIs are absent from
-    the import surface is recorded as unsupported. For a packed sample the same
-    finding is reported as *analysis incomplete* rather than as a negative, since
-    the imports may simply not be visible yet.
+    ADVISORY, and deliberately so. Promotion to a blocking gate was evaluated on
+    2026-09-27 (plan #14d) against the 56-case published corpus and **rejected on
+    the evidence**; the numbers are in `internal/IMPROVEMENT-PLAN.md` (#14d):
+
+    1. The original form (phrase present + no API in the surface) produced 54 flags
+       across 117 behaviour entries - **all false positives**. Absence from the
+       ``pe_imports`` high-signal map proves nothing: that artifact is a curated
+       subset of security-relevant imports, not the full import table, and no
+       evidence-pack artifact holds the full table.
+    2. A contradiction form (report *denies* a behaviour the map *shows*) cut that
+       to 11 (9.4%), but reading all 11 showed every one was a denial of
+       *specificity or dynamic observation* ("no **specific** registry keys were
+       identified", "no persistence actions **were observed**") inside reports that
+       claim the behaviour from static evidence. Phrase-level polarity cannot
+       separate "X was not observed at runtime" from "X does not exist", so a gate
+       here would have produced 11 false reds on human-reviewed case studies.
+
+    What is reported, all measured and none of it gate-failing:
+    ``contradictions``   denials of existence whose defining API *is* in the map
+    ``uncorroborated``   claims with no defining API (advisory: absence is not proof)
+    ``negated_mentions`` corroborated absences - the report denying a behaviour
+    ``detail_mentions``  denials of specificity/observation, not of the behaviour
+    ``catalogue_mentions`` legend/catalogue vocabulary
     """
     surface = (import_surface or "").lower()
-    text = (markdown or "").lower()
+    sentences = _sentences(markdown)
     checked: list[dict] = []
-    unsupported: list[dict] = []
+    contradictions: list[dict] = []
+    uncorroborated: list[dict] = []
+    negated_total = 0
+    catalogue_total = 0
+    detail_total = 0
 
     for behavior, phrases, required in _BEHAVIOR_IMPORT_RULES:
-        matched = [p for p in phrases if p in text]
-        if not matched:
+        matched: list[str] = []
+        negated: list[str] = []
+        catalogue: list[str] = []
+        detail: list[str] = []
+        for sentence in sentences:
+            low = sentence.lower()
+            hits = [p for p in phrases if p in low]
+            if not hits:
+                continue
+            kind = _classify_sentence(sentence)
+            if kind == "negated":
+                negated.extend(hits)
+            elif kind == "catalogue":
+                catalogue.extend(hits)
+            elif kind == "detail":
+                detail.extend(hits)
+            else:
+                matched.extend(hits)
+        if not (matched or negated or catalogue or detail):
             continue
         present = [api for api in required if api in surface]
         entry = {
             "behavior": behavior,
-            "matched_phrases": matched,
+            "matched_phrases": list(dict.fromkeys(matched)),
+            "negated_phrases": list(dict.fromkeys(negated)),
+            "catalogue_phrases": list(dict.fromkeys(catalogue)),
+            "detail_phrases": list(dict.fromkeys(detail)),
             "required_any": list(required),
             "present": present,
         }
         checked.append(entry)
-        if not present:
-            unsupported.append(entry)
+        negated_total += len(entry["negated_phrases"])
+        catalogue_total += len(entry["catalogue_phrases"])
+        detail_total += len(entry["detail_phrases"])
+        if present and entry["negated_phrases"]:
+            contradictions.append(entry)
+        elif entry["matched_phrases"] and not present:
+            uncorroborated.append(entry)
 
     return {
         "advisory": True,
+        "promotion": "rejected 2026-09-27 on the 56-case corpus; see docstring",
         "checked": len(checked),
-        "unsupported": len(unsupported),
-        "unsupported_items": unsupported,
+        "unsupported": len(contradictions),
+        "unsupported_items": contradictions,
+        "contradictions": contradictions,
+        "uncorroborated": len(uncorroborated),
+        "uncorroborated_items": uncorroborated,
+        "negated_mentions": negated_total,
+        "catalogue_mentions": catalogue_total,
+        "detail_mentions": detail_total,
         "packed": bool(packed),
-        "analysis_incomplete": bool(packed and unsupported),
-        "method": ("report phrases are matched against the sample's import surface; "
-                   "a behaviour with no matching API is recorded unsupported, and "
-                   "for a packed sample that becomes 'analysis incomplete'"),
+        "analysis_incomplete": bool(packed and uncorroborated),
+        "method": ("report sentences matching a behaviour phrase are classified as "
+                   "claim / negated / detail / catalogue mention. A contradiction is a "
+                   "denial of the behaviour's existence whose defining API is in the "
+                   "deterministic pe_imports high-signal map. An unnegated claim with "
+                   "no defining API is uncorroborated, never a gate: that map is a "
+                   "curated subset, not the full import table. Packed samples report "
+                   "'analysis incomplete'."),
     }
 
 
