@@ -51,6 +51,7 @@ from v2_lib import (
     _sec_containment_evidence,
     _sec_recommendations_evidence,
     append_technical_evidence_appendix,
+    attach_analysis_scripts,
     attach_dynamic_corroboration,
     attach_dynamic_analysis_section,
     attach_ioc_confidence,
@@ -504,6 +505,8 @@ def run_technical_publish(sha: str, tools_results: dict) -> dict:
         frida_probe=tools_results.get("frida_probe"),
     )
     # WinRE dynamic corroboration (presence-gated: no-op without a pack)
+    # Analysis-scripts appendix (plan #11; presence-gated: stage not run -> unchanged)
+    technical_evidence = attach_analysis_scripts(technical_evidence, sha)
     technical_evidence = attach_dynamic_corroboration(technical_evidence, sha)
     (case_dir(sha) / "EVIDENCE-BUNDLE.md").write_text(technical_evidence)
 

@@ -25,6 +25,7 @@ const DEFAULT_RUN_CONFIG: RunConfig = {
   emulation_oracle: false,
   unpack_pass: false,
   deobfuscation_pass: false,
+  artifact_gen: false,
   winre_dynamic: true,
   recovery_max_funcs: 40,
   recovery_tier_cap: 5,
@@ -108,6 +109,7 @@ export default function SettingsPage() {
           emulation_oracle: Boolean(rc.emulation_oracle),
           unpack_pass: Boolean(rc.unpack_pass),
           deobfuscation_pass: Boolean(rc.deobfuscation_pass),
+          artifact_gen: Boolean(rc.artifact_gen),
           winre_dynamic: Boolean(rc.winre_dynamic ?? true),
           recovery_max_funcs: Number(rc.recovery_max_funcs ?? 40),
           recovery_tier_cap: Number(rc.recovery_tier_cap ?? 5),
@@ -445,6 +447,18 @@ export default function SettingsPage() {
                 onChange={(e) => setRc({ ...rc, deobfuscation_pass: e.target.value === '1' })}
               >
                 <option value="1">On — symbolic deobfuscation</option>
+                <option value="0">Off (default)</option>
+              </Select>
+            </Field>
+            <Field
+              label="Analysis scripts"
+              hint="generate a sample-specific extraction script, run it sandboxed, then re-derive every claimed value from the sample bytes (plan #11). Adds an 'Appendix: Analysis Scripts' report section; never gates the verdict"
+            >
+              <Select
+                value={rc.artifact_gen ? '1' : '0'}
+                onChange={(e) => setRc({ ...rc, artifact_gen: e.target.value === '1' })}
+              >
+                <option value="1">On — generate + verify extraction script</option>
                 <option value="0">Off (default)</option>
               </Select>
             </Field>

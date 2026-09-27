@@ -242,6 +242,7 @@ export const LlmSettingsSchema = z
         emulation_oracle: optBool,
         unpack_pass: optBool,
         deobfuscation_pass: optBool,
+        artifact_gen: optBool,
         recovery_max_funcs: optNum,
         recovery_tier_cap: optNum,
         winre_dynamic: optBool,

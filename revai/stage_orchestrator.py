@@ -275,6 +275,26 @@ class StageRunner:
         )
         return out
 
+    def run_artifact_gen(self) -> dict:
+        """Optional stage 3.6: verifiable artifact generation (plan #11).
+
+        Generates a sample-specific extraction script, runs it in a bounded
+        sandbox, and re-derives every claimed value from the sample bytes
+        deterministically. Skips (rc=0) unless REVAI_ENABLE_ARTIFACT_GEN=1; never
+        gates the verdict, and publish attaches a presence-gated appendix.
+        """
+        if not (os.environ.get("REVAI_ENABLE_ARTIFACT_GEN") or "").strip().lower() in (
+            "1", "true", "yes", "on",
+        ):
+            print("[orchestrator] run_artifact_gen skipped (env not set)", flush=True)
+            return {"ok": True, "rc": 0, "skipped": True, "sha256": self.sha,
+                    "tool": "run_artifact_gen", "reason": "REVAI_ENABLE_ARTIFACT_GEN not set"}
+        return self._run(
+            "run_artifact_gen",
+            [sys.executable, str(SCRIPTS / "artifact_gen.py"), self.sha],
+            1800,
+        )
+
     def run_yara_gen(self) -> dict:
         return self._run(
             "run_yara_gen",
@@ -509,6 +529,15 @@ def _build_lc_tools(runner: StageRunner, need_intake: bool) -> list:
         "and the sample is NOT gated by size; skips otherwise.",
     )
     _add(
+        "run_artifact_gen",
+        runner.run_artifact_gen,
+        "Optional stage 3.6: verifiable artifact generation (plan #11) - author a "
+        "sample-specific extraction script, run it in a bounded sandbox, and "
+        "re-derive every claimed value from the sample bytes. Call it after "
+        "run_deep_dive_agentic and BEFORE run_yara_gen. Skips itself (rc=0) unless "
+        "REVAI_ENABLE_ARTIFACT_GEN=1; never gates the verdict.",
+    )
+    _add(
         "run_yara_gen",
         runner.run_yara_gen,
         "Stage 4: generate YARA/Sigma rules from evidence",
@@ -621,11 +650,15 @@ def run_langgraph_orchestrator(sample: Path | None, sha: str | None) -> dict:
         max_tokens=2048,
     )
 
+    artifact_gen_on = (os.environ.get("REVAI_ENABLE_ARTIFACT_GEN") or "").strip().lower() in (
+        "1", "true", "yes", "on",
+    )
     order = (
         "run_intake → " if need_intake else ""
     ) + (
         "run_quick_scan → run_deep_dive_agentic → "
         + ("run_winre_dynamic → " if os.environ.get("REVAI_WINRE_RUN", "").strip().lower() in ("1", "true", "yes") else "")
+        + ("run_artifact_gen → " if artifact_gen_on else "")
         + "run_yara_gen → read_verdicts → "
         "run_publish → run_section_publish → run_audit → check_quality"
     )

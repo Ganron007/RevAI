@@ -25,6 +25,7 @@ from v2_lib import (  # noqa: E402
     TECHNICAL_REPORT_SECTIONS,
     EvidenceAssembler,
     append_technical_evidence_appendix,
+    attach_analysis_scripts,
     attach_dynamic_corroboration,
     attach_dynamic_analysis_section,
     attach_ioc_confidence,
@@ -980,6 +981,8 @@ def main():
             frida_probe=tools_results.get("frida_probe"),
         )
         # WinRE dynamic corroboration (presence-gated: no-op without a pack)
+        # Analysis-scripts appendix (plan #11; presence-gated: stage not run -> unchanged)
+        technical_evidence = attach_analysis_scripts(technical_evidence, args.sha256)
         technical_evidence = attach_dynamic_corroboration(
             technical_evidence, args.sha256)
         (ev_dir / "03-technical-evidence.md").write_text(technical_evidence)

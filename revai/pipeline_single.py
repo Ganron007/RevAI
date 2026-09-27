@@ -154,6 +154,17 @@ def run_single(sample: Path | None, sha: str | None, mode: str = "standard") -> 
             [sys.executable, str(SCRIPTS / "winre_runner.py"), sha],
             7200,
         ))
+    # Optional artifact-generation stage (opt-in, after deep dive, before YARA).
+    # Gated by REVAI_ENABLE_ARTIFACT_GEN=1. The stage self-skips with rc=0 when
+    # the flag is off and never gates the verdict: it generates an extraction
+    # script, runs it sandboxed, and the code re-derives every claimed value from
+    # the sample bytes. Plan #11.
+    if os.environ.get("REVAI_ENABLE_ARTIFACT_GEN", "").strip().lower() in ("1", "true", "yes", "on"):
+        stages.append((
+            "artifact_gen",
+            [sys.executable, str(SCRIPTS / "artifact_gen.py"), sha],
+            1800,
+        ))
     stages.extend([
         ("yara_gen", [sys.executable, str(SCRIPTS / "yara_gen_v2.py"), sha], 1800),
         ("publish_v2", [sys.executable, str(SCRIPTS / "publish_report_v2.py"), sha, "--template", "full"], 3600),

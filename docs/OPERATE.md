@@ -169,6 +169,12 @@ Tunables (all optional, defaults shown):
 |---|---|---|
 | `REVAI_ENABLE_EMULATION_ORACLE` | off | bounded Speakeasy emulation pass in deep-dive: dynamically resolved imports + executed functions (persisted `deep_dive/03-oracle.json`, surfaced to the agent); oracle-only, never verdicts |
 | `REVAI_ENABLE_UNPACK_PASS` | off | emulation-assisted unpacking for samples the packer checklist flags: OEP detection, carved `unpacked_<name>` payload under `logs/<sha>/unpack/`, in-memory IAT readout |
+| `REVAI_ENABLE_ARTIFACT_GEN` | off | plan #11: generate a sample-specific extraction script, run it in a bounded sandbox, and re-derive every claimed value from the sample bytes (Console: run config → Analysis scripts). Opt-in; self-skips with rc=0 when off; never gates the verdict |
+| `REVAI_ARTIFACT_GEN_TIMEOUT` | 180 | seconds allowed for the generation LLM call in the artifact-generation stage |
+| `REVAI_ARTIFACT_GEN_RUN_TIMEOUT` | 60 | seconds allowed for the *generated script* to run before it is killed and recorded as `timed_out` |
+| `REVAI_ARTIFACT_GEN_MEM_MB` | 1024 | address-space rlimit (MB) for the generated script (POSIX only; recorded either way) |
+| `REVAI_ARTIFACT_GEN_FS_MB` | 32 | file-size rlimit (MB) for the generated script, bounding what it can write |
+| `REVAI_DISABLE_ANALYSIS_SCRIPTS` | off | drop the "Appendix: Analysis Scripts" section from the reports even when the stage ran (the section is presence-gated already; this is the explicit opt-out) |
 | `ENABLE_DEOBFUSCATION_PASS` | off | angr/z3 verification of MBA/CFF/opaque-predicate claims during deep-dive (angr via pipx venv) |
 | `REVAI_CAPA_RULES` | `/opt/capa-rules` | capa rule directory (override for a custom ruleset) |
 | `REVAI_CAPA_SIGNATURES` | `/opt/capa-signatures` | capa signature directory (override) |

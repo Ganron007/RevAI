@@ -5277,6 +5277,123 @@ def attach_dynamic_corroboration(technical_evidence: str, sha: str, *,
         return technical_evidence
 
 
+#: Artifact-generation summary file written by the optional `artifact_gen` stage
+#: (plan #11). Presence-gated: a run without the stage has no file, so reports are
+#: byte-identical for users who do not enable it.
+ARTIFACT_GEN_SUMMARY = "artifact-gen.json"
+
+
+def load_artifact_gen_summary(sha: str, *, logs_dir: Path | None = None) -> dict:
+    """Read the #11 stage summary, or {} when the stage did not run."""
+    try:
+        base = Path(logs_dir) if logs_dir else case_dir(sha)
+        path = base / "artifact_gen" / ARTIFACT_GEN_SUMMARY
+        if not path.is_file():
+            return {}
+        data = json.loads(path.read_text(encoding="utf-8", errors="replace"))
+        return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+
+def format_analysis_scripts_block(summary: dict) -> str:
+    """Render the Zeltser-style "Analysis Scripts" appendix from the #11 summary.
+
+    Deterministic and honest: only values the pipeline re-derived from the sample
+    bytes are listed as verified, and the independence measurement is stated as
+    measured (a value already visible in the generation prompt is not independent
+    extraction, and says so).
+    """
+    if not summary:
+        return ""
+    status = str(summary.get("status") or "unknown")
+    lines = ["## Appendix: Analysis Scripts (generated extraction code)", ""]
+    if status != "ran":
+        lines.append(
+            f"The artifact-generation stage did not produce a run "
+            f"(status: {status}"
+            + (f" - {summary.get('reason')}" if summary.get("reason") else "")
+            + "). Nothing is claimed here."
+        )
+        return "\n".join(lines)
+
+    total = int(summary.get("artifacts_total") or 0)
+    verified = int(summary.get("artifacts_verified") or 0)
+    unverified = int(summary.get("artifacts_unverified") or 0)
+    lines.append(
+        f"The pipeline generated a sample-specific extraction script, executed it "
+        f"in a bounded sandbox, and re-derived every claimed value from the sample "
+        f"bytes. {verified} of {total} claimed values were independently re-derived"
+        + (f"; {unverified} could not be" if unverified else "")
+        + "."
+    )
+    targets = summary.get("targets") or []
+    if targets:
+        lines += ["", "Targets: " + "; ".join(str(t) for t in targets[:6])]
+    verified_items = summary.get("verified_artifacts") or []
+    if verified_items:
+        lines += ["", "| Value (preview) | Kind | Offset | Method | Re-derived as |",
+                  "|---|---|---|---|---|"]
+        for item in verified_items[:12]:
+            value = str(item.get("value_preview") or "").replace("|", "\\|")
+            if len(value) > 60:
+                value = value[:57] + "..."
+            offset = item.get("offset")
+            lines.append(
+                f"| `{value}` | {item.get('kind') or '-'} | "
+                f"{('0x%x' % int(offset)) if isinstance(offset, int) else '-'} | "
+                f"{item.get('method') or '-'} | {item.get('basis') or '-'} |"
+            )
+    caveats = []
+    if summary.get("independence") not in (None, "independent"):
+        caveats.append(
+            f"independence measured as **{summary.get('independence')}** "
+            f"({summary.get('values_pre_seeded_in_prompt') or 0} value(s) already "
+            f"visible in the generation prompt, "
+            f"{summary.get('hardcoded_output_literals') or 0} hardcoded in the "
+            f"script source)"
+        )
+    if not summary.get("input_read"):
+        caveats.append("the generated script did not reference its input argument")
+    ex = summary.get("execution") or {}
+    if ex.get("network_isolation") not in ("unshare_net_applied",):
+        caveats.append(
+            f"network isolation: {ex.get('network_isolation') or 'not enforced'}"
+        )
+    if caveats:
+        lines += ["", "Caveats:"] + [f"- {c}" for c in caveats]
+    lines += [
+        "",
+        f"Script artifact: `artifact_gen/03-generated.py` "
+        f"(sha256 `{str(summary.get('script_sha256') or '')[:16]}...`). "
+        f"The script is a convenience for the analyst; it is not part of the "
+        f"verdict and never gates it.",
+    ]
+    return "\n".join(lines)
+
+
+def attach_analysis_scripts(technical_evidence: str, sha: str, *,
+                            logs_dir: Path | None = None) -> str:
+    """Append the analysis-scripts appendix to a technical evidence pack.
+
+    Presence-gated (no summary -> input unchanged) and opt-out with
+    ``REVAI_DISABLE_ANALYSIS_SCRIPTS=1``. Never alters verdicts.
+    """
+    if os.environ.get("REVAI_DISABLE_ANALYSIS_SCRIPTS", "").strip().lower() in (
+            "1", "true", "yes", "on"):
+        return technical_evidence
+    try:
+        summary = load_artifact_gen_summary(sha, logs_dir=logs_dir)
+        if not summary:
+            return technical_evidence
+        block = format_analysis_scripts_block(summary)
+        if not block:
+            return technical_evidence
+        return (technical_evidence or "").rstrip() + "\n\n" + block
+    except Exception:
+        return technical_evidence
+
+
 #: Pyramid-of-Pain grouping for the confidence table, so the tiers an analyst
 #: already filters on line up with the community-standard indicator ordering.
 _PYRAMID_TIERS = {

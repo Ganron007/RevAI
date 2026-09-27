@@ -92,6 +92,7 @@ STAGES = [
     ("quick_scan", "quick_scan", str(SCRIPTS_DIR / "quick_scan_v2.py"),   []),
     ("deep_dive",  "deep_dive",  str(SCRIPTS_DIR / "deep_dive_agentic.py"), []),
     ("function_recovery", "function_recovery", str(SCRIPTS_DIR / "agentic_recover_v4.py"), []),
+    ("artifact_gen", "artifact_gen", str(SCRIPTS_DIR / "artifact_gen.py"), []),
     ("yara_gen",   "yara_gen",   str(SCRIPTS_DIR / "yara_gen_v2.py"),     []),
     ("publish",    "publish",    str(SCRIPTS_DIR / "publish_report_v2.py"), ["--template", "full"]),
     ("correlate",  "correlate",  str(SCRIPTS_DIR / "section_publisher.py"), []),
@@ -105,6 +106,7 @@ STAGE_DEPS = {
     "quick_scan": ["intake"],
     "deep_dive": ["quick_scan"],
     "function_recovery": ["deep_dive"],
+    "artifact_gen": ["deep_dive"],
     "yara_gen": ["deep_dive"],
     "publish": ["yara_gen"],
     "correlate": ["publish"],
@@ -154,6 +156,24 @@ STAGE_DETAILS = {
         ),
         "artifacts": ["function_recovery.json"],
         "dir": None,
+    },
+    "artifact_gen": {
+        "num": 4, "title": "Analysis Scripts (optional)",
+        "desc": "Generate + verify a sample-specific extraction script",
+        "long_desc": (
+            "Optional stage (plan #11): the LLM authors one small, sample-specific "
+            "extraction script; the pipeline runs it in a bounded sandbox "
+            "(isolated interpreter, scrubbed env, rlimits, timeout, network "
+            "isolation when available) and then re-derives every claimed value from "
+            "the sample bytes with its own code. Values that were already visible in "
+            "the generation prompt, or that appear as literals in the script, are "
+            "flagged as not independent. Publish attaches a presence-gated "
+            "'Appendix: Analysis Scripts' section. Runs only when enabled via "
+            "REVAI_ENABLE_ARTIFACT_GEN=1 (Settings → run config); self-skips with "
+            "rc=0 otherwise and never gates the verdict."
+        ),
+        "artifacts": ["artifact-gen.json", "03-generated.py", "05-verification.json"],
+        "dir": "artifact_gen",
     },
     "yara_gen": {
         "num": 4, "title": "YARA Gen",
@@ -845,11 +865,13 @@ def get_stage_env(rc: dict | None = None) -> dict[str, str]:
     # Optional agentic function-recovery stage (opt-in; self-skips when off)
     if "agentic_recovery" in rc:
         env["REVAI_ENABLE_AGENTIC_RECOVERY"] = "1" if rc["agentic_recovery"] else "0"
-    # Optional analysis-stage toggles (emulation oracle / unpack pass / angr-z3)
+    # Optional analysis-stage toggles (emulation oracle / unpack pass / angr-z3 /
+    # verifiable artifact generation)
     for _key, _flag in (
         ("emulation_oracle", "REVAI_ENABLE_EMULATION_ORACLE"),
         ("unpack_pass", "REVAI_ENABLE_UNPACK_PASS"),
         ("deobfuscation_pass", "ENABLE_DEOBFUSCATION_PASS"),
+        ("artifact_gen", "REVAI_ENABLE_ARTIFACT_GEN"),
     ):
         if _key in rc:
             env[_flag] = "1" if rc[_key] else "0"
@@ -1276,7 +1298,7 @@ _RUN_CONFIG_KEYS = (
     "recursion_limit", "deep_max_steps", "retry_transient_only",
     "budget_warnings", "redundant_nudge", "hallucination_check",
     "failure_taxonomy", "agentic_recovery",
-    "emulation_oracle", "unpack_pass", "deobfuscation_pass",
+    "emulation_oracle", "unpack_pass", "deobfuscation_pass", "artifact_gen",
     "recovery_max_funcs", "recovery_tier_cap",
     "winre_dynamic", "winre_logs", "winre_run",
 )

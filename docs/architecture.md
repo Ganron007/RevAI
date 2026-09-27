@@ -71,14 +71,14 @@ RevAI contains exactly **two LangGraph ReAct loops** (same `create_react_agent` 
 | Loop | Tools it orchestrates | Decides |
 |---|---|---|
 | **Deep-dive agent** (`deep_dive_agentic.py`) | 25 RE tools: `ghidra_query`, `ida_query`, `ghidra_decompile`, `capa_analyze`, `malcat_analyze`, `yara_scan`, `floss_extract`, `pe_import_signals`, `xor_string_search`, `speakeasy_emulate`, `frida_static_probe`, `signature_match`, `r2_decompile`, `upx_unpack`, `shellcode_extract`, `olevba_analyze`, `peepdf_analyze`, `z3_solve`, `angr_analyze`, `dotnet_analyze`, `revai_tools_sec`, `revai_tools_sinks`, `revai_tools_audit`, `api_lookup`, `compare_files` | which tool to call next, with what arguments, based on previous results |
-| **Stage planner** (`stage_orchestrator.py`) | 11 stage tools: `run_intake`, `run_quick_scan`, `run_deep_dive_agentic`, `run_function_recovery`, `run_yara_gen`, `run_publish`, `run_section_publish`, `run_audit`, `check_quality`, `read_verdicts`, `read_evidence` | which stage to execute next, within a policy-pinned order (never skips mandatory stages) |
+| **Stage planner** (`stage_orchestrator.py`) | 12 stage tools: `run_intake`, `run_quick_scan`, `run_deep_dive_agentic`, `run_function_recovery`, `run_artifact_gen`, `run_yara_gen`, `run_publish`, `run_section_publish`, `run_audit`, `check_quality`, `read_verdicts`, `read_evidence` | which stage to execute next, within a policy-pinned order (never skips mandatory stages) |
 
-`run_function_recovery` is an **optional** planner tool — it skips itself when
-`REVAI_ENABLE_AGENTIC_RECOVERY` is off and is never required for green.
+`run_function_recovery` and `run_artifact_gen` are **optional** planner tools — each
+skips itself when its `REVAI_ENABLE_*` flag is off and is never required for green.
 
 **LangChain vs LangGraph here**: LangChain supplies the components (message types `AIMessage`/`HumanMessage`/`SystemMessage`/`ToolMessage`, `StructuredTool` adapters, `ChatOpenAI` client). LangGraph supplies the loop that runs the LLM's chosen tool calls and returns results. Everything outside these two loops — quick_scan, publish, section, audit, yara, intake, function recovery, every retry, every gate — is plain Python.
 
-### C. The 7-Stage Pipeline Spine (+ 1 optional)
+### C. The 7-Stage Pipeline Spine (+ 2 optional)
 
 | Stage | Script | Role & Functionality |
 | :--- | :--- | :--- |
@@ -86,6 +86,7 @@ RevAI contains exactly **two LangGraph ReAct loops** (same `create_react_agent` 
 | **2. Triage** | `quick_scan_v2.py` | Executes 28 tools in parallel (capa, Malcat, YARA, FLOSS, radare2, revai-tools sec/sinks, etc.). Packages findings into the Evidence Pack; one LLM judge call writes the quick verdict. |
 | **3. Deep Dive** | `deep_dive_agentic.py` | LangGraph ReAct agent over the RE tool registry — SQL-first evidence, adaptive tool selection, agent-loop discipline (see §7). API behaviour/abuse claims are grounded on demand via `api_lookup` (offline local index) rather than model recall. |
 | **3.5. Function Recovery** *(optional)* | `agentic_recover_v4.py` (+ `recovery/` package + `anti_analysis_signals.py` + `dynamic_resolve_detect.py`) | Opt-in agentic function-name recovery: relevance-based triage (score = call-in × 2 + string refs + high-value imports × 3 + anti-analysis signals; matched by prefix) → hybrid pool with guaranteed slots for API callers, largest functions, and dynamic-import-resolve sites → call-graph bottom-up tiers → per-function LLM naming with typed signatures → SQL writeback (`ghidra_sql_client`/idasql, confidence ≥ 0.7, never deletes). Gated by `REVAI_ENABLE_AGENTIC_RECOVERY=1` (legacy `ENABLE_AGENTIC_RECOVERY` honored). Produces `function_recovery.json`; recovered names are fed into publish prompts and cited in reports. |
+| **3.6. Analysis Scripts** *(optional)* | `artifact_gen.py` | Opt-in verifiable artifact generation: the LLM authors one small, sample-specific extraction script from **structural** evidence (section table, high-entropy regions with offsets, strings with offsets, bounded decompile excerpts — never a decoded answer), the pipeline runs it in a bounded sandbox (isolated interpreter, scrubbed env with no RevAI secrets, address-space/file-size rlimits, timeout, `unshare -n` when available) and then **re-derives every claimed value from the sample bytes** with its own code. Three anti-cheat measurements: the script must read its input argument, hardcoded output literals are flagged, and values already visible in the generation prompt are flagged as not independent. Gated by `REVAI_ENABLE_ARTIFACT_GEN=1`; self-skips with rc=0 otherwise; never gates the verdict. Publish attaches a presence-gated *Appendix: Analysis Scripts* listing only re-derived values. |
 | **4. Rule Gen** | `yara_gen_v2.py` | Generates YARA + Sigma rules from evidence, provenance-stamped, validated in-process; `iocs.json` extended with revai-tools wallets + defanged IOC merge. |
 | **5. Publish** | `publish_report_v2.py` | LLM Judge authors `REPORT-MASTER-v2.md` (17 sections) and `REPORT-TECHNICAL-v2.md` (13 sections) with the evidence pack appended. |
 | **6. Correlate** | `section_publisher.py` | Section map-reduce: per-section LLM passes with cross-section context → `REPORT-MASTER-v3.md` / `REPORT-TECHNICAL-v3.md`. |
