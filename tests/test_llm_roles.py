@@ -124,8 +124,17 @@ def test_console_role_pins_survive_a_console_default_model(monkeypatch):
 def test_scripted_judgment_sites_use_the_judgment_model(module_name):
     import ast
 
-    source = (ROOT / "revai" / f"{module_name}.py").read_text(encoding="utf-8")
-    tree = ast.parse(source)
+    # Layout-aware: revai/<stage>.py in the repo, flat <stage>.py on the VM.
+    source_path = next(
+        (
+            p
+            for p in (ROOT / "revai" / f"{module_name}.py", ROOT / f"{module_name}.py")
+            if p.is_file()
+        ),
+        None,
+    )
+    assert source_path is not None, f"{module_name}.py not found under {ROOT}"
+    tree = ast.parse(source_path.read_text(encoding="utf-8"))
     getters = {
         node.value.func.id
         for node in ast.walk(tree)
