@@ -169,26 +169,28 @@ Tunables (all optional, defaults shown):
 |---|---|---|
 | `REVAI_ENABLE_EMULATION_ORACLE` | off | bounded Speakeasy emulation pass in deep-dive: dynamically resolved imports + executed functions (persisted `deep_dive/03-oracle.json`, surfaced to the agent); oracle-only, never verdicts |
 | `REVAI_ENABLE_UNPACK_PASS` | off | emulation-assisted unpacking for samples the packer checklist flags: OEP detection, carved `unpacked_<name>` payload under `logs/<sha>/unpack/`, in-memory IAT readout |
-| `REVAI_LLM_RPM` | 120 | client-side request budget per process (sliding 60 s window) |
-| `REVAI_LLM_TPM` | 1000000 | client-side token budget per process, estimated from prompt size |
-| `REVAI_LLM_CONCURRENCY` | 6 | maximum LLM requests in flight per process, whatever a stage's thread pool size is. The slot is held for the request only, never across a backoff |
+| `REVAI_LLM_RPM` | 300 | client-side request budget per process (sliding 60 s window). Inert for a Step Plan key (concurrency-only); a backstop for pay-as-you-go |
+| `REVAI_LLM_TPM` | 1500000 | client-side token budget per process, estimated from prompt size. Same caveat: inert for Step Plan, backstop otherwise |
+| `REVAI_LLM_CONCURRENCY` | 4 | **the limit that actually binds on a Step Plan key**: maximum LLM requests in flight per process, whatever a stage's thread pool size is. Held for the request only, never across a backoff |
 | `REVAI_LLM_BUDGET` | 1 | `0` disables all three client-side limits (for tests and for deliberately unthrottled batch runs) |
 
 > **Why RevAI throttles itself.** Two stages issue several large-prompt LLM calls in
-> parallel (the report section map-reduce, and function recovery, which had 165
-> candidates in one case). HTTP 429 was observed on 4 of 5 samples of a six-sample
-> campaign even though measured usage (~5 calls/min, ~150K tokens/min) sits far below
-> the account's published limits, so the three limits above are a **guard rail** —
-> they bound bursts, keep timing visible in the log, and stop a provider stall from
-> cascading across stages. They are not a mirror of the provider's quota: the account
-> allows concurrency 100 / RPM 1000 / TPM 20M for the models in use, and the endpoint
-> is a plan endpoint whose allowance is the plan's own credit, so raise these if your
-> plan allows more. When the provider does throttle, the response body and
-> `Retry-After` are logged (`[llm_judge] ... HTTP 429 (retry_after=..., body=...)`) —
-> that line is the authoritative answer to *why*, not the client-side limits.
-> Note also that provider limits are usually per **account**, not per key: a second
-> product on the same account consumes the same budget, and a per-process guard rail
-> cannot see it.
+> parallel: the report section map-reduce (4 at a time) and function recovery (8 worker
+> threads; one case had 165 candidates). On a **Step Plan** key the provider enforces a
+> **concurrency limit only** — its published RPM/TPM tier table explicitly excludes
+> Step Plan — so in-flight parallelism is the only thing that can be throttled. A
+> six-sample campaign saw HTTP 429 on 4 of 5 samples at a request rate of ~5/min, which
+> is consistent with a plan concurrency ceiling being exceeded by our own pools and not
+> with any request-rate limit. The guard rail above therefore bounds in-flight requests
+> centrally: any number of worker threads now share one budget, and the default (4)
+> matches the pool we would have used anyway, so nothing slows down today.
+>
+> When the provider does throttle, the response body and `Retry-After` are logged
+> (`[llm_judge] ... HTTP 429 (retry_after=..., body=...)`) — that line, not the
+> client-side limits, is the authoritative answer to *why*, and it is how to learn the
+> plan's real concurrency ceiling. Note also that provider limits are usually per
+> **account**, not per key: another product on the same account consumes the same
+> budget, which a per-process guard rail cannot see.
 | `REVAI_ENABLE_ARTIFACT_GEN` | off | plan #11: generate a sample-specific extraction script, run it in a bounded sandbox, and re-derive every claimed value from the sample bytes (Console: run config → Analysis scripts). Opt-in; self-skips with rc=0 when off; never gates the verdict |
 | `REVAI_ARTIFACT_GEN_TIMEOUT` | 180 | seconds allowed for the generation LLM call in the artifact-generation stage |
 | `REVAI_ARTIFACT_GEN_RUN_TIMEOUT` | 60 | seconds allowed for the *generated script* to run before it is killed and recorded as `timed_out` |

@@ -2407,7 +2407,10 @@ _LLM_BUDGET_CALLS: list[float] = []          # request timestamps (sliding 60s)
 _LLM_BUDGET_TOKENS: list[tuple[float, int]] = []  # (timestamp, estimated tokens)
 _LLM_BUDGET_WAITED_S = 0.0                   # diagnostics: total time spent waiting
 _LLM_BUDGET_WINDOW_S = 60.0
-_CHARS_PER_TOKEN = 3.5                       # conservative English/code estimate
+# Prompts here are JSON/code-dense, where tokens-per-character runs higher than in
+# prose; 3.0 chars/token is deliberately conservative so an estimate errs high.
+# This is a pacing estimate for the client-side guard rail, never an accounting claim.
+_CHARS_PER_TOKEN = 3.0
 _COMPLETION_ALLOWANCE = 4096                 # assumed output tokens per call
 
 
@@ -2418,46 +2421,50 @@ def _llm_budget_enabled() -> bool:
 
 
 def _llm_rpm_limit() -> int:
-    """Requests/min we allow ourselves.
+    """Requests/min we allow ourselves (guard rail, not a quota mirror).
 
-    Our account's published limits for the models we use (step-3.7-flash,
-    step-5-preview) are concurrency 100 / RPM 1000 / TPM 20,000,000, and our
-    measured usage is ~5 calls/min at up to 8-way parallelism, ~150K tokens/min
-    - roughly two orders of magnitude below those numbers. The HTTP 429s seen on
-    2026-09-27 therefore do NOT come from the tier table; the endpoint is
-    `step_plan`, whose quota is the subscribed plan's monthly credit allowance
-    rather than the top-up tiers. These defaults are a client-side guard rail
-    (bound bursts, keep the audit trail honest), not a quota mirror: raise them
-    if your plan allows more, and read the logged 429 body to see what the
-    provider actually objected to.
+    Inert for the Step Plan endpoint we use, which enforces concurrency only; it
+    matters if the key is ever moved to pay-as-you-go, where the account tier
+    (V1 = 400 RPM) does apply.
     """
     try:
-        return max(1, int(os.environ.get("REVAI_LLM_RPM", "120") or 120))
+        return max(1, int(os.environ.get("REVAI_LLM_RPM", "300") or 300))
     except ValueError:
-        return 120
+        return 300
 
 
 def _llm_tpm_limit() -> int:
-    """Tokens/min we allow ourselves (estimate from prompt size, not an accounting claim)."""
+    """Tokens/min we allow ourselves, estimated from prompt size.
+
+    Inert for the Step Plan endpoint (concurrency only); a backstop for a
+    pay-as-you-go key, where the V1 tier allows 2,000,000 tokens/min.
+    """
     try:
-        return max(1000, int(os.environ.get("REVAI_LLM_TPM", "1000000") or 1000000))
+        return max(1000, int(os.environ.get("REVAI_LLM_TPM", "1500000") or 1500000))
     except ValueError:
-        return 1000000
+        return 1500000
 
 
 def _llm_concurrency_limit() -> int:
     """Max LLM requests in flight in this process, whatever the caller's pool size.
 
-    Our largest pool is `agentic_recover_v4` at 8 workers (one case had 165
-    candidates); the section map-reduce uses 4. Capping in-flight requests makes
-    stage-level parallelism safe regardless of what a stage spawns, and the slot
-    is held for the request only - never across a backoff sleep, so a throttled
-    thread cannot starve the others.
+    This is the only limit that applies to us. Our endpoint is the provider's
+    **Step Plan** API, which - per its usage-limits page - enforces a concurrency
+    limit only (the published RPM/TPM tier table explicitly excludes Step Plan).
+    Measured 2026-09-27: HTTP 429 on 4 of 5 samples of a six-sample campaign whose
+    request rate was ~5/min. The plausible cause is our own parallelism against a
+    plan concurrency ceiling: `agentic_recover_v4` runs 8 worker threads (one case
+    had 165 candidates) and the report section map-reduce runs 4.
+
+    Default 4 = the largest pool we would have allowed anyway, so nothing slows
+    down today; it becomes a guard the moment a stage is parallelised further.
+    Raise it once the provider tells us the real number - the response body and
+    Retry-After are logged on every 429 for exactly that reason.
     """
     try:
-        return max(1, int(os.environ.get("REVAI_LLM_CONCURRENCY", "6") or 6))
+        return max(1, int(os.environ.get("REVAI_LLM_CONCURRENCY", "4") or 4))
     except ValueError:
-        return 6
+        return 4
 
 
 _LLM_SEMAPHORE: threading.Semaphore | None = None
