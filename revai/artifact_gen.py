@@ -272,6 +272,10 @@ Rules:
     literal in your own source is worthless and will be flagged.
   - Report the byte offset of each value and the method that produced it, so the
     result can be independently re-derived and checked.
+  - Your script travels to the runner as a JSON string, so backslash escapes can
+    be mangled in transit. NEVER write \\x byte escapes inside the script. Build
+    byte patterns with bytes.fromhex('50450000') or chr(0) instead, e.g.
+    PE_SIG = bytes.fromhex('50450000').
   - If the sample is not amenable (no config, nothing to unpack), say so:
     applicability = "not_applicable" with a reason, and return no script.
 
@@ -301,6 +305,24 @@ def build_prompt(pack: dict) -> str:
 
 
 _FENCE = re.compile(r"```(?:python|py)?\s*(.*?)```", re.S)
+# The script rides to the runner inside a JSON string, so an LLM that writes
+# b'PE\x00\x00' emits an escaped backslash and the runner receives literal
+# backslashes. Observed live 2026-09-27: the script compared against
+# b'PE\\x00\\x00', concluded "not a PE" and exited. We warn instead of silently
+# rewriting source - the failure stays diagnosable.
+_MANGLED_BYTES_LITERAL = re.compile(r"""b(['"])[^'"]*\\\\x""")
+
+
+def source_warnings(script_src: str) -> list[str]:
+    """Static checks on the generated source, recorded honestly in the summary."""
+    out: list[str] = []
+    if _MANGLED_BYTES_LITERAL.search(script_src or ""):
+        out.append("escaped_backslash_in_bytes_literal: build byte patterns with "
+                   "bytes.fromhex() - \\x escapes are mangled by the JSON transport")
+    if re.search(r"\bsocket\b|\brequests\b|\burlopen\b", script_src or ""):
+        out.append("network_import_present: the sandbox has no network, so this "
+                   "cannot work")
+    return out
 
 
 def extract_script(response: dict) -> tuple[str, dict]:
@@ -523,6 +545,47 @@ def _result_artifacts(out_dir: Path, execution: dict) -> tuple[list[dict], str]:
     return [], "no_result_json"
 
 
+def _script_declined(execution: dict) -> str:
+    """Did the *script itself* conclude there is nothing to extract?
+
+    A generated script may answer in the generation shape (it was asked for that
+    JSON) instead of writing result.json. Recorded as an honest not_applicable
+    with the script's own reason, not as a silent zero-claim run.
+    """
+    blob = (execution.get("stdout") or "").strip()
+    if not blob.startswith("{"):
+        return ""
+    data = _read_json_text(blob)
+    if str(data.get("applicability") or "").strip().lower() == "not_applicable":
+        return str(data.get("reason") or "script reported not_applicable")[:300]
+    return ""
+
+
+def _corrective_prompt(prompt: str, script_src: str, execution: dict,
+                       verification: dict) -> str:
+    """One bounded feedback pass - the 'scripts have a feedback loop' part."""
+    return (
+        prompt
+        + "\n\nCORRECTION PASS (your previous script produced no verified artifact):\n"
+        + "Your script reported:\n"
+        + (execution.get("stdout") or "")[:1500]
+        + "\n(exit rc=" + str(execution.get("rc"))
+        + ", stderr: " + (execution.get("stderr") or "")[:600] + ")\n"
+        + "Checklist for the fix:\n"
+        + "  - the runner passes the sample path as argv[1] and an output dir as "
+          "argv[2]; read argv[1], write argv[2] + '/result.json'\n"
+        + "  - print NOTHING else: the only accepted outputs are result.json or a "
+          "single JSON object on stdout with an 'artifacts' list\n"
+        + "  - do not use \\x escapes in byte literals (they are mangled in transit); "
+          "use bytes.fromhex('...')\n"
+        + "  - do not bail out on a format check you are not sure about: locate the "
+          "PE header by scanning for bytes.fromhex('50450000') if e_lfanew looks odd\n"
+        + "  - if genuinely nothing is extractable, return applicability "
+          "'not_applicable' with a specific reason and no script\n"
+        + "\nYour previous script (for reference):\n" + script_src[:4000]
+    )
+
+
 def _read_json_text(text: str) -> dict:
     try:
         data = json.loads(text)
@@ -670,51 +733,121 @@ def run_stage(sha: str, *, force: bool = False) -> dict:
         )
 
     script_path = stage_dir / "03-generated.py"
-    script_path.write_text(script_src + "\n", encoding="utf-8")
     out_dir = stage_dir / "run"
-    if out_dir.exists():
-        shutil.rmtree(out_dir, ignore_errors=True)
-    out_dir.mkdir(parents=True, exist_ok=True)
+    attempts: list[dict] = []
+    script_src_final = script_src
+    meta_final = meta
+    prompt_final = prompt
+    execution: dict = {}
+    verification: dict = {}
+    artifacts: list[dict] = []
+    note = ""
+    syntax_ok = True
 
-    execution = run_generated_script(script_path, sample, out_dir)
-    _write_json(stage_dir / "04-execution.json", execution)
+    # Attempt loop: the first pass, plus ONE bounded correction when the script
+    # produced no verified claim. This is the "scripts have a feedback loop"
+    # half of #11 - the model sees what its own script actually printed.
+    for attempt in (1, 2):
+        script_path.write_text(script_src_final + "\n", encoding="utf-8")
+        try:
+            compile(script_src_final, str(script_path), "exec")
+        except SyntaxError as exc:
+            syntax_ok = False
+            attempts.append({"attempt": attempt, "syntax_error": str(exc)[:300]})
+            if attempt == 1:
+                try:
+                    response = llm_judge(
+                        _corrective_prompt(prompt, script_src_final, {"rc": -1,
+                                                                    "stdout": "",
+                                                                    "stderr": f"SyntaxError: {exc}"},
+                                           {}),
+                        model=get_llm_model(),
+                    )
+                    script_src_final, meta_final = extract_script(response)
+                except Exception:
+                    break
+                continue
+            break
+        if out_dir.exists():
+            shutil.rmtree(out_dir, ignore_errors=True)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        execution = run_generated_script(script_path, sample, out_dir)
+        _write_json(stage_dir / f"04-execution{'' if attempt == 1 else '-retry'}.json",
+                    execution)
+        artifacts, note = _result_artifacts(out_dir, execution)
+        verification = verify_claims(sample, artifacts, prompt_final, script_src_final)
+        verification["result_source"] = note
+        _write_json(stage_dir / f"05-verification{'' if attempt == 1 else '-retry'}.json",
+                    verification)
+        attempts.append({
+            "attempt": attempt,
+            "rc": execution.get("rc"),
+            "claims_total": verification["claims_total"],
+            "claims_verified": verification["claims_verified"],
+            "independence": verification["independence"],
+            "script_sha256": _sha256_bytes(script_src_final.encode("utf-8"))[:16],
+        })
+        if verification["claims_total"] > 0 or attempt == 2:
+            break
+        # Zero claims: one corrective pass, unless the script declined outright.
+        if _script_declined(execution):
+            break
+        try:
+            response = llm_judge(
+                _corrective_prompt(prompt_final, script_src_final, execution, verification),
+                model=get_llm_model(),
+            )
+        except Exception:
+            break
+        retry_src, meta_final = extract_script(response)
+        if not retry_src:
+            break
+        script_src_final, prompt_final = retry_src, prompt_final
 
-    artifacts, note = _result_artifacts(out_dir, execution)
-    verification = verify_claims(sample, artifacts, prompt, script_src)
-    verification["result_source"] = note
-    _write_json(stage_dir / "05-verification.json", verification)
+    declined = _script_declined(execution) if execution else ""
+    if declined:
+        summary = _not_applicable(sha, stage_dir, f"generated script: {declined}",
+                                 meta_final)
+        summary["attempts"] = attempts
+        summary["source_warnings"] = source_warnings(script_src_final)
+        _write_json(stage_dir / SUMMARY_NAME, summary)
+        return summary
 
-    status = "ran" if execution.get("rc") == 0 else "failed"
+    status = "ran" if (execution.get("rc") == 0 and syntax_ok) else "failed"
     summary = {
         "schema": SCHEMA,
         "sha256": sha,
         "status": status,
-        # Honest gate: green only when the script ran AND its claims were
+        # Honest gate: green only when the script ran AND at least one claim was
         # re-derived. Never touches the verdict either way.
-        "ok": status == "ran" and verification["claims_total"] > 0
-              and verification["claims_verified"] > 0,
+        "ok": status == "ran" and verification.get("claims_total", 0) > 0
+              and verification.get("claims_verified", 0) > 0,
         "generated": True,
-        "targets": meta.get("targets") or [],
+        "targets": meta_final.get("targets") or meta.get("targets") or [],
         "script_path": str(script_path),
-        "script_sha256": _sha256_bytes(script_src.encode("utf-8")),
+        "script_sha256": _sha256_bytes(script_src_final.encode("utf-8")),
         "prompt_sha256": _sha256_bytes(prompt.encode("utf-8")),
+        "attempts": attempts,
+        "source_warnings": source_warnings(script_src_final),
+        "syntax_ok": syntax_ok,
         "execution": {k: execution.get(k) for k in
                       ("rc", "timed_out", "elapsed_s", "network_isolation",
                        "interpreter_isolated")},
-        "artifacts_total": verification["claims_total"],
-        "artifacts_verified": verification["claims_verified"],
-        "artifacts_unverified": verification["claims_unverified"],
-        "artifacts_method_unsupported": verification["claims_method_unsupported"],
-        "independence": verification["independence"],
-        "input_read": verification["input_read"],
-        "hardcoded_output_literals": verification["hardcoded_output_literals"],
-        "values_pre_seeded_in_prompt": verification["values_pre_seeded_in_prompt"],
+        "artifacts_total": verification.get("claims_total", 0),
+        "artifacts_verified": verification.get("claims_verified", 0),
+        "artifacts_unverified": verification.get("claims_unverified", 0),
+        "artifacts_method_unsupported": verification.get("claims_method_unsupported", 0),
+        "independence": verification.get("independence", "no_claims"),
+        "input_read": bool(verification.get("input_read")),
+        "hardcoded_output_literals": verification.get("hardcoded_output_literals", 0),
+        "values_pre_seeded_in_prompt": verification.get("values_pre_seeded_in_prompt", 0),
+        "result_source": note,
         "verified_artifacts": [
             {k: a[k] for k in ("kind", "value_preview", "offset", "method", "basis",
                                "pre_seeded_in_prompt")}
-            for a in verification["artifacts"] if a.get("verified")
+            for a in verification.get("artifacts", []) if a.get("verified")
         ],
-        "llm": meta.get("llm"),
+        "llm": meta_final.get("llm") or meta.get("llm"),
         "elapsed_s": round(time.time() - t0, 1),
         "provenance": revai_provenance(),
         "finished_at": _utc(),
@@ -723,7 +856,8 @@ def run_stage(sha: str, *, force: bool = False) -> dict:
     print(
         f"[artifact_gen] {status} rc={execution.get('rc')} "
         f"verified={summary['artifacts_verified']}/{summary['artifacts_total']} "
-        f"independence={summary['independence']} ({summary['elapsed_s']}s)",
+        f"independence={summary['independence']} attempts={len(attempts)} "
+        f"({summary['elapsed_s']}s)",
         flush=True,
     )
     return summary

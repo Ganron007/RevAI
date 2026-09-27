@@ -353,6 +353,98 @@ def test_block_never_leaks_a_secret(monkeypatch, tmp_path=None):
     assert "sk-" not in out
 
 
+# --- the JSON-transport trap and the corrective pass ----------------------
+
+
+def test_mangled_byte_literal_is_warned_not_rewritten():
+    from artifact_gen import source_warnings
+
+    # What the runner actually received on the first live run (2026-09-27):
+    # the model wrote b'PE\x00\x00', the JSON transport delivered backslashes.
+    mangled = "if data[:4] != b'PE\\\\x00\\\\x00':\n    pass\n"
+    warns = source_warnings(mangled)
+    assert any("escaped_backslash_in_bytes_literal" in w for w in warns)
+    clean = "PE_SIG = bytes.fromhex('50450000')\n"
+    assert not any("escaped_backslash" in w for w in source_warnings(clean))
+
+
+def test_network_import_is_warned():
+    from artifact_gen import source_warnings
+
+    warns = source_warnings("import requests\nr = requests.get('http://x')\n")
+    assert any("network_import_present" in w for w in warns)
+
+
+def test_script_declining_is_recognised():
+    from artifact_gen import _script_declined
+
+    exec_rec = {"stdout": '{"applicability": "not_applicable", '
+                          '"reason": "no config blob"}', "rc": 0}
+    assert "no config blob" in _script_declined(exec_rec)
+    assert _script_declined({"stdout": "not json", "rc": 0}) == ""
+    assert _script_declined({"stdout": '{"artifacts": []}', "rc": 0}) == ""
+
+
+def test_corrective_prompt_shows_the_failure_and_the_fix_rules():
+    from artifact_gen import _corrective_prompt
+
+    out = _corrective_prompt("BASE", "print(1)", {"rc": 1, "stdout": "boom",
+                                                  "stderr": "TypeError"}, {})
+    assert "BASE" in out
+    assert "boom" in out and "TypeError" in out
+    assert "bytes.fromhex" in out
+    assert "result.json" in out
+
+
+def test_stage_records_zero_claims_without_a_false_green(monkeypatch):
+    """A script that claims nothing must not report ok=True."""
+    import artifact_gen as ag
+
+    class _Session:
+        @staticmethod
+        def get_sample_path() -> str:
+            return ""
+
+    # Build a minimal on-disk case: sample + a generated script that declines.
+    import json as _json
+    import tempfile
+
+    base = Path(tempfile.mkdtemp())
+    case = base / SHA
+    (case / "artifact_gen").mkdir(parents=True)
+    sample = base / "sample.bin"
+    sample.write_bytes(b"MZ" + b"\x00" * 62)
+    _json.dump({"sample_path": str(sample)}, open(case / "session.json", "w"))
+
+    monkeypatch.setattr(ag, "load_session", lambda _sha: {"sample_path": str(sample)})
+    monkeypatch.setattr(ag, "case_dir", lambda _sha, mode=None: case)
+    monkeypatch.setattr(ag, "revai_provenance", lambda: {"commit": "test"})
+    monkeypatch.setattr(ag, "hitl_checkpoint", lambda *a, **k: {})
+    script = ("import json, sys\n"
+              "print(json.dumps({'applicability': 'not_applicable',\n"
+              "                  'reason': 'packed stub, nothing extractable'}))\n")
+    monkeypatch.setattr(ag, "llm_judge", lambda *a, **k: {
+        "choices": [{"message": {"content": _json.dumps({
+            "applicability": "applicable", "targets": ["t"],
+            "script": script})}}]})
+
+    summary = ag.run_stage(SHA, force=True)
+    assert summary["status"] == "not_applicable"
+    assert summary["ok"] is True          # honest: nothing claimed, nothing wrong
+    assert "nothing extractable" in summary["reason"]
+    assert summary["artifacts_total"] == 0
+    # The report block must say so rather than imply success.
+    block = ag_v2_format(summary)
+    assert "did not produce a run" in block
+    assert "nothing extractable" in block
+
+
+def ag_v2_format(summary: dict) -> str:
+    from v2_lib import format_analysis_scripts_block
+
+    return format_analysis_scripts_block(summary)
+
+
 # --- evidence pack ---------------------------------------------------------
 
 
