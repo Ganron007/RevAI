@@ -813,15 +813,47 @@ def run_stage(sha: str, *, force: bool = False) -> dict:
         _write_json(stage_dir / SUMMARY_NAME, summary)
         return summary
 
-    status = "ran" if (execution.get("rc") == 0 and syntax_ok) else "failed"
+    # Honest taxonomy, fixed 2026-09-27 after the six-sample campaign showed a
+    # single flag poisoning the outcome: a syntax error on attempt 1 used to force
+    # status="failed" even when the correction pass ran fine (fgg_js reported
+    # "failed" while it had 2 re-derived artifacts). Per-attempt state only:
+    #   ran             the last attempt executed and produced >= 1 claim
+    #   not_applicable  the last attempt ran and found nothing, or the model never
+    #                   produced runnable code (unparseable) - nothing failed in
+    #                   the pipeline, so this is not a failure
+    #   failed          the last attempt's script ran and errored (rc != 0)
+    last = attempts[-1] if attempts else {}
+    last_syntax_ok = "syntax_error" not in last
+    last_rc = last.get("rc")
+    claims = int(verification.get("claims_total", 0) or 0)
+    not_applicable_reason = ""
+    if not last_syntax_ok:
+        not_applicable_reason = (
+            f"generated script was not valid Python after {len(attempts)} attempt(s): "
+            f"{last.get('syntax_error')}"
+        )
+    elif last_rc == 0 and claims == 0:
+        not_applicable_reason = (
+            "the script ran but claimed no extractable artifact"
+            + (f" ({note})" if note else "")
+        )
+    if not_applicable_reason:
+        summary = _not_applicable(sha, stage_dir, not_applicable_reason, meta_final)
+        summary["attempts"] = attempts
+        summary["syntax_ok"] = last_syntax_ok
+        summary["source_warnings"] = source_warnings(script_src_final)
+        _write_json(stage_dir / SUMMARY_NAME, summary)
+        return summary
+
+    status = "ran" if last_rc == 0 else "failed"
     summary = {
         "schema": SCHEMA,
         "sha256": sha,
         "status": status,
         # Honest gate: green only when the script ran AND at least one claim was
         # re-derived. Never touches the verdict either way.
-        "ok": status == "ran" and verification.get("claims_total", 0) > 0
-              and verification.get("claims_verified", 0) > 0,
+        "ok": status == "ran" and claims > 0
+              and int(verification.get("claims_verified", 0) or 0) > 0,
         "generated": True,
         "targets": meta_final.get("targets") or meta.get("targets") or [],
         "script_path": str(script_path),
@@ -829,7 +861,7 @@ def run_stage(sha: str, *, force: bool = False) -> dict:
         "prompt_sha256": _sha256_bytes(prompt.encode("utf-8")),
         "attempts": attempts,
         "source_warnings": source_warnings(script_src_final),
-        "syntax_ok": syntax_ok,
+        "syntax_ok": last_syntax_ok,
         "execution": {k: execution.get(k) for k in
                       ("rc", "timed_out", "elapsed_s", "network_isolation",
                        "interpreter_isolated")},
