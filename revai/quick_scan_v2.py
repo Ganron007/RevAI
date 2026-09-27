@@ -29,6 +29,7 @@ from v2_lib import (  # noqa: E402
     evaluate_tool_checklist,
     floss_extract,
     get_llm_model,
+    get_verdict_model,
     ida_query_remote,
     llm_judge,
     load_session,
@@ -362,7 +363,7 @@ def build_prompt(session, ghidra_ev, ida_ev, capa, yara, floss, malcat,
 
 def main():
     env_info = ensure_pipeline_runtime_env()
-    print(f"[quick_scan_v2] runtime env: model={get_llm_model()}", flush=True)
+    print(f"[quick_scan_v2] runtime env: default={get_llm_model()} judgment={get_verdict_model()}", flush=True)
     ap = argparse.ArgumentParser()
     ap.add_argument("sha256")
     ap.add_argument("--pro", action="store_true", help="Use the configured verdict model for quick verdict (default)")
@@ -714,7 +715,10 @@ def main():
     )
     log_dir = audit_path.parent
     (log_dir / "prompt.txt").write_text(prompt)
-    model = get_llm_model()
+    # The triage verdict is a judgment about the sample: the judgment role's
+    # model (REVAI_LLM_VERDICT_MODEL), not the pipeline default. Recorded at
+    # cand["model"] below, so the artifact states which model judged it.
+    model = get_verdict_model()
     llm_verdict: dict = {}
     llm_ok = False
     # Provider degeneration guard (2026-09-22 rehearsal): a corrupted response

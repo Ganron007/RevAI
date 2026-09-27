@@ -19,7 +19,7 @@ You can also override settings per run through the React Console **Settings** ta
 | `REVAI_LLM_TEMPERATURE` | No | Override temperature for LLM judge calls. Default `0.2`. |
 | `REVAI_LLM_TIMEOUT` | No | Read timeout (seconds) for LLM judge calls. Default `300`; raise it for very long report prompts at high reasoning effort. |
 | `REVAI_LLM_PLANNER_MODEL` | No | The **agentic tool loop** (the ReAct planner bound to the deep-dive tool registry) — the call-heavy role. Defaults to `REVAI_LLM_MODEL`. |
-| `REVAI_LLM_VERDICT_MODEL` | No | The **judgment role** only: the agentic final judge. Defaults to `REVAI_LLM_MODEL`. It does not move triage, the deep dive or the reports, so pinning the strongest model here costs one call per agentic run. |
+| `REVAI_LLM_VERDICT_MODEL` | No | The **judgment role**: every call that renders a judgment about the sample — the quick-scan triage verdict, the scripted deep-dive judge, and the agentic final judge. Defaults to `REVAI_LLM_MODEL`. It does not move function recovery, the reports or the v3 sections, so pinning the strongest model here costs two calls per scripted run and one per agentic run. |
 
 > **Role separation.** All three names are resolved independently (`v2_lib.get_default_model` /
 > `get_planner_model` / `get_verdict_model`) and each role pin falls back to `REVAI_LLM_MODEL`, so a

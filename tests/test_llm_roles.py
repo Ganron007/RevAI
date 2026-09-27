@@ -15,6 +15,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "revai"))
 
@@ -108,3 +110,34 @@ def test_console_role_pins_survive_a_console_default_model(monkeypatch):
     assert v2_lib.get_llm_model() == "console-model"
     assert v2_lib.get_planner_model() == "file-planner"
     assert v2_lib.get_verdict_model() == "file-judge"
+
+
+# --- the scripted judgment sites must use the judgment model ---------------
+#
+# quick_scan's triage verdict and deep_dive_v2's judge are the scripted
+# pipeline's judgments about the sample, so they take the judgment role's model
+# (REVAI_LLM_VERDICT_MODEL). Checked structurally: the stages are full evidence
+# pipelines, so the contract is the getter each `model = ...` assignment uses.
+
+
+@pytest.mark.parametrize("module_name", ["quick_scan_v2", "deep_dive_v2"])
+def test_scripted_judgment_sites_use_the_judgment_model(module_name):
+    import ast
+
+    source = (ROOT / "revai" / f"{module_name}.py").read_text(encoding="utf-8")
+    tree = ast.parse(source)
+    getters = {
+        node.value.func.id
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Assign)
+        and isinstance(node.value, ast.Call)
+        and isinstance(node.value.func, ast.Name)
+        and node.value.func.id.endswith("_model")
+        for target in node.targets
+        if isinstance(target, ast.Name) and target.id == "model"
+    }
+    assert getters, f"{module_name}: no model getter assignment found"
+    assert getters == {"get_verdict_model"}, (
+        f"{module_name}: the scripted judgment must use the judgment role's "
+        f"model, found {sorted(getters)}"
+    )

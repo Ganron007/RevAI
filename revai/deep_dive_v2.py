@@ -39,6 +39,7 @@ from v2_lib import (  # noqa: E402
     evaluate_tool_checklist,
     frida_static_probe,
     get_llm_model,
+    get_verdict_model,
     ghidra_decompile,
     hitl_checkpoint,
     ida_query_remote,
@@ -598,7 +599,7 @@ def main():
     args = ap.parse_args()
 
     env_info = ensure_pipeline_runtime_env()
-    print(f"[deep_dive_v2] runtime env: model={get_llm_model()}", flush=True)
+    print(f"[deep_dive_v2] runtime env: default={get_llm_model()} judgment={get_verdict_model()}", flush=True)
 
     session = load_session(args.sha256)
     session_id = session["session_id"]
@@ -735,7 +736,10 @@ def main():
                           intake_validation=intake_validation)
     (ev_dir / "03-prompt.txt").write_text(prompt)
 
-    model = get_llm_model()
+    # The deep-dive judge is the scripted judgment about the sample: the judgment
+    # role's model (REVAI_LLM_VERDICT_MODEL). Recorded in llm_audit.request_model
+    # and analysis["model"] below.
+    model = get_verdict_model()
     try:
         resp = llm_judge(prompt, model=model)
         (ev_dir / "04-llm-raw.json").write_text(
