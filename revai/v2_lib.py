@@ -2378,6 +2378,15 @@ def _llm_response_has_usable_content(data: dict) -> bool:
                 if isinstance(v, (list, dict)) and len(v) > 0:
                     if not _looks_degenerate(json.dumps(v)):
                         return True
+                # Scalar values are content too. This branch was missing, so a
+                # well-formed reply whose values are all bool/int -- e.g. the
+                # '{"ok": true}' that agnes-3.0-flash returns to a "return only
+                # this JSON" instruction -- fell through every clause and was
+                # reported hollow, which made llm_judge retry 3x and then raise
+                # "llm_judge failed" on a perfectly good answer (2026-09-28,
+                # provider switch). `null` and the empty string stay hollow.
+                if isinstance(v, bool) or isinstance(v, (int, float)):
+                    return True
             return False
         if isinstance(parsed, list):
             return len(parsed) > 0
