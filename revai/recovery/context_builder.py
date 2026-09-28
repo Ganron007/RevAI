@@ -3,10 +3,34 @@ context_builder.py — build rich per-function context for LLM recovery.
 """
 from __future__ import annotations
 
+import os
 import sys
 from typing import Any
 
 from .normalizer import Normalizer
+
+
+def _context_query_timeout() -> int:
+    """Bound for the per-function context queries (seconds).
+
+    These are small indexed lookups (pseudocode / xrefs / call edges for one
+    function) and measured 2.4 s each on a 2.3 MB sample (2026-09-28). The 900 s
+    bulk default in ghidra_sql_client is sized for whole-program queries like
+    cfg_edges on 50MB+ samples; applying it per function meant one unanswered
+    request stalled the stage for 15 minutes.
+
+    Overridable because a very large sample can legitimately need longer for a
+    single function's context - fail-open is the right trade for a small one and
+    the wrong one for a huge binary.
+    """
+    try:
+        return max(15, int(os.environ.get("REVAI_GHIDRA_CONTEXT_TIMEOUT_S",
+                                          "120")))
+    except ValueError:
+        return 120
+
+
+CONTEXT_QUERY_TIMEOUT_S = _context_query_timeout()
 
 
 def _addr_key(addr: Any) -> str:
@@ -55,11 +79,27 @@ class ContextBuilder:
         }
 
     def _query(self, sql: str, max_rows: int = 200) -> list[dict]:
-        try:
-            r = self.client.ghidra_query(self.session_id, sql, max_rows=max_rows)
-            return r.get("rows", []) or []
-        except Exception as e:
-            return [{"error": str(e)}]
+        # Per-function queries, so they get a tight bound: one wedged ghidrasql
+        # request must not cost the 900 s bulk default (observed 2026-09-28 on
+        # winservices -- server idle, client blocked in poll the whole time).
+        budget = _context_query_timeout()
+        last = "unknown error"
+        # One retry covers a transient stall; a server that is genuinely wedged
+        # fails open as a data row rather than unwinding the whole stage.
+        for attempt in (1, 2):
+            try:
+                r = self.client.ghidra_query(self.session_id, sql,
+                                             max_rows=max_rows,
+                                             timeout=budget)
+            except Exception as e:
+                last = str(e)
+                continue
+            rows = r.get("rows", []) or []
+            if not (len(rows) == 1 and "error" in rows[0]):
+                return rows
+            # ghidrasql answered with a per-query error: worth one more try
+            last = str(rows[0]["error"])
+        return [{"error": last}]
 
     def _pseudocode(self, addr: str) -> str | None:
         rows = self._query(

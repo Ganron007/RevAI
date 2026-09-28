@@ -672,16 +672,26 @@ def main():
                 t_ctx = time.time()
                 print(f"[agentic_recover_v4] tier {tier_idx}: building Ghidra "
                       f"context for {len(pending)} function(s)", file=sys.stderr)
-                for f in pending:
+                ctx_errors = 0
+                for i, f in enumerate(pending, 1):
                     addr = _addr_key(f["address"])
+                    t_one = time.time()
                     try:
                         prebuilt[addr] = cb.build(
                             f, resolved,
                             obfuscation_flags=contexts[addr].get("obfuscation", {}))
                     except Exception as exc:  # fail-open: keep the function
+                        ctx_errors += 1
                         prebuilt[addr] = {"__error__": f"{type(exc).__name__}: {exc}"}
+                    # Progress every function: this phase is sequential and a
+                    # silent 6+ minute stretch reads as a hung stage (2026-09-28).
+                    print(f"[agentic_recover_v4] tier {tier_idx}: context "
+                          f"{i}/{len(pending)} addr={addr} "
+                          f"{time.time() - t_one:.1f}s", file=sys.stderr)
                 print(f"[agentic_recover_v4] tier {tier_idx}: context built in "
-                      f"{time.time() - t_ctx:.1f}s", file=sys.stderr)
+                      f"{time.time() - t_ctx:.1f}s"
+                      + (f" ({ctx_errors} failed, fail-open)" if ctx_errors
+                         else ""), file=sys.stderr)
 
             # Phase 2 (LLM only, parallel).
             def _analyze_one(f: dict) -> dict:

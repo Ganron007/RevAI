@@ -201,16 +201,25 @@ class GhidraSqlClient:
         session_id: str,
         sql: str,
         max_rows: int = 200,
+        timeout: int | None = None,
     ) -> dict:
         """Run a SQL query against the open Ghidra .gpr for `session_id`.
 
         Returns the same dict shape as the old McpGhidraClient.
         P0.5: read-only — only single SELECT statements are executed.
+
+        `timeout` overrides QUERY_TIMEOUT for callers that issue many small
+        per-item queries. A ghidrasql server can accept a request and then never
+        answer it (observed 2026-09-28: the java process sat at a constant CPU
+        time and the client blocked in poll for the full 900 s), so a tight
+        bound plus a single retry is what keeps one wedged query from stalling a
+        whole stage. Bulk queries keep the long default.
         """
         validate_readonly_sql(sql)
         session = _resolve_session(session_id)
         sha = session.get("sha256") or session_id.split("-", 1)[-1]
         base_url = self._ensure_server(session)
+        budget = QUERY_TIMEOUT if timeout is None else timeout
 
         # HTTP POST to /query
         req = urllib.request.Request(
@@ -220,7 +229,7 @@ class GhidraSqlClient:
             method="POST",
         )
         try:
-            with urllib.request.urlopen(req, timeout=QUERY_TIMEOUT) as resp:
+            with urllib.request.urlopen(req, timeout=budget) as resp:
                 payload = json.loads(resp.read().decode())
         except urllib.error.HTTPError as e:
             raise RuntimeError(
@@ -228,6 +237,13 @@ class GhidraSqlClient:
             )
         except urllib.error.URLError as e:
             raise RuntimeError(f"ghidrasql HTTP unreachable: {e}")
+        except (TimeoutError, OSError) as e:
+            # socket.timeout is an OSError; name it so the audit trail and the
+            # caller's fail-open log show a timeout rather than a generic error
+            raise RuntimeError(
+                f"ghidrasql query timed out after {budget}s "
+                f"(sql={sql[:80]!r})"
+            ) from e
 
         if not payload.get("success"):
             err = (
