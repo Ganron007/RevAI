@@ -111,23 +111,57 @@ class ContextBuilder:
         return None
 
     def _string_refs(self, addr: str, size: int) -> list[str]:
+        """Strings referenced by this function.
+
+        Two steps instead of one range join. The single
+        `xrefs JOIN strings WHERE from_addr BETWEEN ...` query is unusable
+        against ghidrasql (measured 2026-09-28 on a 2.3 MB sample: >40 s at
+        every range width tried, with and without ORDER BY, while the same
+        tables answer in 1-8 s when addressed by key):
+
+            count(*) funcs        7.4 s     xrefs range, no join  8.1 s
+            count(*) xrefs        1.2 s     xrefs point lookup  1.5 s
+            count(*) strings    >60 s       strings WHERE addr IN  1.5 s
+            count(*) pseudocode >60 s       pseudocode WHERE func_addr =  1.5 s
+
+        So: take the xref targets out of `xrefs` (fast, that table is
+        indexed), then resolve those addresses against `strings` with an
+        `IN (...)` list (fast, that table is not). The range join forced a scan
+        of the un-indexed side of both tables.
+        """
         if size <= 0:
             return []
         start = int(addr)
         end = start + size
+        targets = self._query(
+            f"""
+            SELECT DISTINCT x.to_addr
+            FROM xrefs x
+            WHERE x.from_addr >= '{start}' AND x.from_addr <= '{end}'
+            LIMIT 60
+            """,
+            max_rows=60,
+        )
+        addrs = [str(r["to_addr"]) for r in targets
+                 if isinstance(r, dict) and r.get("to_addr")
+                 and str(r["to_addr"]) not in ("0", "None")]
+        if not addrs:
+            return []
+        # ghidrasql has no bound-parameter form over HTTP; these are integers
+        # that came out of Ghidra's own address space, and the client already
+        # rejects multi-statement SQL, so the list form is safe here.
+        literal = ",".join(f"'{a}'" for a in addrs[:60])
         rows = self._query(
             f"""
-            SELECT DISTINCT s.content
-            FROM xrefs x
-            JOIN strings s ON x.to_addr = s.addr
-            WHERE x.from_addr >= '{start}' AND x.from_addr <= '{end}'
-              AND s.length > 2
-            ORDER BY s.length DESC
+            SELECT content
+            FROM strings
+            WHERE addr IN ({literal}) AND length > 2
             LIMIT 20
             """,
             max_rows=20,
         )
-        return [r["content"] for r in rows if "content" in r][:10]
+        return [r["content"] for r in rows
+                if isinstance(r, dict) and r.get("content")][:10]
 
     def _data_xrefs(self, addr: str, size: int) -> list[dict]:
         if size <= 0:
