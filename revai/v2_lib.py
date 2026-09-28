@@ -3184,8 +3184,13 @@ class McpGhidraClient:
         from ghidra_sql_client import get_ghidra_sql_client
         self._client = get_ghidra_sql_client()
 
-    def ghidra_query(self, session_id: str, sql: str, max_rows: int = 200) -> dict:
-        return self._client.ghidra_query(session_id, sql, max_rows=max_rows)
+    def ghidra_query(self, session_id: str, sql: str, max_rows: int = 200,
+                     timeout: int | None = None) -> dict:
+        # `timeout` is forwarded (not swallowed): recovery's per-function
+        # context queries need a tight bound, and a shim that dropped the
+        # argument silently gave them the 900 s bulk default.
+        return self._client.ghidra_query(session_id, sql, max_rows=max_rows,
+                                         timeout=timeout)
 
     def close(self) -> None:
         # Owned by the singleton; no per-instance cleanup.
