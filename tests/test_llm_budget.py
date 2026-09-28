@@ -110,11 +110,23 @@ def test_state_reports_the_configured_limits(monkeypatch):
     assert state["tokens_in_window"] == 0
 
 
+def _stage_source(name: str) -> str:
+    """Read a stage module from either runtime layout.
+
+    A source checkout has revai/<name>.py; the VM's deployed flat layout has
+    <name>.py next to the other scripts. Hardcoding the checkout path made this
+    test fail on the VM with FileNotFoundError, which meant verify-release.sh
+    could never return PASS there -- a gate that cannot pass is not a gate.
+    """
+    for candidate in (ROOT / "revai" / name, ROOT / name):
+        if candidate.is_file():
+            return candidate.read_text(encoding="utf-8")
+    raise AssertionError(f"cannot locate {name} under {ROOT}")
+
+
 def test_stages_that_fire_calls_in_parallel_are_the_reason():
     """Guard the diagnosis: if someone parallelises another LLM stage, this fails."""
-    sp = ROOT / "revai" / "section_publisher.py"
-    rec = ROOT / "revai" / "agentic_recover_v4.py"
-    assert "ThreadPoolExecutor" in sp.read_text(encoding="utf-8")
-    assert "ThreadPoolExecutor" in rec.read_text(encoding="utf-8")
+    assert "ThreadPoolExecutor" in _stage_source("section_publisher.py")
+    assert "ThreadPoolExecutor" in _stage_source("agentic_recover_v4.py")
     # the budget is the only thing standing between those pools and the limiter
     assert hasattr(v2_lib, "llm_budget_acquire")
