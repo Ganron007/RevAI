@@ -447,10 +447,19 @@ def build_base_resolved(funcs: list[dict], signatures: dict[str, dict]) -> dict[
 
 def analyze_function(func: dict, context: dict, resolved: dict[str, dict],
                      system_template: str, user_template: str,
-                     model: str, cb: ContextBuilder) -> dict:
-    """Send one function to the LLM and parse the JSON result."""
+                     model: str, cb: ContextBuilder,
+                     prebuilt_ctx: dict | None = None) -> dict:
+    """Send one function to the LLM and parse the JSON result.
+
+    `prebuilt_ctx` is the Ghidra context fetched by the caller's deterministic
+    phase. When omitted the context is built here (single-function path).
+    """
     addr = _addr_key(func["address"])
-    ctx = cb.build(func, resolved, obfuscation_flags=context.get("obfuscation", {}))
+    if prebuilt_ctx is not None and "__error__" not in prebuilt_ctx:
+        ctx = prebuilt_ctx
+    else:
+        ctx = cb.build(func, resolved,
+                       obfuscation_flags=context.get("obfuscation", {}))
 
     # Render user prompt; cap total size to ~16k tokens budget by truncating pseudocode
     user = render_user_prompt(user_template, {
@@ -649,6 +658,32 @@ def main():
             lock = threading.Lock()
             completed_in_tier = 0
 
+            # Phase 1 (deterministic, single-threaded): pull every function's
+            # Ghidra context before any LLM call. ghidrasql is single-tenant
+            # per .gpr and serializes queries, so fanning this out across the
+            # worker pool just made 8 threads fight over one GPR lock -- 108
+            # LockException aborts on winservices (2026-09-28), every worker
+            # parked until the 900 s query timeout, and the stage produced no
+            # context at all. Only the LLM call below benefits from threads.
+            pending = [f for f in tier_funcs
+                       if _addr_key(f["address"]) not in signatures]
+            prebuilt: dict[str, dict] = {}
+            if pending:
+                t_ctx = time.time()
+                print(f"[agentic_recover_v4] tier {tier_idx}: building Ghidra "
+                      f"context for {len(pending)} function(s)", file=sys.stderr)
+                for f in pending:
+                    addr = _addr_key(f["address"])
+                    try:
+                        prebuilt[addr] = cb.build(
+                            f, resolved,
+                            obfuscation_flags=contexts[addr].get("obfuscation", {}))
+                    except Exception as exc:  # fail-open: keep the function
+                        prebuilt[addr] = {"__error__": f"{type(exc).__name__}: {exc}"}
+                print(f"[agentic_recover_v4] tier {tier_idx}: context built in "
+                      f"{time.time() - t_ctx:.1f}s", file=sys.stderr)
+
+            # Phase 2 (LLM only, parallel).
             def _analyze_one(f: dict) -> dict:
                 addr = _addr_key(f["address"])
                 if addr in signatures:
@@ -656,7 +691,9 @@ def main():
                     rec["function_address"] = addr
                     return rec
                 ctx = contexts[addr]
-                rec = analyze_function(f, ctx, resolved, system_template, user_template, model, cb)
+                rec = analyze_function(f, ctx, resolved, system_template,
+                                       user_template, model, cb,
+                                       prebuilt_ctx=prebuilt.get(addr))
                 with lock:
                     nonlocal completed_in_tier
                     completed_in_tier += 1

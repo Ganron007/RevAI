@@ -47,6 +47,7 @@ import os
 import re
 import signal
 import subprocess
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -70,6 +71,20 @@ SERVER_LIFETIME = 7200  # 2h; ghidrasql --max-runtime cap
 
 # Lazy-loaded singleton (one per process; v2 pipeline is single-threaded)
 _client_instance: "GhidraSqlClient | None" = None
+
+# Server ownership is process-wide, not per-client-instance.
+#
+# ghidrasql is single-tenant per .gpr: it takes an exclusive GPR lock, so two
+# servers on the same project cannot coexist. The function-recovery pool
+# (agentic_recover_v4, 8 workers) shares ONE client, so without this every
+# worker raced through _ensure_server, none saw a registered server (the entry
+# is only stored once the server is healthy), and each started its own and then
+# SIGKILLed the others'. Observed 2026-09-28 on winservices: 108
+# `LockException: Unable to lock project!` aborts, the java server PID churning,
+# and all 8 workers parked until the 900 s query timeout. One lock + one shared
+# registry means the first worker starts the server and the rest reuse it.
+_SERVER_LOCK = threading.RLock()
+_SHARED_SERVERS: dict[str, dict] = {}  # gpr path -> server entry
 
 # P0.5: agent/planner SQL must be read-only. Single SELECT (or WITH...SELECT)
 # only; no multi-statements, no mutation/pragma/attach keywords anywhere.
@@ -175,6 +190,9 @@ class GhidraSqlClient:
         self.port = port
         # session_id -> {"proc": Popen, "port": int, "base_url": str, "gpr": str}
         self._servers: dict[str, dict] = {}
+        # Guards _servers and server start/adopt. The recovery pool queries
+        # Ghidra from 8 threads through one shared client.
+        self._servers_lock = threading.RLock()
 
     # ---- public API -----------------------------------------------------
 
@@ -261,36 +279,68 @@ class GhidraSqlClient:
         }
 
     def close(self, session_id: str) -> None:
-        """Kill the ghidrasql server for one session."""
-        entry = self._servers.pop(session_id, None)
+        """Drop one session's claim on its server.
+
+        Deliberately does NOT kill the server: since 2026-09-28 the server is
+        owned process-wide (`_SHARED_SERVERS`) and shared by every session and
+        thread, so killing it here took away a server other in-flight queries
+        were using. `close_all()` tears it down once at process exit.
+        """
+        with self._servers_lock:
+            entry = self._servers.pop(session_id, None)
         if entry is None:
             return
-        try:
-            os.killpg(os.getpgid(entry["proc"].pid), signal.SIGKILL)
-        except (ProcessLookupError, PermissionError, OSError):
-            pass
         gpr = entry.get("gpr")
         if gpr:
-            proj_dir = Path(gpr).parent
-            for lp in (proj_dir / f"{Path(gpr).stem}.lock",
-                       proj_dir / f"{Path(gpr).stem}.lock~"):
-                try:
-                    if lp.exists():
-                        lp.unlink()
-                except OSError:
-                    pass
+            with _SERVER_LOCK:
+                current = _SHARED_SERVERS.get(gpr)
+                if current is not None and current.get("base_url") == \
+                        entry.get("base_url"):
+                    # last claim on this server -> release ownership so a later
+                    # session can start a fresh one
+                    _SHARED_SERVERS.pop(gpr, None)
 
     def close_all(self) -> None:
-        """Kill all servers (called at process exit or by reset)."""
-        for sid in list(self._servers.keys()):
-            self.close(sid)
+        """Kill every server this process owns (called at exit or by reset)."""
+        with self._servers_lock:
+            self._servers.clear()
+        with _SERVER_LOCK:
+            entries = list(_SHARED_SERVERS.items())
+            _SHARED_SERVERS.clear()
+        for gpr, entry in entries:
+            proc = entry.get("proc")
+            if proc is not None:
+                self._kill_pid(proc.pid)
+            if gpr:
+                proj_dir = Path(gpr).parent
+                for lp in (proj_dir / f"{Path(gpr).stem}.lock",
+                           proj_dir / f"{Path(gpr).stem}.lock~"):
+                    try:
+                        if lp.exists():
+                            lp.unlink()
+                    except OSError:
+                        pass
 
     # ---- internal --------------------------------------------------------
 
     def _ensure_server(self, session: dict) -> str:
+        """Return a healthy ghidrasql base URL for `session`, starting one only
+        if this process has none for that project.
+
+        Serialized process-wide: the recovery pool calls this from 8 threads,
+        and ghidrasql takes an exclusive lock on the .gpr, so concurrent starts
+        deadlock into repeated LockException aborts and each thread killing the
+        others' server. One thread starts; the rest reuse.
+        """
+        with _SERVER_LOCK:
+            with self._servers_lock:
+                return self._ensure_server_locked(session)
+
+    def _ensure_server_locked(self, session: dict) -> str:
         """Start a ghidrasql --http server for `session` if not running.
 
-        Returns the base URL (no trailing slash).
+        Returns the base URL (no trailing slash). Caller must hold
+        `_SERVER_LOCK` and `self._servers_lock`.
         """
         sid = session["session_id"]
         gpr = session.get("gpr_path")
@@ -311,7 +361,28 @@ class GhidraSqlClient:
             if _probe(f"{base_url}/health/deep", 1.5):
                 return base_url
             # dead, kill and restart
-            self.close(sid)
+            self._kill_pid(entry["proc"].pid)
+            self._servers.pop(sid, None)
+
+        # 1b. A server another session/thread in THIS process already started
+        # for the same project. ghidrasql is single-tenant per .gpr, so this is
+        # the only correct answer for a second worker -- starting our own
+        # would lose the GPR lock race and abort (2026-09-28).
+        shared = _SHARED_SERVERS.get(gpr)
+        if shared is not None:
+            proc = shared.get("proc")
+            alive = True
+            if proc is not None:
+                try:
+                    alive = proc.poll() is None
+                except Exception:
+                    alive = True  # adopted _FakePopen from another process
+            if alive and _probe(f"{shared['base_url']}/health/deep", 2.0):
+                self._servers[sid] = shared
+                return shared["base_url"]
+            _SHARED_SERVERS.pop(gpr, None)
+            if proc is not None:
+                self._kill_pid(proc.pid)
 
         # 2. ghidrasql is single-tenant per project. If a ghidrasql is
         # already running for THIS project (tracked or untracked), reuse
@@ -327,13 +398,15 @@ class GhidraSqlClient:
                 self._kill_pid(proc.pid)
             else:
                 # Reuse it; don't track ownership (we didn't start it)
-                self._servers[sid] = {
+                adopted = {
                     "proc": proc,
                     "port": port,
                     "base_url": base_url,
                     "gpr": gpr,
                     "reused": True,
                 }
+                self._servers[sid] = adopted
+                _SHARED_SERVERS.setdefault(gpr, adopted)
                 return base_url
 
         # 3. No reusable server. Kill any other ghidrasql serving a
@@ -389,18 +462,22 @@ class GhidraSqlClient:
                 break
             time.sleep(0.5)
         else:
-            self.close(sid)
+            self._kill_pid(proc.pid)
             raise RuntimeError(
                 f"ghidrasql server for {sid} did not become healthy "
                 f"within {STARTUP_TIMEOUT}s"
             )
 
-        self._servers[sid] = {
+        owned = {
             "proc": proc,
             "port": port,
             "base_url": base_url,
             "gpr": gpr,
         }
+        self._servers[sid] = owned
+        # Publish for every other session/thread in this process: ghidrasql
+        # holds an exclusive lock on the .gpr, so there can be only one.
+        _SHARED_SERVERS[gpr] = owned
         return base_url
 
     @staticmethod
