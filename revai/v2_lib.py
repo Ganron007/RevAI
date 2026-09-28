@@ -2529,6 +2529,24 @@ def llm_budget_acquire(est_tokens: int) -> float:
         waited += delay
 
 
+_LLM_BUDGET_WAIT_COUNT = 0
+_LLM_BUDGET_LAST_WAIT_LOG = 0.0
+_BUDGET_WAIT_LOG_INTERVAL_S = 60.0
+
+
+def _budget_should_log_wait() -> bool:
+    """True for the first wait and then ~once a minute (see the call site)."""
+    global _LLM_BUDGET_WAIT_COUNT, _LLM_BUDGET_LAST_WAIT_LOG
+    with _LLM_BUDGET_LOCK:
+        _LLM_BUDGET_WAIT_COUNT += 1
+        now = time.time()
+        if (_LLM_BUDGET_WAIT_COUNT == 1
+                or now - _LLM_BUDGET_LAST_WAIT_LOG >= _BUDGET_WAIT_LOG_INTERVAL_S):
+            _LLM_BUDGET_LAST_WAIT_LOG = now
+            return True
+    return False
+
+
 def llm_budget_state() -> dict:
     """Budget snapshot for diagnostics/tests (no secrets)."""
     with _LLM_BUDGET_LOCK:
@@ -2539,6 +2557,7 @@ def llm_budget_state() -> dict:
             "calls_in_window": len(_LLM_BUDGET_CALLS),
             "tokens_in_window": sum(t for _, t in _LLM_BUDGET_TOKENS),
             "waited_s_total": round(_LLM_BUDGET_WAITED_S, 1),
+            "wait_count": _LLM_BUDGET_WAIT_COUNT,
         }
 
 
@@ -2628,9 +2647,14 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
         # throttling each other. 2026-09-28: a 4-way x 17-section burst against
         # 30-60K-token prompts produced HTTP 429 on 4 of 5 campaign cases.
         waited = llm_budget_acquire(estimate_llm_tokens(prompt))
-        if waited >= 1.0:
-            print(f"[llm_budget] waited {waited:.1f}s to stay inside "
-                  f"{_llm_rpm_limit()} RPM / {_llm_tpm_limit()} TPM", flush=True)
+        if waited >= 1.0 and _budget_should_log_wait():
+            # Rate-limited: a capped pool logs one line per queued call, which on a
+            # 165-candidate recovery stage was 269 lines and drowned the run log
+            # (observed 2026-09-28). First wait, then ~one a minute, with a count.
+            print(f"[llm_budget] paced {waited:.1f}s to stay inside "
+                  f"{_llm_rpm_limit()} RPM / {_llm_tpm_limit()} TPM / "
+                  f"{_llm_concurrency_limit()} in-flight "
+                  f"(wait {_LLM_BUDGET_WAIT_COUNT})", flush=True)
         try:
             req = urllib.request.Request(
                 api_url,
