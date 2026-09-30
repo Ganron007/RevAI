@@ -52,6 +52,20 @@ def test_body_groups_are_contiguous_and_in_order():
         "the body must stop before the tail groups start")
 
 
+def test_evidence_dense_sections_each_get_their_own_call():
+    """Sections 3-5 overflowed when grouped together on win32k_dll.
+
+    That group returned nothing at all while its neighbours produced ~29K chars
+    each, so the density is per-section, not a general size problem. Asserted so
+    a future "simplify the grouping" change cannot silently reintroduce it.
+    """
+    singles = {a for a, b in pub.TECHNICAL_BODY_GROUPS if b - a == 1}
+    for idx in (2, 3, 4):          # File Layout, Static Code Analysis, Behavioural
+        assert idx in singles, (
+            f"section {SECTIONS[idx]!r} must have its own call; got "
+            f"{pub.TECHNICAL_BODY_GROUPS}")
+
+
 def test_prompt_for_a_subset_asks_only_for_that_subset(monkeypatch):
     """A chunk call must not ask for headings it is not going to write."""
     titles = SECTIONS[2:5]

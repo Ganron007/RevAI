@@ -400,11 +400,16 @@ def verify_sections(md: str) -> list[str]:
 #: TECHNICAL_REPORT_SECTIONS (13 entries). The analytical body is written first
 #: so the closing call can summarise it. Ranges must tile [2, 11) exactly once
 #: each -- `tests/test_publish_chunked.py` asserts the tiling, because an overlap
-#: silently writes one section twice and a gap silently drops it. Sizes are chosen
-#: so no single call comes near the provider's measured ~16K output-token
-#: ceiling; win32k_dll produced 106,873 bytes in one call and never came back,
-#: while the same content split this way is comfortably inside it.
-TECHNICAL_BODY_GROUPS: tuple[tuple[int, int], ...] = ((2, 5), (5, 8), (8, 11))
+#: silently writes one section twice and a gap silently drops it.
+#:
+#: Sections 3-5 get a call each. They are the evidence-dense ones -- layout
+#: tables, disassembly, behavioural narrative -- and grouping them into one call
+#: still overflowed: on win32k_dll that group returned nothing at all while its
+#: neighbours produced 29.7K and 29.3K chars. Sections 6-11 comfortably share
+#: calls. Sizes are chosen against the provider's measured ~16K output-token
+#: ceiling, below which a call always returns and above which it hangs.
+TECHNICAL_BODY_GROUPS: tuple[tuple[int, int], ...] = (
+    (2, 3), (3, 4), (4, 5), (5, 8), (8, 11))
 #: Written last, with the body's text supplied as context: the Executive Summary
 #: and Metadata lead the document but depend on the findings that follow.
 TECHNICAL_WRAP_RANGE = (0, 2)
@@ -458,10 +463,16 @@ def generate_technical_chunked(
         prompt = build_prompt_technical(
             session, verdict, deep, yara_meta, audit, technical_evidence,
             recovery_evidence, final_verdict, sections=titles)
+        errs_before = len(errors)
         md = _call(prompt, f"body-{gi}", f"05-body-{gi:02d}-raw.json")
         if md:
             slots["body"].append(md)
             body_text.append(md)
+        elif len(errors) == errs_before:
+            # the call returned without raising, so it must have returned
+            # nothing usable -- most likely an output-size overflow
+            errors.append(f"body-{gi} ({', '.join(titles)}) produced no "
+                          f"content -- most likely an output-size overflow")
         print(f"[publish_report_v2] technical body part {gi + 1}/"
               f"{len(TECHNICAL_BODY_GROUPS)}: {len(md)} chars"
               f"{' (FAILED)' if not md else ''}", flush=True)
