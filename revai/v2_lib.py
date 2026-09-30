@@ -2647,6 +2647,7 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
     except (TypeError, ValueError):
         timeout_s = 300
     current_reasoning = reasoning
+    same_effort_retry_done = False
     last_aborted: dict | None = None
     last_empty: dict | None = None
     for attempt in range(1, max_retries + 1):
@@ -2759,13 +2760,35 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                 or "timeout" in str(e).lower()
             )
             if _timeout_err:
+                if not same_effort_retry_done:
+                    # Retry ONCE at the same effort before giving up on
+                    # thinking. A provider stall and a genuinely slow job are
+                    # indistinguishable from inside the client, so going
+                    # straight to no-thinking turned one transient stall into a
+                    # stub report: on 2026-09-30 nspack and win32k_dll both went
+                    # red on tech2_no_stubs / no_tech2_fallback after a single
+                    # 600 s timeout. Exactly one retry keeps the "don't walk the
+                    # whole ladder" property (2 thinking windows, not 5) while
+                    # giving a stall a genuine second chance.
+                    same_effort_retry_done = True
+                    sleep_s = 2 ** attempt + random.uniform(0, 1.0)
+                    print(
+                        f"[llm_judge] attempt {attempt}/{max_retries} timed "
+                        f"out after {timeout_s}s (reasoning="
+                        f"{current_reasoning}); retrying once at the same "
+                        f"effort in {sleep_s:.1f}s",
+                        flush=True,
+                    )
+                    time.sleep(sleep_s)
+                    continue
                 # A hung thinking-path call burns the whole read window per
                 # effort level; skip the step-down ladder and go straight to
                 # the no-thinking fallback (rehearsal 2026-09-21: 600s
                 # timeouts at high/medium/low burned ~27 min in one stage).
                 print(
-                    f"[llm_judge] attempt {attempt}/{max_retries} timed out — "
-                    "skipping to the no-thinking fallback",
+                    f"[llm_judge] attempt {attempt}/{max_retries} timed out "
+                    f"after {timeout_s}s — skipping to the no-thinking "
+                    "fallback",
                     flush=True,
                 )
                 break

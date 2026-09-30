@@ -214,6 +214,9 @@ def test_timeout_skips_ladder_to_no_thinking(monkeypatch):
         calls.append(body)
         if len(calls) == 1:
             raise TimeoutError("The read operation timed out")
+        if len(calls) == 2:
+            # the same-effort retry also hangs: a genuinely stuck endpoint
+            raise TimeoutError("The read operation timed out")
         return _FakeResp(_json.dumps({
             "choices": [{"message": {
                 "role": "assistant",
@@ -229,6 +232,18 @@ def test_timeout_skips_ladder_to_no_thinking(monkeypatch):
     monkeypatch.setenv("REVAI_LLM_REASONING", "high")
 
     out = _v2.llm_judge("probe")
-    assert len(calls) == 2, f"expected one timeout then the fallback, got {len(calls)} calls"
-    assert calls[1].get("thinking") == {"type": "disabled"}
+    # The ladder is still skipped, but a hung call now earns ONE same-effort
+    # retry first (2026-09-30: a single 600 s timeout was turning into a stub
+    # report on nspack and win32k_dll). So: hang, same-effort retry, then
+    # straight to no-thinking -- never the full high -> medium -> low walk.
+    assert len(calls) == 3, (
+        f"expected hang + one same-effort retry + no-thinking, got "
+        f"{len(calls)} calls")
+    assert calls[1].get("thinking") == {"type": "enabled"}, (
+        "the second attempt must stay at the same reasoning effort")
+    assert calls[1].get("reasoning_effort") == calls[0].get("reasoning_effort")
+    assert calls[2].get("thinking") == {"type": "disabled"}
+    efforts = [c.get("reasoning_effort") for c in calls]
+    assert "medium" not in efforts and "low" not in efforts, (
+        f"the step-down ladder was walked: {efforts}")
     assert out["choices"][0]["message"]["content"]
