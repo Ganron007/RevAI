@@ -2274,6 +2274,15 @@ def get_llm_reasoning() -> str | None:
     return os.environ.get("REVAI_LLM_REASONING")
 
 
+def _llm_max_tokens() -> int:
+    """Per-request output cap. Provider-specific; see the call site for the
+    measurement that produced the default (2026-10-01)."""
+    try:
+        return max(1024, int(os.environ.get("REVAI_LLM_MAX_TOKENS", "16384")))
+    except (TypeError, ValueError):
+        return 16384
+
+
 def _build_reasoning_body(reasoning: str | None) -> dict:
     """Build the reasoning/thinking control parameters for the LLM body.
 
@@ -2622,7 +2631,22 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
             {"role": "user", "content": prompt},
         ],
         "temperature": 0.0,
-        "max_tokens": 65536,
+        # Provider output ceiling, measured 2026-10-01 on the configured
+        # endpoint. A single request that would emit more than ~16K output
+        # tokens NEVER returns -- it hangs until the socket timeout, which is
+        # what made win32k_dll's monolithic technical report burn 600s, then
+        # 1200s, and still fall back to stubs:
+        #     max_tokens=16384 -> 193-237s, finish_reason=length, OK
+        #     max_tokens=20480 -> hangs
+        #     max_tokens=32768 -> hangs
+        #     max_tokens=65536 -> hangs
+        # Capping at the ceiling turns that silent hang into a clean
+        # finish_reason=length, which _llm_response_has_usable_content rejects,
+        # so the caller retries or falls back quickly instead of stalling. The
+        # durable fix for very long reports is generating them in sections, the
+        # way publish v3 already does (section_publisher) -- a single monolithic
+        # call cannot exceed the ceiling. Override only if the provider changes.
+        "max_tokens": _llm_max_tokens(),
         "response_format": {"type": "json_object"},
     }
     body.update(_build_reasoning_body(reasoning))
