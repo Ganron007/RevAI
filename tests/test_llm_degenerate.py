@@ -195,6 +195,7 @@ def test_timeout_skips_ladder_to_no_thinking(monkeypatch):
     import v2_lib as _v2
 
     calls = []
+    windows = []
 
     class _FakeResp:
         def __init__(self, payload):
@@ -212,6 +213,7 @@ def test_timeout_skips_ladder_to_no_thinking(monkeypatch):
     def fake_urlopen(req, timeout=None):
         body = _json.loads(req.data.decode())
         calls.append(body)
+        windows.append(timeout)
         if len(calls) == 1:
             raise TimeoutError("The read operation timed out")
         if len(calls) == 2:
@@ -246,4 +248,9 @@ def test_timeout_skips_ladder_to_no_thinking(monkeypatch):
     efforts = [c.get("reasoning_effort") for c in calls]
     assert "medium" not in efforts and "low" not in efforts, (
         f"the step-down ladder was walked: {efforts}")
+    # The retry must get a LONGER window, not an identical one: win32k_dll's
+    # technical prompt is 1.5x nspack's and timed out 4x at a flat 600 s, which
+    # an immediate same-window retry cannot rescue.
+    assert windows[1] == windows[0] * 2, (
+        f"same-effort retry should escalate the window: {windows[:2]}")
     assert out["choices"][0]["message"]["content"]

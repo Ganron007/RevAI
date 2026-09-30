@@ -2648,6 +2648,14 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
         timeout_s = 300
     current_reasoning = reasoning
     same_effort_retry_done = False
+    # The same-effort retry gets a LONGER window, not an identical one. A
+    # transient stall is fixed by any retry, but a genuinely slow generation
+    # needs more room: win32k_dll's technical prompt is 1.5x nspack's (35.6KB
+    # vs 23.5KB, 2026-09-30) and it timed out 4x at a flat 600s, which an
+    # immediate same-window retry cannot rescue. Escalating covers both failure
+    # modes with the same attempt count, so the worst case stays bounded at
+    # base + 2*base + no-thinking.
+    attempt_timeout_s = timeout_s
     last_aborted: dict | None = None
     last_empty: dict | None = None
     for attempt in range(1, max_retries + 1):
@@ -2680,7 +2688,7 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
             sem = llm_semaphore()
             sem.acquire()
             try:
-                with urllib.request.urlopen(req, timeout=timeout_s) as resp:
+                with urllib.request.urlopen(req, timeout=attempt_timeout_s) as resp:
                     raw_body = resp.read()
             finally:
                 sem.release()
@@ -2771,12 +2779,14 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                     # whole ladder" property (2 thinking windows, not 5) while
                     # giving a stall a genuine second chance.
                     same_effort_retry_done = True
+                    attempt_timeout_s = timeout_s * 2
                     sleep_s = 2 ** attempt + random.uniform(0, 1.0)
                     print(
                         f"[llm_judge] attempt {attempt}/{max_retries} timed "
                         f"out after {timeout_s}s (reasoning="
                         f"{current_reasoning}); retrying once at the same "
-                        f"effort in {sleep_s:.1f}s",
+                        f"effort with a {attempt_timeout_s}s window in "
+                        f"{sleep_s:.1f}s",
                         flush=True,
                     )
                     time.sleep(sleep_s)
@@ -2787,8 +2797,8 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                 # timeouts at high/medium/low burned ~27 min in one stage).
                 print(
                     f"[llm_judge] attempt {attempt}/{max_retries} timed out "
-                    f"after {timeout_s}s — skipping to the no-thinking "
-                    "fallback",
+                    f"after {attempt_timeout_s}s — skipping to the "
+                    "no-thinking fallback",
                     flush=True,
                 )
                 break
