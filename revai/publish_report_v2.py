@@ -282,14 +282,37 @@ def build_prompt_technical(session: dict, verdict: dict | None, deep: dict | Non
                            yara_meta: dict | None, audit: list,
                            technical_evidence: str,
                            recovery_evidence: str = "",
-                           final_verdict: str | None = None) -> str:
-    """Build a prompt for a technical analyst-grade report with evidence snippets."""
+                           final_verdict: str | None = None,
+                           sections: list[str] | None = None,
+                           prior_sections_md: str = "") -> str:
+    """Build a prompt for a technical analyst-grade report with evidence snippets.
+
+    `sections` restricts the call to a subset of TECHNICAL_REPORT_SECTIONS, which
+    exists because one monolithic call cannot serve every sample: a response that
+    would exceed the provider's ~16K output-token ceiling never returns, it hangs
+    until the socket timeout. That is how win32k_dll's technical report burned
+    600 s, then 1200 s, and still landed on stubs (2026-10-01). See
+    TECHNICAL_BODY_GROUPS and generate_technical_chunked.
+
+    `prior_sections_md` gives the closing call the earlier sections' text so the
+    Executive Summary is written against the body rather than guessed.
+    """
+    wanted = list(sections) if sections else list(TECHNICAL_REPORT_SECTIONS)
     lines = [
         "# Technical Malware Analysis Report v2",
         "",
         "You MUST produce markdown with ALL of these level-1 headings (exact titles):",
-        "\n".join(f"- {s}" for s in TECHNICAL_REPORT_SECTIONS),
+        "\n".join(f"- {s}" for s in wanted),
         "",
+    ]
+    if sections:
+        lines += [
+            "You are producing ONE PART of a larger report. Write ONLY the "
+            "headings listed above -- no other numbered heading, no document "
+            "title, no preamble. Another call writes the remaining sections.",
+            "",
+        ]
+    lines += [
         "Rules (V5.16 — evidence-first, MORE detail preferred):",
         "- This is a TECHNICAL report for reverse engineers. Prefer MORE evidence over less.",
         "- COPY tables/rows from Structured Evidence into the matching sections (do not summarize away addresses).",
@@ -332,6 +355,14 @@ def build_prompt_technical(session: dict, verdict: dict | None, deep: dict | Non
             "relevant section instead of using a different verdict label.",
             "",
         ]
+    if prior_sections_md:
+        lines += [
+            "## Earlier sections of THIS report (already written)",
+            "The sections below are your own earlier output. The Executive "
+            "Summary must summarise THESE, and must not contradict them.",
+            prior_sections_md[:24000],
+            "",
+        ]
     lines += [
         f"verdict.json: {json.dumps(verdict or {}, indent=2)[:4000]}",
         "",
@@ -363,6 +394,98 @@ def build_prompt_technical(session: dict, verdict: dict | None, deep: dict | Non
 
 def verify_sections(md: str) -> list[str]:
     return missing_sections(md, REPORT_MASTER_SECTIONS)
+
+
+#: Section groups for the chunked technical report. Index ranges into
+#: TECHNICAL_REPORT_SECTIONS (13 entries). The analytical body is written first
+#: so the closing call can summarise it. Ranges must tile [2, 11) exactly once
+#: each -- `tests/test_publish_chunked.py` asserts the tiling, because an overlap
+#: silently writes one section twice and a gap silently drops it. Sizes are chosen
+#: so no single call comes near the provider's measured ~16K output-token
+#: ceiling; win32k_dll produced 106,873 bytes in one call and never came back,
+#: while the same content split this way is comfortably inside it.
+TECHNICAL_BODY_GROUPS: tuple[tuple[int, int], ...] = ((2, 5), (5, 8), (8, 11))
+#: Written last, with the body's text supplied as context: the Executive Summary
+#: and Metadata lead the document but depend on the findings that follow.
+TECHNICAL_WRAP_RANGE = (0, 2)
+TECHNICAL_TAIL_RANGE = (11, 13)
+
+
+def generate_technical_chunked(
+    session: dict, verdict: dict | None, deep: dict | None,
+    yara_meta: dict | None, audit: list, technical_evidence: str,
+    recovery_evidence: str = "", final_verdict: str | None = None,
+    ev_dir: Path | None = None,
+) -> tuple[str, list[dict], list[str]]:
+    """Generate the technical report as several bounded calls.
+
+    Returns (markdown, per-call audit records, errors). Every section is produced
+    exactly once; the body groups run first and their text is fed to the wrap
+    call so section 1 summarises real content instead of guessing. A group that
+    fails is recorded and simply leaves its headings out -- the caller's existing
+    completeness check and deterministic fallback handle that, rather than this
+    function inventing filler.
+    """
+    audits: list[dict] = []
+    errors: list[str] = []
+
+    def _call(prompt: str, tag: str, out_name: str) -> str:
+        try:
+            resp = llm_judge(prompt)
+        except Exception as exc:                     # noqa: BLE001
+            errors.append(f"{tag}: {type(exc).__name__}: {exc}")
+            return ""
+        content = resp["choices"][0]["message"].get("content") or ""
+        parsed = _extract_report_json(content)
+        md = (parsed or {}).get("markdown") or ""
+        meta = llm_call_metadata(resp)
+        audits.append({"part": tag, "llm_audit": meta,
+                       "prompt_chars": len(prompt),
+                       "markdown_chars": len(md)})
+        if ev_dir is not None:
+            try:
+                (ev_dir / out_name).write_text(content, encoding="utf-8")
+            except OSError:
+                pass
+        return md
+
+    slots: dict[str, list[str]] = {"wrap": [], "body": [], "tail": []}
+    audits: list[dict] = []
+    errors: list[str] = []
+    body_text: list[str] = []
+    for gi, (a, b) in enumerate(TECHNICAL_BODY_GROUPS):
+        titles = TECHNICAL_REPORT_SECTIONS[a:b]
+        prompt = build_prompt_technical(
+            session, verdict, deep, yara_meta, audit, technical_evidence,
+            recovery_evidence, final_verdict, sections=titles)
+        md = _call(prompt, f"body-{gi}", f"05-body-{gi:02d}-raw.json")
+        if md:
+            slots["body"].append(md)
+            body_text.append(md)
+        print(f"[publish_report_v2] technical body part {gi + 1}/"
+              f"{len(TECHNICAL_BODY_GROUPS)}: {len(md)} chars"
+              f"{' (FAILED)' if not md else ''}", flush=True)
+
+    prior = "\n\n".join(body_text)[:24000]
+    for tag, (a, b) in (("wrap", TECHNICAL_WRAP_RANGE),
+                        ("tail", TECHNICAL_TAIL_RANGE)):
+        titles = TECHNICAL_REPORT_SECTIONS[a:b]
+        if not titles:
+            continue
+        prompt = build_prompt_technical(
+            session, verdict, deep, yara_meta, audit, technical_evidence,
+            recovery_evidence, final_verdict, sections=titles,
+            prior_sections_md=prior)
+        md = _call(prompt, tag, f"05-{tag}-raw.json")
+        if md:
+            slots[tag].append(md)
+        print(f"[publish_report_v2] technical {tag}: {len(md)} chars"
+              f"{' (FAILED)' if not md else ''}", flush=True)
+
+    # Document order: front matter, analytical body, appendices. The wrap call
+    # runs last so it can summarise the body, but its output leads the document.
+    ordered = slots["wrap"] + slots["body"] + slots["tail"]
+    return "\n\n".join(ordered).strip() + "\n", audits, errors
 
 
 def verify_technical_sections(md: str) -> list[str]:
@@ -642,6 +765,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("sha256")
     ap.add_argument("--template", choices=("full", "triage", "ir"), default="full")
+    ap.add_argument(
+        "--technical-monolithic", action="store_true",
+        help="Generate the technical report in ONE call instead of by section "
+             "groups. Kept for comparison only: a single call cannot exceed the "
+             "provider's ~16K output-token ceiling without hanging, so it "
+             "cannot complete for a large sample.",
+    )
     args = ap.parse_args()
 
     # Mode-aware paths: reports + reads live in the run's mode section
@@ -1001,19 +1131,56 @@ def main():
 
         technical_report: dict[str, Any]
         tech_err: str | None = None
+        # Chunked by default. One monolithic call cannot serve every sample: a
+        # response that would exceed the provider's ~16K output-token ceiling
+        # never returns (measured 2026-10-01), so win32k_dll's technical report
+        # burned 600 s, then 1200 s, and still landed on stubs. Pass
+        # --technical-monolithic to keep the old single-call path for
+        # comparison; it is not the default because it cannot complete for a
+        # large sample.
+        chunked = not args.technical_monolithic
         try:
-            resp_tech = llm_judge(prompt_tech)
-            (ev_dir / "05-llm-technical-raw.json").write_text(
-                json.dumps(resp_tech, indent=2, default=str)
-            )
-            technical_report = _extract_report_json(resp_tech["choices"][0]["message"]["content"])
-            meta_tech = llm_call_metadata(resp_tech)
-            meta_tech["request_model"] = get_llm_model()
-            technical_report["model"] = meta_tech.get("response_model") or get_llm_model()
-            technical_report["llm_audit"] = meta_tech
-            technical_report["source"] = technical_report.get("source") or "llm_judge"
-            technical_report["template"] = "technical"
-            technical_report["generated_at"] = datetime.now(timezone.utc).isoformat()
+            if chunked:
+                tech_md_parts, tech_audits, tech_errors = generate_technical_chunked(
+                    session, verdict, deep, yara_meta, audit,
+                    tech_evidence_for_prompt,
+                    recovery_evidence=recovery_evidence,
+                    final_verdict=report.get("final_verdict"),
+                    ev_dir=ev_dir,
+                )
+                if tech_errors:
+                    tech_err = "; ".join(tech_errors)
+                if not tech_md_parts.strip():
+                    raise RuntimeError(tech_err or "chunked technical produced "
+                                       "no content")
+                technical_report = {
+                    "title": f"Technical Report {args.sha256[:12]}",
+                    "markdown": tech_md_parts,
+                    "source": "llm_judge",
+                    "template": "technical",
+                    "generation_mode": "chunked",
+                    "chunk_audits": tech_audits,
+                    "generated_at": datetime.now(timezone.utc).isoformat(),
+                }
+                if tech_errors:
+                    technical_report["llm_error"] = tech_err
+            else:
+                resp_tech = llm_judge(prompt_tech)
+                (ev_dir / "05-llm-technical-raw.json").write_text(
+                    json.dumps(resp_tech, indent=2, default=str)
+                )
+                technical_report = _extract_report_json(
+                    resp_tech["choices"][0]["message"]["content"])
+                meta_tech = llm_call_metadata(resp_tech)
+                meta_tech["request_model"] = get_llm_model()
+                technical_report["model"] = (meta_tech.get("response_model")
+                                             or get_llm_model())
+                technical_report["llm_audit"] = meta_tech
+                technical_report["source"] = (technical_report.get("source")
+                                              or "llm_judge")
+                technical_report["template"] = "technical"
+                technical_report["generation_mode"] = "monolithic"
+                technical_report["generated_at"] = datetime.now(timezone.utc).isoformat()
         except Exception as e:
             tech_err = str(e)
             print(f"[publish_report_v2] technical LLM failed → salvage + FAIL: {e}", flush=True)
