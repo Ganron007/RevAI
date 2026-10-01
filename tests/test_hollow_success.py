@@ -203,3 +203,40 @@ def test_evaluate_case_on_an_empty_dir_is_clean_not_an_error(tmp_path):
     out = hs.evaluate_case(tmp_path)
     assert out["ok"] is True
     assert out["findings"] == []
+
+
+def test_partial_naming_is_advisory_not_a_gate():
+    """52% unknown_* with real content must be reported, not failed.
+
+    Measured on 2026-10-01: raas (a green case) left 53% of recovered functions
+    unnamed with real pseudocode and a real confidence spread. Gating that would
+    be wrong -- the artifact has content -- but ignoring it would hide the reason
+    `function_recovery.json` reports 87 of 200 llm_candidates on big samples.
+    """
+    results = [
+        {"source": "llm_judge", "function_name": "unknown_x",
+         "confidence": 0.7, "normalized_pseudocode": "void f(){}"}
+        if i % 2 else
+        {"source": "llm_judge", "function_name": f"real_{i}",
+         "confidence": 0.8, "normalized_pseudocode": "int g(){}"}
+        for i in range(60)
+    ]
+    data = {"function_results": results,
+            "triage": {"llm_candidates": 200}}
+    assert hs.check_function_recovery(data) == [], "must not gate"
+
+    adv = hs._advisory(data)
+    assert adv["judged"] is True
+    assert 0.45 < adv["unresolved_name_ratio"] < 0.55, adv
+    assert adv["results_vs_candidates"] == "60/200", adv
+    assert "not a hollow success" in adv["note"]
+
+
+def test_advisory_absent_for_tiny_or_missing_recovery():
+    assert hs._advisory(None) == {}
+    tiny = {"function_results": [
+        {"source": "llm_judge", "function_name": "unknown_a",
+         "confidence": 0.1, "normalized_pseudocode": ""}]}
+    adv = hs._advisory(tiny)
+    assert adv["judged"] is False
+    assert "unresolved_name_ratio" not in adv

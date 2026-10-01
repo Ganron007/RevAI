@@ -1516,6 +1516,8 @@ def main():
         "checks": {"no_hollow_artifacts": bool(hollow.get("ok"))},
         "count": hollow.get("count", 0),
         "findings": hollow.get("findings", []),
+        # Reported, never gated: partial naming failure is a depth signal.
+        "advisory": hollow.get("advisory", {}),
     }
 
     stage_ok = {k: v.get("ok") for k, v in report["stages"].items()}

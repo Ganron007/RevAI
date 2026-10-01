@@ -291,8 +291,8 @@ def evaluate_case(case: Path) -> dict[str, Any]:
     case = Path(case)
     findings: list[Finding] = []
 
-    findings += check_function_recovery(
-        _load(case / "function_recovery.json"))
+    recovery = _load(case / "function_recovery.json")
+    findings += check_function_recovery(recovery)
     findings += check_verdict_sources(
         _load(case / "verdict.json"),
         _load(case / "deep_dive" / "05-deep-dive.json"),
@@ -318,4 +318,41 @@ def evaluate_case(case: Path) -> dict[str, Any]:
         "ok": not findings,
         "findings": [f.as_dict() for f in findings],
         "count": len(findings),
+        "advisory": _advisory(recovery),
+    }
+
+
+def _advisory(recovery: dict | None) -> dict[str, Any]:
+    """Quality signals that are real but must NOT gate the run.
+
+    Partial naming failure is a depth problem, not a hollow success: on
+    2026-10-01 two of twelve cases left ~52% of recovered functions named
+    `unknown_*` while carrying real pseudocode and a real confidence spread, and
+    both had passed every gate. Gating that would be wrong (the artifact has
+    content) and ignoring it would hide the reason `function_recovery.json`
+    reports 87 of 200 `llm_candidates` on the large samples.
+    """
+    if not recovery:
+        return {}
+    llm = [r for r in (recovery.get("function_results") or [])
+           if isinstance(r, dict) and r.get("source") == "llm_judge"]
+    if len(llm) < MIN_RESULTS_FOR_RATIO_CHECK:
+        return {"llm_results": len(llm), "judged": False}
+    n = len(llm)
+    unknown = sum(1 for r in llm
+                  if str(r.get("function_name") or "").startswith("unknown_"))
+    empty = sum(1 for r in llm
+                if not (r.get("normalized_pseudocode") or "").strip())
+    triage = recovery.get("triage") or {}
+    return {
+        "llm_results": n,
+        "judged": True,
+        "unresolved_name_ratio": round(unknown / n, 3),
+        "empty_pseudocode_ratio": round(empty / n, 3),
+        "llm_candidates": triage.get("llm_candidates"),
+        "results_vs_candidates": (
+            f"{n}/{triage['llm_candidates']}"
+            if triage.get("llm_candidates") else None),
+        "note": ("partial naming is a depth signal, not a hollow success; "
+                 "gated only at >90% unknown_*"),
     }
