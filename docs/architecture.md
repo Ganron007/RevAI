@@ -89,7 +89,7 @@ skips itself when its `REVAI_ENABLE_*` flag is off and is never required for gre
 | **3.6. Analysis Scripts** *(optional)* | `artifact_gen.py` | Opt-in verifiable artifact generation: the LLM authors one small, sample-specific extraction script from **structural** evidence (section table, high-entropy regions with offsets, strings with offsets, bounded decompile excerpts — never a decoded answer), the pipeline runs it in a bounded sandbox (isolated interpreter, scrubbed env with no RevAI secrets, address-space/file-size rlimits, timeout, `unshare -n` when available) and then **re-derives every claimed value from the sample bytes** with its own code. Three anti-cheat measurements: the script must read its input argument, hardcoded output literals are flagged, and values already visible in the generation prompt are flagged as not independent. Gated by `REVAI_ENABLE_ARTIFACT_GEN=1`; self-skips with rc=0 otherwise; never gates the verdict. Publish attaches a presence-gated *Appendix: Analysis Scripts* listing only re-derived values. |
 | **4. Rule Gen** | `yara_gen_v2.py` | Generates YARA + Sigma rules from evidence, provenance-stamped, validated in-process; `iocs.json` extended with revai-tools wallets + defanged IOC merge. |
 | **5. Publish** | `publish_report_v2.py` | LLM Judge authors `REPORT-MASTER-v2.md` (17 sections) and `REPORT-TECHNICAL-v2.md` (13 sections) with the evidence pack appended. |
-| **6. Correlate** | `section_publisher.py` | Section map-reduce: per-section LLM passes with cross-section context → `REPORT-MASTER-v3.md` / `REPORT-TECHNICAL-v3.md`. |
+| **6. Correlate** | `section_publisher.py` | Section map-reduce: per-section LLM passes with cross-section context → `REPORT-MASTER-v3.md` / `REPORT-TECHNICAL-v3.md`. **Both** reports are generated one section per call. Technical evidence is routed to the sections that need it (`TECHNICAL_SECTION_EVIDENCE`) instead of being sent whole to a single call, and each section's evidence is capped. `REVAI_TECHNICAL_SECTIONWISE=0` restores the single-call technical assembly, retained only as a rollback lever. |
 | **7. Audit** | `audit_pipeline.py` & `report_quality.py` | Per-stage audit (`all_green`), engine-citation honesty, verdict lock, style gates, depth gate, `truly_green`. |
 
 ---
@@ -185,14 +185,16 @@ Every report/rule/trace carries a **provenance banner** (commit, engine, feature
 ## 10. Quality Verification Gate (`truly_green`)
 
 ```text
-truly_green = all_green (per-stage audit) AND quality_green (no fallback stubs)
+truly_green = all_green (per-stage audit, incl. the hollow-success gate)
+              AND quality_green (no fallback stubs)
               AND (failed_tools == 0) AND engine-citation honesty
               AND verdict lock AND confidence sanity AND report style gates
               AND depth gate (capability coverage)
               AND publication-quality gates (cross-report consistency, entropy sanity)
 ```
 
-* **Audit Verification (`all_green`)**: every stage completes rc=0 with valid artifacts.
+* **Audit Verification (`all_green`)**: every stage completes rc=0 with valid artifacts, **and** the artifacts contain something. The second half is the hollow-success gate below — "rc=0 with a well-formed artifact" is not sufficient, because five separate defects produced exactly that while the output was worthless.
+* **Hollow-success gate (`hollow_success`)**: a deterministic, artifact-based stage measuring whether artifacts carry real content rather than merely existing. It reads each report's *own declared* completeness (`source`, `sections_complete`, `sections_missing`, `sections_stub`), function-recovery name/pseudocode ratios, verdict-panel agreement across reports, exhausted LLM calls, and report degeneration or duplicated sections. Artifacts are discovered by glob rather than enumerated, so a new report version cannot silently escape the checks. Deliberately makes no LLM call: a check that needed a model could be hollow in the same way, and would cost a call per run to report whether the calls worked. Partial function naming is reported as an advisory, never gated — that is a depth signal, not an empty artifact.
 * **Quality Gate (`quality_green`)**: no deterministic fallbacks, stubs, or mis-attributed engine citations; SQL-deep honesty (documented infrastructure failures are recorded, not gated); no 0-confidence verdicts on complete dives.
 * **Depth Gate (`depth_coverage`, plan #7)**: deterministic completeness gate on the deep-dive summary. Every capability domain — persistence, C2/network, evasion/anti-analysis, exfiltration, defense impairment, credential access, encryption/obfuscation, plus entry point, imports, strings — must be *addressed*: either evidenced or explicitly stated "not observed". An entirely unmentioned domain fails the gate. Implemented by `v2_lib.evaluate_deep_coverage()` in `audit_deep_standard` / `audit_deep_large`. The deep-dive prompts carry the DEPTH PROTOCOL ("a verdict does not end the analysis") so agents know the requirement before final_answer. Pairs with the optional function-recovery stage (#6), which supplies systematic call-graph coverage.
 * **Style gates**: provenance byline present, citation coverage in narrative, no dump-style code blocks without interpretation, no orphaned tables, healthy prose ratio. Evaluated on the narrative body only (raw evidence appendices are exempt).

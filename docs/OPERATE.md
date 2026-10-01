@@ -35,6 +35,21 @@ CADRE_PIPELINE_MODE=large python3 /opt/scripts/intake_v2.py /path/to/sample.exe
 
 ## Run the full pipeline (orchestrator)
 
+> **Reboot the analysis VM before every sample run.** Do not run samples
+> back-to-back on one boot. State accumulates across runs (Ghidra/JVM heap, the
+> ghidrasql and idasql servers, open handles, project caches) and a run that
+> starts on a degraded VM produces results that cannot be trusted or compared
+> with anything else. This is not a caution about memory headroom: a 32 GB box
+> with ~2 GB in use still shows the slowdown. Any A/B comparison between two
+> runs is only valid if both ran on their own fresh boot.
+>
+> ```bash
+> sudo reboot
+> # wait for SSH, then confirm:  uptime -p        -> "up N minutes"
+> #                            timedatectl     -> "System clock synchronized: yes"
+> cd ~/RevAI && sudo ./scripts/deploy.sh --restart && python3 /opt/scripts/v2_validate.py --smoke-only
+> ```
+
 The recommended way to run the whole spine is the **LangGraph ReAct orchestrator** — it plans and executes intake → quick_scan → agentic deep dive → yara → publish → correlate → audit → quality gate, and retries a stage that fails. This is what the Console's **Run orch** button drives.
 
 ```bash
@@ -49,6 +64,35 @@ python3 /opt/scripts/pipeline_single.py /path/to/sample.exe
 ```
 
 The run writes `orchestrator_trace.json` and `quality-gate.json` under `/opt/samples/logs/<sha256>/`; the final `truly_green` is the honest pass/fail.
+
+### Mode-keyed outputs
+
+Every artifact is written under `logs/<sha256>/<mode>/`, where `<mode>` is
+`scripted`, `agentic`, `single` or `ui`. Always pass `REVAI_RUN_MODE=<mode>` when
+invoking a mode-keyed stage by hand — the default resolves to `single`, so a
+report can be written to one directory and audited in another.
+
+### Reading the LLM timing lines
+
+Every LLM call logs where its time went:
+
+```
+[llm_judge] attempt 1/3 model=... ttft=4.9s total=35.4s chars=914 tok/s=7.7 finish=stop
+```
+
+That single line separates the three failure causes that are otherwise
+indistinguishable:
+
+| Reading | Meaning |
+|---|---|
+| small `ttft`, long `total` | the model is generating slowly |
+| large `ttft` | time spent before the first byte — provider-side queueing |
+| no line at all | the stage did not call the LLM |
+
+A non-streaming request carries no bytes until the response is complete, so
+"slow" and "dead" are the same observation without this. Set
+`REVAI_LLM_STREAM=0` to restore plain POSTs, at the cost of losing the
+distinction.
 
 ## Pipeline stages 
 
@@ -357,6 +401,31 @@ guaranteed present and cannot be paraphrased away (each opt-out above):
 6. **What We Don't Know** — built only from structural gaps (dynamic not run,
    window-bounded coverage, unpack image not statically analyzable) plus the
    report's own explicit negations. Nothing is inferred.
+
+## Report generation is section-wise
+
+Both v3 reports are generated one section per LLM call. The master runs two
+passes (pass 2 adds cross-section context); the technical report runs one.
+
+Technical evidence is **routed** to the sections that need it rather than sent
+whole to every call:
+
+| Section | Evidence keywords routed to it |
+|---|---|
+| 3. File Layout | file layout, sections/regions, virtual files, structures |
+| 4. Static Code Analysis | decompilation, functions, imports, strings, capa, yara |
+| 5. Behavioral & Dynamic | speakeasy, frida, dynamic, upx, unpack |
+| 6. Network Indicators & C2 | network, url, domain, dns, iocs |
+| 9. Detection Engineering | yara, detection, rule, signature |
+
+Every section additionally receives the verdict and deep-dive blocks, so none is
+written blind of the finding, and each section's evidence is capped (the cap is
+disclosed in the text when it bites, never applied silently).
+
+This matters because a single call cannot hold all 13 sections inside the
+per-request output budget. Assembled monolithically it returned truncated after
+section 1 and scored 1 of 13. Set `REVAI_TECHNICAL_SECTIONWISE=0` to restore the
+single-call assembly — kept only as a rollback lever.
 
 ## Verification and release gates
 
