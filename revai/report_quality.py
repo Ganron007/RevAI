@@ -850,6 +850,26 @@ _ELIDED_REGISTRY_RE = re.compile(
     r".*$",
     re.IGNORECASE)
 
+#: Imperative defender guidance. A registry path named inside one of these is a
+#: location the report tells the analyst to inspect or clean, not an indicator
+#: the report claims the sample produced. Both survivors on the real audits were
+#: exactly this:
+#:
+#:   winservices  "**Registry:** Monitor `RegSetValueExA` ... on
+#:                 `HKLM\...\FirewallPolicy` and the `Run` key"
+#:   win32k_dll   "2. Remove registry persistence entries:
+#:                 - HKLM\Software\Microsoft\Windows NT\...\UserList"
+#:
+#: Same speech act as the canonical persistence template already exempted above
+#: ("a verification target, not an observed artifact"). Counted and reported
+#: under `guidance_references`, never silently dropped.
+_GUIDANCE_VERB_RE = re.compile(
+    r"(?i)\b(?:monitor|watch|remove|delete|clean|inspect|scan|check|audit|"
+    r"remediate|remediation|verify|look\s+for|hunt|clear|close)\b")
+
+#: A markdown/numbered list item, whose line is the unit of guidance.
+_BULLET_RE = re.compile(r"(?:[-*+]\s+|\d+[.)]\s+)")
+
 #: A concrete registry path as it appears in raw tool evidence.
 _EVIDENCE_REGKEY_RE = re.compile(
     r"(?i)\b(?:HK(?:LM|CU|CR|U|CC|EY_[A-Z_]+)|HKEY_[A-Z_]+)\\"
@@ -918,6 +938,47 @@ def _ground_elided_regkey(plain: str, evidence: str) -> str | None:
             if best is None or len(csubkeys) > len(best[1]):
                 best = (candidate, csubkeys)
     return best[0] if best else None
+
+
+def _is_guidance_reference(scan: str, raw: str,
+                           spans: dict[tuple[str, str], tuple[int, int]]) -> bool:
+    r"""True when a registry path is named inside defender guidance.
+
+    The scope has to match the unit the reader sees, and choosing it wrong is
+    how this class of check launders real claims:
+
+      * inside a list item, the whole bullet is the unit -- both real cases are
+        bullets ("Remove ... - HKLM\...\UserList (delete added values)")
+      * in running prose, the unit is the sentence. Scoping to the LINE would
+        let "Remove persistence. The observed write was X" excuse X, which is
+        exactly backwards.
+
+    A guidance verb anywhere else in the document must not reach across a
+    section boundary, which is why neither scope extends beyond the item.
+    """
+    text = scan or ""
+    span = spans.get(("registry_key", (raw or "").strip()
+                      .strip(".,;:()[]{}'\"`\\").lower()))
+    if span is None:
+        return False
+    start, end = span
+    line_start = text.rfind("\n", 0, start) + 1
+    nxt_nl = text.find("\n", end)
+    line_end = nxt_nl if nxt_nl != -1 else len(text)
+    line = text[line_start:line_end]
+
+    stripped = line.lstrip()
+    in_bullet = bool(_BULLET_RE.match(stripped))
+    if in_bullet:
+        window = line
+    else:
+        sent_start = max(text.rfind(".", 0, start),
+                         text.rfind(";", 0, start),
+                         text.rfind("!", 0, start),
+                         line_start - 1) + 1
+        window = text[sent_start:line_end]
+
+    return bool(_GUIDANCE_VERB_RE.search(window))
 
 
 def _claims_text(markdown: str) -> str:
@@ -1023,6 +1084,7 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
                       for m in _PROVENANCE_BANNER_RE.finditer(markdown or "")}
     evidence = (evidence_text or "").lower()
     claims: dict[tuple[str, str], str] = {}
+    claim_spans: dict[tuple[str, str], tuple[int, int]] = {}
     for kind, regex in (
         ("url", _CLAIM_URL_RE),
         ("ip", _CLAIM_IP_RE),
@@ -1040,10 +1102,18 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
             if kind == "url" and "." not in _plain_claim(raw).split("//", 1)[-1]:
                 continue
             claims.setdefault((kind, _plain_claim(raw).lower()), raw)
+            # Keep where each claim was found. The classification pass below
+            # needs the position to reason about surrounding context, and it
+            # runs over the deduplicated dict -- where the match object from
+            # this loop is long gone. Reaching for a stale `m` there silently
+            # tested every claim against the last match's position.
+            claim_spans.setdefault((kind, _plain_claim(raw).lower()),
+                                   (m.start(), m.end()))
 
     verified: list[dict[str, str]] = []
     unverified: list[dict[str, str]] = []
     excluded: list[dict[str, str]] = []
+    guidance: list[dict[str, str]] = []
     for (kind, plain), raw in sorted(claims.items()):
         if kind == "hash":
             cited = any(c.startswith(plain) or plain.startswith(c)
@@ -1072,6 +1142,14 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
             # is nothing referenceable to verify.
             excluded.append({"type": kind, "value": raw,
                              "reason": "generic hive key without a specific subkey"})
+            continue
+        if kind == "registry_key" and _is_guidance_reference(scan, raw, claim_spans):
+            # Named inside imperative defender guidance: a location to inspect
+            # or clean, not an indicator the report attributes to the sample.
+            # Reported, not counted as a claim.
+            guidance.append({"type": kind, "value": raw,
+                              "reason": "named in defender guidance, not "
+                                        "claimed as an observed artifact"})
             continue
         if kind == "registry_key" and _ELIDED_REGISTRY_RE.match(plain):
             # Abbreviated path: resolve it rather than exempting it. `tail` is
@@ -1121,12 +1199,17 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
     resolved = [v for v in verified if v.get("abbreviated_from")]
     return {
         "advisory": True,
-        "claims": len(claims),
+        # Paths named in defender guidance are collected by the same regex but
+        # are not indicator claims, so they are counted out of `claims` and
+        # reported separately rather than inflating the judged total.
+        "claims": len(claims) - len(guidance),
         "verified": len(verified),
         "unverified": len(unverified),
         "excluded": len(excluded),
+        "guidance_references": len(guidance),
         "unverified_items": unverified[:40],
         "excluded_items": excluded[:10],
+        "guidance_items": guidance[:10],
         # An abbreviated claim is verified against the concrete path it stood
         # for, not by a literal match, so the substitution has to be auditable
         # -- otherwise "verified" is unfalsifiable for these.
