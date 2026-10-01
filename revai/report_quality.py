@@ -837,6 +837,88 @@ _CANONICAL_REGISTRY_TEMPLATE_RE = re.compile(
     r"^hk(?:cu|lm|cr)\\software\\microsoft\\windows\\currentversion\\"
     r"run(?:once|services)?$")
 
+#: An abbreviated registry path, e.g. `HKCU\...\Run` or
+#: `HKEY_CURRENT_USER\...\Run`. This is ordinary analyst shorthand for a class
+#: of locations: it names a mechanism, not a single path, so it can never match
+#: the evidence verbatim. The canonical template above only ever matched the
+#: fully written-out path, so every elided path fell through to the verbatim
+#: comparison and was reported unverified -- which is how winservices and
+#: win32k_dll each ended up with a red audit for the prose `HKCU\...\Run`.
+_ELIDED_REGISTRY_RE = re.compile(
+    r"^(?:hk(?:cu|lm|cr|u)|hkey_[a-z_]+)"
+    r"(?:\\(?:…|\.\.\.))"      # at least one elided segment
+    r".*$",
+    re.IGNORECASE)
+
+#: A concrete registry path as it appears in raw tool evidence.
+_EVIDENCE_REGKEY_RE = re.compile(
+    r"(?i)\b(?:HK(?:LM|CU|CR|U|CC|EY_[A-Z_]+)|HKEY_[A-Z_]+)\\"
+    r"[^\s\"'<>|)]{2,}")
+
+#: Hive aliases, so `HKCU\...\Run` and `HKEY_CURRENT_USER\...\Run` are
+#: recognised as naming the same location. Keyed by the long form.
+_REGISTRY_HIVE_ALIASES = {
+    "hkey_current_user": "hkcu",
+    "hkey_local_machine": "hklm",
+    "hkey_classes_root": "hkcr",
+    "hkey_users": "hku",
+    "hkey_current_config": "hkcc",
+}
+
+
+def _regkey_parts(value: str) -> tuple[str, list[str]] | None:
+    """Split a registry path into (canonical hive, subkeys). None if malformed."""
+    raw = (value or "").strip().strip("\\").replace("/", "\\")
+    if not raw or "\\" not in raw:
+        return None
+    head, _, rest = raw.partition("\\")
+    hive = head.strip().lower()
+    hive = _REGISTRY_HIVE_ALIASES.get(hive, hive)
+    subkeys = [s.strip().lower() for s in rest.split("\\") if s.strip()]
+    return (hive, subkeys) if subkeys else None
+
+
+def _ground_elided_regkey(plain: str, evidence: str) -> str | None:
+    r"""Resolve an abbreviated registry path to a concrete one in the evidence.
+
+    ``HKCU\...\Run`` is not an indicator that can be matched verbatim, so the
+    verifier has to decide whether it *corresponds* to observed evidence. It
+    does when the evidence contains a concrete path under the same hive whose
+    trailing subkey matches the one the report named -- that is what makes it a
+    legitimate reference to an observed Run-key write rather than a generic
+    persistence claim.
+
+    This is a stricter test than exempting elisions outright: an elided path
+    with nothing corresponding in the evidence still lands in ``unverified``.
+    The matched concrete path is returned so the finding can show what the
+    abbreviation referred to.
+    """
+    parsed = _regkey_parts(plain)
+    if not parsed:
+        return None
+    hive, subkeys = parsed
+    # The trailing subkey is the informative one. Skip the elision segment
+    # itself: it names no real location, so it can never be matched.
+    concrete_tail = [s for s in subkeys if s not in (".", "..", "…", "...")]
+    if not concrete_tail:
+        return None
+    tail = concrete_tail[-1]
+
+    text = evidence or ""
+    best: tuple[str, list[str]] | None = None
+    for m in _EVIDENCE_REGKEY_RE.finditer(text):
+        candidate = m.group(0)
+        cparsed = _regkey_parts(candidate)
+        if not cparsed:
+            continue
+        chive, csubkeys = cparsed
+        if chive != hive or not csubkeys:
+            continue
+        if csubkeys[-1] == tail:
+            if best is None or len(csubkeys) > len(best[1]):
+                best = (candidate, csubkeys)
+    return best[0] if best else None
+
 
 def _claims_text(markdown: str) -> str:
     """Report text with fenced code blocks removed (claims live outside them)."""
@@ -991,6 +1073,34 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
             excluded.append({"type": kind, "value": raw,
                              "reason": "generic hive key without a specific subkey"})
             continue
+        if kind == "registry_key" and _ELIDED_REGISTRY_RE.match(plain):
+            # Abbreviated path: resolve it rather than exempting it. `tail` is
+            # the subkey the report actually named, i.e. what an evidence path
+            # has to end with for the abbreviation to be grounded.
+            parsed = _regkey_parts(plain) or ("", [])
+            concrete = [s for s in parsed[1]
+                        if s not in (".", "..", "…", "...")]
+            tail = concrete[-1] if concrete else ""
+            # If the evidence shows a concrete path under the same hive ending
+            # in the subkey the report named, the abbreviation is a legitimate
+            # reference to an observed artifact -- verified, with the concrete
+            # path recorded. If nothing corresponds, it stays unverified,
+            # because a generic persistence claim is still not an observation.
+            grounded = _ground_elided_regkey(plain, evidence_text or "")
+            if grounded:
+                verified.append({"type": kind, "value": raw,
+                                 "abbreviated_from": grounded})
+            else:
+                # Deliberately NOT excluded. The report asserts a persistence
+                # mechanism at a specific subkey; if no concrete path with that
+                # subkey appears in the evidence, the assertion is unsupported
+                # and belongs in `unverified` where the gate can see it.
+                unverified.append({
+                    "type": kind, "value": raw,
+                    "reason": "abbreviated registry path; no concrete path with "
+                              f"this subkey found in the evidence (claimed "
+                              f"{tail or 'subkey'})"})
+            continue
         if kind == "registry_key" and _CANONICAL_REGISTRY_TEMPLATE_RE.match(plain):
             # A report names the canonical Run key as a *verification target*
             # ("RegSetValue under HKCU\...\Run - not observed"). If a tool really
@@ -1008,6 +1118,7 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
         else:
             unverified.append({"type": kind, "value": raw})
 
+    resolved = [v for v in verified if v.get("abbreviated_from")]
     return {
         "advisory": True,
         "claims": len(claims),
@@ -1016,8 +1127,15 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
         "excluded": len(excluded),
         "unverified_items": unverified[:40],
         "excluded_items": excluded[:10],
+        # An abbreviated claim is verified against the concrete path it stood
+        # for, not by a literal match, so the substitution has to be auditable
+        # -- otherwise "verified" is unfalsifiable for these.
+        "resolved_abbreviations": resolved[:20],
         "method": ("case-insensitive substring match of the plain value against "
-                   "concatenated raw tool evidence (both fanged and defanged forms)"),
+                   "concatenated raw tool evidence (both fanged and defanged "
+                   "forms); an abbreviated registry path is instead resolved to "
+                   "a concrete evidence path under the same hive with the same "
+                   "trailing subkey"),
     }
 
 
