@@ -31,7 +31,7 @@ LOGS = Path("/opt/samples/logs")
 SESSIONS = Path("/opt/samples/sessions")
 SHOWCASE_ROOT = LOGS / "_showcase_audits"
 
-from v2_lib import case_dir  # noqa: E402
+from v2_lib import case_dir, require_run_mode  # noqa: E402
 
 # Candidate deep tools — filtered by tools_raw["_format"] + TOOL_MANIFEST applies_to
 PE_DEEP_TOOLS = [
@@ -1427,6 +1427,9 @@ def main():
         help="Accepted for compatibility; showcase pack is always written.",
     )
     args = ap.parse_args()
+    # Mode-keyed by design: auditing the flat directory would silently report on
+    # legacy artifacts instead of the run you asked about.
+    require_run_mode("audit_pipeline")
     sha = args.sha256
     log = case_dir(sha)
     sess = _load(SESSIONS / f"{sha}.json") or {}

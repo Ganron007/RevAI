@@ -35,7 +35,16 @@ def case_dir(sha: str, mode: str | None = None) -> Path:
     """Return the mode-keyed case directory for a sample.
 
     If mode is None, reads REVAI_RUN_MODE env var (scripted / agentic / ui).
-    If mode is given explicitly, uses it. If neither, returns LOGS_DIR/sha.
+    If mode is given explicitly, uses it. If neither, returns LOGS_DIR/sha
+    (legacy flat layout) and says so ONCE on stderr.
+
+    The warning is not decoration. Running a mode-keyed stage by hand without
+    REVAI_RUN_MODE writes its artifacts into the flat directory while the audit
+    reads the mode directory, so the audit sees stale files and reports failures
+    that do not exist. That happened three times on 2026-09-30/10-01 -- twice to
+    me, writing publish_report_v2.py output to the flat dir and reading an old
+    pipeline-audit.json back. Scripts that are mode-keyed by design should call
+    `require_run_mode()` instead, which raises rather than warns.
     """
     if mode is None:
         mode = os.environ.get("REVAI_RUN_MODE", "").strip()
@@ -44,7 +53,49 @@ def case_dir(sha: str, mode: str | None = None) -> Path:
         d = base / mode
         d.mkdir(parents=True, exist_ok=True)
         return d
+    _warn_flat_case_dir_once(sha)
     return base
+
+
+_FLAT_CASE_DIR_WARNED: set[str] = set()
+
+
+def _warn_flat_case_dir_once(sha: str) -> None:
+    """One stderr line per sha: REVAI_RUN_MODE is unset, using the flat dir."""
+    if sha in _FLAT_CASE_DIR_WARNED:
+        return
+    _FLAT_CASE_DIR_WARNED.add(sha)
+    print(
+        f"[case_dir] WARNING: REVAI_RUN_MODE is not set, so artifacts for "
+        f"{sha[:12]} resolve to the LEGACY FLAT directory "
+        f"(logs/<sha>/) instead of logs/<sha>/<mode>/. Mode-keyed stages "
+        f"(publish_report_v2, section_publisher, audit_pipeline) will write "
+        f"here and the audit will read elsewhere. Export "
+        f"REVAI_RUN_MODE=scripted|agentic|ui, or pass mode= explicitly.",
+        file=sys.stderr, flush=True,
+    )
+
+
+def require_run_mode(stage: str) -> str:
+    """Return REVAI_RUN_MODE, or raise if it is unset.
+
+    For entrypoints that are mode-keyed by design. A flat-dir write is silently
+    wrong for these, so failing loudly at startup is better than producing a
+    report the audit cannot find.
+    """
+    mode = os.environ.get("REVAI_RUN_MODE", "").strip()
+    if not mode:
+        raise RuntimeError(
+            f"{stage}: REVAI_RUN_MODE is not set. This stage writes into "
+            f"logs/<sha>/<mode>/ and the audit reads the same place; the "
+            f"legacy flat layout is not valid for it. Set "
+            f"REVAI_RUN_MODE=scripted|agentic|ui before running.")
+    if mode not in ("scripted", "agentic", "ui"):
+        raise RuntimeError(
+            f"{stage}: REVAI_RUN_MODE={mode!r} is not a known mode "
+            f"(expected scripted, agentic or ui).")
+    return mode
+
 
 # LLM config — clean RevAI runtime home only.
 LLM_ENV_PATH = Path("/opt/revai/config/llm.env")

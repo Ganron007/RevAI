@@ -34,6 +34,7 @@ from v2_lib import (  # noqa: E402
     build_technical_evidence_block,
     case_dir,
     compact_json_for_prompt,
+    require_run_mode,
     align_publish_markdown_to_upstream,
     calibrate_publish_claim,
     cross_stage_verdict_lock,
@@ -476,11 +477,13 @@ def generate_technical_chunked(
     audits: list[dict] = []
     errors: list[str] = []
 
-    def _call(prompt: str, tag: str, out_name: str) -> str:
+    def _call(prompt: str, tag: str, out_name: str,
+              titles: list[str] | None = None) -> str:
+        label = f"{tag} ({', '.join(titles)})" if titles else tag
         try:
             resp = llm_judge(prompt)
         except Exception as exc:                     # noqa: BLE001
-            errors.append(f"{tag}: {type(exc).__name__}: {exc}")
+            errors.append(f"{label}: {type(exc).__name__}: {exc}")
             return ""
         content = resp["choices"][0]["message"].get("content") or ""
         parsed = _extract_report_json(content)
@@ -496,17 +499,49 @@ def generate_technical_chunked(
                 pass
         return md
 
+    def _call_with_split(titles: list[str], tag: str, out_name: str,
+                         prior_sections_md: str = "") -> str:
+        """Call for `titles`; if it returns nothing, retry each title alone.
+
+        A chunk that fails is usually a provider stall rather than a bad prompt,
+        and the provider demonstrably serves the same content when asked for less
+        at a time (win32k_dll: the sections 3-5 group returned nothing while its
+        neighbours produced ~30K chars, and each of those sections succeeded
+        individually). So a failed group is retried one section at a time rather
+        than dropped -- a section only goes missing if it fails on its own too.
+        """
+        prompt = build_prompt_technical(
+            session, verdict, deep, yara_meta, audit, technical_evidence,
+            recovery_evidence, final_verdict, sections=titles,
+            prior_sections_md=prior_sections_md)
+        md = _call(prompt, tag, out_name, titles=titles)
+        if md or len(titles) == 1:
+            return md
+        print(f"[publish_report_v2] {tag} returned nothing; retrying "
+              f"{len(titles)} section(s) individually", flush=True)
+        recovered: list[str] = []
+        for ti, title in enumerate(titles):
+            one = _call(
+                build_prompt_technical(
+                    session, verdict, deep, yara_meta, audit,
+                    technical_evidence, recovery_evidence, final_verdict,
+                    sections=[title]),
+                f"{tag}-split-{ti}", f"{out_name[:-5]}-split-{ti}.json",
+                titles=[title])
+            if one:
+                recovered.append(one)
+            else:
+                errors.append(f"{tag}: section {title!r} also failed alone")
+        return "\n\n".join(recovered) if recovered else ""
+
     slots: dict[str, list[str]] = {"wrap": [], "body": [], "tail": []}
     audits: list[dict] = []
     errors: list[str] = []
     body_text: list[str] = []
     for gi, (a, b) in enumerate(TECHNICAL_BODY_GROUPS):
         titles = TECHNICAL_REPORT_SECTIONS[a:b]
-        prompt = build_prompt_technical(
-            session, verdict, deep, yara_meta, audit, technical_evidence,
-            recovery_evidence, final_verdict, sections=titles)
         errs_before = len(errors)
-        md = _call(prompt, f"body-{gi}", f"05-body-{gi:02d}-raw.json")
+        md = _call_with_split(titles, f"body-{gi}", f"05-body-{gi:02d}-raw.json")
         if md:
             slots["body"].append(md)
             body_text.append(md)
@@ -525,11 +560,9 @@ def generate_technical_chunked(
         titles = TECHNICAL_REPORT_SECTIONS[a:b]
         if not titles:
             continue
-        prompt = build_prompt_technical(
-            session, verdict, deep, yara_meta, audit, technical_evidence,
-            recovery_evidence, final_verdict, sections=titles,
-            prior_sections_md=prior)
-        md = _call(prompt, tag, f"05-{tag}-raw.json")
+        errs_before = len(errors)
+        md = _call_with_split(titles, tag, f"05-{tag}-raw.json",
+                              prior_sections_md=prior)
         if md:
             slots[tag].append(md)
         print(f"[publish_report_v2] technical {tag}: {len(md)} chars"
@@ -826,6 +859,11 @@ def main():
              "cannot complete for a large sample.",
     )
     args = ap.parse_args()
+
+    # Mode-keyed by design: refuse to run without an explicit mode rather than
+    # writing reports into the legacy flat directory where the audit will not
+    # find them (2026-09-30: two runs that way reported stale audit results).
+    require_run_mode("publish_report_v2")
 
     # Mode-aware paths: reports + reads live in the run's mode section
     # (scripted/agentic/ui) so audit_pipeline (case_dir-based) finds them.

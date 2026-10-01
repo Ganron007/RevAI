@@ -34,6 +34,7 @@ from v2_lib import (
     REPORT_MASTER_SECTIONS,
     REPORT_SECTION_SPECS,
     TECHNICAL_REPORT_SECTIONS,
+    require_run_mode,
     LOGS_DIR,
     case_dir,
     _sec_identity_evidence,
@@ -669,6 +670,10 @@ if __name__ == "__main__":
     ap.add_argument("--no-parallel", action="store_true")
     ap.add_argument("--hitl", action="store_true")
     args = ap.parse_args()
+
+    # Mode-keyed by design: sections are written into logs/<sha>/<mode>/ and the
+    # audit reads the same place.
+    require_run_mode("section_publisher")
 
     env_info = ensure_pipeline_runtime_env()
     print(f"[section_publisher] runtime env: model={get_llm_model()}", flush=True)
