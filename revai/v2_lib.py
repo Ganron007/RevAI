@@ -2637,8 +2637,147 @@ def llm_budget_reset() -> None:
         _LLM_BUDGET_TOKENS.clear()
 
 
+def _llm_streaming_enabled() -> bool:
+    """Streaming is on by default; REVAI_LLM_STREAM=0 restores plain POSTs.
+
+    Streaming is not here for speed. It exists so a slow generation is visible
+    as a slow generation: a non-streaming socket carries no bytes until the
+    response is complete, so "slow" and "dead" are the same observation, and the
+    only way to tell them apart without guessing is to watch tokens arrive.
+    """
+    return (os.environ.get("REVAI_LLM_STREAM") or "1").strip().lower() not in (
+        "0", "false", "no", "off")
+
+
+def _approx_tokens(text: str) -> int:
+    """Rough token count for rate reporting only, never an accounting claim."""
+    return max(1, len(text or "") // 4)
+
+
+def _post_llm_streaming(api_url: str, headers: dict, body: dict,
+                        timeout_s: int) -> tuple[dict | None, dict]:
+    """POST with stream=True and reassemble an OpenAI-shaped response dict.
+
+    Why this exists: a NON-streaming request puts zero bytes on the wire until
+    generation finishes, so a socket that stays silent for the whole generation
+    is indistinguishable from a dead one. That is how a healthy-but-slow call
+    came to be logged as "timed out", retried, and eventually blamed on the
+    provider. Streaming makes progress observable, so we can report when the
+    first token arrived and how fast tokens are arriving -- which is what
+    separates "the model is generating slowly" from "we are queuing" from "the
+    endpoint is stalled".
+
+    Returns (response_dict, metrics); response_dict is None when the endpoint
+    does not stream, so the caller can fall back to a plain POST.
+    """
+    import time
+    import urllib.request
+
+    sbody = dict(body)
+    sbody["stream"] = True
+    req = urllib.request.Request(
+        api_url, data=json.dumps(sbody).encode(), headers=headers,
+        method="POST")
+
+    t0 = time.time()
+    parts: list[str] = []
+    role = "assistant"
+    finish = None
+    usage: dict = {}
+    ttft = None
+    chunks = 0
+    try:
+        with urllib.request.urlopen(req, timeout=timeout_s) as resp:
+            for raw in resp:
+                if ttft is None:
+                    ttft = time.time() - t0
+                line = raw.decode("utf-8", "replace").strip()
+                if not line or not line.startswith("data:"):
+                    continue
+                payload = line[5:].strip()
+                if payload == "[DONE]":
+                    break
+                try:
+                    obj = json.loads(payload)
+                except Exception:
+                    continue
+                chunks += 1
+                if isinstance(obj.get("usage"), dict) and obj["usage"]:
+                    usage = obj["usage"]
+                for ch in (obj.get("choices") or []):
+                    delta = ch.get("delta") or {}
+                    if delta.get("role"):
+                        role = delta["role"]
+                    piece = delta.get("content")
+                    if piece:
+                        parts.append(piece)
+                    if ch.get("finish_reason"):
+                        finish = ch["finish_reason"]
+    except Exception as exc:
+        # A timeout must NOT fall back to a plain POST. The fallback is another
+        # full request with another full window, so a 600s streaming timeout
+        # would become 1200s before the retry ladder even saw an attempt --
+        # exactly the overrun that killed artifact_gen. Propagate it and let one
+        # attempt fail once.
+        if isinstance(exc, TimeoutError) or "timed out" in str(exc).lower():
+            raise
+        # Anything else: recorded, not swallowed. A silent `return None` here is
+        # how a broken streaming path would masquerade as "the provider does not
+        # stream" and quietly fall back on every single call.
+        return None, {"streamed": False, "error": f"{type(exc).__name__}: {exc}"}
+
+    text = "".join(parts)
+    if not text:
+        # A stream that produced nothing is indistinguishable from a provider
+        # that ignored stream=True. Let the caller decide.
+        return None, {"streamed": False, "chunks": chunks}
+
+    elapsed = max(1e-6, time.time() - t0)
+    metrics = {
+        "streamed": True,
+        "ttft_s": round(ttft, 1) if ttft else None,
+        "elapsed_s": round(elapsed, 1),
+        "chars": len(text),
+        "chunks": chunks,
+        "approx_tok_rate": round(_approx_tokens(text) / elapsed, 1),
+        "finish_reason": finish,
+    }
+    data = {
+        "choices": [{
+            "index": 0,
+            "message": {"role": role, "content": text},
+            "finish_reason": finish or "stop",
+        }],
+    }
+    if usage:
+        data["usage"] = usage
+    return data, metrics
+
+
+def _log_llm_timing(attempt: int, max_retries: int, model: str,
+                    metrics: dict) -> None:
+    """One line per call saying WHERE the time went.
+
+    This is the diagnostic that settles our-code-vs-provider:
+      * small ttft, healthy tok/s, long total -> the model is generating slowly
+      * large ttft                           -> time spent before the first
+                                               byte (acceptance/queueing)
+      * not streamed                         -> the endpoint ignored stream=True
+    """
+    if not metrics.get("streamed"):
+        return
+    print(
+        f"[llm_judge] attempt {attempt}/{max_retries} model={model} "
+        f"ttft={metrics.get('ttft_s')}s total={metrics.get('elapsed_s')}s "
+        f"chars={metrics.get('chars')} tok/s={metrics.get('approx_tok_rate')} "
+        f"finish={metrics.get('finish_reason')}",
+        flush=True,
+    )
+
+
 def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
-              reasoning: str | None = None) -> dict:
+              reasoning: str | None = None, timeout_s: int | None = None,
+              budget_s: int | None = None) -> dict:
     """Call the configured LLM chat API with retries. Returns the FULL response dict.
 
     Configuration is read from environment at runtime (no hardcoded defaults):
@@ -2682,21 +2821,21 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
             {"role": "user", "content": prompt},
         ],
         "temperature": 0.0,
-        # Provider output ceiling, measured 2026-10-01 on the configured
-        # endpoint. A single request that would emit more than ~16K output
-        # tokens NEVER returns -- it hangs until the socket timeout, which is
-        # what made win32k_dll's monolithic technical report burn 600s, then
-        # 1200s, and still fall back to stubs:
-        #     max_tokens=16384 -> 193-237s, finish_reason=length, OK
-        #     max_tokens=20480 -> hangs
-        #     max_tokens=32768 -> hangs
-        #     max_tokens=65536 -> hangs
-        # Capping at the ceiling turns that silent hang into a clean
-        # finish_reason=length, which _llm_response_has_usable_content rejects,
-        # so the caller retries or falls back quickly instead of stalling. The
-        # durable fix for very long reports is generating them in sections, the
-        # way publish v3 already does (section_publisher) -- a single monolithic
-        # call cannot exceed the ceiling. Override only if the provider changes.
+        # Output cap. CORRECTION 2026-10-01: this used to carry a comment
+        # claiming a measured "~16K provider ceiling" above which requests
+        # "NEVER return". That was wrong, and the error was mine -- the probes
+        # behind it used a bounded wait, which cannot tell "never returns" from
+        # "needs longer than I waited". Re-measured properly:
+        #     streaming at 16384 / 32768 / 65536 -- all healthy, 30-53 tok/s,
+        #       time-to-first-token in seconds
+        #     non-streaming at 32768           -- returned in 119s
+        # So there is no ceiling; those requests were simply slower than the
+        # probe waited. The cap is kept because it bounds a call to something
+        # that reliably finishes inside the socket window at the measured
+        # 30-53 tok/s, not because a larger request would fail. Override with
+        # REVAI_LLM_MAX_TOKENS. Long reports are still generated in sections,
+        # which is a quality decision (a monolithic call truncates), not a
+        # provider limit.
         "max_tokens": _llm_max_tokens(),
         "response_format": {"type": "json_object"},
     }
@@ -2716,9 +2855,12 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
 
     last_error: Exception | None = None
     # Long report prompts can legitimately exceed 2-3 min at reasoning=max.
-    # Default 300s; override with REVAI_LLM_TIMEOUT (seconds).
+    # Default 300s; override with REVAI_LLM_TIMEOUT (seconds). A caller that
+    # knows its own remaining budget (artifact_gen had GEN_TIMEOUT_S=180,
+    # defined and never applied) can pass timeout_s to bound a single attempt.
     try:
-        timeout_s = max(30, int(os.environ.get("REVAI_LLM_TIMEOUT", "300")))
+        timeout_s = int(timeout_s) if timeout_s else max(
+            30, int(os.environ.get("REVAI_LLM_TIMEOUT", "300")))
     except (TypeError, ValueError):
         timeout_s = 300
     current_reasoning = reasoning
@@ -2726,11 +2868,30 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
     # The same-effort retry gets a LONGER window, not an identical one. A
     # transient stall is fixed by any retry, but a genuinely slow generation
     # needs more room: win32k_dll's technical prompt is 1.5x nspack's (35.6KB
-    # vs 23.5KB, 2026-09-30) and it timed out 4x at a flat 600s, which an
-    # immediate same-window retry cannot rescue. Escalating covers both failure
-    # modes with the same attempt count, so the worst case stays bounded at
-    # base + 2*base + no-thinking.
+    # vs 23.5KB, 2026-09-30) and it timed out 4x at a flat 600s.
+    #
+    # 2026-10-01: that escalation was unbounded, and on artifact_gen it was
+    # fatal -- 600s + 1200s = 1800s, which is exactly the stage's own budget, so
+    # the stage was killed by its own inner retry before the second attempt
+    # could finish. A retry window sized without reference to the caller's
+    # remaining budget will always be able to overrun it. When the caller
+    # declares a budget (budget_s), the escalated window is clamped to what is
+    # left after the base attempt.
+    base_timeout_s = timeout_s
     attempt_timeout_s = timeout_s
+    escalated_timeout_s = timeout_s * 2
+    if budget_s:
+        try:
+            b = int(budget_s)
+        except (TypeError, ValueError):
+            b = 0
+        if b > 0:
+            escalated_timeout_s = max(
+                base_timeout_s, min(base_timeout_s * 2, b - base_timeout_s))
+            if escalated_timeout_s <= base_timeout_s:
+                # No room for a second window inside the caller's budget: a
+                # retry cannot finish, so do not pretend it might.
+                escalated_timeout_s = base_timeout_s
     last_aborted: dict | None = None
     last_empty: dict | None = None
     for attempt in range(1, max_retries + 1):
@@ -2763,11 +2924,33 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
             sem = llm_semaphore()
             sem.acquire()
             try:
-                with urllib.request.urlopen(req, timeout=attempt_timeout_s) as resp:
-                    raw_body = resp.read()
+                data, smetrics = (None, {})
+                if _llm_streaming_enabled():
+                    data, smetrics = _post_llm_streaming(
+                        api_url,
+                        {"Content-Type": "application/json",
+                         "Authorization": f"Bearer {api_key}"},
+                        body, attempt_timeout_s)
+                    if data is not None:
+                        _log_llm_timing(attempt, max_retries,
+                                        effective_model, smetrics)
+                if data is None:
+                    # Either streaming is off, or the endpoint ignored it.
+                    # Either way a plain POST is the correct fallback -- but say
+                    # which, so a persistently broken stream is visible instead
+                    # of looking like normal provider behaviour.
+                    if smetrics.get("error"):
+                        print(f"[llm_judge] streaming failed "
+                              f"({smetrics['error']}); falling back to a plain "
+                              f"POST", flush=True)
+                    with urllib.request.urlopen(req,
+                                                timeout=attempt_timeout_s) as resp:
+                        raw_body = resp.read()
+                    data = json.loads(raw_body.decode())
+                    _log_llm_timing(attempt, max_retries, effective_model,
+                                    {"streamed": False})
             finally:
                 sem.release()
-            data = json.loads(raw_body.decode())
             llm_usage_journal(model=effective_model, response=data,
                               note=f"attempt={attempt}")
             if _finish_reason(data) == "abort" and attempt < max_retries:
@@ -2854,7 +3037,7 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                     # whole ladder" property (2 thinking windows, not 5) while
                     # giving a stall a genuine second chance.
                     same_effort_retry_done = True
-                    attempt_timeout_s = timeout_s * 2
+                    attempt_timeout_s = escalated_timeout_s
                     sleep_s = 2 ** attempt + random.uniform(0, 1.0)
                     print(
                         f"[llm_judge] attempt {attempt}/{max_retries} timed "
