@@ -14,6 +14,7 @@ Why this is the right architecture for long reports:
 """
 import json
 import os
+import re
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
@@ -313,6 +314,308 @@ def _build_signoff(tools_results: dict, sha: str) -> str:
     return "\n".join(lines)
 
 
+# ---------------------------------------------------------------------------
+# Technical report, section-wise.
+#
+# Why this exists, measured 2026-10-01 on win32k_dll: the technical report was
+# assembled in ONE llm_judge call asking for all 13 sections. That request does
+# not fit in one response -- the largest successful call that run was 46,415
+# chars against a 16,384-token cap -- so the output came back truncated after
+# section 1, finish_reason=length, and every completeness number downstream
+# described a stub. v2's technical path was already section-wise and scored
+# 13/13; v3 was not, and scored 1/13. Same defect class, adjacent file.
+#
+# The evidence pack is already structured by topic (34 markdown headings), so
+# each section is routed the evidence it needs rather than every section
+# receiving all 46KB. That keeps each prompt focused AND, more importantly,
+# each expected response small -- output size is the constraint, not input.
+#
+# One pass, parallel, mirroring the master's execution model. Cross-section
+# pass 2 is deliberately not done here: it doubles cost and is a quality
+# refinement, whereas the defect being fixed is truncation.
+
+TECHNICAL_SECTION_EVIDENCE: dict[str, tuple[str, ...]] = {
+    "1. Executive Summary": ("verdict", "key_evidence", "deep", "summary"),
+    "2. Sample Metadata": ("file summary", "metadata", "hash", "imports"),
+    "3. File Layout & Structural Analysis": (
+        "file layout", "sections/regions", "virtual files", "structures",
+        "pe imports", "header"),
+    "4. Static Code Analysis": (
+        "decompilation", "functions", "constants", "anomal", "strings",
+        "floss", "high-signal", "entropy", "xor", "capa", "yara", "imports",
+        "r2", "disasm", "ghidra", "sql"),
+    "5. Behavioral & Dynamic Analysis": (
+        "speakeasy", "frida", "dynamic", "behavio", "upx", "unpack", "emulat",
+        "trace"),
+    "6. Network Indicators & C2": (
+        "network", "c2", "url", "domain", "dns", "socket", "http", "iocs",
+        "indicators"),
+    "7. Capabilities Assessment": (
+        "capa", "capabilit", "technique", "tactic", "attack"),
+    "8. Indicators of Compromise": (
+        "ioc", "indicator", "hash", "registry", "mutex", "service", "url"),
+    "9. Detection Engineering": ("yara", "detection", "rule", "signature"),
+    "10. MITRE ATT&CK Mapping": ("mitre", "attack", "tactic", "technique"),
+    "11. What We Don't Know": ("unknown", "gap", "coverage", "limitation"),
+    "12. Appendix A: Tool Evidence Trail": (
+        "tool", "engine", "source", "environment", "version"),
+    "13. Appendix B: Analysis Environment": (
+        "environment", "tool", "version", "host", "platform"),
+}
+
+TECHNICAL_SECTION_DESCRIPTIONS: dict[str, str] = {
+    "1. Executive Summary": (
+        "What this sample is, what it does, and why it matters. Ground every "
+        "claim in the verdict and the deep-dive key evidence."),
+    "2. Sample Metadata": (
+        "Identity facts: filename, size, hashes, format, arch, compile/link "
+        "times, signed or not, packer."),
+    "3. File Layout & Structural Analysis": (
+        "Section layout, regions, entry point, virtual files and structures. "
+        "Explain what the structure implies about how the binary was built."),
+    "4. Static Code Analysis": (
+        "Functions, decompilation, imports, strings, anomalies, entropy. "
+        "Interpret the code: what it implements and what that implies."),
+    "5. Behavioral & Dynamic Analysis": (
+        "What execution shows. If Speakeasy/Frida/UPX RAN, say so and report "
+        "what they recorded; never claim no dynamic analysis happened when the "
+        "tools did run. Empty results are 'not observed', stated plainly."),
+    "6. Network Indicators & C2": (
+        "Network infrastructure: URLs, domains, IPs, protocols. State whether "
+        "each item is a static string or observed traffic, and never present "
+        "one as the other."),
+    "7. Capabilities Assessment": (
+        "What the sample is capable of, tied to capa rules and MITRE "
+        "techniques, with evidence for each capability."),
+    "8. Indicators of Compromise": (
+        "Concrete, copy-pasteable indicators. Cite the engine that produced "
+        "each one. Quote registry paths in full, never abbreviated."),
+    "9. Detection Engineering": (
+        "How an analyst would detect this: YARA logic, behavioural signatures, "
+        "and what makes each rule specific rather than generic."),
+    "10. MITRE ATT&CK Mapping": (
+        "Tactic/technique table. Map only techniques the evidence supports."),
+    "11. What We Don't Know": (
+        "Explicit gaps: what was not analysed, which tools did not run, and "
+        "what would resolve each gap. No speculation presented as fact."),
+    "12. Appendix A: Tool Evidence Trail": (
+        "Which engine produced which claim, so any statement can be traced back "
+        "to its source."),
+    "13. Appendix B: Analysis Environment": (
+        "Tool versions and the platform the analysis ran on."),
+}
+
+#: Evidence every section receives, so none is written blind of the verdict.
+_TECHNICAL_ALWAYS_BLOCKS = ("verdict", "deep-dive summary")
+
+#: Per-section evidence cap. The point of routing is a focused prompt; without a
+#: cap, one section's gather could re-create the oversized request that caused
+#: the truncation in the first place.
+_TECHNICAL_EVIDENCE_CAP = 40_000
+
+
+def _split_evidence_blocks(text: str) -> list[tuple[str, str]]:
+    r"""Split an evidence pack into (heading, block) pairs.
+
+    Splits on EVERY heading level, not just `##`. The real EVIDENCE-BUNDLE.md
+    nests its most useful material under `###`: Decompilations, Imports,
+    Strings, Functions and Structures all live below `## Malcat Structured
+    Analysis`. Splitting only on `##` leaves them merged under a parent heading
+    that matches none of the per-section keywords, so "4. Static Code Analysis"
+    received essentially no evidence while still looking complete -- the silent
+    failure mode routing has to be tested against.
+
+    Routing matches on heading text lowercased, so a new evidence block routes by
+    what it is called rather than by a hand-maintained exhaustive list.
+    """
+    if not text:
+        return []
+    heading_re = re.compile(r"^#{1,6}\s")
+    lines = text.splitlines()
+    blocks: list[tuple[str, str]] = []
+    head = "(preamble)"
+    current: list[str] = []
+    for line in lines:
+        if heading_re.match(line):
+            blocks.append((head, "\n".join(current)))
+            head = line
+            current = [line]
+        else:
+            current.append(line)
+    blocks.append((head, "\n".join(current)))
+    return [(h, b) for h, b in blocks if b.strip()]
+
+
+def _technical_section_evidence(name: str, blocks: list[tuple[str, str]],
+                               header: str = "") -> str:
+    """The evidence blocks relevant to one technical section."""
+    keys = TECHNICAL_SECTION_EVIDENCE.get(name, ())
+    picked: list[str] = [header] if header else []
+    for head, body in blocks:
+        h = head.lower()
+        if any(k in h for k in keys) or any(
+                k in h for k in _TECHNICAL_ALWAYS_BLOCKS):
+            picked.append(body)
+    out = "\n".join(picked)
+    if len(out) > _TECHNICAL_EVIDENCE_CAP:
+        kept: list[str] = []
+        size = 0
+        for part in picked:
+            if size + len(part) > _TECHNICAL_EVIDENCE_CAP and kept:
+                kept.append(f"\n[truncated: evidence for this section exceeded "
+                            f"{_TECHNICAL_EVIDENCE_CAP} chars]\n")
+                break
+            kept.append(part)
+            size += len(part)
+        out = "\n".join(kept)
+    return out
+
+
+def _technical_section_prompt(name: str, description: str, evidence: str,
+                              sha: str, prior_sections_summary: str = "") -> str:
+    """One focused prompt per technical section.
+
+    Carries the same rules as the old monolithic prompt so quality does not
+    regress, but asks for one section instead of thirteen, which is what keeps
+    the response inside the output cap.
+    """
+    parts = [
+        f"# Technical Report Section: {name}",
+        f"sha256: {sha}",
+        "",
+        "## Section description",
+        description,
+        "",
+        "## Evidence for this section (filtered)",
+        evidence or "(no evidence routed to this section -- say so explicitly)",
+        "",
+    ]
+    if prior_sections_summary:
+        parts += ["## Prior sections (for continuity)",
+                  prior_sections_summary, ""]
+    parts.append(
+        "## Rules\n"
+        f"- Write ONLY the '{name}' section, as markdown, beginning with a "
+        "level-2 heading carrying that exact title.\n"
+        "- TECHNICAL report for reverse engineers. Prefer MORE evidence over "
+        "less.\n"
+        "- COPY tables/rows from the evidence into the section, keeping "
+        "addresses and eas exactly.\n"
+        "- Every claim MUST include (source: <engine>) plus an address, rule or "
+        "table row.\n"
+        "- Quote registry paths and IoCs in FULL. Never abbreviate a path with "
+        "'...' -- an unverifiable indicator is worse than none.\n"
+        "- If a tool did not run or produced nothing, write 'not observed'. "
+        "Never invent runtime behavior, and never claim no dynamic analysis "
+        "happened when the tools did run.\n"
+        "- The citation engine must match the evidence (a Malcat string is not "
+        "an IDA SQL row).\n"
+        "- FORBIDDEN: curly apostrophes in headings; 'see appendix' as the only "
+        "body of a section.\n"
+        "- EXPLAIN, DON'T DUMP: every disassembly block, string table or "
+        "evidence row must be introduced with a sentence and followed by an "
+        "interpretation paragraph (what it does, why it matters, what behavior "
+        "it implies, confidence). Hedge inferences ('likely', 'possibly', 'we "
+        "assess').\n"
+        "- ASCII apostrophes only.\n"
+        'Return JSON: {"title": "...", "markdown": "<section content>", '
+        '"source": "llm_judge"}'
+    )
+    return "\n".join(parts)
+
+
+def _generate_technical_section(
+    name: str, blocks: list[tuple[str, str]], header: str, sha: str,
+    prior_summaries: dict[str, str] | None = None) -> dict[str, Any]:
+    """Generate ONE technical section. Never raises: a failure is recorded."""
+    description = TECHNICAL_SECTION_DESCRIPTIONS.get(name, name)
+    result: dict[str, Any] = {"name": name, "llm_ok": False, "error": None,
+                              "pass": 1}
+    try:
+        evidence = _technical_section_evidence(name, blocks, header)
+    except Exception as exc:                      # noqa: BLE001
+        evidence = f"(evidence routing failed: {exc})"
+        result["error"] = f"route: {exc}"
+
+    prior_lines = [f"  - {n}: {m[:200]}"
+                   for n, m in list((prior_summaries or {}).items())[-3:] if m]
+    prompt = _technical_section_prompt(
+        name, description, evidence, sha,
+        "\n".join(prior_lines) if prior_lines else "")
+    result["evidence_chars"] = len(evidence)
+    result["prompt_chars"] = len(prompt)
+
+    try:
+        resp = llm_judge(prompt)
+        content = resp["choices"][0]["message"]["content"]
+        try:
+            v = json.loads(content)
+            result["markdown"] = normalize_llm_content(v) or content
+        except json.JSONDecodeError:
+            result["markdown"] = content
+        meta = llm_call_metadata(resp)
+        if meta:
+            meta["request_model"] = get_llm_model()
+            result["llm_audit"] = meta
+        result["llm_ok"] = True
+    except Exception as exc:                      # noqa: BLE001
+        result["error"] = f"llm: {exc}"
+        result["markdown"] = f"## {name}\n\n_(section generation failed: {exc})_\n"
+    return result
+
+
+def _technical_sectionwise_enabled() -> bool:
+    """Section-wise is the default. REVAI_TECHNICAL_SECTIONWISE=0 restores the
+    monolithic call, kept only as a rollback lever for this change."""
+    return (os.environ.get("REVAI_TECHNICAL_SECTIONWISE") or "1").strip().lower() \
+        not in ("0", "false", "no", "off")
+
+
+def generate_technical_sectionwise(
+    sha: str, technical_evidence: str, *, parallel: bool = True,
+    max_workers: int = 6) -> tuple[list[dict[str, Any]], str]:
+    """Generate all 13 technical sections independently, then assemble.
+
+    Returns (results, markdown). A section that fails is recorded with
+    llm_ok=False and a stated reason; the remaining sections are still produced,
+    because one bad section must not cost the whole report.
+    """
+    blocks = _split_evidence_blocks(technical_evidence)
+    header = "\n".join(
+        f"- sha256: {sha}"
+        f"\n- verdict: {(blocks[0][1][:200] if blocks else '')}")
+
+    print(f"  [technical] section-wise: generating "
+          f"{len(TECHNICAL_REPORT_SECTIONS)} sections "
+          f"({len(blocks)} evidence blocks routed)", flush=True)
+
+    results: list[dict[str, Any]] = []
+    if parallel:
+        with ThreadPoolExecutor(max_workers=max_workers) as pool:
+            futures = {
+                pool.submit(_generate_technical_section, name, blocks, header,
+                            sha): name
+                for name in TECHNICAL_REPORT_SECTIONS
+            }
+            for fut in futures:
+                results.append(fut.result())
+    else:
+        for name in TECHNICAL_REPORT_SECTIONS:
+            results.append(
+                _generate_technical_section(name, blocks, header, sha))
+
+    order = {n: i for i, n in enumerate(TECHNICAL_REPORT_SECTIONS)}
+    results.sort(key=lambda r: order.get(r.get("name", ""), 999))
+
+    parts = [f"# Technical Malware Analysis Report\n"]
+    for r in results:
+        md = (r.get("markdown") or "").strip()
+        if md:
+            parts.append(md)
+            parts.append("")
+    return results, "\n".join(parts)
+
+
 def run_section_based_publish(sha: str, tools_results: dict,
                               parallel: bool = True,
                               hitl_between: bool = False,
@@ -511,6 +814,45 @@ def run_technical_publish(sha: str, tools_results: dict) -> dict:
     technical_evidence = attach_dynamic_corroboration(technical_evidence, sha)
     (case_dir(sha) / "EVIDENCE-BUNDLE.md").write_text(technical_evidence)
 
+    if _technical_sectionwise_enabled():
+        # Section-wise is the default path. The monolithic call below is kept
+        # byte-identical and reachable only via REVAI_TECHNICAL_SECTIONWISE=0,
+        # as a rollback lever, because it is the direct cause of the v3 technical
+        # truncation: one call cannot hold 13 sections inside the output cap, so
+        # it returned finish_reason=length after section 1 and every
+        # completeness figure then described a stub.
+        try:
+            tech_results, tech_md_built = generate_technical_sectionwise(
+                sha, technical_evidence)
+            failed = [r["name"] for r in tech_results if not r.get("llm_ok")]
+            print(
+                f"  [technical] {len(tech_results) - len(failed)}/"
+                f"{len(tech_results)} sections LLM-generated"
+                + (f"; failed: {failed}" if failed else ""),
+                flush=True,
+            )
+            technical_report = {
+                "title": f"Technical Report {sha[:12]}",
+                "markdown": tech_md_built,
+                "source": "llm_judge" if not failed else "partial_llm_judge",
+                "section_results": tech_results,
+                "model": get_llm_model(),
+            }
+        except Exception as exc:                # noqa: BLE001
+            print(f"  [technical] section-wise generation failed "
+                  f"({type(exc).__name__}: {exc}); using deterministic fallback",
+                  flush=True)
+            technical_report = {
+                "title": f"Technical Report {sha[:12]}",
+                "markdown": (
+                    f"# Technical Report\n\nSection-wise generation failed: "
+                    f"{exc}\n\n## Structured Evidence\n\n{technical_evidence}\n"
+                ),
+                "source": "deterministic_fallback",
+            }
+        return _finalize_technical(sha, technical_report, technical_evidence,
+                                   tools_results)
+
     sections = "\n".join(f"- {s}" for s in TECHNICAL_REPORT_SECTIONS)
     # NOTE: no scorecard — RevAI does not use the legacy run_scorecard /
     # RAG verification harness. Tool I/O truth is enforced by
@@ -628,9 +970,25 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
             "source": "deterministic_fallback",
         }
 
+    return _finalize_technical(sha, technical_report, technical_evidence,
+                               tools_results)
+
+
+def _finalize_technical(sha: str, technical_report: dict,
+                        technical_evidence: str,
+                        tools_results: dict | None = None) -> dict:
+    """Score completeness, append the deterministic sections, write the outputs.
+
+    Shared by the section-wise and monolithic paths so the two cannot drift on
+    how completeness is measured or what lands on disk. Extracted rather than
+    duplicated: the scoring below is what the audit and the hollow-success
+    detector read, and two copies of it would be free to disagree.
+    """
+    tools_results = tools_results or {}
     tech_md = technical_report.get("markdown", "") or ""
     missing = missing_sections(tech_md, TECHNICAL_REPORT_SECTIONS)
-    stubs = stub_sections(tech_md, TECHNICAL_REPORT_SECTIONS) if tech_md else list(TECHNICAL_REPORT_SECTIONS)
+    stubs = (stub_sections(tech_md, TECHNICAL_REPORT_SECTIONS) if tech_md
+             else list(TECHNICAL_REPORT_SECTIONS))
     # RevAI: soft-fail Malcat-dependent sections when Malcat is not installed.
     if not _MALCAT_INSTALLED and stubs:
         stubs = [s for s in stubs if s not in _MALCAT_OPTIONAL_SECTIONS]
@@ -646,8 +1004,8 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
     tech_md = append_technical_evidence_appendix(tech_md, technical_evidence)
     technical_report["provenance"] = revai_provenance()
     tech_md = provenance_block() + tech_md
-    # Deterministic alignment sections (plan #12) — IOC tiers, dynamic analysis,
-    # explicit gaps — appended before quality eval. The gap scan uses the report
+    # Deterministic alignment sections (plan #12) - IOC tiers, dynamic analysis,
+    # explicit gaps - appended before quality eval. The gap scan uses the report
     # as the LLM wrote it, so it cannot quote our own caveats.
     _report_scan_text = tech_md
     tech_md = attach_ioc_confidence(tech_md, sha)
@@ -661,7 +1019,8 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
     technical_report["evidence_appendix"] = True
     technical_report["sections_missing"] = missing
     technical_report["sections_stub"] = stubs
-    technical_report["sections_complete"] = len(TECHNICAL_REPORT_SECTIONS) - len(missing)
+    technical_report["sections_complete"] = (
+        len(TECHNICAL_REPORT_SECTIONS) - len(missing))
     q = evaluate_report_markdown(
         tech_md,
         required_sections=TECHNICAL_REPORT_SECTIONS,
