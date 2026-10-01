@@ -397,7 +397,7 @@ def main():
             "model": "deterministic",
             "prompt_tokens_approx": 0,
         }
-        log_dir = LOGS_DIR / args.sha256
+        log_dir = case_dir(args.sha256)
         log_dir.mkdir(parents=True, exist_ok=True)
         (log_dir / "verdict.json").write_text(json.dumps(verdict, indent=2))
         print(f"[quick_scan_v2] GOODWARE_FINGERPRINT match: {gw_name} -> clean", flush=True)
@@ -595,7 +595,13 @@ def main():
         ida_ev = fi.result() if fi else []
 
     # Persist triage tools once — deep_dive reuses this cache (no second capa/FLOSS run).
-    qs_dir = LOGS_DIR / args.sha256 / "quick_scan"
+    #
+    # Must be case_dir(), not LOGS_DIR / sha. deep_dive reads this exact file at
+    # case_dir(sha)/quick_scan/00-tools-raw.json, so writing it to the flat path
+    # meant the cache NEVER hit: every run silently re-ran capa and FLOSS, and
+    # the mode-keyed audit saw no quick_scan tool evidence at all. Same R1
+    # mode-keying defect already fixed in yara_gen_v2 and publish_report_v2.
+    qs_dir = case_dir(args.sha256) / "quick_scan"
     qs_dir.mkdir(parents=True, exist_ok=True)
     tools_raw = {
         "capa": capa,
@@ -694,7 +700,7 @@ def main():
 
     # Optional VT/HA hash enrich (lookup only). Default OFF.
     ti_enrich = ti_hash_enrich(args.sha256)
-    qs_ti = LOGS_DIR / args.sha256 / "quick_scan"
+    qs_ti = case_dir(args.sha256) / "quick_scan"
     qs_ti.mkdir(parents=True, exist_ok=True)
     (qs_ti / "ti-enrich.json").write_text(json.dumps(ti_enrich, indent=2, default=str))
     if ti_enrich.get("enabled"):
