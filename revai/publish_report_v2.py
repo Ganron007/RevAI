@@ -396,6 +396,48 @@ def verify_sections(md: str) -> list[str]:
     return missing_sections(md, REPORT_MASTER_SECTIONS)
 
 
+#: The verdict panel row the audit reads. Must stay in step with
+#: report_quality._VERDICT_PANEL_RE, which is what
+#: cross_report:master_tech_verdict_mismatch compares between the two reports.
+_VERDICT_PANEL_ROW_RE = re.compile(
+    r"(\|\s*\*\*Final\*\*\s*\|\s*)(\*+)([^*|]+?)(\*+)(\s*\|)",
+    re.IGNORECASE,
+)
+
+
+def repair_verdict_panel(md: str, locked_verdict: str | None) -> tuple[str, int]:
+    """Force the markdown verdict panel to the locked label.
+
+    The verdict lock corrects the STRUCTURED verdict, but the audit reads the
+    panel in the markdown, and the model's prose keeps its own label. On
+    win32k_dll the lock reported `final=malicious lock_ok=True` while the master
+    panel still read `**suspicious**` and the technical panel `**unknown**` --
+    which the audit then flagged as a master/technical mismatch.
+
+    Same shape as the existing `_repair_dyn_negation` pass: repair the known
+    narrative defect deterministically and count it, rather than hoping the
+    prompt made the model comply. Returns (markdown, repairs).
+    """
+    label = (locked_verdict or "").strip()
+    if not label or not md:
+        return md, 0
+
+    changed: list[int] = []
+
+    def _sub(m: re.Match[str]) -> str:
+        current = m.group(3).strip().lower()
+        if current == label.lower():
+            # Already correct. re.subn would count this match as a
+            # substitution even though the text is unchanged, which would
+            # report a repair on every single report.
+            return m.group(0)
+        changed.append(1)
+        return f"{m.group(1)}**{label}**{m.group(5)}"
+
+    repaired = _VERDICT_PANEL_ROW_RE.sub(_sub, md)
+    return repaired, len(changed)
+
+
 #: Section groups for the chunked technical report. Index ranges into
 #: TECHNICAL_REPORT_SECTIONS (13 entries). The analytical body is written first
 #: so the closing call can summarise it. Ranges must tile [2, 11) exactly once
@@ -1082,6 +1124,18 @@ def main():
 
     report["provenance"] = revai_provenance()
     md = provenance_block() + md
+    # Force the panel to the locked label. The lock fixed the structured verdict
+    # but not the prose the audit reads (win32k_dll: lock_ok=True with the panel
+    # still saying suspicious). Repaired here, after the lock, counted, not
+    # left to the model.
+    md, _verdict_repairs = repair_verdict_panel(
+        md, report.get("final_verdict") or (verdict or {}).get("verdict"))
+    if _verdict_repairs:
+        report["verdict_panel_repaired"] = _verdict_repairs
+        print(f"[publish_report_v2] repaired {_verdict_repairs} verdict panel "
+              f"row(s) in master -> "
+              f"{report.get('final_verdict') or (verdict or {}).get('verdict')}",
+              flush=True)
     report["markdown"] = md
     md_path = case / "REPORT-v2.md"
     md_path.write_text(md)
@@ -1355,6 +1409,17 @@ def main():
         technical_report["sections_missing"] = tech_missing
         technical_report["sections_stub"] = tech_stubs
         technical_report["sections_complete"] = len(TECHNICAL_REPORT_SECTIONS) - len(tech_missing)
+        # Same lock enforcement as the master: the chunked calls each write their
+        # own prose, so the technical panel is the most likely place for the
+        # model's own label to survive (win32k_dll produced **unknown** there
+        # while the locked verdict was malicious).
+        tech_md, _tech_verdict_repairs = repair_verdict_panel(
+            tech_md, report.get("final_verdict")
+            or (verdict or {}).get("verdict"))
+        if _tech_verdict_repairs:
+            technical_report["verdict_panel_repaired"] = _tech_verdict_repairs
+            print(f"[publish_report_v2] repaired {_tech_verdict_repairs} "
+                  f"verdict panel row(s) in technical", flush=True)
         q_tech = evaluate_report_markdown(
             tech_md,
             required_sections=TECHNICAL_REPORT_SECTIONS,
