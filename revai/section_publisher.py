@@ -567,30 +567,57 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
         _md = str(technical_report.get("markdown") or "")
         _miss1 = missing_sections(_md, TECHNICAL_REPORT_SECTIONS)
         if _miss1:
-            # Truncated assembly: retry once with an explicit completeness nudge
+            # Truncated assembly: retry once with an explicit completeness nudge.
+            #
+            # The retry is isolated in its own try/except on purpose. It used to
+            # sit inside the outer try, so when the retry's llm_judge exhausted
+            # its attempts the exception propagated to the outer handler and
+            # REPLACED the first response -- which was a real, partially
+            # complete report -- with a deterministic fallback stub. Measured on
+            # win32k_dll 2026-10-01: the first call returned a usable section 1,
+            # the retry failed, and the published report was
+            # "LLM failed: llm_judge failed" with 1 of 13 sections and 10 stubs.
+            #
+            # A failed retry must leave the better of what we already have, not
+            # erase it. The retry exists to improve the report, never to decide
+            # whether one exists at all.
             print(
                 f"[section_publisher] technical assembly incomplete "
                 f"(missing {len(_miss1)} sections); retrying once with nudge",
                 flush=True,
             )
-            resp2 = llm_judge(
-                prompt
-                + "\n\nYour previous output was incomplete: it is missing these "
-                "sections: "
-                + ", ".join(_miss1)
-                + ". Complete the FULL report with every required heading; do "
-                "not truncate. Return the complete markdown."
-            )
-            content2 = resp2["choices"][0]["message"]["content"]
-            technical_report2 = normalize_llm_json(content2)
-            _md2 = str(technical_report2.get("markdown") or "")
-            if len(_md2) > len(_md):
-                technical_report = technical_report2
-                technical_report["technical_assembly_retried"] = True
-                technical_report["model"] = (
-                    (llm_call_metadata(resp2) or {}).get("response_model")
-                    or get_llm_model()
+            try:
+                resp2 = llm_judge(
+                    prompt
+                    + "\n\nYour previous output was incomplete: it is missing "
+                    "these sections: "
+                    + ", ".join(_miss1)
+                    + ". Complete the FULL report with every required heading; "
+                    "do not truncate. Return the complete markdown."
                 )
+                content2 = resp2["choices"][0]["message"]["content"]
+                technical_report2 = normalize_llm_json(content2)
+                _md2 = str(technical_report2.get("markdown") or "")
+                if len(_md2) > len(_md):
+                    technical_report = technical_report2
+                    technical_report["technical_assembly_retried"] = True
+                    technical_report["model"] = (
+                        (llm_call_metadata(resp2) or {}).get("response_model")
+                        or get_llm_model()
+                    )
+            except Exception as retry_exc:
+                # Keep the first response. It is partial but real, and the
+                # missing sections are already reported downstream by
+                # missing_sections(), so nothing is hidden by keeping it.
+                print(
+                    f"[section_publisher] technical completeness retry failed "
+                    f"({type(retry_exc).__name__}: {str(retry_exc)[:80]}); "
+                    f"keeping the partial first response "
+                    f"({len(_md)} chars, missing {len(_miss1)} sections)",
+                    flush=True,
+                )
+                technical_report["technical_assembly_retry_failed"] = str(
+                    retry_exc)[:200]
     except Exception as e:
         technical_report = {
             "title": f"Technical Report {sha[:12]}",
