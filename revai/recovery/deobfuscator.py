@@ -25,6 +25,64 @@ CFF_DEFLATTEN_PY = os.environ.get(
 )
 CFF_DETECTOR_LOG = Path("/opt/samples/logs/cff-detector/cff_detector.log")
 
+#: How much of a captured stream to keep when there is no useful reason in it.
+_STDERR_CLIP = 300
+
+#: Traceback frames, when a reason cannot be found. Kept so the reader can see
+#: that the failure was an exception rather than a silent empty return.
+_TB_FRAME_RE = re.compile(r'^\s*File "', re.MULTILINE)
+
+
+def _clip(text: str | None, limit: int = _STDERR_CLIP) -> str:
+    """Bounded fallback text. Empty in, empty out -- never the string 'None'."""
+    return (text or "").strip()[:limit]
+
+
+def _reason_from_stderr(stderr: str | None) -> str:
+    """The one line that says what actually went wrong.
+
+    A Python traceback puts the cause on its LAST line, so a leading clip keeps
+    `Traceback (most recent call last):` plus frames and discards the cause.
+    That clip is the old behaviour.
+
+    To be accurate about what it cost: it did NOT cost us this bug. All nine
+    recorded `deobfuscation.error` values are 258 chars and every one of them
+    ends in `ModuleNotFoundError: No module named 'pyghidra'` -- the cause was
+    recorded in plain text the whole time. What actually happened is worse for
+    the process: the answer sat in the artifact on every run and nobody read
+    it, because nothing in the pipeline flagged the leg as dead. Hence
+    `deobfuscation_status()` and the advisory, which are the real fix.
+
+    The clip is kept because the truncation is latent, not absent: any tool
+    whose traceback runs past 300 chars of frames loses the cause entirely, and
+    the deeper the stack the more certain that is. Cheap to get right.
+
+    Returns the cause line when there is one, otherwise the deepest frame (so
+    the location survives), otherwise a bounded clip of whatever was there.
+    """
+    text = (stderr or "").strip()
+    if not text:
+        return ""
+    lines = [ln.rstrip() for ln in text.splitlines() if ln.strip()]
+    if not lines:
+        return ""
+
+    # Real exception line: "SomeError: detail" (not a bare class name).
+    for ln in reversed(lines):
+        if ln.startswith(("Traceback (", '  File "', "During handling", "The above")):
+            continue
+        if _TB_FRAME_RE.match(ln):
+            continue
+        if ":" in ln:
+            return _clip(ln, 400)
+        return _clip(ln, 400)
+
+    # Only frames: keep the deepest one so the location is not lost.
+    frames = [ln for ln in lines if _TB_FRAME_RE.match(ln)]
+    if frames:
+        return _clip(f"exception in {_clip(frames[-1].strip(), 260)}", 400)
+    return _clip(lines[-1], 400)
+
 
 class DeobfuscatorPass:
     """Lightweight per-function obfuscation triage."""
@@ -127,11 +185,19 @@ class DeobfuscatorPass:
         return any(p in low for p in patterns) and "switch" in low
 
     def run_cff_deflatten(self, timeout: int = 120) -> dict:
-        """Run cff_deflatten.py on the whole binary and return JSON."""
+        """Run cff_deflatten.py on the whole binary and return JSON.
+
+        Fail-open by contract -- deobfuscation is a depth aid, and the caller
+        has already recorded the leg as unavailable rather than failing the
+        stage. The `unavailable` key says which of the three ways this went
+        wrong it was, so the artifact is not just "it errored".
+        """
         if not Path(CFF_DEFLATTEN_PY).is_file():
-            return {"error": f"cff_deflatten.py not found at {CFF_DEFLATTEN_PY}"}
+            return {"error": f"cff_deflatten.py not found at {CFF_DEFLATTEN_PY}",
+                    "unavailable": "missing_tool"}
         if not Path(self.sample_path).is_file():
-            return {"error": f"sample not found: {self.sample_path}"}
+            return {"error": f"sample not found: {self.sample_path}",
+                    "unavailable": "missing_sample"}
         try:
             proc = subprocess.run(
                 [sys.executable, CFF_DEFLATTEN_PY, "--input", self.sample_path, "--json"],
@@ -139,11 +205,46 @@ class DeobfuscatorPass:
             )
             if proc.returncode == 0 and proc.stdout.strip().startswith("{"):
                 return json.loads(proc.stdout)
-            return {"error": proc.stderr[:300] or proc.stdout[:300], "rc": proc.returncode}
+            return {"error": _reason_from_stderr(proc.stderr) or _clip(proc.stdout),
+                    "rc": proc.returncode,
+                    **({"unavailable": "tool_failed"}
+                       if not proc.stdout.strip().startswith("{") else {})}
         except subprocess.TimeoutExpired:
-            return {"error": "cff_deflatten timed out", "timeout": timeout}
+            return {"error": f"cff_deflatten timed out after {timeout}s",
+                    "timeout": timeout, "unavailable": "timeout"}
         except Exception as e:
-            return {"error": f"{type(e).__name__}: {e}"}
+            return {"error": f"{type(e).__name__}: {e}",
+                    "unavailable": "dispatch_failed"}
+
+    def deobfuscation_status(self) -> dict:
+        """Whether the deobfuscation leg can run at all, before spending 120s.
+
+        The leg has been a silent no-op on every run since 2026-09-28:
+        cff_deflatten.py imports pyghidra, which is not importable from the
+        interpreter recovery uses. The cause was recorded correctly every time
+        (`ModuleNotFoundError: No module named 'pyghidra'`, 258 chars, nine
+        artifacts checked) -- nothing was hidden. What was missing is any
+        signal that the leg had not contributed: the stage exited rc=0, the
+        stage-level gates saw a well-formed `deobfuscation.error` field, and no
+        downstream consumer asked whether control flow had been flattened.
+
+        So this probe exists to convert "it errored, we moved on" into a stated
+        capability, and to avoid spending 120 s to learn something a 0.2 s
+        import check already knows.
+        """
+        if not Path(CFF_DEFLATTEN_PY).is_file():
+            return {"available": False, "reason": "cff_deflatten.py missing"}
+        try:
+            proc = subprocess.run(
+                [sys.executable, "-c", "import pyghidra"],
+                capture_output=True, text=True, timeout=30)
+        except Exception as exc:
+            return {"available": False, "reason": f"{type(exc).__name__}: {exc}"}
+        if proc.returncode == 0:
+            return {"available": True}
+        return {"available": False,
+                "reason": _reason_from_stderr(proc.stderr)
+                          or "pyghidra import failed"}
 
     def run_z3_or_angr(self, claim_type: str, timeout: int = 30, **kwargs: Any) -> dict:
         """Invoke the wrapper via `python -c` so recovery does not import it."""

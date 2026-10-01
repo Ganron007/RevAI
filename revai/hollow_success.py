@@ -344,7 +344,7 @@ def _advisory(recovery: dict | None) -> dict[str, Any]:
     empty = sum(1 for r in llm
                 if not (r.get("normalized_pseudocode") or "").strip())
     triage = recovery.get("triage") or {}
-    return {
+    adv = {
         "llm_results": n,
         "judged": True,
         "unresolved_name_ratio": round(unknown / n, 3),
@@ -356,3 +356,14 @@ def _advisory(recovery: dict | None) -> dict[str, Any]:
         "note": ("partial naming is a depth signal, not a hollow success; "
                  "gated only at >90% unknown_*"),
     }
+
+    # The deobfuscation leg has been a silent no-op since 2026-09-28
+    # (pyghidra not importable). It still contributes nothing on the samples it
+    # skips, so state it. Advisory: the obfuscation flags are computed
+    # heuristically either way and no verdict depends on flattening.
+    deob = recovery.get("deobfuscation")
+    if isinstance(deob, dict) and deob.get("skipped"):
+        adv["deobfuscation_leg"] = "skipped"
+        adv["deobfuscation_reason"] = str(
+            deob.get("reason") or deob.get("error") or "unknown")[:200]
+    return adv

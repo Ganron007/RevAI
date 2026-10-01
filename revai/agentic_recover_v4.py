@@ -640,7 +640,26 @@ def main():
             contexts[addr]["obfuscation"] = deob.analyze(f, pseudo)
             contexts[addr]["context_builder"] = cb
 
-        deob_report = deob.run_cff_deflatten(timeout=120)
+        # Probe availability first. cff_deflatten has failed on every run since
+        # 2026-09-28 (pyghidra is not importable from this interpreter), so the
+        # leg contributed nothing while the stage still exited rc=0. Asking
+        # first costs ~0.2 s and turns a silent no-op into a stated capability.
+        deob_status = deob.deobfuscation_status()
+        if deob_status.get("available"):
+            deob_report = deob.run_cff_deflatten(timeout=120)
+        else:
+            deob_report = {
+                "skipped": True,
+                "unavailable": "missing_dependency",
+                "reason": deob_status.get("reason"),
+                "note": ("deobfuscation did not run, so no function in this "
+                         "case received flattened control flow; obfuscation "
+                         "flags below are heuristic only"),
+            }
+            print(f"[agentic_recover_v4] deobfuscation leg unavailable: "
+                  f"{deob_status.get('reason')} -- recorded, not silent",
+                  file=sys.stderr, flush=True)
+        deob_report["status"] = deob_status
         (ev_dir / "01-deobfuscation.json").write_text(json.dumps(deob_report, indent=2, default=str))
 
         # ---- Bottom-up call-graph-ordered LLM analysis ----

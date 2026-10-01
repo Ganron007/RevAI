@@ -34,10 +34,67 @@ RevAI extension — see ../README.md for context.
 """
 import argparse
 import json
+import os
 import sys
+from pathlib import Path
 
 DISPATCHER_OUTDEGREE_MIN = 3
 MIN_CASE_TARGETS = 2
+
+#: Ghidra ships its own PyGhidra as source rather than as an installed package,
+#: so `import pyghidra` only works when that source directory happens to be on
+#: PYTHONPATH. That is why this script failed on every pipeline run from
+#: 2026-09-28: the interpreter had no pyghidra, and nothing set PYTHONPATH, so
+#: the leg was a silent no-op inside a stage that still exited rc=0.
+GHIDRA_CANDIDATES = (
+    os.environ.get("GHIDRA_INSTALL_DIR", ""),
+    "/opt/ghidra",
+    os.environ.get("GHIDRA_HOME", ""),
+    "/usr/share/ghidra",
+)
+
+
+def _import_pyghidra():
+    """Import pyghidra, falling back to Ghidra's own bundled copy.
+
+    Prefers an installed pyghidra (a venv with `pip install pyghidra` is the
+    tidiest setup), then adds Ghidra's `Features/PyGhidra/pypkg/src` to the
+    path. Doing this here rather than relying on the caller's environment means
+    the tool works when run directly, from a pipeline stage, or from setup,
+    with no PYTHONPATH contract for a caller to get wrong.
+
+    Raises with the searched locations listed, because a bare
+    ModuleNotFoundError tells an operator nothing about where it looked.
+    """
+    try:
+        import pyghidra  # noqa: F401
+        return pyghidra
+    except ImportError:
+        pass
+
+    searched = []
+    for root in filter(None, GHIDRA_CANDIDATES):
+        src = Path(root) / "Ghidra" / "Features" / "PyGhidra" / "pypkg" / "src"
+        searched.append(str(src))
+        if not src.is_dir():
+            continue
+        sys.path.insert(0, str(src))
+        # pyghidra locates Ghidra through this variable; without it `start()`
+        # fails with a much less obvious error.
+        os.environ.setdefault("GHIDRA_INSTALL_DIR", root)
+        try:
+            import pyghidra
+            return pyghidra
+        except ImportError:
+            sys.path.pop(0)
+            continue
+
+    raise ImportError(
+        "pyghidra not importable and Ghidra's bundled copy was not found. "
+        f"Searched: {searched}. Install it (pip install pyghidra in the "
+        "interpreter running this script) or set GHIDRA_INSTALL_DIR to a "
+        "Ghidra installation directory."
+    )
 
 
 def find_state_assignment(flat_api, from_block, monitor):
@@ -87,6 +144,66 @@ def get_destination_blocks(block, monitor):
     return dests
 
 
+def _block_key(block):
+    """Stable identity for a basic block, comparable across wrapper objects.
+
+    Ghidra hands out a fresh Java `CodeBlockImpl` on each query, so `==` is
+    reference equality and two queries for the same block compare unequal. The
+    start address is the identity that actually holds.
+    """
+    for getter in ("getFirstStartAddress", "getMinAddress"):
+        fn = getattr(block, getter, None)
+        if fn is None:
+            continue
+        try:
+            addr = fn()
+        except Exception:
+            continue
+        if addr is not None:
+            return str(addr)
+    return repr(block)
+
+
+def find_dispatchers(all_blocks, get_dests, outdeg_min, min_case_targets):
+    """Return [(block, outdegree, back_count, case_targets)] for dispatchers.
+
+    A control-flow-flattening dispatcher is a block that fans out to several
+    case arms, each of which flows back to it. Two subtleties, both of which
+    made this return nothing on a known-flattened binary before:
+
+    1. Blocks are compared by start address, never by object identity. Ghidra
+       returns a fresh `CodeBlockImpl` wrapper per query, so `==` is reference
+       equality and is false for two queries about the same block.
+    2. A case arm qualifies when it has *a* back edge to the dispatcher, not
+       only when *every* successor is the dispatcher. Real arms end in the
+       indirect dispatch and may also fall through; demanding all-successors
+       excludes genuine flattening.
+
+    `get_dests` is injected so this is testable without Ghidra.
+    """
+    candidates = []
+    for b in all_blocks:
+        b_addr = _block_key(b)
+        dests = get_dests(b)
+        if len(dests) < outdeg_min:
+            continue
+        back_count = 0
+        case_targets = []
+        for db in dests:
+            if _block_key(db) == b_addr:
+                continue
+            inner = get_dests(db)
+            if not inner:
+                continue
+            if any(_block_key(d) == b_addr for d in inner):
+                back_count += 1
+                case_targets.append(db)
+        if back_count < min_case_targets:
+            continue
+        candidates.append((b, len(dests), back_count, case_targets))
+    return candidates
+
+
 def collect_all_blocks(program, monitor, bbm):
     """Walk the entire program and return all blocks."""
     af = program.getAddressFactory()
@@ -122,7 +239,7 @@ def main():
     if args.min_case_targets is not None:
         MIN_CASE_TARGETS = args.min_case_targets
 
-    import pyghidra
+    pyghidra = _import_pyghidra()
     pyghidra.start()
 
     with pyghidra.open_program(args.input, analyze=True) as flat_api:
@@ -140,26 +257,12 @@ def main():
             return
 
         # find dispatcher candidates
-        candidates = []
-        for b in all_blocks:
-            dests = get_destination_blocks(b, monitor)
-            if len(dests) < DISPATCHER_OUTDEGREE_MIN:
-                continue
-            back_count = 0
-            case_targets = []
-            for db in dests:
-                if db == b:
-                    continue
-                inner = get_destination_blocks(db, monitor)
-                if not inner:
-                    continue
-                all_back = all(d == b for d in inner)
-                if all_back:
-                    back_count += 1
-                    case_targets.append(db)
-            if back_count < MIN_CASE_TARGETS:
-                continue
-            candidates.append((b, len(dests), back_count, case_targets))
+        candidates = find_dispatchers(
+            all_blocks,
+            lambda b: get_destination_blocks(b, monitor),
+            DISPATCHER_OUTDEGREE_MIN,
+            MIN_CASE_TARGETS,
+        )
 
         # resolve each candidate's containing function
         results = []

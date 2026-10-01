@@ -174,6 +174,37 @@ if [[ -d "$REPO_EXT/cff-deflatten" ]]; then
   cp -r "$REPO_EXT/cff-deflatten/"* /opt/revai/cff-deflatten/
   chown -R remnux:remnux /opt/revai/cff-deflatten 2>/dev/null || true
   ok "cff-deflatten installed to /opt/revai/cff-deflatten"
+
+  # PyGhidra. Ghidra ships it as SOURCE (Features/PyGhidra/pypkg/src), not as
+  # an installed package, so `import pyghidra` fails on a stock interpreter.
+  # That is why the deobfuscation leg was a silent no-op on every run from
+  # 2026-09-28: cff_deflatten.py died on import, the stage still exited rc=0,
+  # and function_recovery.json recorded the traceback without anything flagging
+  # the leg as dead.
+  #
+  # cff_deflatten.py now locates Ghidra's bundled copy itself, so this step is
+  # about jpype (the JPype bridge) rather than pyghidra itself. An editable
+  # install of Ghidra's package is impossible here -- the Ghidra tree is not
+  # writable and pip needs to write egg-info beside the source -- so the
+  # bundled-source path is the supported route.
+  CFF_VENV=/opt/revai/cff-deflatten/venv
+  GHIDRA_SRC=/opt/ghidra/Ghidra/Features/PyGhidra/pypkg
+  if [[ -d "$GHIDRA_SRC" ]]; then
+    python3 -m venv --system-site-packages "$CFF_VENV" 2>/dev/null || true
+    if [[ -x "$CFF_VENV/bin/python" ]]; then
+      # Prefer Ghidra's own jpype wheel (version-matched, no network needed).
+      if ! "$CFF_VENV/bin/pip" install -q --no-index \
+              --find-links "$GHIDRA_SRC/dist" jpype1 2>/dev/null; then
+        "$CFF_VENV/bin/pip" install -q jpype1 2>/dev/null \
+          || warn "cff-deflatten: jpype1 install failed"
+      fi
+      ok "cff-deflatten venv ready at $CFF_VENV"
+    else
+      warn "cff-deflatten venv creation failed; leg will report unavailable"
+    fi
+  else
+    warn "Ghidra PyGhidra sources not found at $GHIDRA_SRC; leg will report unavailable"
+  fi
 else
   warn "extensions/cff-deflatten not found in repo"
 fi
