@@ -651,10 +651,28 @@ def main():
         results: list[dict] = []
         total_llm_calls = 0
         total_prompt_tokens_estimate = 0
+        # Coverage accounting: `llm_candidates` is how many functions the triage
+        # selected, which is NOT how many were analysed. With the per-tier cap
+        # (default 20) over N tiers the reachable ceiling is 20*N, so on
+        # winservices 200 candidates produced 110 results and on win32k_dll 87.
+        # Nothing failed -- most were never attempted, and the artifact said
+        # nothing about it. Recorded per tier and summarised below.
+        capped_by_tier: list[dict] = []
 
         for tier_idx, tier_addrs in enumerate(tiers):
-            tier_funcs = [f for f in all_funcs if _addr_key(f["address"]) in tier_addrs]
-            tier_funcs = tier_funcs[: args.tier_cap]
+            tier_funcs_all = [f for f in all_funcs
+                              if _addr_key(f["address"]) in tier_addrs]
+            tier_funcs = tier_funcs_all[: args.tier_cap]
+            if len(tier_funcs_all) > len(tier_funcs):
+                # The per-tier cap, not a failure. Recorded so the summary can
+                # say how many candidates were never attempted instead of
+                # leaving a reader to guess whether the shortfall was errors.
+                capped_by_tier.append({
+                    "tier": tier_idx,
+                    "available": len(tier_funcs_all),
+                    "attempted": len(tier_funcs),
+                    "skipped_by_cap": len(tier_funcs_all) - len(tier_funcs),
+                })
             lock = threading.Lock()
             completed_in_tier = 0
 
@@ -750,12 +768,38 @@ def main():
             (ev_dir / "05-writeback.json").write_text(json.dumps(writeback_summary, indent=2, default=str))
 
         # ---- Export function_recovery.json ----
+        attempted = sum(1 for r in results if r.get("source") == "llm_judge")
+        candidates = int((triage_report or {}).get("llm_candidates") or 0)
+        coverage = {
+            "llm_candidates": candidates,
+            "results": len(results),
+            "llm_attempted": attempted,
+            "tier_count": len(tiers),
+            "tier_cap": args.tier_cap,
+            "max_funcs": args.max_funcs,
+            "reachable_ceiling": len(tiers) * args.tier_cap,
+            "skipped_by_cap": sum(c["skipped_by_cap"] for c in capped_by_tier),
+            "capped_tiers": capped_by_tier,
+            "note": ("results < llm_candidates means candidates were NOT "
+                     "attempted, not that they failed: the per-tier cap bounds "
+                     "the run. Raise REVAI_AGENTIC_RECOVERY_TIER_CAP (or "
+                     "REVAI_DEPTH=full) to cover more."),
+        }
+        if candidates and attempted < candidates:
+            print(f"[agentic_recover_v4] coverage: {attempted}/{candidates} "
+                  f"candidates attempted "
+                  f"(tier_cap={args.tier_cap} x {len(tiers)} tiers = "
+                  f"{coverage['reachable_ceiling']} ceiling; "
+                  f"{coverage['skipped_by_cap']} skipped by the cap)",
+                  file=sys.stderr, flush=True)
+
         recovery = {
             "sha256": sha,
             "sample_path": sample_path,
             "model": model,
             "generated_at": time.time(),
             "triage": triage_report,
+            "coverage": coverage,
             "deobfuscation": deob_report,
             "tier_count": len(tiers),
             "llm_calls": total_llm_calls,
