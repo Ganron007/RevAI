@@ -133,27 +133,79 @@ def test_empty_stderr_is_empty_not_the_string_none():
 
 # ------------------------------------------------------- status, not a no-op
 
-def test_status_reports_the_missing_dependency(tmp_path, monkeypatch):
+def test_status_reports_missing_jpype_the_real_hard_dependency(tmp_path, monkeypatch):
+    """jpype is the bridge; without it the leg cannot run however PyGhidra is found."""
     tool = tmp_path / "cff_deflatten.py"
     tool.write_text("# stub\n", encoding="utf-8")
     monkeypatch.setattr("recovery.deobfuscator.CFF_DEFLATTEN_PY", str(tool))
+    monkeypatch.setattr("recovery.deobfuscator._can_import",
+                        lambda m: m != "jpype")
+
     deob = DeobfuscatorPass.__new__(DeobfuscatorPass)
     deob.sample_path = str(tool)
-
-    # Force the probe to fail the way the VM's interpreter does.
-    import subprocess
-    real = subprocess.run
-
-    def fake(cmd, **kw):
-        if "import pyghidra" in cmd[-1] if isinstance(cmd[-1], str) else False:
-            return subprocess.CompletedProcess(
-                cmd, 1, "", "ModuleNotFoundError: No module named 'pyghidra'\n")
-        return real(cmd, **kw)
-
-    monkeypatch.setattr("recovery.deobfuscator.subprocess.run", fake)
     st = deob.deobfuscation_status()
     assert st["available"] is False
-    assert "pyghidra" in st["reason"], st
+    assert "jpype" in st["reason"], st
+    assert "setup-remnux.sh" in st["reason"], "must say how to fix it"
+
+
+def test_status_is_available_when_jpype_and_a_bundled_tree_exist(tmp_path, monkeypatch):
+    """The capability, not one import.
+
+    cff_deflatten.py resolves PyGhidra itself, so an interpreter with jpype and
+    a Ghidra source tree runs it fine even though bare `import pyghidra` fails.
+    Probing the bare import reported unavailable for an interpreter that then
+    ran the detector successfully -- measured, not assumed.
+    """
+    tool = tmp_path / "cff_deflatten.py"
+    tool.write_text("# stub\n", encoding="utf-8")
+    ghidra = tmp_path / "ghidra"
+    src = ghidra / "Ghidra" / "Features" / "PyGhidra" / "pypkg" / "src" / "pyghidra"
+    src.mkdir(parents=True)
+
+    monkeypatch.setattr("recovery.deobfuscator.CFF_DEFLATTEN_PY", str(tool))
+    monkeypatch.setattr("recovery.deobfuscator._can_import",
+                        lambda m: m == "jpype")
+    monkeypatch.setattr("recovery.deobfuscator._ghidra_roots",
+                        lambda: [str(ghidra)])
+
+    deob = DeobfuscatorPass.__new__(DeobfuscatorPass)
+    deob.sample_path = str(tool)
+    st = deob.deobfuscation_status()
+    assert st["available"] is True, st
+    assert st["via"] == "ghidra_bundled"
+    assert st["ghidra_install_dir"] == str(ghidra)
+
+
+def test_status_prefers_an_installed_pyghidra(tmp_path, monkeypatch):
+    tool = tmp_path / "cff_deflatten.py"
+    tool.write_text("# stub\n", encoding="utf-8")
+    monkeypatch.setattr("recovery.deobfuscator.CFF_DEFLATTEN_PY", str(tool))
+    monkeypatch.setattr("recovery.deobfuscator._can_import", lambda m: True)
+    deob = DeobfuscatorPass.__new__(DeobfuscatorPass)
+    deob.sample_path = str(tool)
+    st = deob.deobfuscation_status()
+    assert st["available"] is True and st["via"] == "installed"
+
+
+def test_status_names_where_it_looked_when_nothing_provides_pyghidra(
+        tmp_path, monkeypatch):
+    tool = tmp_path / "cff_deflatten.py"
+    tool.write_text("# stub\n", encoding="utf-8")
+    ghidra = tmp_path / "empty-ghidra"
+    (ghidra / "Ghidra").mkdir(parents=True)
+
+    monkeypatch.setattr("recovery.deobfuscator.CFF_DEFLATTEN_PY", str(tool))
+    monkeypatch.setattr("recovery.deobfuscator._can_import",
+                        lambda m: m == "jpype")
+    monkeypatch.setattr("recovery.deobfuscator._ghidra_roots",
+                        lambda: [str(ghidra)])
+
+    deob = DeobfuscatorPass.__new__(DeobfuscatorPass)
+    deob.sample_path = str(tool)
+    st = deob.deobfuscation_status()
+    assert st["available"] is False
+    assert "empty-ghidra" in st["reason"], st
 
 
 def test_missing_tool_is_distinguished_from_a_broken_one(tmp_path, monkeypatch):

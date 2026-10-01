@@ -38,6 +38,38 @@ def _clip(text: str | None, limit: int = _STDERR_CLIP) -> str:
     return (text or "").strip()[:limit]
 
 
+def _can_import(module: str) -> bool:
+    """True when `module` imports under this interpreter. Never raises."""
+    try:
+        proc = subprocess.run(
+            [sys.executable, "-c", f"import {module}"],
+            capture_output=True, text=True, timeout=60)
+        return proc.returncode == 0
+    except Exception:
+        return False
+
+
+def _ghidra_roots() -> list[str]:
+    """Candidate Ghidra installation roots, most specific first.
+
+    Mirrors the search in extensions/cff-deflatten/cff_deflatten.py so the
+    probe's answer and the tool's actual behaviour cannot disagree.
+    """
+    out: list[str] = []
+    for env in ("GHIDRA_INSTALL_DIR", "GHIDRA_HOME"):
+        v = (os.environ.get(env) or "").strip()
+        if v:
+            out.append(v)
+    for v in ("/opt/ghidra", "/usr/share/ghidra"):
+        if v not in out:
+            out.append(v)
+    return out
+
+
+def _pyghidra_src(root: str) -> Path:
+    return Path(root) / "Ghidra" / "Features" / "PyGhidra" / "pypkg" / "src"
+
+
 def _reason_from_stderr(stderr: str | None) -> str:
     """The one line that says what actually went wrong.
 
@@ -219,32 +251,48 @@ class DeobfuscatorPass:
     def deobfuscation_status(self) -> dict:
         """Whether the deobfuscation leg can run at all, before spending 120s.
 
-        The leg has been a silent no-op on every run since 2026-09-28:
-        cff_deflatten.py imports pyghidra, which is not importable from the
-        interpreter recovery uses. The cause was recorded correctly every time
+        The leg was a silent no-op on every run since 2026-09-28:
+        cff_deflatten.py did `import pyghidra`, but Ghidra ships PyGhidra as
+        source rather than an installed package, so the import failed on a stock
+        interpreter. The cause was recorded correctly every time
         (`ModuleNotFoundError: No module named 'pyghidra'`, 258 chars, nine
-        artifacts checked) -- nothing was hidden. What was missing is any
+        artifacts checked) -- nothing was hidden. What was missing was any
         signal that the leg had not contributed: the stage exited rc=0, the
-        stage-level gates saw a well-formed `deobfuscation.error` field, and no
-        downstream consumer asked whether control flow had been flattened.
+        gates saw a well-formed `deobfuscation.error` field, and no downstream
+        consumer asked whether control flow had been flattened.
 
-        So this probe exists to convert "it errored, we moved on" into a stated
-        capability, and to avoid spending 120 s to learn something a 0.2 s
-        import check already knows.
+        This probe exists to convert "it errored, we moved on" into a stated
+        capability, and to avoid spending 120 s to learn what a fraction of a
+        second already knows.
+
+        It checks the CAPABILITY rather than one import, because
+        cff_deflatten.py now resolves PyGhidra itself: the requirement is
+        jpype (the JPype bridge) plus a locatable PyGhidra source tree, and
+        probing bare `import pyghidra` reports unavailable for an interpreter
+        that in fact runs the tool fine. That was measured, not assumed --
+        probing the import said unavailable on the same interpreter that then
+        ran the detector successfully against a positive control.
+
+        Never imports the tool: recovery does not depend on extensions.
         """
         if not Path(CFF_DEFLATTEN_PY).is_file():
             return {"available": False, "reason": "cff_deflatten.py missing"}
-        try:
-            proc = subprocess.run(
-                [sys.executable, "-c", "import pyghidra"],
-                capture_output=True, text=True, timeout=30)
-        except Exception as exc:
-            return {"available": False, "reason": f"{type(exc).__name__}: {exc}"}
-        if proc.returncode == 0:
-            return {"available": True}
+
+        if not _can_import("jpype"):
+            return {"available": False,
+                    "reason": "jpype not importable by "
+                              f"{Path(sys.executable).name}: the JPype bridge "
+                              "to Ghidra is missing (see setup-remnux.sh)"}
+
+        if _can_import("pyghidra"):
+            return {"available": True, "via": "installed"}
+        for root in _ghidra_roots():
+            if (_pyghidra_src(root) / "pyghidra").is_dir():
+                return {"available": True, "via": "ghidra_bundled",
+                        "ghidra_install_dir": root}
         return {"available": False,
-                "reason": _reason_from_stderr(proc.stderr)
-                          or "pyghidra import failed"}
+                "reason": "pyghidra not importable and no Ghidra PyGhidra "
+                          f"source tree found (looked under {_ghidra_roots()})"}
 
     def run_z3_or_angr(self, claim_type: str, timeout: int = 30, **kwargs: Any) -> dict:
         """Invoke the wrapper via `python -c` so recovery does not import it."""
