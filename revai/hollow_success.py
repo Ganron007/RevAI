@@ -182,17 +182,18 @@ def check_verdict_panel_agreement(case: Path) -> list[Finding]:
     means either the repair did not run or a new drift path appeared.
     """
     panels: dict[str, str] = {}
-    for name in ("REPORT-MASTER-v2.md", "REPORT-TECHNICAL-v2.md",
-                 "REPORT-MASTER-v3.md", "REPORT-TECHNICAL-v3.md"):
-        p = case / name
-        if not p.is_file():
+    # Discovered, not enumerated, for the same reason as REPORT_MD_GLOB: a fixed
+    # list of report filenames is a check that silently stops covering the
+    # moment a version is added.
+    for path in sorted(case.glob("REPORT-*.md")):
+        if not path.is_file():
             continue
         try:
-            m = _TICKER_RE.search(p.read_text(errors="replace")[:200000])
+            m = _TICKER_RE.search(path.read_text(errors="replace")[:200000])
         except OSError:
             continue
         if m:
-            panels[name] = m.group(1).strip().lower()
+            panels[path.name] = m.group(1).strip().lower()
 
     findings: list[Finding] = []
     distinct = set(panels.values())
@@ -284,6 +285,114 @@ def check_duplicate_sections(md: str | None) -> list[Finding]:
     return []
 
 
+# ------------------------------------------------------- declared completeness
+
+#: Report sidecars. Discovered, not enumerated: `report*.json` matches
+#: report-v2.json, report-technical-v2.json, report-technical-v3.json and
+#: whatever a future version adds. The hardcoded pair of v2 filenames this
+#: replaced was why the 2026-10-01 win32k_dll run passed the detector while
+#: report-technical-v3.json was declaring 1 of 13 sections complete, 10 stubs
+#: and a deterministic_fallback source.
+REPORT_SIDECAR_GLOB = "report*.json"
+
+#: Per-section provenance manifests (section-results-v3.json and siblings).
+SECTION_MANIFEST_GLOB = "section-results-*.json"
+
+#: Markdown reports, any version.
+REPORT_MD_GLOB = "REPORT-*.md"
+
+
+def check_report_sidecars(case: Path) -> list[Finding]:
+    """Each report's OWN declaration of whether it is complete.
+
+    This is the check that should have caught the v3 technical collapse, and
+    reading the declaration beats re-deriving quality from the markdown for
+    three reasons: it is version-agnostic, it cannot be bypassed by a new report
+    path existing, and it is the stage's own verdict rather than a heuristic of
+    ours. A report that says it fell back, or that it is missing sections, is
+    hollow by its own account -- there is nothing left to infer.
+
+    Measured on the three known-good cases (raas, winservices, fgg_js): every
+    sidecar reports source=llm_judge with 0 missing and 0 stub sections, so
+    flagging either is free of false positives there.
+    """
+    findings: list[Finding] = []
+    for path in sorted(Path(case).glob(REPORT_SIDECAR_GLOB)):
+        data = _load(path)
+        if not isinstance(data, dict):
+            continue
+        name = path.name
+        src = str(data.get("source") or "").strip()
+        missing = data.get("sections_missing") or []
+        stubs = data.get("sections_stub") or []
+        complete = data.get("sections_complete")
+
+        if src in FALLBACK_SOURCES:
+            findings.append(Finding(
+                check="report.fallback_source",
+                detail=(f"{name} declares source={src!r}: no LLM authored this "
+                        f"report, so it carries a deterministic rendering, not "
+                        f"analysis"),
+                evidence={"file": name, "source": src,
+                          "sections_complete": complete}))
+
+        if stubs:
+            findings.append(Finding(
+                check="report.stub_sections",
+                detail=(f"{name} has {len(stubs)} stub section(s) -- "
+                        f"placeholders where real content belongs: "
+                        f"{list(stubs)[:3]}"),
+                evidence={"file": name, "stubs": len(stubs),
+                          "names": [str(s)[:60] for s in list(stubs)[:5]],
+                          "sections_complete": complete}))
+
+        if missing:
+            findings.append(Finding(
+                check="report.sections_missing",
+                detail=(f"{name} is missing {len(missing)} section(s) with only "
+                        f"{complete} complete: {list(missing)[:3]}"),
+                evidence={"file": name, "missing": len(missing),
+                          "sections_complete": complete,
+                          "names": [str(s)[:60] for s in list(missing)[:5]]}))
+
+        if isinstance(complete, int) and complete == 0 and not missing:
+            findings.append(Finding(
+                check="report.empty",
+                detail=f"{name} reports zero completed sections",
+                evidence={"file": name, "sections_complete": 0}))
+    return findings
+
+
+def check_section_manifests(case: Path) -> list[Finding]:
+    """Section manifests record per-section LLM success as `llm_ok`.
+
+    Only an explicit `False` counts. An absent key means the producer did not
+    report provenance, which is not evidence of a hollow section, so treating
+    absence as failure would flag healthy manifests.
+    """
+    findings: list[Finding] = []
+    for path in sorted(Path(case).glob(SECTION_MANIFEST_GLOB)):
+        data = _load(path)
+        if not isinstance(data, dict):
+            continue
+        sections = data.get("sections")
+        if not isinstance(sections, list) or not sections:
+            continue
+        failed = [s for s in sections
+                  if isinstance(s, dict) and s.get("llm_ok") is False]
+        if not failed:
+            continue
+        names = [str(s.get("name") or s.get("title") or "?")[:50]
+                 for s in failed[:5]]
+        findings.append(Finding(
+            check="report.section_llm_failed",
+            detail=(f"{path.name}: {len(failed)}/{len(sections)} sections were "
+                    f"not LLM-authored: {names}"),
+            evidence={"file": path.name, "failed": len(failed),
+                      "total": len(sections), "names": names}))
+    return findings
+
+
 # --------------------------------------------------------------------- aggregate
 
 def evaluate_case(case: Path) -> dict[str, Any]:
@@ -299,20 +408,22 @@ def evaluate_case(case: Path) -> dict[str, Any]:
         _load(case / "report-v2.json"))
     findings += check_verdict_panel_agreement(case)
     findings += check_exhausted_llm_calls(case)
+    findings += check_report_sidecars(case)
+    findings += check_section_manifests(case)
 
-    for name in ("REPORT-MASTER-v2.md", "REPORT-TECHNICAL-v2.md"):
-        p = case / name
-        if p.is_file():
-            try:
-                md = p.read_text(errors="replace")
-            except OSError:
-                continue
-            tag = "REPORT-MASTER-v2" if "MASTER" in name else "REPORT-TECHNICAL-v2"
-            for f in check_report_degenerate(md) + check_duplicate_sections(md):
-                findings.append(Finding(
-                    check=f"{f.check}.{tag.lower()}",
-                    detail=f"[{tag}] {f.detail}",
-                    evidence=f.evidence))
+    # Markdown is now discovered too, so a v3 report is checked for degeneration
+    # and duplicated sections exactly as a v2 one is.
+    for path in sorted(case.glob(REPORT_MD_GLOB)):
+        try:
+            md = path.read_text(errors="replace")
+        except OSError:
+            continue
+        tag = path.stem
+        for f in check_report_degenerate(md) + check_duplicate_sections(md):
+            findings.append(Finding(
+                check=f"{f.check}.{tag.lower()}",
+                detail=f"[{tag}] {f.detail}",
+                evidence=f.evidence))
 
     return {
         "ok": not findings,
