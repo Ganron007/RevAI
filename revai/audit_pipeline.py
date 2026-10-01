@@ -1281,6 +1281,15 @@ def render_markdown(report: dict) -> str:
 
     for stage, body in (report.get("stages") or {}).items():
         lines += [f"## Stage: {stage}", "", f"**ok:** `{body.get('ok')}`", ""]
+        if stage == "hollow_success":
+            # These are prose findings, not booleans -- render them so a red run
+            # says WHY rather than dumping truncated JSON into a table cell.
+            findings = body.get("findings") or []
+            if findings:
+                lines += ["### Findings", ""]
+                for f in findings:
+                    lines.append(f"- `{f.get('check')}` - {f.get('detail')}")
+                lines.append("")
         checks = body.get("checks") or {}
         if checks:
             lines += ["### Checks", "", "| Check | Result |", "|-------|--------|"]
@@ -1488,6 +1497,26 @@ def main():
     report["stages"]["publish"] = audit_publish(log, deep_mtime)
     report["cross_cutting"] = collect_cross_cutting(log, sess)
     report["retry_visibility"] = collect_retry_visibility(log)
+
+    # Hollow-success gate (2026-10-01). Every stage check above asks "is the
+    # artifact PRESENT and well-formed"; none of them asks "does it contain
+    # anything". Five defects shipped as rc=0 with hollow output (plan #30-#33),
+    # so this measures the artifacts themselves and is allowed to fail the run.
+    # Deterministic and artifact-based -- no LLM call, because a check that
+    # needed a model could be hollow in the same way.
+    try:
+        from hollow_success import evaluate_case  # type: ignore
+        hollow = evaluate_case(log)
+    except Exception as exc:                       # never fail the audit itself
+        hollow = {"ok": True, "findings": [], "count": 0,
+                  "error": f"{type(exc).__name__}: {exc}"}
+    report["hollow_success"] = hollow
+    report["stages"]["hollow_success"] = {
+        "ok": bool(hollow.get("ok")),
+        "checks": {"no_hollow_artifacts": bool(hollow.get("ok"))},
+        "count": hollow.get("count", 0),
+        "findings": hollow.get("findings", []),
+    }
 
     stage_ok = {k: v.get("ok") for k, v in report["stages"].items()}
     report["all_green"] = all(stage_ok.values())
