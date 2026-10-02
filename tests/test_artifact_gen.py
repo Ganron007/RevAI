@@ -250,8 +250,17 @@ def test_run_generated_script_executes_and_is_bounded(tmp_path=None):
     assert run_generated_script(boom, sample, out3)["rc"] == 3
 
 
-def test_generated_script_cannot_see_the_llm_key(tmp_path=None):
-    """The sandbox env is scrubbed: a generated script gets no RevAI secrets."""
+def test_generated_script_cannot_see_the_llm_key(monkeypatch, tmp_path=None):
+    """The sandbox env is scrubbed: a generated script gets no RevAI secrets.
+
+    `monkeypatch` rather than a direct os.environ write: this test sets a
+    sentinel API key for the whole process and previously never unset it, so it
+    leaked into every later test. On the VM that made two test_llm_streaming
+    cases fail with a spurious TimeoutError -- an API key being present changes
+    whether llm_judge reaches urlopen at all, which is exactly what those tests
+    are asserting about. They passed in isolation and failed in the full suite,
+    which is the signature of leaked global state rather than a real defect.
+    """
     import os
     import tempfile
 
@@ -267,7 +276,7 @@ def test_generated_script_cannot_see_the_llm_key(tmp_path=None):
     )
     out = base / "out"
     out.mkdir()
-    os.environ["REVAI_LLM_API_KEY"] = "sentinel-not-for-generated-code"
+    monkeypatch.setenv("REVAI_LLM_API_KEY", "sentinel-not-for-generated-code")
     rec = run_generated_script(script, sample, out)
     data = json.loads((out / "result.json").read_text())
     assert "REVAI_LLM_API_KEY" not in data.get("leaked", []), rec.get("stderr")

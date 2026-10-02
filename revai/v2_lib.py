@@ -2362,6 +2362,30 @@ def _llm_max_tokens() -> int:
         return 32768
 
 
+def _llm_temperature() -> float:
+    """Sampling temperature, overridable with REVAI_LLM_TEMPERATURE.
+
+    Found 2026-10-02: the operator's config-of-record has carried
+    `REVAI_LLM_TEMPERATURE=0.2` while the request body hardcoded 0.0, so the
+    setting was read NOWHERE and silently had no effect. A config key that
+    looks live but is inert is the same failure shape as a check that always
+    passes, so the code honours it rather than the config being deleted --
+    the operator wrote it deliberately.
+
+    Default stays 0.0: scripted mode is specified as deterministic, and
+    existing runs must not change behaviour because a key started working.
+    Clamped to the OpenAI-accepted range, and an unparseable value falls back
+    to the default rather than failing a stage.
+    """
+    raw = os.environ.get("REVAI_LLM_TEMPERATURE", "")
+    if not raw.strip():
+        return 0.0
+    try:
+        return max(0.0, min(2.0, float(raw)))
+    except (TypeError, ValueError):
+        return 0.0
+
+
 def _build_reasoning_body(reasoning: str | None) -> dict:
     """Build the reasoning/thinking control parameters for the LLM body.
 
@@ -2848,7 +2872,7 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
             },
             {"role": "user", "content": prompt},
         ],
-        "temperature": 0.0,
+        "temperature": _llm_temperature(),
         # Output cap -- see _llm_max_tokens() for the full value history and for
         # why the previous 16384 default was wrong. Short version: there is no
         # provider output ceiling (the model stops voluntarily at ~6,900 tokens
