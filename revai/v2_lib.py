@@ -25,6 +25,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, cast
 
+# Imported at module level, not lazily: `run_packer_scan` was referenced in the
+# packed-stub acceptance path (line ~4113) without ever being imported here, so
+# the call raised NameError and the surrounding `except Exception` swallowed it.
+# The effect was silent -- a packed stub could never be recognised as
+# `packed_stub`, so it fell through to the Mandiant CLI that errors on
+# intentionally-corrupt packed headers. Found by pyflakes during the 2026-10-02
+# audit; packer_intake imports nothing from v2_lib, so this is not circular.
+from packer_intake import run_packer_scan
+
 SESSIONS_DIR = Path("/opt/samples/sessions")
 LOGS_DIR = Path("/opt/samples/logs")
 CADRE_ENV = Path("/opt/secrets/cadre.env")
