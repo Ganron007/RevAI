@@ -189,12 +189,16 @@ class _Resp:
 
 
 def test_one_failing_section_does_not_lose_the_others(monkeypatch):
+    # Section 8 is rendered deterministically from iocs.json and never reaches
+    # the LLM, so the simulated failure has to be a different section.
+    failing = "6. Network Indicators & C2"
+
     def fake(prompt, *a, **kw):
         # Take the title from the header line, not from the "Write ONLY the '...'"
         # sentence: "11. What We Don't Know" contains an apostrophe, so splitting
         # on quotes silently truncates the name and the fixture proves nothing.
         title = prompt.split("# Technical Report Section: ", 1)[1].splitlines()[0]
-        if title == "8. Indicators of Compromise":
+        if title == failing:
             raise RuntimeError("simulated section failure")
         return _Resp(json.dumps({"title": title,
                                 "markdown": f"## {title}\n\nsubstantive body",
@@ -208,11 +212,36 @@ def test_one_failing_section_does_not_lose_the_others(monkeypatch):
                                                     parallel=False)
     assert len(results) == len(sp.TECHNICAL_REPORT_SECTIONS)
     failed = [r["name"] for r in results if not r["llm_ok"]]
-    assert failed == ["8. Indicators of Compromise"], failed
+    assert failed == [failing], failed
     # The other twelve are still real sections in the output.
     for name in sp.TECHNICAL_REPORT_SECTIONS:
         if name not in failed:
             assert f"## {name}" in md, f"{name} absent from assembled markdown"
+
+
+def test_section_8_never_calls_the_llm(monkeypatch):
+    """The whole point: an indicator no engine produced cannot be authored."""
+    def explode(*a, **kw):
+        raise AssertionError("section 8 must not reach the LLM")
+
+    monkeypatch.setattr(sp, "llm_judge", explode)
+    blocks = sp._split_evidence_blocks(REAL_EVIDENCE)
+    r = sp._generate_technical_section("8. Indicators of Compromise", blocks,
+                                       "", "a" * 64)
+    assert r["llm_ok"] is True
+    assert r.get("deterministic") is True
+    assert r.get("error") is None
+    assert "## 8. Indicators of Compromise" in r["markdown"]
+
+
+def test_section_8_is_included_in_the_assembled_report(monkeypatch):
+    monkeypatch.setattr(sp, "llm_judge", lambda *a, **k: _Resp(
+        json.dumps({"title": "t", "markdown": "## t\n\nbody"})))
+    monkeypatch.setattr(sp, "llm_call_metadata", lambda r: {})
+    monkeypatch.setattr(sp, "get_llm_model", lambda: "m")
+    _results, md = sp.generate_technical_sectionwise("b" * 64, REAL_EVIDENCE,
+                                                     parallel=False)
+    assert "## 8. Indicators of Compromise" in md
 
 
 def test_sectionwise_is_the_default_and_the_rollback_flag_works(monkeypatch):

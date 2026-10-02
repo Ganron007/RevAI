@@ -387,9 +387,9 @@ TECHNICAL_SECTION_DESCRIPTIONS: dict[str, str] = {
     "7. Capabilities Assessment": (
         "What the sample is capable of, tied to capa rules and MITRE "
         "techniques, with evidence for each capability."),
-    "8. Indicators of Compromise": (
-        "Concrete, copy-pasteable indicators. Cite the engine that produced "
-        "each one. Quote registry paths in full, never abbreviated."),
+    # Rendered deterministically from iocs.json, not authored -- see
+    # _build_ioc_section for the measurement that forced it.
+    "8. Indicators of Compromise": "(rendered deterministically)",
     "9. Detection Engineering": (
         "How an analyst would detect this: YARA logic, behavioural signatures, "
         "and what makes each rule specific rather than generic."),
@@ -412,6 +412,139 @@ _TECHNICAL_ALWAYS_BLOCKS = ("verdict", "deep-dive summary")
 #: cap, one section's gather could re-create the oversized request that caused
 #: the truncation in the first place.
 _TECHNICAL_EVIDENCE_CAP = 40_000
+
+
+# ---------------------------------------------------------------------------
+# Section 8 is built deterministically, not authored by the model.
+#
+# Measured 2026-10-02 on win32k_dll: with the technical report complete (13/13),
+# the audit failed on report:unverified_iocs:11 -- every entry a canonical Windows
+# registry path (`...\CurrentVersion\Run`, `...\Winlogon`, `...\Policies\...`)
+# that appears NOWHERE in the evidence pack. iocs.json for that sample has
+# registry_keys: []. The model was writing well-known Windows locations from
+# training, not reporting observations.
+#
+# Two prompt-level instructions against this had already failed (winservices 2,
+# win32k_dll 11), because a report whose indicator section is empty looks like a
+# failed analysis -- the instruction fights the section's own purpose. So the
+# list is no longer authored at all: it is rendered from iocs.json, which records
+# what the engines actually produced and which of them. An indicator that no
+# engine produced cannot enter, because nothing generates it.
+#
+# The prose is deterministic too, and states what was searched and what was NOT
+# found. That is the honest version of the section, and it is strictly more
+# useful to a responder than invented Run keys.
+
+_IOC_KINDS = (
+    ("hashes", "File hashes"),
+    ("domains", "Domains"),
+    ("urls", "URLs"),
+    ("ips", "IP addresses"),
+    ("files", "File names / paths"),
+    ("registry_keys", "Registry keys"),
+    ("mutexes", "Mutexes"),
+    ("wallets_btc", "Cryptocurrency addresses"),
+)
+
+
+def _ioc_value(v) -> str:
+    """Render one indicator value readably.
+
+    Extraction keeps defanged forms and can carry trailing junk from a string
+    table: a NUL-padded value such as a URL followed by padding bytes and
+    unrelated text. NUL padding and control characters are stripped and the value
+    is fenced, so the report shows what the tool saw rather than embedding
+    invisible bytes in the markdown.
+    """
+    if isinstance(v, dict):
+        parts = [f"{k}={_ioc_value(x)}" for k, x in v.items()]
+        return ", ".join(parts)
+    s = str(v)
+    # Cut at the first NUL, then strip control characters.
+    if "\x00" in s:
+        s = s.split("\x00", 1)[0]
+    s = "".join(ch for ch in s if ch.isprintable() or ch == " ")
+    return s.strip().rstrip("\\").strip() or str(v)
+
+
+def _build_ioc_section(sha: str, tools_results: dict | None = None) -> str:
+    """Render section 8 from iocs.json. Never calls the LLM.
+
+    Absence is reported explicitly and attributed: "no registry keys were
+    observed" plus the engines that searched is a finding. Inventing the
+    canonical Run key to fill the space is not.
+    """
+    tools_results = tools_results or {}
+    title = "8. Indicators of Compromise"
+    out = [f"## {title}", ""]
+
+    iocs_path = case_dir(sha) / "iocs.json"
+    data: dict = {}
+    if iocs_path.is_file():
+        try:
+            data = json.loads(iocs_path.read_text(errors="replace")) or {}
+        except Exception as exc:                  # noqa: BLE001
+            out += [f"Indicator extraction could not be read: {exc}.", ""]
+    if not data:
+        out += ["No indicator set was produced for this sample, so no "
+                "indicators are listed. Nothing is claimed here: an absent "
+                "indicator set means the extractors produced nothing to report, "
+                "not that the sample is clean.", ""]
+        return "\n".join(out)
+
+    sources = data.get("source") or []
+    engines = sorted({str(s) for s in sources if s})
+
+    total = 0
+    lines: list[str] = []
+    for key, label in _IOC_KINDS:
+        vals = data.get(key) or []
+        if isinstance(vals, dict):
+            vals = [vals]
+        shown = [_ioc_value(v) for v in vals if _ioc_value(v)]
+        if not shown:
+            continue
+        total += len(shown)
+        lines.append(f"**{label}**")
+        for v in shown[:40]:
+            lines.append(f"- `{v}`")
+        if len(shown) > 40:
+            lines.append(f"- ... and {len(shown) - 40} more (see `iocs.json`)")
+        lines.append("")
+
+    out += ["Every indicator below was produced by the analysis engines named in "
+            "the attribution line and is reproduced verbatim from `iocs.json`. "
+            "Nothing in this section is inferred, reconstructed, or supplied "
+            "from general knowledge of what malware of this kind usually "
+            "does.", ""]
+    if lines:
+        out += lines
+    else:
+        out += ["The extractors ran and produced no indicators.", ""]
+
+    # What was searched and came back empty. This is the part an invented
+    # indicator would otherwise overwrite.
+    empty = [label for key, label in _IOC_KINDS
+             if not (data.get(key) or ({} if key == "hashes" else []))]
+    if empty:
+        out += [f"**Not observed.** No {'; no '.join(empty)} were extracted from "
+                "this sample. Absence here is a statement about what the tools "
+                "recovered, not a claim that the behaviour is absent: a packed "
+                "or obfuscated sample frequently hides these from static "
+                "extraction, and dynamic analysis would be the next step.", ""]
+
+    if engines:
+        out += ["**Attribution.** Extracted deterministically from "
+                + ", ".join(f"`{e}`" for e in engines)
+                + ". Values are shown in the defanged form the extractor "
+                "produced.", ""]
+    out += [f"**Review before sharing.** {str(data.get('note') or '').strip()} "
+            "Incident-response indicator sets routinely contain "
+            "victim-specific data from ransom notes and similar artefacts.",
+            ""]
+    out += [f"Total indicators: **{total}**. Full set with provenance: "
+            "`iocs.json`.", ""]
+    return "\n".join(out)
 
 
 def _split_evidence_blocks(text: str) -> list[tuple[str, str]]:
@@ -531,6 +664,15 @@ def _generate_technical_section(
     description = TECHNICAL_SECTION_DESCRIPTIONS.get(name, name)
     result: dict[str, Any] = {"name": name, "llm_ok": False, "error": None,
                               "pass": 1}
+
+    # Section 8 is rendered from iocs.json rather than authored. See
+    # _build_ioc_section for the measurement that forced it.
+    if name == "8. Indicators of Compromise":
+        result["markdown"] = _build_ioc_section(sha)
+        result["deterministic"] = True
+        result["llm_ok"] = True
+        return result
+
     try:
         evidence = _technical_section_evidence(name, blocks, header)
     except Exception as exc:                      # noqa: BLE001
