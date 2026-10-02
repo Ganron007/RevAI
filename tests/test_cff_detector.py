@@ -27,8 +27,16 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SPEC = importlib.util.spec_from_file_location(
-    "cff_deflatten", ROOT / "extensions" / "cff-deflatten" / "cff_deflatten.py")
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _layout import resolve  # noqa: E402
+
+# The repo keeps this under extensions/; the VM deploys it flat into
+# /opt/scripts. Resolved for both so this tripwire runs on the VM, which is
+# where the deobfuscation defects it guards actually occur.
+_CFF = resolve("extensions/cff-deflatten/cff_deflatten.py")
+if not _CFF.is_file():
+    _CFF = ROOT / "cff_deflatten.py"
+SPEC = importlib.util.spec_from_file_location("cff_deflatten", _CFF)
 cff = importlib.util.module_from_spec(SPEC)
 sys.modules["cff_deflatten"] = cff
 SPEC.loader.exec_module(cff)

@@ -24,11 +24,13 @@ import re
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "revai"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _layout import add_module_dir, source  # noqa: E402
 
-QS = (ROOT / "revai" / "quick_scan_v2.py").read_text(errors="replace")
-DD = (ROOT / "revai" / "deep_dive_agentic.py").read_text(errors="replace")
+add_module_dir("revai/quick_scan_v2.py")
+
+QS = source("revai/quick_scan_v2.py")
+DD = source("revai/deep_dive_agentic.py")
 
 # The cache both sides care about.
 CACHE = "00-tools-raw.json"
