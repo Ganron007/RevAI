@@ -28,6 +28,7 @@ from report_quality import (  # noqa: E402
     _MALCAT_OPTIONAL_SECTIONS,
     evaluate_report_markdown,
     missing_sections,
+    scrub_report_indicators,
     source_is_fallback,
     stub_sections,
 )
@@ -881,6 +882,10 @@ def run_section_based_publish(sha: str, tools_results: dict,
                     "pass1_count": len(pass1_results), "pass2_count": len(pass2_results)},
                    indent=2, default=str)
     )
+    # Plan #42: drop indicator values no tool observed, so the published v3 master
+    # does not assert invented registry paths for the audit to fail on.
+    report_markdown, _master_ioc_scrub = scrub_report_indicators(
+        out_dir, report_markdown, "master_v3")
     (out_dir / "02-REPORT-MASTER-v3.md").write_text(report_markdown)
 
     # Backward compatibility: also write at logs root
@@ -1163,6 +1168,13 @@ def _finalize_technical(sha: str, technical_report: dict,
     technical_report["sections_stub"] = stubs
     technical_report["sections_complete"] = (
         len(TECHNICAL_REPORT_SECTIONS) - len(missing))
+    # Plan #42: scrub BEFORE the quality gate, so it judges the published text.
+    # technical_v3 is the report `claimed_ioc_verification` reads first, so it
+    # is the one the audit holds to account.
+    tech_md, _tech_ioc_scrub = scrub_report_indicators(
+        case_dir(sha), tech_md, "technical_v3")
+    technical_report["markdown"] = tech_md
+    technical_report["indicator_scrub"] = _tech_ioc_scrub
     q = evaluate_report_markdown(
         tech_md,
         required_sections=TECHNICAL_REPORT_SECTIONS,

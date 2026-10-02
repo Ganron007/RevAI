@@ -1036,6 +1036,16 @@ def _plain_claim(value: str) -> str:
     for token in ("[.]", "[dot]", "(.)"):
         value = value.replace(token, ".")
     value = value.replace("[:]", ":").replace("[@]", "@").replace("[at]", "@")
+    # Collapse runs of backslashes. A registry path written inside markdown is
+    # escaped, so the same path reaches us as both `HKCU\Software\...` and
+    # `HKCU\\Software\\...`. Left alone they hash to two different claims, so one
+    # indicator was counted twice in `unverified_items` (win32k_dll, 2026-10-02:
+    # HKEY_CURRENT_USER Run key reported as two separate unverified claims), and
+    # an ELIDED path escaped detection entirely -- `\\` followed by `...` does not
+    # match _ELIDED_REGISTRY_RE, which expects one separator then the ellipsis, so
+    # the escaped spelling fell through to a verbatim evidence comparison and was
+    # flagged unverified when the shorthand form would have been grounded.
+    value = re.sub(r"\\{2,}", r"\\", value)
     return re.sub(r"^hxxps?", "http", value, flags=re.IGNORECASE)
 
 
@@ -1094,7 +1104,16 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
         ("email", _CLAIM_EMAIL_RE),
     ):
         for m in regex.finditer(scan):
-            raw = m.group(0).strip().strip(".,;:()[]{}'\"`\\")
+            # The trailing strip must include markdown emphasis and code
+            # punctuation. `*` and a backtick are not in _CLAIM_URL_RE's
+            # exclusion set, so a URL written as `` `http://icanhazip.com`** ``
+            # was captured as "http://icanhazip.com\`**" and then failed its own
+            # evidence match -- flagged unverified while being present 10 times
+            # in the evidence pack and 4 times in iocs.json (win32k_dll,
+            # 2026-10-02). Stripping `*` and `` ` `` from both ends fixes the
+            # whole class: a real indicator must not be able to fail
+            # verification on typography alone.
+            raw = m.group(0).strip().strip(".,;:()[]{}'\"`*_\\")
             if len(raw) < 4:
                 continue
             if kind == "domain" and not _looks_like_domain(raw):
@@ -1220,6 +1239,162 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
                    "a concrete evidence path under the same hive with the same "
                    "trailing subkey"),
     }
+
+
+#: Fenced blocks, captured so the splitter can keep them verbatim.
+_FENCE_BLOCK_SPLIT_RE = re.compile(r"(```.*?```)", re.DOTALL)
+
+#: What an unobserved indicator is replaced with, per claim type.
+#:
+#: Deliberately NOT a deletion. A sentence like "code paths that write to
+#: `HKCU\...\Run` and create scheduled tasks (source: yara)" carries a real,
+#: evidenced finding -- capa matched T1112 Modify Registry and T1543.003, and a
+#: yara rule fired. Deleting the clause would throw that away and make the report
+#: less informative. The fabricated part is the concrete PATH, so only the path
+#: is neutralised and the evidenced capability survives intact.
+_UNVERIFIED_MARKERS = {
+    "registry_key": "[registry path not observed in evidence]",
+    "url": "[URL not observed in evidence]",
+    "ip": "[IP not observed in evidence]",
+    "domain": "[domain not observed in evidence]",
+    "hash": "[hash not observed in evidence]",
+    "email": "[email not observed in evidence]",
+    "value": "[value not observed in evidence]",
+}
+
+
+def _flex_claim_re(value: str) -> re.Pattern:
+    """Match any markdown rendering of one indicator value.
+
+    Registry paths reach us escaped (``HKCU\\\\Software\\\\...``) as often as
+    plain (``HKCU\\Software\\...``), so each separator matches one or two
+    backslashes. The boundaries stop a claim from matching inside a longer
+    token, and deliberately allow ``*`` and a backtick to follow, so the
+    typography that broke URL claims does not also defeat removal.
+
+    The backslash runs are collapsed BEFORE splitting. Splitting a doubled
+    separator on a single backslash yields an empty part for the gap, and
+    joining that back produces two consecutive separators -- which compiled to
+    requiring two to four backslashes where the text has exactly two, so the
+    second rendering of a path in the same report was silently left in place
+    and `remaining_unverified` stayed at 1 after a "successful" scrub.
+    """
+    parts = re.sub(r"\\{2,}", r"\\", value).split("\\")
+    body = r"\\{1,2}".join(re.escape(p) for p in parts)
+    return re.compile(
+        r"(?<![A-Za-z0-9_\\])" + body + r"(?![A-Za-z0-9_\\-])",
+        re.IGNORECASE)
+
+
+def scrub_unverified_indicators(
+    markdown: str,
+    evidence_text: str,
+    *,
+    provenance_commit: str | None = None,
+) -> tuple[str, list[dict], dict]:
+    """Neutralise indicator values in prose that no tool observed.
+
+    Plan item #42. Two prompt-level attempts to stop the model naming canonical
+    registry paths failed, so this does not try to out-prompt it: the report is
+    made accurate after the fact. Every claim that `verify_claimed_iocs` calls
+    unverified is replaced with a marker naming the kind of thing that was
+    removed, and the removal is recorded so the audit can see it happened.
+
+    What this is NOT: an exemption. Nothing is added to an exclusion list and no
+    check is relaxed -- the text simply stops asserting values that no tool
+    produced, so there is nothing left to fail. `remaining_unverified` re-verifies
+    the result, so a scrub that silently fails to take effect is visible rather
+    than assumed.
+
+    Fenced blocks are preserved: claims are collected outside them, so a value
+    appearing inside a code fence is an illustration and must survive.
+
+    The third element always carries the same keys, including on the no-op paths,
+    so a caller can read `indicators_removed` unconditionally rather than
+    branching on whether anything was found.
+    """
+    if not markdown:
+        return markdown, [], {
+            "indicators_removed": 0, "indicators_removed_detail": [],
+            "unverified_before": 0, "remaining_unverified": 0,
+            "verified_after": 0,
+        }
+    verification = verify_claimed_iocs(
+        markdown, evidence_text, provenance_commit=provenance_commit)
+    unverified = verification.get("unverified_items") or []
+    if not unverified:
+        return markdown, [], {
+            "indicators_removed": 0, "indicators_removed_detail": [],
+            "unverified_before": verification.get("unverified", 0),
+            "remaining_unverified": verification.get("unverified", 0),
+            "verified_after": verification.get("verified", 0),
+        }
+
+    parts = _FENCE_BLOCK_SPLIT_RE.split(markdown)
+    removed: list[dict] = []
+    out: list[str] = []
+    for part in parts:
+        if part.startswith("```"):
+            out.append(part)
+            continue
+        for item in unverified:
+            kind = str(item.get("type") or "value")
+            value = str(item.get("value") or "")
+            if not value:
+                continue
+            marker = _UNVERIFIED_MARKERS.get(kind, _UNVERIFIED_MARKERS["value"])
+            part, n = _flex_claim_re(value).subn(marker, part)
+            if n:
+                removed.append({"type": kind, "value": value,
+                                "occurrences": n, "replaced_with": marker})
+        out.append(part)
+
+    scrubbed = "".join(out)
+    after = verify_claimed_iocs(
+        scrubbed, evidence_text, provenance_commit=provenance_commit)
+    return scrubbed, removed, {
+        "indicators_removed": len(removed),
+        "indicators_removed_detail": removed[:40],
+        "unverified_before": verification.get("unverified", 0),
+        "remaining_unverified": after.get("unverified", 0),
+        "verified_after": after.get("verified", 0),
+    }
+
+
+def scrub_report_indicators(
+    case: Path, markdown: str, label: str,
+) -> tuple[str, dict]:
+    """Scrub one report against its own case's evidence, and record the result.
+
+    Every published report goes through this, not just the one the audit reads
+    (`claimed_ioc_verification` checks `tech3 or tech2 or master`, so a fix
+    applied to a single report would leave the other three asserting values no
+    tool produced -- and on the 2026-10-02 win32k_dll run the unverified claims
+    were spread across master-v2, master-v3 and technical-v3).
+
+    `case` is the mode-keyed case directory. The evidence files consulted are
+    the same ones the audit uses later, and all of them are pre-report tool
+    artifacts, so the decision is made against the same material the gate will
+    judge.
+
+    Never raises: a report that cannot be scrubbed is published unchanged and
+    the audit still sees the unverified claims. Failing closed here would mean
+    losing the report entirely, which is worse than losing one sentence.
+    """
+    try:
+        evidence, evidence_files = collect_evidence_text(case)
+    except Exception as exc:  # noqa: BLE001
+        return markdown, {"label": label, "indicators_removed": 0,
+                          "error": f"evidence unavailable: {type(exc).__name__}"}
+    scrubbed, removed, meta = scrub_unverified_indicators(markdown, evidence)
+    meta["label"] = label
+    meta["evidence_files"] = evidence_files
+    if removed:
+        print(f"[report_quality] {label}: removed {meta['indicators_removed']} "
+              f"unobserved indicator value(s); unverified "
+              f"{meta['unverified_before']} -> {meta['remaining_unverified']}",
+              flush=True)
+    return scrubbed, meta
 
 
 def _ioc_factcheck_issue(claims: dict) -> str | None:

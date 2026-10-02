@@ -61,6 +61,7 @@ from report_quality import (  # noqa: E402
     VERDICT_CALIBRATION_CONTRACT,
     evaluate_report_markdown,
     missing_sections,
+    scrub_report_indicators,
     source_is_fallback,
     stub_sections,
 )
@@ -1246,6 +1247,13 @@ def main():
               f"{report.get('final_verdict') or (verdict or {}).get('verdict')}",
               flush=True)
     report["markdown"] = md
+    # Plan #42: drop indicator values no tool observed before the report is
+    # published, so the audit judges an accurate document rather than one that
+    # has to be failed for asserting invented registry paths. Recorded in the
+    # report JSON so the removal is auditable.
+    md, _ioc_scrub = scrub_report_indicators(case, md, "master_v2")
+    report["markdown"] = md
+    report["indicator_scrub"] = _ioc_scrub
     md_path = case / "REPORT-v2.md"
     md_path.write_text(md)
     (ev_dir / "02-REPORT-MASTER-v2.md").write_text(md)
@@ -1532,6 +1540,11 @@ def main():
             technical_report["verdict_panel_repaired"] = _tech_verdict_repairs
             print(f"[publish_report_v2] repaired {_tech_verdict_repairs} "
                   f"verdict panel row(s) in technical", flush=True)
+        # Plan #42: scrub BEFORE the quality gate, so the gate judges the text
+        # that is actually published rather than text we are about to change.
+        tech_md, _tech_ioc_scrub = scrub_report_indicators(
+            case, tech_md, "technical_v2")
+        technical_report["indicator_scrub"] = _tech_ioc_scrub
         q_tech = evaluate_report_markdown(
             tech_md,
             required_sections=TECHNICAL_REPORT_SECTIONS,
