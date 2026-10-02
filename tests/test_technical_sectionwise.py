@@ -32,7 +32,9 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "revai"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _layout import add_module_dir, source  # noqa: E402
+add_module_dir("revai/section_publisher.py")
 
 import section_publisher as sp  # noqa: E402
 
