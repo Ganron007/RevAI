@@ -179,7 +179,7 @@ def test_no_report_filenames_are_hardcoded():
     `"REPORT-MASTER-v2.md"` means coverage has gone back to being a hand-kept
     list, and the next version added will be invisible again.
     """
-    src = (ROOT / "revai" / "hollow_success.py").read_text(errors="replace")
+    src = source("revai/hollow_success.py")
     code = "\n".join(
         line for line in src.splitlines()
         if not line.lstrip().startswith("#"))

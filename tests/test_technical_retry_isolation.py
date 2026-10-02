@@ -180,7 +180,7 @@ def test_retry_failure_is_recorded_not_swallowed(monkeypatch):
     invisible -- missing_sections() reports it downstream, and this field says
     why the improvement never landed.
     """
-    src = (ROOT / "revai" / "section_publisher.py").read_text(errors="replace")
+    src = source("revai/section_publisher.py")
     assert "technical_assembly_retry_failed" in src, (
         "a failed retry must be recorded in the artifact")
     assert "keeping the partial first response" in src, (

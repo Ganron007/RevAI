@@ -42,7 +42,7 @@ def test_run_packer_scan_is_imported_into_v2_lib():
 
 def test_the_call_site_no_longer_relies_on_a_name_error():
     """Pin the call site so a future refactor cannot reintroduce the swallow."""
-    src = (ROOT / "revai" / "v2_lib.py").read_text(errors="replace")
+    src = source("revai/v2_lib.py")
     assert "pk = run_packer_scan(sample_path)" in src, (
         "the packed-stub acceptance path has moved or been removed -- re-check "
         "that packed stubs are still accepted")
@@ -68,7 +68,7 @@ def test_the_bare_except_is_still_there_but_no_longer_load_bearing():
     What must not happen is a NameError being absorbed by it. Now that the import
     is at module level, the except can only catch failures inside packer_intake.
     """
-    src = (ROOT / "revai" / "v2_lib.py").read_text(errors="replace")
+    src = source("revai/v2_lib.py")
     assert "from packer_intake import run_packer_scan" in src, (
         "import must be at module level so the name resolves before the try")
     assert "from packer_intake import run_packer_scan" not in src.split(
