@@ -55,7 +55,7 @@
   ],
   "summary": "This is a 64-bit Windows GUI PE file packed with UPX, exhibiting high entropy and RWX executable sections consistent with packing. It uses runtime dynamic API resolution and memory permission modification, all of which are common in packed executables. No definitive behavioral evidence of malicious intent (e.g., C2 communication, credential theft, file encryption, persistence) is present in the available static analysis data. All observed signals are consistent with obfuscation/packing, which are neutral per analysis calibration rules, leading to a suspicious verdict pending further dynamic analysis to confirm intent.",
   "source": "llm_judge",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "agreement": "llm_v1_disagree",
   "v1_verdict": {
     "verdict": "malicious",

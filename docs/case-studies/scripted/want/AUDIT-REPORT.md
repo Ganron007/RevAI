@@ -80,7 +80,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "The sample 'want.exe' is packed with PECompact, exhibits high entropy (7.94), and has minimal imports focused on dynamic resolution and memory allocation. Key anomalies include executable/writable sections and unreferenced imports. VirusTotal detections (59 malicious) link it to Lockbit ransomware, indicating malicious intent beyond mere obfuscation. Behavioral indicators such as persistence and anti-debug tags further support the malicious verdict.",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",
@@ -794,7 +794,7 @@ This section details the static identifiers and basic characteristics of the ana
   "score": 80,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "packer_intake",

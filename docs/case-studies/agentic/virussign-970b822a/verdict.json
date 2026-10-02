@@ -43,7 +43,7 @@
   ],
   "summary": "This sample is confirmed malicious, packed with the ASPack executable packer to evade static analysis. It includes anti-VM checks targeting VirtualBox to avoid execution in analysis environments, uses dynamic API resolution imports (LoadLibrary, GetProcAddress) to load additional functionality at runtime, and contains an embedded secondary PE file likely serving as the final malicious payload. All available static analysis data points to the sample being a packed trojan or dropper, with no indicators of benign behavior.",
   "source": "llm_judge",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",

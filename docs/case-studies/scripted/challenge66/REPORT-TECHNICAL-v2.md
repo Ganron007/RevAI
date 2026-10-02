@@ -268,7 +268,7 @@ The environment included VirusTotal for external threat intelligence enrichment,
 - **cross_engine_notes**: Multiple engines confirm UPX packing and dynamic API resolution via minimal imports. MalCat and YARA detect packing anomalies, capa identifies software packing, and pe_imports shows APIs for dynamic loading. VirusTotal reports high malicious detections with trojan.llac/babar family, indicating malicious intent despite static analysis showing primarily obfuscation.
 - **summary**: The sample is a PE executable packed with UPX, showing high entropy, minimal imports for dynamic API resolution, and version info indicating 'Ghost Encryptor'. While static analysis highlights obfuscation without clear behavioral signals, VirusTotal detections classify it as a trojan with 60 malicious reports, supporting a malicious verdict.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

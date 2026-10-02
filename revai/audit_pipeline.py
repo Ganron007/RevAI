@@ -864,7 +864,11 @@ def audit_publish(log: Path, deep_mtime: float) -> dict:
     # Hard quality: LLM narrative required — fallback/stub reports are NOT green
     qpack: dict = {}
     try:
-        from report_quality import evaluate_sha_publish_quality, source_is_fallback
+        from report_quality import (
+            evaluate_sha_publish_quality,
+            redact_model_names,
+            source_is_fallback,
+        )
         # log is the exact case dir (flat or mode-keyed); pin it so the reported
         # sha stays correct (it was labelled with the mode dir name before).
         _sha_quality = log.name if re.fullmatch(r"[0-9a-fA-F]{64}", log.name or "") \
@@ -1539,7 +1543,14 @@ def main():
     out_md = log / "AUDIT-REPORT.md"
     out_json.parent.mkdir(parents=True, exist_ok=True)
     out_json.write_text(json.dumps(report, indent=2, default=str))
-    out_md.write_text(render_markdown(report), encoding="utf-8")
+    # The markdown is a published document, so vendor/model names are scrubbed
+    # from it; pipeline-audit.json keeps them, because that file is the machine
+    # evidence an auditor reads to find out which model judged the sample.
+    audit_md, _redacted = redact_model_names(render_markdown(report))
+    if _redacted:
+        report.setdefault("model_names_redacted", _redacted)
+        out_json.write_text(json.dumps(report, indent=2, default=str))
+    out_md.write_text(audit_md, encoding="utf-8")
     # Keep showcase copy of final AUDIT-REPORT in sync
     shutil.copy2(out_md, showcase_dir / "AUDIT-REPORT.md")
     shutil.copy2(out_json, showcase_dir / "pipeline-audit.json")

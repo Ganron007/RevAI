@@ -367,7 +367,7 @@ Ghidra and IDA failures prevented full disassembly and function-level analysis, 
 - **cross_engine_notes**: Ghidra and IDA analysis failed due to technical issues (Ghidra project ownership error, missing idasql binary), so all evidence is sourced from pe_imports, capa, YARA, and FLOSS. Cross-engine alignment is strong: YARA's Delphi compiler identification matches FLOSS's Delphi-specific strings; pe_imports' high-signal process injection and execution APIs align with capa's detected process injection, execution, and obfuscation behaviors. The sample's packed state (confirmed by YARA) explains its large 2.2MB size, high string count, and failure of Ghidra/IDA to extract function data.
 - **summary**: This is a packed 2.2MB Borland Delphi PE file with 142 imports, including high-signal APIs for process creation, dynamic API resolution, and memory manipulation. Static analysis via capa identifies obfuscation (XOR, RC4), system/file/registry reconnaissance, and privilege escalation capabilities. YARA rules confirm the sample is packed, built with Delphi, and contains code for DEP bypass, privilege escalation, registry/token interaction, and embedded C2 indicators (domains, IPs, base64 data). FLOSS strings corroborate the Delphi compiler identification. All static indicators point to malicious functionality consistent with an infostealer or RAT.
 - **source**: llm_judge
-- **model**: step-3.7-flash
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

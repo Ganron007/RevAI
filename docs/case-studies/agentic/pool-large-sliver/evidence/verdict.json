@@ -61,7 +61,7 @@
   ],
   "summary": "This is a 64-bit statically linked ELF binary with very high entropy (108), indicating heavy obfuscation/packing. It contains no imports (normal for statically linked ELFs), uses stack string obfuscation, XOR/Base64/AES/RC4/ChaCha encryption/encoding, and has heavily obfuscated control flow (spaghetti code, looping functions with high cross-reference counts). Suspicious strings include HTTP protocol markers and encryption/decryption function names, and YARA matches confirm embedded domain and IP address patterns consistent with C2 infrastructure. The filename suffix '_sliver' aligns with the Sliver C2 framework, a common tool for offensive operations and malware implants. No evidence of file destruction, persistence, or credential theft was observed, but the presence of C2 communication indicators confirms malicious intent.",
   "source": "llm_judge",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",

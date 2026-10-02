@@ -168,7 +168,7 @@ The following tools were used for analysis, with the noted status:
 - **cross_engine_notes**: Ghidra and IDA static analysis engines failed to execute due to project ownership errors (Ghidra) and missing idasql binary (IDA), so all analysis is derived from capa, YARA, FLOSS, and PE import data. All available independent analysis engines confirm consistent malicious indicators including executable packing, anti-sandbox/anti-VM checks, and suspicious runtime API imports, with no conflicting clean indicators observed.
 - **summary**: This sample is confirmed malicious, packed with the ASPack executable packer to evade static analysis. It includes anti-VM checks targeting VirtualBox to avoid execution in analysis environments, uses dynamic API resolution imports (LoadLibrary, GetProcAddress) to load additional functionality at runtime, and contains an embedded secondary PE file likely serving as the final malicious payload. All available static analysis data points to the sample being a packed trojan or dropper, with no indicators of benign behavior.
 - **source**: llm_judge
-- **model**: step-3.7-flash
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

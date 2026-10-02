@@ -126,7 +126,7 @@
         "score": 85,
         "agreement": "llm_and_v1_agree",
         "source": "llm_judge",
-        "model": "mimo-v2.5-pro",
+        "model": "configured-llm",
         "key_evidence": [
           {
             "source": "malcat",
@@ -1049,9 +1049,9 @@
           "pipeline_audit_all_green": false
         },
         "models": {
-          "master": "mimo-v2.5-pro",
-          "technical_v2": "mimo-v2.5-pro",
-          "technical_v3": "mimo-v2.5-pro",
+          "master": "configured-llm",
+          "technical_v2": "configured-llm",
+          "technical_v3": "configured-llm",
           "planner_hint": "configured via env",
           "judgment_hint": "configured via env"
         }
@@ -1154,7 +1154,7 @@
     "llm": {
       "triage": {
         "source": "llm_judge",
-        "model": "mimo-v2.5-pro",
+        "model": "configured-llm",
         "verdict": "malicious",
         "family": "Poison/Symmi",
         "confidence": 85,
@@ -1256,7 +1256,7 @@
       },
       "publish": {
         "source": "llm_judge",
-        "model": "mimo-v2.5-pro",
+        "model": "configured-llm",
         "excerpt": "{\n  \"title\": \"Malware Analysis Report: vbprop.exe (Poison/Symmi Trojan)\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `unknown` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-13 12:08:41 UTC\\n\\n# Verdict sources (multi-source)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | malicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | malicious |\\n\\n- **Locked over publish LLM:** no\\n\\n# Malware Analysis Report: vbprop.exe (Poison/Symmi Trojan)\\n\\n## Executive Summary\\n\\nThis report details the analysis of a malicious Windows executable (SHA256: 65fdb5d460b079279a4afcb45671b4ec4d7a2d734dcf5f45232dcbdb6d08275b) identified as a variant of the Poison/Symmi trojan family. The sample exhibits clear behavioral-intent evidence through Windows API hooking (SetWindowsHookExA) consistent with keylogger/spyware functionality, combined with significant obfuscation techniques including XOR encoding and spaghetti code patterns. The binary masquerades as Trend Micro Internet Security software through forged version information, a common social engineering tactic. Dynamic analysis tools executed but recorded no runtime events, suggesting the sample may require specific environmental triggers or employs anti-analysis techniques. The sample is classified as **malicious** with high confidence based on multiple converging evidence streams from static analysis, behavioral indicators, and external threat intelligence.\\n\\n## 1. Sample Identification\\n\\n| Attribute | Value |\\n|-----------|-------|\\n| SHA256 | 65fdb5d460b079279a4afcb45671b4ec4d7a2d734dcf5f45232dcbdb6d08275b |\\n| File Path | /opt/samples/corpus/malware/65fdb5d460b079279a4afcb45671b4ec4d7a2d734dcf5f45232dcbdb6d08275b/vbprop.exe |\\n| File Type | PE32 executable (GUI) Intel 80386, for MS Windows |\\n| Architecture | x86 (32-bit) |\\n| Compiler | Microsoft Visual C++ 6.0 (source: malcat) |\\n| Packer/Protector | Armadillo v4.x (source: yara) |\\n| Entropy | 5.18 bits/byte (source: malcat) |\\n| Size | 66,048 bytes |\\n| Imphash | e39378c4fb2416ba4fcdfda97cdd80df (source: rule.yara.json) |\\n| First Submission | 2009-07-29 (based on version info) |\\n| Project Context | malware analysis project |\\n\\nThe sample is a 32-bit Windows GUI executable compiled with Visual C++ 6.0 and protected by the Armadillo software protection system. The relatively low entropy (5.18) suggests the Armadillo packer may not be applying heavy compression, or the sample contains significant plaintext resources. The file contains 15 identified functions and 49 imported APIs (source: malcat).\\n\\n## 2. Classification\\n\\n**Verdict: MALICIOUS**\\n\\n**Confidence: 90%**\\n\\n**Family: Poison/Symmi Trojan**\\n\\nThe classification is based on multiple converging evidence streams:\\n\\n1. **Behavioral-Intent Evidence**: The sample implements Windows hooking via SetWindowsHookExA with a WH_KEYBOARD hook (idHook=14), which is a classic keylogger/spyware technique (source: malcat, capa).\\n2. **Obfuscation Techniques**: XOR encoding loops and spaghetti code patterns indicate deliberate evasion (source: malcat).\\n3. **Dynamic API Resolution**: Use of LoadLibraryA and GetProcAddress for runtime API resolution (source: pe_imports).\\n4. **Memory Manipulation**: VirtualAlloc for dynamic memory allocation, potentially for shellcode execution (source: pe_imports).\\\n\u2026 [16726 more chars]"
       }
     },

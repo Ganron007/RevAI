@@ -14,7 +14,7 @@
 - **cross_engine_notes**: Ghidra analysis failed due to program not found in project; IDA detected 70,200 strings but no functions; MalCat reported high entropy (7.48) and numerous obfuscated strings; YARA matched rules for domain, IP, base64, and indirect function calls; VirusTotal flagged as malicious with 9 detections and threat label trojan.fkmb.
 - **summary**: The WAV file exhibits high entropy and contains strings matching YARA rules for domain, IP, base64, and malicious document patterns, suggesting embedded malicious content. VirusTotal corroborates with trojan detections, indicating malicious intent despite the non-standard file type.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

@@ -240,7 +240,7 @@ The analysis was conducted in a controlled environment. The specific operating s
 - **cross_engine_notes**: Ghidra and IDA agree on import DLLs (ntdll, shlwapi, wininet, shell32, kernel32, user32, advapi32, ole32) and the presence of 'Adware.dll' string. MalCat identifies high-entropy sections, XOR loops, and behavioral imports (InternetOpen, RegSetValue, CreateProcess, VirtualAlloc). Capa and YARA provide direct behavioral rules (process injection, privilege escalation, anti-VM). External TI (VirusTotal) reports 58/70 malicious detections with threat label 'trojan.tibs/gen2'.
 - **summary**: This DLL is a packed and obfuscated trojan downloader (Tibs family) that performs process injection, privilege escalation, and network communication via WinINet APIs. It uses XOR encryption (key 0x5d785e) and anti-VM techniques to evade analysis. Key behavioral indicators include imports for registry manipulation, process creation, memory allocation, and token adjustment, supported by YARA rules for injection and escalation. External VirusTotal reports high detection rates (58/70). The high entropy (7.99), unusual sections (.nasoc, .tlsc), and unreferenced imports suggest packing/obfuscation, but the behavioral evidence confirms malicious intent.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

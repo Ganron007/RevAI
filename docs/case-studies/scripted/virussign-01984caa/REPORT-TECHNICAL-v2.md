@@ -568,7 +568,7 @@ The generated YARA rule for this sample is available at `/opt/samples/logs/68788
 | UPX | N/A | Executable unpacking | upx, upx_ok: False |
 | Speakeasy | N/A | Windows API emulation for dynamic analysis | speakeasy, speakeasy_ok: True, 0 events |
 | Frida | 17.16.4 | Dynamic instrumentation probe | frida_probe, frida_available: True |
-| llm_judge | step-3.7-flash | Verdict generation, cross-engine discrepancy resolution | llm_judge, verdict; cross_engine_notes |
+| llm_judge | configured-llm | Verdict generation, cross-engine discrepancy resolution | llm_judge, verdict; cross_engine_notes |
 
 IDA was unavailable for this analysis, so no IDA-derived data is present (source: llm_judge, cross_engine_notes). All analysis was conducted on the sample at path `/opt/samples/corpus/incoming/6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d/virussign.com_01984caa0aa32bcadbad335d9a7dce27.vir` as part of the `incoming` project.
 ## Appendix: Full Structured Evidence Pack
@@ -589,7 +589,7 @@ IDA was unavailable for this analysis, so no IDA-derived data is present (source
 - **cross_engine_notes**: ['IDA is unavailable for this sample, so no IDA-derived analysis data exists.', "pe_imports reports 0 imports, while Ghidra and Malcat both report 67 imports: this discrepancy is caused by the presence of bound imports (confirmed by Malcat's BoundImports anomaly), which the pefile library used by pe_imports cannot resolve.", "Malcat reports 2 functions, while Ghidra reports 12 functions: this is due to Malcat's limited function detection for obfuscated VB6 binaries, while Ghidra's more comprehensive analysis identifies additional functional entries.", "Ghidra's decompilation of the entry point produces invalid code with multiple warnings due to packing/obfuscation, while Malcat's limited decompilation correctly identifies the jump to the VB6 ThunRTMain standard entry point.", "Capa only detects the 'compiled from Visual Basic' rule with no additional capability detections, as the sample's packing/obfuscation hides its core functionality from static analysis.", 'String counts vary across tools (Malcat: 100, Ghidra: 200, FLOSS: 437), so combining all sources provides full coverage of embedded strings.']
 - **summary**: This is a malicious, heavily packed/obfuscated Visual Basic 6 compiled PE32 executable. It is branded with 'Unicorn' and 'Kawaii-Unicorn' metadata and strings, and includes Adobe Photoshop-related strings to disguise itself as legitimate software. The sample has near-maximum entropy (87), 11 structural anomalies (including a non-executable code section, entry point in a non-executable region, truncated PE structure, and invalid checksum), and 6 large high-entropy unreferenced buffers likely containing encrypted/compressed malicious payload. Static analysis is heavily hindered by packing: only the VB6 compilation origin is confirmed via capa and YARA, while core malicious capabilities are hidden. The entry point follows standard VB6 execution flow by jumping to the ThunRTMain runtime function. Tool discrepancies (e.g., import count differences) are explained by bound imports and tool-specific limitations for obfuscated VB6 binaries.
 - **source**: llm_judge
-- **model**: step-3.7-flash
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

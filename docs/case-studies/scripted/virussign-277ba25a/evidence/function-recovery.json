@@ -1,7 +1,7 @@
 {
   "sha256": "e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2",
   "sample_path": "/opt/samples/corpus/incoming/e891b8f4825a86999ef858ac13af749d982c91e9d3e92baf922862636912fec2/virussign.com_277ba25a0eb58b53a5f5abfc13e8d5c2.vir",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "generated_at": 1786194176.0533242,
   "triage": {
     "total_functions": 365,
@@ -31,7 +31,7 @@
       "prompt_length": 2707,
       "llm_audit": {
         "request_model": null,
-        "response_model": "mimo-v2.5",
+        "response_model": "configured-llm",
         "response_id": "2cc4502c-7d96-4644-b9eb-aa55e72fded5_7a1aefb6ec254297b615b50c9f217bca",
         "system_fingerprint": null,
         "prompt_tokens": 849,
@@ -59,7 +59,7 @@
       "prompt_length": 5252,
       "llm_audit": {
         "request_model": null,
-        "response_model": "mimo-v2.5",
+        "response_model": "configured-llm",
         "response_id": "da9f14ee-bf9e-4360-86ff-2e359031fc70_091fbb49beeb41abb41b46e67ae8ad67",
         "system_fingerprint": null,
         "prompt_tokens": 1451,
@@ -84,7 +84,7 @@
       "prompt_length": 2707,
       "llm_audit": {
         "request_model": null,
-        "response_model": "mimo-v2.5",
+        "response_model": "configured-llm",
         "response_id": "40307a8e-136a-4e3f-a5f1-aec6f293e7a5_7126089a80ee46f5a840ff37c763c663",
         "system_fingerprint": null,
         "prompt_tokens": 852,
@@ -111,7 +111,7 @@
       "prompt_length": 2761,
       "llm_audit": {
         "request_model": null,
-        "response_model": "mimo-v2.5",
+        "response_model": "configured-llm",
         "response_id": "ec7bee79-afe4-4c65-91c4-9aa9424a7177_0acfdc5ff91f4ee59f0a0aa60613e0a0",
         "system_fingerprint": null,
         "prompt_tokens": 881,
@@ -136,7 +136,7 @@
       "prompt_length": 2707,
       "llm_audit": {
         "request_model": null,
-        "response_model": "mimo-v2.5",
+        "response_model": "configured-llm",
         "response_id": "47bc911f-155a-42a0-b05e-531fee9f6fcc_ae30072d46964d13899ba39d46b62719",
         "system_fingerprint": null,
         "prompt_tokens": 851,
@@ -161,7 +161,7 @@
       "prompt_length": 2707,
       "llm_audit": {
         "request_model": null,
-        "response_model": "mimo-v2.5",
+        "response_model": "configured-llm",
         "response_id": "ad096bb6-a504-42fd-b15c-be1790862000_3ff512a9f2b54bf7bbcae2516e8198ca",
         "system_fingerprint": null,
         "prompt_tokens": 851,
@@ -186,7 +186,7 @@
       "prompt_length": 2707,
       "llm_audit": {
         "request_model": null,
-        "response_model": "mimo-v2.5",
+        "response_model": "configured-llm",
         "response_id": "57884981-4f4c-4889-93d2-b9710d99e5df_1e4e1a7b3d464099ae0add9dfcf83d2d",
         "system_fingerprint": null,
         "prompt_tokens": 851,
@@ -213,7 +213,7 @@
       "prompt_length": 2709,
       "llm_audit": {
         "request_model": null,
-        "response_model": "mimo-v2.5",
+        "response_model": "configured-llm",
         "response_id": "d475e135-6812-472f-9cfa-7a873926545c_65633487fbef444cb3f6833270e15476",
         "system_fingerprint": null,
         "prompt_tokens": 847,
@@ -238,7 +238,7 @@
       "prompt_length": 2707,
       "llm_audit": {
         "request_model": null,
-        "response_model": "mimo-v2.5",
+        "response_model": "configured-llm",
         "response_id": "ccdeac84-daf7-4919-80f9-ebd0eb851d45_38e50d916cf84f639cfb32c36d2f83ab",
         "system_fingerprint": null,
         "prompt_tokens": 852,
@@ -265,7 +265,7 @@
       "prompt_length": 2761,
       "llm_audit": {
         "request_model": null,
-        "response_model": "mimo-v2.5",
+        "response_model": "configured-llm",
         "response_id": "25116d6c-9f4b-4ad5-8a53-daef2b121c5f_8d85aeb31ed4470e8beb0a44580401ac",
         "system_fingerprint": null,
         "prompt_tokens": 880,
@@ -290,7 +290,7 @@
       "prompt_length": 2797,
       "llm_audit": {
         "request_model": null,
-        "response_model": "mimo-v2.5",
+        "response_model": "configured-llm",
         "response_id": "dbe96387-43b2-4099-90c1-b44190343c47_470ca4ac9045436ab1cc664c99346d86",
         "system_fingerprint": null,
         "prompt_tokens": 892,
@@ -320,7 +320,7 @@
         "prompt_length": 2707,
         "llm_audit": {
           "request_model": null,
-          "response_model": "mimo-v2.5",
+          "response_model": "configured-llm",
           "response_id": "2cc4502c-7d96-4644-b9eb-aa55e72fded5_7a1aefb6ec254297b615b50c9f217bca",
           "system_fingerprint": null,
           "prompt_tokens": 849,
@@ -348,7 +348,7 @@
         "prompt_length": 5252,
         "llm_audit": {
           "request_model": null,
-          "response_model": "mimo-v2.5",
+          "response_model": "configured-llm",
           "response_id": "da9f14ee-bf9e-4360-86ff-2e359031fc70_091fbb49beeb41abb41b46e67ae8ad67",
           "system_fingerprint": null,
           "prompt_tokens": 1451,
@@ -373,7 +373,7 @@
         "prompt_length": 2707,
         "llm_audit": {
           "request_model": null,
-          "response_model": "mimo-v2.5",
+          "response_model": "configured-llm",
           "response_id": "40307a8e-136a-4e3f-a5f1-aec6f293e7a5_7126089a80ee46f5a840ff37c763c663",
           "system_fingerprint": null,
           "prompt_tokens": 852,
@@ -400,7 +400,7 @@
         "prompt_length": 2761,
         "llm_audit": {
           "request_model": null,
-          "response_model": "mimo-v2.5",
+          "response_model": "configured-llm",
           "response_id": "ec7bee79-afe4-4c65-91c4-9aa9424a7177_0acfdc5ff91f4ee59f0a0aa60613e0a0",
           "system_fingerprint": null,
           "prompt_tokens": 881,
@@ -425,7 +425,7 @@
         "prompt_length": 2707,
         "llm_audit": {
           "request_model": null,
-          "response_model": "mimo-v2.5",
+          "response_model": "configured-llm",
           "response_id": "47bc911f-155a-42a0-b05e-531fee9f6fcc_ae30072d46964d13899ba39d46b62719",
           "system_fingerprint": null,
           "prompt_tokens": 851,
@@ -450,7 +450,7 @@
         "prompt_length": 2707,
         "llm_audit": {
           "request_model": null,
-          "response_model": "mimo-v2.5",
+          "response_model": "configured-llm",
           "response_id": "ad096bb6-a504-42fd-b15c-be1790862000_3ff512a9f2b54bf7bbcae2516e8198ca",
           "system_fingerprint": null,
           "prompt_tokens": 851,
@@ -475,7 +475,7 @@
         "prompt_length": 2707,
         "llm_audit": {
           "request_model": null,
-          "response_model": "mimo-v2.5",
+          "response_model": "configured-llm",
           "response_id": "57884981-4f4c-4889-93d2-b9710d99e5df_1e4e1a7b3d464099ae0add9dfcf83d2d",
           "system_fingerprint": null,
           "prompt_tokens": 851,
@@ -502,7 +502,7 @@
         "prompt_length": 2709,
         "llm_audit": {
           "request_model": null,
-          "response_model": "mimo-v2.5",
+          "response_model": "configured-llm",
           "response_id": "d475e135-6812-472f-9cfa-7a873926545c_65633487fbef444cb3f6833270e15476",
           "system_fingerprint": null,
           "prompt_tokens": 847,
@@ -527,7 +527,7 @@
         "prompt_length": 2707,
         "llm_audit": {
           "request_model": null,
-          "response_model": "mimo-v2.5",
+          "response_model": "configured-llm",
           "response_id": "ccdeac84-daf7-4919-80f9-ebd0eb851d45_38e50d916cf84f639cfb32c36d2f83ab",
           "system_fingerprint": null,
           "prompt_tokens": 852,
@@ -554,7 +554,7 @@
         "prompt_length": 2761,
         "llm_audit": {
           "request_model": null,
-          "response_model": "mimo-v2.5",
+          "response_model": "configured-llm",
           "response_id": "25116d6c-9f4b-4ad5-8a53-daef2b121c5f_8d85aeb31ed4470e8beb0a44580401ac",
           "system_fingerprint": null,
           "prompt_tokens": 880,
@@ -579,7 +579,7 @@
         "prompt_length": 2797,
         "llm_audit": {
           "request_model": null,
-          "response_model": "mimo-v2.5",
+          "response_model": "configured-llm",
           "response_id": "dbe96387-43b2-4099-90c1-b44190343c47_470ca4ac9045436ab1cc664c99346d86",
           "system_fingerprint": null,
           "prompt_tokens": 892,

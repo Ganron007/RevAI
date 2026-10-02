@@ -494,7 +494,7 @@ EntryPoint {
 - **sha256**: `4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860`
 - **generated_at**: 2026-08-05T10:14:57.838538+00:00
 - **verdict_source**: llm_judge
-- **model**: step-3.7-flash
+- **model**: configured-llm
 - **RAG**: bge-m3 (35,302 records, top-3 per section)
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)

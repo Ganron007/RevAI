@@ -941,7 +941,7 @@ undefined8 CLync99MsoComponentHost.#0(int64_t *param_1,int64_t *param_2,int64_t 
 - **sha256**: `ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7`
 - **generated_at**: 2026-08-05T05:06:15.989020+00:00
 - **verdict_source**: llm_judge
-- **model**: step-3.7-flash
+- **model**: configured-llm
 - **RAG**: bge-m3 (35,302 records, top-3 per section)
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)

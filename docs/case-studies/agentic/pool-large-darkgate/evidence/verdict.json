@@ -73,7 +73,7 @@
   ],
   "summary": "This is a malicious PE32 x86 binary masquerading as a legitimate Tencent GameLoop installer, signed with an expired DigiCert certificate. Static analysis reveals extensive malicious capabilities including process injection (T1055), anti-debug (T1622), anti-VM/sandbox evasion (T1497.001), download and C2 communication (T1105, T1071.001), registry persistence (T1112), keylogging (T1056.001), and heavy obfuscation (Base64, XOR, AES, RC4, control flow flattening, API hashing). The sample masquerades as Tencent GameLoop software per associated registry strings, and YARA, capa, and Malcat all confirm malicious behavioral indicators. While high entropy and obfuscation are neutral protection signals, the clear behavioral intent (injection, download, persistence, credential theft) confirms the sample is malicious.",
   "source": "llm_judge",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",

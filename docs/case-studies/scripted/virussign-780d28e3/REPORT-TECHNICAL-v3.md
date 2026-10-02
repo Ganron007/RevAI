@@ -290,7 +290,7 @@ Flag any VB6-compiled GUI executable that imports `LoadLibrary` and `GetProcAddr
 - **cross_engine_notes**: YARA, FLOSS, and capa all corroborate Visual Basic 6.0 compilation: YARA matches 6 VB6-specific rules, FLOSS extracts VB6 runtime DLL (MSVBVM60.DLL, VBA6.DLL) and VBA function strings, and capa identifies a Visual Basic compilation rule. Dynamic API resolution is confirmed across capa (T1129 runtime linking rule), pe_imports (LoadLibrary/GetProcAddress imports), and FLOSS (extracted API strings). Dropper functionality is indicated by YARA's Dropper_Strings match, FLOSS's 'Payload' string reference, capa's data compression rule (often used for payload packing), and YARA's HasOverlay match (common for embedded secondary payloads). Anti-debug behavior is confirmed by capa's PEB ldr_data access rule.
 - **summary**: This is a malicious Visual Basic 6.0 compiled dropper. It employs dynamic API resolution to evade static analysis, implements debugger detection via PEB access, includes data compression capabilities (likely for payload packing or data archiving), and contains an overlay consistent with an embedded secondary payload. All available analysis engines corroborate malicious indicators, with no benign functionality observed.
 - **source**: llm_judge
-- **model**: step-3.7-flash
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

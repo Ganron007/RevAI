@@ -646,7 +646,7 @@ level: high
 - **cross_engine_notes**: IDA is unavailable for all analysis due to a missing idasql binary, so all findings are sourced from Ghidra, Malcat, capa, FLOSS, YARA, and pe_imports. Malcat provides static profile metadata and anomaly detection, Ghidra supplies deep function (426) and string (921) analysis, capa and pe_imports confirm multiple malicious ATT&CK techniques, YARA identifies additional behavioral indicators, and FLOSS extracts runtime strings including a PDB path matching the Lync/Skype for Business codebase noted in Malcat's debug info.
 - **summary**: This is a 64-bit PE binary with an overall entropy of 45 and a high-entropy (122) overlay, indicating packing or embedded malicious payload. While version information claims to be legitimate Skype for Business (Microsoft Office 2016), cross-engine indicators confirm malicious behavior: anti-debugging imports, registry modification, memory protection manipulation, YARA matches for keylogging, anti-debug, and registry interaction, capa rules for process termination, file system manipulation, and registry modification, and a dynamic string anomaly indicating runtime string construction to evade static analysis. The binary is built from the Lync/Skype for Business codebase (evidenced by the matching PDB path in FLOSS and Malcat debug info) but modified with malicious components, likely belonging to the Mespinoza ransomware family based on the sample path name and observed capabilities.
 - **source**: llm_judge
-- **model**: step-3.7-flash
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

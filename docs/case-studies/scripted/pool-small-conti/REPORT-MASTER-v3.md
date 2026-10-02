@@ -931,7 +931,7 @@ undefined8 sub_140001550(void)
 - **sha256**: `28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9`
 - **generated_at**: 2026-08-05T05:37:35.163194+00:00
 - **verdict_source**: llm_judge
-- **model**: step-3.7-flash
+- **model**: configured-llm
 - **RAG**: bge-m3 (35,302 records, top-3 per section)
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)

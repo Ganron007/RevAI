@@ -37,7 +37,7 @@
   ],
   "summary": "This is a UPX-packed Windows PE file with multiple confirmed malicious indicators: packing for obfuscation (Defense Evasion T1027.002), anti-VM detection, and imports of APIs used for process injection and memory manipulation. Static analysis via Ghidra and IDA failed due to tooling issues, but cross-engine evidence from capa, pe_imports, YARA, and FLOSS provides high confidence the sample is malicious. The underlying payload is hidden by UPX packing and requires unpacking for further analysis and family attribution.",
   "source": "llm_judge",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",

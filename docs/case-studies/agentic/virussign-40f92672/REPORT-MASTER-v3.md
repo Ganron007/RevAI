@@ -286,7 +286,7 @@ Raw tool output (signal-preserving, not summarized). Each tool's evidence card i
 - **sha256**: `353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c`
 - **generated_at**: 2026-08-06T01:57:31.835550+00:00
 - **verdict_source**: llm_judge
-- **model**: step-3.7-flash
+- **model**: configured-llm
 - **RAG**: bge-m3 (35,302 records, top-3 per section)
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)

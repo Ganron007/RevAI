@@ -80,7 +80,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "The sample is a PE executable packed with UPX, showing high entropy, minimal imports for dynamic API resolution, and version info indicating 'Ghost Encryptor'. While static analysis highlights obfuscation without clear behavioral signals, VirusTotal detections classify it as a trojan with 60 malicious reports, supporting a malicious verdict.",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",
@@ -858,7 +858,7 @@ Tools including Speakeasy and Frida were executed in a controlled environment, b
   "score": 85,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "malcat",

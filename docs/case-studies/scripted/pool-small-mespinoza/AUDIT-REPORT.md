@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`step-3.7-flash` verdict=`Malicious` confidence=`78`
+- source=`llm_judge` model=`configured-llm` verdict=`Malicious` confidence=`78`
 - key_evidence_count=`7`
 
 ```json
@@ -170,7 +170,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`step-3.7-flash` verdict=`None` confidence=`None`
+- source=`llm_judge` model=`configured-llm` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -909,7 +909,7 @@ No legitimate use case for the sample was identified across all analysis phases.
   "score": 78,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "malcat",

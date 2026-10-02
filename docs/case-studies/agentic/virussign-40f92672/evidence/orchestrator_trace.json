@@ -3,8 +3,8 @@
   "sha256": "353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c",
   "sample_path": "/opt/samples/incoming/manual-drop/virussign.com_40f9267218c144475dc0691431825779.vir",
   "mode": "langgraph_react",
-  "planner_model": "step-3.7-flash",
-  "judgment_model": "step-3.7-flash",
+  "planner_model": "configured-llm",
+  "judgment_model": "configured-llm",
   "with_dynamic": false,
   "provenance": {
     "project": "RevAI",
@@ -344,7 +344,7 @@
     {
       "type": "tool_message",
       "name": "check_quality",
-      "content": "{\"ok\": false, \"quality_green\": false, \"issues\": [\"technical_v2:stub_sections:['4. Malcat Triage Summary']\", \"tool_rc_nonzero:run_quick_scan:1\", \"tool_rc_nonzero:run_publish:1\", \"tool_rc_nonzero:run_audit:1\", \"deep:sql_deep_unavailable:ghidrasql_server_died\"], \"failed_tools\": [{\"tool\": \"run_quick_scan\", \"rc\": 1}, {\"tool\": \"run_publish\", \"rc\": 1}, {\"tool\": \"run_audit\", \"rc\": 1}], \"deep_checklist_ok\": true, \"deep_sql_deep_ok\": false, \"models\": {\"planner\": \"step-3.7-flash\", \"judgment\": \"step-3.7-fla... (truncated 1281 chars)",
+      "content": "{\"ok\": false, \"quality_green\": false, \"issues\": [\"technical_v2:stub_sections:['4. Malcat Triage Summary']\", \"tool_rc_nonzero:run_quick_scan:1\", \"tool_rc_nonzero:run_publish:1\", \"tool_rc_nonzero:run_audit:1\", \"deep:sql_deep_unavailable:ghidrasql_server_died\"], \"failed_tools\": [{\"tool\": \"run_quick_scan\", \"rc\": 1}, {\"tool\": \"run_publish\", \"rc\": 1}, {\"tool\": \"run_audit\", \"rc\": 1}], \"deep_checklist_ok\": true, \"deep_sql_deep_ok\": false, \"models\": {\"planner\": \"configured-llm\", \"judgment\": \"configured-llm... (truncated 1281 chars)",
       "ts": "2026-08-06T02:02:33Z"
     },
     {
@@ -392,7 +392,7 @@
     {
       "type": "tool_message",
       "name": "check_quality",
-      "content": "{\"ok\": false, \"quality_green\": false, \"issues\": [\"tool_rc_nonzero:run_quick_scan:1\", \"tool_rc_nonzero:run_audit:1\", \"deep:sql_deep_unavailable:ghidrasql_server_died\"], \"failed_tools\": [{\"tool\": \"run_quick_scan\", \"rc\": 1}, {\"tool\": \"run_audit\", \"rc\": 1}], \"deep_checklist_ok\": true, \"deep_sql_deep_ok\": false, \"models\": {\"planner\": \"step-3.7-flash\", \"judgment\": \"step-3.7-flash\", \"master\": \"step-3.7-flash\", \"technical_v2\": \"step-3.7-flash\", \"technical_v3\": \"step-3.7-flash\", \"planner_hint\": \"step-3.7... (truncated 1066 chars)",
+      "content": "{\"ok\": false, \"quality_green\": false, \"issues\": [\"tool_rc_nonzero:run_quick_scan:1\", \"tool_rc_nonzero:run_audit:1\", \"deep:sql_deep_unavailable:ghidrasql_server_died\"], \"failed_tools\": [{\"tool\": \"run_quick_scan\", \"rc\": 1}, {\"tool\": \"run_audit\", \"rc\": 1}], \"deep_checklist_ok\": true, \"deep_sql_deep_ok\": false, \"models\": {\"planner\": \"configured-llm\", \"judgment\": \"configured-llm\", \"master\": \"configured-llm\", \"technical_v2\": \"configured-llm\", \"technical_v3\": \"configured-llm\", \"planner_hint\": \"configured-llm... (truncated 1066 chars)",
       "ts": "2026-08-06T02:02:33Z"
     },
     {
@@ -488,13 +488,13 @@
     "deep_checklist_ok": true,
     "deep_sql_deep_ok": false,
     "models": {
-      "planner": "step-3.7-flash",
-      "judgment": "step-3.7-flash",
-      "master": "step-3.7-flash",
-      "technical_v2": "step-3.7-flash",
-      "technical_v3": "step-3.7-flash",
-      "planner_hint": "step-3.7-flash",
-      "judgment_hint": "step-3.7-flash"
+      "planner": "configured-llm",
+      "judgment": "configured-llm",
+      "master": "configured-llm",
+      "technical_v2": "configured-llm",
+      "technical_v3": "configured-llm",
+      "planner_hint": "configured-llm",
+      "judgment_hint": "configured-llm"
     },
     "checks": {
       "master_v2": {

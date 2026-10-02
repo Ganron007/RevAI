@@ -3,8 +3,8 @@
   "sha256": "706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50",
   "sample_path": "/opt/samples/incoming/manual-drop/lumma_sample.exe",
   "mode": "langgraph_react",
-  "planner_model": "step-3.7-flash",
-  "judgment_model": "step-3.7-flash",
+  "planner_model": "configured-llm",
+  "judgment_model": "configured-llm",
   "with_dynamic": false,
   "provenance": {
     "project": "RevAI",
@@ -296,7 +296,7 @@
     {
       "type": "tool_message",
       "name": "check_quality",
-      "content": "{\"ok\": true, \"quality_green\": true, \"issues\": [\"deep:sql_deep_unavailable:ghidrasql_server_died\"], \"failed_tools\": [], \"deep_checklist_ok\": true, \"deep_sql_deep_ok\": false, \"models\": {\"planner\": \"step-3.7-flash\", \"judgment\": \"step-3.7-flash\", \"master\": \"step-3.7-flash\", \"technical_v2\": \"step-3.7-flash\", \"technical_v3\": \"step-3.7-flash\", \"planner_hint\": \"step-3.7-flash\", \"judgment_hint\": \"step-3.7-flash\"}, \"checks\": {\"master_v2\": {\"ok\": true, \"label\": \"master_v2\", \"source\": \"llm_judge\", \"chars\": ... (truncated 929 chars)",
+      "content": "{\"ok\": true, \"quality_green\": true, \"issues\": [\"deep:sql_deep_unavailable:ghidrasql_server_died\"], \"failed_tools\": [], \"deep_checklist_ok\": true, \"deep_sql_deep_ok\": false, \"models\": {\"planner\": \"configured-llm\", \"judgment\": \"configured-llm\", \"master\": \"configured-llm\", \"technical_v2\": \"configured-llm\", \"technical_v3\": \"configured-llm\", \"planner_hint\": \"configured-llm\", \"judgment_hint\": \"configured-llm\"}, \"checks\": {\"master_v2\": {\"ok\": true, \"label\": \"master_v2\", \"source\": \"llm_judge\", \"chars\": ... (truncated 929 chars)",
       "ts": "2026-08-06T03:47:06Z"
     },
     {
@@ -346,13 +346,13 @@
     "deep_checklist_ok": true,
     "deep_sql_deep_ok": false,
     "models": {
-      "planner": "step-3.7-flash",
-      "judgment": "step-3.7-flash",
-      "master": "step-3.7-flash",
-      "technical_v2": "step-3.7-flash",
-      "technical_v3": "step-3.7-flash",
-      "planner_hint": "step-3.7-flash",
-      "judgment_hint": "step-3.7-flash"
+      "planner": "configured-llm",
+      "judgment": "configured-llm",
+      "master": "configured-llm",
+      "technical_v2": "configured-llm",
+      "technical_v3": "configured-llm",
+      "planner_hint": "configured-llm",
+      "judgment_hint": "configured-llm"
     },
     "checks": {
       "master_v2": {

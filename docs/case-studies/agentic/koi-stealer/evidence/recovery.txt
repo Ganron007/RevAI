@@ -1,7 +1,7 @@
 {
   "sha256": "e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819",
   "sample_path": "/opt/samples/corpus/incoming/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/koi_sample.exe",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "generated_at": 1786174045.719746,
   "triage": {
     "total_functions": 3,
@@ -31,7 +31,7 @@
       "prompt_length": 2543,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-480e3a0800a221e82520590a4d9d8fb3.019fe043fd2b728b943bdba79bd75487",
         "system_fingerprint": null,
         "prompt_tokens": 698,
@@ -73,7 +73,7 @@
       "prompt_length": 2505,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-201a8bc9bf9ecd9412158f1f51ac5d22.019fe043fd7d71169fde17baaf18e09b",
         "system_fingerprint": null,
         "prompt_tokens": 696,
@@ -98,7 +98,7 @@
       "prompt_length": 2463,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-5846d5af473bb60b36172ad922ba8493.019fe043fd1d76ed91d485f85e9b8da9",
         "system_fingerprint": null,
         "prompt_tokens": 681,
@@ -126,7 +126,7 @@
         "prompt_length": 2543,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-480e3a0800a221e82520590a4d9d8fb3.019fe043fd2b728b943bdba79bd75487",
           "system_fingerprint": null,
           "prompt_tokens": 698,
@@ -168,7 +168,7 @@
         "prompt_length": 2505,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-201a8bc9bf9ecd9412158f1f51ac5d22.019fe043fd7d71169fde17baaf18e09b",
           "system_fingerprint": null,
           "prompt_tokens": 696,
@@ -193,7 +193,7 @@
         "prompt_length": 2463,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-5846d5af473bb60b36172ad922ba8493.019fe043fd1d76ed91d485f85e9b8da9",
           "system_fingerprint": null,
           "prompt_tokens": 681,

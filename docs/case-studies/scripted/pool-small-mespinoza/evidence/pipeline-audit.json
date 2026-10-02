@@ -124,7 +124,7 @@
         "score": 78,
         "agreement": "llm_and_v1_agree",
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "key_evidence": [
           {
             "source": "malcat",
@@ -803,9 +803,9 @@
           "pipeline_audit_all_green": false
         },
         "models": {
-          "master": "step-3.7-flash",
-          "technical_v2": "step-3.7-flash",
-          "technical_v3": "step-3.7-flash",
+          "master": "configured-llm",
+          "technical_v2": "configured-llm",
+          "technical_v3": "configured-llm",
           "planner_hint": "configured via env",
           "judgment_hint": "configured via env"
         }
@@ -908,7 +908,7 @@
     "llm": {
       "triage": {
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "verdict": "Malicious",
         "family": "Mespinoza (ransomware)",
         "confidence": 78,
@@ -981,7 +981,7 @@
       },
       "publish": {
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "excerpt": "{\n  \"title\": \"Malware Analysis Report: ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7 (Mespinoza Ransomware)\",\n  \"mark\": \"## Executive Summary\\n\\nThis report analyzes the PE64 sample with SHA256 `ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7`, collected under the pool project with filename `2026-07-03_064480afd4e5e59c783aec43ab1de3ef_mespinoza`. The upstream triage verdict (source: triage verdict.json) classifies the sample as **Malicious** with a score of 78, belonging to the Mespinoza ransomware family. The sample is a tampered, trojanized version of the legitimate Microsoft Skype for Business (Lync) client, masquerading as official Microsoft software to evade detection.\\n\\nKey findings include: (1) tampering indicators including an invalid PE checksum, lack of valid Microsoft signature, 60 delay imports, and large function gaps (source: malcat); (2) high-signal malicious imports including `IsDebuggerPresent` (anti-debug), `RegSetValueExW` (persistence), `VirtualProtect` (memory manipulation), and `LoadLibraryW`/`GetProcAddress` (dynamic code execution) (source: pe_imports); (3) capa rule matches for file system modification (create directory, move file), process manipulation (terminate process, create thread), and registry modification (set registry value) consistent with ransomware behavior (source: capa); (4) YARA matches for anti-debug, keylogging, registry manipulation, and embedded overlay content (source: yara); and (5) OIDs for asymmetric encryption (`sha1WithRSAEncryption`, `signedData`) consistent with ransomware file encryption capabilities (source: malcat).\\n\\nA separate deep-dive assessment (source: deep-dive.json) classified the sample as suspicious, assessing it as a legitimate tampered Lync binary with no ransomware artifacts. This conflicting assessment is noted, but the upstream triage verdict is authoritative per analysis constraints, as it is supported by independent high-signal behavioral indicators from multiple tools.\\n\\nNo dynamic runtime analysis (Speakeasy/Frida) was performed, so all behavioral claims are derived from static analysis and are marked as present-but-unused unless explicitly confirmed.\\n\\n## 1. Sample Identification\\n\\n| Attribute | Value | Source |\\n|-----------|-------|--------|\\n| SHA256 | ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7 | Sample metadata |\\n| Sample Path | /opt/samples/corpus/pool/ba3558c89e9ff2e308d3191c9b8717c6462a0763a46f25730f09ab56e55c65c7/2026-07-03_064480afd4e5e59c783aec43ab1de3ef_mespinoza | Sample metadata |\\n| Project Name | pool | Sample metadata |\\n| File Type | PE64 (x86-64) GUI executable | malcat |\\n| Original Filename | Skype for Business.exe | malcat |\\n| Reported Company | Microsoft Corporation | malcat |\\n| Entropy | 45 | malcat |\\n| UPX Packed | No | UPX probe |\\n| .NET Assembly | No | dnfile/monodis |\\n\\nThe filename suffix `_mespinoza` indicates the sample was collected in a context associated with the Mespinoza ransomware family. The sample masquerades as a legitimate Microsoft Skype for Business binary, but tampering indicators confirm it is not a genuine Microsoft-signed build.\\n\\n## 2. Classification\\n\\n| Field | Value |\\n|-------|-------|\\n| Verdict | Malicious |\\n| Family | Mespinoza (ransomware) |\\n| Confidence | 78 (upstream triage) |\\n| Type | Trojanized legitimate binary (Lync/Skype for Business) |\\n\\nClassification is based on the upstream triage verdict (source: triage verdict.json) which \n\u2026 [50077 more chars]"
       }
     },

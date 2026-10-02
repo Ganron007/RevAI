@@ -44,7 +44,7 @@
   ],
   "summary": "This is a UPX-packed x64 PE file with strong static indicators of malicious intent. UPX packing is confirmed by both YARA and capa, and the sample contains high-signal imports associated with process injection and runtime API resolution, numerous anomalies consistent with packed malware, and fully obfuscated static strings. The underlying payload has not been unpacked, so the specific malware family cannot be determined, but the static evidence strongly indicates the sample is malicious packed malware.",
   "source": "llm_judge",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",

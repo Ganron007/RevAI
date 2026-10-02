@@ -14,7 +14,7 @@
 - **cross_engine_notes**: Ghidra and IDA both report 28 functions, indicating consistent analysis. MalCat provides static anomalies like XorInLoop and BigBufferNoXrefMediumToHighEntropy, suggesting obfuscation and crypto data. Capa detects anti-VM strings for sandbox evasion, and YARA matches a ransomware dropper rule. VirusTotal corroborates with 67 malicious detections and ransomware threat category. FLOSS strings include base64-encoded data and sensitive APIs for memory manipulation.
 - **summary**: The sample is malicious with high confidence. Key indicators include YARA rule match for ransomware dropper, capa detection of anti-VM evasion, and VirusTotal's widespread malicious detections. Anomalies like XOR loops and base64 strings point to obfuscation and encryption routines, while FLOSS-revealed APIs suggest memory manipulation for malicious purposes. Behavioral signals such as sandbox evasion and environment detection confirm hostile intent beyond mere obfuscation.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

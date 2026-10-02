@@ -11,6 +11,6 @@
     "llm_candidates": 0
   },
   "function_results": {},
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "generated_at": "2026-08-10T06:19:45.260307+00:00"
 }

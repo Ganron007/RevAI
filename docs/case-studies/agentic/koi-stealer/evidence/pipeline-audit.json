@@ -124,7 +124,7 @@
         "score": 35,
         "agreement": "llm_v1_disagree",
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "key_evidence": [
           {
             "source": "malcat",
@@ -763,11 +763,11 @@
           "pipeline_audit_all_green": true
         },
         "models": {
-          "master": "step-3.7-flash",
-          "technical_v2": "step-3.7-flash",
-          "technical_v3": "step-3.7-flash",
-          "planner_hint": "step-3.7-flash",
-          "judgment_hint": "step-3.7-flash"
+          "master": "configured-llm",
+          "technical_v2": "configured-llm",
+          "technical_v3": "configured-llm",
+          "planner_hint": "configured-llm",
+          "judgment_hint": "configured-llm"
         }
       },
       "verdict_lock": {
@@ -868,7 +868,7 @@
     "llm": {
       "triage": {
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "verdict": "Suspicious",
         "family": "Unknown (masqueraded/modified Inno Setup installer, potential malicious delivery vehicle but no confirmed malicious payload)",
         "confidence": 35,
@@ -961,7 +961,7 @@
       },
       "publish": {
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "excerpt": "{\n  \"title\": \"Malware Analysis Report: e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819 (koi_sample.exe)\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-08 07:30:27 UTC\\n\\n# Verdict sources (multi-source)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | Suspicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | malicious |\\n\\n- **Locked over publish LLM:** no\\n\\n## Executive Summary\\nThis report analyzes the 32-bit x86 PE sample `koi_sample.exe` (SHA256: e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819), identified as a masqueraded, obfuscated Inno Setup installer. Static analysis reveals a mismatch between the claimed software vendor (\\\"Pringle\\\" in version info) and the code signing certificate subject (\\\"Zhengzhou Lichang Network Technology Co., Ltd.\\\"), indicating potential origin masquerade (source: triage verdict). The sample exhibits heavy control-flow obfuscation (19 XOR-in-loop anomalies, 30 spaghetti functions, 12 high cross-reference looping functions per MalCat) and delay-load stubs for Windows system APIs (source: agentic_recover_v4). High-risk static capabilities include privilege escalation, registry manipulation, process creation, and memory manipulation (VirtualAlloc/VirtualProtect), which are commonly abused by malicious delivery vehicles (source: ghidra_query, pe_imports, capa). No confirmed malicious payload, C2 infrastructure, or runtime malicious behavior was identified in static analysis, but the combination of masquerade, obfuscation, and hostile capabilities warrants classification as Suspicious per upstream triage (source: triage verdict). Dynamic analysis is required to confirm the presence of a bundled payload or runtime malicious actions.\\n\\n## 1. Sample Identification\\n| Attribute | Value |\\n|-----------|-------|\\n| SHA256 | e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819 |\\n| Sample Path | /opt/samples/corpus/incoming/e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819/koi_sample.exe |\\n| Project Name | incoming |\\n| File Type | PE32 (32-bit x86) (source: MalCat) |\\n| Entropy | 7.184 (high, indicating obfuscation/packing) (source: MalCat) |\\n| UPX Status | Not packed (UPX probe returned 0 files) (source: UPX unpack evidence) |\\n| XOR Search Result | XOR 00 mask found at offset 0x0, recovering partial string \\\"This program must be r\\\" (consistent with Inno Setup loader message) (source: xorsearch evidence) |\\n| Version Info | Product name: \\\"Pringle Setup\\\" (source: rule.yara.json strings) |\\n| Code Signing Certificate Subject | Zhengzhou Lichang Network Technology Co., Ltd. (source: triage verdict) |\\n\\nThe sample is a 32-bit Windows PE file with high entropy, consistent with obfuscated or packed content, though UPX did not identify a UPX packer layer. The partial recovered XOR string matches the standard Inno Setup loader error message, confirming the sample is based on the Inno Setup installer framework. A critical discrepancy exists between the claimed vendor (\\\"Pringle\\\" in version metadata) and the code signing certificate issuer, indicating the sample is masqueraded to hide its true origin (source: triage verdict).\\n\\n## 2. Classification\\n| Field | Value \n\u2026 [35833 more chars]"
       }
     },

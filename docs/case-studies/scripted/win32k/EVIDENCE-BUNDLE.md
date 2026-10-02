@@ -14,7 +14,7 @@
 - **cross_engine_notes**: Multiple engines (Ghidra, IDA, MalCat, capa, YARA, pe_imports) converge on a DLL with extensive C2, credential theft, and persistence capabilities. The sample uses HTTP for C2 (wininet APIs, 'http://icanhazip.com'), cryptographic APIs for credential theft (BCrypt, CryptoAPI), process injection (CreateRemoteThread), and registry manipulation for persistence. High entropy in .rsrc section suggests embedded payloads. VirusTotal confirms 55/72 detections as Dyreza/Battdil trojan.
 - **summary**: This 64-bit DLL (win32k.dll) is identified as Dyreza/Battdil trojan with high confidence (95/100). The sample exhibits comprehensive malicious capabilities: HTTP-based C2 communication using wininet APIs with external IP check (http://icanhazip.com), credential theft via cryptographic APIs (BCrypt, CryptoAPI), process injection via CreateRemoteThread, registry manipulation for persistence, and system reconnaissance. Multiple engines confirm behavioral intent: Ghidra/IDA show HTTP and crypto API imports, MalCat identifies crypto/downloader anomalies and high-entropy resources, capa maps to MITRE ATT&CK techniques for defense evasion, discovery, and persistence, YARA matches network and privilege escalation rules, and pe_imports confirms high-signal APIs. VirusTotal reports 55/72 detections as Dyreza/Battdil. The sample's obfuscation (XOR loops, high entropy) is secondary to its clear behavioral intent for credential theft, C2 communication, and persistence.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

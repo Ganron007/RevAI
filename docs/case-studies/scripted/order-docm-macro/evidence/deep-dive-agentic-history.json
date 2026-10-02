@@ -94,8 +94,8 @@
   ],
   "source": "deep_dive_agentic",
   "engine": "langgraph",
-  "planner_model": "mimo-v2.5-pro",
-  "verdict_model": "mimo-v2.5-pro",
+  "planner_model": "configured-llm",
+  "verdict_model": "configured-llm",
   "steps_used": 13,
   "history": [
     {

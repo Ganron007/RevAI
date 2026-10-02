@@ -74,7 +74,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "The WAV file exhibits high entropy and contains strings matching YARA rules for domain, IP, base64, and malicious document patterns, suggesting embedded malicious content. VirusTotal corroborates with trojan detections, indicating malicious intent despite the non-standard file type.",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",
@@ -758,7 +758,7 @@ This section details the static identifiers for the sample with SHA-256 hash `0f
   "score": 85,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "yara",

@@ -55,7 +55,7 @@
   ],
   "summary": "The DLL 'ishelp.dll' exhibits malicious behavior including process injection via CreateRemoteThread, registry-based persistence, privilege escalation, and an embedded payload. It uses anti-analysis techniques and matches known malware patterns, with strong consensus from multiple analysis engines and external threat intelligence.",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",

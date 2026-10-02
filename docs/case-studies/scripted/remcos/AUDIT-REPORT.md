@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`step-3.7-flash` verdict=`Malicious` confidence=`100`
+- source=`llm_judge` model=`configured-llm` verdict=`Malicious` confidence=`100`
 - key_evidence_count=`15`
 
 ```json
@@ -153,7 +153,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`step-3.7-flash` verdict=`None` confidence=`None`
+- source=`llm_judge` model=`configured-llm` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -925,7 +925,7 @@ This sample is a commercially availa
   "score": 100,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "malcat",

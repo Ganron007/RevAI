@@ -1052,7 +1052,7 @@ code_r0x0001400be79c:
 - **sha256**: `669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2`
 - **generated_at**: 2026-08-05T09:32:49.722573+00:00
 - **verdict_source**: llm_judge
-- **model**: step-3.7-flash
+- **model**: configured-llm
 - **RAG**: bge-m3 (35,302 records, top-3 per section)
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)

@@ -214,6 +214,21 @@ _MODEL_NAMES = ("stepfun", "step-3", "step-5", "mimo", "deepseek", "gpt-4",
 _SECRET_VALUE_RE = re.compile(r"(?:API_KEY|TOKEN|SECRET|PASSWORD)\s*[=:]\s*(\S+)", re.I)
 _PLACEHOLDER_RE = re.compile(r"[<>${}%]|^$|your|example|placeholder|redacted|<|xxx", re.I)
 
+#: Suffixes the hygiene scan reads.
+#:
+#: `.txt` and `.jsonl` are here because the published case studies ship 442 .txt
+#: and 56 .jsonl files (recovery.txt, audit.jsonl) that recorded the model name
+#: just as the .json and .md ones did. Scanning only the first five suffixes
+#: would have left the largest non-JSON evidence surface unchecked while still
+#: reporting a pass -- the same shape as skipping case-studies entirely.
+_SCANNED_SUFFIXES = (".py", ".md", ".svg", ".sh", ".json",
+                     ".txt", ".jsonl", ".yml", ".yaml", ".yar")
+
+#: Suffixes whose CONTENT IS PUBLISHED, and so must not name a provider/model.
+#: A subset of _SCANNED_SUFFIXES: `.py` is source, not published output, and
+#: this file has to contain the tokens to police them.
+_PUBLISHED_SUFFIXES = (".md", ".json", ".jsonl", ".txt", ".yml", ".yaml", ".yar")
+
 
 def _looks_like_secret(value: str) -> bool:
     """A literal secret, not a placeholder, template or code expression."""
@@ -235,9 +250,15 @@ def check_hygiene() -> None:
     # harness itself necessarily contains the forbidden tokens as its patterns.
     skip_names = {"AGENTS.md", "CHANGELOG.md", "verify_pipeline.py"}
     for path in REPO.rglob("*"):
-        if not path.is_file() or path.suffix not in (".py", ".md", ".svg", ".sh", ".json"):
+        if not path.is_file() or path.suffix not in _SCANNED_SUFFIXES:
             continue
-        if any(part in ("node_modules", ".git", "case-studies", "internal")
+        # `case-studies` used to be skipped here, which is how 2260 published
+        # files carried six model names (mimo-v2.5-pro, step-3.7-flash, ...)
+        # through a harness that reported 10/10. The skip is gone: the case
+        # studies ARE published, so they are exactly the content this check
+        # exists to police. They were scrubbed on 2026-10-03 and the scan is
+        # what keeps them scrubbed.
+        if any(part in ("node_modules", ".git", "internal")
                for part in path.parts):
             continue
         if path.name in skip_names:
@@ -248,7 +269,14 @@ def check_hygiene() -> None:
         for token in _FORBIDDEN:
             if token in text:
                 bad.append(f"{rel}: {token}")
-        if path.suffix == ".md" and "docs/" in str(rel):
+        if path.suffix in _PUBLISHED_SUFFIXES and "docs/" in rel.as_posix():
+            # Every published artefact, not just the rendered markdown.
+            # Gating this on `.md` is how 2260 case-study files kept six model
+            # names while the harness reported 10/10: the bulk of the leak was
+            # in .json evidence (2415 + 3327 occurrences of mimo-v2.5* alone),
+            # plus 56 .jsonl and 442 .txt files, none of which this check ever
+            # looked at. `.py` is excluded on purpose -- source comments are a
+            # separate rule, and this file necessarily contains the tokens.
             for token in _MODEL_NAMES:
                 if token.lower() in text.lower():
                     bad.append(f"{rel}: model name '{token}'")

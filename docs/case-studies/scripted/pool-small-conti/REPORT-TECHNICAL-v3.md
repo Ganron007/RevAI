@@ -287,7 +287,7 @@ Monitor for mutex creation of `Global\BeaconMutex_12345` to detect running insta
 - **cross_engine_notes**: IDA is unavailable due to validation failure, so all analysis relies on Ghidra, Malcat, capa, pe_imports, YARA, and FLOSS. Ghidra's imports table is empty for this sample, so import data is sourced from Malcat and pe_imports to avoid data gaps. String data is combined from Ghidra (5317 strings) and Malcat (100 strings) for maximum coverage.
 - **summary**: This is a malicious 64-bit Windows PE sample, likely a Conti ransomware loader/initial access payload. It is heavily obfuscated (98 entropy, RC4 encryption) and exhibits classic process injection behavior: it drops a DLL to a temp path, injects it into the explorer.exe process using VirtualAllocEx, WriteProcessMemory, and CreateRemoteThread. It uses a Telegram Bot API endpoint for C2 communications, contains an embedded secondary PE payload, and has capabilities for process enumeration and file operations. All analysis sources (Malcat, Ghidra, capa, pe_imports, YARA) corroborate malicious behavior.
 - **source**: llm_judge
-- **model**: step-3.7-flash
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

@@ -3,8 +3,8 @@
   "sha256": "669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2",
   "sample_path": "/opt/samples/incoming/manual-drop/pool/mid/2026-07-03_02c9e5186bff0f868d7d7b5028b42753_mespinoza",
   "mode": "langgraph_react",
-  "planner_model": "step-3.7-flash",
-  "judgment_model": "step-3.7-flash",
+  "planner_model": "configured-llm",
+  "judgment_model": "configured-llm",
   "with_dynamic": false,
   "started_at": "2026-08-05T08:03:22Z",
   "finished_at": "2026-08-05T08:03:22Z",
@@ -247,13 +247,13 @@
     "deep_checklist_ok": true,
     "deep_sql_deep_ok": true,
     "models": {
-      "planner": "step-3.7-flash",
-      "judgment": "step-3.7-flash",
+      "planner": "configured-llm",
+      "judgment": "configured-llm",
       "master": null,
       "technical_v2": null,
       "technical_v3": null,
-      "planner_hint": "step-3.7-flash",
-      "judgment_hint": "step-3.7-flash"
+      "planner_hint": "configured-llm",
+      "judgment_hint": "configured-llm"
     },
     "checks": {
       "master_v2": {

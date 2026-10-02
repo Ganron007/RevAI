@@ -124,7 +124,7 @@
         "score": 87,
         "agreement": "llm_and_v1_agree",
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "key_evidence": [
           {
             "source": "capa",
@@ -748,9 +748,9 @@
           "pipeline_audit_all_green": false
         },
         "models": {
-          "master": "step-3.7-flash",
-          "technical_v2": "step-3.7-flash",
-          "technical_v3": "step-3.7-flash",
+          "master": "configured-llm",
+          "technical_v2": "configured-llm",
+          "technical_v3": "configured-llm",
           "planner_hint": "configured via env",
           "judgment_hint": "configured via env"
         }
@@ -853,7 +853,7 @@
     "llm": {
       "triage": {
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "verdict": "Malicious",
         "family": "Lumma Stealer (infostealer) \u2014 sample is an NSIS installer/dropper for the Lumma payload, consistent with the sample filename and matching behavioral profile of keylogging, credential theft, registry manipulation, privilege escalation, and system enumeration.",
         "confidence": 87,
@@ -977,7 +977,7 @@
       },
       "publish": {
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "excerpt": "{\n  \"title\": \"Malware Analysis Report: Lumma Stealer (NSIS Dropper) \\u2014 SHA256 706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-08 08:28:07 UTC\\n\\n# Classification (multi-source \\u2014 V5.12)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final (locked)** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | Malicious |\\n| Deep dive | Malicious |\\n| Publish LLM (claimed) | benign |\\n\\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: keylogger, win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.\\n- **Family (triage):** Lumma Stealer (infostealer) \\u2014 sample is an NSIS installer/dropper for the Lumma payload, consistent with the sample filename and matching behavioral profile of keylogging, credential theft, registry manipulation, privilege escalation, and system enumeration.\\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\\n\\n---\\n\\n### Publish LLM narrative (unedited)\\n\\n# Malware Analysis Report: Lumma Stealer (NSIS Dropper) \\u2014 SHA256 706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50\\n\\n## Executive Summary\\nThis report analyzes a 32-bit Windows PE executable (SHA256: 706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50) identified as a malicious NSIS installer/dropper for the Lumma Stealer infostealer family. The sample received a triage score of 87/100, with a confirmed malicious verdict driven by multiple behavioral indicators of credential theft, system enumeration, and privilege escalation. The sample is signed with a code signing certificate issued to Mozilla Corporation, which is likely stolen to masquerade as legitimate software and bypass endpoint detection. Static analysis confirms the sample contains a 1.05MB NSIS installer overlay that bundles the Lumma payload, along with hardcoded command-and-control (C2) indicators and capabilities for keylogging, screen capture, registry manipulation, token-based privilege escalation, and file system enumeration. Dynamic analysis did not observe persistence, anti-analysis, or defense impairment behaviors, but static code analysis confirms these capabilities are present in the sample. No full C2 address extraction was possible during analysis due to the embedded NSIS payload not being fully decompressed. (source: triage_verdict, deep_dive, malcat, yara, capa)\\n\\n## 1. Sample Identification\\nThe analyzed sample is a 32-bit Windows GUI PE executable with the following identifying attributes:\\n- SHA256: 706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50\\n- Sample path: /opt/samples/corpus/incoming/706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50/lumma_sample.exe\\n- File type: Nullsoft PiMP self-extracting (SFX) installer with embedded NSIS overlay (1.05MB, offset 0x523776)\\n- Digital signature: Issued to Mozilla Corporation, likely stolen for masquerading purposes\\n- Entropy: 216 (high, consistent with packed/obfuscated malicious code)\\n- UPX status: Not packed with UPX, but uses a custom SFX stub for payload bundling\\nThe sample filename explicitly ref\n\u2026 [23904 more chars]"
       }
     },

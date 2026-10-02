@@ -86,7 +86,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "The sample exhibits clear malicious behaviors including file downloading via URLDownloadToFile, anti-debugging checks, and process creation, as evidenced by imports and behavioral rules. Combined with obfuscation techniques (XOR encoding, spaghetti functions) and high VirusTotal detections, it is identified as a trojan downloader likely belonging to the usbles26 family, with intent to download and execute additional payloads.",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",
@@ -1008,7 +1008,7 @@ The following table summarizes key identifiers:
   "score": 85,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "malcat",

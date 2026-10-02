@@ -190,7 +190,7 @@ Specific environment details such as OS, versions, or network settings are not p
 - **cross_engine_notes**: Ghidra analysis failed entirely due to server errors; IDA reported zero functions and only one string, providing minimal insight; Malcat revealed the file is text/utf8 with Base64 constants and numerous obfuscated strings indicative of encoding; YARA matched six rules including behavioral indicators like domain and Android Meterpreter; VirusTotal shows high malicious detections (44/61 engines) with threat labels suggesting a trojan downloader.
 - **summary**: The JavaScript file 'loveyou.js' shows significant obfuscation through Base64 encoding and contains strings matching YARA rules for malware indicators such as Android Meterpreter and domain patterns. External threat intelligence from VirusTotal confirms a high malicious detection rate, classifying it as a trojan downloader. Despite tool limitations (Ghidra failure, IDA low function count), the behavioral evidence from YARA and Malcat points to malicious intent, warranting a malicious verdict.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

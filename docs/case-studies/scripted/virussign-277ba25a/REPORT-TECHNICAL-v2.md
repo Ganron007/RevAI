@@ -307,7 +307,7 @@ The following unknowns remain due to tooling limitations, lack of observed runti
 - **cross_engine_notes**: Ghidra failed to initialize due to a project ownership (NotOwnerException) error, and IDA was missing the required idasql binary, so no function, import, or decompilation data was available from those two engines. All usable static analysis evidence was sourced from capa, YARA, FLOSS, and pe_imports, which provided consistent, corroborating indicators of malicious behavior.
 - **summary**: This is a packed, obfuscated PE sample with multiple encryption capabilities (RC4, Chaskey, Speck) and system language discovery functionality, consistent with an information stealer or remote access trojan. YARA and FLOSS evidence indicates potential C2-related artifacts (domains, IPs, base64 data). While Ghidra and IDA analysis failed due to tooling errors, cross-engine evidence from capa, YARA, FLOSS, and pe_imports provides strong confirmation of malicious behavior.
 - **source**: llm_judge
-- **model**: step-3.7-flash
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

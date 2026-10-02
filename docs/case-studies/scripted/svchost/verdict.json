@@ -67,7 +67,7 @@
   ],
   "summary": "The sample is a 32-bit Windows executable (svchost.exe) identified as Locky ransomware. It exhibits multiple malicious behaviors including file encryption using cryptographic APIs (e.g., CryptEncrypt), deletion of volume shadow copies via vssadmin.exe, HTTP-based C2 communication, and registry modifications for persistence. Evidence from static analysis, YARA rules (direct Locky match), decompilation (references to ransom instructions), and external threat intelligence (VirusTotal) confirms its ransomware nature with high confidence.",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",

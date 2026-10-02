@@ -252,7 +252,7 @@ The sample contains a digital signature block at offset 0x1128685 (source: yara,
 - **cross_engine_notes**: Ghidra failed to execute due to a project ownership (NotOwnerException) error, IDA is unavailable due to a missing idasql binary, and Malcat crashed with a top-level error, so no function-level, decompilation, control flow graph, or static profile data is available from these tools. Reliable analysis data was successfully retrieved from pe_imports, capa, yara, and floss. Note that Ghidra's empty imports table is a known limitation for stripped/mixed-mode PEs and does not indicate a lack of malicious imports, as confirmed by the 171 high-signal imports retrieved via pe_imports.
 - **summary**: This sample is a packed Windows PE file identified as Lumma Stealer (LummaC2), a known info-stealing malware family. The sample exhibits all core TTPs of Lumma: file and directory discovery, registry manipulation, system information gathering, keylogging, process enumeration, privilege escalation, and XOR obfuscation. It is packed with a Nullsoft PiMP self-extracting stub to evade static analysis, and uses dynamic API resolution to hide malicious functionality. The sample filename directly references the Lumma family, and all observed behavioral indicators align with known Lumma Stealer operation. No clean or legitimate functionality was identified in the available analysis data.
 - **source**: llm_judge
-- **model**: step-3.7-flash
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

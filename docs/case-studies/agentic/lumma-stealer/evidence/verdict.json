@@ -90,7 +90,7 @@
   ],
   "summary": "This is a malicious 32-bit Windows PE sample, identified as an NSIS installer/dropper for Lumma Stealer (infostealer). The sample is signed with a likely stolen code signing certificate issued to Mozilla Corporation to masquerade as legitimate software. Static analysis confirms multiple malicious behavioral capabilities: keylogging via polling, screen capture, registry enumeration and modification (for persistence and credential theft), privilege escalation via token manipulation, process and file enumeration, and ability to launch child processes. The sample contains a 1.05MB NSIS installer overlay where the malicious payload resides, which was not fully analyzed by Ghidra leading to empty function/import counts in that tool. Obfuscation signals (XOR encoding, high entropy) are present but are not the basis for the malicious verdict, which is driven by confirmed hostile behavioral intent consistent with infostealer malware.",
   "source": "llm_judge",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",

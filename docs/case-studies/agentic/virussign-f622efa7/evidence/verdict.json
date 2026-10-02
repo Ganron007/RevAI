@@ -37,7 +37,7 @@
   ],
   "summary": "The sample is a 32-bit PE executable packed with UPX, as confirmed by capa, YARA, and Malcat anomalies. It exhibits multiple indicators of obfuscation, including high entropy, packing anomalies, and suspicious API imports (VirtualProtect, VirtualAlloc). However, no clear behavioral malicious intent such as file destruction, persistence, or credential theft is present in the evidence. The packing and obfuscation alone are neutral signals, placing this sample in the suspicious category pending further analysis for actionable malicious behavior.",
   "source": "llm_judge",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "agreement": "llm_v1_disagree",
   "v1_verdict": {
     "verdict": "malicious",

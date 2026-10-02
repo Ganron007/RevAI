@@ -617,7 +617,7 @@ The following gaps remain due to limited dynamic analysis and incomplete static 
 - **cross_engine_notes**: All available analysis engines (Malcat, capa, pe_imports, YARA, FLOSS) provide consistent, overlapping evidence of malicious behavior with no conflicting indicators. Ghidra and IDA failed to process the sample due to server startup errors and missing idasql binaries, so no additional evidence is available from those tools, but the existing evidence is sufficient for a high-confidence verdict.
 - **summary**: This sample is a malicious PE file disguised as the legitimate Tencent GameLoop GameDownload.exe installer. It exhibits extensive obfuscation (entropy 157, XOR loops, spaghetti code, stack strings, Base64/AES encryption), sandbox/VM evasion, process injection, file download, C2 communication, registry persistence, and keylogging capabilities. It is tagged in the sample corpus with multiple malware families (DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca Stealer, Medusalocker, Njrat, Remcos, Revil), indicating it is likely a trojanized installer or multi-family loader/dropper. All available analysis tools (Malcat, capa, pe_imports, YARA, FLOSS) consistently identify malicious indicators, with no conflicting evidence. Ghidra and IDA analysis failed due to technical errors, but the existing evidence is sufficient for a high-confidence malicious verdict.
 - **source**: llm_judge
-- **model**: step-3.7-flash
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

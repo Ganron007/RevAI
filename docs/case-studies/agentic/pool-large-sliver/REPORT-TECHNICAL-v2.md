@@ -684,7 +684,7 @@ For Sliver C2 implants, monitor for ELF processes initiating unusual outbound TL
 - **cross_engine_notes**: Ghidra and IDA analysis failed due to processing errors (Ghidra could not locate the sample file in its project, IDA SQL tool was missing), so all static analysis evidence is sourced from Malcat, capa, and YARA. The sample is a high-entropy (108) packed ELF x64 binary, consistent with obfuscated malware. The filename suffix '_sliver' strongly indicates association with the Sliver C2 framework.
 - **summary**: This is a high-confidence malicious ELF x64 implant for the Sliver C2 framework. The sample is heavily obfuscated and packed (entropy 108), with confirmed implementation of multiple encryption, hashing, and obfuscation routines. Cross-engine evidence from Malcat, capa, and YARA all align with the behavior of a Sliver C2 implant, with no contradictory evidence present. Ghidra and IDA analysis was unavailable due to processing errors, but the available evidence is sufficient for a definitive malicious classification.
 - **source**: llm_judge
-- **model**: step-3.7-flash
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

@@ -114,8 +114,8 @@
   ],
   "source": "deep_dive_agentic",
   "engine": "langgraph",
-  "planner_model": "step-3.7-flash",
-  "verdict_model": "step-3.7-flash",
+  "planner_model": "configured-llm",
+  "verdict_model": "configured-llm",
   "steps_used": 16,
   "history": [
     {

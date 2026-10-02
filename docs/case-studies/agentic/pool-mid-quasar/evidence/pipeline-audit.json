@@ -124,7 +124,7 @@
         "score": 95,
         "agreement": "llm_and_v1_agree",
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "key_evidence": [
           {
             "source": "pe_imports",
@@ -732,11 +732,11 @@
           "pipeline_audit_all_green": true
         },
         "models": {
-          "master": "step-3.7-flash",
-          "technical_v2": "step-3.7-flash",
-          "technical_v3": "step-3.7-flash",
-          "planner_hint": "step-3.7-flash",
-          "judgment_hint": "step-3.7-flash"
+          "master": "configured-llm",
+          "technical_v2": "configured-llm",
+          "technical_v3": "configured-llm",
+          "planner_hint": "configured-llm",
+          "judgment_hint": "configured-llm"
         }
       },
       "verdict_lock": {
@@ -837,7 +837,7 @@
     "llm": {
       "triage": {
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "verdict": "MALICIOUS",
         "family": "Quasar RAT",
         "confidence": 95,
@@ -917,7 +917,7 @@
       },
       "publish": {
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "excerpt": "{\n  \"title\": \"Malware Analysis Report: Quasar RAT Sample (SHA256: cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36)\",\n  \"mark\": \"# Malware Analysis Report: Quasar RAT Sample (SHA256: cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36)\\n\\n## Executive Summary\\nThis report analyzes a 64-bit Windows PE executable (SHA256: cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36) identified as **MALICIOUS** with 98% confidence, belonging to the Quasar RAT family. Static analysis confirms the sample implements multiple hostile capabilities: three distinct persistence mechanisms (Windows service creation, registry Run key modification, shortcut creation in the user startup folder), obfuscation techniques (XOR encoding, obfuscated stackstrings, spaghetti code) to evade detection, and embedded command-and-control (C2) network indicators. The sample masquerades as a legitimate 'DWAgent service' via its version metadata. No evidence of active defense impairment (e.g., antivirus disabling, security log deletion) was identified in static analysis, and no runtime execution data was collected during analysis. All tool gates passed, with high-signal matches from capa, YARA, PE import analysis, and MalCat decompilation confirming malicious intent.\\n\\n## 1. Sample Identification\\n| Attribute | Value |\\n|-----------|-------|\\n| SHA256 | cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36 |\\n| Sample Path | /opt/samples/corpus/pool/cde83fd3b872670a8c56376ddba525e5744dcf615174ea894aa6a2d6c9094e36/2026-07-03_c6241aa893c4def80ccfadb200c3eeea_quasar-rat |\\n| Project Name | pool |\\n| File Type | 64-bit Windows PE executable (x86-64) |\\n| Packer Status | Not packed (UPX probe returned 0 matches, no packer signatures identified) (source: upx_unpack) |\\n| Entropy | 146 (high, consistent with obfuscated code and embedded data) (source: malcat, file_summary) |\\n| Version Info | FileDescription = 'DWAgent service' (masquerade as legitimate software) (source: malcat, file_summary.metadata) |\\n| .NET Status | Not a .NET assembly (source: dotnet_analyze) |\\n\\nThe sample is a native x86-64 Windows executable with no .NET components, and no evidence of UPX or other common packer usage.\\n\\n## 2. Classification\\n| Field | Value |\\n|-------|-------|\\n| Verdict | MALICIOUS |\\n| Family | Quasar RAT |\\n| Confidence | 98% |\\n| Tool Gate Status | Passed (all required tools: capa, yara, floss, malcat, pe_imports returned valid results) (source: triage_verdict.json, tool_gate) |\\n\\nThe MALICIOUS verdict is calibrated to behavioral intent evidence, not solely obfuscation signals. High-signal behavioral indicators include Windows service persistence, registry modification, shortcut creation, embedded C2 endpoints, and masquerading as legitimate software, all of which align with known Quasar RAT functionality. Obfuscation signals (XOR encoding, spaghetti code) are secondary supporting evidence, not the primary basis for the verdict (source: triage_verdict.json, deep-dive.json).\\n\\n## 3. Background & Family Lineage\\nQuasar RAT is a publicly available open-source remote access trojan, originally developed for legitimate remote administration purposes but frequently abused by threat actors for malicious campaigns including data exfiltration, credential theft, and lateral movement. This sample is a native x64 variant (rather than the more common .NET build) that acts as a dropper/loader for Quasar RAT functionality, consistent with known\n\u2026 [48501 more chars]"
       }
     },

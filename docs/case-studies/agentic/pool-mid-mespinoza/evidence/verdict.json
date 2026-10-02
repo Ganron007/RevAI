@@ -67,7 +67,7 @@
   ],
   "summary": "This sample is malware disguised as Skype for Business Recording Manager 2015 (legitimate Microsoft software). It exhibits multiple malicious behaviors: keylogging (T1056.001), persistence via Run registry keys (T1547.001), XOR obfuscation (T1027), and anti-debug techniques (T1622). The file shows high entropy (95) and numerous anomalies including CrossSectionJump, SpaghettiFunction, and XorInLoop patterns indicating heavy obfuscation/protection. Despite being signed with a Microsoft certificate, the behavioral evidence from capa, YARA, and static analysis confirms malicious intent. The combination of keylogging, persistence, and obfuscation techniques strongly suggests spyware or infostealer functionality.",
   "source": "llm_judge",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",

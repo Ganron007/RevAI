@@ -124,7 +124,7 @@
         "score": 92,
         "agreement": "llm_and_v1_agree",
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "key_evidence": [
           {
             "source": "ida",
@@ -846,11 +846,11 @@
           "pipeline_audit_all_green": true
         },
         "models": {
-          "master": "step-3.7-flash",
-          "technical_v2": "step-3.7-flash",
-          "technical_v3": "step-3.7-flash",
-          "planner_hint": "step-3.7-flash",
-          "judgment_hint": "step-3.7-flash"
+          "master": "configured-llm",
+          "technical_v2": "configured-llm",
+          "technical_v3": "configured-llm",
+          "planner_hint": "configured-llm",
+          "judgment_hint": "configured-llm"
         }
       },
       "verdict_lock": {
@@ -951,7 +951,7 @@
     "llm": {
       "triage": {
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "verdict": "Malicious",
         "family": "Conti ransomware",
         "confidence": 92,
@@ -1032,7 +1032,7 @@
       },
       "publish": {
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "excerpt": "{\n  \"title\": \"Malware Analysis Report: Conti Ransomware Loader/Injector (SHA256: 28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9)\",\n  \"mark\": \"## Executive Summary\\nThis report analyzes a malicious 64-bit Windows GUI PE sample (SHA256: 28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9) identified as a Conti ransomware loader and injector. Upstream triage assigned a malicious verdict with a score of 92 and family guess of Conti ransomware (source: triage verdict.json). Static and behavioral analysis confirm the sample implements process injection into the legitimate explorer.exe process, communicates with a Telegram Bot API command-and-control (C2) endpoint, contains an embedded 342016-byte secondary PE payload (likely the Conti ransomware encryptor), and includes capabilities for screen capture, file staging, and RC4-encrypted exfiltration via a SOCKS5 proxy. No persistence mechanisms, defense impairment activities, or credential theft capabilities were observed in static or behavioral analysis, and the initial access vector for the sample is unknown. All behavioral indicators are corroborated across Ghidra, capa, YARA, MalCat, and pe_imports analysis, with no evidence of benign functionality.\\n\\n## 1. Sample Identification\\n| Property | Value |\\n|----------|-------|\\n| SHA256 | 28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9 |\\n| Sample Path | /opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti |\\n| Project Name | pool |\\n| File Type | 64-bit Windows GUI PE, with overlay and SEH enabled (source: deep-dive.json, MalCat) |\\n| Entropy | 98 (high, but not indicative of packing, as UPX unpacking failed and no packer signatures were detected) (source: MalCat, UPX unpack evidence) |\\n| Packing | Not packed: UPX probe returned 0 files tested, xorsearch only identified standard DOS stub XOR patterns with no obfuscated malicious strings (source: UPX unpack evidence, xorsearch evidence) |\\n| .NET Status | Not a .NET assembly (source: .NET analysis evidence) |\\n| Triage Verdict | Malicious, score 92, family guess Conti ransomware (source: triage verdict.json) |\\n\\n## 2. Classification\\nVerdict: **Malicious**\\nFamily: Conti ransomware (loader/injector component)\\nConfidence: High (90%, per deep-dive.json)\\nThis classification is based on explicit behavioral intent evidence, not obfuscation alone. High-signal indicators include process injection imports, YARA rules for injection and screen capture, a Telegram Bot C2 string, an embedded secondary PE payload, and capa rules confirming hostile capabilities. No benign functionality was identified across all analysis tools (source: triage verdict.json, deep-dive.json, tool_gate ok: true).\\n\\n## 3. Background & Family Lineage\\nConti is a prominent ransomware-as-a-service (RaaS) group active since 2020, known for double-extortion attacks, widespread use of Cobalt Strike beacons, and modular malware loaders to stage encryption payloads. This sample is a loader/injector component consistent with Conti's documented TTPs: it stages a secondary PE payload (likely the Conti encryptor) via process injection into a trusted system process, and uses a low-profile C2 channel (Telegram Bot API) to avoid detection. The sample's use of MinGW-w64 compiled code and RC4 encryption aligns with previously observed Conti loader variants (source: triage verdict.json family_guess, deep-dive.js\n\u2026 [46187 more chars]"
       }
     },

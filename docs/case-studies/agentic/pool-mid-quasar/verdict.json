@@ -55,7 +55,7 @@
   ],
   "summary": "The sample is a confirmed malicious Quasar RAT payload. Despite failures in Ghidra, IDA, and Malcat analysis, cross-engine evidence from pe_imports, capa, YARA, and FLOSS confirms all core Quasar RAT capabilities: Windows service-based persistence, registry and file system manipulation, process creation, code injection via memory protection changes, XOR obfuscation of data and payloads, and dropper functionality. All observed TTPs align with publicly documented Quasar RAT behavior.",
   "source": "llm_judge",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",

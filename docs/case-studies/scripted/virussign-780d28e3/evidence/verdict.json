@@ -79,7 +79,7 @@
   ],
   "summary": "This is a malicious VB6 crypter/dropper with active defense evasion capabilities. The sample modifies the Windows hosts file to block communication with major security vendors (Symantec, McAfee, Microsoft security updates), attempts to manipulate the Windows Security Center registry settings, and establishes persistence via Run registry key. The binary contains XOR obfuscation loops and dynamic API resolution typical of crypters. Multiple tools confirm Visual Basic 6.0 origin with 42 functions and ~370 strings. The presence of the string 'Darty Crypter Source' explicitly identifies it as a crypter tool. Evidence shows direct system tampering (hosts file, registry) rather than just obfuscation, justifying a malicious verdict.",
   "source": "llm_judge",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",

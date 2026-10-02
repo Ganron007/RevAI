@@ -1,7 +1,7 @@
 {
   "sha256": "3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544",
   "sample_path": "/opt/samples/corpus/incoming/3476906b2c724a601697ee517190121f2e141a09c2dc10d08426b1b37460a544/virussign.com_7edf35d0f60858a43bb919d8b41a62a0.vir",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "generated_at": 1786198367.892783,
   "triage": {
     "total_functions": 23,
@@ -36,7 +36,7 @@
       "prompt_length": 3058,
       "llm_audit": {
         "request_model": null,
-        "response_model": "mimo-v2.5",
+        "response_model": "configured-llm",
         "response_id": "3fd2e182-aa01-484c-ad25-51946bfa4542_ab2481b9cec24d619975c571b972f3d3",
         "system_fingerprint": null,
         "prompt_tokens": 898,
@@ -61,7 +61,7 @@
       "prompt_length": 2986,
       "llm_audit": {
         "request_model": null,
-        "response_model": "mimo-v2.5",
+        "response_model": "configured-llm",
         "response_id": "a273f6ee-f0da-411c-ae75-5daaec2cabf7_0890430847cb40d6a7c8ef215fa4e14a",
         "system_fingerprint": null,
         "prompt_tokens": 877,
@@ -86,7 +86,7 @@
       "prompt_length": 2980,
       "llm_audit": {
         "request_model": null,
-        "response_model": "mimo-v2.5",
+        "response_model": "configured-llm",
         "response_id": "3279cfe2-730f-4e75-9d1a-766fc0260973_34d2a4b11642443bb49d06fc1eddae2d",
         "system_fingerprint": null,
         "prompt_tokens": 873,
@@ -116,7 +116,7 @@
       "prompt_length": 2999,
       "llm_audit": {
         "request_model": null,
-        "response_model": "mimo-v2.5",
+        "response_model": "configured-llm",
         "response_id": "158d581b-4c10-492a-bddc-97e535e1fe2f_c98f45e6bc334591bbcdeed70b3b1fe2",
         "system_fingerprint": null,
         "prompt_tokens": 883,
@@ -146,7 +146,7 @@
       "prompt_length": 3071,
       "llm_audit": {
         "request_model": null,
-        "response_model": "mimo-v2.5",
+        "response_model": "configured-llm",
         "response_id": "734c77b0-cb3b-4bb5-8ab3-77da2eb31fe4_f8135edec0c74ec79b905d951b3b6a99",
         "system_fingerprint": null,
         "prompt_tokens": 897,
@@ -179,7 +179,7 @@
         "prompt_length": 3058,
         "llm_audit": {
           "request_model": null,
-          "response_model": "mimo-v2.5",
+          "response_model": "configured-llm",
           "response_id": "3fd2e182-aa01-484c-ad25-51946bfa4542_ab2481b9cec24d619975c571b972f3d3",
           "system_fingerprint": null,
           "prompt_tokens": 898,
@@ -204,7 +204,7 @@
         "prompt_length": 2986,
         "llm_audit": {
           "request_model": null,
-          "response_model": "mimo-v2.5",
+          "response_model": "configured-llm",
           "response_id": "a273f6ee-f0da-411c-ae75-5daaec2cabf7_0890430847cb40d6a7c8ef215fa4e14a",
           "system_fingerprint": null,
           "prompt_tokens": 877,
@@ -229,7 +229,7 @@
         "prompt_length": 2980,
         "llm_audit": {
           "request_model": null,
-          "response_model": "mimo-v2.5",
+          "response_model": "configured-llm",
           "response_id": "3279cfe2-730f-4e75-9d1a-766fc0260973_34d2a4b11642443bb49d06fc1eddae2d",
           "system_fingerprint": null,
           "prompt_tokens": 873,
@@ -259,7 +259,7 @@
         "prompt_length": 2999,
         "llm_audit": {
           "request_model": null,
-          "response_model": "mimo-v2.5",
+          "response_model": "configured-llm",
           "response_id": "158d581b-4c10-492a-bddc-97e535e1fe2f_c98f45e6bc334591bbcdeed70b3b1fe2",
           "system_fingerprint": null,
           "prompt_tokens": 883,
@@ -289,7 +289,7 @@
         "prompt_length": 3071,
         "llm_audit": {
           "request_model": null,
-          "response_model": "mimo-v2.5",
+          "response_model": "configured-llm",
           "response_id": "734c77b0-cb3b-4bb5-8ab3-77da2eb31fe4_f8135edec0c74ec79b905d951b3b6a99",
           "system_fingerprint": null,
           "prompt_tokens": 897,

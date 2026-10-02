@@ -65,7 +65,7 @@ The analysis was conducted in a controlled environment using the tools mentioned
 - **cross_engine_notes**: Ghidra and IDA agree on 74 functions and 88 imports, indicating reliable disassembly. MalCat identifies 11 anomalies including EmbeddedProgram and high-signal imports like CreateRemoteThread. Capa and YARA rules detect process injection, privilege escalation, and persistence behaviors. External VirusTotal shows 49 malicious detections with threat names like 'lotusblossom' and 'explorerhijack'.
 - **summary**: The DLL 'ishelp.dll' exhibits malicious behavior including process injection via CreateRemoteThread, registry-based persistence, privilege escalation, and an embedded payload. It uses anti-analysis techniques and matches known malware patterns, with strong consensus from multiple analysis engines and external threat intelligence.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

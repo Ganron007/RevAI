@@ -800,7 +800,7 @@ The 24 capa rules are listed in Section 7.3. Key behavioral rules include `log k
 - **cross_engine_notes**: Multiple engines consistently identify malicious behaviors: Ghidra and IDA show registry manipulation imports; MalCat flags anomalies like DynamicString and key security APIs; capa and YARA rules detect keylogging, privilege escalation, registry modification, and defense impairment; VirusTotal reports high detection rate with threat families luder/texel. Obfuscation signals (e.g., high entropy, stack strings) are present but secondary to behavioral evidence.
 - **summary**: The sample exhibits strong malicious behaviors including keylogging, privilege escalation, registry manipulation, and defense impairment. Tools like YARA and capa detect specific attack techniques, while VirusTotal confirms high detection rates. Obfuscation elements are present but secondary to clear behavioral intent.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

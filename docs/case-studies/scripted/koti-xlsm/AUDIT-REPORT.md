@@ -62,7 +62,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "The sample is an Excel macro-enabled workbook (OOXML format) with high entropy and base64-encoded content. External threat intelligence from VirusTotal indicates it is a trojan downloader associated with the XAgent family, as evidenced by multiple AV detections and behavioral tags. While static analysis tools like Ghidra and IDA failed, MalCat confirmed the macro presence and high entropy, and YARA rules detected suspicious strings. These factors collectively point to malicious intent.",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",
@@ -662,7 +662,7 @@ This section details the sample identifiers for the artifact with SHA256 hash `8
   "score": 85,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "yara",

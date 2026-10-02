@@ -316,7 +316,7 @@ level: high
 - **cross_engine_notes**: Discrepancies in string and function counts across Ghidra, IDA, and Malcat indicate varied tool coverage; Malcat and Capa consistently detect obfuscation (e.g., CrossSectionJump, XorInLoop, obfuscated stackstrings). Ghidra and IDA show common DLL imports but no definitive C2 or payload strings. External VirusTotal detections (58 malicious) strongly suggest a known malware family, but local analysis lacks explicit behavioral evidence like C2 or persistence.
 - **summary**: The sample exhibits multiple obfuscation indicators (e.g., CrossSectionJump, DynamicString, XorInLoop) and high-signal imports like VirtualAllocEx, suggesting defense evasion and potential code injection. Capa confirms obfuscated stackstrings as a behavioral tactic. While local analysis does not reveal explicit C2, persistence, or data exfiltration, external VirusTotal detections with 58 malicious engines and threat class 'trojan.adload/fugrafa' strongly indicate malicious intent. The combination of obfuscation and external reputation warrants a malicious verdict, though score reflects lack of clear local behavioral evidence.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

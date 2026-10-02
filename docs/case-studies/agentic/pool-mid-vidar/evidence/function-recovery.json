@@ -1,7 +1,7 @@
 {
   "sha256": "0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5",
   "sample_path": "/opt/samples/corpus/pool/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "generated_at": 1786147003.677745,
   "triage": {
     "total_functions": 544,
@@ -31,7 +31,7 @@
       "prompt_length": 3184,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-b0a8a6b4c5f0fa23b1eb601e1358f890.019fdea76aaa73c8bda811efd5b1d8ce",
         "system_fingerprint": null,
         "prompt_tokens": 1013,
@@ -56,7 +56,7 @@
       "prompt_length": 3166,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-87c5d00dfa3648ad39782dc1c835ad85.019fdea76ac87024869b42d71dbf16c8",
         "system_fingerprint": null,
         "prompt_tokens": 1005,
@@ -81,7 +81,7 @@
       "prompt_length": 3227,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-21a752a7c03c26cc56629484fbc0da42.019fdea76ac174939161445e3e1a9202",
         "system_fingerprint": null,
         "prompt_tokens": 1035,
@@ -124,7 +124,7 @@
       "prompt_length": 3608,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-420205808439df07f177c833dda86e79.019fdea76b027e3e8019f7d5d36b9db1",
         "system_fingerprint": null,
         "prompt_tokens": 1183,
@@ -149,7 +149,7 @@
       "prompt_length": 3184,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-81fa560d3388c47676b0a66daa79cd5e.019fdea7f2117bf0ab59c5ad0c6ee611",
         "system_fingerprint": null,
         "prompt_tokens": 1011,
@@ -177,7 +177,7 @@
         "prompt_length": 3184,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-b0a8a6b4c5f0fa23b1eb601e1358f890.019fdea76aaa73c8bda811efd5b1d8ce",
           "system_fingerprint": null,
           "prompt_tokens": 1013,
@@ -202,7 +202,7 @@
         "prompt_length": 3166,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-87c5d00dfa3648ad39782dc1c835ad85.019fdea76ac87024869b42d71dbf16c8",
           "system_fingerprint": null,
           "prompt_tokens": 1005,
@@ -227,7 +227,7 @@
         "prompt_length": 3227,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-21a752a7c03c26cc56629484fbc0da42.019fdea76ac174939161445e3e1a9202",
           "system_fingerprint": null,
           "prompt_tokens": 1035,
@@ -270,7 +270,7 @@
         "prompt_length": 3608,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-420205808439df07f177c833dda86e79.019fdea76b027e3e8019f7d5d36b9db1",
           "system_fingerprint": null,
           "prompt_tokens": 1183,
@@ -295,7 +295,7 @@
         "prompt_length": 3184,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-81fa560d3388c47676b0a66daa79cd5e.019fdea7f2117bf0ab59c5ad0c6ee611",
           "system_fingerprint": null,
           "prompt_tokens": 1011,

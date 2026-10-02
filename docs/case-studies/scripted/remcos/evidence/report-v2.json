@@ -21,10 +21,10 @@
     "16. Author + Sign-off"
   ],
   "source": "llm_judge",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "llm_audit": {
-    "request_model": "step-3.7-flash",
-    "response_model": "step-3.7-flash",
+    "request_model": "configured-llm",
+    "response_model": "configured-llm",
     "response_id": "chatcmpl-7a5fa5a05cdf11b3f4777f2b136d795b.019fe072a2087e20af5395836b49c0aa",
     "system_fingerprint": null,
     "prompt_tokens": 19128,

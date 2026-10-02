@@ -381,7 +381,7 @@ All capabilities are derived from static analysis, as no dynamic behavior was ob
 - **cross_engine_notes**: Ghidra failed to start due to a project ownership (NotOwnerException) error, IDA is non-functional due to a missing idasql binary, Malcat analysis failed with an MCP closure error, and capa timed out after 300s, so no function-level, decompilation, or capa capability data is available. The only functional analysis engines (pe_imports, YARA, FLOSS) all produce consistent indicators of malicious PE functionality, including high-signal imports for process injection and execution, YARA matches for common malware capabilities and C2 indicators, and Delphi runtime strings confirming a functional 32-bit Windows GUI PE.
 - **summary**: Sample is a high-confidence malicious 32-bit Windows GUI PE compiled with Borland/Delphi. High-signal PE imports indicate capabilities for process injection (T1055), process execution (T1106), and dynamic API resolution (T1129). YARA matches confirm additional malware capabilities including privilege escalation, DEP bypass, registry/token/file manipulation, and embedded C2 indicators. FLOSS extracted 10018 strings including Delphi runtime metadata, confirming the sample is functional. No decompilation or function-level analysis is available due to tool failures, but all available high-signal indicators are consistent with a Delphi-based infostealer or post-exploitation malware.
 - **source**: llm_judge
-- **model**: step-3.7-flash
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

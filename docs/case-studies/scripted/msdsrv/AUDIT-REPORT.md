@@ -80,7 +80,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "This PE executable, disguised as 'System Search Indexer', exhibits malicious behaviors including keylogging, clipboard data theft, network communication via WinINet APIs (e.g., InternetOpen, HttpOpenRequestA), and anti-analysis techniques (e.g., IsDebuggerPresent, obfuscation anomalies). Multiple analysis engines corroborate these findings, and external threat intelligence confirms it belongs to the graftor/skeeyah trojan family, indicating clear hostile intent beyond mere obfuscation.",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",
@@ -972,7 +972,7 @@ In summary, this sample is a likely variant of the Trojan.Graftor/Skeeyah family
   "score": 95,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "capa",

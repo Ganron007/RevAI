@@ -730,7 +730,7 @@ void jmp_msvbvm60.ThunRTMain(void)
 - **sha256**: `6878836f0ab5bdf0b1567ed45818d733c3426480251992985f6daa6f20de5b4d`
 - **generated_at**: 2026-08-03T06:16:31.399443+00:00
 - **verdict_source**: llm_judge
-- **model**: step-3.7-flash
+- **model**: configured-llm
 - **RAG**: bge-m3 (35,302 records, top-3 per section)
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)

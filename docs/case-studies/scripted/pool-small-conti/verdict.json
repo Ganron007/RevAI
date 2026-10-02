@@ -49,7 +49,7 @@
   ],
   "summary": "This is a malicious 64-bit Windows PE sample, likely a Conti ransomware loader/initial access payload. It is heavily obfuscated (98 entropy, RC4 encryption) and exhibits classic process injection behavior: it drops a DLL to a temp path, injects it into the explorer.exe process using VirtualAllocEx, WriteProcessMemory, and CreateRemoteThread. It uses a Telegram Bot API endpoint for C2 communications, contains an embedded secondary PE payload, and has capabilities for process enumeration and file operations. All analysis sources (Malcat, Ghidra, capa, pe_imports, YARA) corroborate malicious behavior.",
   "source": "llm_judge",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",

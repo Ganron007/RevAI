@@ -124,7 +124,7 @@
         "score": 90,
         "agreement": "llm_and_v1_agree",
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "key_evidence": [
           {
             "source": "pe_imports",
@@ -808,11 +808,11 @@
           "pipeline_audit_all_green": true
         },
         "models": {
-          "master": "step-3.7-flash",
-          "technical_v2": "step-3.7-flash",
-          "technical_v3": "step-3.7-flash",
-          "planner_hint": "step-3.7-flash",
-          "judgment_hint": "step-3.7-flash"
+          "master": "configured-llm",
+          "technical_v2": "configured-llm",
+          "technical_v3": "configured-llm",
+          "planner_hint": "configured-llm",
+          "judgment_hint": "configured-llm"
         }
       },
       "verdict_lock": {
@@ -913,7 +913,7 @@
     "llm": {
       "triage": {
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "verdict": "MALICIOUS",
         "family": "Multi-functional info-stealer/loader masquerading as Tencent GameLoop installer, with capabilities consistent with DarkGate, LucaStealer, Remcos, and related info-stealing/RAT families",
         "confidence": 90,
@@ -1015,7 +1015,7 @@
       },
       "publish": {
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "excerpt": "{\n  \"title\": \"Malware Analysis Report: SHA256 7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6 \\u2014 Multi-Functional Info-Stealer/Loader Masquerading as Tencent GameLoop Installer\",\n  \"mark\": \"# Malware Analysis Report: SHA256 7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6 \\u2014 Multi-Functional Info-Stealer/Loader Masquerading as Tencent GameLoop Installer\\n\\n## Executive Summary\\nThis report analyzes a malicious PE32 x86 executable (SHA256: 7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6) masquerading as a legitimate Tencent GameLoop Android emulator installer. Upstream triage assigns a MALICIOUS verdict with 90% confidence, identifying the sample as a multi-functional info-stealer/loader with capabilities consistent with 10+ malware families including DarkGate, LucaStealer, Remcos, and Revil. Static and deterministic behavioral analysis confirm high-signal malicious capabilities including process injection, anti-debug/anti-VM evasion, HTTP command-and-control (C2) communication, registry persistence, and keylogging. The sample uses extensive obfuscation (API hashing, XOR, Base64, control flow flattening) and carries an expired DigiCert code signing certificate to masquerade as legitimate software. No runtime sandbox (Speakeasy/Frida) data is available, so all behavioral claims are derived from static analysis tools (capa, YARA, Malcat, PE import analysis). (source: triage_verdict.json, verdict, MALICIOUS, 90 confidence)\\n\\n## 1. Sample Identification\\nThe analyzed sample is a PE32 x86 executable with a file size of 8.7MB, collected on 2026-07-03 as part of the \\\"pool\\\" project, stored at /opt/samples/corpus/pool/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil. Malcat analysis confirms the file type as PE x86 with a SHA256 matching the provided hash. The sample is signed with a DigiCert code signing certificate that was valid from 2020-11-25 to 2024-02-22, which expired 2+ years before the sample collection date, indicating an invalid signature commonly associated with trojanized legitimate software. (source: malcat, static_profile, File: type=PE, architecture=X86, entropy=157, sha256=7fbde4a...; malcat, static_profile, Certificate::Validity (2020-11-25 to 2024-02-22), expired before collection date)\\n\\n## 2. Classification\\nVerdict: MALICIOUS. Confidence: 90%. Classification: Trojanized installer / modular info-stealer and RAT loader. The sample is not a member of a single malware family, but rather a multi-functional loader that bundles or emulates capabilities from 10+ distinct malware families, as confirmed by YARA matches for DarkGate, Elex, Floxif, Glassworm, HijackLoader, Luca-Stealer, Medusalocker, Njrat, Remcos, and Revil. It masquerades as a Tencent GameLoop installer to trick users into executing malicious code. (source: triage_verdict.json, verdict, MALICIOUS, family_guess: Multi-functional info-stealer/loader masquerading as Tencent GameLoop installer; deep_dive.json, key_evidence, YARA matched 10+ malware families: darkgate, elex, floxif, glassworm, hijackloader, luca-stealer, medusalocker, njrat, remcos, revil)\\n\\n## 3. Background & Family Lineage\\nThe sample's association with 10+ malware families indicates it is either a modular loader designed to deliver multiple payloads or a \\\"Frankenstein\\\" malware that combines c\n\u2026 [65654 more chars]"
       }
     },

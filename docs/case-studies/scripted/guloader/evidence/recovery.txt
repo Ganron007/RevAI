@@ -1,7 +1,7 @@
 {
   "sha256": "c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509",
   "sample_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509/guLoader.exe",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "generated_at": 1786290684.2787302,
   "triage": {
     "total_functions": 22,
@@ -33,7 +33,7 @@
       "prompt_length": 15778,
       "llm_audit": {
         "request_model": null,
-        "response_model": "mimo-v2.5-pro",
+        "response_model": "configured-llm",
         "response_id": "d4247b86-b808-4367-aac5-7c66a57d5d3f_c09eb922a9844f4486d2585eb50ff6ea",
         "system_fingerprint": null,
         "prompt_tokens": 6851,
@@ -58,7 +58,7 @@
       "prompt_length": 12004,
       "llm_audit": {
         "request_model": null,
-        "response_model": "mimo-v2.5-pro",
+        "response_model": "configured-llm",
         "response_id": "1cf4b3e1-63dc-4361-8ac7-73c0acf28a37_3558552ea0064b2fa5e637e8f38ab37f",
         "system_fingerprint": null,
         "prompt_tokens": 4941,
@@ -88,7 +88,7 @@
         "prompt_length": 15778,
         "llm_audit": {
           "request_model": null,
-          "response_model": "mimo-v2.5-pro",
+          "response_model": "configured-llm",
           "response_id": "d4247b86-b808-4367-aac5-7c66a57d5d3f_c09eb922a9844f4486d2585eb50ff6ea",
           "system_fingerprint": null,
           "prompt_tokens": 6851,
@@ -113,7 +113,7 @@
         "prompt_length": 12004,
         "llm_audit": {
           "request_model": null,
-          "response_model": "mimo-v2.5-pro",
+          "response_model": "configured-llm",
           "response_id": "1cf4b3e1-63dc-4361-8ac7-73c0acf28a37_3558552ea0064b2fa5e637e8f38ab37f",
           "system_fingerprint": null,
           "prompt_tokens": 4941,

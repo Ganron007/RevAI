@@ -160,7 +160,7 @@ Monitor for process execution events where a UPX-packed PE loads `ws2_32.dll` (i
 - **cross_engine_notes**: Ghidra analysis failed due to a NotOwnerException (project owned by remnux user), IDA failed to launch due to a missing /usr/local/bin/idasql binary, and Malcat analysis failed with an MCP closure error. No function, import, decompilation, or static profile data was available from these engines. The Ghidra imports table is known to return empty results for this sample type, so import data was sourced from the pe_imports engine. Usable static evidence was successfully retrieved from capa, pe_imports, YARA, and FLOSS despite the analysis engine failures.
 - **summary**: This is a UPX-packed Windows PE file with strong indicators of malicious behavior: high-signal imports for process injection and dynamic code execution, VM/sandbox detection logic, embedded base64 content, and HTTP network communication strings. Full deep analysis was blocked by environmental failures for Ghidra, IDA, and Malcat, but cross-engine static evidence from capa, pe_imports, YARA, and FLOSS confirms the sample is malicious. The UPX packing obfuscates the underlying payload, so the specific malware family cannot be determined from available static data.
 - **source**: llm_judge
-- **model**: step-3.7-flash
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

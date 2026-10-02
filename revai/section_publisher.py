@@ -28,6 +28,7 @@ from report_quality import (  # noqa: E402
     _MALCAT_OPTIONAL_SECTIONS,
     evaluate_report_markdown,
     missing_sections,
+    redact_model_names,
     scrub_report_indicators,
     source_is_fallback,
     stub_sections,
@@ -886,6 +887,10 @@ def run_section_based_publish(sha: str, tools_results: dict,
     # does not assert invented registry paths for the audit to fail on.
     report_markdown, _master_ioc_scrub = scrub_report_indicators(
         out_dir, report_markdown, "master_v3")
+    report_markdown, _master_models = redact_model_names(report_markdown)
+    if _master_models:
+        print(f"[section_publisher] master_v3: redacted model name(s) "
+              f"{_master_models}", flush=True)
     (out_dir / "02-REPORT-MASTER-v3.md").write_text(report_markdown)
 
     # Backward compatibility: also write at logs root
@@ -1175,6 +1180,12 @@ def _finalize_technical(sha: str, technical_report: dict,
         case_dir(sha), tech_md, "technical_v3")
     technical_report["markdown"] = tech_md
     technical_report["indicator_scrub"] = _tech_ioc_scrub
+    tech_md, _tech_models = redact_model_names(tech_md)
+    if _tech_models:
+        technical_report["model_names_redacted"] = _tech_models
+        print(f"[section_publisher] technical_v3: redacted model name(s) "
+              f"{_tech_models}", flush=True)
+    technical_report["markdown"] = tech_md
     q = evaluate_report_markdown(
         tech_md,
         required_sections=TECHNICAL_REPORT_SECTIONS,

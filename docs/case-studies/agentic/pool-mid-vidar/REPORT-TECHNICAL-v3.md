@@ -295,7 +295,7 @@ Alert on combinations of the following import signatures within a single PE: `Is
 - **cross_engine_notes**: Malcat's static profile initially identifies the binary as the legitimate NSudo system tool (v6.2, M2-Team) based on version metadata and PDB path, but this is inconsistent with other engine findings: the binary has extreme entropy (105) indicating packing, the .reloc section is marked RWX with no actual relocations (abnormal for legitimate PE files), and the sample filename contains the 'vidar' malware family marker. Cross-engine behavior and static analysis all align with known Vidar info-stealer characteristics, indicating the binary is a packed Vidar sample disguised as NSudo.
 - **summary**: This is a packed Vidar info-stealer sample disguised as the legitimate NSudo privilege escalation tool. The binary uses XOR-based decryption routines stored in the RWX .reloc section to unpack its payload at runtime, and exhibits core Vidar capabilities including anti-debugging, privilege escalation, registry persistence, process creation, and file manipulation. The high entropy and obfuscation anomalies are consistent with Vidar's common packing and anti-analysis techniques.
 - **source**: llm_judge
-- **model**: step-3.7-flash
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

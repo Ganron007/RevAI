@@ -6743,6 +6743,13 @@ def build_technical_evidence_block(
         ):
             v = verdict.get(k)
             if v not in (None, ""):
+                # The verdict's real model name stays in verdict.json (machine
+                # evidence, an auditor needs it) but this pack is embedded in a
+                # PUBLISHED report and the model copies what it reads here into
+                # its own prose. Public form only.
+                if k == "model":
+                    from report_quality import PUBLIC_MODEL_LABEL
+                    v = PUBLIC_MODEL_LABEL
                 lines.append(f"- **{k}**: {v}")
         ke = verdict.get("key_evidence") or []
         if ke:

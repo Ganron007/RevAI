@@ -124,7 +124,7 @@
         "score": 40.0,
         "agreement": "llm_and_v1_agree",
         "source": "llm_judge",
-        "model": "mimo-v2.5-pro",
+        "model": "configured-llm",
         "key_evidence": [
           {
             "source": "malcat",
@@ -825,9 +825,9 @@
           "pipeline_audit_all_green": false
         },
         "models": {
-          "master": "mimo-v2.5-pro",
-          "technical_v2": "mimo-v2.5-pro",
-          "technical_v3": "mimo-v2.5-pro",
+          "master": "configured-llm",
+          "technical_v2": "configured-llm",
+          "technical_v3": "configured-llm",
           "planner_hint": "configured via env",
           "judgment_hint": "configured via env"
         }
@@ -930,7 +930,7 @@
     "llm": {
       "triage": {
         "source": "llm_judge",
-        "model": "mimo-v2.5-pro",
+        "model": "configured-llm",
         "verdict": "malicious",
         "family": "Locky",
         "confidence": 40,
@@ -1022,7 +1022,7 @@
       },
       "publish": {
         "source": "llm_judge",
-        "model": "mimo-v2.5-pro",
+        "model": "configured-llm",
         "excerpt": "{\n  \"title\": \"Locky Ransomware Analysis Report\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `unknown` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-13 05:11:37 UTC\\n\\n# Verdict sources (multi-source)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | malicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | malicious |\\n\\n- **Locked over publish LLM:** no\\n\\n# Locky Ransomware Analysis Report\\n\\n## Executive Summary\\n\\nThis report details the analysis of a 32-bit Windows executable (`svchost.exe`) identified as Locky ransomware. The sample exhibits classic ransomware behavior: it encrypts victim files using the Windows CryptoAPI, appends the `.locky` extension, drops a ransom note (`\\\\_Locky_recover_instructions.txt`), and deletes Volume Shadow Copies to prevent system recovery. It communicates with six hardcoded command-and-control (C2) IP addresses over HTTP to report encryption statistics. The analysis is based on static analysis, YARA rule matching, and decompilation. Dynamic analysis was performed in this triage (Speakeasy emulation and Frida probing ran); both tools recorded zero runtime events. The sample is assessed with high confidence to be malicious Locky ransomware.\\n\\n## 1. Sample Identification\\n\\n| Attribute | Value |\\n|---|---|\\n| SHA256 | `28046c14ea3325885ee1e731cd0bcf9f38445df02675836b851cb2ae94c050eb` |\\n| File Name | `svchost.exe` |\\n| File Type | PE32 executable (GUI) Intel 80386, for MS Windows |\\n| Architecture | x86 (32-bit) |\\n| Entropy | 6.13 bits/byte (whole-file Shannon entropy) |\\n| Packed | No (UPX probe returned 0 files tested) |\\n| .NET | Not a .NET assembly |\\n| Project | malware |\\n\\nThe sample is a standard 32-bit Windows executable with a GUI subsystem. The entropy of 6.13 bits/byte is within the normal range for compiled code and does not indicate packing or encryption of the entire file (source: malcat). The file is not packed with UPX (source: upx_unpack).\\n\\n## 2. Classification\\n\\n| Attribute | Value |\\n|---|---|\\n| Verdict | **Malicious** |\\n| Family | Locky (ransomware) |\\n| Confidence | 99% |\\n| Triage Score | 40.0 |\\n| Triage Confidence | 40 |\\n| Agreement | `llm_and_v1_agree` |\\n\\nThe classification is based on multiple converging lines of evidence. A direct YARA match for `Locky_Ransomware_2` was triggered (source: malcat). The binary imports a full cryptographic pipeline (`CryptAcquireContextA`, `CryptCreateHash`, `CryptHashData`, `CryptImportKey`, `CryptSetKeyParam`, `CryptEncrypt`, `CryptGenRandom`) from `ADVAPI32.DLL`, which is consistent with ransomware file encryption (source: pe_imports). Decompilation reveals references to `Locky_recover_instructions.txt` and `.bmp` files, confirming the deployment of ransom notes (source: ghidra_query). The sample contains a command to delete Volume Shadow Copies (`vssadmin.exe Delete Shadows /All /Quiet`), a key ransomware behavior to inhibit recovery (source: malcat). External threat intelligence from VirusTotal shows 66 malicious detections with the popular threat name 'locky' (source: external_ti). The registry key `Software\\\\Locky` is present, indicating persistence and family association (source: malcat).\\n\\n## 3. Background & Family Lineage\\n\\nLocky is a well-documented ransomware family that first appeared in early 2016. It is typically distr\n\u2026 [24659 more chars]"
       }
     },

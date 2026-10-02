@@ -1,7 +1,7 @@
 {
   "sha256": "2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c",
   "sample_path": "/opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "generated_at": 1786157980.8154793,
   "triage": {
     "total_functions": 1641,
@@ -44,7 +44,7 @@
       "prompt_length": 16177,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-89f18f029d6caf3b0a8708ceb7e37c23.019fdf4e225878a4915b4b6f22b34700",
         "system_fingerprint": null,
         "prompt_tokens": 6226,
@@ -87,7 +87,7 @@
       "prompt_length": 15293,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-df2c1d540236584e1e35cba2385cc18b.019fdf4e22767cabb33213ad610aeab7",
         "system_fingerprint": null,
         "prompt_tokens": 5652,
@@ -129,7 +129,7 @@
       "prompt_length": 14846,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-4f3db364cac9e8ef74307ac15a50e10b.019fdf4e22397317ab5ea71e08528865",
         "system_fingerprint": null,
         "prompt_tokens": 4713,
@@ -179,7 +179,7 @@
       "prompt_length": 15392,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-5d86c81c83b06d304fd406bb98efe20e.019fdf4e8ca87cf7824c4f124025b97b",
         "system_fingerprint": null,
         "prompt_tokens": 5463,
@@ -221,7 +221,7 @@
       "prompt_length": 14857,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-3d404a969c41699824b7827d9e65005f.019fdf4e224b7d07b64140a91ad3327a",
         "system_fingerprint": null,
         "prompt_tokens": 4726,
@@ -251,7 +251,7 @@
       "prompt_length": 9618,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-c02366f19b3be0344325cae21bf30761.019fdf4f7581724eb54b5ce3c7154534",
         "system_fingerprint": null,
         "prompt_tokens": 3400,
@@ -281,7 +281,7 @@
       "prompt_length": 16341,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-dfb8a2cac346dcd644846bd2398093fe.019fdf4f75577628a16f9bb61c5f6a8b",
         "system_fingerprint": null,
         "prompt_tokens": 6592,
@@ -322,7 +322,7 @@
         "prompt_length": 16177,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-89f18f029d6caf3b0a8708ceb7e37c23.019fdf4e225878a4915b4b6f22b34700",
           "system_fingerprint": null,
           "prompt_tokens": 6226,
@@ -365,7 +365,7 @@
         "prompt_length": 15293,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-df2c1d540236584e1e35cba2385cc18b.019fdf4e22767cabb33213ad610aeab7",
           "system_fingerprint": null,
           "prompt_tokens": 5652,
@@ -407,7 +407,7 @@
         "prompt_length": 14846,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-4f3db364cac9e8ef74307ac15a50e10b.019fdf4e22397317ab5ea71e08528865",
           "system_fingerprint": null,
           "prompt_tokens": 4713,
@@ -457,7 +457,7 @@
         "prompt_length": 15392,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-5d86c81c83b06d304fd406bb98efe20e.019fdf4e8ca87cf7824c4f124025b97b",
           "system_fingerprint": null,
           "prompt_tokens": 5463,
@@ -499,7 +499,7 @@
         "prompt_length": 14857,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-3d404a969c41699824b7827d9e65005f.019fdf4e224b7d07b64140a91ad3327a",
           "system_fingerprint": null,
           "prompt_tokens": 4726,
@@ -529,7 +529,7 @@
         "prompt_length": 9618,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-c02366f19b3be0344325cae21bf30761.019fdf4f7581724eb54b5ce3c7154534",
           "system_fingerprint": null,
           "prompt_tokens": 3400,
@@ -559,7 +559,7 @@
         "prompt_length": 16341,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-dfb8a2cac346dcd644846bd2398093fe.019fdf4f75577628a16f9bb61c5f6a8b",
           "system_fingerprint": null,
           "prompt_tokens": 6592,

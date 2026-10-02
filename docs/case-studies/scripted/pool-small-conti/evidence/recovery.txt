@@ -1,7 +1,7 @@
 {
   "sha256": "28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9",
   "sample_path": "/opt/samples/corpus/pool/28ea44a49cb4277edb82609efa4af573d953cdaa77a1973e3e7fc412b97450a9/2026-07-03_057dff5650af402177d65141acdf65d0_conti",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "generated_at": 1786156673.8397171,
   "triage": {
     "total_functions": 86,
@@ -36,7 +36,7 @@
       "prompt_length": 3330,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-4586f5ea69c18d3837a6f67d27f9bb73.019fdf367dbc72948d5d8f9711a45714",
         "system_fingerprint": null,
         "prompt_tokens": 998,
@@ -66,7 +66,7 @@
       "prompt_length": 3611,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-9d7d95fc7937cae5b9af74d216448ca7.019fdf367e0d7abcb630831cc1c2b7db",
         "system_fingerprint": null,
         "prompt_tokens": 1085,
@@ -100,7 +100,7 @@
       "prompt_length": 3238,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-c419d5813c58df57b4d28e74eeec04b6.019fdf367e0b7279abd806d3c2269c81",
         "system_fingerprint": null,
         "prompt_tokens": 984,
@@ -130,7 +130,7 @@
       "prompt_length": 3282,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-0c6c49fd91da3456fc7a72979a045e73.019fdf36cf8272858f5963aa6fd2fd90",
         "system_fingerprint": null,
         "prompt_tokens": 976,
@@ -160,7 +160,7 @@
       "prompt_length": 3335,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-afb56c75fdcc100c6cd2c60459a8371a.019fdf367dc276b7acff500e2d257269",
         "system_fingerprint": null,
         "prompt_tokens": 1023,
@@ -190,7 +190,7 @@
       "prompt_length": 3813,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-cece1ead5309c635b4054526eb5a436d.019fdf37ade270d9808dbba6aa516b89",
         "system_fingerprint": null,
         "prompt_tokens": 1166,
@@ -224,7 +224,7 @@
       "prompt_length": 3883,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-8b22f1ddeaf336782eb09f9f8a6ff25e.019fdf37ade07511a3ee70fdf16cb6dc",
         "system_fingerprint": null,
         "prompt_tokens": 1206,
@@ -251,7 +251,7 @@
       "prompt_length": 5755,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-b314aa3c73a88519eef0a61bd85a98c2.019fdf37adef7d22a46ad53a9ce3c617",
         "system_fingerprint": null,
         "prompt_tokens": 1840,
@@ -281,7 +281,7 @@
       "prompt_length": 3616,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-9e9723e0e69ea3bbe6b55c4eb067228e.019fdf37e9b97539a0b58d0161736815",
         "system_fingerprint": null,
         "prompt_tokens": 1098,
@@ -311,7 +311,7 @@
       "prompt_length": 9442,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-c8f008513992b29dfa2a5662c4dcf723.019fdf37adf17c72b831e6d5ad4e6f21",
         "system_fingerprint": null,
         "prompt_tokens": 3139,
@@ -345,7 +345,7 @@
       "prompt_length": 3189,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-24a54de010d033e262213a84a6afa58c.019fdf3948827ec3980459d6e4d3096d",
         "system_fingerprint": null,
         "prompt_tokens": 957,
@@ -379,7 +379,7 @@
       "prompt_length": 2755,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-26ad9b156da63f0ccafae2fb5e6236af.019fdf3948bf763cad857e238bc09cca",
         "system_fingerprint": null,
         "prompt_tokens": 803,
@@ -405,7 +405,7 @@
       "prompt_length": 4275,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-e5bad87f60a0039003faef5751cafe8d.019fdf39488b727b99d3c2f3996e7055",
         "system_fingerprint": null,
         "prompt_tokens": 1382,
@@ -435,7 +435,7 @@
       "prompt_length": 8714,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-f3821b69c62c5098e94efffa13cd5d94.019fdf3948ba7c7ebbf9370c51069765",
         "system_fingerprint": null,
         "prompt_tokens": 2845,
@@ -460,7 +460,7 @@
       "prompt_length": 6626,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-98592c5927e78082c2b34f64d78e4cd2.019fdf3ab55177b5b8a7a91e361f8783",
         "system_fingerprint": null,
         "prompt_tokens": 2039,
@@ -485,7 +485,7 @@
       "prompt_length": 7473,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-b9ccc613d9de8e1e577383d8391f9389.019fdf3af0b17f2a85c6e21b35060f24",
         "system_fingerprint": null,
         "prompt_tokens": 2318,
@@ -510,7 +510,7 @@
       "prompt_length": 2719,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-8fbf513a4af6590a5e92a1e61b7fcc90.019fdf3bd8f7723494ebce32043d0be5",
         "system_fingerprint": null,
         "prompt_tokens": 784,
@@ -535,7 +535,7 @@
       "prompt_length": 2716,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-abfbdde7b9e503ab53cbc452f7c47fd8.019fdf3bd8c87e3f86477813cccfd459",
         "system_fingerprint": null,
         "prompt_tokens": 783,
@@ -568,7 +568,7 @@
         "prompt_length": 3330,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-4586f5ea69c18d3837a6f67d27f9bb73.019fdf367dbc72948d5d8f9711a45714",
           "system_fingerprint": null,
           "prompt_tokens": 998,
@@ -598,7 +598,7 @@
         "prompt_length": 3611,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-9d7d95fc7937cae5b9af74d216448ca7.019fdf367e0d7abcb630831cc1c2b7db",
           "system_fingerprint": null,
           "prompt_tokens": 1085,
@@ -632,7 +632,7 @@
         "prompt_length": 3238,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-c419d5813c58df57b4d28e74eeec04b6.019fdf367e0b7279abd806d3c2269c81",
           "system_fingerprint": null,
           "prompt_tokens": 984,
@@ -662,7 +662,7 @@
         "prompt_length": 3282,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-0c6c49fd91da3456fc7a72979a045e73.019fdf36cf8272858f5963aa6fd2fd90",
           "system_fingerprint": null,
           "prompt_tokens": 976,
@@ -692,7 +692,7 @@
         "prompt_length": 3335,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-afb56c75fdcc100c6cd2c60459a8371a.019fdf367dc276b7acff500e2d257269",
           "system_fingerprint": null,
           "prompt_tokens": 1023,
@@ -722,7 +722,7 @@
         "prompt_length": 3813,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-cece1ead5309c635b4054526eb5a436d.019fdf37ade270d9808dbba6aa516b89",
           "system_fingerprint": null,
           "prompt_tokens": 1166,
@@ -756,7 +756,7 @@
         "prompt_length": 3883,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-8b22f1ddeaf336782eb09f9f8a6ff25e.019fdf37ade07511a3ee70fdf16cb6dc",
           "system_fingerprint": null,
           "prompt_tokens": 1206,
@@ -783,7 +783,7 @@
         "prompt_length": 5755,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-b314aa3c73a88519eef0a61bd85a98c2.019fdf37adef7d22a46ad53a9ce3c617",
           "system_fingerprint": null,
           "prompt_tokens": 1840,
@@ -813,7 +813,7 @@
         "prompt_length": 3616,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-9e9723e0e69ea3bbe6b55c4eb067228e.019fdf37e9b97539a0b58d0161736815",
           "system_fingerprint": null,
           "prompt_tokens": 1098,
@@ -843,7 +843,7 @@
         "prompt_length": 9442,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-c8f008513992b29dfa2a5662c4dcf723.019fdf37adf17c72b831e6d5ad4e6f21",
           "system_fingerprint": null,
           "prompt_tokens": 3139,
@@ -877,7 +877,7 @@
         "prompt_length": 3189,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-24a54de010d033e262213a84a6afa58c.019fdf3948827ec3980459d6e4d3096d",
           "system_fingerprint": null,
           "prompt_tokens": 957,
@@ -911,7 +911,7 @@
         "prompt_length": 2755,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-26ad9b156da63f0ccafae2fb5e6236af.019fdf3948bf763cad857e238bc09cca",
           "system_fingerprint": null,
           "prompt_tokens": 803,
@@ -937,7 +937,7 @@
         "prompt_length": 4275,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-e5bad87f60a0039003faef5751cafe8d.019fdf39488b727b99d3c2f3996e7055",
           "system_fingerprint": null,
           "prompt_tokens": 1382,
@@ -967,7 +967,7 @@
         "prompt_length": 8714,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-f3821b69c62c5098e94efffa13cd5d94.019fdf3948ba7c7ebbf9370c51069765",
           "system_fingerprint": null,
           "prompt_tokens": 2845,
@@ -992,7 +992,7 @@
         "prompt_length": 6626,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-98592c5927e78082c2b34f64d78e4cd2.019fdf3ab55177b5b8a7a91e361f8783",
           "system_fingerprint": null,
           "prompt_tokens": 2039,
@@ -1017,7 +1017,7 @@
         "prompt_length": 7473,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-b9ccc613d9de8e1e577383d8391f9389.019fdf3af0b17f2a85c6e21b35060f24",
           "system_fingerprint": null,
           "prompt_tokens": 2318,
@@ -1042,7 +1042,7 @@
         "prompt_length": 2719,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-8fbf513a4af6590a5e92a1e61b7fcc90.019fdf3bd8f7723494ebce32043d0be5",
           "system_fingerprint": null,
           "prompt_tokens": 784,
@@ -1067,7 +1067,7 @@
         "prompt_length": 2716,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-abfbdde7b9e503ab53cbc452f7c47fd8.019fdf3bd8c87e3f86477813cccfd459",
           "system_fingerprint": null,
           "prompt_tokens": 783,

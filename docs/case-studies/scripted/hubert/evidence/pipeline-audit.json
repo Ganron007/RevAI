@@ -124,7 +124,7 @@
         "score": 95,
         "agreement": "llm_and_v1_agree",
         "source": "llm_judge",
-        "model": "mimo-v2.5-pro",
+        "model": "configured-llm",
         "key_evidence": [
           {
             "source": "malcat",
@@ -946,9 +946,9 @@
           "pipeline_audit_all_green": false
         },
         "models": {
-          "master": "mimo-v2.5-pro",
-          "technical_v2": "mimo-v2.5-pro",
-          "technical_v3": "mimo-v2.5-pro",
+          "master": "configured-llm",
+          "technical_v2": "configured-llm",
+          "technical_v3": "configured-llm",
           "planner_hint": "configured via env",
           "judgment_hint": "configured via env"
         }
@@ -1062,7 +1062,7 @@
     "llm": {
       "triage": {
         "source": "llm_judge",
-        "model": "mimo-v2.5-pro",
+        "model": "configured-llm",
         "verdict": "malicious",
         "family": "Tibs",
         "confidence": 95,
@@ -1182,7 +1182,7 @@
       },
       "publish": {
         "source": "llm_judge",
-        "model": "mimo-v2.5-pro",
+        "model": "configured-llm",
         "excerpt": "{\n  \"title\": \"Malware Analysis Report: hubert.dll (Tibs Trojan Downloader)\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `unknown` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-13 11:49:35 UTC\\n\\n# Verdict sources (multi-source)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | malicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | malicious |\\n\\n- **Locked over publish LLM:** no\\n\\n# Malware Analysis Report: hubert.dll (Tibs Trojan Downloader)\\n\\n## Executive Summary\\n\\nThis report details the analysis of a malicious DLL file (`hubert.dll`) identified as a member of the Tibs malware family. The sample is a packed and obfuscated trojan downloader that employs multiple evasion techniques, including XOR-based encryption, anti-VM checks, and high-entropy packing. Static and behavioral analysis confirm its malicious intent through the presence of process injection, privilege escalation, and network communication capabilities. The DLL uses WinINet APIs for command-and-control (C2) communication and contains strings indicative of registry manipulation for persistence. External threat intelligence from VirusTotal reports a high detection rate (58/70 engines), corroborating our findings. We assess with high confidence that this sample is malicious and designed for initial access, execution, and persistence on compromised systems.\\n\\n## 1. Sample Identification\\n\\nThe sample under analysis is a 32-bit Windows DLL file with the following characteristics:\\n\\n| Attribute | Value |\\n|-----------|-------|\\n| **SHA256** | `0598e95ea5f28e3e591a8ab26bd6794e06f038282cac8ecf302009c6636cd0bc` |\\n| **File Path** | `/opt/samples/corpus/malware/0598e95ea5f28e3e591a8ab26bd6794e06f038282cac8ecf302009c6636cd0bc/hubert.dll` |\\n| **File Type** | PE32 DLL (Dynamic Link Library) |\\n| **Architecture** | x86 (32-bit) |\\n| **Entropy** | 7.99 bits/byte (whole-file Shannon entropy) |\\n| **Import Hash** | `c69e7c5c6b975b5dd44f2d4469eea107` |\\n| **Sections** | `.nasoc`, `.tlsc` (unusual names), `.text`, `.rdata`, `.data`, `.rsrc` |\\n| **Packing** | Not UPX; custom packing suspected due to high entropy and section anomalies |\\n\\nThe high entropy (7.99) and unusual section names (`.nasoc`, `.tlsc`) are strong indicators of packing or obfuscation (source: malcat). The file is not a .NET assembly (source: dotnet_analyze).\\n\\n## 2. Classification\\n\\n**Verdict: MALICIOUS**\\n\\n**Confidence: 95/100**\\n\\n**Family: Tibs (Trojan.Tibs/gen2)**\\n\\nThe classification is based on multiple converging lines of evidence:\\n1.  **Behavioral Intent:** The sample contains YARA rule matches for process injection (`ProcessInjectionTargets`) and privilege escalation (`ElevatePrivileges`), which are clear indicators of malicious functionality (source: malcat).\\n2.  **Network Capability:** High-signal imports for WinINet APIs (`InternetOpenA`, `InternetReadFile`) and strings like `InternetOpenUrlA` confirm C2 communication capability (source: malcat, floss).\\n3.  **Obfuscation & Evasion:** XOR decryption loops (key `0x5d785e`) and anti-VM strings targeting Xen are present (source: malcat, capa).\\n4.  **External Corroboration:** VirusTotal reports 58/70 AV detections as malicious, with the label `trojan.tibs/gen2` (source: external_ti).\\n5.  **Upstream Triage:** The initial triage verdict is `maliciou\n\u2026 [18237 more chars]"
       }
     },

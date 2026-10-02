@@ -333,7 +333,7 @@ Deploy the generated Sigma rule at `/opt/samples/logs/cde83fd3b872670a8c56376ddb
 - **cross_engine_notes**: Ghidra headless analysis failed with a NotOwnerException (project owned by remnux user), IDA analysis is unavailable due to a missing /usr/local/bin/idasql binary, and Malcat triage failed with a runtime closure error. Despite these tool failures, consistent malicious indicators aligned with Quasar RAT were retrieved from pe_imports, capa, YARA, and FLOSS, providing sufficient cross-engine confidence in the verdict.
 - **summary**: The sample is a confirmed malicious Quasar RAT payload. Despite failures in Ghidra, IDA, and Malcat analysis, cross-engine evidence from pe_imports, capa, YARA, and FLOSS confirms all core Quasar RAT capabilities: Windows service-based persistence, registry and file system manipulation, process creation, code injection via memory protection changes, XOR obfuscation of data and payloads, and dropper functionality. All observed TTPs align with publicly documented Quasar RAT behavior.
 - **source**: llm_judge
-- **model**: step-3.7-flash
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

@@ -124,7 +124,7 @@
         "score": 75,
         "agreement": "llm_and_v1_agree",
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "key_evidence": [
           {
             "source": "malcat",
@@ -781,11 +781,11 @@
           "pipeline_audit_all_green": false
         },
         "models": {
-          "master": "step-3.7-flash",
-          "technical_v2": "step-3.7-flash",
-          "technical_v3": "step-3.7-flash",
-          "planner_hint": "step-3.7-flash",
-          "judgment_hint": "step-3.7-flash"
+          "master": "configured-llm",
+          "technical_v2": "configured-llm",
+          "technical_v3": "configured-llm",
+          "planner_hint": "configured-llm",
+          "judgment_hint": "configured-llm"
         }
       },
       "verdict_lock": {
@@ -886,7 +886,7 @@
     "llm": {
       "triage": {
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "verdict": "Malicious",
         "family": "Vidar",
         "confidence": 75,
@@ -980,7 +980,7 @@
       },
       "publish": {
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "excerpt": "{\n  \"title\": \"Malware Analysis Report: Vidar Infostealer Masquerading as NSudo (SHA256: 0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5)\",\n  \"mark\": \"# Malware Analysis Report: Vidar Infostealer Masquerading as NSudo (SHA256: 0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5)\\n\\n## Executive Summary\\nThis report analyzes a 64-bit Windows GUI PE executable (SHA256: 0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5) collected from a Vidar infostealer campaign, as indicated by the `_vidar` suffix in its filename. Upstream triage classifies the sample as Malicious with a confidence score of 75, and our analysis confirms this verdict. The binary masquerades as the legitimate open-source NSudo privilege escalation tool from M2-Team, but is a modified, custom-packed build with additional malicious capabilities not present in official NSudo releases.\\nKey findings include:\\n- Custom packing/obfuscation (high entropy, XOR loops, spaghetti control flow) that hides core functionality from static analysis, but does not indicate benign behavior on its own.\\n- High-signal behavioral capabilities consistent with Vidar infostealer: anti-debugging, privilege escalation, screenshot capture, Windows registry and token manipulation, persistence, and defense impairment (Windows Defender disablement).\\n- No direct C2 strings were identified in static analysis, but embedded network indicator artifacts (domain, IP, URL, base64 string YARA matches) confirm the presence of command-and-control communication capabilities for data exfiltration.\\nThe sample poses a high risk to Windows endpoints, as it can steal sensitive data (credentials, screenshots, system information), gain elevated SYSTEM privileges, and evade detection via anti-debug and antivirus disablement.\\n\\n## 1. Sample Identification\\n| Attribute | Value |\\n|-----------|-------|\\n| SHA256 | 0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5 |\\n| Sample Path | /opt/samples/corpus/pool/0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5/2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar |\\n| Project Name | pool |\\n| File Type | 64-bit Windows GUI PE executable |\\n| Compiler | Microsoft Visual C++ 8.0 (Visual Studio 2017 15.9.4, per Rich header) |\\n| Masquerade | Legitimate NSudo privilege escalation tool (M2-Team) |\\n| PDB Path (embedded) | E:\\\\Projects\\\\NSudo\\\\Output\\\\Release\\\\x64\\\\NSudo.pdb |\\nThe sample's filename includes the `_vidar` suffix, which indicates it was collected as part of a Vidar infostealer malware campaign (source: sample_path, query: filename, row: 2026-07-04_578608b9385c3d0d8fca05fc2c69c1d4_vidar, why: collection context suffix directly associates the sample with the Vidar family). Embedded version metadata claims the binary is the official NSudo 6.2.1812.31 tool from M2-Team, but structural anomalies confirm it is a modified, packed build (source: malcat, query: file_summary.metadata, row: VersionInfo::ProductName=NSudo, VersionInfo::ProductVersion=6.2.1812.31, VersionInfo::CompanyName=M2-Team, why: metadata is consistent with NSudo masquerade, but inconsistent with unobfuscated official NSudo releases).\\n\\n## 2. Classification\\n| Field | Value |\\n|-------|-------|\\n| Verdict | Malicious |\\n| Family | Vidar Infostealer |\\n| Confidence | Medium (50%, per deep-dive analysis) |\\n| Justification | The sample is a modified, packed NSudo build with confirmed behavioral capabilities aligned with Vidar's known TTPs, i\n\u2026 [57582 more chars]"
       }
     },

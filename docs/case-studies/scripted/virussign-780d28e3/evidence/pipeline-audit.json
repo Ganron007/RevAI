@@ -124,7 +124,7 @@
         "score": 85,
         "agreement": "llm_and_v1_agree",
         "source": "llm_judge",
-        "model": "mimo-v2.5",
+        "model": "configured-llm",
         "key_evidence": [
           {
             "source": "malcat",
@@ -791,9 +791,9 @@
           "pipeline_audit_all_green": false
         },
         "models": {
-          "master": "mimo-v2.5",
-          "technical_v2": "mimo-v2.5",
-          "technical_v3": "mimo-v2.5",
+          "master": "configured-llm",
+          "technical_v2": "configured-llm",
+          "technical_v3": "configured-llm",
           "planner_hint": "configured via env",
           "judgment_hint": "configured via env"
         }
@@ -896,7 +896,7 @@
     "llm": {
       "triage": {
         "source": "llm_judge",
-        "model": "mimo-v2.5",
+        "model": "configured-llm",
         "verdict": "malicious",
         "family": "crypter/dropper (likely VB6-based malware dropper with defense evasion)",
         "confidence": 85,
@@ -1000,7 +1000,7 @@
       },
       "publish": {
         "source": "llm_judge",
-        "model": "mimo-v2.5",
+        "model": "configured-llm",
         "excerpt": "{\n  \"title\": \"VB6 Crypter/Dropper Analysis Report: Darty Crypter with Hosts File Tampering and Process Hollowing\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-08 17:30:50 UTC\\n\\n# Verdict sources (multi-source)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | malicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | malicious |\\n\\n- **Locked over publish LLM:** no\\n\\n# Executive Summary\\n\\nThis report details the analysis of a malicious VB6 crypter/dropper sample identified by SHA-256 hash `8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075`. The sample, explicitly identified as \\\"Darty Crypter Source\\\" in its debug information, implements defense evasion and payload delivery via process hollowing (RunPE). Key malicious behaviors include active tampering with the Windows hosts file to block communications with over 30 antivirus vendor domains, manipulation of Windows Security Center registry settings, and establishment of persistence via the Windows Run key. The sample employs classic VB6 obfuscation, dynamic API resolution, and anti-analysis techniques including WMI-based virtual machine detection and anti-debugging measures. Analysis was conducted using static tools (Ghidra, IDA, MalCat, CAPA, YARA) with no runtime observation due to sandbox limitations (source: speakeasy).\\n\\n## 1. Sample Identification\\n\\n**SHA-256:** `8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075` (source: report_metadata)\\n\\n**File Path:** `/opt/samples/corpus/incoming/8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075/virussign.com_780d28e33c39a8513613918671ac0b78.vir` (source: report_metadata)\\n\\n**Project Context:** The sample was received into the `incoming` analysis project (source: report_metadata).\\n\\n**Sample Characteristics:** This is a 32-bit Windows Portable Executable (PE) file with high entropy (135) indicating potential obfuscation or packing (source: malcat). The file was not packed with UPX (source: upx_unpack). YARA rules confirm it is a Visual Basic 5/6 executable (`Microsoft_Visual_Basic_v50v60`) with an overlay and rich signature (source: yara).\\n\\n## 2. Classification\\n\\n**Verdict:** Malicious\\n\\n**Confidence:** High (95%)\\n\\n**Family Classification:** VB6 Crypter/Dropper (source: triage_verdict). The sample explicitly identifies itself as \\\"Darty Crypter Source\\\" in its PDB path (source: ghidra). It demonstrates classic crypter/dropper behavior: obfuscating, decompressing, and executing an embedded payload via process hollowing while evading detection.\\n\\n**Primary Function:** Defense evasion and payload delivery. The sample modifies system configurations to disable security products, establishes persistence, and uses RunPE to inject and execute a compressed payload (source: deep_dive).\\n\\n**Secondary Characteristics:** Anti-analysis (VM detection, anti-debugging), privilege escalation (UAC bypass), and dynamic API resolution are observed (source: malcat, capa).\\n\\n## 3. Background & Family Lineage\\n\\nThe sample belongs to the \\\"Darty Crypter\\\" family, a VB6-based tool designed to obfuscate and protect malware payloads. The presence of the string `@*\\\\AC:\\\\Users\\\\Owner\\\\Desktop\\\\Darty Crypter Source\\\\Payload\\\\P\n\u2026 [18486 more chars]"
       }
     },

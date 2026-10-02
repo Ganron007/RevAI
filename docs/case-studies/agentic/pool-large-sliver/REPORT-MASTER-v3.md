@@ -886,7 +886,7 @@ void sub_9462c0(undefined8 param_1,int64_t param_2,undefined8 param_3,uint64_t p
 - **sha256**: `eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f`
 - **generated_at**: 2026-08-05T11:49:19.177296+00:00
 - **verdict_source**: llm_judge
-- **model**: step-3.7-flash
+- **model**: configured-llm
 - **RAG**: bge-m3 (35,302 records, top-3 per section)
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)

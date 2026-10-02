@@ -21,10 +21,10 @@
     "16. Author + Sign-off"
   ],
   "source": "llm_judge",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "llm_audit": {
-    "request_model": "mimo-v2.5",
-    "response_model": "mimo-v2.5",
+    "request_model": "configured-llm",
+    "response_model": "configured-llm",
     "response_id": "1a17bee8-6299-4873-a1c0-29b42d057944_e97e3674acda40bb886c3de149b601f8",
     "system_fingerprint": null,
     "prompt_tokens": 14234,

@@ -14,7 +14,7 @@
 - **cross_engine_notes**: MalCat anomalies align with capa and YARA detections for hooking and obfuscation. Ghidra and IDA report consistent function and string counts, while MalCat provides detailed behavioral evidence through decompilations and high-signal imports. External VirusTotal detections corroborate local findings with high confidence.
 - **summary**: The sample exhibits clear behavioral-intent evidence through hooking APIs (SetWindowsHookExA) and obfuscation (XOR loops, spaghetti functions). Combined with dynamic API resolution (LoadLibrary, VirtualAlloc) and strong external VirusTotal detections, it is identified as malicious malware, likely belonging to the Poison or Symmi trojan families. Obfuscation alone is neutral, but the presence of hooking and evasion techniques elevates the threat level.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

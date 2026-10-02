@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`step-3.7-flash` verdict=`MALICIOUS` confidence=`90`
+- source=`llm_judge` model=`configured-llm` verdict=`MALICIOUS` confidence=`90`
 - key_evidence_count=`11`
 
 ```json
@@ -121,7 +121,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`step-3.7-flash` verdict=`None` confidence=`None`
+- source=`llm_judge` model=`configured-llm` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -785,7 +785,7 @@ The malicious verdict is supported by full consensus between the LLM analysis pi
   "score": 90,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "pe_imports",

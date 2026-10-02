@@ -74,7 +74,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "The JavaScript file 'loveyou.js' shows significant obfuscation through Base64 encoding and contains strings matching YARA rules for malware indicators such as Android Meterpreter and domain patterns. External threat intelligence from VirusTotal confirms a high malicious detection rate, classifying it as a trojan downloader. Despite tool limitations (Ghidra failure, IDA low function count), the behavioral evidence from YARA and Malcat points to malicious intent, warranting a malicious verdict.",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",
@@ -696,7 +696,7 @@ Dynamic analysis was performed using Speakeasy emulation and Frida probing (sour
   "score": 85,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "yara",

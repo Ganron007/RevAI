@@ -56,7 +56,7 @@
   ],
   "summary": "This sample is a malicious PE file with strong indicators of being a RAT/ransomware hybrid or associated loader. Static analysis reveals high-signal malicious imports for anti-debugging, payload downloading, registry modification, process execution, and dynamic API resolution. YARA matches detect common malware capabilities including keylogging, screen capture, privilege escalation, and file/network operations. Capa rules map these capabilities to ATT&CK techniques for RAT and ransomware operation. FLOSS string analysis reveals heavy obfuscation consistent with malware attempting to hide its indicators. The sample's file path references multiple known ransomware and RAT families, further confirming its malicious nature. No conflicting benign indicators were identified.",
   "source": "llm_judge",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",

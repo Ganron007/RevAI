@@ -49,7 +49,7 @@
   ],
   "summary": "This is a packed/obfuscated ELF x64 Sliver C2 implant targeting Linux systems. It employs multiple layers of encryption (XOR, AES, ChaCha, RC4), control flow obfuscation (spaghetti code, sequential functions), and stackstring obfuscation to evade static analysis. It includes built-in cryptographic capabilities for secure C2 communication, and resolves imports dynamically to avoid static detection. Cross-engine analysis from Malcat, capa, and YARA provides high-confidence confirmation of malicious behavior, with no indicators of legitimate software.",
   "source": "llm_judge",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",

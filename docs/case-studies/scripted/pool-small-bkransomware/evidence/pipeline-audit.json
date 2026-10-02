@@ -124,7 +124,7 @@
         "score": 92,
         "agreement": "llm_and_v1_agree",
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "key_evidence": [
           {
             "source": "malcat",
@@ -858,11 +858,11 @@
           "pipeline_audit_all_green": true
         },
         "models": {
-          "master": "step-3.7-flash",
-          "technical_v2": "step-3.7-flash",
-          "technical_v3": "step-3.7-flash",
-          "planner_hint": "step-3.7-flash",
-          "judgment_hint": "step-3.7-flash"
+          "master": "configured-llm",
+          "technical_v2": "configured-llm",
+          "technical_v3": "configured-llm",
+          "planner_hint": "configured-llm",
+          "judgment_hint": "configured-llm"
         }
       },
       "verdict_lock": {
@@ -963,7 +963,7 @@
     "llm": {
       "triage": {
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "verdict": "Malicious",
         "family": "Probable BKRansomware variant with info-stealer (Elex/Hawkeye/Remcos) capabilities, aligned with the sample's collection context and behavioral overlap with these families",
         "confidence": 92,
@@ -1075,7 +1075,7 @@
       },
       "publish": {
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "excerpt": "{\n  \"title\": \"Malware Analysis Report: Probable BKRansomware Variant with Info-Stealer Capabilities (SHA256: 2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c)\",\n  \"mark\": \"# Malware Analysis Report: Probable BKRansomware Variant with Info-Stealer Capabilities (SHA256: 2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c)\\n\\n## Executive Summary\\nThis report analyzes a 32-bit x86 Windows GUI PE file (SHA256: 2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c) identified as malicious with a triage score of 92. The sample masquerades as a legitimate Adobe Bootstrapper installer to trick users into execution. Static and behavioral analysis confirm it is a probable BKRansomware variant bundled with info-stealer capabilities aligned with the Elex, Hawkeye, and Remcos crimeware families. Observed malicious capabilities include anti-debugging, privilege escalation, credential theft (keylogging, screen capture), payload dropping, registry manipulation, arbitrary process execution, and system shutdown functionality. No active C2 communication or persistence mechanisms were observed in dynamic analysis, but these capabilities are present as latent functionality. The sample is not packed with UPX, but uses control flow obfuscation and XOR loops to hinder analysis. (source: triage_verdict, deep-dive, MalCat)\\n\\n## 1. Sample Identification\\n| Property | Value |\\n|----------|-------|\\n| SHA256 | 2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c |\\n| Sample Path | /opt/samples/corpus/pool/2f2c6d9466e8572bce76ca8d766b43d014eadfcff81f6e35e1b42766af59d60c/2026-07-03_0d164c2f725067a84a46383965b0afd0_bkransomware_elex_hawkeye_maze_remcos |\\n| Project Name | pool |\\n| File Type | 32-bit x86 Windows GUI PE executable |\\n| Compiler | Visual C++ 8.0 (2013), per YARA MSVC_2013_linker and rich signature matches |\\n| Masquerade | Version info claims to be \\\"Adobe Bootstrapper for Single Installation\\\" with OriginalFilename \\\"Setup.exe\\\" |\\n| Entropy | 109 (high, driven by obfuscated code and large string sets, not packing) |\\n| Packing | Not packed with UPX; UPX probe returned 0 tested files |\\n| XOR Obfuscation | Only standard PE DOS stub XOR (\\\"This program cannot be run in DOS mode\\\") found at file offset 0; no hidden XOR-encoded payloads detected |\\n\\n## 2. Classification\\n| Field | Value |\\n|-------|-------|\\n| Verdict | Malicious |\\n| Family | Probable BKRansomware variant with bundled Elex/Hawkeye/Remcos info-stealer components |\\n| Triage Score | 92/100 |\\n| Confidence | High (matches upstream triage, multiple independent behavioral signals confirm malicious intent) |\\nThe classification is driven by confirmed behavioral-intent evidence, not just obfuscation: the sample implements ransomware-associated capabilities (file operations, system shutdown) and info-stealer capabilities (keylogging, screen capture, token manipulation) while masquerading as legitimate software. (source: triage_verdict, yara, capa, pe_imports)\\n\\n## 3. Background & Family Lineage\\nBKRansomware is a ransomware strain that encrypts user files and demands payment for decryption, often bundled with info-stealing components to harvest credentials before encryption. Elex and Hawkeye are info-stealers focused on keylogging, screen capture, and credential harvesting from browsers and applications. Remcos is a remote access trojan (RAT) with info-stealing, process execution, and surveillance capabilities. This sample appears to be a hy\n\u2026 [47542 more chars]"
       }
     },

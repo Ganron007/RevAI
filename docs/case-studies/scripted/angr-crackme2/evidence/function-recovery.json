@@ -1,7 +1,7 @@
 {
   "sha256": "cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4",
   "sample_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-H3/cbddf52b9cc0cf6f25b24890930e6d2137a60c647361a4c7b0081182b20841f4/angr_crackme2.exe",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "generated_at": 1786296551.5461137,
   "triage": {
     "total_functions": 2,
@@ -31,7 +31,7 @@
       "prompt_length": 2491,
       "llm_audit": {
         "request_model": null,
-        "response_model": "mimo-v2.5-pro",
+        "response_model": "configured-llm",
         "response_id": "baa30923-a46f-4104-b195-a90c02260ea9_b794e3157da843a4af8065920bd0e170",
         "system_fingerprint": null,
         "prompt_tokens": 703,
@@ -59,7 +59,7 @@
         "prompt_length": 2491,
         "llm_audit": {
           "request_model": null,
-          "response_model": "mimo-v2.5-pro",
+          "response_model": "configured-llm",
           "response_id": "baa30923-a46f-4104-b195-a90c02260ea9_b794e3157da843a4af8065920bd0e170",
           "system_fingerprint": null,
           "prompt_tokens": 703,

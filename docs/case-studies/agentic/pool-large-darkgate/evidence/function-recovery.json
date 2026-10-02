@@ -1,7 +1,7 @@
 {
   "sha256": "7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6",
   "sample_path": "/opt/samples/corpus/pool/7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6/2026-07-03_037362bb94b9109d6113217305cbb699_darkgate_elex_floxif_glassworm_hijackloader_luca-stealer_medusalocker_njrat_remcos_revil",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "generated_at": 1786163270.6305182,
   "triage": {
     "total_functions": 1,
@@ -31,7 +31,7 @@
       "prompt_length": 2301,
       "llm_audit": {
         "request_model": null,
-        "response_model": "step-3.7-flash",
+        "response_model": "configured-llm",
         "response_id": "chatcmpl-a49caf82712c38c3dadee4ad920f3c0d.019fdf9fd86c758495413bfba23e27d7",
         "system_fingerprint": null,
         "prompt_tokens": 627,
@@ -59,7 +59,7 @@
         "prompt_length": 2301,
         "llm_audit": {
           "request_model": null,
-          "response_model": "step-3.7-flash",
+          "response_model": "configured-llm",
           "response_id": "chatcmpl-a49caf82712c38c3dadee4ad920f3c0d.019fdf9fd86c758495413bfba23e27d7",
           "system_fingerprint": null,
           "prompt_tokens": 627,

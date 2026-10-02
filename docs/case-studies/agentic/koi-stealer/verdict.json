@@ -73,7 +73,7 @@
   ],
   "summary": "This is a packed 2.2MB Borland Delphi PE file with 142 imports, including high-signal APIs for process creation, dynamic API resolution, and memory manipulation. Static analysis via capa identifies obfuscation (XOR, RC4), system/file/registry reconnaissance, and privilege escalation capabilities. YARA rules confirm the sample is packed, built with Delphi, and contains code for DEP bypass, privilege escalation, registry/token interaction, and embedded C2 indicators (domains, IPs, base64 data). FLOSS strings corroborate the Delphi compiler identification. All static indicators point to malicious functionality consistent with an infostealer or RAT.",
   "source": "llm_judge",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",

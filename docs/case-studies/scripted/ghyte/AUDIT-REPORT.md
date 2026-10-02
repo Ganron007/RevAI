@@ -80,7 +80,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "The PE file exhibits multiple behavioral signals including encryption (RC4 PRGA) and window hiding from capa, code anomalies like XOR loops and function gaps from MalCat, and YARA rule matches for potential malware families. VirusTotal corroborates with high detection rates for trojan.upatre/zbot, indicating malicious intent beyond mere obfuscation.",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",
@@ -911,7 +911,7 @@ The sample with SHA256 hash `a59b2cb9f6c706635b4d97edc574a72ac54fba47f9a4a1eae77
   "score": 85,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "capa",

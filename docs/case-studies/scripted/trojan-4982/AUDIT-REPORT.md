@@ -930,7 +930,7 @@ This assessment is hedged as likely malicious based on static analysis; dynamic 
   "score": 85,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "pe_imports",

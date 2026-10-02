@@ -1,7 +1,7 @@
 {
   "sha256": "91b176fb0d650dcc59ff87f5aab50c7a8371fb859f096f93f7cee9920c90dacc",
   "sample_path": "/opt/samples/corpus/incoming/91b176fb0d650dcc59ff87f5aab50c7a8371fb859f096f93f7cee9920c90dacc/virussign.com_f622efa728edc2b6d606315cc6746fa9.vir",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "generated_at": 1786201860.9987364,
   "triage": {
     "total_functions": 0,

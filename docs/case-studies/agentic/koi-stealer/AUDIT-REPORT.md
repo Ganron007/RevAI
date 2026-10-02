@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`step-3.7-flash` verdict=`Suspicious` confidence=`35`
+- source=`llm_judge` model=`configured-llm` verdict=`Suspicious` confidence=`35`
 - key_evidence_count=`9`
 
 ```json
@@ -131,7 +131,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`step-3.7-flash` verdict=`None` confidence=`None`
+- source=`llm_judge` model=`configured-llm` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -851,7 +851,7 @@ These initial rule matches are consistent with the sample's structure as a modif
   "score": 35,
   "agreement": "llm_v1_disagree",
   "source": "llm_judge",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "malcat",

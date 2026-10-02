@@ -1,7 +1,7 @@
 {
   "sha256": "5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da",
   "sample_path": "/opt/samples/corpus/REVAI-LAB-CORPUS-L2/5f251ed33fb1b6960b4d5641b44b44f67277765aa69649977a27ec79cb6153da/space1.ex",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "generated_at": 1786293425.669117,
   "triage": {
     "total_functions": 33,
@@ -31,7 +31,7 @@
       "prompt_length": 2772,
       "llm_audit": {
         "request_model": null,
-        "response_model": "mimo-v2.5-pro",
+        "response_model": "configured-llm",
         "response_id": "f259975b-c197-4df3-af06-859593f0325c_dc741bb938b448d5b6561ac0345d8dc1",
         "system_fingerprint": null,
         "prompt_tokens": 824,
@@ -56,7 +56,7 @@
       "prompt_length": 3190,
       "llm_audit": {
         "request_model": null,
-        "response_model": "mimo-v2.5-pro",
+        "response_model": "configured-llm",
         "response_id": "fbf29764-c34d-45a7-ad06-fd167b51efae_39362740985c40588bb40beb24590782",
         "system_fingerprint": null,
         "prompt_tokens": 1036,
@@ -81,7 +81,7 @@
       "prompt_length": 6432,
       "llm_audit": {
         "request_model": null,
-        "response_model": "mimo-v2.5-pro",
+        "response_model": "configured-llm",
         "response_id": "f8345717-36c3-4193-9d9c-488138a0310f_26ebbf41b83c4945a5416b0b9af0c70f",
         "system_fingerprint": null,
         "prompt_tokens": 2533,
@@ -107,7 +107,7 @@
       "prompt_length": 4282,
       "llm_audit": {
         "request_model": null,
-        "response_model": "mimo-v2.5-pro",
+        "response_model": "configured-llm",
         "response_id": "aec0accd-a1ba-4236-919a-10ee0390f5f1_ffa4a31ed01442178e10a9867f135392",
         "system_fingerprint": null,
         "prompt_tokens": 1506,
@@ -132,7 +132,7 @@
       "prompt_length": 3971,
       "llm_audit": {
         "request_model": null,
-        "response_model": "mimo-v2.5-pro",
+        "response_model": "configured-llm",
         "response_id": "69799973-6ab4-434c-b615-b50d4c03be01_9ed55593f97044d4ba29c5276cd8fd52",
         "system_fingerprint": null,
         "prompt_tokens": 1363,
@@ -157,7 +157,7 @@
       "prompt_length": 4605,
       "llm_audit": {
         "request_model": null,
-        "response_model": "mimo-v2.5-pro",
+        "response_model": "configured-llm",
         "response_id": "41068f94-bc82-43c7-bc4a-aa836e2fae45_f37e3fb0081840778e35dd5e765022ca",
         "system_fingerprint": null,
         "prompt_tokens": 1770,
@@ -185,7 +185,7 @@
         "prompt_length": 2772,
         "llm_audit": {
           "request_model": null,
-          "response_model": "mimo-v2.5-pro",
+          "response_model": "configured-llm",
           "response_id": "f259975b-c197-4df3-af06-859593f0325c_dc741bb938b448d5b6561ac0345d8dc1",
           "system_fingerprint": null,
           "prompt_tokens": 824,
@@ -210,7 +210,7 @@
         "prompt_length": 3190,
         "llm_audit": {
           "request_model": null,
-          "response_model": "mimo-v2.5-pro",
+          "response_model": "configured-llm",
           "response_id": "fbf29764-c34d-45a7-ad06-fd167b51efae_39362740985c40588bb40beb24590782",
           "system_fingerprint": null,
           "prompt_tokens": 1036,
@@ -235,7 +235,7 @@
         "prompt_length": 6432,
         "llm_audit": {
           "request_model": null,
-          "response_model": "mimo-v2.5-pro",
+          "response_model": "configured-llm",
           "response_id": "f8345717-36c3-4193-9d9c-488138a0310f_26ebbf41b83c4945a5416b0b9af0c70f",
           "system_fingerprint": null,
           "prompt_tokens": 2533,
@@ -261,7 +261,7 @@
         "prompt_length": 4282,
         "llm_audit": {
           "request_model": null,
-          "response_model": "mimo-v2.5-pro",
+          "response_model": "configured-llm",
           "response_id": "aec0accd-a1ba-4236-919a-10ee0390f5f1_ffa4a31ed01442178e10a9867f135392",
           "system_fingerprint": null,
           "prompt_tokens": 1506,
@@ -286,7 +286,7 @@
         "prompt_length": 3971,
         "llm_audit": {
           "request_model": null,
-          "response_model": "mimo-v2.5-pro",
+          "response_model": "configured-llm",
           "response_id": "69799973-6ab4-434c-b615-b50d4c03be01_9ed55593f97044d4ba29c5276cd8fd52",
           "system_fingerprint": null,
           "prompt_tokens": 1363,
@@ -311,7 +311,7 @@
         "prompt_length": 4605,
         "llm_audit": {
           "request_model": null,
-          "response_model": "mimo-v2.5-pro",
+          "response_model": "configured-llm",
           "response_id": "41068f94-bc82-43c7-bc4a-aa836e2fae45_f37e3fb0081840778e35dd5e765022ca",
           "system_fingerprint": null,
           "prompt_tokens": 1770,

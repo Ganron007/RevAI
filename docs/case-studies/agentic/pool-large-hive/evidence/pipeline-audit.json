@@ -124,7 +124,7 @@
         "score": 35,
         "agreement": "llm_v1_disagree",
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "key_evidence": [
           {
             "source": "pe_imports",
@@ -788,11 +788,11 @@
           "pipeline_audit_all_green": true
         },
         "models": {
-          "master": "step-3.7-flash",
-          "technical_v2": "step-3.7-flash",
-          "technical_v3": "step-3.7-flash",
-          "planner_hint": "step-3.7-flash",
-          "judgment_hint": "step-3.7-flash"
+          "master": "configured-llm",
+          "technical_v2": "configured-llm",
+          "technical_v3": "configured-llm",
+          "planner_hint": "configured-llm",
+          "judgment_hint": "configured-llm"
         }
       },
       "verdict_lock": {
@@ -893,7 +893,7 @@
     "llm": {
       "triage": {
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "verdict": "SUSPICIOUS",
         "family": "Unknown (UPX-packed 64-bit Windows PE)",
         "confidence": 35,
@@ -969,7 +969,7 @@
       },
       "publish": {
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "excerpt": "{\n  \"title\": \"Malware Analysis Report: 4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-08 03:37:23 UTC\\n\\n# Verdict sources (multi-source)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | SUSPICIOUS |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | malicious |\\n\\n- **Locked over publish LLM:** no\\n\\n## Executive Summary\\nThis report analyzes 64-bit Windows GUI PE sample with SHA256 4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860, collected from the pool project corpus. Static analysis confirms the sample is heavily obfuscated, with UPX packing indicators, high entropy (226), RWX executable sections, and only 4 KERNEL32.DLL imports. No malicious behavioral intent (e.g., C2 communication, persistence, credential theft, data exfiltration) was observed in static analysis. Per verdict calibration rules, obfuscation and packing are neutral signals, so the final classification is SUSPICIOUS, pending dynamic analysis to confirm intent. Upstream triage initially flagged the sample as suspicious, with a deep-dive assessment of malicious that was calibrated down due to lack of behavioral evidence. (source: triage_verdict, deep-dive.json, malcat, capa)\\n\\n## 1. Sample Identification\\n| Attribute | Value |\\n|-----------|-------|\\n| SHA256 | 4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860 |\\n| Sample Path | /opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive |\\n| Project Name | pool |\\n| File Type | 64-bit Windows GUI Portable Executable (PE) |\\n| Entropy | 226 (high, consistent with packed/obfuscated content) |\\n| Total Static Strings | 7237 |\\n| Dynamic Strings (FLOSS) | 0 |\\n| UPX Unpack Status | Failed (sample may use modified UPX or alternate packer) |\\n\\nThe sample is a 64-bit Windows GUI PE file, as confirmed by PE header analysis and YARA rules matching IsPE64 and IsWindowsGUI (source: yara, malcat). It exhibits extremely high entropy of 226, a strong indicator of compressed or encrypted content, consistent with packing (source: malcat). FLOSS string extraction recovered 7237 static strings but 0 decoded, stack, or tight strings, which aligns with packed code where strings are only decrypted at runtime (source: floss). UPX unpacking attempts failed, suggesting the sample may use a modified UPX stub or alternate packing method (source: upx_unpack).\\n\\n## 2. Classification\\n| Field | Value |\\n|-------|-------|\\n| Final Verdict | SUSPICIOUS |\\n| Confidence | Medium |\\n| Family | Unknown |\\n| Justification | No observed malicious behavioral intent; all observed signals are neutral obfuscation/packing indicators per calibration rules |\\n\\nThe final classification is SUSPICIOUS, aligned with upstream triage verdict (source: triage_verdict). An initial deep-dive assessment returned a malicious verdict with 90% confidence, but this was calibrated down per mandatory verdict calibration rules: obfuscation, packing, high entropy, and RWX sections are neutral signals that appear in both benign and malicious software (e.g., crackmes, commercial software protectors, legitimate obfuscated tool\n\u2026 [18638 more chars]"
       }
     },

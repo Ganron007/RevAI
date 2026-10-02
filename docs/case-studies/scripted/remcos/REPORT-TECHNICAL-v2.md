@@ -797,7 +797,7 @@ All 49 capa rules from the analysis can be used for behavioral detection, includ
 - **cross_engine_notes**: IDA analysis is unavailable due to missing idasql binary; all evidence is derived from Ghidra, Malcat, capa, YARA, FLOSS, and pe_imports. Ghidra (1057 strings) and Malcat (100 strings) string datasets are combined for maximum coverage with high confidence. Ghidra decompilation confirms DES encryption routines that align with Malcat's embedded DES constant detections and capa's DES encryption behavior rules. Independent engines consistently detect core Remcos capabilities including keylogging, registry persistence, process enumeration, and credential harvesting indicators.
 - **summary**: This is a high-confidence detection of the Remcos remote access trojan (RAT). The sample is packed with a high-entropy overlay containing the malicious payload, and uses XOR and DES encryption for obfuscation of strings, configurations, and C2 communications. It implements core Remcos features including keylogging, process enumeration, registry-based persistence, and browser credential harvesting via injection of login pages for major services. Import resolution by hash and widespread looped XOR operations are used to evade static analysis, consistent with known Remcos obfuscation techniques.
 - **source**: llm_judge
-- **model**: step-3.7-flash
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

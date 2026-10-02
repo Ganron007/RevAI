@@ -64,7 +64,7 @@
   ],
   "summary": "This is a 32-bit x86 Delphi-based Inno Setup installer with heavy obfuscation (evidenced by spaghetti control flow, XOR encoding loops, and high cross-reference looping anomalies) and a valid code signing certificate that does not match its claimed vendor ('Pringle' in version info vs 'Zhengzhou Lichang Network Technology Co., Ltd.' on the certificate). It exhibits capabilities for privilege escalation, registry manipulation, and process creation, which are common in both legitimate installers and malicious software. No definitive malicious behavior (e.g., C2 communication, file encryption, credential theft, persistence mechanisms) was identified in static analysis, but the masquerade and obfuscation warrant further dynamic analysis to inspect the installer's runtime actions and any bundled payloads.",
   "source": "llm_judge",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "agreement": "llm_v1_disagree",
   "v1_verdict": {
     "verdict": "malicious",

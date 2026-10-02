@@ -38,7 +38,7 @@
   ],
   "summary": "This PE sample is packed with ASPack and exhibits multiple malicious indicators: defense evasion via anti-VM strings (capa), embedded PE files suggesting additional program installation (capa, malcat), network share access (YARA), and dynamic code loading imports (pe_imports). While packing alone is neutral, these behavioral signals confirm malicious intent. The file contains license-related strings, but they appear to be decoys or part of the packed content. Overall, the evidence points to a malicious executable designed to evade detection and potentially execute further payloads.",
   "source": "llm_judge",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",

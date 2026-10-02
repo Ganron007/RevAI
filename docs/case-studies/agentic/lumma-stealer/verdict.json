@@ -67,7 +67,7 @@
   ],
   "summary": "This sample is a packed Windows PE file identified as Lumma Stealer (LummaC2), a known info-stealing malware family. The sample exhibits all core TTPs of Lumma: file and directory discovery, registry manipulation, system information gathering, keylogging, process enumeration, privilege escalation, and XOR obfuscation. It is packed with a Nullsoft PiMP self-extracting stub to evade static analysis, and uses dynamic API resolution to hide malicious functionality. The sample filename directly references the Lumma family, and all observed behavioral indicators align with known Lumma Stealer operation. No clean or legitimate functionality was identified in the available analysis data.",
   "source": "llm_judge",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",

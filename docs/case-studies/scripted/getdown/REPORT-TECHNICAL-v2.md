@@ -799,7 +799,7 @@ All evidence in this report is cited with `(source: <engine>)` notation. The sou
 - **cross_engine_notes**: Ghidra and IDA consistently report function counts (135-136) and string counts (138-147), confirming structural consistency. MalCat identifies critical anomalies such as downloader API usage and obfuscation patterns. Capa and YARA rules reinforce behavioral indicators like file downloading, process creation, and XOR encoding. VirusTotal shows high malicious detection rate with threat labels aligning with trojan downloader behavior.
 - **summary**: The sample exhibits clear malicious behaviors including file downloading via URLDownloadToFile, anti-debugging checks, and process creation, as evidenced by imports and behavioral rules. Combined with obfuscation techniques (XOR encoding, spaghetti functions) and high VirusTotal detections, it is identified as a trojan downloader likely belonging to the usbles26 family, with intent to download and execute additional payloads.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

@@ -85,7 +85,7 @@
   ],
   "summary": "This is a high-confidence detection of the Remcos remote access trojan (RAT). The sample is packed with a high-entropy overlay containing the malicious payload, and uses XOR and DES encryption for obfuscation of strings, configurations, and C2 communications. It implements core Remcos features including keylogging, process enumeration, registry-based persistence, and browser credential harvesting via injection of login pages for major services. Import resolution by hash and widespread looped XOR operations are used to evade static analysis, consistent with known Remcos obfuscation techniques.",
   "source": "llm_judge",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",

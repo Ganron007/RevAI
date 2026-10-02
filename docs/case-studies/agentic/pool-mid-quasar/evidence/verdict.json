@@ -55,7 +55,7 @@
   ],
   "summary": "This is a 64-bit Windows PE file identified as Quasar RAT, a publicly known remote access trojan. Static analysis confirms multiple malicious behavioral capabilities: Windows service persistence (via CreateService imports and capa rules), registry persistence and modification (via RegSetValue imports and capa Run key rules), shortcut-based persistence (via Malcat decompilation of IShellLinkW usage), embedded C2 endpoints (via YARA domain/IP matches), and obfuscation (XOR encoding, stackstrings, spaghetti code) to evade detection. The sample masquerades as a legitimate 'DWAgent service' per its version info. All evidence aligns with known Quasar RAT functionality, resulting in a high-confidence malicious verdict.",
   "source": "llm_judge",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",

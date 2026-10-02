@@ -124,7 +124,7 @@
         "score": 85,
         "agreement": "llm_and_v1_agree",
         "source": "llm_judge",
-        "model": "mimo-v2.5-pro",
+        "model": "configured-llm",
         "key_evidence": [
           {
             "source": "pe_imports",
@@ -896,9 +896,9 @@
           "pipeline_audit_all_green": false
         },
         "models": {
-          "master": "mimo-v2.5-pro",
-          "technical_v2": "mimo-v2.5-pro",
-          "technical_v3": "mimo-v2.5-pro",
+          "master": "configured-llm",
+          "technical_v2": "configured-llm",
+          "technical_v3": "configured-llm",
           "planner_hint": "configured via env",
           "judgment_hint": "configured via env"
         }
@@ -1001,7 +1001,7 @@
     "llm": {
       "triage": {
         "source": "llm_judge",
-        "model": "mimo-v2.5-pro",
+        "model": "configured-llm",
         "verdict": "malicious",
         "family": "Trioris",
         "confidence": 85,
@@ -1104,7 +1104,7 @@
       },
       "publish": {
         "source": "llm_judge",
-        "model": "mimo-v2.5-pro",
+        "model": "configured-llm",
         "excerpt": "{\n  \"title\": \"Trioris/Cerbu Trojan Analysis Report\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `unknown` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-13 13:19:21 UTC\\n\\n# Verdict sources (multi-source)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | malicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | malicious |\\n\\n- **Locked over publish LLM:** no\\n\\n## Executive Summary\\n\\nThis report details the analysis of a malicious Windows executable (SHA256: 38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73) identified as a variant of the Trioris/Cerbu trojan family. The sample exhibits a comprehensive set of malicious capabilities, including HTTP-based command and control (C2) communication with the Russian domain 'twoyden.ru', SOCKS5 proxy/relay functionality, system fingerprinting, registry-based persistence, anti-analysis techniques, and data exfiltration capabilities. The binary is a 32-bit x86 PE executable with a high entropy of 6.82 bits/byte, indicating significant obfuscation or packing, though it is not UPX-packed. Dynamic analysis was performed in this triage (Speakeasy emulation and Frida probing ran); both tools recorded zero runtime events in this assessment, so all findings are based on static analysis, disassembly, and tool-based heuristics. The sample's malicious nature is confirmed by multiple behavioral indicators, including credit card parsing, C2 communication, and anti-debugging measures, aligning with the upstream triage verdict of 'malicious' with a score of 85/100. We assess with high confidence that this is a trojan designed for data theft and remote control, likely targeting Russian-speaking users based on embedded configuration strings.\\n\\n## 1. Sample Identification\\n\\nThe sample under analysis is a Windows Portable Executable (PE) file. Key identifiers are as follows:\\n\\n| Attribute | Value |\\n|---|---|\\n| SHA256 | 38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73 |\\n| File Path | /opt/samples/corpus/day6/38b1bbc48c35a5decd8eaf475a5b32f742c28c5d0b5f9c85c1a667fbf2cbdb73/trojan_4982.exe |\\n| Project Name | day6 |\\n| File Type | PE x86 executable |\\n| Architecture | X86 (32-bit) |\\n| Entropy | 6.82 bits/byte (whole-file Shannon entropy) |\\n| Imphash | b5f4ee827c576f7005f9e544e6955bfb |\\n| Packed | Not UPX-packed (source: UPX unpack evidence) |\\n| .NET | Not a .NET assembly (source: dotnet_analyze) |\\n| Signed | Invalid signature (source: triage verdict) |\\n\\nThe filename 'trojan_4982.exe' suggests it was part of a malware corpus collection. The high entropy value (6.82 bits/byte) indicates significant code obfuscation or compression, though not via UPX. The imphash can be used for clustering with other samples from the same family. (source: MalCat evidence, triage verdict)\\n\\n## 2. Classification\\n\\n**Verdict: MALICIOUS**\\n\\n**Family: Trioris/Cerbu**\\n\\n**Confidence: High (90%)**\\n\\nThe classification is based on multiple converging lines of evidence:\\n\\n1. **Behavioral Intent**: The sample contains code for parsing credit card information (source: capa rule 'parse credit card information'), which is a clear indicator of data theft intent. This is not a neutral capability; it is specifically designed for financial fraud.\\n2. **C2 Communication**: HTTP-based communication with the \n\u2026 [19720 more chars]"
       }
     },

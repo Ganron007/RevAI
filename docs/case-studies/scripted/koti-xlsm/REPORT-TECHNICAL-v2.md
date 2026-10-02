@@ -248,7 +248,7 @@ The analysis was performed in a controlled environment with the following charac
 - **cross_engine_notes**: Ghidra and IDA analysis failed due to session errors; MalCat identified the file as a ZIP/OOXML with high entropy (7.56) and macro content (xl/macrosheets/sheet1.xml); YARA rules matched for base64-encoded strings; VirusTotal reported 34 malicious detections with tags like 'calls-wmi' and threat label 'trojan.msexcel/x97m'. No direct behavioral evidence from static analysis tools, but external TI strongly indicates malicious activity.
 - **summary**: The sample is an Excel macro-enabled workbook (OOXML format) with high entropy and base64-encoded content. External threat intelligence from VirusTotal indicates it is a trojan downloader associated with the XAgent family, as evidenced by multiple AV detections and behavioral tags. While static analysis tools like Ghidra and IDA failed, MalCat confirmed the macro presence and high entropy, and YARA rules detected suspicious strings. These factors collectively point to malicious intent.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

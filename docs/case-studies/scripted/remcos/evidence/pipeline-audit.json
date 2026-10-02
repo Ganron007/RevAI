@@ -124,7 +124,7 @@
         "score": 100,
         "agreement": "llm_and_v1_agree",
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "key_evidence": [
           {
             "source": "malcat",
@@ -797,11 +797,11 @@
           "pipeline_audit_all_green": true
         },
         "models": {
-          "master": "step-3.7-flash",
-          "technical_v2": "step-3.7-flash",
-          "technical_v3": "step-3.7-flash",
-          "planner_hint": "step-3.7-flash",
-          "judgment_hint": "step-3.7-flash"
+          "master": "configured-llm",
+          "technical_v2": "configured-llm",
+          "technical_v3": "configured-llm",
+          "planner_hint": "configured-llm",
+          "judgment_hint": "configured-llm"
         }
       },
       "verdict_lock": {
@@ -902,7 +902,7 @@
     "llm": {
       "triage": {
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "verdict": "Malicious",
         "family": "Remcos RAT (Remote Access Trojan)",
         "confidence": 100,
@@ -1074,7 +1074,7 @@
       },
       "publish": {
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "excerpt": "{\n  \"title\": \"Malware Analysis Report: Remcos RAT Sample (SHA256: 1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0)\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-08 08:19:42 UTC\\n\\n# Classification (multi-source \\u2014 V5.12)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final (locked)** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | Malicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | benign |\\n\\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: keylogger, win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.\\n- **Family (triage):** Remcos RAT (Remote Access Trojan)\\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\\n\\n---\\n\\n### Publish LLM narrative (unedited)\\n\\n## Executive Summary\\nThis report analyzes a 32-bit Windows GUI executable (SHA256: 1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0) identified as a malicious Remcos Remote Access Trojan (RAT). The sample masquerades as the legitimate NirSoft Web Browser Password Viewer utility to avoid user suspicion, as confirmed by VersionInfo metadata (source: malcat). Static and tool-based analysis confirms extensive hostile capabilities including native keylogging, browser credential theft, registry-based persistence, process injection, and encrypted command-and-control (C2) communication. The sample implements heavy obfuscation including XOR encryption, API import by hash, and a high-entropy overlay to evade static detection. All observed capabilities align with the known feature set of the Remcos RAT, a commercial remote access tool widely abused in malicious cyber operations. The final classification verdict is Malicious, with high confidence in the Remcos family assignment.\\n\\n## 1. Sample Identification\\n| Field | Value |\\n|-------|-------|\\n| SHA256 | 1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0 |\\n| Sample Path | /opt/samples/corpus/incoming/1b0eb55bb50d0286b192accbe408826c4c2e6c59a78d52743ce4f84ac0b1d6d0/remcos_sample.exe |\\n| Project Name | incoming |\\n| File Type | 32-bit Windows GUI Portable Executable (PE) |\\n| Masqueraded Identity | NirSoft Web Browser Password Viewer (VersionInfo FileDescription, InternalName, CompanyName) (source: malcat) |\\n| Build Environment | Microsoft Visual C++ 2003, with Rich PE signature and SEH initialization (source: yara) |\\n| .NET Status | Not a .NET assembly (source: dotnet_analyze) |\\n| Original Filename | remcos_sample.exe (source: sample_metadata) |\\n\\nThe sample is a native 32-bit Windows GUI executable, compiled with Visual C++ 2003, and explicitly masquerades as a legitimate NirSoft credential viewing tool in its version metadata. It is not a .NET assembly, and its original filename directly references the Remcos RAT family.\\n\\n## 2. Classification\\n| Attribute | Value |\\n|-----------|-------|\\n| Verdict | Malicious |\\n| Family | Remcos RAT (Remote Access Trojan) |\\n| Confidence | High |\\n| Justification | The sample exhibits confirmed behavioral-intent capabilities including keylogging, credential theft, persistence, and C2 communication, alongside masquer\n\u2026 [25977 more chars]"
       }
     },

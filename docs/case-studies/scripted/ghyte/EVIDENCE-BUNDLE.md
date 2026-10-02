@@ -14,7 +14,7 @@
 - **cross_engine_notes**: Local tools (capa, MalCat) indicate behavioral intent through encryption and defense evasion techniques, while VirusTotal confirms high detection rates as a known trojan/downloader. Obfuscation signals are present but are complemented by malicious behavioral evidence.
 - **summary**: The PE file exhibits multiple behavioral signals including encryption (RC4 PRGA) and window hiding from capa, code anomalies like XOR loops and function gaps from MalCat, and YARA rule matches for potential malware families. VirusTotal corroborates with high detection rates for trojan.upatre/zbot, indicating malicious intent beyond mere obfuscation.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

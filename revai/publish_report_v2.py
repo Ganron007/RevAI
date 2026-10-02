@@ -61,6 +61,8 @@ from report_quality import (  # noqa: E402
     VERDICT_CALIBRATION_CONTRACT,
     evaluate_report_markdown,
     missing_sections,
+    PUBLIC_MODEL_LABEL,
+    redact_model_names,
     scrub_report_indicators,
     source_is_fallback,
     stub_sections,
@@ -1252,6 +1254,14 @@ def main():
     # has to be failed for asserting invented registry paths. Recorded in the
     # report JSON so the removal is auditable.
     md, _ioc_scrub = scrub_report_indicators(case, md, "master_v2")
+    # Vendor/model names are scrubbed from published markdown (docs hygiene).
+    # Done AFTER the scrub because the model may have copied the name into its
+    # own prose while writing from evidence that still carried it.
+    md, _models_redacted = redact_model_names(md)
+    if _models_redacted:
+        report["model_names_redacted"] = _models_redacted
+        print(f"[publish_report_v2] master_v2: redacted model name(s) "
+              f"{_models_redacted} -> {PUBLIC_MODEL_LABEL}", flush=True)
     report["markdown"] = md
     report["indicator_scrub"] = _ioc_scrub
     md_path = case / "REPORT-v2.md"
@@ -1545,6 +1555,11 @@ def main():
         tech_md, _tech_ioc_scrub = scrub_report_indicators(
             case, tech_md, "technical_v2")
         technical_report["indicator_scrub"] = _tech_ioc_scrub
+        tech_md, _tech_models = redact_model_names(tech_md)
+        if _tech_models:
+            technical_report["model_names_redacted"] = _tech_models
+            print(f"[publish_report_v2] technical_v2: redacted model name(s) "
+                  f"{_tech_models} -> {PUBLIC_MODEL_LABEL}", flush=True)
         q_tech = evaluate_report_markdown(
             tech_md,
             required_sections=TECHNICAL_REPORT_SECTIONS,

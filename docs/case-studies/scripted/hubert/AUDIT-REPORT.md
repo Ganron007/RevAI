@@ -942,7 +942,7 @@ The sample with SHA256 `0598e95ea5f28e3e591a8ab26bd6794e06f038282cac8ecf302009c6
   "score": 95,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "malcat",

@@ -215,7 +215,7 @@ This appendix summarizes the key evidence from each analysis engine used in this
 - **Tools Used**: Malcat, CAPA, YARA (pipeline), PE Imports analyzer, Radare2, Ghidra, FLOSS, Speakeasy, Frida, VirusTotal API.
 - **Dynamic Analysis**: Speakeasy emulation (no behavior observed), Frida probe (candidates identified, no hooks executed).
 - **Static Analysis**: Full PE structure analysis, string extraction, import analysis, disassembly, capability matching.
-- **Verdict Source**: `llm_judge` model `mimo-v25-pro` with agreement from `v1`.
+- **Verdict Source**: `llm_judge` model `configured-llm` with agreement from `v1`.
 ## Appendix: Full Structured Evidence Pack
 
 # Technical Evidence Pack
@@ -234,7 +234,7 @@ This appendix summarizes the key evidence from each analysis engine used in this
 - **cross_engine_notes**: Ghidra and IDA reveal HTTP-related strings (e.g., 'http://', 'WININET.DLL') and DLL imports, indicating network capabilities. Malcat identifies obfuscation anomalies like DownloaderApiUsage and XorInLoop, alongside YARA matches for keylogger and network rules. Capa confirms behavioral-intent evidence: keylogging and clipboard data theft. pe_imports highlights high-signal imports such as IsDebuggerPresent and InternetOpen for anti-debugging and C2. External TI from VirusTotal shows 56 malicious detections, classifying it as a trojan with tags like persistence and runtime-modules.
 - **summary**: This PE executable, disguised as 'System Search Indexer', exhibits malicious behaviors including keylogging, clipboard data theft, network communication via WinINet APIs (e.g., InternetOpen, HttpOpenRequestA), and anti-analysis techniques (e.g., IsDebuggerPresent, obfuscation anomalies). Multiple analysis engines corroborate these findings, and external threat intelligence confirms it belongs to the graftor/skeeyah trojan family, indicating clear hostile intent beyond mere obfuscation.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

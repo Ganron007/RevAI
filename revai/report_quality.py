@@ -1278,6 +1278,98 @@ _ORPHAN_FRAGMENT_RE = re.compile(
     r"evidence\]\s?(?:[A-Za-z0-9._-]+)?\\[A-Za-z0-9._\\-]+")
 
 
+#: The only model identifier allowed to appear in published markdown.
+#:
+#: Reports are public documents; vendor and model names are scrubbed from them
+#: (docs hygiene rule). JSON artifacts are NOT scrubbed -- verdict.json,
+#: pipeline-audit.json and report-*.json keep the real name, because they are
+#: machine evidence and an auditor needs to know which model judged the sample.
+#: The published markdown says a configured LLM did it, which is the honest
+#: claim a reader can actually verify.
+PUBLIC_MODEL_LABEL = "configured-llm"
+
+
+def configured_model_names() -> list[str]:
+    """Every model name this deployment is configured with, longest first.
+
+    Longest-first matters: `mimo-v2.6-pro` and `mimo-v2.6` can both be
+    configured (verdict vs default), and replacing the shorter first would
+    leave a dangling `-pro` behind.
+
+    The resolvers read os.environ, which the pipeline populates via
+    ensure_pipeline_runtime_env(). If that has not run -- a bare import, a unit
+    test, a maintenance script -- this falls back to reading the MODEL
+    variables out of the env file so redaction cannot silently become a no-op.
+    A silent no-op is the failure mode worth avoiding here: the caller would
+    report success while publishing the name it was asked to remove.
+
+    Only `*_MODEL`-shaped variables are read. Keys and secrets in the same file
+    are neither read nor retained.
+    """
+    names: set[str] = set()
+    for fn in ("get_default_model", "get_planner_model", "get_verdict_model"):
+        try:
+            from v2_lib import fn as _fn  # type: ignore
+            v = _fn()
+        except Exception:
+            continue
+        if v and isinstance(v, str):
+            names.add(v.strip())
+    for var in ("REVAI_LLM_MODEL", "REVAI_LLM_PLANNER_MODEL",
+                "REVAI_LLM_VERDICT_MODEL", "REVAI_FORCE_MODEL"):
+        v = os.environ.get(var, "").strip()
+        if v:
+            names.add(v)
+    if not names:
+        for path in (Path("/opt/revai/config/llm.env"),
+                     Path(__file__).resolve().parent.parent
+                     / "config" / "llm.env"):
+            try:
+                if not path.is_file():
+                    continue
+                for line in path.read_text(
+                        encoding="utf-8", errors="replace").splitlines():
+                    s = line.strip()
+                    if not s or s.startswith("#") or "=" not in s:
+                        continue
+                    k, _, v = s.partition("=")
+                    k, v = k.strip(), v.strip()
+                    if k.endswith("_MODEL") and v and len(v) >= 3:
+                        names.add(v)
+            except Exception:
+                continue
+            if names:
+                break
+    return sorted((n for n in names if len(n) >= 3), key=len, reverse=True)
+
+
+def redact_model_names(markdown: str) -> tuple[str, list[str]]:
+    """Replace configured model names in published markdown with the public label.
+
+    Two reasons this exists rather than only fixing the injection site:
+
+    1. The technical evidence pack renders the verdict's `model` field, and the
+       model then COPIES that string into its own prose. Fixing the injection
+       stops the source but not the copy.
+    2. A published report is a document a reader may screenshot or quote; the
+       provider name is not part of the analysis.
+
+    Only names this deployment is actually configured with are replaced, so
+    prose that happens to contain a similar word is untouched. Exact-match
+    rather than a fuzzy model-name regex, on purpose: a regex broad enough to
+    catch unknown vendors is also broad enough to mangle analysis text.
+    """
+    if not markdown:
+        return markdown, []
+    replaced: list[str] = []
+    out = markdown
+    for name in configured_model_names():
+        if name and name in out:
+            out = out.replace(name, PUBLIC_MODEL_LABEL)
+            replaced.append(name)
+    return out, sorted(set(replaced))
+
+
 def _flex_claim_re(value: str) -> re.Pattern:
     """Match any markdown rendering of one indicator value.
 

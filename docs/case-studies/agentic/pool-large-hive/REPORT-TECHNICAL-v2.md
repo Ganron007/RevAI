@@ -253,7 +253,7 @@ Recommendations for detecting this sample and similar UPX-packed malware:
 ## 12. Appendix: Analysis Environment
 | Component | Details | Source |
 |---|---|---|
-| Analysis Tools | Malcat, capa (malcat-capa v1.18), pe_imports, YARA, FLOSS, Ghidra, radare2, UPX, XOR search, Speakeasy, Frida 17.16.4, llm_judge (step-3.7-flash), deep_dive_agentic (langgraph) | structured evidence, deep_dive.json |
+| Analysis Tools | Malcat, capa (malcat-capa v1.18), pe_imports, YARA, FLOSS, Ghidra, radare2, UPX, XOR search, Speakeasy, Frida 17.16.4, llm_judge (configured-llm), deep_dive_agentic (langgraph) | structured evidence, deep_dive.json |
 | Sample Path | /opt/samples/corpus/pool/4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860/2026-07-03_52e3a64ea0a04ce87227ea213caa2371_hive | structured evidence |
 | Project Name | pool | structured evidence |
 | Analysis Timestamps | Unix epoch 1785923880 to 1785924364 (from audit trail) | audit trail |
@@ -276,7 +276,7 @@ Recommendations for detecting this sample and similar UPX-packed malware:
 - **cross_engine_notes**: UPX packing is cross-validated by YARA (upx_39x_lzma_x64 rule match) and capa (packed with UPX rule). High-signal imports (LoadLibrary, GetProcAddress, VirtualProtect) are reported by both Malcat and pe_imports, and map to ATT&CK techniques T1129 (Shared Modules) and T1055 (Process Injection) per capa and pe_imports. Malcat's 16 anomalies (high entropy, WX sections, invalid PE headers, cross-section jumps) align with packed malware characteristics, consistent with the UPX packing confirmation. Ghidra's 137 functions and decompilation failure are expected for a UPX-packed sample, where the unpacking stub is present but the payload is encrypted until runtime. IDA returned no data, consistent with a heavily packed/stripped sample, but other engines provide sufficient evidence of malicious intent.
 - **summary**: This is a UPX-packed x64 PE file with strong static indicators of malicious intent. UPX packing is confirmed by both YARA and capa, and the sample contains high-signal imports associated with process injection and runtime API resolution, numerous anomalies consistent with packed malware, and fully obfuscated static strings. The underlying payload has not been unpacked, so the specific malware family cannot be determined, but the static evidence strongly indicates the sample is malicious packed malware.
 - **source**: llm_judge
-- **model**: step-3.7-flash
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

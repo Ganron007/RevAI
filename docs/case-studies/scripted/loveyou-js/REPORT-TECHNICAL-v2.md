@@ -250,7 +250,7 @@ The analysis was performed using the following tools and environment, as indicat
 - **XOR Search:** Tool run, found no XOR-encoded candidates.
 - **VirusTotal:** External threat intelligence lookup.
 - **Deep Dive Agentic Analysis:** Langgraph-based agentic analysis engine.
-- **LLM Judge:** Final verdict and scoring model (mimo-v2.5-pro).
+- **LLM Judge:** Final verdict and scoring model (configured-llm).
 
 The sample path was `/opt/samples/corpus/malware/f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1/loveyou.js`. Logs and generated rules are stored under `/opt/samples/logs/f3e743c919c1deaf5108d361c4ff610187606f450fabda0bea3786d4063511b1/`.
 ## Appendix: Full Structured Evidence Pack
@@ -271,7 +271,7 @@ The sample path was `/opt/samples/corpus/malware/f3e743c919c1deaf5108d361c4ff610
 - **cross_engine_notes**: Ghidra analysis failed entirely due to server errors; IDA reported zero functions and only one string, providing minimal insight; Malcat revealed the file is text/utf8 with Base64 constants and numerous obfuscated strings indicative of encoding; YARA matched six rules including behavioral indicators like domain and Android Meterpreter; VirusTotal shows high malicious detections (44/61 engines) with threat labels suggesting a trojan downloader.
 - **summary**: The JavaScript file 'loveyou.js' shows significant obfuscation through Base64 encoding and contains strings matching YARA rules for malware indicators such as Android Meterpreter and domain patterns. External threat intelligence from VirusTotal confirms a high malicious detection rate, classifying it as a trojan downloader. Despite tool limitations (Ghidra failure, IDA low function count), the behavioral evidence from YARA and Malcat points to malicious intent, warranting a malicious verdict.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

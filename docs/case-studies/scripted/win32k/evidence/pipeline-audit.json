@@ -124,7 +124,7 @@
         "score": 95,
         "agreement": "llm_and_v1_agree",
         "source": "llm_judge",
-        "model": "mimo-v2.5-pro",
+        "model": "configured-llm",
         "key_evidence": [
           {
             "source": "ghidra",
@@ -989,9 +989,9 @@
           "pipeline_audit_all_green": false
         },
         "models": {
-          "master": "mimo-v2.5-pro",
-          "technical_v2": "mimo-v2.5-pro",
-          "technical_v3": "mimo-v2.5-pro",
+          "master": "configured-llm",
+          "technical_v2": "configured-llm",
+          "technical_v3": "configured-llm",
           "planner_hint": "configured via env",
           "judgment_hint": "configured via env"
         }
@@ -1094,7 +1094,7 @@
     "llm": {
       "triage": {
         "source": "llm_judge",
-        "model": "mimo-v2.5-pro",
+        "model": "configured-llm",
         "verdict": "malicious",
         "family": "Dyreza/Battdil",
         "confidence": 95,
@@ -1296,7 +1296,7 @@
       },
       "publish": {
         "source": "llm_judge",
-        "model": "mimo-v2.5-pro",
+        "model": "configured-llm",
         "excerpt": "{\n  \"title\": \"Dyreza/Battdil Trojan Analysis Report\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `unknown` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-14 02:42:36 UTC\\n\\n# Classification (multi-source \\u2014 V5.12)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final (locked)** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | malicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | benign |\\n\\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.\\n- **Family (triage):** Dyreza/Battdil\\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\\n\\n---\\n\\n### Publish LLM narrative (unedited)\\n\\n# Dyreza/Battdil Trojan Analysis Report\\n\\n## Executive Summary\\n\\nThis report details the analysis of a 64-bit Windows DLL (SHA256: 8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde) masquerading as the legitimate Windows kernel component `win32k.dll`. The sample is identified as a variant of the Dyreza/Battdil banking trojan with high confidence (98/100). It is a fully-featured backdoor/RAT with 855 exports, indicating a modular framework. Its primary capabilities include HTTP-based command-and-control (C2) communication, credential theft targeting major web browsers, persistence via scheduled tasks, privilege escalation, and process injection. The malware fingerprints the infected system's OS version and checks its public IP address via `http://icanhazip.com` for beaconing. It employs multiple encryption layers (AES, XOR, Base64, SHA-2/BLAKE2) and masquerades as a system DLL to evade detection. The verdict is **malicious** based on clear behavioral intent for credential theft, C2 communication, and persistence, corroborated by 55/72 VirusTotal detections and multiple tool analyses.\\n\\n## 1. Sample Identification\\n\\n| Attribute | Value |\\n|---|---|\\n| **SHA256** | 8088f08a5636cec3bf8b9f05b6ca2d0b21a76a56199d6ccd1777a6f6a7b9fdde |\\n| **File Name** | win32k.dll |\\n| **File Type** | PE32+ (64-bit) DLL |\\n| **Architecture** | x86-64 |\\n| **Size** | Not specified in evidence |\\n| **Entropy** | 7.37 bits/byte (source: malcat) |\\n| **Imphash** | 8d7e3e41cd993d5a41f4e96d6076c4f7 (source: rule.yara.json) |\\n| **Packed** | No (UPX probe failed, not packed) (source: upx_unpack) |\\n| **.NET Assembly** | No (source: dotnet_analyze) |\\n| **Project** | malware |\\n\\nThe file is a 64-bit DLL with a high entropy of 7.37 bits/byte, suggesting significant obfuscation or encryption within its sections (source: malcat). The filename `win32k.dll` is a deliberate attempt to masquerade as the legitimate Windows kernel-mode driver, a common evasion tactic (source: deep-dive.json). The import hash (imphash) is a unique fingerprint for its import table configuration.\\n\\n## 2. Classification\\n\\n**Verdict: Malicious**\\n\\n**Family: Dyreza/Battdil**\\n\\n**Confidence: 98/100**\\n\\nThe classification is based on a convergence of evidence from multiple analysis engines. The upstream triage verdict is malicious with a score of 95/100, identifying the family as Dyreza/Battdil (source: triage verdict.json). VirusTotal reports 55/72 detections for this family (source: triage verdict.json). The de\n\u2026 [20542 more chars]"
       }
     },

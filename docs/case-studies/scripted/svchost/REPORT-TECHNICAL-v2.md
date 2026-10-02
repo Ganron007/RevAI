@@ -690,7 +690,7 @@ The analysis followed a systematic approach with multiple verification steps:
 - **cross_engine_notes**: Multiple tools (Ghidra, IDA, Malcat, Capa, YARA, pe_imports, external TI) consistently indicate ransomware behavior, including encryption, shadow copy deletion, C2 communication, and persistence. YARA rule directly matches Locky ransomware, and decompiled code references ransomware instructions.
 - **summary**: The sample is a 32-bit Windows executable (svchost.exe) identified as Locky ransomware. It exhibits multiple malicious behaviors including file encryption using cryptographic APIs (e.g., CryptEncrypt), deletion of volume shadow copies via vssadmin.exe, HTTP-based C2 communication, and registry modifications for persistence. Evidence from static analysis, YARA rules (direct Locky match), decompilation (references to ransom instructions), and external threat intelligence (VirusTotal) confirms its ransomware nature with high confidence.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

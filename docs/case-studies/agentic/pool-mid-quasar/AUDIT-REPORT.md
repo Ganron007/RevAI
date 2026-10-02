@@ -31,7 +31,7 @@ _No tool retries occurred during this run._
 
 #### `triage`
 
-- source=`llm_judge` model=`step-3.7-flash` verdict=`MALICIOUS` confidence=`95`
+- source=`llm_judge` model=`configured-llm` verdict=`MALICIOUS` confidence=`95`
 - key_evidence_count=`8`
 
 ```json
@@ -178,7 +178,7 @@ _No tool retries occurred during this run._
 
 #### `publish`
 
-- source=`llm_judge` model=`step-3.7-flash` verdict=`None` confidence=`None`
+- source=`llm_judge` model=`configured-llm` verdict=`None` confidence=`None`
 - key_evidence_count=`0`
 
 ```json
@@ -924,7 +924,7 @@ Static anomaly detection from MalCat identified multiple anti-analysis and paylo
   "score": 95,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "step-3.7-flash",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "pe_imports",

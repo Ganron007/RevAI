@@ -104,7 +104,7 @@ _No tool retries occurred during this run._
   ],
   "summary": "The sample exhibits strong malicious behaviors including keylogging, privilege escalation, registry manipulation, and defense impairment. Tools like YARA and capa detect specific attack techniques, while VirusTotal confirms high detection rates. Obfuscation elements are present but secondary to clear behavioral intent.",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "agreement": "llm_and_v1_agree",
   "v1_summary": {
     "verdict": "malicious",
@@ -925,7 +925,7 @@ This section presents the core identifiers for the analyzed sample, derived from
   "score": 95,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "yara",

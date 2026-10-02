@@ -124,7 +124,7 @@
         "score": 82,
         "agreement": "llm_and_v1_agree",
         "source": "llm_judge",
-        "model": "mimo-v2.5",
+        "model": "configured-llm",
         "key_evidence": [
           {
             "source": "capa",
@@ -848,11 +848,11 @@
           "pipeline_audit_all_green": false
         },
         "models": {
-          "master": "mimo-v2.5",
-          "technical_v2": "mimo-v2.5",
-          "technical_v3": "mimo-v2.5",
-          "planner_hint": "mimo-v2.5",
-          "judgment_hint": "mimo-v2.5"
+          "master": "configured-llm",
+          "technical_v2": "configured-llm",
+          "technical_v3": "configured-llm",
+          "planner_hint": "configured-llm",
+          "judgment_hint": "configured-llm"
         }
       },
       "verdict_lock": {
@@ -953,7 +953,7 @@
     "llm": {
       "triage": {
         "source": "llm_judge",
-        "model": "mimo-v2.5",
+        "model": "configured-llm",
         "verdict": "malicious",
         "family": "Malware disguised as Skype for Business Recording Manager - likely spyware/infostealer with keylogging capabilities",
         "confidence": 82,
@@ -1041,7 +1041,7 @@
       },
       "publish": {
         "source": "llm_judge",
-        "model": "mimo-v2.5",
+        "model": "configured-llm",
         "excerpt": "{\n  \"title\": \"Malware Analysis Report: Skype for Business Recording Manager 2015 Masquerade\",\n  \"markdown\": \"> **RevAI provenance** \\u2014 commit `80c92a39d67f7e321883d3656b87cc4b04c5b7b5` \\u00b7 engine `langgraph` \\u00b7 agent-loop flags: budget=True redundant=True hallucination=True taxonomy=True \\u00b7 generated 2026-08-08 12:22:38 UTC\\n\\n# Classification (multi-source \\u2014 V5.12)\\n\\n| Source | Verdict |\\n|--------|--------|\\n| **Final (locked)** | **malicious** |\\n| Triage upstream (quick \\u222a deep) | malicious |\\n| Quick scan | malicious |\\n| Deep dive | malicious |\\n| Publish LLM (claimed) | benign |\\n\\n- **Lock reason:** publish LLM claimed `benign` but upstream triage is `malicious` (YARA / tool-backed: keylogger, win_files_operation). Final verdict follows triage; dual-use branding does not clear the sample.\\n- **Family (triage):** Malware disguised as Skype for Business Recording Manager - likely spyware/infostealer with keylogging capabilities\\n- **Honesty:** the publish narrative below is **preserved unedited** so analysts can see what the report LLM argued. It is **not** a clearance.\\n\\n---\\n\\n### Publish LLM narrative (unedited)\\n\\n## Executive Summary\\n\\nThis report details the analysis of a malicious sample masquerading as Skype for Business Recording Manager 2015, a legitimate Microsoft application. The sample (SHA-256: 669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2) exhibits multiple malicious behaviors indicative of spyware or infostealer functionality. Key findings include: keylogging via polling (T1056.001), persistence via Run registry keys (T1547.001), XOR obfuscation (T1027), and anti-debug techniques (T1622). The binary shows high entropy (95) and numerous code anomalies including CrossSectionJump, SpaghettiFunction, and XorInLoop patterns, indicating heavy obfuscation. Despite being signed with a Microsoft certificate, behavioral evidence from capa, YARA, and static analysis confirms malicious intent. The combination of keylogging, persistence, and obfuscation techniques strongly suggests spyware or infostealer functionality. (source: triage_verdict.json, capa, yara, malcat)\\n\\n## 1. Sample Identification\\n\\nThe analyzed sample is a 64-bit Windows Portable Executable (PE) file identified by the following metadata:\\n\\n| Attribute | Value |\\n|-----------|-------|\\n| SHA-256 | 669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2 |\\n| Sample Path | /opt/samples/corpus/pool/669cf448a0b2b308e648691d8bec3daecbbeb3cd4f3bc1341c9b03a904089db2/2026-07-03_02c9e5186bff0f868d7d7b5028b42753_mespinoza |\\n| Project | pool |\\n| File Type | PE (64-bit) |\\n| Architecture | X64 |\\n| Entropy | 95 (High) |\\n| Product Version | 16.0.4266.1001 |\\n| File Description | Skype for Business Recording Manager 2015 |\\n| Digital Signature | Signed (Microsoft certificate) |\\n(source: malcat_evidence, rule.yara.json)\\n\\n## 2. Classification\\n\\nBased on comprehensive behavioral and static analysis, this sample is classified as **malicious** with high confidence.\\n\\n| Verdict | Confidence | Family Assessment |\\n|---------|------------|-------------------|\\n| Malicious | 82/100 | Spyware/Infostealer disguised as Skype for Business Recording Manager |\\n\\nThe classification is supported by multiple independent tools identifying keylogging, persistence, and evasion capabilities. The masquerading as legitimate Microsoft software is a clear deceptive tactic. While the sample is signed, this is likely stolen or abused ce\n\u2026 [18147 more chars]"
       }
     },

@@ -31,7 +31,7 @@
   ],
   "summary": "This PE sample exhibits strong indicators of packing and obfuscation, including high entropy, a decryption routine in function sub_474643, and anomalies like non-executable code sections. The use of RC4 encryption via SystemFunction033 suggests defense evasion, but no behavioral-intent evidence (e.g., network C2, persistence, credential theft) was identified. Function analysis across tools is inconsistent, limiting coverage. Based on calibration, protection-only evidence classifies this as suspicious, not definitively malicious.",
   "source": "llm_judge",
-  "model": "mimo-v2.5",
+  "model": "configured-llm",
   "agreement": "llm_v1_disagree",
   "v1_verdict": {
     "verdict": "malicious",

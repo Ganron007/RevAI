@@ -918,7 +918,7 @@ This section provides the key identifiers for the sample under analysis, derived
   "score": 95,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "ghidra",

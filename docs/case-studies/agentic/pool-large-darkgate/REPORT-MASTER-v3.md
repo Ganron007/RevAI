@@ -1037,7 +1037,7 @@ uint32_t __fastcall sub_4bb468(uint32_t param_1,uint32_t *param_2,uint32_t param
 - **sha256**: `7fbde4a47c916e4e3bbbb8c0e77d947216452f1f30e7b27f9e68a7642c8f72a6`
 - **generated_at**: 2026-08-06T07:11:19.754367+00:00
 - **verdict_source**: llm_judge
-- **model**: step-3.7-flash
+- **model**: configured-llm
 - **RAG**: bge-m3 (35,302 records, top-3 per section)
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)

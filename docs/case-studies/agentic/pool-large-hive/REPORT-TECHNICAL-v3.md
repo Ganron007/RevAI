@@ -428,7 +428,7 @@ Analysis environment details:
 - **cross_engine_notes**: UPX packing is cross-validated by YARA (upx_39x_lzma_x64 rule match) and capa (packed with UPX rule). High-signal imports (LoadLibrary, GetProcAddress, VirtualProtect) are reported by both Malcat and pe_imports, and map to ATT&CK techniques T1129 (Shared Modules) and T1055 (Process Injection) per capa and pe_imports. Malcat's 16 anomalies (high entropy, WX sections, invalid PE headers, cross-section jumps) align with packed malware characteristics, consistent with the UPX packing confirmation. Ghidra's 137 functions and decompilation failure are expected for a UPX-packed sample, where the unpacking stub is present but the payload is encrypted until runtime. IDA returned no data, consistent with a heavily packed/stripped sample, but other engines provide sufficient evidence of malicious intent.
 - **summary**: This is a UPX-packed x64 PE file with strong static indicators of malicious intent. UPX packing is confirmed by both YARA and capa, and the sample contains high-signal imports associated with process injection and runtime API resolution, numerous anomalies consistent with packed malware, and fully obfuscated static strings. The underlying payload has not been unpacked, so the specific malware family cannot be determined, but the static evidence strongly indicates the sample is malicious packed malware.
 - **source**: llm_judge
-- **model**: step-3.7-flash
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |

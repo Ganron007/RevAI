@@ -123,7 +123,7 @@
         "score": 85,
         "agreement": "llm_and_v1_agree",
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "key_evidence": [
           {
             "source": "malcat",
@@ -734,11 +734,11 @@
           "pipeline_audit_all_green": true
         },
         "models": {
-          "master": "step-3.7-flash",
-          "technical_v2": "step-3.7-flash",
-          "technical_v3": "step-3.7-flash",
-          "planner_hint": "step-3.7-flash",
-          "judgment_hint": "step-3.7-flash"
+          "master": "configured-llm",
+          "technical_v2": "configured-llm",
+          "technical_v3": "configured-llm",
+          "planner_hint": "configured-llm",
+          "judgment_hint": "configured-llm"
         }
       },
       "verdict_lock": {
@@ -839,7 +839,7 @@
     "llm": {
       "triage": {
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "verdict": "Malicious",
         "family": "Sliver (C2 framework / Linux implant)",
         "confidence": 85,
@@ -919,7 +919,7 @@
       },
       "publish": {
         "source": "llm_judge",
-        "model": "step-3.7-flash",
+        "model": "configured-llm",
         "excerpt": "{\n  \"title\": \"Malware Analysis Report: Sliver C2 Linux Implant (SHA256: eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f)\",\n  \"mark\": \"## Executive Summary\\n\\nThis sample is classified as **Malicious** with 90% confidence as a Sliver command-and-control (C2) framework Linux implant (source: deep-dive.json, confidence=90; source: triage verdict.json, verdict=Malicious, family_guess=Sliver (C2 framework / Linux implant)). The sample is a 64-bit statically linked ELF binary compiled in Go, with very high entropy (108) indicating heavy custom obfuscation (source: malcat, file_summary, type=ELF, architecture=X64, entropy=108, file_size=9281874). Static analysis confirms the presence of Sliver-specific C2 profile strings, encryption/encoding routines for C2 communications, and obfuscation techniques designed to evade reverse engineering (source: deep-dive.json, IDA strings: Sliver C2 profile identifiers; source: capa, top_rules: obfuscated stackstrings, encryption/encoding routines). No persistence mechanisms, defense impairment routines, or data destruction capabilities were observed in static analysis (source: deep-dive.json, Persistence: not observed, Defense_impairment: not observed). No dynamic behavioral analysis was performed, so active C2 communication and runtime capabilities are unconfirmed.\\n\\n## 1. Sample Identification\\n\\n| Metadata Field | Value | Evidence Source |\\n|----------------|-------|-----------------|\\n| SHA256 | eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f | triage verdict.json, sample_path |\\n| Sample Path | /opt/samples/corpus/pool/eceb8e06657564c16e1c0c9e1cf21cd875ebf06a1c37b81df3824fc77159ae3f/2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver | triage verdict.json, sample_path |\\n| Project Name | pool | triage verdict.json, project_name |\\n| File Type | 64-bit statically linked ELF | malcat, file_summary, type=ELF, architecture=X64 |\\n| File Size | 9,281,874 bytes (9.28 MB) | malcat, file_summary, file_size=9281874 |\\n| Entropy | 108 (very high) | malcat, file_summary, entropy=108 |\\n| Compile Language | Go | deep-dive.json, IDA funcs: Go runtime and internal_cpu symbols |\\n| Filename | 2026-07-03_7089acf1941ea01081b4eab5f0b77136_sliver | ida_query, sql=SELECT * FROM welcome, filename |\\n\\nThe high entropy and obfuscation are neutral protection signals, not standalone evidence of malicious intent (source: triage verdict.json, key_evidence, entropy row). The '_sliver' filename suffix aligns with Sliver implant naming conventions (source: triage verdict.json, key_evidence, welcome row).\\n\\n## 2. Classification\\n\\n| Classification Field | Value |\\n|----------------------|-------|\\n| Verdict | Malicious |\\n| Family | Sliver (C2 framework / Linux implant) |\\n| Confidence | 90% |\\n| Malware Type | Post-exploitation C2 implant |\\n| Persistence Observed | No |\\n| Defense Impairment Observed | No |\\n| Data Exfiltration Observed | No |\\n\\nThe classification is aligned with the upstream triage verdict (source: triage verdict.json, verdict=Malicious). The sample is not ransomware, an info-stealer, or a dropper, but a C2 implant designed for remote command execution and post-exploitation tasks. No dual-use tool masquerading is present, as the sample's artifacts confirm it is a Sliver implant, not a legitimate remote administration tool (source: deep-dive.json, IDA strings: Sliver C2 profile identifiers).\\n\\n## 3. Background & Family Lineage\\n\\nSliver is an open-source C2 framework developed \n\u2026 [44785 more chars]"
       }
     },

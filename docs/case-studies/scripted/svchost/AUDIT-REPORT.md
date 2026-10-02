@@ -996,7 +996,7 @@ This sample is Locky ransomware, as confirmed by high-confidence static analysis
   "score": 40.0,
   "agreement": "llm_and_v1_agree",
   "source": "llm_judge",
-  "model": "mimo-v2.5-pro",
+  "model": "configured-llm",
   "key_evidence": [
     {
       "source": "malcat",

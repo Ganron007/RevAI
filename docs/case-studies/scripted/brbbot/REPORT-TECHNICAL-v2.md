@@ -512,7 +512,7 @@ Several aspects of this malware's behavior remain unknown due to tooling limitat
 | Frida | v17.16.4, 0 events | frida_probe |
 | .NET Check | Not .NET | dotnet |
 | PE Imports | 115 imports | pe_imports |
-| LLM Judge | mimo-v2.5-pro | llm_judge |
+| LLM Judge | configured-llm | llm_judge |
 | Deep Dive | langgraph | deep_dive_agentic |
 
 ### 12.2 Key Evidence Citations
@@ -554,7 +554,7 @@ The following SQL queries were executed during analysis (source: audit trail):
 | Sample Path | `/opt/samples/corpus/malware/f47060d0f7de5ee651878eb18dd2d24b5003bdb03ef4f49879f448f05034a21e/brbbot.exe` |
 | Project | malware |
 | Analysis Date | 2026-08-12 |
-| LLM Model | mimo-v2.5-pro |
+| LLM Model | configured-llm |
 | Deep Dive Engine | langgraph |
 | Frida Version | 17.16.4 |
 | Speakeasy | Enabled, 0 events recorded |
@@ -582,7 +582,7 @@ The following SQL queries were executed during analysis (source: audit trail):
 - **cross_engine_notes**: Ghidra and IDA confirm 225 functions and consistent crypto/HTTP imports. Malcat highlights persistence via registry run key and crypto anomalies. Capa maps to multiple ATT&CK techniques including persistence and encryption. YARA rules indicate network and downloader behaviors. External VT shows 57 malicious detections.
 - **summary**: The sample brbbot.exe is malicious trojan exhibiting persistence via registry run keys, HTTP-based C2 communication, data encryption with hardcoded keys, and anti-debugging behaviors. Evidence is consistent across multiple analysis engines and supported by external threat intelligence with 57 VirusTotal detections.
 - **source**: llm_judge
-- **model**: mimo-v2.5-pro
+- **model**: configured-llm
 
 ### key_evidence (triage) — cite source field exactly
 | source | query_or_table | row_or_rule | why |
