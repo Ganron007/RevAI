@@ -817,7 +817,9 @@ _CLAIM_DOMAIN_RE = re.compile(
     r"(?<![\w.-])(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\[\.\]|\.))+[a-z]{2,}(?![\w.-])",
     re.IGNORECASE)
 _CLAIM_HASH_RE = re.compile(r"\b[a-fA-F0-9]{32,64}\b")
-_CLAIM_REGKEY_RE = re.compile(r"(?i)\bHK(?:LM|CU|CR|U|EY_[A-Z_]+)\\[^\s\"'<>|]+")
+_CLAIM_REGKEY_RE = re.compile(
+    r"(?i)\bHK(?:LM|CU|CR|U|EY_[A-Z_]+)\\(?:[^\s\"'<>|]+"
+    r"(?: (?=[A-Za-z0-9._-]+\\)[^\s\"'<>|]*)?)*")
 _CLAIM_EMAIL_RE = re.compile(r"\b[\w.+-]+(?:\[@\]|@)[\w-]+(?:(?:\[\.\]|\.)[\w-]+)+\b")
 
 #: Provenance banner line: "> **RevAI provenance** — commit `<hash>` · engine ..."
@@ -1263,6 +1265,19 @@ _UNVERIFIED_MARKERS = {
 }
 
 
+#: Text immediately after a scrub marker that continues the removed path.
+#: See the `orphan_fragments` result in `scrub_unverified_indicators`.
+#:
+#: The continuation is ` WORD\...`, not `\...`: when the extractor truncated
+#: `SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon` at the space, the
+#: removed part ended at `Windows` and what remained was ` NT\CurrentVersion\
+#: Winlogon`. Matching only a leading separator would have missed exactly the
+#: case that occurred.
+_ORPHAN_FRAGMENT_RE = re.compile(
+    r"\[(?:registry path|URL|IP|domain|hash|email|value) not observed in "
+    r"evidence\]\s?(?:[A-Za-z0-9._-]+)?\\[A-Za-z0-9._\\-]+")
+
+
 def _flex_claim_re(value: str) -> re.Pattern:
     """Match any markdown rendering of one indicator value.
 
@@ -1291,6 +1306,15 @@ def _flex_claim_re(value: str) -> re.Pattern:
     because `...\\CurrentVersion\\Run\\<value_name>` names the same key the
     report was claiming. It is consumed as part of the match (below), so the
     strict boundary still applies to what comes after it.
+
+    Segments containing a space are matched whole rather than truncated at it.
+    That is not cosmetic: `SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon`
+    is a real key, and an earlier version of this stopped at the space, so the
+    claim was read as `...\\Microsoft\\Windows` and the scrubber then replaced
+    that prefix and published the orphan tail ` NT\\CurrentVersion\\Winlogon`
+    beside the marker. `remaining_unverified` stayed at 0, because the leftover
+    is not itself a registry claim -- which is why the fragment check in
+    `scrub_unverified_indicators` exists alongside it.
     """
     parts = re.sub(r"\\{2,}", r"\\", value).split("\\")
     body = r"\\{1,2}".join(re.escape(p) for p in parts)
@@ -1331,7 +1355,7 @@ def scrub_unverified_indicators(
         return markdown, [], {
             "indicators_removed": 0, "indicators_removed_detail": [],
             "unverified_before": 0, "remaining_unverified": 0,
-            "verified_after": 0,
+            "verified_after": 0, "orphan_fragments": [],
         }
     verification = verify_claimed_iocs(
         markdown, evidence_text, provenance_commit=provenance_commit)
@@ -1342,6 +1366,7 @@ def scrub_unverified_indicators(
             "unverified_before": verification.get("unverified", 0),
             "remaining_unverified": verification.get("unverified", 0),
             "verified_after": verification.get("verified", 0),
+            "orphan_fragments": [],
         }
 
     parts = _FENCE_BLOCK_SPLIT_RE.split(markdown)
@@ -1372,12 +1397,20 @@ def scrub_unverified_indicators(
     scrubbed = "".join(out)
     after = verify_claimed_iocs(
         scrubbed, evidence_text, provenance_commit=provenance_commit)
+    # A fragment is text left adjacent to a marker that continues the path it
+    # replaced -- "NT\CurrentVersion\Winlogon" after
+    # "...\Microsoft\Windows" was removed. It is NOT an unverified CLAIM, so
+    # the count above cannot see it, and it ships as orphan prose naming a
+    # registry location nothing observed. Checked explicitly rather than
+    # assumed.
+    fragments = _ORPHAN_FRAGMENT_RE.findall(scrubbed)
     return scrubbed, removed, {
         "indicators_removed": len(removed),
         "indicators_removed_detail": removed[:40],
         "unverified_before": verification.get("unverified", 0),
         "remaining_unverified": after.get("unverified", 0),
         "verified_after": after.get("verified", 0),
+        "orphan_fragments": fragments[:10],
     }
 
 

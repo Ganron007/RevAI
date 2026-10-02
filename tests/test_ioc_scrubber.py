@@ -276,6 +276,51 @@ def test_scrubber_does_not_grow_an_exclusion_list():
         "scrubbing changed which claims are exempt")
 
 
+def test_registry_segments_containing_a_space_are_not_truncated():
+    r"""Regression found by reading the published report, not by a metric.
+
+    `SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon` is a real key. The
+    old extractor stopped at the space, so the claim was read as
+    `...\Microsoft\Windows`, the scrubber replaced that prefix, and the report
+    shipped the orphan tail ` NT\CurrentVersion\Winlogon` next to the marker --
+    with `remaining_unverified` at 0, because the tail is not itself a claim.
+    """
+    from report_quality import _CLAIM_REGKEY_RE
+    path = r"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
+    found = [m.group(0) for m in _CLAIM_REGKEY_RE.finditer(f"uses {path} for logon")]
+    assert found == [path], found
+
+    scrubbed, _, meta = scrub_unverified_indicators(
+        f"uses {path} for logon", EVIDENCE)
+    assert "NT\\CurrentVersion\\Winlogon" not in scrubbed, scrubbed
+    assert not meta["orphan_fragments"], meta["orphan_fragments"]
+
+
+def test_bare_hive_aliases_in_prose_are_not_claims():
+    """`via HKCU/HKLM auto-run keys` names hives, not paths."""
+    from report_quality import _CLAIM_REGKEY_RE
+    t = "supports persistence via HKCU/HKLM auto-run keys"
+    assert not [m.group(0) for m in _CLAIM_REGKEY_RE.finditer(t)]
+
+
+def test_orphan_fragment_is_reported_even_when_no_claim_remains():
+    r"""`remaining_unverified == 0` is necessary but not sufficient.
+
+    A leftover path tail is not a registry claim, so the verifier cannot see it.
+    The fragment check is what makes a clean result trustworthy: without it the
+    scrubber reported success while shipping ` NT\CurrentVersion\Winlogon`.
+    """
+    md = ("Replaced marker [registry path not observed in evidence] "
+          r"NT\CurrentVersion\Winlogon here.")
+    from report_quality import _ORPHAN_FRAGMENT_RE
+    assert _ORPHAN_FRAGMENT_RE.findall(md), (
+        "the orphan fragment pattern must catch a path tail after a marker")
+    # And a marker with ordinary prose after it is not a fragment.
+    clean = ("Replaced marker [registry path not observed in evidence] "
+             "for persistence.")
+    assert not _ORPHAN_FRAGMENT_RE.findall(clean)
+
+
 def test_empty_markdown_is_handled():
     """The meta keys are present even on the no-op paths.
 
