@@ -4172,14 +4172,83 @@ def capa_analyze(sample_path: str, timeout: int | None = None) -> dict:
     return _try_capa_rs()
 
 
-def _collect_floss_strings(
-    data: dict, max_strings: int = 80
-) -> tuple[list[str], dict[str, int], int]:
-    """Flatten floss --json → (sample strings, per-category counts, total count).
+#: Strings that carry indicator value rather than prose. These claim the sample
+#: budget FIRST, because losing one costs the report real evidence.
+#:
+#: Found 2026-10-02 on win32k_dll. The DLL contains seven UTF-16 registry paths
+#: -- including `Software\Microsoft\Windows NT\CurrentVersion\Winlogon\
+#: SpecialAccounts\UserList`, a textbook logon-hijack plus account-enumeration
+#: chain -- and FLOSS reported all of them under `static_strings` (817 of them).
+#: The sampler took 80 in category-priority order and `static_strings` is
+#: consumed LAST, so all 80 slots went to `decoded_strings` (89) and
+#: `static_strings` contributed nothing at all.
+#:
+#: The report was then written without them and filled the gap from training
+#: data: Malcat's abbreviated `Software\Microso..Version\Winlogon` came back
+#: spelled out as a path that does not exist. The model was reconstructing
+#: because the prompt never contained the evidence -- so the sampling, not the
+#: model, was what needed fixing.
+_IOC_URL_RE = re.compile(r"(?i)\b(?:https?|ftp|file)://|\bwww\.[a-z0-9-]+\.")
+_IOC_IP_RE = re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b")
+_IOC_EMAIL_RE = re.compile(r"(?i)\b[\w.+-]+@[\w-]+(?:\.[\w-]+)+\b")
+#: A registry path: an HK* hive, a SOFTWARE/SYSTEM root, or 2+ backslash
+#: separators (which also catches hive-less subkeys).
+_IOC_REGISTRY_RE = re.compile(
+    r"(?i)\bHK(?:LM|CU|CR|U|EY_[A-Z_]+)\\|"
+    r"\b(?:SOFTWARE|SYSTEM|SAM|SECURITY)\\|"
+    r"\\[^\\\s]{2,}\\[^\\\s]{2,}")
+_IOC_PATH_RE = re.compile(r"(?i)(?:\b[A-Z]:\\|\\\\|%[A-Z_]+%\\)")
+#: Named kernel objects: `Global\` / `Local\` prefixed mutexes and events. One
+#: separator only, so the registry rule above does not catch them.
+_IOC_MUTEX_RE = re.compile(r"(?i)\b(?:Global|Local)\\[A-Za-z0-9_.$-]{3,}")
+#: Extensions worth spending budget on. `dll`, `sys`, `tmp`, `dat`, `log`,
+#: `ini` and `cfg` are deliberately EXCLUDED: in a strings dump they are almost
+#: entirely import-table and CRT noise (`kernel32.dll` matched on the first
+#: attempt, which is precisely the false positive this priority is supposed to
+#: avoid), and the import table already records those authoritatively. The
+#: script and executable types are the diagnostic ones, and are what a
+#: CreateProcess-style invocation actually names.
+_IOC_INTERESTING_EXT_RE = re.compile(
+    r"(?i)\.(?:exe|bat|cmd|ps1|vbs|vbe|js|jse|hta|scr|pif|cpl|msi|jar|lnk)"
+    r"(?:\b|$)")
 
-    ``max_strings`` caps the returned sample for LLM/cards.
-    ``total`` sums category lengths (accuracy signal; avoids full unique-set
-    on 100k+ string dumps).
+
+def _is_ioc_shaped(s: str) -> bool:
+    """True when a string looks like an indicator rather than program text.
+
+    Conservative by design. A bare dotted token is far too ambiguous -- it
+    matches `kernel32.dll`, capability names and version strings -- so domains
+    are only claimed when an explicit scheme, `www.`, or a real TLD appears.
+    Registry paths and URLs are unambiguous, and that is where the win32k_dll
+    evidence loss actually happened.
+    """
+    if not s:
+        return False
+    return bool(
+        _IOC_URL_RE.search(s)
+        or _IOC_IP_RE.search(s)
+        or _IOC_EMAIL_RE.search(s)
+        or _IOC_REGISTRY_RE.search(s)
+        or _IOC_PATH_RE.search(s)
+        or _IOC_MUTEX_RE.search(s)
+        or _IOC_INTERESTING_EXT_RE.search(s)
+    )
+
+
+def _collect_floss_strings(
+    data: dict, max_strings: int = 300
+) -> tuple[list[str], dict[str, int], int, dict]:
+    """Flatten floss --json -> (sample, per-category counts, total, ioc stats).
+
+    ``max_strings`` caps what reaches the prompt. ``total`` sums category
+    lengths (accuracy signal; avoids building a full unique-set on 100k+ string
+    dumps).
+
+    Sampling is shape-first: every IOC-shaped string claims budget before any
+    filler does, and the counts of what did not fit are returned so a truncated
+    indicator set is visible in the artifact instead of silent. Taking the
+    first N in category order systematically starved `static_strings`, which is
+    where plain registry paths and URLs live.
     """
     def _iter_strings(items):
         for item in items or []:
@@ -4192,8 +4261,10 @@ def _collect_floss_strings(
                 yield s[:200]
 
     per_category: dict[str, int] = {}
-    sample: list[str] = []
+    ioc_hits: list[str] = []
+    filler: list[str] = []
     seen_sample: set[str] = set()
+    ioc_total = 0
     total = 0
 
     priority_categories = (
@@ -4206,14 +4277,19 @@ def _collect_floss_strings(
     )
 
     def _consume(cat: str, items) -> None:
-        nonlocal total
+        nonlocal total, ioc_total
         n = 0
         for s in _iter_strings(items):
             n += 1
             total += 1
-            if len(sample) < max_strings and s not in seen_sample:
+            if _is_ioc_shaped(s):
+                ioc_total += 1
+                if s not in seen_sample:
+                    seen_sample.add(s)
+                    ioc_hits.append(s)
+            elif s not in seen_sample:
                 seen_sample.add(s)
-                sample.append(s)
+                filler.append(s)
         per_category[cat] = n
 
     inner = data.get("strings")
@@ -4227,10 +4303,19 @@ def _collect_floss_strings(
         for cat in priority_categories:
             _consume(cat, data.get(cat) or [])
 
-    return sample, per_category, total
+    ioc_kept = ioc_hits[:max_strings]
+    sample = ioc_kept + filler[: max(0, max_strings - len(ioc_kept))]
+    ioc_stats = {
+        "ioc_shaped_total": ioc_total,
+        "ioc_shaped_sampled": len(ioc_kept),
+        "ioc_shaped_dropped": max(0, len(ioc_hits) - len(ioc_kept)),
+        "sample_budget": max_strings,
+    }
+    return sample, per_category, total, ioc_stats
 
 
-def floss_extract(sample_path: str, max_strings: int = 80, timeout: int | None = None) -> dict:
+def floss_extract(sample_path: str, max_strings: int | None = None,
+                  timeout: int | None = None) -> dict:
     """Run FLOSS string extraction (V5.11).
 
     Always pass ``--language none`` so Rust/Go language extractors cannot hang
@@ -4238,8 +4323,18 @@ def floss_extract(sample_path: str, max_strings: int = 80, timeout: int | None =
 
     ``timeout`` caps the size-based default so callers (e.g. quick_scan) can
     enforce the TOOL_MANIFEST wall budget.
+
+    ``max_strings`` defaults to ``REVAI_FLOSS_MAX_STRINGS`` (300). It was 80
+    until 2026-10-02, which is a volume question with a cheap answer -- 300 is
+    still a fraction of a typical string table. The real defect was never the
+    size but the ORDER: see _collect_floss_strings.
     """
     import os as _os
+    if max_strings is None:
+        try:
+            max_strings = max(20, int(os.environ.get("REVAI_FLOSS_MAX_STRINGS", "300")))
+        except (TypeError, ValueError):
+            max_strings = 300
     fmt = _detect_format_for_tools(sample_path)
     if fmt not in ("pe", "dotnet"):
         return {
@@ -4344,7 +4439,7 @@ def floss_extract(sample_path: str, max_strings: int = 80, timeout: int | None =
             data = json.loads(proc.stdout)
         except Exception as e:
             return _strings_fallback(f"floss json parse failed: {e}")
-        strings, per_category, total = _collect_floss_strings(
+        strings, per_category, total, ioc_stats = _collect_floss_strings(
             data, max_strings=max_strings
         )
         if total <= 0:
@@ -4355,6 +4450,11 @@ def floss_extract(sample_path: str, max_strings: int = 80, timeout: int | None =
             "strings_sampled": len(strings),
             "strings": strings,
             "per_category": per_category,
+            # Dropped-indicator counts are recorded rather than inferred: a
+            # truncated indicator set must be visible in the artifact, because
+            # "we sampled 300 of 907 strings" says nothing about whether the
+            # evidence the report needs was among them.
+            **ioc_stats,
             "raw_key_total": len(data) if isinstance(data, dict) else 0,
             "floss_profile": profile,
             "floss_language": "none",
