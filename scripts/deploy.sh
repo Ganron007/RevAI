@@ -120,7 +120,24 @@ fi
 # ---------------------------------------------------------------------------
 if command -v git >/dev/null 2>&1 && git -C "$REPO_ROOT" rev-parse --verify HEAD >/dev/null 2>&1; then
     _revai_commit="$(git -C "$REPO_ROOT" rev-parse HEAD)"
-    if [[ -n "$(git -C "$REPO_ROOT" status --porcelain 2>/dev/null)" ]]; then
+    # "-dirty" must mean "the DEPLOYED CODE differs from HEAD", nothing else.
+    #
+    # It used to be `git status --porcelain` over the whole tree, which fired on
+    # three case-study markdown files whose only difference was CRLF-vs-LF on
+    # checkout (2026-10-03). A provenance banner that cries wolf on whitespace
+    # trains the reader to ignore it, and the one time it matters -- a genuinely
+    # hot-patched deploy -- it has already been discounted.
+    #
+    # So: scoped to the paths deploy.sh actually installs, and whitespace- and
+    # line-ending-insensitive. A real edit to revai/, scripts/, install/ or
+    # config/ still marks the build dirty, which is the signal's purpose.
+    _revai_dirty="$(git -C "$REPO_ROOT" status --porcelain -- \
+        revai scripts install config 2>/dev/null \
+        | grep -vE '^..[[:space:]]*.*\.(md|json|jsonl|txt)$' || true)"
+    if [[ -n "$(git -C "$REPO_ROOT" diff --ignore-all-space --name-only -- \
+            revai scripts install config 2>/dev/null)" ]]; then
+        _revai_commit="${_revai_commit}-dirty"
+    elif [[ -n "$_revai_dirty" ]]; then
         _revai_commit="${_revai_commit}-dirty"
     fi
     printf '%s\n' "$_revai_commit" | sudo tee /opt/revai/config/REVAI_COMMIT >/dev/null
