@@ -30,12 +30,16 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _layout import resolve  # noqa: E402
 
-# The repo keeps this under extensions/; the VM deploys it flat into
-# /opt/scripts. Resolved for both so this tripwire runs on the VM, which is
-# where the deobfuscation defects it guards actually occur.
-_CFF = resolve("extensions/cff-deflatten/cff_deflatten.py")
-if not _CFF.is_file():
-    _CFF = ROOT / "cff_deflatten.py"
+# Three layouts, because the deobfuscation helper is installed as an EXTENSION
+# rather than deployed with the scripts (AGENTS.md section 2: `extensions/*` ->
+# /opt/revai/* via install/setup-remnux.sh). Without the third candidate this
+# file failed at COLLECTION on the VM and took the whole suite down with it.
+_CFF_CANDIDATES = (
+    resolve("extensions/cff-deflatten/cff_deflatten.py"),
+    ROOT / "cff_deflatten.py",
+    Path("/opt/revai/cff-deflatten/cff_deflatten.py"),
+)
+_CFF = next((p for p in _CFF_CANDIDATES if p.is_file()), _CFF_CANDIDATES[0])
 SPEC = importlib.util.spec_from_file_location("cff_deflatten", _CFF)
 cff = importlib.util.module_from_spec(SPEC)
 sys.modules["cff_deflatten"] = cff
