@@ -427,6 +427,31 @@ per-request output budget. Assembled monolithically it returned truncated after
 section 1 and scored 1 of 13. Set `REVAI_TECHNICAL_SECTIONWISE=0` to restore the
 single-call assembly — kept only as a rollback lever.
 
+Verified on win32k_dll: **13/13 sections, `source: llm_judge`, `quality.ok=true`,
+0 missing, 0 stub, 232 KB** (was 97 KB), stage rc=0 in 356s.
+
+### Reading the indicator section critically
+
+A complete report asserts far more indicators than a truncated one, and the
+report will sometimes contain **plausible Windows registry paths that no tool
+observed** — canonical persistence locations such as
+`HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run`. The model
+knows these from training; they are not extracted from the sample. When the
+sample's evidence pack contains no registry strings at all, such a path is
+unsupported no matter how correct it looks as a Windows fact.
+
+Two tells:
+
+- a path appears whose engine attribution is absent or generic
+- the path is written with **doubled backslashes** (`HKLM\\SOFTWARE\\...`),
+  which reads as an escaped pattern rather than a string lifted from the binary
+
+The `report:unverified_iocs` audit check compares each claimed indicator against
+the raw tool evidence and fails the run when one is not found there. Treat a
+failure of that check as a genuine finding about the report, not as a gate to be
+satisfied: an indicator that no engine produced must not be published as
+observed, however plausible it is.
+
 ## Verification and release gates
 
 Two layers, both deterministic and safe to run any time:
