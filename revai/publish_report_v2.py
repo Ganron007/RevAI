@@ -100,12 +100,24 @@ def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, ya
                       malcat_result: dict | None = None,
                       capa_result: dict | None = None, yara_result: dict | None = None,
                       floss_result: dict | None = None, pe_imports_result: dict | None = None,
-                      recovery_evidence: str = "") -> str:
+                      recovery_evidence: str = "",
+                      sections: list[str] | None = None) -> str:
+    """Master report prompt.
+
+    `sections` restricts the requested headings to a subset. The master report
+    was one call for all 17 sections and returned finish=length at 48,813 chars
+    on win32k_dll (2026-10-02) — rejected as truncated and retried, twice over the
+    stage's budget. One section per call removes the overflow at the source.
+    """
+    want = list(sections) if sections else list(REPORT_MASTER_SECTIONS)
     lines = [
-        f"# Publish report v2 — REPORT-MASTER ({len(REPORT_MASTER_SECTIONS)} sections)",
+        f"# Publish report v2 — REPORT-MASTER ({len(want)} sections)",
         "",
         "You MUST produce markdown with ALL of these level-1 headings (exact titles):",
-        section_checklist(),
+        "\n".join(f"- {s}" for s in want),
+        "",
+        "Write ONLY the sections listed above. Do not add others, and do not "
+        "restate sections you were not asked for.",
         "",
         f"sha256: {session['sha256']}",
         f"sample_path: {session['sample_path']}",
@@ -289,11 +301,13 @@ def build_prompt_technical(session: dict, verdict: dict | None, deep: dict | Non
     """Build a prompt for a technical analyst-grade report with evidence snippets.
 
     `sections` restricts the call to a subset of TECHNICAL_REPORT_SECTIONS, which
-    exists because one monolithic call cannot serve every sample: a response that
-    would exceed the provider's ~16K output-token ceiling never returns, it hangs
-    until the socket timeout. That is how win32k_dll's technical report burned
-    600 s, then 1200 s, and still landed on stubs (2026-10-01). See
-    TECHNICAL_BODY_GROUPS and generate_technical_chunked.
+    exists because one oversized call does not serve every sample: a response
+    wanting more than the per-request output budget comes back truncated
+    (finish=length), which the pipeline rejects and retries. There is no provider
+    output CEILING — the model stops voluntarily at ~6,900 tokens even when told
+    to write "many thousands of words" (measured 2026-10-02) — so the fix is a
+    smaller request, not a bigger allowance. See TECHNICAL_BODY_GROUPS and
+    generate_technical_chunked.
 
     `prior_sections_md` gives the closing call the earlier sections' text so the
     Executive Summary is written against the body rather than guessed.
@@ -449,10 +463,30 @@ def repair_verdict_panel(md: str, locked_verdict: str | None) -> tuple[str, int]
 #: tables, disassembly, behavioural narrative -- and grouping them into one call
 #: still overflowed: on win32k_dll that group returned nothing at all while its
 #: neighbours produced 29.7K and 29.3K chars. Sections 6-11 comfortably share
-#: calls. Sizes are chosen against the provider's measured ~16K output-token
-#: ceiling, below which a call always returns and above which it hangs.
-TECHNICAL_BODY_GROUPS: tuple[tuple[int, int], ...] = (
-    (2, 3), (3, 4), (4, 5), (5, 8), (8, 11))
+#: calls. Sizes are chosen so a call cannot ask for more output than the
+#: per-request budget allows: an oversized request comes back truncated
+#: (finish=length) and is rejected and retried, which is what cost win32k_dll
+#: roughly 1331s of a 3600s stage budget on 2026-10-02. There is no provider
+#: output ceiling -- the model stops voluntarily at ~6,900 tokens even when told
+#: to write "many thousands of words" -- so the fix is a smaller request.
+#: One section per call.
+#:
+#: This was ((2,3),(3,4),(4,5),(5,8),(8,11)) — five calls, with the last two
+#: covering three sections each. Measured on win32k_dll 2026-10-02, the
+#: three-section groups wanted more output than the per-request cap allows:
+#: four of publish_v2's eleven calls came back finish=length at 27K-49K chars,
+#: each was rejected as truncated and retried, and the stage was killed at its
+#: 3600s budget with ~270s of real work left. About 1331s of the budget was
+#: spent generating responses that were thrown away.
+#:
+#: A saturation probe settled whether the cap itself was at fault: asked to
+#: "write many thousands of words", the model stopped voluntarily at ~6,900
+#: tokens — under both the old 16384 cap and a 32768 one. So the cap was not the
+#: binding constraint; the oversized REQUEST was. Splitting to one section per
+#: call removes the overflow at the source, which is what the v3 technical
+#: report already does (section_publisher.TECHNICAL_SECTION_EVIDENCE).
+TECHNICAL_BODY_GROUPS: tuple[tuple[int, int], ...] = tuple(
+    (i, i + 1) for i in range(2, 11))
 #: Written last, with the body's text supplied as context: the Executive Summary
 #: and Metadata lead the document but depend on the findings that follow.
 TECHNICAL_WRAP_RANGE = (0, 2)
@@ -855,8 +889,8 @@ def main():
         "--technical-monolithic", action="store_true",
         help="Generate the technical report in ONE call instead of by section "
              "groups. Kept for comparison only: a single call cannot exceed the "
-             "provider's ~16K output-token ceiling without hanging, so it "
-             "cannot complete for a large sample.",
+             "per-request budget allows, comes back truncated, "
+             "and cannot complete for a large sample.",
     )
     args = ap.parse_args()
 
@@ -961,16 +995,53 @@ def main():
     report: dict[str, Any]
     llm_err: str | None = None
     try:
-        resp = llm_judge(prompt)
-        (ev_dir / "01-llm-raw.json").write_text(json.dumps(resp, indent=2, default=str))
-        report = _extract_report_json(resp["choices"][0]["message"]["content"])
-        meta = llm_call_metadata(resp)
-        meta["request_model"] = get_llm_model()
-        report["model"] = meta.get("response_model") or get_llm_model()
-        report["llm_audit"] = meta
-        report["source"] = report.get("source") or "llm_judge"
-        report["template"] = args.template
-        report["generated_at"] = datetime.now(timezone.utc).isoformat()
+        # One section per call. A single call for all 17 sections overflowed the
+        # per-request output budget (finish=length at 48,813 chars on win32k_dll,
+        # 2026-10-02), and each overflow was rejected as truncated and retried,
+        # consuming the stage budget on responses that were thrown away.
+        master_pieces: list[str] = []
+        master_failed: list[str] = []
+        for si, title in enumerate(REPORT_MASTER_SECTIONS):
+            one = build_prompt_full(
+                session, verdict, deep, yara_meta, audit,
+                dotnet_result=dotnet_result, r2_decomp=r2_decomp,
+                r2_ai=r2_ai, frida_trace=frida_trace, upx=upx,
+                xor_hits=xor_hits, olevba=olevba, peepdf=peepdf,
+                malcat_result=malcat_result, capa_result=capa_result,
+                yara_result=yara_result, floss_result=floss_result,
+                pe_imports_result=pe_imports_result,
+                recovery_evidence=recovery_evidence,
+                sections=[title])
+            try:
+                r = llm_judge(one)
+                (ev_dir / f"01-master-{si:02d}-raw.json").write_text(
+                    json.dumps(r, indent=2, default=str))
+                piece = (_extract_report_json(
+                    r["choices"][0]["message"]["content"]) or {}).get("markdown") or ""
+            except Exception as exc:                 # noqa: BLE001
+                print(f"[publish_report_v2] master section {title!r} failed: "
+                      f"{type(exc).__name__}: {str(exc)[:80]}", flush=True)
+                piece = ""
+            if piece.strip():
+                master_pieces.append(piece)
+            else:
+                master_failed.append(title)
+            print(f"[publish_report_v2] master section {si + 1}/"
+                  f"{len(REPORT_MASTER_SECTIONS)} {title[:44]}: "
+                  f"{len(piece)} chars"
+                  f"{' (FAILED)' if not piece.strip() else ''}", flush=True)
+        report = {
+            "title": f"RE Report {args.sha256[:12]}",
+            "markdown": "\n\n".join(master_pieces),
+            "source": "llm_judge",
+            "template": args.template,
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "section_wise": True,
+            "sections_failed": master_failed,
+        }
+        if master_failed:
+            report["model"] = get_llm_model()
+            report["llm_audit"] = llm_call_metadata({}) or {}
     except Exception as e:
         llm_err = str(e)
         print(f"[publish_report_v2] LLM failed, using deterministic fallback: {e}", flush=True)
@@ -1234,13 +1305,16 @@ def main():
 
         technical_report: dict[str, Any]
         tech_err: str | None = None
-        # Chunked by default. One monolithic call cannot serve every sample: a
-        # response that would exceed the provider's ~16K output-token ceiling
-        # never returns (measured 2026-10-01), so win32k_dll's technical report
-        # burned 600 s, then 1200 s, and still landed on stubs. Pass
-        # --technical-monolithic to keep the old single-call path for
-        # comparison; it is not the default because it cannot complete for a
-        # large sample.
+        # Chunked by default. One monolithic call does not serve every sample: a
+        # response wanting more than the per-request output budget comes back
+        # truncated (finish=length) and is rejected and retried. There is no
+        # provider output CEILING -- the model stops voluntarily at ~6,900 tokens
+        # even when told to write "many thousands of words" (measured
+        # 2026-10-02) -- so the fix is a smaller request, not a larger allowance.
+        # On win32k_dll the oversized calls cost ~1331s of a 3600s stage budget
+        # on responses that were discarded. Pass --technical-monolithic to keep
+        # the old single-call path for comparison; it is not the default because
+        # it cannot complete for a large sample.
         chunked = not args.technical_monolithic
         try:
             if chunked:

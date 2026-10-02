@@ -2326,12 +2326,31 @@ def get_llm_reasoning() -> str | None:
 
 
 def _llm_max_tokens() -> int:
-    """Per-request output cap. Provider-specific; see the call site for the
-    measurement that produced the default (2026-10-01)."""
+    """Per-request OUTPUT cap (`max_tokens`), per call -- not a run budget.
+
+    Value history, because the previous default was wrong and the reason is worth
+    keeping:
+
+    * 16384 was set on 2026-10-01 from a claimed "~16K provider ceiling above
+      which requests NEVER return". That measurement was invalid: the probes used
+      a bounded wait, which cannot distinguish "never returns" from "needs longer
+      than I waited", and 16384 had itself taken ~200s.
+    * 32768 measured 2026-10-02. Asked to "write many thousands of words", the
+      model stopped voluntarily at ~6,900 tokens -- under both 16384 and 32768.
+      No output ceiling was ever demonstrated.
+    * The real limit was the REQUEST, not the cap. Oversized single-shot report
+      calls overflowed 16384 and returned finish=length; on win32k_dll four of
+      publish_v2's eleven calls did, and the stage was killed at its budget with
+      ~270s of real work left. Those callers are now split per section.
+
+    So this is a guard rail against a pathological prompt, set above anything
+    legitimate work has produced. It is not a tuned limit, and raising it is not a
+    substitute for splitting an oversized request.
+    """
     try:
-        return max(1024, int(os.environ.get("REVAI_LLM_MAX_TOKENS", "16384")))
+        return max(1024, int(os.environ.get("REVAI_LLM_MAX_TOKENS", "32768")))
     except (TypeError, ValueError):
-        return 16384
+        return 32768
 
 
 def _build_reasoning_body(reasoning: str | None) -> dict:
@@ -2821,21 +2840,12 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
             {"role": "user", "content": prompt},
         ],
         "temperature": 0.0,
-        # Output cap. CORRECTION 2026-10-01: this used to carry a comment
-        # claiming a measured "~16K provider ceiling" above which requests
-        # "NEVER return". That was wrong, and the error was mine -- the probes
-        # behind it used a bounded wait, which cannot tell "never returns" from
-        # "needs longer than I waited". Re-measured properly:
-        #     streaming at 16384 / 32768 / 65536 -- all healthy, 30-53 tok/s,
-        #       time-to-first-token in seconds
-        #     non-streaming at 32768           -- returned in 119s
-        # So there is no ceiling; those requests were simply slower than the
-        # probe waited. The cap is kept because it bounds a call to something
-        # that reliably finishes inside the socket window at the measured
-        # 30-53 tok/s, not because a larger request would fail. Override with
-        # REVAI_LLM_MAX_TOKENS. Long reports are still generated in sections,
-        # which is a quality decision (a monolithic call truncates), not a
-        # provider limit.
+        # Output cap -- see _llm_max_tokens() for the full value history and for
+        # why the previous 16384 default was wrong. Short version: there is no
+        # provider output ceiling (the model stops voluntarily at ~6,900 tokens
+        # even when told to write "many thousands of words"), and the calls that
+        # used to overflow 16384 were oversized REQUESTS, now split per section.
+        # This is a guard rail, not a tuned limit.
         "max_tokens": _llm_max_tokens(),
         "response_format": {"type": "json_object"},
     }
