@@ -65,6 +65,46 @@ python3 /opt/scripts/pipeline_single.py /path/to/sample.exe
 
 The run writes `orchestrator_trace.json` and `quality-gate.json` under `/opt/samples/logs/<sha256>/`; the final `truly_green` is the honest pass/fail.
 
+### Running a sample under a watcher
+
+Use `scripts/run-watched.sh` rather than launching `pipeline_single.py` in the
+background. A background launch has no mechanism to notice that the run ended,
+failed, or hit a fatal signal, so the result can sit unread for hours.
+
+```bash
+# Reboots, then (after you re-run it) watches the run to completion
+scripts/run-watched.sh /path/to/sample.exe
+
+# If you have just rebooted by hand, skip the reboot step
+scripts/run-watched.sh /path/to/sample.exe --no-reboot
+
+# Stop on the first fatal signal instead of letting a doomed run continue
+scripts/run-watched.sh /path/to/sample.exe --no-reboot --abort-on-error
+```
+
+It streams each stage as it completes, classifies the **first** anomaly with the
+stage it belongs to, and prints a summary including per-report completeness and
+the sidecar table:
+
+```
+[watch]   intake              ok      45.8s
+[watch]   deep_dive           FAILED rc=1 (488.5s)
+[watch]   ! llm-timeout x2 (in: publish_v2)
+...
+  report sidecars:
+    report-technical-v3.json     source=llm_judge              complete=13 quality_ok=True
+```
+
+Signals classified: stage rc≠0, stage kill (`===== TIMEOUT`), LLM read timeout,
+empty LLM response, HTTP 429, HTTP 5xx, and a hollow-success failure. Exit codes:
+`0` every stage rc=0 · `1` a stage failed · `2` a fatal signal aborted the run ·
+`3` usage or environment error.
+
+The reboot step cannot continue across the reboot itself, so the script exits
+after issuing it — re-run the same command once SSH is back and it will detect
+the fresh boot. It warns when uptime exceeds 20 minutes, because a run on a
+loaded VM is not comparable with a fresh-boot one.
+
 ### Mode-keyed outputs
 
 Every artifact is written under `logs/<sha256>/<mode>/`, where `<mode>` is
