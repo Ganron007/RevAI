@@ -304,7 +304,24 @@ _ENV_ALLOWLIST = {
 
 def check_env_contract() -> None:
     docs_dir = REPO / "docs"
-    if not docs_dir.is_dir():
+    # Gate on the documents this check actually reads, NOT on the directory
+    # merely existing.
+    #
+    # The VM deploy is flat and ships only `docs/case-studies`, so `docs/` is
+    # present while CONFIGURE.md and README.md are not. The old
+    # `if not docs_dir.is_dir(): return` therefore did not fire, the scan read
+    # zero documents, and EVERY env var in the code was reported as
+    # undocumented -- dozens of fabricated "wiring regressions" that had
+    # nothing to do with the code. test_wiring_coherence surfaced them as
+    # failures on the VM.
+    #
+    # A check that cannot run in a supported layout must SKIP. Reporting a red
+    # it cannot legitimately produce is how a harness stops being believed.
+    if not any((docs_dir / name).is_file() for name in
+               ("CONFIGURE.md", "OPERATE.md")) and not (
+                   REPO / "README.md").is_file():
+        warn("env.documented",
+             "no operator docs deployed (flat VM layout) - skipped")
         return
     documented: set[str] = set()
     for path in list(docs_dir.glob("*.md")) + [REPO / "README.md"]:

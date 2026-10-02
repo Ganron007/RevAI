@@ -30,7 +30,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(ROOT / "revai"))
 
-from _layout import add_module_dir  # noqa: E402
+from _layout import add_module_dir, source  # noqa: E402
 
 add_module_dir("revai/verify_pipeline.py")
 
@@ -110,7 +110,7 @@ def test_the_docs_path_test_is_posix_normalised():
     is False and the whole branch is skipped. The condition must go through
     `as_posix()`.
     """
-    src = (ROOT / "revai" / "verify_pipeline.py").read_text(errors="replace")
+    src = source("revai/verify_pipeline.py")
     assert '"docs/" in rel.as_posix()' in src, (
         "the docs path test must use as_posix(); str(rel) uses backslashes on "
         "Windows and silently disables the check there")
@@ -119,7 +119,7 @@ def test_the_docs_path_test_is_posix_normalised():
 
 
 def test_case_studies_are_no_longer_skipped():
-    src = (ROOT / "revai" / "verify_pipeline.py").read_text(errors="replace")
+    src = source("revai/verify_pipeline.py")
     skip_line = [ln for ln in src.splitlines()
                  if "node_modules" in ln and "continue" not in ln]
     for ln in skip_line:
