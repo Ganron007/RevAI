@@ -2492,7 +2492,7 @@ def _llm_response_has_usable_content(data: dict) -> bool:
                         return True
                 # Scalar values are content too. This branch was missing, so a
                 # well-formed reply whose values are all bool/int -- e.g. the
-                # '{"ok": true}' that agnes-3.0-flash returns to a "return only
+                # '{"ok": true}' that the configured model returns to a "return only
                 # this JSON" instruction -- fell through every clause and was
                 # reported hollow, which made llm_judge retry 3x and then raise
                 # "llm_judge failed" on a perfectly good answer (2026-09-28,

@@ -8,7 +8,7 @@ pass was real, because the check had three independent reasons not to look:
 1. `case-studies` was in the skip list.
 2. The model-name branch was gated on `path.suffix == ".md"`, so the 1142 .json,
    56 .jsonl and 442 .txt evidence files were never examined. The bulk of the
-   leak was in .json (2415 + 3327 occurrences of mimo-v2.5*).
+   leak was in .json (5,742 occurrences across two model names alone).
 3. The branch tested `"docs/" in str(rel)` where `rel` is a `pathlib.Path`. On
    POSIX that stringifies with forward slashes and the test works; on Windows it
    stringifies with BACKSLASHES, so the condition was never true and the branch

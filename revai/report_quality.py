@@ -1292,9 +1292,9 @@ PUBLIC_MODEL_LABEL = "configured-llm"
 def configured_model_names() -> list[str]:
     """Every model name this deployment is configured with, longest first.
 
-    Longest-first matters: `mimo-v2.6-pro` and `mimo-v2.6` can both be
-    configured (verdict vs default), and replacing the shorter first would
-    leave a dangling `-pro` behind.
+    Longest-first matters: the verdict model and the default model are often
+    two names sharing a prefix (e.g. `<name>-pro` and `<name>`), and replacing
+    the shorter first would leave the suffix dangling in the output.
 
     The resolvers read os.environ, which the pipeline populates via
     ensure_pipeline_runtime_env(). If that has not run -- a bare import, a unit

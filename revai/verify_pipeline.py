@@ -253,7 +253,7 @@ def check_hygiene() -> None:
         if not path.is_file() or path.suffix not in _SCANNED_SUFFIXES:
             continue
         # `case-studies` used to be skipped here, which is how 2260 published
-        # files carried six model names (mimo-v2.5-pro, step-3.7-flash, ...)
+        # files carried six distinct provider/model names
         # through a harness that reported 10/10. The skip is gone: the case
         # studies ARE published, so they are exactly the content this check
         # exists to police. They were scrubbed on 2026-10-03 and the scan is
@@ -273,7 +273,7 @@ def check_hygiene() -> None:
             # Every published artefact, not just the rendered markdown.
             # Gating this on `.md` is how 2260 case-study files kept six model
             # names while the harness reported 10/10: the bulk of the leak was
-            # in .json evidence (2415 + 3327 occurrences of mimo-v2.5* alone),
+            # in .json evidence (5,742 occurrences across two model names alone),
             # plus 56 .jsonl and 442 .txt files, none of which this check ever
             # looked at. `.py` is excluded on purpose -- source comments are a
             # separate rule, and this file necessarily contains the tokens.

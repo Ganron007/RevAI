@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """The hollow-response checker must not reject scalar-valued JSON.
 
-Found during the 2026-09-28 provider switch to agnes-3.0-flash. That model
+Found during the 2026-09-28 provider switch. That model
 answers a "return only this JSON: {"ok": true}" instruction with exactly
 `{"ok": true}`, and `_llm_response_has_usable_content` returned False: its value
 loop only accepted str >= 3 chars, non-empty list/dict, and report-shaped
