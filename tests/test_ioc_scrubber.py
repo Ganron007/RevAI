@@ -143,6 +143,64 @@ def test_scrubber_removes_both_spellings_of_the_same_path():
     assert RUN_KEY not in prose, "one rendering of the path survived in prose"
 
 
+def test_scrubber_handles_a_path_followed_by_a_value_name():
+    """Regression found on the real report, not by a test.
+
+    win32k_dll's technical v3 explained its own method with
+    ``HKEY_CURRENT_USER\\...\\CurrentVersion\\Run\\<value_name>``. The trailing
+    boundary rejected a match whenever a separator followed, so that occurrence
+    survived and `remaining_unverified` stayed at 1 -- a scrub that reported
+    partial success.
+    """
+    md = ("Give the exact registry key path, e.g. "
+          "`HKEY_CURRENT_USER\\" + RUN_KEY + "\\<value_name>`.\n")
+    scrubbed, removed, meta = scrub_unverified_indicators(md, EVIDENCE)
+    assert removed, "the value_name form was skipped"
+    assert meta["remaining_unverified"] == 0, meta
+    assert RUN_KEY not in scrubbed
+
+
+def test_longer_paths_are_not_left_in_fragments():
+    """Regression found on the real report, not by a test.
+
+    `HKLM\\...\\Microsoft\\Windows` is a prefix of
+    `HKLM\\...\\Microsoft\\Windows\\CurrentVersion\\Run`, and the LONGER path is
+    *excluded* from `unverified` by _CANONICAL_REGISTRY_TEMPLATE_RE -- so it is
+    absent from the scrubber's work list while the shorter one still matched
+    inside it. The result was the marker followed by a dangling
+    `\\CurrentVersion\\Run` in the published report.
+    """
+    long_key = "HKLM\\" + RUN_KEY
+    short_key = "HKLM\\Software\\Microsoft\\Windows"
+    md = f"Observed `{long_key}` and separately `{short_key}`.\n"
+    scrubbed, _, _ = scrub_unverified_indicators(md, EVIDENCE)
+    # The excluded canonical path must survive untouched...
+    assert long_key in scrubbed, (
+        f"an excluded canonical path was damaged: {scrubbed!r}")
+    # ...and the removed one must not leave a tail behind it.
+    assert "]\\CurrentVersion" not in scrubbed, (
+        f"a longer path was left in fragments: {scrubbed!r}")
+    assert scrubbed.count("[registry path not observed in evidence]") == 1
+
+
+def test_a_longer_word_is_its_own_claim_not_a_partial_match():
+    r"""`...\RunOnce` is a different claim from `...\Run`.
+
+    _CLAIM_REGKEY_RE is greedy over `[^\s"'<>|]+`, so it extracts the whole
+    `RunOnce` token and it is judged on its own merits. The check that matters
+    is that the boundary rejects a match when the continuation is alphanumeric,
+    so `...\Run` is never treated as satisfied by `...\RunOnce`.
+    """
+    from report_quality import _flex_claim_re
+    long_key = "HKLM\\" + RUN_KEY
+    rx = _flex_claim_re(long_key)
+    assert not rx.search("Observed `HKLM\\" + RUN_KEY + "Once` here.\n"), (
+        "matched inside an alphanumeric continuation")
+    # And the placeholder form IS matched whole, so nothing dangles.
+    assert rx.search("key `HKLM\\" + RUN_KEY + "\\<value_name>` here.\n"), (
+        "the placeholder form must match so it is removed whole")
+
+
 # --------------------------------------------------------------------------
 # The scrubber
 # --------------------------------------------------------------------------

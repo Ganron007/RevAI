@@ -1278,11 +1278,25 @@ def _flex_claim_re(value: str) -> re.Pattern:
     requiring two to four backslashes where the text has exactly two, so the
     second rendering of a path in the same report was silently left in place
     and `remaining_unverified` stayed at 1 after a "successful" scrub.
+
+    The trailing boundary rejects a following separator, which is what stops a
+    shorter claim from being cut out of the middle of a longer one. That is not
+    hypothetical: `HKLM\\...\\Microsoft\\Windows` is a prefix of
+    `HKLM\\...\\Microsoft\\Windows\\CurrentVersion\\Run`, and the LONGER path is
+    excluded from `unverified` by _CANONICAL_REGISTRY_TEMPLATE_RE -- so it is
+    absent from the scrubber's work list while the shorter one still matches
+    inside it, leaving a dangling `\\CurrentVersion\\Run` in the published report.
+
+    A placeholder value name is the one legitimate way a separator may follow,
+    because `...\\CurrentVersion\\Run\\<value_name>` names the same key the
+    report was claiming. It is consumed as part of the match (below), so the
+    strict boundary still applies to what comes after it.
     """
     parts = re.sub(r"\\{2,}", r"\\", value).split("\\")
     body = r"\\{1,2}".join(re.escape(p) for p in parts)
+    placeholder = r"(?:\\{1,2}<[^>\n]*>)?"
     return re.compile(
-        r"(?<![A-Za-z0-9_\\])" + body + r"(?![A-Za-z0-9_\\-])",
+        r"(?<![A-Za-z0-9_\\])" + body + placeholder + r"(?![A-Za-z0-9_\\-])",
         re.IGNORECASE)
 
 
@@ -1333,11 +1347,17 @@ def scrub_unverified_indicators(
     parts = _FENCE_BLOCK_SPLIT_RE.split(markdown)
     removed: list[dict] = []
     out: list[str] = []
+    # Longest value first. Defensive rather than load-bearing: the strict
+    # trailing boundary in _flex_claim_re is what actually prevents a prefix
+    # from matching inside a longer path, since a longer path may be verified or
+    # excluded and therefore absent from `unverified` entirely.
+    ordered = sorted(unverified,
+                     key=lambda it: len(str(it.get("value") or "")), reverse=True)
     for part in parts:
         if part.startswith("```"):
             out.append(part)
             continue
-        for item in unverified:
+        for item in ordered:
             kind = str(item.get("type") or "value")
             value = str(item.get("value") or "")
             if not value:
