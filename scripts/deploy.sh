@@ -70,6 +70,12 @@ if [[ -d "$REPO_ROOT/tests" ]]; then
     ok "Deploying tests to /opt/scripts/tests/ ..."
     sudo mkdir -p /opt/scripts/tests
     sudo cp -a "$REPO_ROOT/tests"/test_*.py /opt/scripts/tests/ 2>/dev/null || true
+        # Test helpers that are not test modules still have to reach the VM, or
+        # the tripwires that import them fail at COLLECTION time there. This
+        # happened with tests/_layout.py on 2026-10-02: it was silently not
+        # deployed, and tests/test_case_dir_coherence.py + test_cff_detector.py
+        # then aborted the whole VM suite. Copy every .py, not just test_*.py.
+        sudo cp -a "$REPO_ROOT/tests"/*.py /opt/scripts/tests/ 2>/dev/null || true
 fi
 
 # ---------------------------------------------------------------------------

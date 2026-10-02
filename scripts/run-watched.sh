@@ -121,7 +121,24 @@ export REVAI_TOOL_RETRIES="${REVAI_TOOL_RETRIES:-0}"
 : > "$RUN_LOG"
 log "log: $RUN_LOG"
 
-cd "$SCRIPTS_DIR/.." 2>/dev/null || cd /opt/scripts
+# Resolve the directory that actually holds pipeline_single.py. Two layouts:
+#   deployed  -> /opt/scripts/run-watched.sh, so SCRIPTS_DIR is the scripts dir
+#   from repo -> <repo>/scripts/run-watched.sh, and the module lives in revai/
+# Getting this wrong is not hypothetical: an earlier revision assumed
+# SCRIPTS_DIR/.. and cd'd to /opt, so every run died instantly with
+# "can't open file '/opt/pipeline_single.py'".
+if [[ -f "$SCRIPTS_DIR/pipeline_single.py" ]]; then
+  RUN_DIR="$SCRIPTS_DIR"
+elif [[ -f "$REPO_ROOT/revai/pipeline_single.py" ]]; then
+  RUN_DIR="$REPO_ROOT/revai"
+else
+  fail "cannot locate pipeline_single.py near $SCRIPTS_DIR or $REPO_ROOT/revai"
+  exit 3
+fi
+log "run dir: $RUN_DIR"
+cd "$RUN_DIR" || { fail "cannot cd to $RUN_DIR"; exit 3; }
+[[ -f pipeline_single.py ]] || { fail "pipeline_single.py missing in $RUN_DIR"; exit 3; }
+
 python3 pipeline_single.py "$SAMPLE" > "$RUN_LOG" 2>&1 &
 RUN_PID=$!
 log "pid: $RUN_PID"
