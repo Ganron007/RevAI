@@ -17,9 +17,32 @@ are **vendor / licensed** and must be placed manually.
 |-----------|---------------|---------------|
 | **Ghidra** | `/opt/ghidra` (with `support/analyzeHeadless`) | Official NSA/Ghidra build or REMnux package; symlink to `/opt/ghidra` if needed. **Ghidra 12.1+** required for ghidrasql v0.0.4 |
 | **CADRE PE Loader** | `/opt/ghidra/Ghidra/Extensions/CADRE/` | Custom Ghidra PE loader extension — ensures import references are created for packed/binder PEs. Pre-installed on the deployment VM; source in `extensions/cadre-pe-loader/`. |
-| **ghidrasql** | `/usr/local/bin/ghidrasql` | Built by `install/install-ghidrasql.sh` (clones [0xeb/libghidra](https://github.com/0xeb/libghidra) + [0xeb/ghidrasql](https://github.com/0xeb/ghidrasql); uses Ghidra's bundled Gradle wrapper). ghidrasql is by Elias Bachaalany, used under the Human-Origin Source License v1.0 |
+| **ghidrasql** | `/usr/local/bin/ghidrasql` | Built by `install/install-ghidrasql.sh` (clones [0xeb/libghidra](https://github.com/0xeb/libghidra) + [0xeb/ghidrasql](https://github.com/0xeb/ghidrasql); uses Ghidra's bundled Gradle wrapper). **Current on the deployment VM: ghidrasql 0.0.7 + libghidra 0.0.8.** ghidrasql is by Elias Bachaalany, used under the Human-Origin Source License v1.0 |
 | **LLM API** | `/opt/revai/config/llm.env` | Copy `config/llm.env.template` and fill model / URL / key |
 | **JDK 21 + CMake** | on `PATH` | Used to build LibGhidraHost + ghidrasql (setup installs via apt when missing); Gradle is provided by Ghidra's bundled wrapper |
+
+### Upgrading ghidrasql or libghidra
+
+`install/install-ghidrasql.sh` rebuilds from source. To upgrade a live deployment
+**without** a full rebuild, install the staged release and validate it before
+trusting it:
+
+1. **Verify the artifacts first.** Check them against the release's own
+   `SHA256SUMS` before installing anything.
+2. **Back up what is there**, including any locally patched jar. A drop-in can
+   silently discard a hotfix — the previous LibGhidraHost jar carried a
+   v0.0.2-era `SymbolsRuntime.class` patch that upstream no longer shipped.
+   Investigate whether the patched code path has callers before deciding; on that
+   one it did not, so upstream's canonical variant was equivalent.
+3. **Validate with `scripts/validate-ghidrasql-sql.py`** — run it against the
+   same project *before* and *after* the swap and compare the whole query set.
+   Every query our deep-dive runs is in it, so a schema or behaviour change
+   shows up as a diff rather than as a silently broken deep dive.
+4. **Confirm the signal extractors** still return byte-identical results on a
+   stored project, then restart the service.
+
+Install only when no run is active — a swap mid-run leaves headless servers
+holding the old jar.
 
 ## Recommended (optional): Malcat
 

@@ -137,6 +137,62 @@ A non-streaming request carries no bytes until the response is complete, so
 `REVAI_LLM_STREAM=0` to restore plain POSTs, at the cost of losing the
 distinction.
 
+  A non-streaming request carries no bytes until the response is complete, so
+"slow" and "dead" are the same observation without this. Set
+`REVAI_LLM_STREAM=0` to restore plain POSTs, at the cost of losing the
+distinction.
+
+### Indicator scrubber and published-name redaction
+
+Reports are made accurate after they are written, by code rather than by
+prompting harder. Two passes run over every published report:
+
+* **Indicator scrubber (plan #42).** Each indicator value that no tool
+  observed is replaced with a marker naming the kind of thing that was
+  removed, and the removal is recorded in the report's JSON (`indicator_scrub`)
+  so the audit can see it. Replacing rather than deleting matters: when Malcat
+  reports a registry-persistence rule the capability claim is real, so only the
+  concrete path the model filled in from training data is neutralised — the
+  evidenced finding survives.
+* **Model-name redaction.** Published markdown never names the provider or
+  model. `verdict.json` and `pipeline-audit.json` keep the real one, because an
+  auditor needs to know which model judged the sample. The split is machine
+  evidence vs published document.
+
+The scrubber **refuses to run against an empty evidence corpus**. An empty
+corpus makes every claim look unobserved, which would delete the sample's own
+sha256 while reporting `remaining_unverified: 0`; absent and empty now behave
+identically, and a skipped scrub is recorded as an error rather than a clean
+result.
+
+To record the result without failing the audit — a run whose report
+legitimately cites sources outside the evidence pack:
+
+```
+REVAI_IOC_FACTCHECK=advisory
+```
+
+### Indicator-first string sampling
+
+FLOSS content strings (`kernel32.dll` and other import-table noise) are not
+indicators, so they no longer consume sample budget. Indicator-shaped strings
+— registry paths, URLs, IPs, emails, file paths, `Global\`/`Local\` mutexes,
+script and executable extensions — claim it first, in any FLOSS category.
+Before this change `static_strings` was sampled last and contributed nothing
+under a low cap, so a real sample's registry paths never reached the prompt and
+the model reconstructed them from training data.
+
+The artifact records `ioc_shaped_total`, `ioc_shaped_sampled` and
+`ioc_shaped_dropped`, so a truncated indicator set is visible instead of
+silent. Budget is `REVAI_FLOSS_MAX_STRINGS` (default `300`).
+
+### Deterministic indicator section
+
+Section 8 of the technical report is **rendered from `iocs.json`**, not
+authored by the model — indicator counts, values and confidence tiers cannot
+be prose-invented or quietly dropped. Read it as the authoritative list, and
+treat any indicator that appears nowhere in it as unverified.
+
 ## Pipeline stages 
 
 1. **intake** — session + Ghidra (optional IDA)  

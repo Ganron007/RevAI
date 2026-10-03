@@ -139,6 +139,9 @@ Distinctive capabilities — the things that set RevAI apart. For the full featu
 | **Malcat native capa engine** | Faster + more reliable than Mandiant capa on hard samples — see [`docs/malcat-capa-engine.md`](docs/malcat-capa-engine.md) |
 | **In-process yara-x engine** | YARA scanning with no external `yr` binary — see [`docs/OPERATE.md`](docs/OPERATE.md) |
 | **Honest `truly_green` gate** | Green requires audit **and** report quality **and** zero failed tools — plus engine-citation verification and a cross-stage verdict lock |
+| **Indicator scrubber** | Indicators no tool observed are removed from published report prose by code, and the removal is recorded and re-verified — a report asserts only what its evidence supports. Refuses to run against an empty evidence corpus, so the sample's own sha256 can never be deleted by a bad root |
+| **Published-artifact hygiene** | Published reports never name the provider or model (`configured-llm`) while `verdict.json` and `pipeline-audit.json` keep the real one — an auditor can still tell which model judged the sample |
+| **Run watchdog** | `scripts/run-watched.sh` streams a run's stages, attributes each failure to the stage that emitted it, and can abort before the time budget is gone — exit 0/1/2/3 distinguishes "stages green", "a stage failed", "the watcher killed it", "usage error" |
 | **Depth gate (capability coverage)** | Deep-dive summary must address every capability domain — as evidence or explicit "not observed" — see [`docs/architecture.md`](docs/architecture.md#10-quality-verification-gate-truly_green) |
 | **Publication-quality gates** | Deterministic cross-report checks (dynamic-analysis honesty, verdict-panel agreement, entropy vs measured file entropy) |
 | **Agentic function recovery** | Opt-in relevance-based triage → LLM naming (`FUN_…` → `parse_http_header`) → SQL writeback (conf ≥ 0.7, never deletes) → names cited in reports |
@@ -227,16 +230,21 @@ Full ops: [`docs/OPERATE.md`](docs/OPERATE.md) · Install: [`docs/INSTALL.md`](d
 
 ## What's coming…
 
-*Work-in-progress — the roadmap below is where RevAI is headed before the
-`v1.0.0` release tag. Items land as they are built, tested, and published.*
+*Where RevAI is headed before the `v1.0.0` release tag. Items land as they are
+built, tested and published; this table is kept to what is actually next.*
 
 | Item | Description |
 |------|-------------|
-| **Verifiable artifact generation** | A stage that writes config extractors / unpackers / deobfuscation scripts for the sample and runs them — the artifact verifies itself |
-| **Interactive steering mode** | A fourth run mode: analyst notes injected mid-run with HITL pause points; deterministic gates stay final |
-| **Behavior-prerequisite gate promotion** | Move the advisory claim-vs-import check (G20) to a gate once its residual is reviewed |
-| **Deployment rehearsal** | Clean-install test of the setup and deploy scripts on a fresh VM, so the documented path matches reality before release |
-| **`v1.0.0` release tag** | Versioned first release once the items above land, including a clean-install deployment rehearsal of the setup scripts on a fresh VM |
+| **Analysis depth profile** (`REVAI_DEPTH=full`) | A depth profile that raises deep-dive budgets, floors the dynamic idle-stop, forces the emulator + solver + unpack passes, and requires the report's "not observed / not reconstructed" gap section. Not yet implemented — the knob is deliberately not advertised anywhere until it is |
+| **Interactive steering mode** | A fourth run mode: analyst notes injected mid-run with HITL pause points between stages. Composes the existing stages, so deterministic gates stay final — steering adds context, never bypasses a gate |
+| **Multi-provider matrix** | Provider benchmark and report diff across `REVAI_LLM_*`: which model judged, which wrote, and where two independent providers disagree |
+| **Claim-level entailment checker** | Post-`v1.0.0`: claim-by-claim grounding of report statements against the evidence pack, so a gate can test reasoning validity rather than only breadth |
+| **`v1.0.0` release tag** | Versioned first release once the items above land, following a clean-install deployment rehearsal of the setup scripts on a fresh VM |
+
+**Blocked on operator input, not on engineering:** the 12 manual UI runs that
+populate `docs/case-studies/ui/`, and a new six-family sample set
+(Winnti_ZxShell, Armored_Likho ×2, Sunshuttle, DynoWiper, Tomiris) for the
+final full-gate campaign.
 
 ---
 
