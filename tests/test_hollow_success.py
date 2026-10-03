@@ -308,3 +308,50 @@ def test_no_banner_means_everything_is_judged():
         "sections_complete": 1}), encoding="utf-8")
     got = _checks(hs.check_report_sidecars(case))
     assert "report.fallback_source" in got, got
+
+
+# --------------------------------------------------------------------------
+# 2026-10-03: publish-sidecar discovery + blind-panel guard
+# --------------------------------------------------------------------------
+
+def test_publish_sidecar_prefers_report_v2():
+    case = Path(__import__("tempfile").mkdtemp())
+    (case / "report-v2.json").write_text(
+        json.dumps({"source": "llm_judge"}), encoding="utf-8")
+    (case / "report-technical-v3.json").write_text(
+        json.dumps({"source": "llm_judge", "sections_complete": 13}),
+        encoding="utf-8")
+    assert hs._publish_sidecar(case) == {"source": "llm_judge"}
+
+
+def test_publish_sidecar_falls_back_to_a_newer_report():
+    """If the publisher stops writing report-v2.json, the check must not
+    silently no-op -- the one filename the discovery rule did not cover."""
+    case = Path(__import__("tempfile").mkdtemp())
+    (case / "report-technical-v3.json").write_text(
+        json.dumps({"source": "llm_judge", "sections_complete": 13}),
+        encoding="utf-8")
+    got = hs._publish_sidecar(case)
+    assert isinstance(got, dict) and got.get("source") == "llm_judge", got
+
+
+def _panel_md(verdict: str) -> str:
+    return f"| Verdict | |\n|---|---|\n| **Final** | **{verdict}** |\n"
+
+
+def test_unreadable_panels_are_flagged_not_vacuously_passed():
+    """Two reports, zero parseable panels -- the agreement check must say
+    it is blind instead of passing on nothing to compare."""
+    case = Path(__import__("tempfile").mkdtemp())
+    (case / "REPORT-MASTER-v3.md").write_text("no panel here\n", encoding="utf-8")
+    (case / "REPORT-TECHNICAL-v3.md").write_text("no panel either\n", encoding="utf-8")
+    got = _checks(hs.check_verdict_panel_agreement(case))
+    assert "verdict.panels_unreadable" in got, got
+
+
+def test_parseable_panels_do_not_trigger_the_blind_guard():
+    case = Path(__import__("tempfile").mkdtemp())
+    (case / "REPORT-MASTER-v3.md").write_text(_panel_md("malicious"), encoding="utf-8")
+    (case / "REPORT-TECHNICAL-v3.md").write_text(_panel_md("malicious"), encoding="utf-8")
+    got = _checks(hs.check_verdict_panel_agreement(case))
+    assert got == set(), got

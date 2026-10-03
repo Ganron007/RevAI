@@ -243,9 +243,11 @@ def check_verdict_panel_agreement(case: Path) -> list[Finding]:
     # when a RUN START banner exists: a re-run must not inherit the previous
     # run's panel disagreement as its own finding.
     run_start = _run_start_epoch(case)
+    md_files: list[Path] = []
     for path in sorted(case.glob("REPORT-*.md")):
         if not path.is_file() or not _is_current_run(path, run_start):
             continue
+        md_files.append(path)
         try:
             m = _TICKER_RE.search(path.read_text(errors="replace")[:200000])
         except OSError:
@@ -260,6 +262,20 @@ def check_verdict_panel_agreement(case: Path) -> list[Finding]:
             check="verdict.panel_disagreement",
             detail=(f"report verdict panels disagree: {panels}"),
             evidence={"panels": panels}))
+    # Blind, not passing: with several reports on disk and fewer than two
+    # panels parsed, there is nothing to disagree WITH -- the check would
+    # vacuously pass on a format change that stopped emitting the panel,
+    # which is the check that cannot fail again. Two reports are required so
+    # a legitimately single-report case is not flagged for having nothing to
+    # compare.
+    if len(md_files) >= 2 and len(panels) < 2:
+        findings.append(Finding(
+            check="verdict.panels_unreadable",
+            detail=(f"{len(md_files)} report(s) present but only {len(panels)} "
+                    "verdict panel(s) parseable -- panel agreement is not "
+                    "checkable"),
+            evidence={"files": [p.name for p in md_files],
+                      "parsed": sorted(panels)}))
     return findings
 
 
@@ -458,6 +474,33 @@ def check_section_manifests(case: Path) -> list[Finding]:
     return findings
 
 
+def _publish_sidecar(case: Path) -> dict | None:
+    """The publish stage's verdict-source sidecar, discovered not assumed.
+
+    ``report-v2.json`` is the current publisher's artifact and was the one
+    filename the discovery rule did not cover: if a future version stops
+    writing it, the verdict-source check would silently no-op. Prefer the
+    known name; otherwise take the newest remaining report sidecar that
+    declares a source.
+    """
+    known = Path(case) / "report-v2.json"
+    if known.is_file():
+        data = _load(known)
+        if data is not None:
+            return data
+    candidates: list[tuple[float, dict]] = []
+    for p in Path(case).glob("report*.json"):
+        if not p.is_file():
+            continue
+        data = _load(p)
+        if isinstance(data, dict) and data.get("source"):
+            try:
+                candidates.append((p.stat().st_mtime, data))
+            except OSError:
+                continue
+    return max(candidates, key=lambda c: c[0])[1] if candidates else None
+
+
 # --------------------------------------------------------------------- aggregate
 
 def evaluate_case(case: Path) -> dict[str, Any]:
@@ -470,7 +513,7 @@ def evaluate_case(case: Path) -> dict[str, Any]:
     findings += check_verdict_sources(
         _load(case / "verdict.json"),
         _load(case / "deep_dive" / "05-deep-dive.json"),
-        _load(case / "report-v2.json"))
+        _publish_sidecar(case))
     findings += check_verdict_panel_agreement(case)
     findings += check_exhausted_llm_calls(case)
     findings += check_report_sidecars(case)
