@@ -976,15 +976,15 @@ def _ground_elided_regkey(plain: str, evidence: str) -> str | None:
     if not parsed:
         return None
     hive, subkeys = parsed
-    # The trailing subkey is the informative one. Skip the elision segment
-    # itself: it names no real location, so it can never be matched.
-    concrete_tail = [s for s in subkeys if s not in (".", "..", "…", "...")]
-    if not concrete_tail:
+    # Skip the elision segment itself: it names no real location, so it can never
+    # be matched. Everything the claim ACTUALLY names is what the candidate must
+    # carry.
+    named = [s for s in subkeys if s not in (".", "..", "…", "...")]
+    if not named:
         return None
-    tail = concrete_tail[-1]
 
     text = evidence or ""
-    best: tuple[str, list[str]] | None = None
+    best: tuple[tuple[int, int], str] | None = None
     for m in _EVIDENCE_REGKEY_RE.finditer(text):
         candidate = m.group(0)
         cparsed = _regkey_parts(candidate)
@@ -993,12 +993,31 @@ def _ground_elided_regkey(plain: str, evidence: str) -> str | None:
         chive, csubkeys = cparsed
         if chive != hive or not csubkeys:
             continue
-        if tail in csubkeys:
+        # EVERY named segment must appear in the candidate, in the order the
+        # claim wrote them.
+        #
+        # Matching on the last segment alone made a single shared leaf enough to
+        # ground a path -- so `HKLM\...\Services\MyDriver\Parameters` was
+        # "verified" against `HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\
+        # Parameters\Interface`, and `HKCU\...\Policies\Explorer\Run` against
+        # the real `HKCU\...\CurrentVersion\Run` (review finding MEDIUM-2,
+        # 2026-10-03). Both are common segment names an LLM reaches for when
+        # writing from training data, so the loose rule converted fabrication
+        # into GREEN -- strictly worse than failing to ground it, because the
+        # gate then certifies the invented path.
+        ci = 0
+        for seg in named:
+            while ci < len(csubkeys) and csubkeys[ci] != seg:
+                ci += 1
+            if ci >= len(csubkeys):
+                break
+            ci += 1
+        else:
             # Exact tail match ranks first regardless of depth; among equal
             # ranks, the deepest path is the most specific corroboration.
-            rank = (0 if csubkeys[-1] == tail else 1, len(csubkeys))
+            rank = (0 if csubkeys[-1] == named[-1] else 1, len(csubkeys))
             if best is None or rank > best[0]:
-                best = (rank, candidate, csubkeys)
+                best = (rank, candidate)
     return best[1] if best else None
 
 
