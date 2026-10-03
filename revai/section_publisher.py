@@ -445,7 +445,9 @@ _IOC_KINDS = (
     ("files", "File names / paths"),
     ("registry_keys", "Registry keys"),
     ("mutexes", "Mutexes"),
-    ("wallets_btc", "Cryptocurrency addresses"),
+    ("emails", "Email addresses"),
+    ("wallets_btc", "Cryptocurrency addresses (BTC)"),
+    ("wallets_eth", "Cryptocurrency addresses (ETH)"),
 )
 
 
@@ -885,8 +887,12 @@ def run_section_based_publish(sha: str, tools_results: dict,
     )
     # Plan #42: drop indicator values no tool observed, so the published v3 master
     # does not assert invented registry paths for the audit to fail on.
+    # The scrubber must see the case directory (the root holding deep_dive/,
+    # quick_scan/, iocs.json...), not correlate/ -- none of the evidence files
+    # live under correlate/, so passing it empties the evidence corpus and
+    # scrubbed every indicator the master legitimately cited.
     report_markdown, _master_ioc_scrub = scrub_report_indicators(
-        out_dir, report_markdown, "master_v3")
+        case_dir(sha), report_markdown, "master_v3")
     report_markdown, _master_models = redact_model_names(report_markdown)
     if _master_models:
         print(f"[section_publisher] master_v3: redacted model name(s) "

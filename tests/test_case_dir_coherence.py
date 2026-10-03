@@ -110,3 +110,34 @@ def test_case_dir_is_the_only_supported_artifact_root():
         assert d.parent.name == "a" * 64, d
     finally:
         os.environ.pop("REVAI_RUN_MODE", None)
+
+def test_indicator_scrubber_receives_the_case_directory():
+    """Every report scrub must see the case dir, never a report's own folder.
+
+    Found 2026-10-03: section_publisher scrubbed REPORT-MASTER-v3.md against
+    `out_dir` (case_dir(sha)/correlate). collect_evidence_text() looks for
+    deep_dive/, quick_scan/, iocs.json... *under the root it is given*, and
+    none of those live under correlate/ -- so the evidence corpus was empty,
+    every claim verified false, and the published master lost every indicator
+    it legitimately cited, sample sha256 included. The audit stayed green
+    because claimed_ioc_verification judges technical_v3 first, whose scrub
+    passed the correct root.
+
+    The structural pairing invariant: the first argument of every
+    scrub_report_indicators() call site must BE the case directory.
+    """
+    for rel in ("revai/section_publisher.py", "revai/publish_report_v2.py"):
+        src = source(rel)
+        # The first argument may itself be a call (`case_dir(sha)`), so the
+        # capture must tolerate one parenthesized group -- a plain word regex
+        # would silently skip exactly the call shape it is guarding.
+        calls = re.findall(
+            r"scrub_report_indicators\(\s*([\w.]+(?:\(\w+\))?)\s*,", src)
+        assert calls, f"{rel}: no scrub_report_indicators() call found"
+        for root in calls:
+            assert root in ("case_dir(sha)", "case"), (
+                f"{rel}: scrub_report_indicators() is called with root "
+                f"`{root}`. The scrubber resolves deep_dive/, quick_scan/ and "
+                "iocs.json *under* that root, so anything but the mode-keyed "
+                "case directory empties the evidence corpus and scrubs every "
+                "indicator the report legitimately cites.")
