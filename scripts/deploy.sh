@@ -82,7 +82,7 @@ fi
 # Deploy the operator entry points from scripts/ (layout-aware helpers the docs
 # reference by their deployed path, e.g. /opt/scripts/verify-release.sh).
 # ---------------------------------------------------------------------------
-for _op_script in verify-release.sh winre-llm-env.sh; do
+for _op_script in verify-release.sh winre-llm-env.sh run-watched.sh; do
     if [[ -f "$REPO_ROOT/scripts/$_op_script" ]]; then
         ok "Deploying $_op_script to /opt/scripts/ ..."
         sudo cp -a "$REPO_ROOT/scripts/$_op_script" /opt/scripts/
@@ -128,16 +128,27 @@ if command -v git >/dev/null 2>&1 && git -C "$REPO_ROOT" rev-parse --verify HEAD
     # trains the reader to ignore it, and the one time it matters -- a genuinely
     # hot-patched deploy -- it has already been discounted.
     #
-    # So: scoped to the paths deploy.sh actually installs, and whitespace- and
-    # line-ending-insensitive. A real edit to revai/, scripts/, install/ or
-    # config/ still marks the build dirty, which is the signal's purpose.
-    _revai_dirty="$(git -C "$REPO_ROOT" status --porcelain -- \
-        revai scripts install config 2>/dev/null \
-        | grep -vE '^..[[:space:]]*.*\.(md|json|jsonl|txt)$' || true)"
-    if [[ -n "$(git -C "$REPO_ROOT" diff --ignore-all-space --name-only -- \
-            revai scripts install config 2>/dev/null)" ]]; then
-        _revai_commit="${_revai_commit}-dirty"
-    elif [[ -n "$_revai_dirty" ]]; then
+    # The scope below is the set deploy.sh actually installs, nothing else:
+    #   revai/            (recursive -- includes prompts/*.txt, which define
+    #                      runtime behavior, and ui/ SOURCE, because the Console
+    #                      bundle is built from it at deploy time)
+    #   tests/            (tests/*.py are copied)
+    #   assets/api_index/ (bundled index + NOTICE)
+    #   the three operator scripts and install/revai.service
+    # Deliberately OUT of scope: config/ (never copied -- llm.env is manual),
+    # install/setup-remnux.sh and extensions/ (deployed by setup, not here),
+    # docs/ and internal/.
+    # Detection is whitespace-insensitive (`diff HEAD`, so CRLF noise on a
+    # checkout cannot mark the build dirty) plus untracked files under the
+    # scope (cp -a ships those too, so an uncommitted new module must count).
+    _dirty_paths=(revai tests assets/api_index
+                  scripts/verify-release.sh scripts/winre-llm-env.sh scripts/run-watched.sh
+                  install/revai.service)
+    _revai_dirty="$(git -C "$REPO_ROOT" diff --ignore-all-space --name-only HEAD -- \
+                        "${_dirty_paths[@]}" 2>/dev/null
+                    git -C "$REPO_ROOT" ls-files --others --exclude-standard -- \
+                        "${_dirty_paths[@]}" 2>/dev/null)"
+    if [[ -n "$_revai_dirty" ]]; then
         _revai_commit="${_revai_commit}-dirty"
     fi
     printf '%s\n' "$_revai_commit" | sudo tee /opt/revai/config/REVAI_COMMIT >/dev/null
