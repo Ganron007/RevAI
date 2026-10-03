@@ -50,12 +50,22 @@ ABORT_ON_ERROR=0
 TIMEOUT_MINUTES=240
 REBOOT=1
 
+# A missing option value must exit with the documented usage code. Under `set -u`
+# a trailing `--sha` used to abort the shell with exit 1, which a caller reads as
+# "a stage failed"; the header documents 3 as a usage/environment error.
+need_value() {
+  if [[ $# -lt 2 ]]; then
+    echo "$1 requires a value" >&2
+    exit 3
+  fi
+}
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --sha) SHA="$2"; shift 2 ;;
-    --mode) MODE_FLAG="$2"; shift 2 ;;
+    --sha) need_value "$@"; SHA="$2"; shift 2 ;;
+    --mode) need_value "$@"; MODE_FLAG="$2"; shift 2 ;;
     --abort-on-error) ABORT_ON_ERROR=1; shift ;;
-    --timeout-minutes) TIMEOUT_MINUTES="$2"; shift 2 ;;
+    --timeout-minutes) need_value "$@"; TIMEOUT_MINUTES="$2"; shift 2 ;;
     --no-reboot) REBOOT=0; shift ;;
     -h|--help) sed -n '2,42p' "${BASH_SOURCE[0]}"; exit 0 ;;
     -*) echo "unknown option: $1" >&2; exit 3 ;;
@@ -71,6 +81,14 @@ if [[ ! -f "$SAMPLE" ]]; then
   echo "sample not found: $SAMPLE" >&2
   exit 3
 fi
+# Validate the wall-clock bound BEFORE anything is launched. A non-integer used
+# to reach the deadline arithmetic inside watch_loop -- after the run was
+# already started -- so the arithmetic error orphaned it, which is the same
+# "watcher dies, run survives" failure mode kill_run was fixed for.
+if ! [[ "$TIMEOUT_MINUTES" =~ ^[0-9]+$ ]]; then
+  echo "--timeout-minutes must be a whole number of minutes (got '$TIMEOUT_MINUTES')" >&2
+  exit 3
+fi
 
 log() { printf '[watch] %s\n' "$*"; }
 fail() { printf '[watch] ERROR: %s\n' "$*" >&2; }
@@ -78,7 +96,14 @@ fail() { printf '[watch] ERROR: %s\n' "$*" >&2; }
 # --------------------------------------------------------------------- reboot
 if [[ "$REBOOT" == "1" ]]; then
   log "rebooting before the run (mandatory; see docs/OPERATE.md)"
-  sudo reboot
+  if ! sudo reboot; then
+    # A failed reboot used to exit 0, which this script's header defines as
+    # "every stage rc=0" — so a caller scripting `run-watched.sh … && deploy`
+    # treated the reboot rule as honoured when it had not happened at all. The
+    # rule is load-bearing, so its failure must not look like success.
+    fail "reboot failed; the reboot-before-every-run rule did NOT happen"
+    exit 1
+  fi
   log "reboot issued — this script cannot continue across it. Re-run it once SSH"
   log "is back; it will detect the fresh boot and skip the reboot."
   exit 0
@@ -166,7 +191,11 @@ log "run dir: $RUN_DIR"
 cd "$RUN_DIR" || { fail "cannot cd to $RUN_DIR"; exit 3; }
 [[ -f pipeline_single.py ]] || { fail "pipeline_single.py missing in $RUN_DIR"; exit 3; }
 
-python3 pipeline_single.py "$SAMPLE" > "$RUN_LOG" 2>&1 &
+# `setsid` puts the run in its own session AND its own process group, which is
+# what lets kill_run signal the whole tree. Without it the stages are
+# grandchildren of THIS process, and killing only the parent left them running
+# (defect B1).
+setsid python3 pipeline_single.py "$SAMPLE" > "$RUN_LOG" 2>&1 &
 RUN_PID=$!
 log "pid: $RUN_PID"
 
@@ -181,8 +210,31 @@ FIRST_ERROR=""
 START=$(date +%s)
 
 kill_run() {
+  # Kill the whole PROCESS GROUP, not just the parent.
+  #
+  # `pipeline_single.py` runs each stage with subprocess.run, so the stage is a
+  # GRANDCHILD of this watcher. Signalling only "$RUN_PID" left the stage -- a
+  # Ghidra headless analyse, an LLM-heavy deep dive -- running for hours after
+  # the watcher had already reported exit 2 "run killed", while `wait` returned
+  # promptly and printed a clean-looking summary over a live process. On
+  # --abort-on-error that is the difference between stopping a doomed run and
+  # leaving it burning tokens.
+  #
+  # The run is launched with `setsid` so it becomes a group leader in its own
+  # right; killing the negative PID signals every member. A pattern kill
+  # A pattern kill is deliberately NOT used -- AGENTS.md records that it also
+  # kills the invoking shell.
+  local pgid
+  pgid="$(ps -o pgid= -p "$RUN_PID" 2>/dev/null | tr -d ' ')"
+  if [[ -n "$pgid" ]]; then
+    kill -TERM "-$pgid" 2>/dev/null
+    sleep 5
+    kill -KILL "-$pgid" 2>/dev/null
+  fi
+  # Always signal the direct child too: the group may already be gone, and the
+  # parent is what `wait` is blocked on.
   kill -TERM "$RUN_PID" 2>/dev/null
-  sleep 5
+  sleep 3
   kill -KILL "$RUN_PID" 2>/dev/null
 }
 

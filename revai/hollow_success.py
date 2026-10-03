@@ -69,6 +69,49 @@ _TICKER_RE = re.compile(r"\|\s*\*\*Final\*\*\s*\|\s*\*+([^*|]+?)\*+\s*\|",
 _RUN_START_RE = re.compile(
     r"===== RUN START (\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z) =====")
 
+#: The one log that carries the banner. pipeline_single.run_single appends it
+#: there; every other case log is a stage's own file, and treating them as
+#: banner-bearing is what zeroed the exhausted-call check (defect A2).
+STAGE_LOG_NAME = "pipeline_single.log"
+
+
+def _banner_stamp(case: Path) -> str | None:
+    """The newest RUN START banner stamp in the case's stage log, if any."""
+    try:
+        text = (Path(case) / STAGE_LOG_NAME).read_text(errors="replace")
+    except OSError:
+        return None
+    stamps = _RUN_START_RE.findall(text)
+    return stamps[-1] if stamps else None
+
+
+def _banner_epoch(stamp: str) -> float | None:
+    """UTC epoch of one banner stamp, or None when it does not parse."""
+    try:
+        from datetime import datetime, timezone
+        dt = datetime.strptime(
+            stamp, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+        return dt.timestamp()
+    except ValueError:
+        return None
+
+
+def _boundary_is_unsound(case: Path, epoch: float) -> bool:
+    """True when a clock step has made the banner unusable as a cutoff.
+
+    The banner is appended to the stage log, so that file's mtime can NEVER be
+    older than the instant the banner was written. When it is, the clock
+    stepped back after the banner and every artifact written since carries an
+    mtime behind the boundary. A strict cutoff then discards THIS run's own
+    artifacts and calls the case clean -- the false-green direction this gate
+    must never take (defect A3), so the boundary is abandoned rather than
+    trusted.
+    """
+    try:
+        return (Path(case) / STAGE_LOG_NAME).stat().st_mtime < epoch
+    except OSError:
+        return False
+
 
 def _run_start_epoch(case: Path) -> float | None:
     """UTC epoch of the newest RUN START banner in the case's stage log.
@@ -79,21 +122,29 @@ def _run_start_epoch(case: Path) -> float | None:
     exhausted-call needles in the append-only log -- only see artifacts from
     the run that wrote it. A publish-only re-run therefore cannot inherit the
     previous run's stale reports as findings of its own.
+
+    Also None when the banner cannot be trusted as a cutoff (see
+    :func:`_boundary_is_unsound`): an unsound boundary is dropped, which fails
+    OPEN -- stale artifacts are judged again -- instead of silently skipping
+    the current run's.
     """
-    try:
-        text = (Path(case) / "pipeline_single.log").read_text(errors="replace")
-    except OSError:
+    stamp = _banner_stamp(case)
+    if stamp is None:
         return None
-    stamps = _RUN_START_RE.findall(text)
-    if not stamps:
+    epoch = _banner_epoch(stamp)
+    if epoch is None or _boundary_is_unsound(case, epoch):
         return None
-    try:
-        from datetime import datetime, timezone
-        dt = datetime.strptime(
-            stamps[-1], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
-        return dt.timestamp()
-    except ValueError:
-        return None
+    return epoch
+
+
+def _has_run_banner(case: Path) -> bool:
+    """True when the case's stage log records that a run started here.
+
+    Deliberately independent of :func:`_run_start_epoch`: a banner whose
+    timestamp cannot be used as a cutoff (clock skew) still proves a run began,
+    which is what the produced-something check needs to know.
+    """
+    return _banner_stamp(case) is not None
 
 
 def _is_current_run(path: Path, run_start: float | None) -> bool:
@@ -106,16 +157,26 @@ def _is_current_run(path: Path, run_start: float | None) -> bool:
         return True
 
 
-def _log_text_for_this_run(path: Path, run_start: float | None) -> str:
-    """A log's content, sliced to the current run when a banner exists."""
+def _log_text_for_this_run(path: Path) -> str:
+    """A log's content, sliced to the current run when THIS file has a banner.
+
+    The boundary is per FILE, not per case. Only the stage log carries a
+    banner, so slicing every log at a marker it does not contain returned ""
+    and zeroed the whole check: the orchestrator log, the ghidrasql/idasql
+    server logs and the WinRE run log all record exhausted LLM calls and
+    attempts that then contributed nothing (defect A2, a regression in the
+    other direction).
+    """
     try:
         text = path.read_text(errors="replace")
     except OSError:
         return ""
-    if run_start is None:
-        return text
     idx = text.rfind("===== RUN START ")
-    return text[idx:] if idx != -1 else ""
+    if idx == -1:
+        # No banner in this file: it is not an append-only record shared
+        # between runs, so all of it describes the current run.
+        return text
+    return text[idx:]
 
 
 @dataclass
@@ -130,7 +191,14 @@ class Finding:
                 "evidence": self.evidence}
 
 
-def _load(path: Path) -> dict | None:
+def _load(path: Path) -> Any:
+    """A JSON payload, or None when the file is absent or unparseable.
+
+    Returns whatever `json.loads` produced, which is not always a dict: a
+    valid-but-non-dict payload must not short-circuit a caller's discovery (see
+    `_publish_sidecar`) or blow it up with an AttributeError (see
+    `check_function_recovery`). Every caller checks the type.
+    """
     try:
         return json.loads(path.read_text(errors="replace"))
     except Exception:
@@ -145,7 +213,7 @@ def check_function_recovery(data: dict | None) -> list[Finding]:
     This is the exact shape of defect #31: 110 results, 0 errors, every name
     `unknown_*`, every confidence at the floor, every pseudocode empty.
     """
-    if not data:
+    if not isinstance(data, dict):
         return []
     results = data.get("function_results") or data.get("results") or []
     llm = [r for r in results
@@ -239,15 +307,22 @@ def check_verdict_panel_agreement(case: Path) -> list[Finding]:
     panels: dict[str, str] = {}
     # Discovered, not enumerated, for the same reason as REPORT_MD_GLOB: a fixed
     # list of report filenames is a check that silently stops covering the
-    # moment a version is added. Stale reports from an earlier run are skipped
-    # when a RUN START banner exists: a re-run must not inherit the previous
-    # run's panel disagreement as its own finding.
+    # moment a version is added. Stale reports from an earlier run are not
+    # COMPARED when a RUN START banner exists -- a re-run must not inherit the
+    # previous run's panel disagreement as its own finding -- but they are
+    # still counted as reports on disk (defect A5): a publish that wrote the
+    # master and died before the technical report must land on the blind side
+    # of this check, not on the side where there is nothing left to compare.
     run_start = _run_start_epoch(case)
     md_files: list[Path] = []
-    for path in sorted(case.glob("REPORT-*.md")):
-        if not path.is_file() or not _is_current_run(path, run_start):
+    current: list[Path] = []
+    for path in sorted(case.glob(REPORT_MD_GLOB)):
+        if not path.is_file():
             continue
         md_files.append(path)
+        if not _is_current_run(path, run_start):
+            continue
+        current.append(path)
         try:
             m = _TICKER_RE.search(path.read_text(errors="replace")[:200000])
         except OSError:
@@ -267,7 +342,9 @@ def check_verdict_panel_agreement(case: Path) -> list[Finding]:
     # vacuously pass on a format change that stopped emitting the panel,
     # which is the check that cannot fail again. Two reports are required so
     # a legitimately single-report case is not flagged for having nothing to
-    # compare.
+    # compare. The threshold is on the reports PRESENT, not on the ones that
+    # survived the current-run filter: counting only the survivors is how a
+    # half-written report set read as a single-report case and passed.
     if len(md_files) >= 2 and len(panels) < 2:
         findings.append(Finding(
             check="verdict.panels_unreadable",
@@ -275,6 +352,7 @@ def check_verdict_panel_agreement(case: Path) -> list[Finding]:
                     "verdict panel(s) parseable -- panel agreement is not "
                     "checkable"),
             evidence={"files": [p.name for p in md_files],
+                      "current_run": [p.name for p in current],
                       "parsed": sorted(panels)}))
     return findings
 
@@ -284,23 +362,26 @@ def check_verdict_panel_agreement(case: Path) -> list[Finding]:
 def check_exhausted_llm_calls(case: Path) -> list[Finding]:
     """Calls that burned every attempt are recorded, not silently absorbed.
 
-    Scans the case's stage log for the terminal forms llm_judge prints when it
-    gives up. Budget unlimited does not make a failed call harmless: it means
-    that piece of analysis is missing from the report.
+    Scans every log the case holds -- the stage log plus the stage logs the
+    individual stages keep (orchestrator, ghidrasql/idasql servers, WinRE
+    runner) -- for the terminal forms llm_judge prints when it gives up. Budget
+    unlimited does not make a failed call harmless: it means that piece of
+    analysis is missing from the report.
     """
     logs = list(case.glob("*.log")) + [case / "pipeline_single.log"]
     logs = [p for p in dict.fromkeys(logs) if p.is_file()]
-    run_start = _run_start_epoch(case)
     patterns = {
         "llm.exhausted": "llm_judge failed",
         "llm.terminal_abort": "attempt 3/3 failed",
     }
     counts: Counter[str] = Counter()
     for path in logs:
-        # Append-only log: only the segment since this run's banner is this
-        # run's record. Without the boundary, a re-run inherited the previous
-        # run's exhausted calls as its own findings.
-        text = _log_text_for_this_run(path, run_start)
+        # Append-only log: only the segment since this file's OWN last banner
+        # is this run's record. Without the boundary a re-run inherited the
+        # previous run's exhausted calls as its own findings; applying the
+        # case's banner to every file instead zeroed every log except the
+        # stage log, which is the only one that writes a banner.
+        text = _log_text_for_this_run(path)
         for key, needle in patterns.items():
             counts[key] += text.count(needle)
     return [Finding(
@@ -450,9 +531,19 @@ def check_section_manifests(case: Path) -> list[Finding]:
     Only an explicit `False` counts. An absent key means the producer did not
     report provenance, which is not evidence of a hollow section, so treating
     absence as failure would flag healthy manifests.
+
+    Same current-run boundary as the other report readers: a manifest older
+    than the run's banner belongs to the previous run. Without the filter this
+    was the one reader that still judged stale artifacts, so the same file was
+    skipped by one check and judged by another (2026-10-03 review, defect A1).
+    The balance for that filter is `check_run_produced_artifacts`: a re-run that
+    wrote no manifest of its own does not silently inherit a clean verdict.
     """
     findings: list[Finding] = []
+    run_start = _run_start_epoch(case)
     for path in sorted(Path(case).glob(SECTION_MANIFEST_GLOB)):
+        if not _is_current_run(path, run_start):
+            continue
         data = _load(path)
         if not isinstance(data, dict):
             continue
@@ -474,6 +565,50 @@ def check_section_manifests(case: Path) -> list[Finding]:
     return findings
 
 
+def check_run_produced_artifacts(case: Path) -> list[Finding]:
+    """A run that started and produced nothing must not read as clean.
+
+    The current-run filter is what stops a re-run from inheriting the previous
+    run's findings, and it is exactly what hid a crashed run: with the previous
+    run's reports still on disk and a banner in the stage log, every report
+    check above sees an empty case and returns clean. Reproduced 2026-10-03 --
+    a case dir holding stale reports plus a stage log containing only a RUN
+    START banner and `===== TIMEOUT` evaluated to ok=True with zero findings;
+    deleting the banner line made the same artifacts yield four findings.
+
+    So the filter is balanced by a requirement rather than trusted on its own:
+    when a run demonstrably started (a banner exists) and EVERY report artifact
+    in the case predates that banner, the run produced no report at all. The
+    publisher writes unconditionally on success, so there is no legitimate
+    "up to date, nothing to do" path that this would flag.
+
+    Fires only when stale artifacts exist to mask the emptiness: a first-time
+    case whose run died before publishing is caught by the ordinary missing
+    -artifact checks, and flagging it here too would add a second, vaguer
+    signal for the same defect.
+    """
+    if not _has_run_banner(case):
+        return []
+    run_start = _run_start_epoch(case)
+    fresh: list[str] = []
+    stale: list[str] = []
+    for pattern in (REPORT_SIDECAR_GLOB, SECTION_MANIFEST_GLOB, REPORT_MD_GLOB):
+        for path in sorted(Path(case).glob(pattern)):
+            if not path.is_file():
+                continue
+            (fresh if _is_current_run(path, run_start)
+             else stale).append(path.name)
+    if fresh or not stale:
+        return []
+    return [Finding(
+        check="run.produced_nothing",
+        detail=(f"this run produced no report artifact: all {len(stale)} report "
+                f"file(s) in the case predate its RUN START banner, so every "
+                f"report check was skipped and the case read as clean"),
+        evidence={"stale_files": sorted(stale)[:10], "stale": len(stale),
+                  "current": 0})]
+
+
 def _publish_sidecar(case: Path) -> dict | None:
     """The publish stage's verdict-source sidecar, discovered not assumed.
 
@@ -482,15 +617,22 @@ def _publish_sidecar(case: Path) -> dict | None:
     writing it, the verdict-source check would silently no-op. Prefer the
     known name; otherwise take the newest remaining report sidecar that
     declares a source.
+
+    Two rules this reader shares with the other sidecar readers: the payload
+    must be a dict -- a valid JSON array or string is not a verdict and used to
+    short-circuit discovery, silently disabling the check (defect A4) -- and a
+    sidecar older than the run's banner is a previous run's, so the same file
+    is not skipped by one check and judged by this one.
     """
+    run_start = _run_start_epoch(case)
     known = Path(case) / "report-v2.json"
-    if known.is_file():
+    if known.is_file() and _is_current_run(known, run_start):
         data = _load(known)
-        if data is not None:
+        if isinstance(data, dict):
             return data
     candidates: list[tuple[float, dict]] = []
-    for p in Path(case).glob("report*.json"):
-        if not p.is_file():
+    for p in Path(case).glob(REPORT_SIDECAR_GLOB):
+        if not p.is_file() or not _is_current_run(p, run_start):
             continue
         data = _load(p)
         if isinstance(data, dict) and data.get("source"):

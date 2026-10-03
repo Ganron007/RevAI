@@ -2462,7 +2462,18 @@ def _llm_response_has_usable_content(data: dict) -> bool:
     """
     try:
         choice = (data.get("choices") or [{}])[0]
-        if str(choice.get("finish_reason") or "") == "length":
+        finish = str(choice.get("finish_reason") or "")
+        if finish == "length":
+            return False
+        # An UNKNOWN finish (None) is recorded honestly, but it is not accepted.
+        # The stream ended without the provider saying why, which on a
+        # non-compliant endpoint is indistinguishable from a hard truncation, and
+        # accepting it meant a truncated stream whose truncation the guard could
+        # not see sailed through as a clean stop (verified 2026-10-03: truncated
+        # stream, no finish chunk -> finish=None, usable=True). The retry ladder
+        # is what gives such a call its second chance, so rejecting it costs one
+        # attempt and closes the hole.
+        if finish not in ("stop", "function_call", "tool_calls"):
             return False
         msg = choice.get("message") or {}
         content = msg.get("content") or ""
@@ -2762,6 +2773,29 @@ def _post_llm_streaming(api_url: str, headers: dict, body: dict,
     # complete because the finish chunk parsed fine.
     data_lines: list[str] = []
 
+    def _salvage_if_complete(exc: BaseException):
+        """Recover a finished answer from a stream that died after the finish.
+
+        A stream can deliver every chunk including `finish_reason` and then die
+        on the trailing usage chunk or the connection close. Propagating that
+        fails the attempt and re-sends the whole prompt -- for an answer that is
+        already sitting in `parts`. When a CLEAN finish arrived the response is
+        complete, so rebuild the non-streaming shape from it.
+
+        A truncated stream (finish_reason "length", or no finish at all) is NOT
+        salvaged: it would hand truncated content back as if complete.
+        """
+        if not parts or finish is None or finish == "length":
+            return None
+        text = "".join(parts)
+        return ({"choices": [{"message": {"role": role or "assistant",
+                                          "content": text},
+                              "finish_reason": finish}],
+                 **({"usage": usage} if usage else {})},
+                {"streamed": True, "salvaged": True, "chunks": chunks,
+                 "note": f"stream died after a clean finish: "
+                         f"{type(exc).__name__}"})
+
     def _dispatch_event(payload: str) -> None:
         nonlocal role, finish, usage, chunks
         if payload == "[DONE]":
@@ -2771,9 +2805,18 @@ def _post_llm_streaming(api_url: str, headers: dict, body: dict,
         except Exception:
             return
         chunks += 1
+        # A non-object payload is legal JSON and must be skipped, not fatal.
+        # `data: null` parses fine, then `obj.get` raised AttributeError; because
+        # the fast path only wraps json.loads in its try, that escaped and killed
+        # a call the provider had answered correctly -- where the pre-existing
+        # code returned None and recovered via a plain POST.
+        if not isinstance(obj, dict):
+            return
         if isinstance(obj.get("usage"), dict) and obj["usage"]:
             usage = obj["usage"]
         for ch in (obj.get("choices") or []):
+            if not isinstance(ch, dict):
+                continue
             delta = ch.get("delta") or {}
             if delta.get("role"):
                 role = delta["role"]
@@ -2816,6 +2859,15 @@ def _post_llm_streaming(api_url: str, headers: dict, body: dict,
                     if data_lines:
                         _dispatch_lines(data_lines)
                         data_lines.clear()
+                        # Re-check the finish condition here. The blank-line
+                        # branch used to `continue` without it, so a finish
+                        # carried in a MULTI-LINE event was never noticed and a
+                        # provider that sent one and then stalled produced a
+                        # read timeout on a complete answer -- the exact defect
+                        # the finish check below was added for, for the one
+                        # event shape multi-line support created.
+                        if finish is not None:
+                            break
                     continue
                 if not line.startswith("data:"):
                     continue  # event:, id:, comments
@@ -2857,12 +2909,18 @@ def _post_llm_streaming(api_url: str, headers: dict, body: dict,
         # exactly the overrun that killed artifact_gen. Propagate it and let one
         # attempt fail once.
         if isinstance(exc, TimeoutError) or "timed out" in str(exc).lower():
+            salvaged = _salvage_if_complete(exc)
+            if salvaged is not None:
+                return salvaged
             raise
         # A stream that already DELIVERED content and then died mid-body is the
         # same shape: the fallback would be a second full-length request, and a
         # mid-body death after tokens were flowing is not "the provider does not
         # stream". Propagate so the attempt fails once instead of doubling.
         if parts:
+            salvaged = _salvage_if_complete(exc)
+            if salvaged is not None:
+                return salvaged
             raise
         # Anything else: recorded, not swallowed. A silent `return None` here is
         # how a broken streaming path would masquerade as "the provider does not
@@ -3042,10 +3100,50 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
             attempt_timeout_s = min(base_timeout_s, b)
 
     def _budget_remaining() -> int:
-        """Seconds left of the caller's budget; 0 when no budget was declared."""
+        """Seconds left of the caller's budget; 0 when no budget was declared.
+
+        Callers must distinguish the two zero cases by testing
+        `budget_deadline is None` themselves -- this helper deliberately
+        reports 0 for both, and every current call site already guards on the
+        deadline being set.
+        """
         if budget_deadline is None:
             return 0
         return max(0, int(budget_deadline - time.monotonic()))
+
+    #: Below this many seconds left, a further attempt cannot finish anything
+    #: and is skipped rather than started. Deliberately generous: the failure mode
+    #: worth avoiding is a retry that costs a full window and still times out.
+    _MIN_VIABLE_RETRY_S = 30
+
+    def _can_retry_after(sleep_s: float, *, why: str) -> bool:
+        """Sleep, unless the caller's budget cannot survive another attempt.
+
+        Every retry transition in the ladder used to sleep and continue without
+        consulting the deadline, so with a budget declared the ladder could
+        overshoot it by the sum of its own backoffs (measured 2026-10-03:
+        timeout_s=180, budget_s=180 and three abort-retries produced a 535 s
+        span against a 180 s budget). This is the single place that decision is
+        made now, so a new transition cannot forget it.
+
+        Returns True when it is safe to sleep and retry, False when the budget is
+        spent -- the caller should break to the no-thinking fallback rather than
+        burn time it does not have.
+        """
+        if budget_deadline is None:
+            # No budget declared: the caller has not constrained us, so the
+            # historical behaviour stands.
+            return True
+        remaining = _budget_remaining() - int(sleep_s)
+        if remaining < _MIN_VIABLE_RETRY_S:
+            print(
+                f"[llm_judge] {why}; {max(0, remaining)}s would remain after "
+                f"{sleep_s:.1f}s backoff, below the {_MIN_VIABLE_RETRY_S}s "
+                "needed to finish an attempt - skipping to the fallback",
+                flush=True,
+            )
+            return False
+        return True
     last_aborted: dict | None = None
     last_empty: dict | None = None
     for attempt in range(1, max_retries + 1):
@@ -3119,6 +3217,9 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                     flush=True,
                 )
                 current_reasoning = nxt
+                if not _can_retry_after(2 ** attempt + random.uniform(0, 1.0),
+                                        why="provider aborted mid-reasoning"):
+                    break
                 time.sleep(2 ** attempt + random.uniform(0, 1.0))  # jitter
                 continue
             if _finish_reason(data) == "abort":
@@ -3135,6 +3236,10 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                         flush=True,
                     )
                     current_reasoning = nxt
+                    if not _can_retry_after(
+                            2 ** attempt + random.uniform(0, 1.0),
+                            why="attempt returned no usable content"):
+                        break
                     time.sleep(2 ** attempt + random.uniform(0, 1.0))  # jitter
                     continue
                 last_empty = data
@@ -3160,10 +3265,25 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                     base = 2 ** attempt
                     if retry_after:
                         try:
-                            base = max(base, float(retry_after))
+                            # Cap the provider's own Retry-After at the
+                            # caller's remaining budget. It was trusted
+                            # unboundedly, so a provider answering
+                            # "Retry-After: 120" against a 180 s budget produced
+                            # two sleeps of 121 s and 120 s -- a 241 s span from
+                            # backoff alone, and past the deadline before the
+                            # next request was even sent.
+                            asked = float(retry_after)
                         except ValueError:
-                            pass
+                            asked = 0.0
+                        if budget_deadline is not None:
+                            room = max(0, _budget_remaining()
+                                       - _MIN_VIABLE_RETRY_S)
+                            asked = min(asked, max(0, room))
+                        base = max(base, asked)
                     sleep_s = base + random.uniform(0, 1.5)
+                    if not _can_retry_after(sleep_s,
+                                            why="provider throttled us"):
+                        break
                     print(
                         f"[llm_judge] attempt {attempt}/{max_retries} HTTP 429 "
                         f"model={effective_model} "
@@ -3191,26 +3311,36 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                     # whole ladder" property (2 thinking windows, not 5) while
                     # giving a stall a genuine second chance.
                     same_effort_retry_done = True
+                    # Budget is a deadline: grant only what actually fits.
+                    #
+                    # This used to compare the remaining budget against the
+                    # NOMINAL window and break when it did not fit, which meant
+                    # the natural `budget = 2 x timeout` configuration disabled
+                    # the same-effort retry entirely: after attempt 1 burns its
+                    # full 600 s window, 598 s remain, a 598 s window would have
+                    # fit perfectly, and the ladder skipped straight to the
+                    # no-thinking fallback -- while logging "no budget left" and
+                    # printing the 598 s it was throwing away. Compare against
+                    # the window that would actually be granted instead.
                     sleep_s = 2 ** attempt + random.uniform(0, 1.0)
                     used_window = attempt_timeout_s
-                    # Budget is a deadline: the retry window is what actually
-                    # fits after the backoff, and if no meaningful window fits
-                    # at all, a retry cannot finish -- skip it instead of
-                    # burning the caller's budget on a guaranteed overrun.
-                    remaining = _budget_remaining() - int(sleep_s)
-                    if budget_deadline is not None and remaining < base_timeout_s:
+                    remaining = (_budget_remaining() - int(sleep_s)
+                                 if budget_deadline is not None else base_timeout_s * 2)
+                    window = min(base_timeout_s * 2, max(0, remaining))
+                    if budget_deadline is not None and window < base_timeout_s:
                         print(
                             f"[llm_judge] attempt {attempt}/{max_retries} timed "
                             f"out after {used_window}s (reasoning="
-                            f"{current_reasoning}); no budget left for a second "
-                            f"window ({max(0, remaining)}s remaining) — "
-                            "skipping to the no-thinking fallback",
+                            f"{current_reasoning}); only {window}s would remain "
+                            f"after a {sleep_s:.1f}s backoff, under the "
+                            f"{base_timeout_s}s nominal window — skipping to "
+                            "the no-thinking fallback",
                             flush=True,
                         )
                         break
                     attempt_timeout_s = (
-                        min(base_timeout_s * 2, remaining)
-                        if budget_deadline is not None else base_timeout_s * 2)
+                        window if budget_deadline is not None
+                        else base_timeout_s * 2)
                     print(
                         f"[llm_judge] attempt {attempt}/{max_retries} timed "
                         f"out after {used_window}s (reasoning="
@@ -3234,6 +3364,8 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                 break
             if attempt < max_retries:
                 sleep_s = 2 ** attempt
+                if not _can_retry_after(sleep_s, why="attempt failed"):
+                    break
                 print(f"[llm_judge] attempt {attempt}/{max_retries} failed ({type(e).__name__}: {e}); retrying in {sleep_s}s...", flush=True)
                 time.sleep(sleep_s)
             else:

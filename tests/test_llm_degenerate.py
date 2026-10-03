@@ -133,7 +133,7 @@ def test_llm_judge_reasoning_override(monkeypatch):
     def fake_urlopen(req, timeout=None):
         calls.append(_json.loads(req.data.decode()))
         return _FakeResp(_json.dumps({
-            "choices": [{"message": {"role": "assistant", "content": '{"verdict":"unknown"}'}}],
+            "choices": [{"message": {"role": "assistant", "content": '{"verdict":"unknown"}'}, "finish_reason": "stop"}],
             "usage": {},
         }).encode())
 
