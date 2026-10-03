@@ -32,8 +32,14 @@ import subprocess
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
-WATCHER = ROOT / "scripts" / "run-watched.sh"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _layout import resolve  # noqa: E402
+
+# scripts/run-watched.sh in the repo; /opt/scripts/run-watched.sh once deployed.
+WATCHER = resolve("scripts/run-watched.sh")
+# The directory to run from: the repo root in the repo layout, the scripts dir
+# in the flat VM layout. The script path is then relative either way.
+ROOT = WATCHER.parent.parent if WATCHER.parent.name == "scripts" else WATCHER.parent
 
 
 def _run_watcher(*args: str) -> subprocess.CompletedProcess:
