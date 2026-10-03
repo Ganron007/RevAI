@@ -123,6 +123,13 @@ def run_single(sample: Path | None, sha: str | None, mode: str = "standard") -> 
         intake_cmd = None
 
     run_log = case_dir(sha) / "pipeline_single.log"
+    # Run boundary (2026-10-03, hollow-success stale-artifact finding): the
+    # stage log is append-only and case dirs are reused, so hollow_success
+    # otherwise mixed the PREVIOUS run's exhausted-call records and sidecars
+    # into this run's verdict. The banner timestamp is what it slices on.
+    run_log.parent.mkdir(parents=True, exist_ok=True)
+    with run_log.open("a", encoding="utf-8") as _lf:
+        _lf.write(f"\n===== RUN START {_utc()} =====\n")
     trace_path = case_dir(sha) / "stage_trace.json"
     stages = []
     if intake_cmd:

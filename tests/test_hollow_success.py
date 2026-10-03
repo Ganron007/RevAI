@@ -240,3 +240,71 @@ def test_advisory_absent_for_tiny_or_missing_recovery():
     adv = hs._advisory(tiny)
     assert adv["judged"] is False
     assert "unresolved_name_ratio" not in adv
+
+
+# --------------------------------------------------------------------------
+# 2026-10-03: stale artifacts from a previous run must not be judged
+# --------------------------------------------------------------------------
+
+import os  # noqa: E402
+import time  # noqa: E402
+
+
+def _write_run_banner(case):
+    """Append a RUN START banner whose timestamp is genuinely in the past.
+
+    `_run_start_epoch` parses the banner TEXT, so the stamp must be a real
+    UTC instant before now -- a hardcoded date drifts into the future as the
+    machine clock advances, and `time.mktime` would misread it as local time.
+    """
+    past = time.time() - 3600
+    utc = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(past))
+    (case / "pipeline_single.log").write_text(
+        f"old run's exhausted call line: llm_judge failed\n"
+        f"===== RUN START {utc} =====\n"
+        "this run so far has no failures\n",
+        encoding="utf-8")
+
+
+def test_exhausted_call_needles_before_the_banner_are_not_this_runs():
+    case = Path(__import__("tempfile").mkdtemp())
+    _write_run_banner(case)
+    got = _checks(hs.check_exhausted_llm_calls(case))
+    assert "llm.exhausted" not in got, got
+
+
+def test_sidecar_older_than_the_banner_is_skipped():
+    case = Path(__import__("tempfile").mkdtemp())
+    _write_run_banner(case)
+    stale = case / "report-technical-v3.json"
+    stale.write_text(json.dumps({
+        "source": "deterministic_fallback",
+        "sections_missing": list(range(12)), "sections_stub": [],
+        "sections_complete": 1}), encoding="utf-8")
+    stamp = time.time() - 7200
+    os.utime(stale, (stamp, stamp))
+    got = _checks(hs.check_report_sidecars(case))
+    assert not got, f"stale sidecar was judged as this run's: {got}"
+
+
+def test_sidecar_written_after_the_banner_is_judged():
+    case = Path(__import__("tempfile").mkdtemp())
+    _write_run_banner(case)
+    fresh = case / "report-technical-v3.json"
+    fresh.write_text(json.dumps({
+        "source": "deterministic_fallback",
+        "sections_missing": list(range(12)), "sections_stub": [],
+        "sections_complete": 1}), encoding="utf-8")
+    got = _checks(hs.check_report_sidecars(case))
+    assert "report.fallback_source" in got, got
+
+
+def test_no_banner_means_everything_is_judged():
+    """The boundary is opt-in: other runners and legacy cases are unchanged."""
+    case = Path(__import__("tempfile").mkdtemp())
+    (case / "report-technical-v3.json").write_text(json.dumps({
+        "source": "deterministic_fallback",
+        "sections_missing": list(range(12)), "sections_stub": [],
+        "sections_complete": 1}), encoding="utf-8")
+    got = _checks(hs.check_report_sidecars(case))
+    assert "report.fallback_source" in got, got

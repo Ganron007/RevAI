@@ -62,6 +62,61 @@ _DEGENERATE_TOKEN = re.compile(r"\S+")
 _TICKER_RE = re.compile(r"\|\s*\*\*Final\*\*\s*\|\s*\*+([^*|]+?)\*+\s*\|",
                          re.IGNORECASE)
 
+#: Written by pipeline_single at the top of every run (see
+#: pipeline_single.run_single). Case dirs are reused and the stage log is
+#: append-only, so this timestamp is the boundary between one run's artifacts
+#: and the previous run's.
+_RUN_START_RE = re.compile(
+    r"===== RUN START (\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z) =====")
+
+
+def _run_start_epoch(case: Path) -> float | None:
+    """UTC epoch of the newest RUN START banner in the case's stage log.
+
+    None when there is no banner (another runner, a legacy case, or a flat log
+    layout): every artifact is then judged, exactly as before. With a banner,
+    checks that would otherwise mix runs -- report sidecars, markdown panels,
+    exhausted-call needles in the append-only log -- only see artifacts from
+    the run that wrote it. A publish-only re-run therefore cannot inherit the
+    previous run's stale reports as findings of its own.
+    """
+    try:
+        text = (Path(case) / "pipeline_single.log").read_text(errors="replace")
+    except OSError:
+        return None
+    stamps = _RUN_START_RE.findall(text)
+    if not stamps:
+        return None
+    try:
+        from datetime import datetime, timezone
+        dt = datetime.strptime(
+            stamps[-1], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+        return dt.timestamp()
+    except ValueError:
+        return None
+
+
+def _is_current_run(path: Path, run_start: float | None) -> bool:
+    """True when `path` belongs to the current run (or no boundary is known)."""
+    if run_start is None:
+        return True
+    try:
+        return path.stat().st_mtime >= run_start
+    except OSError:
+        return True
+
+
+def _log_text_for_this_run(path: Path, run_start: float | None) -> str:
+    """A log's content, sliced to the current run when a banner exists."""
+    try:
+        text = path.read_text(errors="replace")
+    except OSError:
+        return ""
+    if run_start is None:
+        return text
+    idx = text.rfind("===== RUN START ")
+    return text[idx:] if idx != -1 else ""
+
 
 @dataclass
 class Finding:
@@ -184,9 +239,12 @@ def check_verdict_panel_agreement(case: Path) -> list[Finding]:
     panels: dict[str, str] = {}
     # Discovered, not enumerated, for the same reason as REPORT_MD_GLOB: a fixed
     # list of report filenames is a check that silently stops covering the
-    # moment a version is added.
+    # moment a version is added. Stale reports from an earlier run are skipped
+    # when a RUN START banner exists: a re-run must not inherit the previous
+    # run's panel disagreement as its own finding.
+    run_start = _run_start_epoch(case)
     for path in sorted(case.glob("REPORT-*.md")):
-        if not path.is_file():
+        if not path.is_file() or not _is_current_run(path, run_start):
             continue
         try:
             m = _TICKER_RE.search(path.read_text(errors="replace")[:200000])
@@ -216,16 +274,17 @@ def check_exhausted_llm_calls(case: Path) -> list[Finding]:
     """
     logs = list(case.glob("*.log")) + [case / "pipeline_single.log"]
     logs = [p for p in dict.fromkeys(logs) if p.is_file()]
+    run_start = _run_start_epoch(case)
     patterns = {
         "llm.exhausted": "llm_judge failed",
         "llm.terminal_abort": "attempt 3/3 failed",
     }
     counts: Counter[str] = Counter()
     for path in logs:
-        try:
-            text = path.read_text(errors="replace")
-        except OSError:
-            continue
+        # Append-only log: only the segment since this run's banner is this
+        # run's record. Without the boundary, a re-run inherited the previous
+        # run's exhausted calls as its own findings.
+        text = _log_text_for_this_run(path, run_start)
         for key, needle in patterns.items():
             counts[key] += text.count(needle)
     return [Finding(
@@ -317,7 +376,13 @@ def check_report_sidecars(case: Path) -> list[Finding]:
     flagging either is free of false positives there.
     """
     findings: list[Finding] = []
+    run_start = _run_start_epoch(case)
     for path in sorted(Path(case).glob(REPORT_SIDECAR_GLOB)):
+        if not _is_current_run(path, run_start):
+            # A report older than this run's banner belongs to a previous run;
+            # judging it here is how a re-run failed on findings it never
+            # produced (2026-10-03 stale-artifact review).
+            continue
         data = _load(path)
         if not isinstance(data, dict):
             continue
@@ -412,8 +477,12 @@ def evaluate_case(case: Path) -> dict[str, Any]:
     findings += check_section_manifests(case)
 
     # Markdown is now discovered too, so a v3 report is checked for degeneration
-    # and duplicated sections exactly as a v2 one is.
+    # and duplicated sections exactly as a v2 one is. Stale reports from an
+    # earlier run are skipped when a RUN START banner exists.
+    run_start = _run_start_epoch(case)
     for path in sorted(case.glob(REPORT_MD_GLOB)):
+        if not _is_current_run(path, run_start):
+            continue
         try:
             md = path.read_text(errors="replace")
         except OSError:
