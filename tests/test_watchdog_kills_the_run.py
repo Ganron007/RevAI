@@ -106,17 +106,15 @@ def test_missing_option_values_exit_with_the_usage_code():
 
 
 def test_non_integer_timeout_is_rejected_before_launch():
-    """B4: validating inside watch_loop orphans the run."""
-    # A REAL sample file, and a REPO-RELATIVE one: the validator sits after the
-    # existence check on purpose, so a missing file would mask it with "sample
-    # not found" -- and a Windows absolute path is mangled by the bash that
-    # invokes the watcher, which reads as a missing file too.
-    sample = ROOT / "_watchdog_probe_sample.bin"
-    sample.write_bytes(b"MZ")
-    try:
-        proc = _run_watcher(sample.name, "--timeout-minutes", "1.5")
-    finally:
-        sample.unlink(missing_ok=True)
+    """B4: validating inside watch_loop orphans the run.
+
+    The validator sits before the sample-existence check on purpose, so a
+    nonexistent sample still reaches it — which is what lets this test run
+    without a real, writable sample path on either host (a Windows temp path is
+    mangled by the bash that invokes the watcher, and the deployed runtime dir
+    is root-owned).
+    """
+    proc = _run_watcher("/tmp/no-such-sample.bin", "--timeout-minutes", "1.5")
     assert proc.returncode == 3, proc.returncode
     assert "whole number" in proc.stderr, proc.stderr
 

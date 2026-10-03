@@ -77,16 +77,17 @@ if [[ -z "$SAMPLE" ]]; then
   echo "usage: $(basename "$0") <sample-path> [--sha <sha>] [--mode scripted] [--abort-on-error]" >&2
   exit 3
 fi
-if [[ ! -f "$SAMPLE" ]]; then
-  echo "sample not found: $SAMPLE" >&2
-  exit 3
-fi
-# Validate the wall-clock bound BEFORE anything is launched. A non-integer used
-# to reach the deadline arithmetic inside watch_loop -- after the run was
-# already started -- so the arithmetic error orphaned it, which is the same
-# "watcher dies, run survives" failure mode kill_run was fixed for.
+# Validate the wall-clock bound BEFORE any input check. A non-integer used to
+# reach the deadline arithmetic inside watch_loop -- after the run was already
+# started -- so the arithmetic error orphaned it, the same "watcher dies, run
+# survives" failure mode kill_run was fixed for. It is checked here, next to the
+# argument parsing that produced it, so no later input check can mask it.
 if ! [[ "$TIMEOUT_MINUTES" =~ ^[0-9]+$ ]]; then
   echo "--timeout-minutes must be a whole number of minutes (got '$TIMEOUT_MINUTES')" >&2
+  exit 3
+fi
+if [[ ! -f "$SAMPLE" ]]; then
+  echo "sample not found: $SAMPLE" >&2
   exit 3
 fi
 
