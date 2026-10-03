@@ -926,7 +926,7 @@ _BULLET_RE = re.compile(r"(?:[-*+]\s+|\d+[.)]\s+)")
 #: claims the evidence does not support.
 _EVIDENCE_REGKEY_RE = re.compile(
     r"(?i)\b(?:HK(?:LM|CU|CR|U|CC|EY_[A-Z_]+)|HKEY_[A-Z_]+)"
-    r"(?:\\[^\s\"'<>|)\n]{2,}(?:\s+[A-Z][^\s\"'<>|)\n]*(?=\s*\\))*)+")
+    r"(?:\\[^\s\"'<>|)\n]{2,}(?:[ \t]+[A-Z][^\s\"'<>|)\n]*(?=\s*\\))*)+")
 
 #: Hive aliases, so `HKCU\...\Run` and `HKEY_CURRENT_USER\...\Run` are
 #: recognised as naming the same location. Keyed by the long form.
