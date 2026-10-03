@@ -74,9 +74,47 @@ def _read(name: str) -> str:
     return (CODE / name).read_text(encoding="utf-8", errors="replace")
 
 
+def _block(text: str, start: str, end_pat: str) -> str:
+    """Text from `start` through the first match of `end_pat` after it.
+
+    Fixed-width slices ([:3000], [:9000]...) silently truncated as the
+    structures they scanned grew, and a renamed start anchor produced an empty
+    slice whose counts were 0 -- and every downstream check PASSED on exactly
+    the restructure it exists to catch (2026-10-03 review). Anchors are
+    asserted separately in check_registry; these end patterns bound each
+    block exactly instead of by character count.
+    """
+    i = text.find(start)
+    if i == -1:
+        return ""
+    m = re.compile(end_pat, re.M).search(text, i + len(start))
+    return text[i:] if not m else text[i:m.start()]
+
+
 def check_registry() -> None:
     v2 = _read("v2_lib.py")
-    manifest_block = v2[v2.find("TOOL_MANIFEST = {"):]
+    dd = _read("deep_dive_agentic.py")
+    lg = _read("agentic_langgraph.py")
+
+    # The anchors every count below depends on. If a refactor renames one, the
+    # scan must FAIL LOUDLY, not pass with zero entries.
+    missing_anchors = [
+        f"{name}:{anchor}"
+        for name, text, anchor in (
+            ("v2_lib", v2, "TOOL_MANIFEST = {"),
+            ("deep_dive_agentic", dd, "class ToolRegistry"),
+            ("deep_dive_agentic", dd, "TOOL_DESCRIPTIONS = {"),
+            ("agentic_langgraph", lg, "AGENT_TOOL_NAMES = ["),
+        )
+        if text.find(anchor) == -1
+    ]
+    check("registry.anchors_present", not missing_anchors,
+          "4 structural anchors found" if not missing_anchors
+          else f"anchors missing (renamed by a refactor?): {', '.join(missing_anchors)}")
+    if missing_anchors:
+        return
+
+    manifest_block = _block(v2, "TOOL_MANIFEST = {", r"^\}")
     entries = re.findall(r'^    "([A-Za-z0-9_]+)": \{\n(.*?)^    \},',
                          manifest_block, re.M | re.S)
     manifest = {name: body for name, body in entries}
@@ -89,11 +127,10 @@ def check_registry() -> None:
           f"{len(manifest)} manifest tools" if not missing_fn
           else f"missing callables: {', '.join(missing_fn[:5])}")
 
-    dd = _read("deep_dive_agentic.py")
-    reg_block = dd[dd.find("class ToolRegistry"):]
-    registry = re.findall(r'"([A-Za-z0-9_]+)": self\.', reg_block[:3000])
-    desc_block = dd[dd.find("TOOL_DESCRIPTIONS"):]
-    descriptions = re.findall(r'^    "([A-Za-z0-9_]+)": "', desc_block[:9000], re.M)
+    reg_block = _block(dd, "class ToolRegistry", r"^        }")
+    registry = re.findall(r'"([A-Za-z0-9_]+)": self\.', reg_block)
+    desc_block = _block(dd, "TOOL_DESCRIPTIONS = {", r"^\}")
+    descriptions = re.findall(r'^    "([A-Za-z0-9_]+)": "', desc_block, re.M)
     undescribed = sorted(set(registry) - set(descriptions))
     check("registry.descriptions", not undescribed,
           f"{len(registry)} agent tools" if not undescribed
@@ -103,9 +140,8 @@ def check_registry() -> None:
           "descriptions match registry" if not phantom
           else f"described but not callable: {', '.join(phantom)}")
 
-    lg = _read("agentic_langgraph.py")
-    names_block = lg[lg.find("AGENT_TOOL_NAMES"):]
-    names = re.findall(r'^    "([A-Za-z0-9_]+)",$', names_block[:1200], re.M)
+    names_block = _block(lg, "AGENT_TOOL_NAMES = [", r"^\]")
+    names = re.findall(r'^    "([A-Za-z0-9_]+)",$', names_block, re.M)
     unknown = sorted(set(names) - set(registry))
     check("langgraph.tools_exist", not unknown,
           f"{len(names)} langgraph tools" if not unknown
@@ -167,12 +203,21 @@ _AGENT_PATTERNS = (
 
 def check_docs_counts() -> None:
     v2 = _read("v2_lib.py")
-    manifest_block = v2[v2.find("TOOL_MANIFEST = {"):]
+    manifest_block = _block(v2, "TOOL_MANIFEST = {", r"^\}")
     n_manifest = len(re.findall(r'^    "([A-Za-z0-9_]+)": \{\n(.*?)^    \},',
                                 manifest_block, re.M | re.S))
     dd = _read("deep_dive_agentic.py")
-    reg_block = dd[dd.find("class ToolRegistry"):]
-    n_agent = len(re.findall(r'"([A-Za-z0-9_]+)": self\.', reg_block[:3000]))
+    reg_block = _block(dd, "class ToolRegistry", r"^        \}")
+    n_agent = len(re.findall(r'"([A-Za-z0-9_]+)": self\.', reg_block))
+    # Zero counts from a missing anchor would make every documented number
+    # "wrong" or, if docs dropped their counts too, vacuously right. Fail on
+    # the code side explicitly instead.
+    check("registry.counts_nonzero", n_manifest > 0 and n_agent > 0,
+          f"manifest={n_manifest} agent={n_agent}"
+          if n_manifest > 0 and n_agent > 0
+          else f"manifest={n_manifest} agent={n_agent} -- the structural "
+               "anchors exist (check_registry passed) but the scans found "
+               "nothing; the extraction regexes drifted")
 
     docs = {
         "README.md": REPO / "README.md",
@@ -226,8 +271,11 @@ _SCANNED_SUFFIXES = (".py", ".md", ".svg", ".sh", ".json",
 
 #: Suffixes whose CONTENT IS PUBLISHED, and so must not name a provider/model.
 #: A subset of _SCANNED_SUFFIXES: `.py` is source, not published output, and
-#: this file has to contain the tokens to police them.
-_PUBLISHED_SUFFIXES = (".md", ".json", ".jsonl", ".txt", ".yml", ".yaml", ".yar")
+#: this file has to contain the tokens to police them. `.svg` is here because
+#: docs/img/architecture_v2.svg is published and its `<text>` nodes are exactly
+#: where a "28 tools · configured-llm" label would drift back to a real name.
+_PUBLISHED_SUFFIXES = (".md", ".json", ".jsonl", ".txt", ".yml", ".yaml",
+                       ".yar", ".svg")
 
 
 def _looks_like_secret(value: str) -> bool:
@@ -269,8 +317,14 @@ def check_hygiene() -> None:
         for token in _FORBIDDEN:
             if token in text:
                 bad.append(f"{rel}: {token}")
-        if path.suffix in _PUBLISHED_SUFFIXES and "docs/" in rel.as_posix():
-            # Every published artefact, not just the rendered markdown.
+        if path.suffix in _PUBLISHED_SUFFIXES and (
+                "docs/" in rel.as_posix()
+                or rel.as_posix() in ("README.md", "LICENSE")
+                or rel.name == "README.md"):
+            # Every published artefact, not just the rendered markdown, and
+            # not only under docs/: the repo-root README is the front page a
+            # reader lands on first, and gating the model scan on "docs/" in
+            # the path is how it would have drifted back (2026-10-03 review).
             # Gating this on `.md` is how 2260 case-study files kept six model
             # names while the harness reported 10/10: the bulk of the leak was
             # in .json evidence (5,742 occurrences across two model names alone),
