@@ -80,6 +80,9 @@ scripts/run-watched.sh /path/to/sample.exe --no-reboot
 
 # Stop on the first fatal signal instead of letting a doomed run continue
 scripts/run-watched.sh /path/to/sample.exe --no-reboot --abort-on-error
+
+# Watch an agentic-mode run (default: scripted, or an exported REVAI_RUN_MODE)
+scripts/run-watched.sh /path/to/sample.exe --no-reboot --mode agentic
 ```
 
 It streams each stage as it completes, classifies the **first** anomaly with the
@@ -253,9 +256,9 @@ Tunables (all optional, defaults shown):
 |---|---|---|
 | `REVAI_ENABLE_EMULATION_ORACLE` | off | bounded Speakeasy emulation pass in deep-dive: dynamically resolved imports + executed functions (persisted `deep_dive/03-oracle.json`, surfaced to the agent); oracle-only, never verdicts |
 | `REVAI_ENABLE_UNPACK_PASS` | off | emulation-assisted unpacking for samples the packer checklist flags: OEP detection, carved `unpacked_<name>` payload under `logs/<sha>/unpack/`, in-memory IAT readout |
-| `REVAI_LLM_RPM` | 600 | client-side request budget per process (sliding 60 s window). Sized so it does not become the binding constraint under `REVAI_LLM_CONCURRENCY`; a backstop, not a provider mirror |
-| `REVAI_LLM_TPM` | 6000000 | client-side token budget per process, estimated from prompt size. Same role: backstop, not a provider mirror |
-| `REVAI_LLM_CONCURRENCY` | 16 | maximum LLM requests in flight per process, whatever a stage's thread pool size is. Held for the request only, never across a backoff. **Provider-specific — re-measure after changing providers** (see the note below) |
+| `REVAI_LLM_RPM` | 300 | client-side request budget per process (sliding 60 s window). Sized so it does not become the binding constraint under `REVAI_LLM_CONCURRENCY`; a backstop, not a provider mirror |
+| `REVAI_LLM_TPM` | 1500000 | client-side token budget per process, estimated from prompt size. Same role: backstop, not a provider mirror |
+| `REVAI_LLM_CONCURRENCY` | 6 | maximum LLM requests in flight per process, whatever a stage's thread pool size is. Held for the request only, never across a backoff. **Provider-specific — re-measure after changing providers** (see the note below); the shipped default is deliberately conservative, and the values in the note are what one lab deployment measured and configured |
 | `REVAI_LLM_BUDGET` | 1 | `0` disables all three client-side limits (for tests and for deliberately unthrottled batch runs) |
 
 > **Why RevAI throttles itself, and how the number is chosen.** The cap is a
