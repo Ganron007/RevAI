@@ -632,6 +632,21 @@ def main():
         flush=True,
     )
 
+    # Plan #28: persist the high-signal import map as its own artifact. The
+    # behaviour cross-check (report_quality.collect_import_surface) needs this
+    # map at a known path; until now it only existed inside 00-tools-raw.json,
+    # so on a live case the check silently fell back to lower-fidelity sources
+    # (calibration 2026-09-27: the fallback left it with 0/27 behaviour APIs
+    # "present" on a real Win32 GUI sample). Written only when the tool
+    # produced a real map -- a failed pe_imports run must not look like
+    # evidence of absence.
+    _pe_map = tools_raw.get("pe_imports") or {}
+    if isinstance(_pe_map, dict) and _pe_map.get("signals") and not _pe_map.get("error"):
+        (qs_dir / "pe-imports.json").write_text(
+            json.dumps(_pe_map, indent=2, default=str))
+        print(f"[quick_scan_v2] pe-imports map -> {qs_dir / 'pe-imports.json'} "
+              f"signals={_pe_map.get('signal_count')}", flush=True)
+
     # Hard gate: triage tools must be ok (no silent empty).
     # capa may soft-fail on large when malcat+pe_imports ok (not pretended green).
     # Real malcat capa_summary (if present) is evidence for LLM — does NOT mark capa ok.

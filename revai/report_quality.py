@@ -826,7 +826,17 @@ _CLAIM_REGKEY_RE = re.compile(
 _CLAIM_EMAIL_RE = re.compile(r"\b[\w.+-]+(?:\[@\]|@)[\w-]+(?:(?:\[\.\]|\.)[\w-]+)+\b")
 
 #: Provenance banner line: "> **RevAI provenance** — commit `<hash>` · engine ..."
-_PROVENANCE_BANNER_RE = re.compile(r"commit\s*`([0-9a-fA-F]{7,40})`")
+#:
+#: The optional `-<suffix>` matters: a deploy from a dirty tree writes
+#: commit `<hash>-dirty`, and that is the normal state during development.
+#: Requiring the closing backtick right after the hex run made this regex
+#: miss every `-dirty` banner, which silently disabled the "a report cites
+#: the commit of the deploy that generated it" exclusion -- after a redeploy
+#: the stale cited commit was then reported as an unverified sha256
+#: indicator, exactly the noise the exclusion exists to prevent. Found live
+#: 2026-10-03 re-auditing winservices after repointing REVAI_COMMIT at the
+#: pushed HEAD.
+_PROVENANCE_BANNER_RE = re.compile(r"commit\s*`([0-9a-fA-F]{7,40})(?:-[a-z]+)?`")
 
 #: Fenced code blocks. Illustrative snippets (and their placeholders) are not
 #: indicator claims: a report that shows `pe.imphash() == "…"  // placeholder`
@@ -1848,7 +1858,12 @@ def _load_high_signal_map(root: Path) -> tuple[set[str], list[str], dict]:
     names: set[str] = set()
     used: list[str] = []
     meta: dict = {"kind": "none", "signal_count": None}
-    for rel in ("pe-imports.txt", "quick_scan/pe-imports.txt", "deep_dive/pe-imports.txt"):
+    # quick_scan/pe-imports.json is the canonical artifact (#28, 2026-10-03):
+    # quick_scan writes the tool's own map there, so the authoritative source
+    # no longer has to be dug out of 00-tools-raw.json. The .txt spellings
+    # predate it and stay for older cases.
+    for rel in ("quick_scan/pe-imports.json", "pe-imports.txt",
+                "quick_scan/pe-imports.txt", "deep_dive/pe-imports.txt"):
         path = root / rel
         if not path.is_file():
             continue

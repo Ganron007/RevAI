@@ -311,3 +311,24 @@ def test_collect_import_surface_falls_back_to_structured(tmp_path):
     surface, sources = rq.collect_import_surface(tmp_path)
     assert "createremotethread" in surface
     assert any("00-tools-raw.json" in s for s in sources)
+
+
+def test_dirty_provenance_banner_commit_is_excluded():
+    """`commit \`<hash>-dirty\`` is build metadata too.
+
+    Found live 2026-10-03: the banner regex required the closing backtick
+    right after the hex run, so a `-dirty` banner (the normal state during
+    development) matched nothing -- and after a redeploy repointed
+    REVAI_COMMIT, the report's own stale commit hash was reported as an
+    unverified sha256 indicator. The report's cited commit must be excluded
+    whatever is currently deployed.
+    """
+    stale = "aea6e2c85dcca1129676e45a8ae22277ccc18fae"
+    md = (
+        "> **RevAI provenance** — commit `" + stale + "-dirty` · engine x\n"
+        "\n"
+        f"The sample hash {stale} appears in the appendix.\n"
+    )
+    out = rq.verify_claimed_iocs(md, "", provenance_commit="feaa8187deadbeef")
+    assert out["unverified"] == 0, out
+    assert out["excluded"] >= 1, out
