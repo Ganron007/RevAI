@@ -387,12 +387,12 @@ def test_master_v3_scrub_record_is_persisted():
     tech3 -> tech2 -> master), so the audit would never have seen the loss
     either -- leaving the e879318 bug undetectable for that report.
     """
-    import sys as _sys
+    from _layout import add_module_dir, source
 
-    _sys.path.insert(0, str(ROOT / "revai"))
+    add_module_dir("revai/section_publisher.py")
     import section_publisher
 
-    src = (ROOT / "revai" / "section_publisher.py").read_text(errors="replace")
+    src = source("revai/section_publisher.py")
     assert src.count("_master_ioc_scrub") >= 2, (
         "master_v3's scrub record is assigned but never read; that is the only "
         "tripwire the wrong-evidence-root bug has for this report")
