@@ -176,3 +176,63 @@ def test_floss_extract_default_budget_is_configurable(monkeypatch):
     monkeypatch.setenv("REVAI_FLOSS_MAX_STRINGS", "42")
     src = inspect.getsource(v2_lib.floss_extract)
     assert "REVAI_FLOSS_MAX_STRINGS" in src
+
+# --------------------------------------------------------------------------
+# 2026-10-03: escape-token false positives + IPv6/GUID coverage
+# --------------------------------------------------------------------------
+
+def test_hex_escape_runs_are_not_paths():
+    r"""`\x41\x42\x43` is decoder text, not a backslash path.
+
+    The generic two-segment alternative matched ANY two segments between
+    backslashes, so hex-escape runs and embedded regex fragments claimed the
+    IOC budget before filler -- displacing the real strings the priority was
+    built to protect.
+    """
+    for s in (r"\x41\x42\x43", r"\x68\x74\x74\x70\x3a\x2f\x2f",
+              r"\u0041\u0042\u0043", r"\d+\.\d+\.\d+"):
+        assert not v2_lib._is_ioc_shaped(s), s
+
+
+def test_real_paths_with_escape_prefixes_are_still_paths():
+    r"""Decoder output that CONTAINS a path must still claim budget."""
+    assert v2_lib._is_ioc_shaped(r"\x41\x42\Software\Microsoft\Run")
+    assert v2_lib._is_ioc_shaped(r"HKCU\Software\Microsoft\Windows")
+
+
+def test_guids_and_ipv6_are_indicators():
+    for s in ("{1a2b3c4d-5e6f-4a0b-8c9d-0e1f2a3b4c5d}",
+              "2001:db8:dead:beef::1", "fe80::1",
+              "C2 fell back to 2001:db8:1:2:3:4:5:6 after the v4 was blocked"):
+        assert v2_lib._is_ioc_shaped(s), s
+
+
+def test_cpp_style_scope_is_not_ipv6():
+    """`std::vector`-shaped text must not read as a compressed IPv6 literal."""
+    for s in ("std::vector allocate", "Module::Function called", "a::b",
+              "::1"):
+        assert not v2_lib._is_ioc_shaped(s), s
+
+
+def test_ioc_stats_report_unique_alongside_occurrences():
+    """`total` counts occurrences; sampled/dropped are unique-based.
+
+    A string seen in three categories inflated the total three times, so the
+    artifact overstated evidence loss. `ioc_shaped_unique` is the honest
+    denominator next to the unique sampled/dropped pair.
+    """
+    data = {"strings": {
+        "decoded_strings": [
+            {"string": "http://a.example.com"},
+            {"string": "HKCU\Software\X"},
+            {"string": "http://a.example.com"},   # duplicate occurrence
+        ],
+        "static_strings": [
+            {"string": "http://a.example.com"},   # same value, other category
+            {"string": "plain filler text here"},
+        ],
+    }}
+    _, _, total, stats = v2_lib._collect_floss_strings(data, max_strings=10)
+    assert stats["ioc_shaped_total"] == 4
+    assert stats["ioc_shaped_unique"] == 2
+    assert stats["ioc_shaped_dropped"] == 0
