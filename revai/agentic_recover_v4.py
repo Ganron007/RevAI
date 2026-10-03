@@ -801,8 +801,9 @@ def main():
             "capped_tiers": capped_by_tier,
             "note": ("results < llm_candidates means candidates were NOT "
                      "attempted, not that they failed: the per-tier cap bounds "
-                     "the run. Raise REVAI_AGENTIC_RECOVERY_TIER_CAP (or "
-                     "REVAI_DEPTH=full) to cover more."),
+                     "the run. Raise REVAI_AGENTIC_RECOVERY_TIER_CAP (more "
+                     "functions per tier) or REVAI_AGENTIC_RECOVERY_MAX_FUNCS "
+                     "(more candidates overall) to cover more."),
         }
         if candidates and attempted < candidates:
             print(f"[agentic_recover_v4] coverage: {attempted}/{candidates} "
