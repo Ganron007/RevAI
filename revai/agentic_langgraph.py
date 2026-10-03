@@ -27,6 +27,7 @@ from pydantic import BaseModel, Field
 from v2_lib import (  # noqa: E402
     case_dir,
     ensure_pipeline_runtime_env,
+    get_llm_temperature,
     get_planner_model,
     get_verdict_model,
     load_session,
@@ -468,7 +469,9 @@ def run_langgraph_deep_dive(sha: str, max_steps: int = 10, helpers: dict | None 
         model=planner_model,
         api_key=api_key,
         base_url=api_url,
-        temperature=0.0,
+        # REVAI_LLM_TEMPERATURE, honoured here too: this site hardcoded 0.0,
+        # so the setting only ever applied to the urllib request path.
+        temperature=get_llm_temperature(),
         max_tokens=4096,
         callbacks=[_UsageCallback(planner_model, progress_path)],
     )

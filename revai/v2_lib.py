@@ -2375,15 +2375,30 @@ def _llm_temperature() -> float:
     Default stays 0.0: scripted mode is specified as deterministic, and
     existing runs must not change behaviour because a key started working.
     Clamped to the OpenAI-accepted range, and an unparseable value falls back
-    to the default rather than failing a stage.
+    to the default rather than failing a stage. NaN/inf are caught explicitly:
+    every comparison against NaN is False, so the clamp alone would admit them
+    (and `min(2.0, nan)` evaluates to 2.0 -- the hottest allowed value).
     """
     raw = os.environ.get("REVAI_LLM_TEMPERATURE", "")
     if not raw.strip():
         return 0.0
     try:
-        return max(0.0, min(2.0, float(raw)))
+        value = float(raw)
     except (TypeError, ValueError):
         return 0.0
+    if value != value or value in (float("inf"), float("-inf")):
+        return 0.0
+    return max(0.0, min(2.0, value))
+
+
+def get_llm_temperature() -> float:
+    """Public resolver for non-urllib LLM clients (the LangGraph path).
+
+    agentic_langgraph and stage_orchestrator construct ChatOpenAI directly;
+    without this they hardcoded temperature=0.0 and the same declared-but-
+    inert config key the urllib path fixed kept having no effect there.
+    """
+    return _llm_temperature()
 
 
 def _build_reasoning_body(reasoning: str | None) -> dict:
@@ -2582,8 +2597,11 @@ def _llm_concurrency_limit() -> int:
     the six-sample campaign was in that stage or in the 4-way section map-reduce,
     all on the flash model - not the judgment model.
 
-    Default 6 leaves headroom under the measured ceiling of 8 for the main thread
-    and any straggler, without serialising the pools.
+    Default 6 is deliberately conservative so an unconfigured deployment stays
+    under any plausible provider ceiling (the first provider we measured
+    allowed 8); it is NOT a tuned value. The configured deployment raises it
+    in llm.env after measuring its provider -- see docs/OPERATE.md for the
+    measurement recipe.
     """
     try:
         return max(1, int(os.environ.get("REVAI_LLM_CONCURRENCY", "6") or 6))
@@ -2738,33 +2756,100 @@ def _post_llm_streaming(api_url: str, headers: dict, body: dict,
     usage: dict = {}
     ttft = None
     chunks = 0
+    # SSE events may span several `data:` lines (joined with \n per the spec).
+    # Parsing each line standalone silently dropped split payloads: both halves
+    # failed json.loads, the content vanished, and the stream still LOOKED
+    # complete because the finish chunk parsed fine.
+    data_lines: list[str] = []
+
+    def _dispatch_event(payload: str) -> None:
+        nonlocal role, finish, usage, chunks
+        if payload == "[DONE]":
+            return
+        try:
+            obj = json.loads(payload)
+        except Exception:
+            return
+        chunks += 1
+        if isinstance(obj.get("usage"), dict) and obj["usage"]:
+            usage = obj["usage"]
+        for ch in (obj.get("choices") or []):
+            delta = ch.get("delta") or {}
+            if delta.get("role"):
+                role = delta["role"]
+            piece = delta.get("content")
+            if piece:
+                parts.append(piece)
+            if ch.get("finish_reason"):
+                finish = ch["finish_reason"]
+
+    def _dispatch_lines(lines: list[str]) -> None:
+        """Dispatch one gathered SSE event (possibly multi-line), with recovery.
+
+        The joined payload is tried first (the SSE-spec shape). If it does not
+        parse, the buffer was not one multi-line event -- e.g. a malformed line
+        gathered valid single-line events behind it -- so fall back to the old
+        per-line behaviour, where each unparseable line is skipped instead of
+        taking the rest of the stream down with it.
+        """
+        if not lines:
+            return
+        joined = "\n".join(lines)
+        if len(lines) > 1:
+            try:
+                json.loads(joined)
+                _dispatch_event(joined)
+                return
+            except Exception:
+                pass
+        for ln in lines:
+            _dispatch_event(ln)
+
     try:
         with urllib.request.urlopen(req, timeout=timeout_s) as resp:
             for raw in resp:
                 if ttft is None:
                     ttft = time.time() - t0
-                line = raw.decode("utf-8", "replace").strip()
-                if not line or not line.startswith("data:"):
+                line = raw.decode("utf-8", "replace").rstrip("\r\n")
+                if not line:
+                    # Blank line = end of an SSE event: dispatch what gathered.
+                    if data_lines:
+                        _dispatch_lines(data_lines)
+                        data_lines.clear()
                     continue
+                if not line.startswith("data:"):
+                    continue  # event:, id:, comments
                 payload = line[5:].strip()
                 if payload == "[DONE]":
+                    if data_lines:
+                        _dispatch_lines(data_lines)
+                        data_lines.clear()
                     break
-                try:
-                    obj = json.loads(payload)
-                except Exception:
-                    continue
-                chunks += 1
-                if isinstance(obj.get("usage"), dict) and obj["usage"]:
-                    usage = obj["usage"]
-                for ch in (obj.get("choices") or []):
-                    delta = ch.get("delta") or {}
-                    if delta.get("role"):
-                        role = delta["role"]
-                    piece = delta.get("content")
-                    if piece:
-                        parts.append(piece)
-                    if ch.get("finish_reason"):
-                        finish = ch["finish_reason"]
+                if data_lines:
+                    # Mid-event: SSE allows an event's payload to span several
+                    # data: lines, joined with \n.
+                    data_lines.append(payload)
+                else:
+                    # Fast path (the common shape): one self-contained JSON
+                    # event per line. Only a line that does not parse on its
+                    # own starts a multi-line buffer, so providers that omit
+                    # blank separators keep working exactly as before.
+                    try:
+                        json.loads(payload)
+                        _dispatch_event(payload)
+                    except Exception:
+                        data_lines.append(payload)
+                # A provider that never sends [DONE] must not turn a COMPLETE
+                # answer into a read timeout: once a finish_reason arrived, the
+                # event stream is over for our purposes.
+                if finish is not None:
+                    if data_lines:
+                        _dispatch_lines(data_lines)
+                        data_lines.clear()
+                    break
+            if data_lines:
+                _dispatch_lines(data_lines)
+                data_lines.clear()
     except Exception as exc:
         # A timeout must NOT fall back to a plain POST. The fallback is another
         # full request with another full window, so a 600s streaming timeout
@@ -2772,6 +2857,12 @@ def _post_llm_streaming(api_url: str, headers: dict, body: dict,
         # exactly the overrun that killed artifact_gen. Propagate it and let one
         # attempt fail once.
         if isinstance(exc, TimeoutError) or "timed out" in str(exc).lower():
+            raise
+        # A stream that already DELIVERED content and then died mid-body is the
+        # same shape: the fallback would be a second full-length request, and a
+        # mid-body death after tokens were flowing is not "the provider does not
+        # stream". Propagate so the attempt fails once instead of doubling.
+        if parts:
             raise
         # Anything else: recorded, not swallowed. A silent `return None` here is
         # how a broken streaming path would masquerade as "the provider does not
@@ -2784,6 +2875,15 @@ def _post_llm_streaming(api_url: str, headers: dict, body: dict,
         # that ignored stream=True. Let the caller decide.
         return None, {"streamed": False, "chunks": chunks}
 
+    if finish is None:
+        # A stream that ends without a finish chunk is NOT a clean stop: it is
+        # either a non-compliant endpoint or a hard truncation, and labelling
+        # it "stop" let arbitrarily truncated content pass the length guard.
+        # Record it honestly as unknown (the truncation guard still rejects
+        # explicit "length"), so the log line shows exactly what happened.
+        print(f"[llm_judge] stream ended without a finish_reason after "
+              f"{chunks} chunk(s), {len(text)} chars; recorded as unknown",
+              flush=True)
     elapsed = max(1e-6, time.time() - t0)
     metrics = {
         "streamed": True,
@@ -2798,7 +2898,7 @@ def _post_llm_streaming(api_url: str, headers: dict, body: dict,
         "choices": [{
             "index": 0,
             "message": {"role": role, "content": text},
-            "finish_reason": finish or "stop",
+            "finish_reason": finish,
         }],
     }
     if usage:
@@ -2902,8 +3002,10 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
     # knows its own remaining budget (artifact_gen had GEN_TIMEOUT_S=180,
     # defined and never applied) can pass timeout_s to bound a single attempt.
     try:
-        timeout_s = int(timeout_s) if timeout_s else max(
-            30, int(os.environ.get("REVAI_LLM_TIMEOUT", "300")))
+        if timeout_s is None or int(timeout_s) <= 0:
+            timeout_s = max(30, int(os.environ.get("REVAI_LLM_TIMEOUT", "300")))
+        else:
+            timeout_s = int(timeout_s)
     except (TypeError, ValueError):
         timeout_s = 300
     current_reasoning = reasoning
@@ -2917,24 +3019,33 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
     # fatal -- 600s + 1200s = 1800s, which is exactly the stage's own budget, so
     # the stage was killed by its own inner retry before the second attempt
     # could finish. A retry window sized without reference to the caller's
-    # remaining budget will always be able to overrun it. When the caller
-    # declares a budget (budget_s), the escalated window is clamped to what is
-    # left after the base attempt.
+    # remaining budget will always be able to overrun it.
+    #
+    # 2026-10-03: the precomputed clamp `max(base, min(base*2, b - base))` had
+    # a floor that reinstated the overrun it was clamping -- when the remaining
+    # budget could not fit a second window, max() restored a FULL base window
+    # (timeout_s=180 with budget_s=180 ran 360s+), and the branch that was
+    # supposed to handle "no room" only re-assigned the value it already had.
+    # The budget is now a DEADLINE: every window is min(nominal, what is
+    # actually left), and a window that cannot fit is skipped with a log line
+    # instead of pretending it might finish.
     base_timeout_s = timeout_s
     attempt_timeout_s = timeout_s
-    escalated_timeout_s = timeout_s * 2
+    budget_deadline: float | None = None
     if budget_s:
         try:
             b = int(budget_s)
         except (TypeError, ValueError):
             b = 0
         if b > 0:
-            escalated_timeout_s = max(
-                base_timeout_s, min(base_timeout_s * 2, b - base_timeout_s))
-            if escalated_timeout_s <= base_timeout_s:
-                # No room for a second window inside the caller's budget: a
-                # retry cannot finish, so do not pretend it might.
-                escalated_timeout_s = base_timeout_s
+            budget_deadline = time.monotonic() + b
+            attempt_timeout_s = min(base_timeout_s, b)
+
+    def _budget_remaining() -> int:
+        """Seconds left of the caller's budget; 0 when no budget was declared."""
+        if budget_deadline is None:
+            return 0
+        return max(0, int(budget_deadline - time.monotonic()))
     last_aborted: dict | None = None
     last_empty: dict | None = None
     for attempt in range(1, max_retries + 1):
@@ -3080,11 +3191,29 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                     # whole ladder" property (2 thinking windows, not 5) while
                     # giving a stall a genuine second chance.
                     same_effort_retry_done = True
-                    attempt_timeout_s = escalated_timeout_s
                     sleep_s = 2 ** attempt + random.uniform(0, 1.0)
+                    used_window = attempt_timeout_s
+                    # Budget is a deadline: the retry window is what actually
+                    # fits after the backoff, and if no meaningful window fits
+                    # at all, a retry cannot finish -- skip it instead of
+                    # burning the caller's budget on a guaranteed overrun.
+                    remaining = _budget_remaining() - int(sleep_s)
+                    if budget_deadline is not None and remaining < base_timeout_s:
+                        print(
+                            f"[llm_judge] attempt {attempt}/{max_retries} timed "
+                            f"out after {used_window}s (reasoning="
+                            f"{current_reasoning}); no budget left for a second "
+                            f"window ({max(0, remaining)}s remaining) — "
+                            "skipping to the no-thinking fallback",
+                            flush=True,
+                        )
+                        break
+                    attempt_timeout_s = (
+                        min(base_timeout_s * 2, remaining)
+                        if budget_deadline is not None else base_timeout_s * 2)
                     print(
                         f"[llm_judge] attempt {attempt}/{max_retries} timed "
-                        f"out after {timeout_s}s (reasoning="
+                        f"out after {used_window}s (reasoning="
                         f"{current_reasoning}); retrying once at the same "
                         f"effort with a {attempt_timeout_s}s window in "
                         f"{sleep_s:.1f}s",
@@ -3126,9 +3255,24 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
             "timeout" if err_is_timeout
             else ("empty response" if last_empty is not None else "abort")
         )
+        # The fallback is a real request too: it gets what is left of the
+        # caller's budget, and if nothing meaningful is left it does not run --
+        # a third window inside a budget that could not fit a second is the
+        # same overrun in a different coat.
+        fallback_window_s = timeout_s
+        remaining = _budget_remaining()
+        if budget_deadline is not None:
+            if remaining < 30:
+                print(
+                    f"[llm_judge] no budget left for the no-thinking fallback "
+                    f"({remaining}s remaining)",
+                    flush=True,
+                )
+                raise last_error or RuntimeError("llm_judge budget exhausted")
+            fallback_window_s = min(timeout_s, remaining)
         print(
             f"[llm_judge] retries exhausted ({_why}); final attempt with "
-            "thinking disabled",
+            f"thinking disabled (window {fallback_window_s}s)",
             flush=True,
         )
         body.update({"thinking": {"type": "disabled"}})
@@ -3142,7 +3286,7 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                 },
                 method="POST",
             )
-            with urllib.request.urlopen(req, timeout=timeout_s) as resp:
+            with urllib.request.urlopen(req, timeout=fallback_window_s) as resp:
                 data = json.loads(resp.read().decode())
                 llm_usage_journal(model=effective_model, response=data,
                                   note="attempt=final-no-thinking")
@@ -4191,12 +4335,30 @@ def capa_analyze(sample_path: str, timeout: int | None = None) -> dict:
 _IOC_URL_RE = re.compile(r"(?i)\b(?:https?|ftp|file)://|\bwww\.[a-z0-9-]+\.")
 _IOC_IP_RE = re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b")
 _IOC_EMAIL_RE = re.compile(r"(?i)\b[\w.+-]+@[\w-]+(?:\.[\w-]+)+\b")
-#: A registry path: an HK* hive, a SOFTWARE/SYSTEM root, or 2+ backslash
-#: separators (which also catches hive-less subkeys).
+#: A registry path: an HK* hive or a SOFTWARE/SYSTEM root (both unambiguous).
 _IOC_REGISTRY_RE = re.compile(
-    r"(?i)\bHK(?:LM|CU|CR|U|EY_[A-Z_]+)\\|"
-    r"\b(?:SOFTWARE|SYSTEM|SAM|SECURITY)\\|"
-    r"\\[^\\\s]{2,}\\[^\\\s]{2,}")
+    r"(?i)\bHK(?:LM|CU|CR|U|CC|EY_[A-Z_]+)\\|"
+    r"\b(?:SOFTWARE|SYSTEM|SAM|SECURITY)\\")
+#: Two backslash-separated segments also catch hive-less subkeys -- but a
+#: segment pair whose every part is an escape token (`\x41\x42`,
+#: `\u0041\u0042`) is decoder/regex text, not a path. Without the filter those
+#: strings claimed budget BEFORE filler, displacing exactly the real evidence
+#: the priority exists to protect (2026-10-03 review finding).
+_IOC_SUBKEY_PAIR_RE = re.compile(r"\\[^\\\s]{2,}\\[^\\\s]{2,}")
+_IOC_ESCAPE_TOKEN_RE = re.compile(r"(?i)^[a-z][0-9a-f]{1,4}$")
+#: IPv6 (full form, or compressed with a real multi-hex prefix) and a GUID in
+#: braces: both are real indicators that previously fell to the filler pool.
+#: The compressed form requires a 2-4 hex-char prefix, so C++ scope text
+#: (`a::b`, `std::vector`) does not read as an address; the loopback `::1` is
+#: deliberately not an indicator, matching the claim checker's placeholder
+#: ranges.
+_IOC_IPV6_RE = re.compile(
+    r"(?i)(?:^|[\s\"'(])("
+    r"(?:[0-9a-f]{1,4}:){3,}[0-9a-f:]{0,4}"
+    r"|[0-9a-f]{2,4}::[0-9a-f:]{1,}"
+    r")(?:$|(?=[\s\"')]))")
+_IOC_GUID_RE = re.compile(
+    r"(?i)\{[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\}")
 _IOC_PATH_RE = re.compile(r"(?i)(?:\b[A-Z]:\\|\\\\|%[A-Z_]+%\\)")
 #: Named kernel objects: `Global\` / `Local\` prefixed mutexes and events. One
 #: separator only, so the registry rule above does not catch them.
@@ -4224,6 +4386,16 @@ def _is_ioc_shaped(s: str) -> bool:
     """
     if not s:
         return False
+    if _IOC_SUBKEY_PAIR_RE.search(s):
+        # Not every backslash-separated string is a path: only when at least
+        # one segment is NOT an escape token does it carry path evidence.
+        segments = [p for p in re.split(r"\\{2,}|\\", s) if p]
+        if not all(_IOC_ESCAPE_TOKEN_RE.match(p) for p in segments):
+            return True
+    if _IOC_GUID_RE.search(s):
+        return True
+    if _IOC_IPV6_RE.search(s):
+        return True
     return bool(
         _IOC_URL_RE.search(s)
         or _IOC_IP_RE.search(s)
@@ -4307,6 +4479,12 @@ def _collect_floss_strings(
     sample = ioc_kept + filler[: max(0, max_strings - len(ioc_kept))]
     ioc_stats = {
         "ioc_shaped_total": ioc_total,
+        # ioc_total counts OCCURRENCES across categories; the sampled/dropped
+        # pair below is unique-based. Without the unique figure an artifact
+        # could read "907 shaped, 300 sampled, 607 dropped" where most of the
+        # 907 were the same string seen in several categories -- overstating
+        # the evidence loss.
+        "ioc_shaped_unique": len(ioc_hits),
         "ioc_shaped_sampled": len(ioc_kept),
         "ioc_shaped_dropped": max(0, len(ioc_hits) - len(ioc_kept)),
         "sample_budget": max_strings,

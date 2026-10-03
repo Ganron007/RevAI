@@ -35,6 +35,7 @@ from v2_lib import (  # noqa: E402
     SESSIONS_DIR,
     case_dir,
     ensure_pipeline_runtime_env,
+    get_llm_temperature,
     get_planner_model,
     get_verdict_model,
     get_llm_model,
@@ -646,7 +647,8 @@ def run_langgraph_orchestrator(sample: Path | None, sha: str | None) -> dict:
         model=planner,
         api_key=api_key,
         base_url=api_url,
-        temperature=0.0,
+        # REVAI_LLM_TEMPERATURE, honoured here too (see agentic_langgraph).
+        temperature=get_llm_temperature(),
         max_tokens=2048,
     )
 

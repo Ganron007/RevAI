@@ -328,3 +328,109 @@ def test_streaming_path_is_used_by_default_end_to_end(monkeypatch):
     out = v2_lib.llm_judge("p", max_retries=1)
     assert calls["stream"] == 1, "expected a streaming request"
     assert out["choices"][0]["message"]["content"] == '{"ok": true}', out
+
+# --------------------------------------------------------------------------
+# 2026-10-03: the budget deadline fixes
+# --------------------------------------------------------------------------
+
+def test_no_room_for_a_second_window_skips_the_retry(monkeypatch):
+    """budget_s < 2 * timeout_s must not overrun the caller's budget.
+
+    The old clamp `max(base, min(base*2, b - base))` had a floor that
+    reinstated the overrun: with timeout_s=180 and budget_s=180 the retry got
+    another FULL 180s window (360s total) and the no-thinking fallback added a
+    third. The budget is a deadline now -- the first attempt gets min(base,
+    budget), and when nothing meaningful is left, both the same-effort retry
+    and the fallback are skipped with a log line instead of pretended.
+
+    The fake clock advances by each attempt's window, which is what makes the
+    budget actually consumed (a real timeout burns wall time; an instant test
+    handler does not).
+    """
+    seen = []
+    clock = {"t": 1000.0}
+
+    def handler(req, timeout=None):
+        seen.append(timeout)
+        clock["t"] += (timeout or 0)
+        raise TimeoutError("The read operation timed out")
+
+    _patch_urlopen(monkeypatch, handler)
+    monkeypatch.setattr(v2_lib.time, "monotonic", lambda: clock["t"])
+    monkeypatch.setenv("REVAI_LLM_TIMEOUT", "600")
+    monkeypatch.setenv("REVAI_LLM_STREAM", "0")
+    monkeypatch.setenv("REVAI_LLM_API_KEY", "k")
+    monkeypatch.setenv("REVAI_LLM_API_URL", "http://x/v1/chat/completions")
+    import time as _t
+    monkeypatch.setattr(_t, "sleep", lambda *_: None)
+
+    with pytest.raises(Exception):
+        v2_lib.llm_judge("p", timeout_s=180, budget_s=180, max_retries=3)
+    assert seen == [180], (
+        f"exactly one attempt fits the budget; got windows {seen}")
+
+
+def test_first_attempt_is_clamped_to_a_smaller_budget(monkeypatch):
+    """A budget below the base window bounds the FIRST attempt too."""
+    seen = []
+    clock = {"t": 1000.0}
+
+    def handler(req, timeout=None):
+        seen.append(timeout)
+        clock["t"] += (timeout or 0)
+        raise TimeoutError("The read operation timed out")
+
+    _patch_urlopen(monkeypatch, handler)
+    monkeypatch.setattr(v2_lib.time, "monotonic", lambda: clock["t"])
+    monkeypatch.setenv("REVAI_LLM_TIMEOUT", "600")
+    monkeypatch.setenv("REVAI_LLM_STREAM", "0")
+    monkeypatch.setenv("REVAI_LLM_API_KEY", "k")
+    monkeypatch.setenv("REVAI_LLM_API_URL", "http://x/v1/chat/completions")
+    import time as _t
+    monkeypatch.setattr(_t, "sleep", lambda *_: None)
+
+    with pytest.raises(Exception):
+        v2_lib.llm_judge("p", timeout_s=600, budget_s=120, max_retries=3)
+    assert seen == [120], f"first window must be the budget, got {seen}"
+
+
+def test_stream_ending_without_a_finish_reason_is_recorded_as_unknown(monkeypatch):
+    """A clean EOF without a finish chunk is not a clean stop.
+
+    Labelling it "stop" let arbitrarily truncated content pass the length
+    guard. The response keeps the content (a provider that never sends finish
+    chunks must still work) but records finish_reason None and says so.
+    """
+    lines = [b"data: " + json.dumps(
+        {"choices": [{"delta": {"content": "partial"}, "finish_reason": None}]}
+    ).encode() + b"\n"]
+    resp = _FakeResp(lines)  # ends without [DONE] and without a finish chunk
+    _patch_urlopen(monkeypatch, lambda *a, **k: resp)
+    data, metrics = v2_lib._post_llm_streaming(
+        "http://x/v1/chat/completions", {}, {"model": "m"}, 60)
+    assert data is not None
+    assert data["choices"][0]["finish_reason"] is None
+    assert metrics["finish_reason"] is None
+    assert metrics["chunks"] == 1
+
+
+def test_stream_reader_stops_at_finish_reason_without_done(monkeypatch):
+    """A provider that omits [DONE] must not turn a complete answer into a
+    read timeout: once finish_reason arrived, the reader stops."""
+    lines = [
+        b"data: " + json.dumps(
+            {"choices": [{"delta": {"content": "done"}, "finish_reason": None}]}
+        ).encode() + b"\n\n",
+        b"data: " + json.dumps(
+            {"choices": [{"delta": {}, "finish_reason": "stop"}]}
+        ).encode() + b"\n\n",
+        # Nothing after this -- the fake response ends; a real stalled socket
+        # would block here until the timeout, which is the bug.
+    ]
+    resp = _FakeResp(lines)
+    _patch_urlopen(monkeypatch, lambda *a, **k: resp)
+    data, metrics = v2_lib._post_llm_streaming(
+        "http://x/v1/chat/completions", {}, {"model": "m"}, 60)
+    assert data is not None
+    assert data["choices"][0]["finish_reason"] == "stop"
+    assert metrics["chunks"] == 2

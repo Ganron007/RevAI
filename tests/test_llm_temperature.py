@@ -83,3 +83,39 @@ def test_the_shipped_template_documents_the_key():
         pytest.skip("config/llm.env.template not deployed on this host")
     assert "REVAI_LLM_TEMPERATURE" in tmpl.read_text(errors="replace"), (
         "REVAI_LLM_TEMPERATURE is not in the template")
+
+# --------------------------------------------------------------------------
+# 2026-10-03: NaN guard + the LangGraph path
+# --------------------------------------------------------------------------
+
+def test_nan_and_inf_fall_back_to_the_default(monkeypatch):
+    """min(2.0, nan) evaluates to 2.0, so the clamp alone admits NaN.
+
+    Every comparison against NaN is False, which silently produced the HOTTEST
+    allowed temperature from a garbage value; the review catch was that the
+    docstring claimed unparseable values fall back while nan did not.
+    """
+    monkeypatch.setenv("REVAI_LLM_TEMPERATURE", "nan")
+    assert v2_lib._llm_temperature() == 0.0
+    monkeypatch.setenv("REVAI_LLM_TEMPERATURE", "inf")
+    assert v2_lib._llm_temperature() == 0.0
+    monkeypatch.setenv("REVAI_LLM_TEMPERATURE", "-inf")
+    assert v2_lib._llm_temperature() == 0.0
+
+
+def test_the_langgraph_path_uses_the_resolver_too():
+    """agentic_langgraph and stage_orchestrator construct ChatOpenAI directly.
+
+    They hardcoded temperature=0.0, so fixing only the urllib body left the
+    declared key inert on the agentic path -- the same declared-but-inert
+    shape, one layer over. Structural: every request-making ChatOpenAI site
+    must go through get_llm_temperature(). (The /api/graph placeholder agent
+    never generates and is exempt.)
+    """
+    for name in ("revai/agentic_langgraph.py", "revai/stage_orchestrator.py"):
+        src = source(name)
+        assert "temperature=get_llm_temperature()" in src, (
+            f"{name}: ChatOpenAI does not use get_llm_temperature(); "
+            "REVAI_LLM_TEMPERATURE is inert on this path again")
+        assert "temperature=0.0" not in src, (
+            f"{name}: a hardcoded temperature remains alongside the resolver")
