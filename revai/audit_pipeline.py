@@ -444,7 +444,11 @@ def audit_quick(log: Path, *, strict: bool) -> dict:
         "llm_source": (verdict.get("source") or "") in ("llm_judge", "goodware_fingerprint"),
         "tools_all_ok": all(tool_status[n]["ok"] for n in required_quick),
         "citations_grounded": citations["ok"] or verdict.get("source") == "goodware_fingerprint",
-        "capa_salvage_used": capa_salvage,
+        # None (not applicable) when capa passed -- there was nothing to
+        # salvage, and a False here on green runs read as a failure. False
+        # now means capa failed AND no salvage was achievable; True means the
+        # salvage path ran. Non-gating either way (not in required_keys).
+        "capa_salvage_used": (None if tool_status["capa"]["ok"] else capa_salvage),
         "evidence_pack_present": (log / "quick_scan" / "evidence-pack.md").exists(),
     }
     tools_all = all(tool_status[n]["ok"] for n in required_quick)
@@ -698,7 +702,17 @@ def audit_deep_large(log: Path, *, strict: bool) -> dict:
         "checklist_ok_flag": bool(ag.get("checklist_ok", checks.get("tools_all_ok"))),
         "agentic_confidence_sane": _conf_sane,
         "depth_coverage": bool(base.get("depth_coverage", {}).get("ok", True)),
+        "engine_path": "agentic",
     })
+    # The standard-path artifact checks are inherited from audit_deep_standard
+    # but do not gate this path (the ok computation below never reads them).
+    # They stayed False on green agentic runs, which trained readers to
+    # discount False entries in the audit table -- the provenance-cries-wolf
+    # class. None renders as `None` and means "not applicable on this path";
+    # _attributate_layers counts only `v is False`, so attribution is
+    # unaffected.
+    for _std_only in ("00_sql_evidence", "03_prompt", "04_llm", "llm_source"):
+        checks[_std_only] = None
     ok = (
         checks.get("01_tools_raw")
         and checks.get("tools_all_ok")
