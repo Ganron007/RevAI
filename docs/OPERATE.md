@@ -193,6 +193,33 @@ authored by the model — indicator counts, values and confidence tiers cannot
 be prose-invented or quietly dropped. Read it as the authoritative list, and
 treat any indicator that appears nowhere in it as unverified.
 
+### Reading a finished run in one command
+
+`scripts/instrument-live-log.sh` reads a run's outcome from its artifacts in a
+single pass — stage rc and duration, `finish_reason` across every LLM call,
+anomalies, the audit gate, IoC verification, the indicator scrub's removal
+records, report sizes and the verdict.
+
+```
+./instrument-live-log.sh                      # newest run
+./instrument-live-log.sh <sha256|case-dir>    # one run
+./instrument-live-log.sh /opt/samples/logs/_watched_<sha12>.log
+./instrument-live-log.sh --wait <sha256>       # block until the run ends
+```
+
+Pass the **watched** log (`_watched_<sha12>.log`) when `run-watched.sh` has
+quarantined the case dir — that log keeps the full stage history, and the case's
+own `pipeline_single.log` may have been rotated away.
+
+Exit contract: `0` every gate green · `1` something failed (a stage rc, a
+`finish=length` truncation, a hollow finding, or unverified indicators) · `2`
+still running · `3` usage error.
+
+Why one command rather than a few greps: each SSH call is a fresh shell, so
+nothing carries over between them, and a stale read is easy to mistake for a
+current one. This exists so "read the artifact, not the return code" is a command
+rather than something to remember.
+
 ## Pipeline stages 
 
 1. **intake** — session + Ghidra (optional IDA)  

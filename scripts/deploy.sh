@@ -82,7 +82,7 @@ fi
 # Deploy the operator entry points from scripts/ (layout-aware helpers the docs
 # reference by their deployed path, e.g. /opt/scripts/verify-release.sh).
 # ---------------------------------------------------------------------------
-for _op_script in verify-release.sh winre-llm-env.sh run-watched.sh validate-ghidrasql-sql.py; do
+for _op_script in verify-release.sh winre-llm-env.sh run-watched.sh validate-ghidrasql-sql.py instrument-live-log.sh; do
     if [[ -f "$REPO_ROOT/scripts/$_op_script" ]]; then
         ok "Deploying $_op_script to /opt/scripts/ ..."
         sudo cp -a "$REPO_ROOT/scripts/$_op_script" /opt/scripts/
@@ -142,7 +142,7 @@ if command -v git >/dev/null 2>&1 && git -C "$REPO_ROOT" rev-parse --verify HEAD
     # checkout cannot mark the build dirty) plus untracked files under the
     # scope (cp -a ships those too, so an uncommitted new module must count).
     _dirty_paths=(revai tests assets/api_index
-                  scripts/verify-release.sh scripts/winre-llm-env.sh scripts/run-watched.sh
+                  scripts/verify-release.sh scripts/winre-llm-env.sh scripts/run-watched.sh scripts/instrument-live-log.sh
                   scripts/validate-ghidrasql-sql.py
                   install/revai.service)
     _revai_dirty="$(git -C "$REPO_ROOT" diff --ignore-all-space --name-only HEAD -- \
