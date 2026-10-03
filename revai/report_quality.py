@@ -812,13 +812,16 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str, *,
 # --- claimed-IOC fact verification (plan #10; advisory until calibrated) ---
 
 _CLAIM_URL_RE = re.compile(r"(?i)\b(?:hxxps?|https?|ftp)(?:\[:\]|:)?//[^\s\"'<>()\[\]{}\\]+")
-_CLAIM_IP_RE = re.compile(r"\b(?:\d{1,3}(?:\[\.\]|\.)){3}\d{1,3}\b")
+# The trailing lookahead rejects a follow-on `.`/`[.]` + digit, so `1.2.3.4`
+# inside `1.2.3.4.5` is not extracted as a four-octet claim -- the checker must
+# not manufacture the partial value the scrubber would then mangle.
+_CLAIM_IP_RE = re.compile(r"\b(?:\d{1,3}(?:\[\.\]|\.)){3}\d{1,3}(?!(?:\[\.\]|\.)\d)\b")
 _CLAIM_DOMAIN_RE = re.compile(
     r"(?<![\w.-])(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\[\.\]|\.))+[a-z]{2,}(?![\w.-])",
     re.IGNORECASE)
 _CLAIM_HASH_RE = re.compile(r"\b[a-fA-F0-9]{32,64}\b")
 _CLAIM_REGKEY_RE = re.compile(
-    r"(?i)\bHK(?:LM|CU|CR|U|EY_[A-Z_]+)\\(?:[^\s\"'<>|]+"
+    r"(?i)\bHK(?:LM|CU|CR|U|CC|EY_[A-Z_]+)\\(?:[^\s\"'<>|]+"
     r"(?: (?=[A-Za-z0-9._-]+\\)[^\s\"'<>|]*)?)*")
 _CLAIM_EMAIL_RE = re.compile(r"\b[\w.+-]+(?:\[@\]|@)[\w-]+(?:(?:\[\.\]|\.)[\w-]+)+\b")
 
@@ -829,15 +832,43 @@ _PROVENANCE_BANNER_RE = re.compile(r"commit\s*`([0-9a-fA-F]{7,40})`")
 #: indicator claims: a report that shows `pe.imphash() == "…"  // placeholder`
 #: must not be audited as if it claimed a hash. Claims are collected from prose,
 #: tables and list items only.
-_FENCED_CODE_RE = re.compile(r"```.*?```", re.DOTALL)
+#:
+#: The second alternative handles an UNTERMINATED fence: an odd number of ```
+#: markers otherwise leaves everything after the last one classified as prose,
+#: so indicators inside it were extracted as claims (and scrubbed) by one pass
+#: while the fence-aware splitter kept them verbatim -- the two passes silently
+#: disagreeing about what is code.
+_FENCED_CODE_RE = re.compile(r"```.*?```|```.*\Z", re.DOTALL)
 
 #: Canonical persistence templates: cited as verification targets ("RegSetValue
 #: under HKCU\...\Run (or equivalent) — not observed") far more often than as
-#: observed artifacts. Excluded ONLY when absent from the evidence; if a tool did
-#: observe the key, the evidence match verifies it normally.
+#: observed artifacts. Both hive spellings are accepted -- `HKCU\...` and
+#: `HKEY_CURRENT_USER\...` name the identical hive, and treating them
+#: differently inside one report is incoherent (before 2026-10-03 the short
+#: form was excluded as a template while the long form of the same fabrication
+#: was flagged unverified).
+#: Excluded ONLY when used as a verification target (see
+#: _CANONICAL_TEMPLATE_TARGET_RE); if a tool did observe the key, the evidence
+#: match verifies it normally; and a bare unobserved assertion ("persists via
+#: HKCU\...\Run") is a claim like any other -- it goes to `unverified` and the
+#: scrubber neutralises it.
 _CANONICAL_REGISTRY_TEMPLATE_RE = re.compile(
-    r"^hk(?:cu|lm|cr)\\software\\microsoft\\windows\\currentversion\\"
+    r"^(?:hk(?:cu|lm|cr)|hkey_current_user|hkey_local_machine|hkey_classes_root)"
+    r"\\software\\microsoft\\windows\\currentversion\\"
     r"run(?:once|services)?$")
+
+#: Phrases that mark a canonical template mention as a verification target
+#: rather than an assertion about the sample. Matched against the same window
+#: _is_guidance_reference uses (whole bullet, or sentence in prose), so a
+#: mention in a sentence that ASSERTS the behavior ("persists via ...") never
+#: qualifies.
+_CANONICAL_TEMPLATE_TARGET_RE = re.compile(
+    r"(?i)\b(?:not\s+observed|not\s+detected|no\s+evidence|no\s+specific|"
+    r"absen(?:t|ce)|"
+    r"did\s+not|or\s+equivalent|would\s+(?:indicate|suggest|be)|"
+    r"appears\s+in\s+the\s+evidence|presence\s+of|if\s+present|"
+    r"persistence\s+check|"
+    r"monitor|watch|check|hunt|verify|look\s+for)\b")
 
 #: An abbreviated registry path, e.g. `HKCU\...\Run` or
 #: `HKEY_CURRENT_USER\...\Run`. This is ordinary analyst shorthand for a class
@@ -847,7 +878,7 @@ _CANONICAL_REGISTRY_TEMPLATE_RE = re.compile(
 #: comparison and was reported unverified -- which is how winservices and
 #: win32k_dll each ended up with a red audit for the prose `HKCU\...\Run`.
 _ELIDED_REGISTRY_RE = re.compile(
-    r"^(?:hk(?:cu|lm|cr|u)|hkey_[a-z_]+)"
+    r"^(?:hk(?:cu|lm|cr|u|cc)|hkey_[a-z_]+)"
     r"(?:\\(?:…|\.\.\.))"      # at least one elided segment
     r".*$",
     re.IGNORECASE)
@@ -873,9 +904,19 @@ _GUIDANCE_VERB_RE = re.compile(
 _BULLET_RE = re.compile(r"(?:[-*+]\s+|\d+[.)]\s+)")
 
 #: A concrete registry path as it appears in raw tool evidence.
+#:
+#: Segments may contain a space (`Windows NT`), but ONLY when the segment is
+#: followed by another separator -- each continuation word after the space must
+#: start uppercase AND be followed by `\`. The strictness is load-bearing in
+#: both directions: without it the extractor stopped at the space and read
+#: `...\Microsoft\Windows NT\CurrentVersion\Winlogon` as `...\Microsoft\Windows`,
+#: so an elided claim of the real Winlogon path could never ground (2026-10-03);
+#: with a looser space rule, prose after a path ("HKCU\Run and HKLM\RunOnce")
+#: would be swallowed into one candidate whose tail then falsely grounds
+#: claims the evidence does not support.
 _EVIDENCE_REGKEY_RE = re.compile(
-    r"(?i)\b(?:HK(?:LM|CU|CR|U|CC|EY_[A-Z_]+)|HKEY_[A-Z_]+)\\"
-    r"[^\s\"'<>|)]{2,}")
+    r"(?i)\b(?:HK(?:LM|CU|CR|U|CC|EY_[A-Z_]+)|HKEY_[A-Z_]+)"
+    r"(?:\\[^\s\"'<>|)\n]{2,}(?:\s+[A-Z][^\s\"'<>|)\n]*(?=\s*\\))*)+")
 
 #: Hive aliases, so `HKCU\...\Run` and `HKEY_CURRENT_USER\...\Run` are
 #: recognised as naming the same location. Keyed by the long form.
@@ -906,9 +947,15 @@ def _ground_elided_regkey(plain: str, evidence: str) -> str | None:
     ``HKCU\...\Run`` is not an indicator that can be matched verbatim, so the
     verifier has to decide whether it *corresponds* to observed evidence. It
     does when the evidence contains a concrete path under the same hive whose
-    trailing subkey matches the one the report named -- that is what makes it a
+    subkeys include the one the report named -- that is what makes it a
     legitimate reference to an observed Run-key write rather than a generic
     persistence claim.
+
+    The named segment may appear anywhere in the candidate's path, not only as
+    its final subkey: real evidence lines carry a value name after the key
+    (``...\Winlogon\Shell = explorer.exe``), and requiring the claim's segment
+    to be the LAST one would leave the very paths analysts abbreviate most
+    ungrounded. Exact-tail matches still win over deeper ones.
 
     This is a stricter test than exempting elisions outright: an elided path
     with nothing corresponding in the evidence still lands in ``unverified``.
@@ -936,15 +983,38 @@ def _ground_elided_regkey(plain: str, evidence: str) -> str | None:
         chive, csubkeys = cparsed
         if chive != hive or not csubkeys:
             continue
-        if csubkeys[-1] == tail:
-            if best is None or len(csubkeys) > len(best[1]):
-                best = (candidate, csubkeys)
-    return best[0] if best else None
+        if tail in csubkeys:
+            # Exact tail match ranks first regardless of depth; among equal
+            # ranks, the deepest path is the most specific corroboration.
+            rank = (0 if csubkeys[-1] == tail else 1, len(csubkeys))
+            if best is None or rank > best[0]:
+                best = (rank, candidate, csubkeys)
+    return best[1] if best else None
 
 
-def _is_guidance_reference(scan: str, raw: str,
-                           spans: dict[tuple[str, str], tuple[int, int]]) -> bool:
-    r"""True when a registry path is named inside defender guidance.
+def _evidence_has_regkey(plain: str, evidence: str) -> str | None:
+    r"""The concrete evidence path with this hive AND subkey list, or None.
+
+    Substring matching cannot verify a canonical-path claim across hive
+    spellings: the evidence's `HKCU\Software\...\Run` does not contain the
+    literal `HKEY_CURRENT_USER\Software\...\Run`, so the long spelling of an
+    OBSERVED key failed verification while the short spelling of the same key
+    passed. Comparison is on the parsed hive + full subkey list, which is
+    stricter than a substring in every other respect.
+    """
+    parsed = _regkey_parts(plain)
+    if not parsed:
+        return None
+    hive, subkeys = parsed
+    for m in _EVIDENCE_REGKEY_RE.finditer(evidence or ""):
+        candidate = m.group(0)
+        if _regkey_parts(candidate) == (hive, subkeys):
+            return candidate
+    return None
+
+
+def _claim_context_window(scan: str, start: int, end: int) -> str:
+    r"""The text a reader would hold in mind at this position.
 
     The scope has to match the unit the reader sees, and choosing it wrong is
     how this class of check launders real claims:
@@ -959,28 +1029,39 @@ def _is_guidance_reference(scan: str, raw: str,
     section boundary, which is why neither scope extends beyond the item.
     """
     text = scan or ""
-    span = spans.get(("registry_key", (raw or "").strip()
-                      .strip(".,;:()[]{}'\"`\\").lower()))
-    if span is None:
-        return False
-    start, end = span
     line_start = text.rfind("\n", 0, start) + 1
     nxt_nl = text.find("\n", end)
     line_end = nxt_nl if nxt_nl != -1 else len(text)
     line = text[line_start:line_end]
 
     stripped = line.lstrip()
-    in_bullet = bool(_BULLET_RE.match(stripped))
-    if in_bullet:
-        window = line
-    else:
-        sent_start = max(text.rfind(".", 0, start),
-                         text.rfind(";", 0, start),
-                         text.rfind("!", 0, start),
-                         line_start - 1) + 1
-        window = text[sent_start:line_end]
+    if _BULLET_RE.match(stripped):
+        return line
+    sent_start = max(text.rfind(".", 0, start),
+                     text.rfind(";", 0, start),
+                     text.rfind("!", 0, start),
+                     line_start - 1) + 1
+    return text[sent_start:line_end]
 
-    return bool(_GUIDANCE_VERB_RE.search(window))
+
+def _is_guidance_reference(scan: str, raw: str,
+                           spans: dict[tuple[str, str], list[tuple[int, int]]]) -> bool:
+    r"""True when a registry path is named inside defender guidance.
+
+    A path counts as guidance only when EVERY occurrence sits in a guidance
+    window. Classifying on the first occurrence alone laundered the opposite
+    direction: a value first mentioned in "Monitor ..." guidance and later
+    asserted bare ("The sample writes to X") was excused by its first mention
+    and never judged as the claim it also was.
+    """
+    text = scan or ""
+    span_list = spans.get(("registry_key", _plain_claim(raw or "").lower()))
+    if not span_list:
+        return False
+    return all(
+        bool(_GUIDANCE_VERB_RE.search(
+            _claim_context_window(text, start, end)))
+        for start, end in span_list)
 
 
 def _claims_text(markdown: str) -> str:
@@ -1096,7 +1177,7 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
                       for m in _PROVENANCE_BANNER_RE.finditer(markdown or "")}
     evidence = (evidence_text or "").lower()
     claims: dict[tuple[str, str], str] = {}
-    claim_spans: dict[tuple[str, str], tuple[int, int]] = {}
+    claim_spans: dict[tuple[str, str], list[tuple[int, int]]] = {}
     for kind, regex in (
         ("url", _CLAIM_URL_RE),
         ("ip", _CLAIM_IP_RE),
@@ -1123,13 +1204,16 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
             if kind == "url" and "." not in _plain_claim(raw).split("//", 1)[-1]:
                 continue
             claims.setdefault((kind, _plain_claim(raw).lower()), raw)
-            # Keep where each claim was found. The classification pass below
-            # needs the position to reason about surrounding context, and it
-            # runs over the deduplicated dict -- where the match object from
-            # this loop is long gone. Reaching for a stale `m` there silently
-            # tested every claim against the last match's position.
-            claim_spans.setdefault((kind, _plain_claim(raw).lower()),
-                                   (m.start(), m.end()))
+            # Keep where EVERY occurrence was found. The classification pass
+            # below needs the positions to reason about surrounding context,
+            # and it runs over the deduplicated dict -- where the match object
+            # from this loop is long gone. Keeping only the FIRST span made
+            # guidance classification reversible: a value first mentioned in
+            # "Monitor ..." guidance and later asserted bare was excused by
+            # its first mention.
+            claim_spans.setdefault((kind, _plain_claim(raw).lower()), [])
+            claim_spans[(kind, _plain_claim(raw).lower())].append(
+                (m.start(), m.end()))
 
     verified: list[dict[str, str]] = []
     unverified: list[dict[str, str]] = []
@@ -1201,16 +1285,36 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
                               f"{tail or 'subkey'})"})
             continue
         if kind == "registry_key" and _CANONICAL_REGISTRY_TEMPLATE_RE.match(plain):
-            # A report names the canonical Run key as a *verification target*
-            # ("RegSetValue under HKCU\...\Run - not observed"). If a tool really
-            # observed it, the evidence match below verifies it as usual; only an
-            # unobserved template is excluded.
+            # A report names the canonical Run key. Three cases, kept strictly
+            # apart: a tool really observed it (verified below, in either hive
+            # spelling); it is used as a verification TARGET -- "RegSetValue
+            # under HKCU\...\Run (or equivalent) - not observed" -- which the
+            # context window shows, and is excluded; or it is a bare unobserved
+            # assertion ("persists via HKCU\...\Run"), which is a claim like
+            # any other and falls through to `unverified`, where the scrubber
+            # neutralises it. Before the context check the template branch
+            # excluded ALL unobserved mentions, so the exact fabrication #42
+            # exists for -- a canonical path written from training data --
+            # shipped while the audit counted zero.
             if plain in evidence or raw.lower() in evidence:
                 verified.append({"type": kind, "value": raw})
-            else:
+                continue
+            matched = _evidence_has_regkey(plain, evidence_text or "")
+            if matched:
+                verified.append({"type": kind, "value": raw,
+                                 "abbreviated_from": matched})
+                continue
+            span_list = claim_spans.get((kind, plain)) or []
+            scan_text = scan
+            if span_list and all(
+                _CANONICAL_TEMPLATE_TARGET_RE.search(
+                    _claim_context_window(scan_text, s, e))
+                for s, e in span_list):
                 excluded.append({"type": kind, "value": raw,
                                  "reason": "canonical persistence template used as a "
                                            "verification target, not an observed artifact"})
+                continue
+            unverified.append({"type": kind, "value": raw})
             continue
         if plain in evidence or raw.lower() in evidence:
             verified.append({"type": kind, "value": raw})
@@ -1243,8 +1347,11 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
     }
 
 
-#: Fenced blocks, captured so the splitter can keep them verbatim.
-_FENCE_BLOCK_SPLIT_RE = re.compile(r"(```.*?```)", re.DOTALL)
+#: Fenced blocks, captured so the splitter can keep them verbatim. The second
+#: alternative keeps an UNTERMINATED fence verbatim too, so the scrubber and
+#: the claim extractor agree on where code ends even when the report's markdown
+#: is unbalanced (see _FENCED_CODE_RE).
+_FENCE_BLOCK_SPLIT_RE = re.compile(r"(```.*?```|```.*\Z)", re.DOTALL)
 
 #: What an unobserved indicator is replaced with, per claim type.
 #:
@@ -1373,18 +1480,19 @@ def redact_model_names(markdown: str) -> tuple[str, list[str]]:
 def _flex_claim_re(value: str) -> re.Pattern:
     """Match any markdown rendering of one indicator value.
 
+    The body is built from the PLAIN (undefanged) value, and the characters
+    that defanging rewrites match either spelling: `.` matches `[.]`, `(.)` and
+    `[dot]`, `:` matches `[:]`, `@` matches `[@]`/`[at]`, and an `http` prefix
+    matches its `hxxp` rendering. Without this, whichever spelling came first
+    in the report was removed and the other survived -- `remaining_unverified`
+    stayed above zero while the scrub reported success (2026-10-03: `evil.com`
+    in prose and `evil[.]com` in a table row are one claim).
+
     Registry paths reach us escaped (``HKCU\\\\Software\\\\...``) as often as
     plain (``HKCU\\Software\\...``), so each separator matches one or two
     backslashes. The boundaries stop a claim from matching inside a longer
     token, and deliberately allow ``*`` and a backtick to follow, so the
     typography that broke URL claims does not also defeat removal.
-
-    The backslash runs are collapsed BEFORE splitting. Splitting a doubled
-    separator on a single backslash yields an empty part for the gap, and
-    joining that back produces two consecutive separators -- which compiled to
-    requiring two to four backslashes where the text has exactly two, so the
-    second rendering of a path in the same report was silently left in place
-    and `remaining_unverified` stayed at 1 after a "successful" scrub.
 
     The trailing boundary rejects a following separator, which is what stops a
     shorter claim from being cut out of the middle of a longer one. That is not
@@ -1394,9 +1502,18 @@ def _flex_claim_re(value: str) -> re.Pattern:
     absent from the scrubber's work list while the shorter one still matches
     inside it, leaving a dangling `\\CurrentVersion\\Run` in the published report.
 
+    A `.` that continues a longer indicator is rejected in both directions:
+    `evil.com` must not be cut out of the verified `sub.evil.com` (lookbehind:
+    preceded by a letter + dot), and `1.2.3.4` must not be cut out of
+    `1.2.3.4.5` (lookahead: followed by a dot + digit). A sentence-final period
+    passes both, because it is followed by space or end of line.
+
     A placeholder value name is the one legitimate way a separator may follow,
     because `...\\CurrentVersion\\Run\\<value_name>` names the same key the
-    report was claiming. It is consumed as part of the match (below), so the
+    report was claiming. An ellipsis tail (`...\\Run\\...`, the report naming
+    the key as a location class without a concrete value -- winservices
+    2026-10-03: `HKCU\\...\\Run\\...` in "no specific registry key path
+    appears in the evidence") is the same shape and is consumed too, so the
     strict boundary still applies to what comes after it.
 
     Segments containing a space are matched whole rather than truncated at it.
@@ -1408,11 +1525,27 @@ def _flex_claim_re(value: str) -> re.Pattern:
     is not itself a registry claim -- which is why the fragment check in
     `scrub_unverified_indicators` exists alongside it.
     """
-    parts = re.sub(r"\\{2,}", r"\\", value).split("\\")
-    body = r"\\{1,2}".join(re.escape(p) for p in parts)
-    placeholder = r"(?:\\{1,2}<[^>\n]*>)?"
+    plain = _plain_claim(value)
+    body_parts: list[str] = []
+    for ch in plain:
+        if ch == "\\":
+            body_parts.append(r"\\{1,2}")
+        elif ch == ".":
+            body_parts.append(r"(?:\.|\[\.\]|\(\.\)|\[dot\])")
+        elif ch == ":":
+            body_parts.append(r"(?:\[:\]|:)")
+        elif ch == "@":
+            body_parts.append(r"(?:\[@\]|\[at\]|@)")
+        else:
+            body_parts.append(re.escape(ch))
+    body = "".join(body_parts)
+    # hxxp/hxxps is the same URL as http/https for claim purposes; the plain
+    # body starts with `http`, so widen exactly that prefix.
+    body = re.sub(r"^h(?:t{2}p)", r"h(?:ttp|x{2}p)", body)
+    placeholder = r"(?:\\{1,2}(?:<[^>\n]*>|\.{3}|…))?"
     return re.compile(
-        r"(?<![A-Za-z0-9_\\])" + body + placeholder + r"(?![A-Za-z0-9_\\-])",
+        r"(?<![A-Za-z0-9_\\])(?<![A-Za-z]\.)" + body + placeholder
+        + r"(?![A-Za-z0-9_\\-])(?!\.[A-Za-z0-9])(?!\[\.\][0-9])",
         re.IGNORECASE)
 
 
@@ -1487,15 +1620,19 @@ def scrub_unverified_indicators(
         out.append(part)
 
     scrubbed = "".join(out)
-    after = verify_claimed_iocs(
-        scrubbed, evidence_text, provenance_commit=provenance_commit)
     # A fragment is text left adjacent to a marker that continues the path it
     # replaced -- "NT\CurrentVersion\Winlogon" after
     # "...\Microsoft\Windows" was removed. It is NOT an unverified CLAIM, so
     # the count above cannot see it, and it ships as orphan prose naming a
-    # registry location nothing observed. Checked explicitly rather than
-    # assumed.
-    fragments = _ORPHAN_FRAGMENT_RE.findall(scrubbed)
+    # registry location nothing observed. Remove it (the marker stays, the
+    # leftover tail goes) and report what was cut; leaving it in the published
+    # document while merely counting it was the 2026-10-03 review finding.
+    fragments = [m.group(0) for m in _ORPHAN_FRAGMENT_RE.finditer(scrubbed)]
+    if fragments:
+        scrubbed = _ORPHAN_FRAGMENT_RE.sub(
+            lambda m: m.group(0)[:m.group(0).index("]") + 1], scrubbed)
+    after = verify_claimed_iocs(
+        scrubbed, evidence_text, provenance_commit=provenance_commit)
     return scrubbed, removed, {
         "indicators_removed": len(removed),
         "indicators_removed_detail": removed[:40],
