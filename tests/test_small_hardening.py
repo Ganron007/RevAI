@@ -122,17 +122,50 @@ def test_docs_counts_fails_when_a_doc_carries_no_counts(tmp_path, monkeypatch):
     finally:
         vp.check = original
     flagged = [d for n, ok, d in seen if n == "docs.counts" and not ok]
-    assert flagged and "no tool counts found" in flagged[0], seen
+    # Each family is asserted on its own (MEDIUM-3): a doc missing only the
+    # manifest count is flagged for exactly that, not only when both are gone.
+    assert flagged and "manifest tool count" in flagged[0], seen
 
 
-def test_docs_counts_still_passes_on_a_correct_doc(tmp_path, monkeypatch):
-    """The other direction: the new rule must not flag a real doc."""
+def test_docs_counts_fails_when_only_the_manifest_count_is_missing(
+        tmp_path, monkeypatch):
+    """MEDIUM-3: the omission guard was conjunctive, so this used to pass."""
     import verify_pipeline as vp
 
     (tmp_path / "docs").mkdir()
     (tmp_path / "docs" / "tool-stack.md").write_text(
-        "# Tool stack\n\nA 28-tool manifest with 25 agent-callable tools.\n",
+        "# Tool stack\n\n25 agent-callable tools, no manifest count.\n",
         encoding="utf-8")
+    monkeypatch.setattr(vp, "REPO", tmp_path)
+    seen: list[tuple[str, bool, str]] = []
+    original = vp.check
+
+    def spy(name, ok=True, detail="", *a, **kw):
+        seen.append((name, bool(ok), str(detail)))
+
+    vp.check = spy
+    try:
+        vp.check_docs_counts()
+    finally:
+        vp.check = original
+    flagged = [d for n, ok, d in seen if n == "docs.counts" and not ok]
+    assert flagged and "manifest tool count" in flagged[0], seen
+
+
+def test_docs_counts_still_passes_on_a_correct_doc(tmp_path, monkeypatch):
+    """The other direction: the new rule must not flag a real doc.
+
+    The doc carries a phrasing the patterns actually recognise for BOTH
+    families: the phrasing the previous fixture used ("A 28-tool manifest")
+    does not match the manifest pattern, so that fixture was never a correct
+    doc in the first place.
+    """
+    import verify_pipeline as vp
+
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "docs" / "tool-stack.md").write_text(
+        "# Tool stack\n\nThe pipeline runs 28 tools automatically, with 25 "
+        "agent-callable tools.\n", encoding="utf-8")
     monkeypatch.setattr(vp, "REPO", tmp_path)
     seen: list[tuple[str, bool, str]] = []
     original = vp.check

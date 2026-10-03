@@ -244,14 +244,25 @@ def check_docs_counts() -> None:
             found_agent |= _nums(pattern, text)
         for value in sorted(v for v in found_agent if v != n_agent):
             problems.append(f"{name}: agent tool count {value} != {n_agent}")
-        if not found_manifest and not found_agent:
+        if not found_manifest:
             # The patterns can only flag numbers that still match them:
             # DELETING the counts from a doc made this check pass silently
             # (the omission hole, 2026-10-03). Every file in this list is
             # documented as carrying the tool counts, so none may carry none.
+            #
+            # Each family is asserted ON ITS OWN. A single `not A and not B`
+            # only catches deleting BOTH, so removing just the manifest count
+            # -- or just the agent count -- still passed with the other family
+            # still there: the same hole one level narrower (review finding
+            # MEDIUM-3, 2026-10-03). The two patterns are independently
+            # removable, so they get independent assertions.
             problems.append(
-                f"{name}: no tool counts found -- the counts were removed or "
-                "the patterns drifted")
+                f"{name}: no manifest tool count found -- it was removed or "
+                "the pattern drifted")
+        if not found_agent:
+            problems.append(
+                f"{name}: no agent-callable tool count found -- it was "
+                "removed or the pattern drifted")
     check("docs.counts", not problems,
           f"manifest={n_manifest} agent={n_agent}" if not problems
           else "; ".join(problems[:4]))

@@ -128,11 +128,15 @@ def test_indicator_scrubber_receives_the_case_directory():
     """
     for rel in ("revai/section_publisher.py", "revai/publish_report_v2.py"):
         src = source(rel)
-        # The first argument may itself be a call (`case_dir(sha)`), so the
-        # capture must tolerate one parenthesized group -- a plain word regex
-        # would silently skip exactly the call shape it is guarding.
+        # Capture the first argument as ANY expression up to the first top-level
+        # comma. A `[\w.]+` capture -- even one allowing one parenthesized group
+        # -- cannot match `case_dir(sha) / "correlate"`, which is the LITERAL
+        # FORM of the bug this test guards: the original defect passed
+        # `out_dir`, whose value is `case_dir(sha)/correlate`. A rewrite into
+        # that shape directly would have been invisible, so the capture has to
+        # cover it.
         calls = re.findall(
-            r"scrub_report_indicators\(\s*([\w.]+(?:\(\w+\))?)\s*,", src)
+            r"scrub_report_indicators\(\s*(.*?),\s*", src)
         assert calls, f"{rel}: no scrub_report_indicators() call found"
         for root in calls:
             assert root in ("case_dir(sha)", "case"), (
