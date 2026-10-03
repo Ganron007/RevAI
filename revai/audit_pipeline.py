@@ -1546,6 +1546,11 @@ def main():
     # The markdown is a published document, so vendor/model names are scrubbed
     # from it; pipeline-audit.json keeps them, because that file is the machine
     # evidence an auditor reads to find out which model judged the sample.
+    # The name is imported HERE because eaeae5f only imported it inside the
+    # quality-pack function's try-block, so main() hit a NameError on the
+    # first real audit run after that commit (found live 2026-10-03 while
+    # re-verifying #35 on winservices; no test executes this render path).
+    from report_quality import redact_model_names
     audit_md, _redacted = redact_model_names(render_markdown(report))
     if _redacted:
         report.setdefault("model_names_redacted", _redacted)
