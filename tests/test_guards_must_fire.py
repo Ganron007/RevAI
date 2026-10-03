@@ -69,9 +69,17 @@ def test_the_tripwire_is_not_blind_to_a_keyword_first_argument():
 # ------------------------------------------------------------------ MEDIUM-3
 
 def _run_harness() -> str:
+    """Run the real harness, wherever it lives.
+
+    `revai/verify_pipeline.py` in the repo, `/opt/scripts/verify_pipeline.py`
+    once deployed -- the twelfth layout trap, where a hardcoded path passes
+    locally and fails on the VM.
+    """
+    harness = resolve("revai/verify_pipeline.py")
     out = subprocess.run(
-        [sys.executable, "revai/verify_pipeline.py"],
-        capture_output=True, text=True, cwd=str(ROOT), timeout=900)
+        [sys.executable, str(harness)],
+        capture_output=True, text=True,
+        cwd=str(harness.parent), timeout=900)
     return out.stdout + out.stderr
 
 
