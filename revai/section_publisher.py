@@ -902,9 +902,16 @@ def run_section_based_publish(sha: str, tools_results: dict,
     # Backward compatibility: also write at logs root
     root_dir = case_dir(sha)
     (root_dir / "REPORT-MASTER-v3.md").write_text(report_markdown)
+    # PERSIST the scrub record. It was assigned here and read nowhere, which
+    # removed the only tripwire the e879318 bug had: for master_v3 the removal
+    # was invisible, and REPORT-MASTER-v3 is not the report
+    # `claimed_ioc_verification` reads (report_quality picks tech3 -> tech2 ->
+    # master), so the audit would never have seen the loss either. The sibling
+    # publish paths all record theirs; this one had been left out.
     (root_dir / "section-results-v3.json").write_text(
         json.dumps({"sections": section_results, "timings": section_timings,
-                    "pass1_count": len(pass1_results), "pass2_count": len(pass2_results)},
+                    "pass1_count": len(pass1_results), "pass2_count": len(pass2_results),
+                    "master_v3_indicator_scrub": _master_ioc_scrub},
                    indent=2, default=str)
     )
 

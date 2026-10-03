@@ -28,6 +28,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "revai"))
 
+import report_quality as rq  # noqa: E402
 from report_quality import (  # noqa: E402
     scrub_unverified_indicators,
     verify_claimed_iocs,
@@ -331,6 +332,73 @@ def test_orphan_fragment_is_reported_even_when_no_claim_remains():
     clean = ("Replaced marker [registry path not observed in evidence] "
              "for persistence.")
     assert not _ORPHAN_FRAGMENT_RE.findall(clean)
+
+
+def test_scrubber_does_not_run_against_an_empty_evidence_corpus():
+    """HIGH-2, found 2026-10-03 by review. The severe one.
+
+    `collect_evidence_text` returns `("", [])` with NO exception when the root
+    holds none of the evidence files -- so the scrubber's `except` never fired.
+    Every claim then failed its evidence match, every claim was "unverified", and
+    every claim was DELETED, including the sample's own sha256 and its C2 URLs,
+    with `remaining_unverified: 0` self-certifying the success.
+
+    That is the e879318 failure (wrong evidence root) reproducing silently: the
+    report loses all its indicators and nothing records that it happened. An
+    absent corpus and an EMPTY corpus must behave the same way -- refuse.
+    """
+    import tempfile
+
+    from report_quality import collect_evidence_text
+
+    empty = Path(tempfile.mkdtemp())
+    assert collect_evidence_text(empty)[1] == [], "premise: empty root"
+
+    md = ("- Sample sha256: 8d7e3e41cd993d5a41f4e96d6076c4f7\n"
+          "- C2: http://203.183.172.196:3478\n")
+    out, meta = rq.scrub_report_indicators(empty, md, "probe")
+    assert meta["indicators_removed"] == 0, meta
+    assert "error" in meta and meta["error"], (
+        "an empty corpus must be recorded as an error, not silently scrubbed")
+    assert out == md, "markdown must be untouched when there is no evidence"
+    assert "8d7e3e41cd993d5a41f4e96d6076c4f7" in out, "sha256 was deleted"
+
+
+def test_a_real_corpus_still_scrubs(tmp_path):
+    """The guard must not disable the scrubber where it SHOULD act."""
+    (tmp_path / "iocs.json").write_text(
+        '{"urls": ["http://icanhazip.com"]}', encoding="utf-8")
+    md = ("- Real C2: http://icanhazip.com\n"
+          "- Invented: http://evil.example.org/x\n")
+    out, meta = rq.scrub_report_indicators(tmp_path, md, "probe")
+    assert meta.get("evidence_files"), "a real corpus must list its files"
+    assert meta["indicators_removed"] >= 1, meta
+    assert "icanhazip" in out, "a GROUNDED indicator was removed"
+    assert "evil.example.org" not in out, "an ungrounded indicator survived"
+
+
+def test_master_v3_scrub_record_is_persisted():
+    """HIGH-1: the record existed and was read nowhere.
+
+    `_master_ioc_scrub` was assigned in section_publisher and never read, so for
+    REPORT-MASTER-v3 the removal was invisible. The sibling publish paths all
+    record theirs; master_v3 was left out. And REPORT-MASTER-v3 is not the
+    report `claimed_ioc_verification` reads (report_quality picks
+    tech3 -> tech2 -> master), so the audit would never have seen the loss
+    either -- leaving the e879318 bug undetectable for that report.
+    """
+    import sys as _sys
+
+    _sys.path.insert(0, str(ROOT / "revai"))
+    import section_publisher
+
+    src = (ROOT / "revai" / "section_publisher.py").read_text(errors="replace")
+    assert src.count("_master_ioc_scrub") >= 2, (
+        "master_v3's scrub record is assigned but never read; that is the only "
+        "tripwire the wrong-evidence-root bug has for this report")
+    assert "master_v3_indicator_scrub" in src, (
+        "the record must be written into section-results-v3.json")
+    assert callable(section_publisher.scrub_report_indicators)
 
 
 def test_empty_markdown_is_handled():

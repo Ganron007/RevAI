@@ -1678,6 +1678,26 @@ def scrub_report_indicators(
     except Exception as exc:  # noqa: BLE001
         return markdown, {"label": label, "indicators_removed": 0,
                           "error": f"evidence unavailable: {type(exc).__name__}"}
+    if not evidence_files:
+        # An EMPTY corpus is the dangerous case, not an absent one.
+        #
+        # collect_evidence_text returns ("", []) with NO exception when the root
+        # holds none of _EVIDENCE_FILES, so the `except` above never fires. Every
+        # claim then fails its evidence match, every claim is "unverified", and
+        # every claim gets deleted -- including the sample's own sha256 and its
+        # C2 URLs -- with `remaining_unverified: 0` self-certifying the success.
+        #
+        # That is the e879318 failure (wrong evidence root) reproducing silently:
+        # the report loses all its indicators and the audit never sees a removal
+        # record. Refuse to scrub against nothing. Reproduced 2026-10-03 with an
+        # empty root: 3 claims in, 2 indicators removed, 0 remaining, no error.
+        return markdown, {
+            "label": label,
+            "indicators_removed": 0,
+            "error": "empty evidence corpus - scrub skipped",
+            "evidence_files": [],
+            "remaining_unverified": None,
+        }
     scrubbed, removed, meta = scrub_unverified_indicators(markdown, evidence)
     meta["label"] = label
     meta["evidence_files"] = evidence_files
