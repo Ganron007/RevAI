@@ -24,6 +24,7 @@ from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
 from pydantic import BaseModel, Field
 
+from skills import skill_grounding_block as _skill_grounding_block  # noqa: E402
 from v2_lib import (  # noqa: E402
     case_dir,
     ensure_pipeline_runtime_env,
@@ -519,6 +520,10 @@ def run_langgraph_deep_dive(sha: str, max_steps: int = 10, helpers: dict | None 
         callbacks=[_UsageCallback(planner_model, progress_path)],
     )
 
+    # One definition of the skills instruction, shared with the custom
+    # engine's build_messages. Two copies is how the LangGraph engine came
+    # to have load_skill bound but never told the model about it.
+    skill_block = _skill_grounding_block()
     findings_preview = _truncate(json.dumps(findings, default=str), 3500)
     system_prompt = f"""You are an agentic malware reverse-engineering assistant using tool calling.
 
@@ -558,6 +563,8 @@ API GROUNDING: before describing what a Windows API does or how malware abuses i
 call api_lookup for that symbol (it accepts the spelling a disassembler shows - A/W,
 Nt/Zw, __imp_, @N decoration all fold). If api_lookup reports no entry, say it was
 not found instead of recalling an answer.
+
+{skill_block}
 """
 
     agent = create_react_agent(llm, tools=lc_tools, prompt=system_prompt)

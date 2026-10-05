@@ -78,6 +78,48 @@ def list_skills() -> list[str]:
                               if p.is_dir() and (p / "SKILL.md").is_file())]
 
 
+#: The prompt fragment that tells the model the procedures exist and that they
+#: must be LOADED, not recalled. Shared by both engines (the custom engine's
+#: build_messages and the LangGraph system prompt) because two copies of a
+#: prompt fragment is how the LangGraph engine came to run with the skills
+#: layer bound but never mentioned -- proven by the 2026-10-05 sample run,
+#: where 42 agent steps produced zero load_skill calls on the default engine.
+#:
+#: Wording rules that make this load-bearing rather than decorative:
+#:   * "BEFORE attempting the work it covers" -- a procedure loaded afterwards
+#:     is a procedure the answer was already written without.
+#:   * "not evidence" -- methodology is not a finding, and must not be cited.
+#:   * verdict-calibration is called out by name and tied to "any judgment",
+#:     because that is the one whose absence directly degrades the verdict.
+SKILL_GROUNDING = """PROCEDURE GROUNDING: reverse-engineering procedures are not recalled
+from memory -- they are LOADED. Call `load_skill` with the name of the procedure
+that covers the work you are about to do, BEFORE you do it. A procedure recalled
+from memory is not evidence and must not be cited as one.
+
+Available procedures: {index}
+
+- If a procedure covers the next step, load it first and follow it.
+- Load `verdict-calibration` before rendering ANY judgment about the sample.
+- A procedure tells you HOW to investigate, never WHAT to conclude. It is not
+  evidence, and its content must not be reported as a finding or cited as a source.
+- An unknown name is an error; do not substitute a guess."""
+
+
+def skill_grounding_block() -> str:
+    """The procedure-grounding fragment with the live index substituted in."""
+    names = list_skills()
+    if not names:
+        # No skills deployed: an empty index would invite a call that cannot
+        # succeed, and a silent omission would leave the engine with no
+        # instruction at all. Say what is true.
+        return (
+            "PROCEDURE GROUNDING: no reverse-engineering procedures are deployed "
+            "for this host (skills/ is absent or empty), so there is nothing to "
+            "load. Methodology is not evidence; investigate and cite only tool "
+            "output.")
+    return SKILL_GROUNDING.format(index=", ".join(sorted(names)))
+
+
 def _read_skill_file(name: str) -> tuple[dict, str] | None:
     """(manifest, body) for a skill, or None when it does not exist.
 

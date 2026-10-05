@@ -59,8 +59,26 @@ FALLBACK_SOURCES = frozenset({
 })
 
 _DEGENERATE_TOKEN = re.compile(r"\S+")
-_TICKER_RE = re.compile(r"\|\s*\*\*Final\*\*\s*\|\s*\*+([^*|]+?)\*+\s*\|",
-                         re.IGNORECASE)
+#: Two report formats exist since #39 made the technical report section-wise:
+#:
+#:   1. the v2 table row    | **Final** | *suspicious* |
+#:   2. the v3 inline panel **Verdict: suspicious** (confidence: 70/100, ...)
+#:
+#: A reader that knows only #1 goes blind on every run that emits #3, which is
+#: every run since #39 shipped -- observed live as
+#: `verdict.panels_unreadable: 5 report(s) present but only 1 verdict panel(s)
+#: parseable` on a run whose reports were complete (13/13 and 17/17,
+#: quality_ok=True) and whose verdicts were stated in prose in all of them.
+#:
+#: The v3 alternative is deliberately NARROW: it requires the confidence clause
+#: that follows, so a paragraph that merely mentions a verdict cannot satisfy
+#: the panel check. A looser `\\bverdict[:\s*]+(\\w+)` would match the report
+#: talking ABOUT verdicts, which is how this check would stop meaning anything.
+_TICKER_RE = re.compile(
+    r"\|\s*\*\*Final\*\*\s*\|\s*\*+([^*|]+?)\*+\s*\|"
+    r"|\*\*verdict\s*:\s*[\s*`]*([a-z][a-z _-]{2,30}?)[\s*`]*\s*"
+    r"\(\s*(?:confidence|score)",
+    re.IGNORECASE)
 
 #: Written by pipeline_single at the top of every run (see
 #: pipeline_single.run_single). Case dirs are reused and the stage log is
@@ -328,7 +346,11 @@ def check_verdict_panel_agreement(case: Path) -> list[Finding]:
         except OSError:
             continue
         if m:
-            panels[path.name] = m.group(1).strip().lower()
+            # group(1) is the v2 table row; group(2) the v3 inline panel. Reading
+            # only group(1) is what left the v3 reports unreadable.
+            verdict = (m.group(1) or m.group(2) or "").strip().lower()
+            if verdict:
+                panels[path.name] = verdict
 
     findings: list[Finding] = []
     distinct = set(panels.values())

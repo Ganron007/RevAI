@@ -235,6 +235,35 @@ def _cli() -> int:
     summary["case_dir"] = str(case)
     summary["converged"] = has_converged(st["regions"])
     summary["stop_reason"] = st.get("stop_reason")
+
+    # A depth run that has done nothing must not read as a depth run that
+    # finished. The convergence loop is plan #20 and is not implemented yet, so
+    # the honest report is an explicit one -- not rc=0 with an empty map and no
+    # artifact, which is exactly the hollow-success shape the rest of the
+    # pipeline gates against.
+    spend = st.get("spend") or {}
+    if not st.get("regions") and not spend.get("llm_calls"):
+        summary["stop_reason"] = (
+            "no-depth-analysis-performed: the convergence loop is plan #20 and "
+            "is not implemented yet. This run reported the case's depth state; "
+            "it did not investigate anything. regions_total=0 means nothing was "
+            "looked at, not that the sample has no functions."
+        )
+        summary["depth_deferred_to"] = "plan #20 (multi-agent domain-node loop)"
+        print("[depth] WARNING: no depth analysis ran. The convergence loop is "
+              "deferred to plan #20; this invocation only reports state.",
+              file=sys.stderr, flush=True)
+        # Write the artifact with that reason inside it. A stage that produced
+        # nothing and left no trace is indistinguishable in the trace from one
+        # that legitimately found nothing.
+        try:
+            out = case / "understanding.json"
+            out.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+            summary["understanding_json"] = str(out)
+        except OSError as exc:
+            print(f"[depth] could not write understanding.json: {exc}",
+                  file=sys.stderr, flush=True)
+
     print(json.dumps(summary, indent=2))
     return 0
 
