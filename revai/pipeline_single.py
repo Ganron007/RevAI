@@ -157,6 +157,16 @@ def run_single(sample: Path | None, sha: str | None, mode: str = "standard") -> 
             7200,
         ))
     stages.append(("deep_dive", [sys.executable, str(SCRIPTS / "deep_dive_agentic.py"), sha], 14400))
+    # D0 depth mode (post-pipeline, opt-in, env-gated). Runs AFTER the main
+    # pipeline has produced its reports -- it is not a pipeline stage and never
+    # gates one. Its objective is UNDERSTANDING, not a verdict, so its output is
+    # a function map rather than a judgment. See revai/depth_agent.py.
+    if os.environ.get("REVAI_DEPTH", "").strip().lower() in ("1", "true", "on"):
+        stages.append((
+            "depth_understanding",
+            [sys.executable, str(SCRIPTS / "depth_agent.py"), sha],
+            int(os.environ.get("REVAI_DEPTH_CEILING_SECONDS", "7200") or 7200) + 300,
+        ))
     # Optional v4 function-recovery stage (opt-in, between deep dive and yara).
     # Gated by REVAI_ENABLE_AGENTIC_RECOVERY=1 (legacy ENABLE_AGENTIC_RECOVERY
     # honored). Never required for green — recovery output feeds the reports.

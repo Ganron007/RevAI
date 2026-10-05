@@ -246,6 +246,36 @@ extraction is auditable. Those paths are **not resolvable in this public
 repository** and are never presented as links. `ghidra-sql-recipes` is
 repo-derived and honestly says so rather than carrying external citations.
 
+### Depth mode (opt-in, post-pipeline)
+
+`REVAI_DEPTH=1` starts a second, separate run **after** the main pipeline has
+finished. Its objective is to understand **how** the sample works — not whether it
+is malicious. It produces a function map, not a verdict, and it never gates the
+main pipeline. Off by default.
+
+Why it is its own mode rather than a budget knob: it is expensive, it is slow,
+its outcome is unpredictable (it loops until the picture is complete), and an
+examiner must be able to stop, resume, and read its status.
+
+The loop terminates on a **declared unknown set**, not a step count. Every
+function or region carries one of four statuses — `understood`, `partial`,
+`not-reconstructed`, `not-explored` — each with a reason and an evidence
+citation. `not-explored` is the only status excused a citation: it asserts
+nothing beyond that the region was not looked at.
+
+The ceiling (`REVAI_DEPTH_CEILING_SECONDS`, default 7200s) **consolidates rather
+than truncates**. On hitting it, or on an examiner stop, the run writes what it
+knows and declares what remains — so a cutoff is a partial-but-honest map, never
+nothing. Every run reports its cost: N regions understood / partial /
+not-reconstructed / not-explored, plus tokens and seconds.
+
+Resume: state is checkpointed atomically after every region, so stopping and
+restarting continues rather than restarts, and a stop mid-write cannot corrupt
+the resume point.
+
+An unrecognised status label counts as *not understood*, so a typo cannot quietly
+mark the run finished.
+
 ## Pipeline stages 
 
 1. **intake** — session + Ghidra (optional IDA)  
