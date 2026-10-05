@@ -134,7 +134,7 @@ def test_docs_counts_fails_when_only_the_manifest_count_is_missing(
 
     (tmp_path / "docs").mkdir()
     (tmp_path / "docs" / "tool-stack.md").write_text(
-        "# Tool stack\n\n25 agent-callable tools, no manifest count.\n",
+        "# Tool stack\n\n26 agent-callable tools, no manifest count.\n",
         encoding="utf-8")
     monkeypatch.setattr(vp, "REPO", tmp_path)
     seen: list[tuple[str, bool, str]] = []
@@ -164,7 +164,7 @@ def test_docs_counts_still_passes_on_a_correct_doc(tmp_path, monkeypatch):
 
     (tmp_path / "docs").mkdir()
     (tmp_path / "docs" / "tool-stack.md").write_text(
-        "# Tool stack\n\nThe pipeline runs 28 tools automatically, with 25 "
+        "# Tool stack\n\nThe pipeline runs 28 tools automatically, with 26 "
         "agent-callable tools.\n", encoding="utf-8")
     monkeypatch.setattr(vp, "REPO", tmp_path)
     seen: list[tuple[str, bool, str]] = []

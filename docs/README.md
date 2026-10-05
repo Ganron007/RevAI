@@ -66,3 +66,14 @@ RevAI supports three modes of execution, all using the same tool stack and LLM b
 The deep dive always runs through the LangGraph ReAct agent — only the stage ordering differs between modes. Usage details: [`OPERATE.md`](OPERATE.md).
 
 For the project overview, see the top-level [`README.md`](../README.md).
+
+---
+
+## RE agent skills
+
+Reverse-engineering procedure is a cited, versioned artifact the agent LOADS on
+demand, never prose it recalls. Five skills ship (re-methodology,
+unpack-and-verify, obfuscation-recognition, ghidra-sql-recipes,
+verdict-calibration); the deep-dive prompt carries a one-line index and the
+load_skill tool fetches the body. See [OPERATE.md](OPERATE.md).
+

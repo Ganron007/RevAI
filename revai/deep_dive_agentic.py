@@ -63,6 +63,7 @@ from packer_intake import run_packer_scan  # noqa: E402
 from report_quality import VERDICT_CALIBRATION_CONTRACT  # noqa: E402
 import api_lookup  # noqa: E402
 import binary_diff  # noqa: E402
+import skills  # noqa: E402
 
 MAX_STEPS = int(os.environ.get("REVAI_DEEP_MAX_STEPS") or "16")
 MAX_TOOL_RESULT_CHARS = 2000
@@ -363,6 +364,7 @@ TOOL_DESCRIPTIONS = {
     "revai_tools_sec": "Deterministic mitigations-with-consequence from the sample's own headers (ASLR/DEP/CFG/GS/SEH), each with an exploitation consequence note. Args: (none - uses session sample_path). Marker level only; never a verdict input.",
     "revai_tools_sinks": "Dangerous-API call sites (memcpy, recv, system, ...) located inside named functions via radare2. Args: (none - uses session sample_path). Honest 0-site results are recorded; fail-open.",
     "revai_tools_audit": "Sink sites with exploitable argument provenance (constant-length vs subtraction/register-source patterns) plus entry reachability. Args: (none - uses session sample_path). Deeper than revai_tools_sinks; fail-open.",
+    "load_skill": "Load a reverse-engineering PROCEDURE by name: re-methodology, unpack-and-verify, obfuscation-recognition, ghidra-sql-recipes, verdict-calibration. Returns the cited, versioned procedure text. Args: skill (name, required). Load the procedure BEFORE attempting the work it covers -- a procedure recalled from memory is not evidence. An unknown name raises; do not substitute a guess.",
     "signature_match": "Match a function against the crypto/stdlib/winapi signature DBs. Args: func_name, imports (list), strings (list), constants (list), size (int). Use to name an unidentified routine before claiming what it does.",
     "z3_solve": "Verify an MBA / opaque-predicate identity with z3 (e.g. 'x^y + 2*(x&y) == x+y'). Args: claim_text (the identity as written in code), timeout (default 60). Use before asserting an obfuscated expression's meaning.",
     "angr_analyze": "Control-flow-flattening deflatten via angr, when cff_detect flagged candidates. Args: timeout (default 120). CPU-hungry: run only on flagged functions, and treat a timeout as honest not_applicable.",
@@ -511,6 +513,15 @@ IMPORTANT:
   shows — A/W, Nt/Zw, __imp_, @N decoration all fold). The index carries curated
   malicious-use notes and attack categories that are not reliably known from memory.
   If api_lookup reports no entry, say it was not found instead of recalling.
+- PROCEDURE GROUNDING: the procedures below are loaded with the `load_skill` tool,
+  never recalled. A step you followed without loading the skill it came from is not
+  evidence and must not be cited as one.
+
+{skills.skill_index_text()}
+
+  Load the procedure BEFORE the work it covers. In particular: load
+  re-methodology before a long manual walkthrough, unpack-and-verify the moment the
+  sample looks packed, and verdict-calibration before you render any judgment.
 - MASQUERADE AWARENESS: VersionInfo / product / company metadata (e.g. "Microsoft",
   "Adobe", "Skype") is trivially forged and is NOT evidence of legitimacy. A sample
   whose deterministic tools (Malcat obfuscation anomalies, YARA family/keylogger
@@ -553,6 +564,7 @@ class ToolRegistry:
             "revai_tools_audit": self._revai_tools_audit,
             "api_lookup": self._api_lookup,
             "compare_files": self._compare_files,
+            "load_skill": self._load_skill,
         }
 
     def _compare_files(self, args, session):
@@ -587,6 +599,39 @@ class ToolRegistry:
         if query:
             return api_lookup.search(query, limit=args.get("limit") or 10)
         return {"error": "api_lookup requires args.api or args.query"}
+
+    def _load_skill(self, args, session):
+        """Load a reverse-engineering PROCEDURE by name.
+
+        Methodology is not evidence: it is a cited, versioned artifact the agent
+        reads, never prose it recalls. A skill that resolves returns the procedure
+        plus the citation for whatever the report writes using it.
+
+        Fail-open with an EXPLICIT error, never a silent empty result: an
+        unavailable skill means the procedure could not be read, and reporting
+        that is what keeps a hollow-success run from happening here.
+        """
+        name = str(args.get("skill") or args.get("name") or "").strip()
+        if not name:
+            return {"error": "load_skill requires args.skill",
+                    "available": skills.list_skills()}
+        try:
+            loaded = skills.load_skill(name)
+        except KeyError as exc:
+            return {"error": str(exc), "available": skills.list_skills()}
+        except Exception as exc:  # a corrupt skill file must not kill the loop
+            return {"error": f"skill {name!r} failed to load: {exc}",
+                    "available": skills.list_skills()}
+        return {
+            "skill": loaded["name"],
+            "version": loaded["version"],
+            "covers": loaded["covers"],
+            "does_not_cover": loaded["does_not_cover"],
+            "body": loaded["body"],
+            "sources": loaded["sources"],
+            "attribution": loaded["attribution"],
+            "citation": skills.skill_citation(name),
+        }
 
     def _revai_tools_sec(self, args, session):
         return revai_tools_sec(session["sample_path"])

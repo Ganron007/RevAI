@@ -220,6 +220,32 @@ nothing carries over between them, and a stale read is easy to mistake for a
 current one. This exists so "read the artifact, not the return code" is a command
 rather than something to remember.
 
+### RE agent skills (loaded, not recalled)
+
+Reverse-engineering *procedure* is a cited, versioned artifact the agent loads on
+demand — never prose it recalls. That distinction is the point: prompt prose gets
+re-summarised by the model, the summary drifts, and nothing can tell you. A skill
+is a file with a version and cited sources, so a gate can check it and a report
+can cite it.
+
+| Skill | Covers |
+|---|---|
+| `re-methodology` | The canonical static-analysis sequence and its stop conditions |
+| `unpack-and-verify` | Unpack, dump, rebuild the import table, re-analyse — and the honesty rule that a rebuilt import is a **claim** |
+| `obfuscation-recognition` | The tells and standard attacks for CFF, MBA, string encryption and flattening |
+| `ghidra-sql-recipes` | The query patterns against our SQL bridges |
+| `verdict-calibration` | The calibration contract verbatim |
+
+Load one with the `load_skill` tool; the deep-dive prompt carries a one-line
+index of what exists. Each skill declares what it **does not** cover, so "the
+skill was silent" is distinguishable from "no source existed".
+
+**Attribution.** Skills ship a `sources.jsonl` recording the internal knowledge
+base chunks each was extracted from (chunk id, source path, line range), so the
+extraction is auditable. Those paths are **not resolvable in this public
+repository** and are never presented as links. `ghidra-sql-recipes` is
+repo-derived and honestly says so rather than carrying external citations.
+
 ## Pipeline stages 
 
 1. **intake** — session + Ghidra (optional IDA)  

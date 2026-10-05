@@ -1,6 +1,6 @@
 # Tool Stack (28 tools)
 
-The pipeline runs **28 tools automatically** via `TOOL_MANIFEST`, plus **25 agent-callable
+The pipeline runs **28 tools automatically** via `TOOL_MANIFEST`, plus **26 agent-callable
 tools** in the deep-dive `ToolRegistry`. All tools are format-aware — each runs only
 when it applies to the sample's file type.
 

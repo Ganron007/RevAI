@@ -29,4 +29,4 @@ def test_registry_and_manifest_counts_are_expected(capsys):
     # These two numbers appear in the public docs; pin them so a silent change
     # fails here first (update the docs in the same commit when they change).
     assert counts.get("manifest.fn", "").startswith("28 manifest tools")
-    assert counts.get("registry.descriptions", "").startswith("25 agent tools")
+    assert counts.get("registry.descriptions", "").startswith("26 agent tools")

@@ -105,7 +105,7 @@ def test_docs_counts_fails_when_the_agent_count_alone_is_removed():
         return
     backup = README.read_text(encoding="utf-8")
     try:
-        mutated = backup.replace("25 agent-callable", "agent-callable")
+        mutated = backup.replace("26 agent-callable", "agent-callable")
         assert mutated != backup, "probe did not mutate anything"
         README.write_text(mutated, encoding="utf-8")
         out = _run_harness()

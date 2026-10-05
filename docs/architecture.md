@@ -70,7 +70,7 @@ RevAI contains exactly **two LangGraph ReAct loops** (same `create_react_agent` 
 
 | Loop | Tools it orchestrates | Decides |
 |---|---|---|
-| **Deep-dive agent** (`deep_dive_agentic.py`) | 25 RE tools: `ghidra_query`, `ida_query`, `ghidra_decompile`, `capa_analyze`, `malcat_analyze`, `yara_scan`, `floss_extract`, `pe_import_signals`, `xor_string_search`, `speakeasy_emulate`, `frida_static_probe`, `signature_match`, `r2_decompile`, `upx_unpack`, `shellcode_extract`, `olevba_analyze`, `peepdf_analyze`, `z3_solve`, `angr_analyze`, `dotnet_analyze`, `revai_tools_sec`, `revai_tools_sinks`, `revai_tools_audit`, `api_lookup`, `compare_files` | which tool to call next, with what arguments, based on previous results |
+| **Deep-dive agent** (`deep_dive_agentic.py`) | 26 RE tools: `ghidra_query`, `ida_query`, `ghidra_decompile`, `capa_analyze`, `malcat_analyze`, `yara_scan`, `floss_extract`, `pe_import_signals`, `xor_string_search`, `speakeasy_emulate`, `frida_static_probe`, `signature_match`, `r2_decompile`, `upx_unpack`, `shellcode_extract`, `olevba_analyze`, `peepdf_analyze`, `z3_solve`, `angr_analyze`, `dotnet_analyze`, `revai_tools_sec`, `revai_tools_sinks`, `revai_tools_audit`, `api_lookup`, `compare_files` | which tool to call next, with what arguments, based on previous results |
 | **Stage planner** (`stage_orchestrator.py`) | 12 stage tools: `run_intake`, `run_quick_scan`, `run_deep_dive_agentic`, `run_function_recovery`, `run_artifact_gen`, `run_yara_gen`, `run_publish`, `run_section_publish`, `run_audit`, `check_quality`, `read_verdicts`, `read_evidence` | which stage to execute next, within a policy-pinned order (never skips mandatory stages) |
 
 `run_function_recovery` and `run_artifact_gen` are **optional** planner tools — each
@@ -208,7 +208,7 @@ truly_green = all_green (per-stage audit, incl. the hollow-success gate)
 
 * [`OPERATE.md`](OPERATE.md) — Daily pipeline operation, staging samples, running CLI / Console.
 * [`PREREQUISITES.md`](PREREQUISITES.md) — System requirements, Ghidra, ghidrasql, Malcat, IDA Pro (optional), LLM setup.
-* [`tool-stack.md`](tool-stack.md) — 28 format-aware manifest tools + 25 agent-callable tools (incl. revai-tools, the offline API lookup index and structural binary comparison).
+* [`tool-stack.md`](tool-stack.md) — 28 format-aware manifest tools + 26 agent-callable tools (incl. revai-tools, the offline API lookup index and structural binary comparison).
 * [`agent-loop-discipline.md`](agent-loop-discipline.md) — Loop discipline, budget warnings, hallucination checks, failure taxonomy.
 * [`cadre-pe-loader.md`](cadre-pe-loader.md) — Custom Ghidra PE loader for packed/binder samples.
 * [`malcat-capa-engine.md`](malcat-capa-engine.md) — Malcat-native capa engine integration.
