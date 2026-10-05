@@ -32,6 +32,7 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 import time
 from pathlib import Path
 
@@ -64,7 +65,15 @@ DEFAULT_CEILING_SECONDS = 7200
 
 
 def depth_enabled() -> bool:
-    """Whether depth mode is on. Off by default — the main pipeline is unaffected."""
+    """Whether depth mode is on. Off by default — the main pipeline is unaffected.
+
+    The vocabulary is deliberately 1/true/on and NOT the wider "yes" accepted by
+    other startup gates: `REVAI_DEPTH` also carries the historical
+    `REVAI_DEPTH=full` spelling from plan #26, which means a *depth profile*
+    rather than "on". Widening the truthy set here would make R2's future
+    `full` profile indistinguishable from "on". tests/test_depth_mode.py pins
+    this; a change here is a change to the documented contract, not a fix.
+    """
     return os.environ.get(DEPTH_ENV, "").strip().lower() in ("1", "true", "on")
 
 
@@ -78,8 +87,33 @@ def status_requires_evidence(status: str) -> bool:
     return status != STATUS_NOT_EXPLORED
 
 
+def unrecognised_statuses(regions: dict) -> list[str]:
+    """Names carrying a status outside the vocabulary.
+
+    An unrecognised label is NOT 'unknown' and NOT 'understood' -- it is a defect
+    in the state itself, and it must be visible rather than silently dropped from
+    both sets. `unknown_set` used to test membership in UNKNOWN_STATUSES, so a
+    typo'd status was excluded from the unknown set (the loop would terminate with
+    the region never understood) AND from cost_summary's counts (regions_total
+    under-counted by one). Only has_converged noticed, and nothing called it.
+    """
+    known = set(VALID_STATUSES)
+    return sorted(name for name, r in (regions or {}).items()
+                  if str((r or {}).get("status")) not in known)
+
+
 def unknown_set(regions: dict) -> list[str]:
-    """Names of the regions still unknown, for the termination check."""
+    """Names still unknown, PLUS anything with a malformed status.
+
+    Defensive because this is the set a loop's termination depends on: treating an
+    unrecognised status as 'not unknown' would end the run with a region never
+    understood and reported as such.
+    """
+    return sorted(set(unknown_set_known(regions)) | set(unrecognised_statuses(regions)))
+
+
+def unknown_set_known(regions: dict) -> list[str]:
+    """Names carrying one of the recognised UNKNOWN statuses."""
     return sorted(name for name, r in (regions or {}).items()
                   if str((r or {}).get("status")) in UNKNOWN_STATUSES)
 
@@ -141,24 +175,69 @@ def cost_summary(regions: dict, spend: dict) -> dict:
     budgets by measurement.
     """
     counts = {s: 0 for s in VALID_STATUSES}
+    malformed = 0
     for r in (regions or {}).values():
         s = str((r or {}).get("status"))
         if s in counts:
             counts[s] += 1
-    return {"regions_total": sum(counts.values()), "by_status": counts,
-             "unknown_remaining": sum(counts[s] for s in UNKNOWN_STATUSES),
+        else:
+            malformed += 1
+    unknown = sum(counts[s] for s in UNKNOWN_STATUSES)
+    return {"regions_total": sum(counts.values()) + malformed,
+             "by_status": counts,
+             "malformed_status": malformed,
+             # A region with an unrecognised status is not accounted 'unknown',
+             # but it is certainly not understood -- report both so the number
+             # reconciles and cannot be read as a clean completion.
+             "unknown_remaining": unknown + malformed,
              "spend": spend}
 
 
-if __name__ == "__main__":
+def _cli() -> int:
     import argparse
     ap = argparse.ArgumentParser(description="depth mode")
-    ap.add_argument("case", nargs="?", help="case dir to inspect")
+    ap.add_argument("target", nargs="?",
+                    help="case directory (default: read REVAI_CASE_DIR)")
+    ap.add_argument("--status", action="store_true",
+                    help="report the depth state as JSON and exit")
     args = ap.parse_args()
-    if args.case:
-        st = load_state(Path(args.case))
-        print(json.dumps(cost_summary(st["regions"], st["spend"]), indent=2))
-    else:
+
+    # Resolve the case dir the SAME way the other stages do. The first version
+    # took a bare path and pipeline_single passed a sha, so the stage read
+    # /opt/samples/logs/<sha>/understanding.json -- a path that never exists --
+    # and reported an empty map with rc=0. That is indistinguishable in the trace
+    # from 'the sample has no functions', which is exactly the hollow-success
+    # failure the rest of the pipeline gates against.
+    case = None
+    target = args.target or os.environ.get("REVAI_CASE_DIR", "")
+    if target:
+        p = Path(target)
+        if p.is_dir():
+            case = p
+        else:
+            try:
+                from v2_lib import case_dir
+                case = case_dir(target)
+            except Exception:
+                case = p
+        if not case.is_dir():
+            print(f"[depth] case dir not found: {target}", file=sys.stderr,
+                  flush=True)
+            return 3
+
+    if case is None:
         print(f"depth enabled: {depth_enabled()}  "
               f"ceiling: {ceiling_seconds()}s")
-    raise SystemExit(0)
+        return 0
+
+    st = load_state(case)
+    summary = cost_summary(st["regions"], st["spend"])
+    summary["case_dir"] = str(case)
+    summary["converged"] = has_converged(st["regions"])
+    summary["stop_reason"] = st.get("stop_reason")
+    print(json.dumps(summary, indent=2))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(_cli())

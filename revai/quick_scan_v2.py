@@ -19,7 +19,6 @@ from pathlib import Path
 sys.path.insert(0, "/opt/scripts")
 from steering import (  # noqa: E402
     effective_steering_note,
-    load_steering_notes,
     record_steering,
     steering_block,
 )
@@ -738,6 +737,12 @@ def main():
             flush=True,
         )
 
+    # One merge point for the direction of THIS run, shared by the prompt and
+    # the artifact. Computing it twice (once inside build_prompt via
+    # effective_steering_note, once for the artifact) would let the report cite
+    # a direction the prompt never saw.
+    _eff_note = effective_steering_note(case_dir(args.sha256))
+
     prompt = build_prompt(
         session, ghidra_ev, ida_ev, capa, yara, floss, malcat, intake_validation,
         pe_imports=pe_imports,
@@ -745,7 +750,7 @@ def main():
         packer=packer,
         revai_sec=rts_sec,
         revai_sinks=rts_sinks,
-        steering=effective_steering_note(case_dir(sha)),
+        steering=_eff_note,
     )
     log_dir = audit_path.parent
     (log_dir / "prompt.txt").write_text(prompt)
@@ -753,7 +758,7 @@ def main():
     # L1: persist the direction the analyst gave, so this run's report can cite
     # what it was steering on. No note -> no file, so a run without steering has
     # byte-identical artifacts.
-    _noted = record_steering(case_dir(sha))
+    _noted = record_steering(case_dir(args.sha256), _eff_note)
     if _noted:
         print(f"[quick_scan_v2] analyst steering recorded -> {_noted.name}",
               flush=True)

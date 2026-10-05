@@ -799,6 +799,20 @@ def persist_run_config_snapshot(sha: str, rc: dict) -> None:
         pass
 
 
+def run_mode_for(_rc: dict | None = None) -> str:
+    """The run mode a UI-started stage will use.
+
+    Extracted from get_stage_env so the mode lives in ONE place.
+    api_steer needs the same directory the stage will write to, and resolving it
+    separately is what produced the P1 defect: the app process had no
+    REVAI_RUN_MODE (resolving to logs/<sha>) while each stage got "ui"
+    (logs/<sha>/ui), so a steering note was recorded in one place and read from
+    the other. Both sides were correct uses of case_dir() -- which is exactly
+    why no structural check caught it.
+    """
+    return "ui"
+
+
 def get_stage_env(rc: dict | None = None) -> dict[str, str]:
     """Build the environment variables passed to every spawned stage.
 
@@ -812,7 +826,7 @@ def get_stage_env(rc: dict | None = None) -> dict[str, str]:
         # Post-opt standard defaults (S1/S4) — match CLI rebench / S2 ui_default
         "CADRE_FLOSS_PROFILE": os.environ.get("CADRE_FLOSS_PROFILE", "auto"),
         "CADRE_CAPA_ENGINE": os.environ.get("CADRE_CAPA_ENGINE", "auto"),
-        "REVAI_RUN_MODE": "ui",
+        "REVAI_RUN_MODE": run_mode_for(rc),
     }
     # LLM backend: the env file is the single source of truth for model choice.
     # The Console may set the DEFAULT model, but role separation is the file's
@@ -1444,8 +1458,18 @@ def api_steer(sha):
     sha = require_sha(sha)
     if not sha:
         return jsonify({"error": "invalid sha"}), 400
-    from v2_lib import case_dir as _case_dir
-    case = _case_dir(sha)
+    # P1: resolve the SAME case directory the stage process will use.
+    #
+    # This handler used to call case_dir(sha) in the app process, which has no
+    # REVAI_RUN_MODE -> logs/<sha>. The stage process gets REVAI_RUN_MODE=ui from
+    # get_stage_env -> logs/<sha>/ui. A note recorded here appeared in the UI and
+    # was then invisible to the re-run it was written for, because the two sides
+    # disagreed about which directory is the case dir. Both were correct uses of
+    # case_dir(), which is why no structural check caught it.
+    #
+    # get_stage_env already computes the mode a stage would run with; reuse that
+    # instead of re-deriving it here, so the two cannot drift again.
+    case = case_dir(sha, mode=run_mode_for(sha))
     if request.method == "POST":
         body = request.get_json(silent=True) or {}
         note = str(body.get("note") or "").strip()

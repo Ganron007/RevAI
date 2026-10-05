@@ -67,6 +67,12 @@ import skills  # noqa: E402
 
 MAX_STEPS = int(os.environ.get("REVAI_DEEP_MAX_STEPS") or "16")
 MAX_TOOL_RESULT_CHARS = 2000
+
+#: Cap on pre-dive observations rendered outside the findings budget (currently
+#: the WinRE detonation pack). Bounded here so a huge pack cannot flood the
+#: prompt; the marker `_truncate` adds is always visible, so a cut is never
+#: silent. A pack smaller than this renders in full.
+DYNAMIC_EVIDENCE_CHARS = 12000
 MAX_FINDINGS_CHARS = 4000
 
 # Agent tool name → TOOL_MANIFEST key (same checklist as standard deep_dive_v2).
@@ -467,9 +473,32 @@ def build_messages(
     findings_text = _truncate(json.dumps(findings, default=str), MAX_FINDINGS_CHARS)
     history_text = "\n".join(
         f"  - {h.get('tool','?')}: {h.get('reason','')[:60]}" +
-        (" [ERR]" if h.get("error") else "")
+        # A bare [ERR] tells the model a step failed but not why, so it cannot
+        # tell "no pack exists" from "the pack exists and could not be read" and
+        # may keep treating the pack as available. The first 90 chars of the
+        # error are enough to make the difference visible, and the full text
+        # stays in the artifact.
+        (f" [ERR: {str(h.get('error'))[:90]}]" if h.get("error") else "")
         for h in history[-20:]
     ) or "(no tool calls yet)"
+    # Observations that carry their own text (currently the WinRE detonation pack).
+    # Rendered here rather than folded into `findings`, because findings is capped
+    # at MAX_FINDINGS_CHARS and a block big enough to matter would be cut away
+    # entirely while still shifting the boundary for everything else -- so a
+    # pack-present run would differ from a pack-absent run in a way the reader
+    # cannot see. `evidence_text` is bounded by DYNAMIC_EVIDENCE_CHARS.
+    evidence_blocks = [
+        str(h.get("evidence_text"))
+        for h in (history or [])
+        if isinstance(h, dict) and h.get("evidence_text")
+    ]
+    evidence_text = ""
+    if evidence_blocks:
+        evidence_text = (
+            "\n\nObservations recorded before this dive (rendered in full; NOT "
+            "part of the findings budget):\n"
+            + _truncate("\n\n".join(evidence_blocks), DYNAMIC_EVIDENCE_CHARS)
+        )
 
     user = f"""Goal: Complete SQL deep RE on the sample, then produce a verdict with evidence.
 
@@ -489,7 +518,7 @@ Available tools:
 {tool_desc}
 
 Tool call history:
-{history_text}
+{history_text}{evidence_text}
 
 Current findings:
 {findings_text}
@@ -1035,9 +1064,21 @@ def _run_standard_checklist(registry: "ToolRegistry", session: dict, sha: str) -
     #
     # Presence-gated: no pack, no change. The block corroborates static findings
     # and never overrides them (`static_yara_wins`), the same contract the
-    # publish-time attachment already honoured. Recorded as a finding with its
-    # authority stated, so a reader can tell dynamic-observed from
-    # static-observed without guessing.
+    # publish-time attachment already honoured.
+    #
+    # It has to REACH the agent. The first version computed the block, kept
+    # `len(block)`, and discarded the text: `01-tools-raw.json` recorded 4200
+    # chars and the log line said "ingested", while nothing in the prompt the
+    # model reads contained a single observed domain -- so the reorder changed
+    # nothing observable, and the artifact claimed otherwise. It is now appended
+    # to `history` with the text in a field build_messages renders in full, and
+    # added to the evidence pack so the report's grounding corpus sees it too.
+    #
+    # It is deliberately NOT added to `findings`: findings is serialised under a
+    # 4000-char budget, so a real pack-sized block is always truncated away while
+    # still shifting the truncation boundary and silently cutting 98 chars out of
+    # some other finding. That is the bug class "presence-gated: no pack, no
+    # change" is meant to prevent -- the prompt must be identical with no pack.
     try:
         from v2_lib import (
             dynamic_corroboration_enabled,
@@ -1052,18 +1093,52 @@ def _run_standard_checklist(registry: "ToolRegistry", session: dict, sha: str) -
                 pack = load_dynamic_pack(sha)
                 block = format_flare_dynamic_evidence(pack) if pack else ""
                 if block:
+                    # The authoritative copy lives in history/tools_raw; findings
+                    # gets only the pointer it needs, and nothing else.
                     findings["dynamic_corroboration"] = {
                         "pack_present": True,
                         "chars": len(block),
                         "authority": "corroborating-only",
                     }
+                    history.append({
+                        "step": len(history) + 1,
+                        "tool": "winre_dynamic_pack",
+                        "args": {"sha": sha},
+                        "reason": "WinRE detonation pack observed before this dive",
+                        "result": {"pack_present": True, "chars": len(block)},
+                        "error": None,
+                        # Rendered by build_messages under its own heading, NOT
+                        # through the findings budget.
+                        "evidence_text": block,
+                    })
+                    tools_raw["dynamic_corroboration"] = {
+                        "pack_present": True,
+                        "chars": len(block),
+                        "authority": "corroborating-only",
+                        "ingested_into": "history+evidence-pack",
+                    }
                     print(
                         f"[deep_dive_agentic] dynamic pack ingested as "
-                        f"evidence ({len(block)} chars, corroborating-only)",
+                        f"evidence ({len(block)} chars into history, "
+                        f"corroborating-only)",
                         flush=True,
                     )
+                else:
+                    # No pack / no observations: nothing is recorded, so the
+                    # prompt stays byte-identical to a static-only run.
+                    tools_raw["dynamic_corroboration"] = {
+                        "pack_present": False,
+                    }
             except Exception as exc:  # never break the dive over a missing pack
                 findings["dynamic_corroboration"] = {"error": str(exc)[:200]}
+                history.append({
+                    "step": len(history) + 1,
+                    "tool": "winre_dynamic_pack",
+                    "args": {"sha": sha},
+                    "reason": "WinRE detonation pack was requested",
+                    "result": None,
+                    "error": f"ingest failed: {type(exc).__name__}: {exc}",
+                })
                 print(
                     f"[deep_dive_agentic] dynamic pack ingest failed "
                     f"({type(exc).__name__}: {exc}) - continuing with static "
@@ -1151,6 +1226,24 @@ def _run_standard_checklist(registry: "ToolRegistry", session: dict, sha: str) -
         "revai_tools_sinks": tools_raw.get("revai_tools_sinks"),
         "revai_tools_audit": tools_raw.get("revai_tools_audit"),
     }
+    # The WinRE detonation pack, when present. Adding it here (not to `findings`)
+    # is what lets the IoC scrubber ground a dynamic-observed value against a
+    # source the reader can also see, and keeps the agent-facing path separate
+    # from the grounding path.
+    _dc = tools_raw.get("dynamic_corroboration")
+    if isinstance(_dc, dict) and _dc.get("pack_present"):
+        _ev_block = next(
+            (str(h.get("evidence_text")) for h in reversed(history or [])
+             if isinstance(h, dict) and h.get("evidence_text")),
+            "",
+        )
+        if _ev_block:
+            tools_for_pack["winre_dynamic"] = {
+                "pack_present": True,
+                "chars": _dc.get("chars"),
+                "authority": "corroborating-only",
+                "block": _ev_block,
+            }
     pack = package_stage_evidence(
         "deep_dive", tools_for_pack, budget_chars=60000, sha=sha, persist=True,
     )

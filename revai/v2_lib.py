@@ -3013,9 +3013,9 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
             reasoning = os.environ.get("REVAI_LLM_PLANNER_REASONING") or "disabled"
         else:
             # Default effort: "high". Providers commonly support low/medium/high
-            # (step-5-preview's own metadata lists exactly that, 2026-09-21);
-            # "max" was the old default but is not universally supported and this
-            # endpoint silently accepts unsupported values.
+            # (the configured endpoint's own metadata lists exactly that,
+            # 2026-09-21); "max" was the old default but is not universally
+            # supported and this endpoint silently accepts unsupported values.
             reasoning = get_llm_reasoning() or "high"
 
     body = {
@@ -6085,8 +6085,10 @@ def winre_dynamic_status(sha: str, mode: str | None = None) -> dict:
     raises; a missing root or pack is reported as such.
     """
     root = Path(os.environ.get("REVAI_WINRE_LOGS") or "/opt/winre/logs")
-    disabled = os.environ.get("REVAI_DISABLE_DYNAMIC_CORROBORATION", "").strip().lower() in (
-        "1", "true", "yes", "on")
+    # Reuse the shared helper. The inline tuple here was a SECOND definition of
+    # the same opt-out: identical today, and the one thing guaranteed to drift is
+    # a vocabulary that lives in two places.
+    disabled = not dynamic_corroboration_enabled()
     section_disabled = os.environ.get("REVAI_DISABLE_DYNAMIC_SECTION", "").strip().lower() in (
         "1", "true", "yes", "on")
     out: dict = {

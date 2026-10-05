@@ -19,16 +19,16 @@ guard that cannot fail is worse than no guard: it is believed.
 from __future__ import annotations
 
 import re
+import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from _layout import resolve  # noqa: E402
-
-README = ROOT / "README.md"
 
 SHAPES = [
     "scrub_report_indicators(case_dir(sha) / \"correlate\", md, \"x\")",
@@ -68,53 +68,110 @@ def test_the_tripwire_is_not_blind_to_a_keyword_first_argument():
 
 # ------------------------------------------------------------------ MEDIUM-3
 
-def _run_harness() -> str:
+def _run_harness(root: Path | None = None) -> str:
     """Run the real harness, wherever it lives.
 
     `revai/verify_pipeline.py` in the repo, `/opt/scripts/verify_pipeline.py`
     once deployed -- the twelfth layout trap, where a hardcoded path passes
     locally and fails on the VM.
+
+    `root` points the harness at a different docs tree. The mutation tests pass
+    a copy, so probing the guard never touches a tracked file.
     """
     harness = resolve("revai/verify_pipeline.py")
+    cmd = [sys.executable, str(harness)]
+    if root is not None:
+        cmd += ["--root", str(root)]
     out = subprocess.run(
-        [sys.executable, str(harness)],
+        cmd,
         capture_output=True, text=True,
         cwd=str(harness.parent), timeout=900)
     return out.stdout + out.stderr
 
 
-def test_docs_counts_fails_when_the_manifest_count_alone_is_removed():
-    if not README.is_file():
-        return
-    backup = README.read_text(encoding="utf-8")
+def _probe_docs_tree(mutate) -> str:
+    """Run the harness against a COPY of the docs tree, mutated by `mutate`.
+
+    Mutating the tracked README.md directly is a defect in itself, not a
+    shortcut:
+
+    * every concurrent harness run in the same tree sees the mutation and
+      reports a spurious `docs.counts` FAIL -- observed live as
+      `test_docs_counts_passes_on_the_untouched_tree` failing because a
+      *sibling test's* write was visible mid-run;
+    * a kill, timeout or Ctrl-C between the write and the `finally` restore
+      leaves the tracked file permanently mutated;
+    * `write_text` is not atomic on Windows, so a reader can observe a
+      truncated README.
+
+    Copying into tmp_path also makes the probes RUNNABLE on the flat VM layout:
+    the old version skipped when `README.md` was not beside the tests, so the
+    guard it was written to pin executed nothing there while looking
+    layout-aware. Deploy copies `revai/*` and `tests/*.py`, never the docs, so
+    the skip was the normal VM case.
+    """
+    files = [
+        ROOT / "README.md",
+        ROOT / "docs" / "tool-stack.md",
+        ROOT / "docs" / "architecture.md",
+        ROOT / "docs" / "img" / "architecture_v2.svg",
+        ROOT / "assets" / "revai-architecture.svg",
+    ]
+    present = [p for p in files if p.is_file()]
+    assert present, "no docs to probe -- the probe itself is broken"
+    tmp = Path(tempfile.mkdtemp(prefix="verify-probe-"))
     try:
-        mutated = (backup
-                   .replace("(28 tools)", "(a handful of tools)")
-                   .replace("28 format-aware manifest tools",
-                            "format-aware manifest tools"))
-        assert mutated != backup, "probe did not mutate anything"
-        README.write_text(mutated, encoding="utf-8")
-        out = _run_harness()
+        for src in present:
+            dst = tmp / src.relative_to(ROOT)
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            text = mutate(src.read_text(encoding="utf-8"), src.name)
+            if text != src.read_text(encoding="utf-8"):
+                dst.write_text(text, encoding="utf-8")
+            else:
+                shutil.copyfile(src, dst)
+        return _run_harness(root=tmp)
     finally:
-        README.write_text(backup, encoding="utf-8")
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def _drop_manifest_counts(text: str, _name: str) -> str:
+    return (text
+            .replace("(28 tools)", "(a handful of tools)")
+            .replace("28 format-aware manifest tools",
+                     "format-aware manifest tools"))
+
+
+def _drop_agent_counts(text: str, _name: str) -> str:
+    return text.replace("26 agent-callable", "agent-callable")
+
+
+def test_docs_counts_fails_when_the_manifest_count_alone_is_removed():
+    out = _probe_docs_tree(_drop_manifest_counts)
     assert "FAIL" in out and "docs.counts" in out, out[-500:]
 
 
 def test_docs_counts_fails_when_the_agent_count_alone_is_removed():
-    if not README.is_file():
-        return
-    backup = README.read_text(encoding="utf-8")
-    try:
-        mutated = backup.replace("26 agent-callable", "agent-callable")
-        assert mutated != backup, "probe did not mutate anything"
-        README.write_text(mutated, encoding="utf-8")
-        out = _run_harness()
-    finally:
-        README.write_text(backup, encoding="utf-8")
+    out = _probe_docs_tree(_drop_agent_counts)
     assert "FAIL" in out and "docs.counts" in out, out[-500:]
 
 
+def test_the_probe_actually_mutates_a_documented_count():
+    """A probe that changes nothing cannot prove the guard fires."""
+    tmp = Path(tempfile.mkdtemp(prefix="verify-noop-"))
+    try:
+        (tmp / "README.md").write_text("nothing here to mutate", encoding="utf-8")
+        out = _run_harness(root=tmp)
+        assert "FAIL" in out and "docs.counts" in out, (
+            "a tree with no counts at all should fail the omission guard")
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
 def test_docs_counts_passes_on_the_untouched_tree():
+    """The real tree, unmutated, still passes -- and nothing in this session has
+    written to it, which is what makes the assertion meaningful."""
     out = _run_harness()
     assert "docs.counts" in out, out[-500:]
     assert "FAIL" not in out, out[-500:]
+    assert "a handful of tools" not in (ROOT / "README.md").read_text(
+        encoding="utf-8"), "a mutated README was left behind by a probe"

@@ -42,6 +42,7 @@ def test_the_script_is_executable():
     `st_mode` is 0644 there regardless, and asserting on it would fail on the
     developer host while the deploy is correct.
     """
+def test_it_deploys_with_the_operator_scripts():
     assert TOOL.is_file(), f"missing {TOOL}"
     inside = subprocess.run(
         ["git", "rev-parse", "--is-inside-work-tree"],
@@ -49,7 +50,7 @@ def test_the_script_is_executable():
     if inside.returncode != 0:
         return  # deployed flat layout: there is no git index to consult
     out = subprocess.run(
-        ["git", "ls-files", "-s", "scripts/instrument-live-log.sh"],
+        ["git", "ls-files", "-s", TOOL.relative_to(ROOT).as_posix()],
         capture_output=True, text=True, cwd=str(ROOT))
     assert out.returncode == 0, out.stderr
     assert out.stdout.startswith("100755"), (
@@ -59,9 +60,8 @@ def test_the_script_is_executable():
 def test_bash_syntax_is_valid():
     """A syntax error here means the tool is dead in production."""
     out = subprocess.run(
-        ["bash", "-n",
-         ("scripts/" if TOOL.parent != ROOT else "") + TOOL.name],
-        capture_output=True, text=True, cwd=str(ROOT))
+        ["bash", "-n", TOOL.name],
+        capture_output=True, text=True, cwd=str(TOOL.parent))
     assert out.returncode == 0, out.stderr
 
 

@@ -20,6 +20,7 @@ copied into the case dir so a report can cite what direction the analyst gave.
 from __future__ import annotations
 
 import os
+import sys
 from pathlib import Path
 
 #: Environment variable naming the pre-run notes file.
@@ -42,28 +43,50 @@ def load_steering_notes() -> str:
     silently ignored, because a note that silently does not arrive is worse than
     one that was never given -- it looks like the analyst was heard.
     """
+    return load_steering_notes_ex()[0]
+
+
+#: L1 delivery state, returned beside the note text by load_steering_notes_ex.
+STEERING_UNSET = "unset"          # no file named at all
+STEERING_DELIVERED = "delivered"  # file named and read
+STEERING_UNDELIVERED = "undelivered"  # file named but the text never arrived
+
+
+def load_steering_notes_ex() -> tuple[str, str]:
+    """(note, status) where status is one of the STEERING_* states.
+
+    The status exists because "no note was given" and "a note was given but did
+    not arrive" must not be treated the same. effective_steering_note falls back
+    to the most recent post-hoc note only in the first case; falling back in the
+    second steers the run with a stale note the analyst has already disagreed
+    with, while one stderr line -- lost in a service journal -- claims the file
+    was not found.
+    """
     path = os.environ.get(STEERING_FILE_ENV, "").strip()
     if not path:
-        return ""
+        return "", STEERING_UNSET
     p = Path(path)
     if not p.is_file():
-        import sys
-        print(f"[steering] note file not found: {path} (continuing without it)",
-              file=sys.stderr, flush=True)
-        return ""
+        print(f"[steering] note file not found: {path} (no analyst direction "
+              "for this run)", file=sys.stderr, flush=True)
+        return "", STEERING_UNDELIVERED
     try:
         text = p.read_text(encoding="utf-8", errors="replace").strip()
     except OSError as exc:
-        import sys
-        print(f"[steering] note file unreadable: {exc} (continuing without it)",
-              file=sys.stderr, flush=True)
-        return ""
+        print(f"[steering] note file unreadable: {exc} (no analyst direction "
+              "for this run)", file=sys.stderr, flush=True)
+        return "", STEERING_UNDELIVERED
+    if not text:
+        # Given, but empty. Not "absent": refusing to substitute a stale note
+        # here is the whole point of tracking the state.
+        print(f"[steering] note file is empty: {path} (no analyst direction "
+              "for this run)", file=sys.stderr, flush=True)
+        return "", STEERING_UNDELIVERED
     if len(text) > MAX_NOTE_CHARS:
-        import sys
         print(f"[steering] note truncated {len(text)} -> {MAX_NOTE_CHARS} chars",
               file=sys.stderr, flush=True)
         text = text[:MAX_NOTE_CHARS]
-    return text
+    return text, STEERING_DELIVERED
 
 
 
@@ -72,16 +95,26 @@ def effective_steering_note(case_dir: Path | None = None) -> str:
 
     L1 (a note given before the run) wins over L3 (a note recorded after a
     previous run): the operator writing a file for this run is the more recent
-    and more specific act. With no file, the most recent post-hoc note applies.
+    and more specific act. With no L1 at all, the most recent post-hoc note applies.
 
     This is the single merge point, so a stage run cannot see "the pre-run note"
     from one code path and "the last post-hoc note" from another -- two merge
     points would drift, and drift here means an analyst is steered by a note they
     did not write.
+
+    A second drift, found in review: L1 was consulted, the file was named but the
+    text never arrived (a typo'd path, an unreadable file, an empty file), and the
+    code fell through to the stale L3 note anyway. That steers the run with the
+    direction the analyst has already disagreed with, and reports it as the
+    direction for this run. When L1 was named but undelivered, this returns ""
+    deliberately: no analyst direction reaches this run, and the run says so.
     """
-    direct = load_steering_notes()
-    if direct.strip():
+    direct, status = load_steering_notes_ex()
+    if status == STEERING_DELIVERED:
         return direct
+    if status == STEERING_UNDELIVERED:
+        # Named but not delivered: do NOT substitute an older note.
+        return ""
     if case_dir is None:
         return ""
     try:

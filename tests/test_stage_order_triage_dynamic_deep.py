@@ -16,6 +16,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _layout import add_module_dir, source  # noqa: E402
+import ast
 
 add_module_dir("revai/v2_lib.py")
 
@@ -26,50 +27,55 @@ ROOT = Path(__file__).resolve().parent.parent
 def _stage_order(source: str) -> list[str]:
     """The order in which pipeline_single appends its stages.
 
-    Line-based rather than parsed from an executed list, because the point is the
-    SOURCE order: this test must fail if someone moves an append, even if the
-    resulting list would happen to be equivalent.
+    Disccovered from the AST, in SOURCE order, so the test still fails if
+    someone moves an append even when the resulting list would be equivalent.
 
-    Handles both shapes this file uses -- `stages.append(( "name", ...))` on one
-    line, and the multi-line `stages.append(("name", ...))` where `"name"` sits
-    on its own line inside the tuple. A naive same-line match missed the latter,
-    which is exactly how the R1 reorder is written.
+    The line-based version this replaces is why this file needed changing twice:
+    it matched a name only when it appeared on the same line as `append`, or on
+    a line that *itself* started with `"`. Repositioning `quick_scan` from a
+    `stages.extend([...])` list entry to a wrapped
+    `stages.append(\\n ("quick_scan", ...),)` put the name on a line starting
+    with `(`, which the extractor could not see, and the reorder vanished.
+    A check that misses a stage is worse than one that fails.
+
+    Stage names are taken from the FIRST element of each tuple handed to
+    `stages.append` / `extend` / `insert`, in the order they are written.
     """
-    names = ("intake", "quick_scan", "winre_dynamic", "deep_dive",
-             "function_recovery", "artifact_gen", "yara_gen", "publish")
-    lines = source.splitlines()
-    hits: list[tuple[int, str]] = []
-    in_extend = False
-    for i, ln in enumerate(lines):
-        stripped = ln.strip()
-        if "stages.extend(" in stripped:
-            in_extend = True
-        if in_extend and stripped.startswith("])"):
-            in_extend = False
-        relevant = ("append" in stripped or "extend" in stripped or in_extend)
-        if relevant:
-            for name in names:
-                if f'"{name}"' in stripped:
-                    hits.append((i, name))
-                    break
+    tree = ast.parse(source)
+    fn = next((n for n in ast.walk(tree)
+               if isinstance(n, ast.FunctionDef) and n.name == "build_stages"), None)
+    assert fn is not None, "build_stages() not found -- this file needs updating"
+    names: list[tuple[int, str]] = []
+    for node in ast.walk(fn):
+        if not isinstance(node, ast.Call):
             continue
-        # A bare "name" line: relevant when the previous non-blank line opened
-        # an append (i.e. we are inside its argument tuple).
-        if stripped.startswith('"') and stripped.endswith(","):
-            key = stripped.strip('",')
-            if key in names:
-                for back in range(i - 1, max(-1, i - 4), -1):
-                    prev = lines[back].strip()
-                    if not prev:
-                        continue
-                    if "append" in prev or "extend" in prev:
-                        hits.append((i, key))
-                    break
-    seen: dict[str, int] = {}
-    for i, name in hits:
-        seen[name] = i
-    return [n for n, _ in sorted(((n, i) for n, i in seen.items()),
-                                 key=lambda t: t[1])]
+        if not (isinstance(node.func, ast.Attribute)
+                and node.func.attr in ("append", "extend", "insert")):
+            continue
+        arg = None
+        for a in node.args:
+            if isinstance(a, (ast.Tuple, ast.List)):
+                arg = a
+                break
+            if isinstance(a, ast.Constant):
+                arg = a
+        if arg is None:
+            continue
+        if isinstance(arg, ast.List):
+            items = [e for e in arg.elts if isinstance(e, ast.Tuple)]
+        elif isinstance(arg, ast.Tuple):
+            items = [arg]
+        else:
+            continue
+        for tup in items:
+            if (tup.elts and isinstance(tup.elts[0], ast.Constant)
+                    and isinstance(tup.elts[0].value, str)):
+                names.append((tup.elts[0].lineno, tup.elts[0].value))
+    out: list[str] = []
+    for _, name in sorted(names, key=lambda t: t[0]):
+        if name and name not in out:
+            out.append(name)
+    return out
 
 
 def test_dynamic_runs_between_triage_and_deep_dive():

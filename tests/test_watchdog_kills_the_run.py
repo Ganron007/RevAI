@@ -49,10 +49,19 @@ def _run_watcher(*args: str) -> subprocess.CompletedProcess:
     two mounts are not interchangeable -- a hardcoded prefix fails on one of
     them. Passing a RELATIVE path with ``cwd`` sidesteps the mount question
     entirely, and it is what a caller would type anyway.
+
+    The cwd/arg pair is derived from the RESOLVED path so it is right in both
+    layouts: in the repo the script is ``scripts/run-watched.sh`` (cwd=repo,
+    arg="run-watched.sh" == WRONG) -- no: the resolved parent IS the directory
+    that contains the script, so ``cwd=WATCHER.parent`` with ``arg=name`` is
+    exact in the repo (parent=scripts) and on the VM (parent=/opt/scripts).
+    The previous literal ``"scripts/run-watched.sh"`` with ``cwd=ROOT`` resolved
+    to <root>/scripts/... which does not exist in the flat deploy, and the new
+    layout gate flags it for precisely that reason.
     """
     return subprocess.run(
-        ["bash", "scripts/run-watched.sh", *args],
-        capture_output=True, text=True, timeout=60, cwd=str(ROOT))
+        ["bash", WATCHER.name, *args],
+        capture_output=True, text=True, timeout=60, cwd=str(WATCHER.parent))
 
 
 def _src() -> str:

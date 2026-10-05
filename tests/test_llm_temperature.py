@@ -75,7 +75,7 @@ def test_the_request_body_actually_uses_it(monkeypatch):
 
 def test_the_shipped_template_documents_the_key():
     """A key nobody documents is how this drifts in the first place."""
-    tmpl = ROOT / "config" / "llm.env.template"
+    tmpl = resolve("config/llm.env.template")
     if not tmpl.is_file():
         # The VM deploys scripts flat and does not ship config/; skip rather
         # than fail on a layout the code never runs in.

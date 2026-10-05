@@ -53,17 +53,35 @@ PYTEST="${REVAI_PYTEST:-$PYTHON -m pytest}"
 # has pytest. If none does, FAIL LOUDLY -- a gate that cannot verify parity must
 # say so, not report a confusing module error.
 if ! "$PYTHON" -c 'import pytest' >/dev/null 2>&1; then
-  for cand in /tmp/rtvenv/bin/python "$(command -v python)".*; do
+  # Any python on PATH that can RUN pytest, tried as a real list -- not a glob.
+  #
+  # The previous loop was `"$(command -v python)".*`. On the VM there is no
+  # binary named `python` at all (only python3 / python3.12), so the command
+  # substitution returned EMPTY and the pattern degenerated to `.*` -- a glob
+  # over the working directory's dotfiles. `[ -x ]` is true for a directory, so
+  # the gate then tried to EXECUTE .git, .pytest_cache, etc, and gave up with
+  # "FATAL: no python with pytest found" while a perfectly good interpreter was
+  # sitting on PATH. A gate that fails for a false reason gets ignored, which is
+  # the same outcome as a gate that cannot fail.
+  candidates="/tmp/rtvenv/bin/python"
+  for name in python3 python3.13 python3.12 python3.11 python; do
+    found="$(command -v "$name" 2>/dev/null || true)"
+    [ -n "$found" ] && candidates="$candidates $found"
+  done
+  for cand in $candidates; do
+    [ -n "$cand" ] || continue
     [ -x "$cand" ] || continue
-    if "$cand" -c 'import pytest' >/dev/null 2>&1; then
+    # "import pytest" only proves it is importable. --version proves it can run,
+    # which is what this gate actually needs it to do.
+    if "$cand" -m pytest --version >/dev/null 2>&1; then
       PYTHON="$cand"
       PYTEST="$cand -m pytest"
       echo "[verify-release] system python has no pytest; using $cand"
       break
     fi
   done
-  if ! "$PYTHON" -c 'import pytest' >/dev/null 2>&1; then
-    echo "[verify-release] FATAL: no python with pytest found."
+  if ! "$PYTHON" -m pytest --version >/dev/null 2>&1; then
+    echo "[verify-release] FATAL: no python with a RUNNABLE pytest found."
     echo "[verify-release] the test suite CANNOT run, so this gate cannot verify"
     echo "[verify-release] deployment parity. Install pytest or set REVAI_PYTHON."
     exit 1

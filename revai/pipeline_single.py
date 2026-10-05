@@ -32,6 +32,8 @@ from v2_lib import (  # noqa: E402
     revai_provenance,
     update_session,
 )
+from depth_agent import ceiling_seconds as depth_ceiling_seconds
+from depth_agent import depth_enabled
 
 SCRIPTS = Path("/opt/scripts")
 
@@ -131,75 +133,7 @@ def run_single(sample: Path | None, sha: str | None, mode: str = "standard") -> 
     with run_log.open("a", encoding="utf-8") as _lf:
         _lf.write(f"\n===== RUN START {_utc()} =====\n")
     trace_path = case_dir(sha) / "stage_trace.json"
-    stages = []
-    if intake_cmd:
-        stages.append(("intake", intake_cmd, 7200))
-    stages.extend([
-        ("quick_scan", [sys.executable, str(SCRIPTS / "quick_scan_v2.py"), sha], 7200),
-    ])
-    # Optional WinRE detonation stage. Order matters (R1, operator-approved
-    # 2026-10-05): triage -> dynamic -> deep_dive.
-    #
-    # The dynamic pack used to run AFTER deep_dive and be attached to the
-    # technical evidence pack at publish time. That put it in the report the
-    # human reads while the one agent that could have used it — deep_dive —
-    # never saw it. In a real IR flow the detonation is the *preceding*
-    # investigators' context; the RE is what completes the picture.
-    #
-    # Gated by REVAI_WINRE_RUN=1; the runner self-skips when WinRE is not
-    # installed/configured. A Flare-side failure is recorded and never blocks
-    # the static run. With the flag off the stage list is byte-identical to the
-    # old order, so a static-only deployment is unchanged by this.
-    if os.environ.get("REVAI_WINRE_RUN", "").strip().lower() in ("1", "true", "yes"):
-        stages.append((
-            "winre_dynamic",
-            [sys.executable, str(SCRIPTS / "winre_runner.py"), sha],
-            7200,
-        ))
-    stages.append(("deep_dive", [sys.executable, str(SCRIPTS / "deep_dive_agentic.py"), sha], 14400))
-    # D0 depth mode (post-pipeline, opt-in, env-gated). Runs AFTER the main
-    # pipeline has produced its reports -- it is not a pipeline stage and never
-    # gates one. Its objective is UNDERSTANDING, not a verdict, so its output is
-    # a function map rather than a judgment. See revai/depth_agent.py.
-    if os.environ.get("REVAI_DEPTH", "").strip().lower() in ("1", "true", "on"):
-        stages.append((
-            "depth_understanding",
-            [sys.executable, str(SCRIPTS / "depth_agent.py"), sha],
-            int(os.environ.get("REVAI_DEPTH_CEILING_SECONDS", "7200") or 7200) + 300,
-        ))
-    # Optional v4 function-recovery stage (opt-in, between deep dive and yara).
-    # Gated by REVAI_ENABLE_AGENTIC_RECOVERY=1 (legacy ENABLE_AGENTIC_RECOVERY
-    # honored). Never required for green — recovery output feeds the reports.
-    _rec_enabled = (
-        os.environ.get("REVAI_ENABLE_AGENTIC_RECOVERY")
-        or os.environ.get("ENABLE_AGENTIC_RECOVERY", "0")
-    ).strip().lower() in ("1", "true", "yes")
-    if _rec_enabled:
-        stages.append((
-            "function_recovery",
-            [sys.executable, str(SCRIPTS / "agentic_recover_v4.py"), sha],
-            3600,
-        ))
-    # WinRE detonation: moved ABOVE deep_dive (R1). See the ordering note at the
-    # top of the stage list. Deliberately not appended here any more — a second
-    # append would detonate twice, and the Flare side is not free.
-    # Optional artifact-generation stage (opt-in, after deep dive, before YARA).
-    # Gated by REVAI_ENABLE_ARTIFACT_GEN=1. The stage self-skips with rc=0 when
-    # the flag is off and never gates the verdict: it generates an extraction
-    # script, runs it sandboxed, and the code re-derives every claimed value from
-    # the sample bytes. Plan #11.
-    if os.environ.get("REVAI_ENABLE_ARTIFACT_GEN", "").strip().lower() in ("1", "true", "yes", "on"):
-        stages.append((
-            "artifact_gen",
-            [sys.executable, str(SCRIPTS / "artifact_gen.py"), sha],
-            1800,
-        ))
-    stages.extend([
-        ("yara_gen", [sys.executable, str(SCRIPTS / "yara_gen_v2.py"), sha], 1800),
-        ("publish_v2", [sys.executable, str(SCRIPTS / "publish_report_v2.py"), sha, "--template", "full"], 3600),
-        ("publish_v3", [sys.executable, str(SCRIPTS / "section_publisher.py"), sha], 3600),
-        ("audit", [sys.executable, str(SCRIPTS / "audit_pipeline.py"), sha, "--mode", "single"], 600),
-    ])
+    stages = build_stages(sha, intake_cmd)
 
     trace = {
         "schema": "v6.3.single",
@@ -315,6 +249,101 @@ def finalize_trace(trace: dict, audit_path: Path | None = None) -> dict:
         trace["aborted"] = True
         trace["aborted_reason"] = f"audit stage rc={audit_entry.get('rc')}"
     return trace
+
+
+def build_stages(sha: str, intake_cmd: list[str] | None) -> list[tuple[str, list[str], int]]:
+    """The scripted stage spine, in execution order, as (name, cmd, timeout).
+
+    Extracted from `main()` so the ORDER is a value a test can assert instead
+    of prose. While it was inline, a stage inserted at the wrong index was
+    invisible: a test could only check where a literal *appears in the file*,
+    and `stages.insert(1, ...)` leaves the source in exactly the same place.
+    Stage order is load-bearing, so it has to be a readable value.
+
+    Stage 3 (winre_dynamic) and the final depth_understanding are env-gated and
+    self-skip, so with no flags the list is exactly the static-only spine.
+    """
+    stages: list[tuple[str, list[str], int]] = []
+    if intake_cmd:
+        stages.append(("intake", intake_cmd, 7200))
+    stages.append(
+        ("quick_scan", [sys.executable, str(SCRIPTS / "quick_scan_v2.py"), sha], 7200),
+    )
+    # Optional WinRE detonation stage. Order matters (R1, operator-approved
+    # 2026-10-05): triage -> dynamic -> deep_dive.
+    #
+    # The dynamic pack used to run AFTER deep_dive and be attached to the
+    # technical evidence pack at publish time. That put it in the report the
+    # human reads while the one agent that could have used it -- deep_dive --
+    # never saw it. In a real IR flow the detonation is the *preceding*
+    # investigators' context; the RE is what completes the picture.
+    #
+    # Gated by REVAI_WINRE_RUN=1; the runner self-skips when WinRE is not
+    # installed/configured. A Flare-side failure is recorded and never blocks
+    # the static run. With the flag off the stage list is byte-identical to the
+    # old order, so a static-only deployment is unchanged by this.
+    if os.environ.get("REVAI_WINRE_RUN", "").strip().lower() in ("1", "true", "yes"):
+        stages.append((
+            "winre_dynamic",
+            [sys.executable, str(SCRIPTS / "winre_runner.py"), sha],
+            7200,
+        ))
+    stages.append(("deep_dive", [sys.executable, str(SCRIPTS / "deep_dive_agentic.py"), sha], 14400))
+    # Optional v4 function-recovery stage (opt-in, between deep dive and yara).
+    # Gated by REVAI_ENABLE_AGENTIC_RECOVERY=1 (legacy ENABLE_AGENTIC_RECOVERY
+    # honored). Never required for green -- recovery output feeds the reports.
+    _rec_enabled = (
+        os.environ.get("REVAI_ENABLE_AGENTIC_RECOVERY")
+        or os.environ.get("ENABLE_AGENTIC_RECOVERY", "0")
+    ).strip().lower() in ("1", "true", "yes")
+    if _rec_enabled:
+        stages.append((
+            "function_recovery",
+            [sys.executable, str(SCRIPTS / "agentic_recover_v4.py"), sha],
+            3600,
+        ))
+    # Optional artifact-generation stage (opt-in, after deep dive, before YARA).
+    # Gated by REVAI_ENABLE_ARTIFACT_GEN=1. The stage self-skips with rc=0 when
+    # the flag is off and never gates the verdict: it generates an extraction
+    # script, runs it sandboxed, and the code re-derives every claimed value from
+    # the sample bytes. Plan #11.
+    if os.environ.get("REVAI_ENABLE_ARTIFACT_GEN", "").strip().lower() in ("1", "true", "yes", "on"):
+        stages.append((
+            "artifact_gen",
+            [sys.executable, str(SCRIPTS / "artifact_gen.py"), sha],
+            1800,
+        ))
+    stages.extend([
+        ("yara_gen", [sys.executable, str(SCRIPTS / "yara_gen_v2.py"), sha], 1800),
+        ("publish_v2", [sys.executable, str(SCRIPTS / "publish_report_v2.py"), sha, "--template", "full"], 3600),
+        ("publish_v3", [sys.executable, str(SCRIPTS / "section_publisher.py"), sha], 3600),
+        ("audit", [sys.executable, str(SCRIPTS / "audit_pipeline.py"), sha, "--mode", "single"], 600),
+    ])
+    # D0 depth mode, strictly LAST. It is NOT a pipeline stage: it runs after the
+    # reports and the audit exist, because everything it reads as starting
+    # context (deep-dive output, iocs.json, both reports, the audit) must be
+    # there first, and nothing downstream depends on it. Its objective is
+    # UNDERSTANDING, not a verdict, so its output is a function map
+    # (understanding.json) rather than a judgment.
+    #
+    # Ordering was wrong in the first cut: appending it after deep_dive put a
+    # stage whose ceiling is REVAI_DEPTH_CEILING_SECONDS (default 2h) in front of
+    # yara_gen, publish_v2, publish_v3 and audit. That delayed the reports a
+    # human is waiting for, started the loop from a context that does not yet
+    # include iocs.json or the reports it advertises reading, and -- with
+    # REVAI_HITL_VERDICT=1 -- let it run before any human had seen a verdict.
+    #
+    # The ceiling is read through depth_agent.ceiling_seconds(), whose fallback
+    # on a non-numeric value the inline `int(...)` this replaced did not have.
+    # The stage is deliberately absent from `abort_on`, so a timeout it cannot
+    # recover from does not fail the pipeline it follows.
+    if depth_enabled():
+        stages.append((
+            "depth_understanding",
+            [sys.executable, str(SCRIPTS / "depth_agent.py"), sha],
+            depth_ceiling_seconds() + 300,
+        ))
+    return stages
 
 
 def main() -> int:

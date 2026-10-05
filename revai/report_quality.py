@@ -1781,9 +1781,21 @@ def _dynamic_pack_evidence_text(root: Path) -> tuple[str, list[str]]:
 
     Values come from v2_lib's pack loader, so a report that cites the dynamic
     block verifies against the same numbers the block rendered.
+
+    Gated on the SAME shared opt-out as the block itself
+    (`v2_lib.dynamic_corroboration_enabled()`). Without it, a run with
+    REVAI_DISABLE_DYNAMIC_CORROBORATION=1 still loads the pack into the
+    grounding corpus: the report carries no dynamic block, so a reader cannot see
+    where a value came from, while a claim that happens to coincide with a pack
+    value is still certified "verified" against it. Grounding a published claim
+    against a source the published report does not show is exactly what the
+    "verified/unverified" distinction is for.
     """
     sha = root.name if re.fullmatch(r"[0-9a-fA-F]{64}", root.name or "") else root.parent.name
     if not re.fullmatch(r"[0-9a-fA-F]{64}", sha or ""):
+        return "", []
+    from v2_lib import dynamic_corroboration_enabled
+    if not dynamic_corroboration_enabled():
         return "", []
     winre_root = Path(os.environ.get("REVAI_WINRE_LOGS") or "/opt/winre/logs")
     if not winre_root.is_dir():

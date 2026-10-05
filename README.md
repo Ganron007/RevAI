@@ -55,13 +55,26 @@ React Console and drives the stage scripts under `/opt/scripts/`.
 
 ## Three ways to run the pipeline
 
-All modes run the same 7 stages (+1 optional function-recovery stage), the same tool stack, and the same LLM backend — the difference is *who decides the sequence* and *how failures are handled*:
+All modes run the same stage scripts, the same tool stack, and the same LLM backend. Stages 3 and 8.5 are optional and self-skip when disabled. The difference between modes is *who decides the sequence* and *how failures are handled*:
+
+| # | Stage | Gate |
+|---|---|---|
+| 1 | **intake** — Ghidra (+ optional IDA) session | always |
+| 2 | **quick_scan** — triage tools, then an LLM verdict | always |
+| 3 | **winre_dynamic** - Flare detonation, ingested as deep-dive evidence (corroborating only: it never overrides a static finding) | `REVAI_WINRE_RUN=1` |
+| 4 | **deep_dive** — agentic deep dive | always |
+| 4.5 | **function_recovery** — agentic function-name recovery | `REVAI_ENABLE_AGENTIC_RECOVERY=1` |
+| 5 | **yara_gen** — YARA + Sigma | always |
+| 6 | **publish** — REPORT-MASTER (LLM-authored, source-tagged) | always |
+| 7 | **correlate** — section Map-Reduce report (v3) | always |
+| 8 | **audit** — `all_green`, then `truly_green` | always |
+| 8.5 | **depth_understanding** — depth mode | `REVAI_DEPTH=1` |
 
 | Mode | Script / Entry | Stage Sequencing | Failure Handling |
 | :--- | :--- | :--- | :--- |
-| **Scripted** *(default)* | `pipeline_single.py` | • Deterministic fixed order (`intake` → `quick_scan` → `deep_dive` → `yara_gen` → `publish` → `section` → `audit`)<br>• No LLM orchestration | **Zero retries**<br>Failed stage aborts remaining pipeline (predictable, deterministic runtime). |
+| **Scripted** *(default)* | `pipeline_single.py` | • Deterministic fixed order (see the spine above)<br>• No LLM orchestration | **Zero retries**<br>Failed stage aborts remaining pipeline (predictable, deterministic runtime). |
 | **Agentic** | `stage_orchestrator.py` | • LangGraph ReAct planner (LLM) in policy-pinned order<br>• Observes verdicts/evidence between stages<br>• HITL stop before publish if quick/deep verdicts disagree | **1 bounded retry** *(default)*<br>Handles transient failures (timeouts, connection loss, OOM). Calibrated via `REVAI_*` env / console panel (retries, budget, recursion limit, timeout scale). |
-| **Web Console** | `http://<host>:5000` | • Manual stage buttons (human-paced)<br>• **Run orch** button (full agentic path) | **UI-configured**<br>Run config panel sets retries, budget profile (*standard* / *generous* / *unlimited*), and timeout scale before execution. |
+| **Web Console** | `http://<host>:5000` | • Manual stage buttons (human-paced)<br>• **Run orch** button (full agentic path)<br>• **Analyst steering** — pre-run note (`REVAI_STEERING_FILE`), or a post-hoc note via `/api/steer/<sha>` for the next run | **UI-configured**<br>Run config panel sets retries, budget profile (*standard* / *generous* / *unlimited*), and timeout scale before execution. |
 
 The shared tool stack across all three modes:
 

@@ -32,7 +32,6 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parent if (HERE.parent / "assets").is_dir() else HERE
 #: On the VM the flat runtime dir is both "code" and "root".
 CODE = HERE
-
 FAILURES: list[str] = []
 WARNINGS: list[str] = []
 RESULTS: list[dict] = []
@@ -201,6 +200,18 @@ _AGENT_PATTERNS = (
 )
 
 
+def _registry_tool_names(dd: str) -> set[str]:
+    """Every agent-callable tool name in the deep-dive ToolRegistry.
+
+    Discovered from the `"name": self._method` registrations, so a new tool is
+    in this set the moment it is registered and a doc that forgets it can be
+    caught. The regex mirrors the one check_docs_counts already uses for the
+    count, so the two cannot disagree about what a tool is.
+    """
+    reg_block = _block(dd, "class ToolRegistry", r"^        \}")
+    return set(re.findall(r'"([A-Za-z0-9_]+)":\s*self\.', reg_block))
+
+
 def check_docs_counts() -> None:
     v2 = _read("v2_lib.py")
     manifest_block = _block(v2, "TOOL_MANIFEST = {", r"^\}")
@@ -263,6 +274,35 @@ def check_docs_counts() -> None:
             problems.append(
                 f"{name}: no agent-callable tool count found -- it was "
                 "removed or the pattern drifted")
+    # The NUMBER is not the claim. `load_skill` shipped in the ToolRegistry and
+    # in the prompt, was omitted from both docs' enumerated tool lists, and this
+    # check passed because the headline still said "26". A doc that lists 25 of
+    # 26 names is exactly the kind of half-true sentence this harness exists to
+    # catch, so the enumerated names are checked against the registry too.
+    # Only where a doc actually enumerates them: a doc with no backticked
+    # tool names is not asserting a list.
+    registry_agent = _registry_tool_names(dd)
+    code_names = {n for n in registry_agent if len(n) > 3}
+    if len(code_names) >= 10:
+        for name, path in present.items():
+            text = path.read_text(encoding="utf-8", errors="replace")
+            # A doc "enumerates" when it names >=10 registry tools. Names are
+            # matched as WORDS, not backticked identifiers: tool-stack.md lists
+            # them `ghidra_query · ida_query · ...` with no backticks at all, so
+            # a backtick-only match finds 6 of 26 and concludes "not a list" --
+            # which is how the omission check passed while a tool was missing.
+            named = {t for t in code_names
+                     if f"`{t}`" in text
+                     or re.search(rf"(?<![A-Za-z0-9_]){re.escape(t)}(?![A-Za-z0-9_])",
+                                  text)}
+            if len(named) < 10:
+                continue  # not a full list; nothing to compare
+            missing = sorted(code_names - named)
+            if missing:
+                problems.append(
+                    f"{name}: enumerates the agent tools but omits "
+                    f"{len(missing)}: {', '.join(missing[:6])}"
+                    + (" ..." if len(missing) > 6 else ""))
     check("docs.counts", not problems,
           f"manifest={n_manifest} agent={n_agent}" if not problems
           else "; ".join(problems[:4]))
@@ -438,7 +478,23 @@ def run_checks() -> tuple[list[dict], list[str], list[str]]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="RevAI pipeline verification harness")
     parser.add_argument("--json", action="store_true", help="machine-readable output")
+    parser.add_argument(
+        "--root",
+        help=("Directory holding README.md / docs/ to check. Defaults to the "
+              "source checkout containing this script. Used by the guard tests "
+              "to probe a mutated COPY of the docs instead of writing to the "
+              "tracked files."),
+    )
     args = parser.parse_args(argv)
+
+    # A mutable module global, set once from the CLI before any check runs.
+    # The probe tests need this so they can mutate a copy: writing to the real
+    # README.md makes every concurrent harness run (a CI job, an operator
+    # command, a sibling test) report a spurious FAIL, and a kill between the
+    # write and the restore leaves the tracked file permanently mutated.
+    global REPO
+    if args.root:
+        REPO = Path(args.root).resolve()
 
     print(f"layout={'source' if (REPO / 'docs').is_dir() else 'flat'} root={REPO}")
     results, failures, warnings = run_checks()

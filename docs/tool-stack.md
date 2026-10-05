@@ -53,8 +53,15 @@ when it applies to the sample's file type.
 ghidra_query · ida_query · ghidra_decompile · signature_match · z3_solve · angr_analyze
 · malcat_analyze · capa_analyze · pe_import_signals · yara_scan · floss_extract ·
 dotnet_analyze · speakeasy_emulate · frida_static_probe · r2_decompile · upx_unpack ·
-xor_string_search · olevba_analyze · peepdf_analyze · revai_tools_sec ·
-revai_tools_sinks · revai_tools_audit · api_lookup · compare_files
+xor_string_search · shellcode_extract · olevba_analyze · peepdf_analyze ·
+revai_tools_sec · revai_tools_sinks · revai_tools_audit · api_lookup · compare_files ·
+load_skill
+
+`load_skill` is bound to the agent graph as well as the registry. The deep-dive
+prompt instructs the model to load a procedure before doing the work it covers,
+so a name the graph cannot execute would make the instruction a dead end: the
+step is consumed, the procedure never arrives, and the agent falls back to
+recall — the failure the skills layer exists to prevent.
 
 ### API lookup index
 

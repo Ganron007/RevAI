@@ -120,7 +120,25 @@ AGENT_TOOL_NAMES = [
     "angr_analyze",
     "api_lookup",
     "compare_files",
+    # load_skill MUST stay in this list. The system prompt tells the model to load
+    # a procedure before doing the work it covers; a tool the prompt names but the
+    # graph does not bind cannot execute (the provider rejects the unbound function
+    # name), so the step is consumed, the procedure never arrives, and the agent
+    # falls back to recall -- the exact failure the skills layer exists to prevent.
+    "load_skill",
 ]
+
+#: Per-tool result caps. The agentic loop truncates tool results to a shared
+#: budget (MAX_TOOL_RESULT_CHARS, 2000) so one noisy tool cannot eat the context.
+#: A skill is a procedure document: truncating it at 2000 chars cuts the "Stop
+#: conditions" and "What this skill does NOT cover" sections and -- for
+#: verdict-calibration -- the calibration contract itself, which is the part the
+#: skill exists to deliver. Re-calling does not help (the redundant-call detector
+#: flags it), so the procedure must arrive whole. Skills are bounded by
+#: MAX_SKILL_CHARS in skills.py, so this stays a fixed, predictable cost.
+TOOL_RESULT_CHARS = {
+    "load_skill": 6000,
+}
 
 
 class GhidraQueryArgs(BaseModel):
@@ -164,6 +182,17 @@ class CompareFilesArgs(BaseModel):
     a: str = Field("", description="Reference file; defaults to the analyzed sample")
 
 
+class LoadSkillArgs(BaseModel):
+    skill: str = Field(
+        ...,
+        description=(
+            "Procedure to load, by name: re-methodology, unpack-and-verify, "
+            "obfuscation-recognition, ghidra-sql-recipes, verdict-calibration. "
+            "An unknown name is an error -- do not substitute a guess."
+        ),
+    )
+
+
 _ARG_MODELS: dict[str, type[BaseModel]] = {
     "ghidra_query": GhidraQueryArgs,
     "ida_query": IdaQueryArgs,
@@ -173,6 +202,7 @@ _ARG_MODELS: dict[str, type[BaseModel]] = {
     "angr_analyze": AngrAnalyzeArgs,
     "api_lookup": ApiLookupArgs,
     "compare_files": CompareFilesArgs,
+    "load_skill": LoadSkillArgs,
 }
 
 #: Model-facing descriptions where the generic "Run tool X" text is not enough.
@@ -189,6 +219,15 @@ _TOOL_DOC = {
         "sizes, imphash equality, shared/unique sections with entropy deltas, import "
         "overlap, exact 64-byte chunk containment. Args: b (second file path); a "
         "defaults to the analyzed sample. Facts only - do not claim a family from it."
+    ),
+    "load_skill": (
+        "Load a reverse-engineering PROCEDURE by name and follow it: re-methodology, "
+        "unpack-and-verify, obfuscation-recognition, ghidra-sql-recipes, "
+        "verdict-calibration. Returns the cited, versioned procedure text in full. "
+        "Load the procedure BEFORE attempting the work it covers -- a procedure "
+        "recalled from memory is not evidence. Load verdict-calibration before "
+        "rendering any judgment. Args: skill (name, required). An unknown name is an "
+        "error; do not substitute a guess."
     ),
 }
 
@@ -255,6 +294,10 @@ def _build_lc_tools(registry: Any, session: dict, history: list, findings: dict,
                 state["seen"].add(sig)
 
             state["calls"] += 1
+            # A skill is a procedure document, not a query result: it needs its
+            # own (larger) cap or the stop-conditions section -- the part that says
+            # when to stop digging -- is the part that gets cut. See TOOL_RESULT_CHARS.
+            _cap = TOOL_RESULT_CHARS.get(name, max_chars)
             if _call_with_tool_retry is not None:
                 result = _call_with_tool_retry(registry, name, kwargs or {}, session)
             else:
@@ -270,7 +313,7 @@ def _build_lc_tools(registry: Any, session: dict, history: list, findings: dict,
                 "engine": "langgraph",
             })
             findings[f"lg_{name}_{len(history)}"] = result
-            return _truncate(json.dumps(result, default=str), max_chars) + _budget_note()
+            return _truncate(json.dumps(result, default=str), _cap) + _budget_note()
 
         _runner.__name__ = name
         _runner.__doc__ = _TOOL_DOC.get(name) or f"Run tool `{name}` on the current sample/session."

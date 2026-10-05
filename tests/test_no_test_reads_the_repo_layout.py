@@ -38,69 +38,23 @@ import warnings
 from pathlib import Path
 
 TESTS_DIR = Path(__file__).resolve().parent
+sys.path.insert(0, str(TESTS_DIR))
+
+# The taint scanner lives in its own module so it can be probed directly by
+# test_the_tripwire_sees_the_escape_shapes below. The previous version's scanner
+# was a private function inside this file, which meant it could only be tested
+# against the one synthetic shape that test wrote -- a gate verified against
+# itself.
+from _layout_scan import file_reads_repo_source  # noqa: E402
+
 REPO_ROOT = TESTS_DIR.parent
 
 #: Repo subdirectories whose files are deployed FLAT (so a repo-layout path does
 #: not exist on the VM). Anything else is data, not code.
-_CODE_DIRS = ("revai", "scripts", "install", "config", "extensions", "docs")
-
-#: Attribute reads that touch the filesystem and therefore need a real path.
-_READERS = frozenset({
-    "read_text", "read_bytes", "is_file", "exists", "glob", "rglob",
-    "open", "iterdir", "stat",
-})
+_CODE_DIRS = ("revai", "scripts", "install", "config", "extensions")
 
 #: The sanctioned accessor. Tests that need a repo file must go through it.
 _LAYOUT_MODULE = "_layout"
-
-
-def _rooted_repo_paths(tree: ast.AST) -> list[str]:
-    """Every `ROOT / "<code-dir>" / ...` sub-expression in this test file."""
-    found: list[str] = []
-    for node in ast.walk(tree):
-        # BinOp chains: ((ROOT / "revai") / "x.py")
-        if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div):
-            seg = ast.dump(node)
-            for d in _CODE_DIRS:
-                if f"Constant(value='{d}')" in seg or f'Constant(value="{d}")' in seg:
-                    found.append(d)
-                    break
-    return found
-
-
-def _file_reads_repo_source(path: Path) -> list[int]:
-    """Line numbers in `path` that read a file under a code directory."""
-    src = path.read_text(encoding="utf-8", errors="replace")
-    try:
-        # ast.parse on files this test does not own surfaces their latent
-        # SyntaxWarnings (non-raw docstrings containing \` or \S). Those are not
-        # this tripwire's finding -- suppress them so a warning in an unrelated
-        # file cannot make this gate look broken.
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore", SyntaxWarning)
-            tree = ast.parse(src)
-    except SyntaxError as exc:  # a broken test file is itself a finding
-        print(f"  {path.name}: PARSE ERROR {exc}")
-        return [exc.lineno or 0]
-    uses_layout = _LAYOUT_MODULE in src
-    bad: list[int] = []
-    for node in ast.walk(tree):
-        if not isinstance(node, ast.Call):
-            continue
-        f = node.func
-        if not isinstance(f, ast.Attribute) or f.attr not in _READERS:
-            continue
-        seg = ast.dump(node)
-        # Only when the call is rooted at ROOT and reaches into a code dir.
-        if "Name(id='ROOT'" not in seg and "Name(id='REPO_ROOT'" not in seg:
-            continue
-        if any(f"Constant(value='{d}')" in seg or f'Constant(value="{d}")' in seg
-               for d in _CODE_DIRS):
-            bad.append(node.lineno)
-    if bad and not uses_layout:
-        # Not a failure on its own: the file may simply never read a repo file.
-        pass
-    return bad
 
 
 def test_no_test_reads_a_repo_layout_path_directly():
@@ -109,7 +63,7 @@ def test_no_test_reads_a_repo_layout_path_directly():
     for path in sorted(TESTS_DIR.glob("*.py")):
         if path.name == "_layout.py" or path.name == Path(__file__).name:
             continue
-        lines = _file_reads_repo_source(path)
+        lines = file_reads_repo_source(path)
         if lines:
             offenders[path.name] = lines
 
@@ -140,32 +94,26 @@ def test_layout_module_covers_every_code_directory():
     assert found is not None and found.name == "v2_lib.py", found
 
 
-def test_the_tripwire_itself_can_fail():
-    """A tripwire that cannot fire is the defect it was written to prevent."""
-    import inspect
+def test_the_tripwire_itself_can_fail(tmp_path):
+    """A tripwire that cannot fire is the defect it was written to prevent.
 
-    import _layout
-
-    # A genuinely repo-rooted read must be detected in a synthetic file.
-    probe = TESTS_DIR / "_tripwire_probe.py"
+    Writes its probe into `tmp_path`, not into `tests/`: the scan globs
+    `tests/*.py`, so a probe left behind by a kill, timeout or Ctrl-C between
+    the write and the unlink is picked up by the very next run and reported as
+    an offender -- self-inflicted red from the tripwire's own probe.
+    """
+    probe = tmp_path / "_probe_detects.py"
     probe.write_text(
         "from pathlib import Path\n"
         "ROOT = Path(__file__).resolve().parent.parent\n"
         "src = (ROOT / 'revai' / 'v2_lib.py').read_text(errors='replace')\n",
         encoding="utf-8")
-    try:
-        hits = _file_reads_repo_source(probe)
-    finally:
-        probe.unlink()
-    assert hits, "the AST scan did not detect a repo-rooted read_text"
+    assert file_reads_repo_source(probe), "the scan missed a repo-rooted read_text"
 
 
-def test_the_tripwire_does_not_flag_the_safe_form():
+def test_the_tripwire_does_not_flag_the_safe_form(tmp_path):
     """And it must not flag tests that already go through _layout."""
-    sys.path.insert(0, str(TESTS_DIR))
-    import _layout
-
-    probe = TESTS_DIR / "_tripwire_probe2.py"
+    probe = tmp_path / "_probe_safe.py"
     probe.write_text(
         "import sys\n"
         "from pathlib import Path\n"
@@ -173,12 +121,47 @@ def test_the_tripwire_does_not_flag_the_safe_form():
         "from _layout import resolve, source\n"
         "src = source('revai/v2_lib.py')\n",
         encoding="utf-8")
-    try:
-        hits = _file_reads_repo_source(probe)
-    finally:
-        probe.unlink()
+    hits = file_reads_repo_source(probe)
     assert not hits, f"false positive on the sanctioned form: {hits}"
-    assert callable(_layout.source)
+
+
+def test_the_tripwire_sees_the_escape_shapes(tmp_path):
+    """Every shape the old substring scan was blind to.
+
+    The previous gate matched `Name(id='ROOT'` plus a reader attribute, which
+    let through four ordinary spellings -- all of them demonstrated against it:
+
+      p = ROOT / "revai" / "x.py" ; p.read_text()      (indirection)
+      open(ROOT / "revai" / "x.py").read()             (`open` is ast.Name,
+                                                        not ast.Attribute)
+      REPO_ROOT / "scripts" / "x.py"                   (root named REPO_ROOT)
+      subprocess.run([sys.executable, str(ROOT / "scripts" / "x.sh")])
+
+    The last one is how the harness invokes scripts, so it was not a
+    hypothetical. This test is what keeps the gate honest about all of them.
+    """
+    shapes = [
+        "p = ROOT / 'revai' / 'x.py'\ndata = p.read_text(errors='replace')\n",
+        "data = open(ROOT / 'revai' / 'x.py').read()\n",
+        "REPO_ROOT = Path(__file__).resolve().parent.parent\n"
+        "data = (REPO_ROOT / 'revai' / 'x.py').read_text()\n",
+        "import subprocess, sys\n"
+        "subprocess.run([sys.executable, str(ROOT / 'scripts' / 'x.sh')])\n",
+        "import py_compile\n"
+        "py_compile.compile(str(ROOT / 'revai' / 'cli.py'))\n",
+        "data = open('revai/v2_lib.py').read()\n",
+    ]
+    header = ("import subprocess, sys, py_compile\n"
+              "from pathlib import Path\n"
+              "ROOT = Path(__file__).resolve().parent.parent\n")
+    missed: list[int] = []
+    for i, shape in enumerate(shapes):
+        probe = tmp_path / f"_probe_escape_{i}.py"
+        probe.write_text(header + shape, encoding="utf-8")
+        hits = file_reads_repo_source(probe)
+        if not hits:
+            missed.append(i)
+    assert not missed, f"the scan is blind to shapes {missed} of {len(shapes)}"
 
 
 if __name__ == "__main__":
