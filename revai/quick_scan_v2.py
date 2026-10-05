@@ -17,6 +17,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 sys.path.insert(0, "/opt/scripts")
+from steering import load_steering_notes, record_steering, steering_block  # noqa: E402
 from v2_lib import (  # noqa: E402
     LOGS_DIR,
     case_dir,
@@ -209,11 +210,17 @@ def load_intake_validation(sha: str) -> dict:
 def build_prompt(session, ghidra_ev, ida_ev, capa, yara, floss, malcat,
                  intake_validation: dict | None = None, pe_imports=None,
                  ti_enrich: dict | None = None, packer: dict | None = None,
-                 revai_sec=None, revai_sinks=None) -> str:
+                 revai_sec=None, revai_sinks=None,
+                 steering: str | None = None) -> str:
     intake_validation = intake_validation or {}
     source_decisions = intake_validation.get("source_decisions", {})
 
-    p = [
+    # L1 light steering: analyst direction goes FIRST in the prompt. It is
+    # context, not evidence and not an instruction, and the block says so in
+    # terms -- a note that could command a verdict would make a calibration-gated
+    # stage ungated by construction. See revai/steering.py.
+    block = steering_block(steering)
+    p = ([block] if block else []) + [
         "# Triage evidence",
         f"sha256: {session['sha256']}",
         f"sample_path: {session['sample_path']}",
@@ -733,9 +740,18 @@ def main():
         packer=packer,
         revai_sec=rts_sec,
         revai_sinks=rts_sinks,
+        steering=load_steering_notes(),
     )
     log_dir = audit_path.parent
     (log_dir / "prompt.txt").write_text(prompt)
+
+    # L1: persist the direction the analyst gave, so this run's report can cite
+    # what it was steering on. No note -> no file, so a run without steering has
+    # byte-identical artifacts.
+    _noted = record_steering(case_dir(sha))
+    if _noted:
+        print(f"[quick_scan_v2] analyst steering recorded -> {_noted.name}",
+              flush=True)
     # The triage verdict is a judgment about the sample: the judgment role's
     # model (REVAI_LLM_VERDICT_MODEL), not the pipeline default. Recorded at
     # cand["model"] below, so the artifact states which model judged it.
