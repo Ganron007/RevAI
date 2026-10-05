@@ -17,7 +17,12 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 sys.path.insert(0, "/opt/scripts")
-from steering import load_steering_notes, record_steering, steering_block  # noqa: E402
+from steering import (  # noqa: E402
+    effective_steering_note,
+    load_steering_notes,
+    record_steering,
+    steering_block,
+)
 from v2_lib import (  # noqa: E402
     LOGS_DIR,
     case_dir,
@@ -740,7 +745,7 @@ def main():
         packer=packer,
         revai_sec=rts_sec,
         revai_sinks=rts_sinks,
-        steering=load_steering_notes(),
+        steering=effective_steering_note(case_dir(sha)),
     )
     log_dir = audit_path.parent
     (log_dir / "prompt.txt").write_text(prompt)

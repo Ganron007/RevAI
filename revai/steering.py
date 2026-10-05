@@ -66,6 +66,31 @@ def load_steering_notes() -> str:
     return text
 
 
+
+def effective_steering_note(case_dir: Path | None = None) -> str:
+    """The direction that applies to THIS stage run.
+
+    L1 (a note given before the run) wins over L3 (a note recorded after a
+    previous run): the operator writing a file for this run is the more recent
+    and more specific act. With no file, the most recent post-hoc note applies.
+
+    This is the single merge point, so a stage run cannot see "the pre-run note"
+    from one code path and "the last post-hoc note" from another -- two merge
+    points would drift, and drift here means an analyst is steered by a note they
+    did not write.
+    """
+    direct = load_steering_notes()
+    if direct.strip():
+        return direct
+    if case_dir is None:
+        return ""
+    try:
+        from steering_history import latest_steering_note
+        return latest_steering_note(Path(case_dir))
+    except Exception:
+        return ""
+
+
 def steering_block(notes: str | None = None) -> str:
     """The prompt block carrying analyst direction, or "" when there is none.
 

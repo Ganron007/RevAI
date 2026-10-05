@@ -28,6 +28,11 @@ LOGS_DIR = Path("/opt/samples/logs")
 SCRIPTS_DIR = Path("/opt/scripts")
 sys.path.insert(0, str(SCRIPTS_DIR))
 from v2_lib import case_dir, winre_dynamic_status  # noqa: E402
+from steering_history import (  # noqa: E402
+    append_steering_note,
+    latest_steering_note,
+    read_steering_history,
+)
 CONFIG_PATH = Path("/opt/samples/pipeline-config.json")
 # The LLM API key comes ONLY from the service environment / this env file (the
 # same file the systemd unit loads). The UI never stores secrets.
@@ -1421,6 +1426,38 @@ def api_run(sha, stage):
     task_id = run_stage(sha, stage, sample_path)
     return jsonify({"task_id": task_id, "sha": sha, "stage": stage,
                     "command": build_stage_command(stage, sha, sample_path)})
+
+
+
+@app.route("/api/steer/<sha>", methods=["GET", "POST"])
+def api_steer(sha):
+    """L3 post-hoc steering: read or record analyst direction on a case.
+
+    GET returns the recorded history so the UI can show what has been steered.
+    POST appends a note for the NEXT stage run to consume as L1 direction.
+
+    A note is context. It reaches the analysis through the same
+    load_steering_notes() path a pre-run note uses, so there is one
+    implementation of "what direction was given" and it cannot differ between
+    "before the first run" and "after it". It cannot set a verdict.
+    """
+    sha = require_sha(sha)
+    if not sha:
+        return jsonify({"error": "invalid sha"}), 400
+    from v2_lib import case_dir as _case_dir
+    case = _case_dir(sha)
+    if request.method == "POST":
+        body = request.get_json(silent=True) or {}
+        note = str(body.get("note") or "").strip()
+        level = str(body.get("level") or "L3-post-hoc")
+        try:
+            record = append_steering_note(case, note, level)
+        except ValueError as exc:
+            return jsonify({"error": str(exc)}), 400
+        return jsonify({"ok": True, "record": record,
+                        "history": read_steering_history(case)}), 201
+    return jsonify({"sha": sha, "history": read_steering_history(case),
+                    "latest": latest_steering_note(case)})
 
 
 @app.route("/api/run_all/<sha>", methods=["POST"])
