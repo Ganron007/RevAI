@@ -136,8 +136,27 @@ def run_single(sample: Path | None, sha: str | None, mode: str = "standard") -> 
         stages.append(("intake", intake_cmd, 7200))
     stages.extend([
         ("quick_scan", [sys.executable, str(SCRIPTS / "quick_scan_v2.py"), sha], 7200),
-        ("deep_dive", [sys.executable, str(SCRIPTS / "deep_dive_agentic.py"), sha], 14400),
     ])
+    # Optional WinRE detonation stage. Order matters (R1, operator-approved
+    # 2026-10-05): triage -> dynamic -> deep_dive.
+    #
+    # The dynamic pack used to run AFTER deep_dive and be attached to the
+    # technical evidence pack at publish time. That put it in the report the
+    # human reads while the one agent that could have used it — deep_dive —
+    # never saw it. In a real IR flow the detonation is the *preceding*
+    # investigators' context; the RE is what completes the picture.
+    #
+    # Gated by REVAI_WINRE_RUN=1; the runner self-skips when WinRE is not
+    # installed/configured. A Flare-side failure is recorded and never blocks
+    # the static run. With the flag off the stage list is byte-identical to the
+    # old order, so a static-only deployment is unchanged by this.
+    if os.environ.get("REVAI_WINRE_RUN", "").strip().lower() in ("1", "true", "yes"):
+        stages.append((
+            "winre_dynamic",
+            [sys.executable, str(SCRIPTS / "winre_runner.py"), sha],
+            7200,
+        ))
+    stages.append(("deep_dive", [sys.executable, str(SCRIPTS / "deep_dive_agentic.py"), sha], 14400))
     # Optional v4 function-recovery stage (opt-in, between deep dive and yara).
     # Gated by REVAI_ENABLE_AGENTIC_RECOVERY=1 (legacy ENABLE_AGENTIC_RECOVERY
     # honored). Never required for green — recovery output feeds the reports.
@@ -151,16 +170,9 @@ def run_single(sample: Path | None, sha: str | None, mode: str = "standard") -> 
             [sys.executable, str(SCRIPTS / "agentic_recover_v4.py"), sha],
             3600,
         ))
-    # Optional WinRE detonation stage (opt-in, between deep dive and publish).
-    # Gated by REVAI_WINRE_RUN=1; the runner skips itself when WinRE is not
-    # installed/configured (Console Settings -> Dynamic analysis (WinRE)).
-    # A Flare-side failure is recorded and never blocks the static run.
-    if os.environ.get("REVAI_WINRE_RUN", "").strip().lower() in ("1", "true", "yes"):
-        stages.append((
-            "winre_dynamic",
-            [sys.executable, str(SCRIPTS / "winre_runner.py"), sha],
-            7200,
-        ))
+    # WinRE detonation: moved ABOVE deep_dive (R1). See the ordering note at the
+    # top of the stage list. Deliberately not appended here any more — a second
+    # append would detonate twice, and the Flare side is not free.
     # Optional artifact-generation stage (opt-in, after deep dive, before YARA).
     # Gated by REVAI_ENABLE_ARTIFACT_GEN=1. The stage self-skips with rc=0 when
     # the flag is off and never gates the verdict: it generates an extraction

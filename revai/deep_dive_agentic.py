@@ -1025,6 +1025,52 @@ def _run_standard_checklist(registry: "ToolRegistry", session: dict, sha: str) -
         if agent_tool == "yara_scan":
             yara_res = res if isinstance(res, dict) else {}
 
+    # R1: ingest the WinRE detonation pack as deep-dive EVIDENCE.
+    #
+    # The stage order is now triage -> dynamic -> deep_dive (operator-approved
+    # 2026-10-05), and this is the half that makes the reorder worth anything.
+    # The pack used to be attached to the technical evidence pack at publish
+    # time only, so it reached the report the human reads while deep_dive -- the
+    # one agent that could have reasoned over it -- never saw it.
+    #
+    # Presence-gated: no pack, no change. The block corroborates static findings
+    # and never overrides them (`static_yara_wins`), the same contract the
+    # publish-time attachment already honoured. Recorded as a finding with its
+    # authority stated, so a reader can tell dynamic-observed from
+    # static-observed without guessing.
+    try:
+        from v2_lib import (
+            dynamic_corroboration_enabled,
+            format_flare_dynamic_evidence,
+            load_dynamic_pack,
+        )
+    except Exception as _imp_exc:  # an import failure is recorded, never fatal
+        findings["dynamic_corroboration"] = {"error": str(_imp_exc)[:200]}
+    else:
+        if dynamic_corroboration_enabled():
+            try:
+                pack = load_dynamic_pack(sha)
+                block = format_flare_dynamic_evidence(pack) if pack else ""
+                if block:
+                    findings["dynamic_corroboration"] = {
+                        "pack_present": True,
+                        "chars": len(block),
+                        "authority": "corroborating-only",
+                    }
+                    print(
+                        f"[deep_dive_agentic] dynamic pack ingested as "
+                        f"evidence ({len(block)} chars, corroborating-only)",
+                        flush=True,
+                    )
+            except Exception as exc:  # never break the dive over a missing pack
+                findings["dynamic_corroboration"] = {"error": str(exc)[:200]}
+                print(
+                    f"[deep_dive_agentic] dynamic pack ingest failed "
+                    f"({type(exc).__name__}: {exc}) - continuing with static "
+                    f"only",
+                    flush=True,
+                )
+
     # V5.16.5 — post-UPX second-pass on unpacked payload
     upx_r = tools_raw.get("upx") if isinstance(tools_raw.get("upx"), dict) else {}
     unpacked = (upx_r or {}).get("unpacked_path") or ""

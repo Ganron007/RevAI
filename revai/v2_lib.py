@@ -6248,6 +6248,20 @@ def format_flare_dynamic_evidence(pack: dict | None) -> str:
     return "\n".join(lines)
 
 
+def dynamic_corroboration_enabled() -> bool:
+    """Whether dynamic corroboration may be attached anywhere.
+
+    One definition of the opt-out, shared by the publish-time attachment and the
+    deep-dive ingestion (R1), so the two cannot drift. If they did, a run with
+    REVAI_DISABLE_DYNAMIC_CORROBORATION=1 could suppress the pack in the report
+    while the agent still reasoned over it -- the report would then claim an
+    absence the analysis had seen.
+    """
+    return os.environ.get(
+        "REVAI_DISABLE_DYNAMIC_CORROBORATION", "").strip().lower() not in (
+            "1", "true", "yes", "on")
+
+
 def attach_dynamic_corroboration(technical_evidence: str, sha: str, *,
                                  logs_dir: Path | None = None,
                                  winre_root: Path | None = None) -> str:
@@ -6257,8 +6271,7 @@ def attach_dynamic_corroboration(technical_evidence: str, sha: str, *,
     users without WinRE get identical reports. Opt out with
     ``REVAI_DISABLE_DYNAMIC_CORROBORATION=1``. Never alters verdicts.
     """
-    if os.environ.get("REVAI_DISABLE_DYNAMIC_CORROBORATION", "").strip().lower() in (
-            "1", "true", "yes", "on"):
+    if not dynamic_corroboration_enabled():
         return technical_evidence
     try:
         pack = load_dynamic_pack(sha, logs_dir=logs_dir, winre_root=winre_root)
