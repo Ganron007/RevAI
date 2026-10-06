@@ -252,26 +252,6 @@ Full ops: [`docs/OPERATE.md`](docs/OPERATE.md) · Install: [`docs/INSTALL.md`](d
 
 ---
 
-## What's coming…
-
-*Where RevAI is headed before the `v1.0.0` release tag. Items land as they are
-built, tested and published; this table is kept to what is actually next.*
-
-| Item | Description |
-|------|-------------|
-| **Analysis depth profile** (`REVAI_DEPTH=full`) | A depth profile that raises deep-dive budgets, floors the dynamic idle-stop, forces the emulator + solver + unpack passes, and requires the report's "not observed / not reconstructed" gap section. Not yet implemented — the knob is deliberately not advertised anywhere until it is |
-| **Interactive steering mode** | A fourth run mode: analyst notes injected mid-run with HITL pause points between stages. Composes the existing stages, so deterministic gates stay final — steering adds context, never bypasses a gate |
-| **Multi-provider matrix** | Provider benchmark and report diff across `REVAI_LLM_*`: which model judged, which wrote, and where two independent providers disagree |
-| **Claim-level entailment checker** | Post-`v1.0.0`: claim-by-claim grounding of report statements against the evidence pack, so a gate can test reasoning validity rather than only breadth |
-| **`v1.0.0` release tag** | Versioned first release once the items above land, following a clean-install deployment rehearsal of the setup scripts on a fresh VM |
-
-**Blocked on operator input, not on engineering:** the 12 manual UI runs that
-populate `docs/case-studies/ui/`, and a new six-family sample set
-(Winnti_ZxShell, Armored_Likho ×2, Sunshuttle, DynoWiper, Tomiris) for the
-final full-gate campaign.
-
----
-
 ## License
 
 MIT — see [LICENSE](LICENSE).
