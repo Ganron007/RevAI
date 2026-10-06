@@ -71,7 +71,8 @@ def _src() -> str:
 def test_run_is_started_in_its_own_process_group():
     """Without setsid there is no group to signal, so B1 cannot be fixed."""
     src = _src()
-    start = re.search(r"^\s*setsid\s+python3\s+pipeline_single\.py", src, re.M)
+    start = re.search(r"^\s*setsid\s+python3\s+\"?\$?(?:DRIVER|pipeline_single\.py)\"?",
+                      src, re.M)
     assert start, "the run must be launched with setsid so it leads a group"
 
 

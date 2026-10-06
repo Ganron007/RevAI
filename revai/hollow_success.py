@@ -76,8 +76,8 @@ _DEGENERATE_TOKEN = re.compile(r"\S+")
 #: talking ABOUT verdicts, which is how this check would stop meaning anything.
 _TICKER_RE = re.compile(
     r"\|\s*\*\*Final\*\*\s*\|\s*\*+([^*|]+?)\*+\s*\|"
-    r"|\*\*verdict\s*:\s*[\s*`]*([a-z][a-z _-]{2,30}?)[\s*`]*\s*"
-    r"\(\s*(?:confidence|score)",
+    r"|\*\*verdict\s*:\s*[\s*`]*([a-z][a-z _-]{2,30}?)[\s*`]*"
+    r"(?:\(|,)\s*(?:confidence|score)[\s:]*\d",
     re.IGNORECASE)
 
 #: Written by pipeline_single at the top of every run (see

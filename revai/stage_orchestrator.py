@@ -382,6 +382,52 @@ class StageRunner:
             600,
         )
 
+    def run_depth(self) -> dict:
+        """Stage 9: depth mode (plan #48), gated by REVAI_DEPTH.
+
+        Returns early with a recorded skip when the gate is off, so the trace
+        shows "asked for and skipped" rather than a stage that never existed.
+        When it is on, the case dir is passed explicitly: depth_agent resolves
+        a sha through case_dir(), which needs REVAI_RUN_MODE to be right, and in
+        agentic mode that is `agentic` -- not the scripted default.
+        """
+        try:
+            from depth_agent import ceiling_seconds, depth_enabled
+        except Exception as exc:  # pragma: no cover - not deployed
+            return {"ok": True, "skipped": True,
+                    "reason": f"depth_agent unavailable: {exc}"}
+        if not depth_enabled():
+            out = {"ok": True, "skipped": True,
+                   "reason": "REVAI_DEPTH is not set",
+                   "note": "depth mode is opt-in; set REVAI_DEPTH=1 to enable"}
+            self.events.append({"type": "observe", "tool": "depth_understanding",
+                                "data": out, "ts": _utc()})
+            return out
+        case = case_dir(self.sha)
+        env = dict(os.environ)
+        env["REVAI_CASE_DIR"] = str(case)
+        env["REVAI_DEPTH"] = "1"
+        try:
+            proc = subprocess.run(
+                [sys.executable, str(SCRIPTS / "depth_agent.py"), self.sha],
+                capture_output=True, text=True, timeout=ceiling_seconds() + 300,
+                env=env, cwd=str(SCRIPTS),
+            )
+        except subprocess.TimeoutExpired:
+            return {"ok": True, "skipped": True,
+                    "reason": "depth hit its ceiling; the run is not failed by it"}
+        except Exception as exc:
+            return {"ok": True, "skipped": True, "reason": str(exc)}
+        # Depth never gates this pipeline, so a non-zero rc is recorded, not
+        # raised: the objective is understanding, and a partial map is a result.
+        out = {"ok": proc.returncode == 0, "rc": proc.returncode,
+               "case_dir": str(case),
+               "stdout_tail": (proc.stdout or "")[-600:],
+               "stderr_tail": (proc.stderr or "")[-300:]}
+        self.events.append({"type": "observe", "tool": "depth_understanding",
+                            "data": out, "ts": _utc()})
+        return out
+
     def read_verdicts(self) -> dict:
         v = _verdicts(self.sha)
         self.events.append({"type": "observe", "tool": "read_verdicts", "data": v, "ts": _utc()})

@@ -222,3 +222,58 @@ def test_the_panel_reader_is_not_satisfied_by_prose_about_verdicts():
              "Why the verdict is suspicious rather than clean.")
     assert not hs._TICKER_RE.search(prose), (
         "the reader matched prose that merely discusses verdicts")
+
+
+# ================= format 3: the agentic report's own verdict form ==========
+
+def test_the_panel_reader_reads_the_agentic_report_format_too():
+    """The agentic publisher writes a third form the first fix did not cover.
+
+    Run comparison on the same sample (sha 18df68d): the scripted run turned
+    green after the first fix, and the agentic run stayed red on the same check
+    with the same 5-reports-1-panel symptom. The agentic publisher writes:
+
+        **Verdict: SUSPICIOUS (score 45/100)** - ...      (uppercase, parenthesised)
+        **Verdict:** suspicious, score 45/100, ...          (comma, not parenthesis)
+
+    The first fix required a PARENTHESIS before confidence/score, so the comma
+    form was invisible. Both modes must be readable or the cross-report
+    agreement check is a coin flip on which publisher wrote the report.
+    """
+    sys.modules.pop("hollow_success", None)
+    d = resolve("revai/hollow_success.py").parent
+    if str(d) not in sys.path:
+        sys.path.insert(0, str(d))
+    import hollow_success as hs  # noqa: PLC0415
+
+    agentic_formats = [
+        "**Verdict: SUSPICIOUS (score 45/100)** - a legitimately coded tool",
+        '**Verdict:** suspicious, score 45/100, family guess "NetSupport"',
+    ]
+    for text in agentic_formats:
+        m = hs._TICKER_RE.search(text)
+        assert m, f"the reader cannot parse the agentic verdict form: {text[:56]}"
+        got = (m.group(1) or m.group(2) or "").strip().lower()
+        assert got == "suspicious", f"{text[:50]} -> {got!r}"
+
+
+def test_the_broadened_reader_still_rejects_prose():
+    """Widening to the comma form must not let 'scored' satisfy the check.
+
+    `(?:confidence|score)[\\s:]*\\d` is the anchor: a comma followed by `score`
+    and a digit. "the verdict is suspicious, scored on a scale" has the comma and
+    a word starting with `score`, but no digit immediately after it, so it must
+    not match -- otherwise a report discussing its own scoring would count as a
+    verdict panel.
+    """
+    sys.modules.pop("hollow_success", None)
+    d = resolve("revai/hollow_success.py").parent
+    if str(d) not in sys.path:
+        sys.path.insert(0, str(d))
+    import hollow_success as hs  # noqa: PLC0415
+
+    assert not hs._TICKER_RE.search(
+        "The verdict is suspicious, scored on a scale of one to ten.")
+    assert not hs._TICKER_RE.search(
+        "We report the verdict with low confidence because the tool output "
+        "was thin.")

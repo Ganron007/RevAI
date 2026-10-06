@@ -142,6 +142,8 @@ log "mode: $MODE"
 
 LOG_DIR=/opt/samples/logs
 CASE_DIR="$LOG_DIR/$SHA/$MODE"
+# Named after the scripted driver so existing tooling keeps working; in
+# agentic mode the orchestrator writes its own trace alongside it.
 STAGE_LOG="$CASE_DIR/pipeline_single.log"
 AUDIT_JSON="$CASE_DIR/pipeline-audit.json"
 RUN_LOG="$LOG_DIR/_watched_${SHA:0:12}.log"
@@ -196,7 +198,29 @@ cd "$RUN_DIR" || { fail "cannot cd to $RUN_DIR"; exit 3; }
 # what lets kill_run signal the whole tree. Without it the stages are
 # grandchildren of THIS process, and killing only the parent left them running
 # (defect B1).
-setsid python3 pipeline_single.py "$SAMPLE" > "$RUN_LOG" 2>&1 &
+# Dispatch on the mode. pipeline_single.py does NOT branch to
+# stage_orchestrator on REVAI_RUN_MODE -- it only uses the variable for its
+# case-dir default -- so a hardcoded pipeline_single.py here meant
+# `--mode agentic` ran the deterministic scripted spine and filed it under the
+# agentic case dir, where it looked exactly like an agentic run. Fail loudly on
+# an unrecognised mode instead: a run in the wrong mode is worse than no run.
+case "$MODE" in
+  scripted)
+    DRIVER="pipeline_single.py"
+    ;;
+  agentic)
+    DRIVER="stage_orchestrator.py"
+    ;;
+  *)
+    fail "unknown mode '$MODE' (expected scripted|agentic); refusing to run " \
+         "the wrong spine and file it under $CASE_DIR"
+    exit 3
+    ;;
+esac
+[[ -f "$DRIVER" ]] || { fail "$DRIVER missing in $RUN_DIR"; exit 3; }
+log "driver: $DRIVER (mode: $MODE)"
+
+setsid python3 "$DRIVER" "$SAMPLE" > "$RUN_LOG" 2>&1 &
 RUN_PID=$!
 log "pid: $RUN_PID"
 
