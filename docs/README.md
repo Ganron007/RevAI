@@ -1,6 +1,6 @@
 # RevAI Documentation
 
-- [`architecture.md`](architecture.md) — System architecture, 7-stage spine, Evidence Pack grounding (no RAG), HITL approval gate, depth gate (capability coverage), optional function-recovery stage.
+- [`architecture.md`](architecture.md) — System architecture, stage spine, Evidence Pack grounding (no RAG), HITL approval gate, depth gate (capability coverage), optional function-recovery stage.
 - [`FEATURES.md`](FEATURES.md) — full feature inventory: every feature with its env gate, stage, and produced artifact.
 - [`PREREQUISITES.md`](PREREQUISITES.md) — Ghidra, ghidrasql, CADRE PE Loader, Malcat (optional), LLM.
 - [`INSTALL.md`](INSTALL.md) — install dependencies on REMnux.

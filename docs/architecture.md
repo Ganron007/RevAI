@@ -78,7 +78,7 @@ skips itself when its `REVAI_ENABLE_*` flag is off and is never required for gre
 
 **LangChain vs LangGraph here**: LangChain supplies the components (message types `AIMessage`/`HumanMessage`/`SystemMessage`/`ToolMessage`, `StructuredTool` adapters, `ChatOpenAI` client). LangGraph supplies the loop that runs the LLM's chosen tool calls and returns results. Everything outside these two loops — quick_scan, publish, section, audit, yara, intake, function recovery, every retry, every gate — is plain Python.
 
-### C. The 7-Stage Pipeline Spine (+ 2 optional)
+### C. The Stage Spine (8 stages + 2 optional)
 
 | Stage | Script | Role & Functionality |
 | :--- | :--- | :--- |

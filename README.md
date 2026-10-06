@@ -55,24 +55,11 @@ React Console and drives the stage scripts under `/opt/scripts/`.
 
 ## Three ways to run the pipeline
 
-All modes run the same stage scripts, the same tool stack, and the same LLM backend. Stages 3 and 8.5 are optional and self-skip when disabled. The difference between modes is *who decides the sequence* and *how failures are handled*:
-
-| # | Stage | Gate |
-|---|---|---|
-| 1 | **intake** — Ghidra (+ optional IDA) session | always |
-| 2 | **quick_scan** — triage tools, then an LLM verdict | always |
-| 3 | **winre_dynamic** - Flare detonation, ingested as deep-dive evidence (corroborating only: it never overrides a static finding) | `REVAI_WINRE_RUN=1` |
-| 4 | **deep_dive** — agentic deep dive | always |
-| 4.5 | **function_recovery** — agentic function-name recovery | `REVAI_ENABLE_AGENTIC_RECOVERY=1` |
-| 5 | **yara_gen** — YARA + Sigma | always |
-| 6 | **publish** — REPORT-MASTER (LLM-authored, source-tagged) | always |
-| 7 | **correlate** — section Map-Reduce report (v3) | always |
-| 8 | **audit** — `all_green`, then `truly_green` | always |
-| 8.5 | **depth_understanding** — depth mode | `REVAI_DEPTH=1` |
+All modes run the same stage scripts, the same tool stack, and the same LLM backend. The difference between modes is *who decides the sequence* and *how failures are handled* — the stage list itself is in [Pipeline](#pipeline) below:
 
 | Mode | Script / Entry | Stage Sequencing | Failure Handling |
 | :--- | :--- | :--- | :--- |
-| **Scripted** *(default)* | `pipeline_single.py` | • Deterministic fixed order (see the spine above)<br>• No LLM orchestration | **Zero retries**<br>Failed stage aborts remaining pipeline (predictable, deterministic runtime). |
+| **Scripted** *(default)* | `pipeline_single.py` | • Deterministic fixed order (the spine below)<br>• No LLM orchestration | **Zero retries**<br>Failed stage aborts remaining pipeline (predictable, deterministic runtime). |
 | **Agentic** | `stage_orchestrator.py` | • LangGraph ReAct planner (LLM) in policy-pinned order<br>• Observes verdicts/evidence between stages<br>• HITL stop before publish if quick/deep verdicts disagree | **1 bounded retry** *(default)*<br>Handles transient failures (timeouts, connection loss, OOM). Calibrated via `REVAI_*` env / console panel (retries, budget, recursion limit, timeout scale). |
 | **Web Console** | `http://<host>:5000` | • Manual stage buttons (human-paced)<br>• **Run orch** button (full agentic path)<br>• **Analyst steering** — pre-run note (`REVAI_STEERING_FILE`), or a post-hoc note via `/api/steer/<sha>` for the next run | **UI-configured**<br>Run config panel sets retries, budget profile (*standard* / *generous* / *unlimited*), and timeout scale before execution. |
 
@@ -100,7 +87,7 @@ deep dive queries those databases directly, and the LLM authors the verdict and
 report from the assembled evidence pack. The quality gate (`report_quality.py`)
 has the final say on `truly_green`.
 
-For a full breakdown of component layering, the 7-stage spine, Evidence Pack
+For a full breakdown of component layering, the stage spine, Evidence Pack
 grounding (no RAG), and the Human-in-the-Loop approval gate, see
 [`docs/architecture.md`](docs/architecture.md).
 
@@ -112,32 +99,56 @@ grounding (no RAG), and the Human-in-the-Loop approval gate, see
 
 ## Pipeline
 
-The spine runs seven stages (plus one optional stage). Orchestration is either the **LangGraph ReAct orchestrator** (`stage_orchestrator.py`, which plans/executes the whole spine — this is what the Console's **Run orch** button drives) or the **deterministic single-mode spine** (`pipeline_single.py`).
+The spine runs the stages below. Orchestration is either the **LangGraph ReAct
+orchestrator** (`stage_orchestrator.py`, which plans/executes the whole spine —
+this is what the Console's **Run orch** button drives) or the **deterministic
+single-mode spine** (`pipeline_single.py`).
 
 ```
 React Console / CLI
-   │
-   │  stage_orchestrator.py  (LangGraph ReAct: plan → act → observe)
-   │     OR pipeline_single.py (deterministic spine)
-   │
-   ├─ 1. intake_v2.py            session + Ghidra (optional IDA) → SQLite
-   ├─ 2. quick_scan_v2.py        triage tools → evidence-pack → LLM verdict
-   ├─ 3. deep_dive_agentic.py    AGENTIC LangGraph ReAct deep dive
-   │        (planner agent drives Ghidra/IDA SQL, capa, Malcat, FLOSS, YARA, r2,
-   │         revai-tools sec/sinks/audit, api_lookup offline API grounding)
-   ├─ 3.5 function_recovery*  OPT-IN agentic function-name recovery
-   │        (call-graph tiers → LLM naming → ghidrasql writeback, conf ≥ 0.7)
-   ├─ 4. yara_gen_v2.py          YARA + Sigma generation
-   ├─ 5. publish_report_v2.py    REPORT-MASTER (LLM-authored, source-tagged)
-   ├─ 6. section_publisher.py    correlate — section Map-Reduce report
-   └─ 7. audit_pipeline.py       all_green per-stage audit
-            │
-            └─ report_quality.py → truly_green quality gate
+   |
+   |  stage_orchestrator.py  (LangGraph ReAct: plan -> act -> observe)
+   |     OR pipeline_single.py (deterministic spine)
+   |
+   |- 1. intake_v2.py            session + Ghidra (optional IDA) -> SQLite
+   |- 2. quick_scan_v2.py        triage tools -> evidence-pack -> LLM verdict
+   |- 3. winre_dynamic*       OPT-IN Flare detonation, ingested as deep-dive
+   |        evidence (corroborating only: it never overrides a static finding)
+   |- 4. deep_dive_agentic.py    AGENTIC LangGraph ReAct deep dive
+   |        (planner agent drives Ghidra/IDA SQL, capa, Malcat, FLOSS, YARA, r2,
+   |         revai-tools sec/sinks/audit, api_lookup offline API grounding,
+   |         load_skill RE procedure grounding)
+   |- 4.5 function_recovery**  OPT-IN agentic function-name recovery
+   |        (call-graph tiers -> LLM naming -> ghidrasql writeback, conf >= 0.7)
+   |- 5. yara_gen_v2.py          YARA + Sigma generation
+   |- 6. publish_report_v2.py    REPORT-MASTER (LLM-authored, source-tagged)
+   |- 7. section_publisher.py    correlate - section Map-Reduce report
+   |- 8. audit_pipeline.py       all_green per-stage audit
+   |        |
+   |        '- report_quality.py -> truly_green quality gate
+   '- 8.5 depth_understanding*  OPT-IN depth mode: a post-pipeline,
+            ceiling-bounded run that maps how the sample works
+            (understanding.json). It never gates the pipeline and never
+            produces a verdict.
 ```
 
-*`function_recovery` is optional — enabled via `REVAI_ENABLE_AGENTIC_RECOVERY=1` (legacy `ENABLE_AGENTIC_RECOVERY` honored); recovered names feed the published reports.
+\* `winre_dynamic` (`REVAI_WINRE_RUN=1`) and `depth_understanding`
+(`REVAI_DEPTH=1`) are opt-in and self-skip when disabled. With `REVAI_WINRE_RUN`
+unset the stage list is byte-identical to the historical order, so a static-only
+deployment is unchanged by opting in.
 
-**Verdict generation:** tools → `package_stage_evidence` → LLM. The LLM writes the verdict and report from the stage-tagged evidence pack.
+\*\* `function_recovery` is enabled via `REVAI_ENABLE_AGENTIC_RECOVERY=1`
+(legacy `ENABLE_AGENTIC_RECOVERY` honored); recovered names feed the published
+reports.
+
+**Analyst steering** can reach the analysis at three points: `L1` a pre-run note
+from a file (`REVAI_STEERING_FILE`), `L2` mid-run steering from the UI
+(deliberately deferred), and `L3` a post-hoc note via `/api/steer/<sha>` for the
+next run. All levels merge in one place, and a note is context only — tool
+evidence outranks it and it can never set a verdict.
+
+**Verdict generation:** tools -> `package_stage_evidence` -> LLM. The LLM writes
+the verdict and report from the stage-tagged evidence pack.
 
 ---
 
