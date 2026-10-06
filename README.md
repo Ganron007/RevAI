@@ -99,56 +99,38 @@ grounding (no RAG), and the Human-in-the-Loop approval gate, see
 
 ## Pipeline
 
-The spine runs the stages below. Orchestration is either the **LangGraph ReAct
-orchestrator** (`stage_orchestrator.py`, which plans/executes the whole spine —
-this is what the Console's **Run orch** button drives) or the **deterministic
+Orchestration is either the **LangGraph ReAct orchestrator**
+(`stage_orchestrator.py`, which plans and executes the whole spine — this is
+what the Console's **Run orch** button drives) or the **deterministic
 single-mode spine** (`pipeline_single.py`).
 
 ```
 React Console / CLI
    |
-   |  stage_orchestrator.py  (LangGraph ReAct: plan -> act -> observe)
+   |  stage_orchestrator.py   (LangGraph ReAct: plan -> act -> observe)
    |     OR pipeline_single.py (deterministic spine)
    |
-   |- 1. intake_v2.py            session + Ghidra (optional IDA) -> SQLite
-   |- 2. quick_scan_v2.py        triage tools -> evidence-pack -> LLM verdict
-   |- 3. winre_dynamic*       OPT-IN Flare detonation, ingested as deep-dive
-   |        evidence (corroborating only: it never overrides a static finding)
-   |- 4. deep_dive_agentic.py    AGENTIC LangGraph ReAct deep dive
-   |        (planner agent drives Ghidra/IDA SQL, capa, Malcat, FLOSS, YARA, r2,
-   |         revai-tools sec/sinks/audit, api_lookup offline API grounding,
-   |         load_skill RE procedure grounding)
-   |- 4.5 function_recovery**  OPT-IN agentic function-name recovery
-   |        (call-graph tiers -> LLM naming -> ghidrasql writeback, conf >= 0.7)
-   |- 5. yara_gen_v2.py          YARA + Sigma generation
-   |- 6. publish_report_v2.py    REPORT-MASTER (LLM-authored, source-tagged)
-   |- 7. section_publisher.py    correlate - section Map-Reduce report
-   |- 8. audit_pipeline.py       all_green per-stage audit
-   |        |
+   |- 1.  intake_v2.py           session + Ghidra (optional IDA) -> SQLite
+   |- 2.  quick_scan_v2.py       triage tools -> evidence pack -> LLM verdict
+   |- 3.  winre_dynamic          [REVAI_WINRE_RUN=1]
+   |        Flare detonation, fed to the deep dive as evidence
+   |- 4.  deep_dive_agentic.py   AGENTIC LangGraph ReAct deep dive
+   |        (Ghidra/IDA SQL, capa, Malcat, FLOSS, YARA, r2, revai-tools,
+   |         api_lookup, load_skill)
+   |- 4.5 function_recovery      [REVAI_ENABLE_AGENTIC_RECOVERY=1]
+   |        agentic function-name recovery, names cited in reports
+   |- 5.  yara_gen_v2.py         YARA + Sigma generation
+   |- 6.  publish_report_v2.py   REPORT-MASTER (LLM-authored, source-tagged)
+   |- 7.  section_publisher.py   correlate - section Map-Reduce report
+   |- 8.  audit_pipeline.py      all_green per-stage audit
    |        '- report_quality.py -> truly_green quality gate
-   '- 8.5 depth_understanding*  OPT-IN depth mode: a post-pipeline,
-            ceiling-bounded run that maps how the sample works
-            (understanding.json). It never gates the pipeline and never
-            produces a verdict.
+   '- 8.5 depth_understanding    [REVAI_DEPTH=1]
+            post-pipeline depth run -> understanding.json
 ```
 
-\* `winre_dynamic` (`REVAI_WINRE_RUN=1`) and `depth_understanding`
-(`REVAI_DEPTH=1`) are opt-in and self-skip when disabled. With `REVAI_WINRE_RUN`
-unset the stage list is byte-identical to the historical order, so a static-only
-deployment is unchanged by opting in.
-
-\*\* `function_recovery` is enabled via `REVAI_ENABLE_AGENTIC_RECOVERY=1`
-(legacy `ENABLE_AGENTIC_RECOVERY` honored); recovered names feed the published
-reports.
-
-**Analyst steering** can reach the analysis at three points: `L1` a pre-run note
-from a file (`REVAI_STEERING_FILE`), `L2` mid-run steering from the UI
-(deliberately deferred), and `L3` a post-hoc note via `/api/steer/<sha>` for the
-next run. All levels merge in one place, and a note is context only — tool
-evidence outranks it and it can never set a verdict.
-
-**Verdict generation:** tools -> `package_stage_evidence` -> LLM. The LLM writes
-the verdict and report from the stage-tagged evidence pack.
+Stages 3, 4.5 and 8.5 are opt-in and skip themselves when their variable is
+unset, so a static-only run is `intake` -> `quick_scan` -> `deep_dive` ->
+`yara_gen` -> `publish` -> `section` -> `audit`.
 
 ---
 
@@ -158,20 +140,20 @@ Distinctive capabilities — the things that set RevAI apart. For the full featu
 
 | Capability | What makes it distinctive |
 | :--- | :--- |
-| **Custom CADRE PE Loader** | Own Ghidra loader — recovers import tables on packed/binder PEs — see [`docs/cadre-pe-loader.md`](docs/cadre-pe-loader.md) |
-| **Agent-loop discipline** | Budget warnings · redundant-call detection · hallucination check · failure taxonomy — see [`docs/agent-loop-discipline.md`](docs/agent-loop-discipline.md) |
-| **Malcat native capa engine** | Faster + more reliable than Mandiant capa on hard samples — see [`docs/malcat-capa-engine.md`](docs/malcat-capa-engine.md) |
-| **In-process yara-x engine** | YARA scanning with no external `yr` binary — see [`docs/OPERATE.md`](docs/OPERATE.md) |
-| **Honest `truly_green` gate** | Green requires audit **and** report quality **and** zero failed tools — plus engine-citation verification and a cross-stage verdict lock |
-| **Indicator scrubber** | Indicators no tool observed are removed from published report prose by code, and the removal is recorded and re-verified — a report asserts only what its evidence supports. Refuses to run against an empty evidence corpus, so the sample's own sha256 can never be deleted by a bad root |
-| **Published-artifact hygiene** | Published reports never name the provider or model (`configured-llm`) while `verdict.json` and `pipeline-audit.json` keep the real one — an auditor can still tell which model judged the sample |
-| **Run watchdog** | `scripts/run-watched.sh` streams a run's stages, attributes each failure to the stage that emitted it, and can abort before the time budget is gone — exit 0/1/2/3 distinguishes "stages green", "a stage failed", "the watcher killed it", "usage error" |
-| **Depth gate (capability coverage)** | Deep-dive summary must address every capability domain — as evidence or explicit "not observed" — see [`docs/architecture.md`](docs/architecture.md#10-quality-verification-gate-truly_green) |
-| **Publication-quality gates** | Deterministic cross-report checks (dynamic-analysis honesty, verdict-panel agreement, entropy vs measured file entropy) |
-| **Agentic function recovery** | Opt-in relevance-based triage → LLM naming (`FUN_…` → `parse_http_header`) → SQL writeback (conf ≥ 0.7, never deletes) → names cited in reports |
-| **Verifiable analysis scripts** | Opt-in: the LLM writes a sample-specific extraction script, the pipeline runs it sandboxed and then **re-derives every claimed value from the sample bytes itself**; values already visible in the generation prompt, or hardcoded in the script, are flagged as not independent — the report appendix lists only re-derived values |
-| **Tool Stack (28 tools)** | 28 format-aware manifest tools + 26 agent-callable tools (incl. revai-tools, the offline Windows-API lookup index, the RE procedure skills loader and structural binary comparison — fail-open, never gates) — see [`docs/tool-stack.md`](docs/tool-stack.md) |
-| **Offline API grounding** | `api_lookup` answers what a Windows API does and how it is abused from a local SQLite index (reference text + curated malicious-use notes + malapi.io attack categories + FTS search), so the deep-dive agent grounds API claims instead of recalling them — A/W, Nt/Zw, `__imp_`, `@N` spellings all fold. Knowledge only: never verdicts, never capability matching |
+| **Custom CADRE PE Loader** | Our own Ghidra loader that recovers import tables from packed and binder PEs — [`docs/cadre-pe-loader.md`](docs/cadre-pe-loader.md) |
+| **Agent-loop discipline** | The deep-dive agent is kept honest: budget nudges, duplicate-call detection, and a check that every claim traces to tool output — [`docs/agent-loop-discipline.md`](docs/agent-loop-discipline.md) |
+| **Malcat native capa engine** | Uses Malcat's own capability engine, which holds up better than Mandiant capa on packed samples — [`docs/malcat-capa-engine.md`](docs/malcat-capa-engine.md) |
+| **In-process yara-x engine** | YARA scanning runs inside the pipeline, with no external `yr` binary — [`docs/OPERATE.md`](docs/OPERATE.md) |
+| **Honest `truly_green` gate** | Green requires the audit, the report quality checks, and zero failed tools to all pass together |
+| **Indicator scrubber** | Code deletes any indicator the tools never observed from the report before it is published, and records what it removed |
+| **Published-artifact hygiene** | Published reports never name the model; the audit trail still does |
+| **Run watchdog** | `scripts/run-watched.sh` streams a run and stops it early on a fatal error instead of letting it burn the time budget |
+| **Depth gate (capability coverage)** | The deep dive must address every capability domain — as evidence or as stated 'not observed' — [`docs/architecture.md`](docs/architecture.md#10-quality-verification-gate-truly_green) |
+| **Publication-quality gates** | Deterministic checks that the reports agree with each other and with the evidence |
+| **Agentic function recovery** | Opt-in: recovers readable function names and writes them back, with a confidence floor |
+| **Verifiable analysis scripts** | Opt-in: the LLM writes an extraction script, the pipeline runs it sandboxed and re-derives every claimed value from the sample itself |
+| **Tool Stack (28 tools)** | 28 format-aware manifest tools + 26 agent-callable tools — [`docs/tool-stack.md`](docs/tool-stack.md) |
+| **Offline API grounding** | A local Windows-API index the agent queries instead of recalling what an API does — [`docs/tool-stack.md`](docs/tool-stack.md) |
 
 ---
 
