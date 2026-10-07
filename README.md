@@ -51,6 +51,20 @@ React Console and drives the stage scripts under `/opt/scripts/`.
   <img src="docs/img/ui-screenshot_v2.png" alt="RevAI Console — landing / lab overview" width="100%">
 </p>
 
+The Console is a control surface, not a separate pipeline: every stage runs the
+same script the CLI runs, with the same tools and the same gates. What it adds is
+being able to drive a run stage by stage, watch it live, and read the artifacts
+without leaving the browser — running the whole spine with the **Run orch**
+button, inspecting verdicts and reports per case, configuring the optional WinRE
+detonation, and recording analyst direction.
+
+**Everything the CLI can do is reachable from the Console and vice versa** — that
+parity is a design rule, not an accident. Environment gates an operator would
+think of as a feature (depth mode, TI enrichment, the depth ceiling, the IoC
+fact-check's mode) are settable from both, and a test fails if a new gate
+becomes reachable from only one. See
+[`docs/OPERATE.md`](docs/OPERATE.md) for the Console field by field.
+
 ---
 
 ## Three ways to run the pipeline

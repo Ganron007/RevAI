@@ -50,12 +50,22 @@ when it applies to the sample's file type.
 
 ## Agent-callable tools (deep-dive ToolRegistry)
 
-ghidra_query · ida_query · ghidra_decompile · signature_match · z3_solve · angr_analyze
-· malcat_analyze · capa_analyze · pe_import_signals · yara_scan · floss_extract ·
-dotnet_analyze · speakeasy_emulate · frida_static_probe · r2_decompile · upx_unpack ·
+### Bound to the LangGraph graph (the default engine)
+
+ghidra_query · ida_query · ghidra_decompile · capa_analyze · malcat_analyze ·
+yara_scan · floss_extract · pe_import_signals · speakeasy_emulate · r2_decompile ·
+z3_solve · angr_analyze · api_lookup · compare_files · load_skill
+
+### In the registry, run by the deterministic checklist instead
+
+signature_match · dotnet_analyze · frida_static_probe · upx_unpack ·
 xor_string_search · shellcode_extract · olevba_analyze · peepdf_analyze ·
-revai_tools_sec · revai_tools_sinks · revai_tools_audit · api_lookup · compare_files ·
-load_skill
+revai_tools_sec · revai_tools_sinks · revai_tools_audit
+
+The split is deliberate: the checklist already covers the static scanners, so the
+agent's inventory is the SQL-first RE core plus the extras that benefit from the
+model choosing when to call them. `REVAI_AGENTIC_ENGINE=custom` binds the whole
+26-tool registry to the loop.
 
 `load_skill` is bound to the agent graph as well as the registry. The deep-dive
 prompt instructs the model to load a procedure before doing the work it covers,
