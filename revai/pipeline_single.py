@@ -251,6 +251,26 @@ def finalize_trace(trace: dict, audit_path: Path | None = None) -> dict:
     return trace
 
 
+def _stage_timeout(env: str, default: int) -> int:
+    """Per-stage timeout in seconds, overridable by env.
+
+    The publish stages are the ones that scale with sample size: 104 KB took
+    1422s, 2 MB took 2122s, and a 3.5 MB sample projects past the 3600s default.
+    Hardcoding a larger number only moves the wall, so it becomes a knob --
+    REVAI_STAGE_TIMEOUT_<NAME> wins, the historical default otherwise.
+    """
+    raw = os.environ.get(env, "").strip()
+    if not raw:
+        return default
+    try:
+        val = int(raw)
+    except ValueError:
+        print(f"[pipeline_single] {env}={raw!r} is not a number; "
+              f"using {default}", file=sys.stderr, flush=True)
+        return default
+    return val if val > 0 else default
+
+
 def build_stages(sha: str, intake_cmd: list[str] | None) -> list[tuple[str, list[str], int]]:
     """The scripted stage spine, in execution order, as (name, cmd, timeout).
 
@@ -315,9 +335,12 @@ def build_stages(sha: str, intake_cmd: list[str] | None) -> list[tuple[str, list
         ))
     stages.extend([
         ("yara_gen", [sys.executable, str(SCRIPTS / "yara_gen_v2.py"), sha], 1800),
-        ("publish_v2", [sys.executable, str(SCRIPTS / "publish_report_v2.py"), sha, "--template", "full"], 3600),
-        ("publish_v3", [sys.executable, str(SCRIPTS / "section_publisher.py"), sha], 3600),
-        ("audit", [sys.executable, str(SCRIPTS / "audit_pipeline.py"), sha, "--mode", "single"], 600),
+        ("publish_v2", [sys.executable, str(SCRIPTS / "publish_report_v2.py"), sha, "--template", "full"],
+         _stage_timeout("REVAI_STAGE_TIMEOUT_PUBLISH", 3600)),
+        ("publish_v3", [sys.executable, str(SCRIPTS / "section_publisher.py"), sha],
+         _stage_timeout("REVAI_STAGE_TIMEOUT_PUBLISH", 3600)),
+        ("audit", [sys.executable, str(SCRIPTS / "audit_pipeline.py"), sha, "--mode", "single"],
+         _stage_timeout("REVAI_STAGE_TIMEOUT_AUDIT", 600)),
     ])
     # D0 depth mode, strictly LAST. It is NOT a pipeline stage: it runs after the
     # reports and the audit exist, because everything it reads as starting

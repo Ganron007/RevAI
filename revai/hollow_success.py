@@ -74,11 +74,34 @@ _DEGENERATE_TOKEN = re.compile(r"\S+")
 #: that follows, so a paragraph that merely mentions a verdict cannot satisfy
 #: the panel check. A looser `\\bverdict[:\s*]+(\\w+)` would match the report
 #: talking ABOUT verdicts, which is how this check would stop meaning anything.
-_TICKER_RE = re.compile(
-    r"\|\s*\*\*Final\*\*\s*\|\s*\*+([^*|]+?)\*+\s*\|"
-    r"|\*\*verdict\s*:\s*[\s*`]*([a-z][a-z _-]{2,30}?)[\s*`]*"
-    r"(?:\(|,)\s*(?:confidence|score)[\s:]*\d",
-    re.IGNORECASE)
+#: The verdict vocabulary. Drawn from calibrate_verdict's accepted verdicts,
+#: so the extractor and the verdict engine cannot disagree about what a verdict
+#: can be. Matching on THIS rather than on the punctuation around it is what
+#: makes the reader survive a new report layout: five layouts exist across the
+#: two publishers and a punctuation-anchored regex went blind on the fifth.
+_VERDICT_VOCAB = (
+    "malicious", "not_malicious", "not malicious", "suspicious", "benign",
+    "unknown", "clean", "no_verdict",
+)
+
+#: A line that names a verdict, in any layout we have seen:
+#:   | **Final** | **suspicious** |
+#:   **Verdict: suspicious** (confidence: 70/100, ...)
+#:   **Verdict:** `suspicious` (score 45), ...
+#:   **Verdict: SUSPICIOUS (score 45/100)** - ...
+#:   **Verdict: MALICIOUS** | **Family: ...** | **Score: 97/100** |
+#:   | **Verdict** | Malicious | ...
+#: Anchored on `verdict` then the vocabulary word within a short span, so a
+#: paragraph that merely discusses verdicts (without naming one) matches nothing.
+_PANEL_RE = re.compile(
+    r"(?:verdict|final)\**\s*[:\|]?\s*\**\s*[`\|\s>*_-]{0,24}?\b("
+    + "|".join(re.escape(v).replace(r"\ ", r"[ _]") for v in _VERDICT_VOCAB)
+    + r")\b",
+    re.IGNORECASE,
+)
+
+#: Retained for callers that read a table row specifically (the older v2 shape).
+_TICKER_RE = _PANEL_RE
 
 #: Written by pipeline_single at the top of every run (see
 #: pipeline_single.run_single). Case dirs are reused and the stage log is
@@ -342,13 +365,11 @@ def check_verdict_panel_agreement(case: Path) -> list[Finding]:
             continue
         current.append(path)
         try:
-            m = _TICKER_RE.search(path.read_text(errors="replace")[:200000])
+            m = _PANEL_RE.search(path.read_text(errors="replace")[:200000])
         except OSError:
             continue
         if m:
-            # group(1) is the v2 table row; group(2) the v3 inline panel. Reading
-            # only group(1) is what left the v3 reports unreadable.
-            verdict = (m.group(1) or m.group(2) or "").strip().lower()
+            verdict = (m.group(1) or "").strip().lower().replace(" ", "_")
             if verdict:
                 panels[path.name] = verdict
 
