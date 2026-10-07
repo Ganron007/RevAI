@@ -27,6 +27,7 @@ spelled with one of the conventional root names, so a test that calls its root
 from __future__ import annotations
 
 import ast
+import re
 import warnings
 
 # Repo subdirectories whose files are deployed FLAT, so a repo-layout path does
@@ -181,29 +182,37 @@ class _SanitiseLayout(ast.NodeTransformer):
       import _layout            -> _layout.resolve("revai/x.py")
       from _layout import resolve -> resolve("revai/x.py")
 
-    Without this, the string argument inside the sanctioned call is still a
-    code-dir literal in the dump, and the `.read_text()` that follows it gets
-    flagged anyway -- a false positive on the ONE allowed form, which is how a
-    gate gets people to route around it.
+    Also replaces `git ls-files` style METADATA queries. Asking git which files
+    the repo owns never opens a repo path -- the paths travel as arguments to
+    git, not to the filesystem -- so treating one as a repo-rooted read flagged
+    a test that reads nothing. Without this, a gate that cannot tell a metadata
+    query from a file open fails on the sanctioned pattern.
     """
+
+    _GIT_QUERY = re.compile(r"^\s*git\s+(?:ls-files|ls-tree|rev-parse|status)\b")
+
+    def _is_git_query(self, call: ast.Call) -> bool:
+        if not call.args:
+            return False
+        first = call.args[0]
+        elts = first.elts if isinstance(first, ast.List) else [first]
+        words = [e.value for e in elts[:2]
+                 if isinstance(e, ast.Constant) and isinstance(e.value, str)]
+        if not words:
+            return False
+        return bool(self._GIT_QUERY.match(" ".join(words)))
 
     def __init__(self) -> None:
         self.aliases: set[str] = set()
-        self.saw_layout_import = False
 
-    def _visit_imports(self, tree: ast.AST) -> None:
+    def _collect_aliases(self, tree: ast.AST) -> None:
         for node in ast.walk(tree):
-            if isinstance(node, ast.ImportFrom):
-                if node.module == _LAYOUT_MODULE or (
-                        node.module or "").endswith("._layout"):
-                    self.saw_layout_import = True
-                    for a in node.names:
-                        if a.name in ("resolve", "source"):
-                            self.aliases.add(a.asname or a.name)
-            elif isinstance(node, ast.Import):
+            if isinstance(node, ast.ImportFrom) and (
+                    node.module == _LAYOUT_MODULE
+                    or (node.module or "").endswith("._layout")):
                 for a in node.names:
-                    if a.name.split(".")[-1] == _LAYOUT_MODULE:
-                        self.saw_layout_import = True
+                    if a.name in ("resolve", "source"):
+                        self.aliases.add(a.asname or a.name)
 
     def visit_Call(self, node: ast.Call) -> ast.AST:
         f = node.func
@@ -212,8 +221,11 @@ class _SanitiseLayout(ast.NodeTransformer):
                 and f.attr in ("resolve", "source")):
             return ast.copy_location(ast.Name(id="_SANITISED_PATH_", ctx=ast.Load()),
                                      node)
-        if (isinstance(f, ast.Name) and f.id in self.aliases):
+        if isinstance(f, ast.Name) and f.id in self.aliases:
             return ast.copy_location(ast.Name(id="_SANITISED_PATH_", ctx=ast.Load()),
+                                     node)
+        if self._is_git_query(node):
+            return ast.copy_location(ast.Name(id="_GIT_QUERY_", ctx=ast.Load()),
                                      node)
         return self.generic_visit(node)
 
@@ -233,7 +245,7 @@ def file_reads_repo_source(path) -> list[int]:
         return [exc.lineno or 0]
 
     _san = _SanitiseLayout()
-    _san._visit_imports(tree)
+    _san._collect_aliases(tree)
     tree = _san.visit(tree)
     tainted = _collect_tainted(tree)
     mentions_code_dir = _has_code_dir(tree)

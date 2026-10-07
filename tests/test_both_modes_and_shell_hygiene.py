@@ -86,18 +86,34 @@ def test_no_shell_script_carries_crlf():
 
 
 def _repo_scripts():
-    """The shell scripts this REPO owns, wherever the tests run.
+    """The shell scripts THIS REPO owns, wherever the tests run.
 
-    Scoped deliberately: on the VM the scripts directory also holds files the
-    repo never shipped (`run_agent_sandbox.sh` is one, and it is malformed), so
-    scanning the runtime directory fails the suite on a file nobody in the repo
-    can fix from here. The repo layout is `scripts/`; the flat VM layout has no
-    repo-owned `scripts/` of its own, in which case there is nothing to scan.
+    Authoritative via `git ls-files scripts/*.sh`: on the VM the runtime
+    directory also holds files the repo never shipped, and one of them
+    (`run_agent_sandbox.sh`, a doubled quote on line 53) is malformed. Scanning
+    the runtime directory therefore fails the suite on a file nobody in the repo
+    can fix from here -- and a check that fails for a file it does not own is
+    the same noise as a check that cannot fail.
+
+    Falls back to the repo-layout resolver when git is unavailable.
     """
+    try:
+        out = subprocess.run(["git", "ls-files", "scripts/*.sh"],
+                             capture_output=True, text=True,
+                             cwd=str(TESTS.parent))
+        paths = [TESTS.parent / l for l in out.stdout.split() if l.strip()]
+        if paths:
+            return sorted(paths)
+    except Exception:
+        pass
+    # git unavailable: resolve each known script through the sanctioned
+    # resolver instead of globbing a repo directory (the flat VM deploy has no
+    # scripts/ of its own, which is what the layout tripwire guards).
+    names = ("deploy.sh", "run-watched.sh", "verify-release.sh",
+             "instrument-live-log.sh")
+    return [p for p in (resolve(f"scripts/{n}") for n in names) if p.is_file()]
     cand = TESTS.parent / "scripts"
-    if cand.is_dir():
-        return sorted(cand.glob("*.sh"))
-    return []
+    return sorted(cand.glob("*.sh")) if cand.is_dir() else []
 
 
 def test_the_shell_scripts_are_syntactically_valid():

@@ -23,7 +23,7 @@ from pathlib import Path
 
 TESTS = Path(__file__).resolve().parent
 sys.path.insert(0, str(TESTS))
-from _layout import resolve  # noqa: E402
+from _layout import code_files, resolve  # noqa: E402
 
 #: Feature-shaped: a gate whose VALUE changes what the pipeline does, as opposed
 #: to where a binary lives or how long a tool may run.
@@ -54,7 +54,7 @@ EXEMPT = {
 def _feature_gates() -> set[str]:
     """Feature-shaped env gates the pipeline reads, excluding app.py itself."""
     gates = set()
-    for p in resolve("revai").parent.rglob("*.py"):
+    for p in code_files():
         if p.name == "app.py":
             continue
         try:

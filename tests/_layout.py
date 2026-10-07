@@ -57,3 +57,21 @@ def add_module_dir(relpath: str) -> None:
     d = resolve(relpath).parent
     if str(d) not in sys.path:
         sys.path.insert(0, str(d))
+
+
+def code_files() -> list[Path]:
+    """Every pipeline .py file, in whichever layout we are in.
+
+    The sanctioned way to ENUMERATE the code tree. A test that globs
+    `ROOT / "revai"` itself is exactly what the layout tripwire exists to
+    catch -- the flat VM deploy has no such directory -- so enumeration goes
+    through here instead of through a hand-written path.
+
+    Repo layout: <root>/revai/*.py. Flat layout: <root>/*.py (the deployed
+    scripts), which is where resolve() lands for any revai/<name>.py.
+    """
+    root = ROOT
+    repo_dir = root / "revai"
+    if repo_dir.is_dir():
+        return sorted(p for p in repo_dir.glob("*.py") if p.is_file())
+    return sorted(p for p in root.glob("*.py") if p.is_file())
