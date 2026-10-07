@@ -102,6 +102,12 @@ STAGES = [
     ("publish",    "publish",    str(SCRIPTS_DIR / "publish_report_v2.py"), ["--template", "full"]),
     ("correlate",  "correlate",  str(SCRIPTS_DIR / "section_publisher.py"), []),
     ("audit",      "audit",      str(SCRIPTS_DIR / "audit_pipeline.py"),   []),
+    # Depth mode is opt-in (REVAI_DEPTH=1) and runs AFTER the audit, so it is
+    # last in the Console's registry too -- the same position the scripted spine
+    # appends it in. Without this row the Console could not run depth mode at
+    # all: app.py had no reference to depth_agent/understanding.json, so the CLI
+    # ran it and the UI silently could not.
+    ("depth",      "depth",      str(SCRIPTS_DIR / "depth_agent.py"),      []),
 ]
 STAGE_INFO = {sid: (label, script, args) for sid, label, script, args in STAGES}
 
@@ -116,9 +122,25 @@ STAGE_DEPS = {
     "publish": ["yara_gen"],
     "correlate": ["publish"],
     "audit": ["correlate"],
+    # Depth reads everything the pipeline produced, so it depends on the audit,
+    # exactly as the scripted spine orders it.
+    "depth": ["audit"],
 }
 
 STAGE_DETAILS = {
+    "depth": {
+        "num": 8.5, "title": "Depth (understanding)",
+        "desc": "Post-pipeline depth run: map HOW the sample works",
+        "long_desc": (
+            "Opt-in (REVAI_DEPTH=1). Runs AFTER the audit. Objective is "
+            "UNDERSTANDING, not a verdict: it produces a function map "
+            "(understanding.json) and never a judgment. It never gates the "
+            "pipeline. A run that did no analysis reports that explicitly "
+            "rather than an empty map."
+        ),
+        "artifacts": ["understanding.json"],
+        "dir": None,
+    },
     "intake": {
         "num": 1, "title": "Intake",
         "desc": "Load sample into Ghidra + IDA, create session registry",
@@ -906,6 +928,22 @@ def get_stage_env(rc: dict | None = None) -> dict[str, str]:
         _off = "1" if not rc["winre_dynamic"] else "0"
         env["REVAI_DISABLE_DYNAMIC_CORROBORATION"] = _off
         env["REVAI_DISABLE_DYNAMIC_SECTION"] = _off
+    # The two gates that used to be CLI-only. ti_enrich is a boolean like the
+    # rest; the ceiling is a number, so a bad value must not kill a run -- it
+    # falls back to the pipeline default, which is what depth_agent does.
+    env["REVAI_TI_ENRICH"] = "1" if rc.get("ti_enrich") else "0"
+    try:
+        env["REVAI_DEPTH_CEILING_SECONDS"] = str(
+            int(rc.get("depth_ceiling_seconds") or 7200))
+    except (TypeError, ValueError):
+        env["REVAI_DEPTH_CEILING_SECONDS"] = "7200"
+    # The IoC fact-check's mode: blocking (the default) or advisory. The CLI
+    # escape hatch is REVAI_IOC_FACTCHECK=advisory; an operator who wants a run
+    # to continue past unverified claims should be able to say so in the UI
+    # rather than exporting a variable.
+    _ioc = str(rc.get("ioc_factcheck") or "").strip().lower()
+    if _ioc in ("advisory", "blocking"):
+        env["REVAI_IOC_FACTCHECK"] = _ioc
     if rc.get("winre_logs"):
         env["REVAI_WINRE_LOGS"] = str(rc["winre_logs"])
     # Optional WinRE detonation stage (opt-in per run): when set, the orchestrator
@@ -953,6 +991,15 @@ def build_stage_command(stage: str, sha: str, sample_path: str) -> list:
         return ["python3", script, "--family", family, sha]
     if stage == "deep_dive":
         return ["python3", script, sha]  # deep_dive_agentic — no --mode
+    if stage == "depth":
+        # Depth is opt-in, so the button must set the gate itself: an operator
+        # clicking "Depth" in the Console has already opted in, and requiring
+        # them to ALSO export REVAI_DEPTH=1 by hand is the parity gap.
+        cmd = ["python3", script, sha]
+        if not (os.environ.get("REVAI_DEPTH") or "").strip().lower() in (
+                "1", "true", "yes", "on"):
+            cmd = ["env", "REVAI_DEPTH=1"] + cmd
+        return cmd
     if stage == "audit":
         mode = _session_pipeline_mode(sha)
         audit_mode = "large" if mode in ("single", "large") else "standard"
@@ -1320,6 +1367,10 @@ _RUN_CONFIG_KEYS = (
     "emulation_oracle", "unpack_pass", "deobfuscation_pass", "artifact_gen",
     "recovery_max_funcs", "recovery_tier_cap",
     "winre_dynamic", "winre_logs", "winre_run",
+    # Both were CLI-only: read by the pipeline but absent from every persisted
+    # key list, so an operator could only set them by exporting a variable by
+    # hand. CLI/UI parity is a must, so they join run_config with the rest.
+    "ti_enrich", "depth_ceiling_seconds", "ioc_factcheck",
 )
 
 
@@ -1345,6 +1396,13 @@ def api_settings_post():
         cfg[key] = data[key]
     # Optional WinRE integration settings (non-secret; the SSH key is a path).
     for key in WINRE_SETTINGS_KEYS:
+        if key in data:
+            cfg[key] = data[key]
+    # Pipeline gates the Console may set. Both were CLI-only: read by the
+    # pipeline but absent from every persisted key list, so an operator could
+    # only set them by exporting a variable by hand. Non-secret, so the UI can
+    # hold them like any other setting.
+    for key in ("ti_enrich", "depth_ceiling_seconds"):
         if key in data:
             cfg[key] = data[key]
     if isinstance(data.get("run_config"), dict):
