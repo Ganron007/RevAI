@@ -25,6 +25,12 @@ from langgraph.prebuilt import create_react_agent
 from pydantic import BaseModel, Field
 
 from skills import skill_grounding_block as _skill_grounding_block  # noqa: E402
+from domain_graph import (  # noqa: E402
+    DOMAINS,
+    domain_graph_enabled,
+    domain_step_budget,
+)
+from report_quality import VERDICT_CALIBRATION_CONTRACT  # noqa: E402
 from v2_lib import (  # noqa: E402
     case_dir,
     ensure_pipeline_runtime_env,
@@ -33,6 +39,7 @@ from v2_lib import (  # noqa: E402
     get_verdict_model,
     load_session,
     llm_judge,
+    normalize_llm_json,
     llm_usage_journal,
 )
 
@@ -428,6 +435,136 @@ def messages_from_stream_chunks(chunks) -> list:
     return messages
 
 
+def _llm_json(text: str) -> dict:
+    """Parse a model reply into a dict, tolerating fences and prose.
+
+    A domain node's reply is free text; an unparseable one must become a partial
+    result rather than an exception, because one badly-formed domain should not
+    end the whole dive.
+    """
+    try:
+        out = normalize_llm_json(text or "")
+        return out if isinstance(out, dict) else {}
+    except Exception:
+        return {}
+
+def run_domain_deep_dive(sha: str, max_steps: int, helpers: dict,
+                         registry: Any, session: dict, file_type: str,
+                         history: list, findings: dict, lc_tools: list,
+                         llm: Any, system_prompt: str,
+                         verdict_model: str | None = None) -> dict:
+    """Plan #20: run the deep dive as named domain nodes.
+
+    Each domain node gets its own bounded investigation over the SAME tool
+    registry, so a stubborn injection question can no longer time out the whole
+    run before persistence was ever looked at. The graph's node list is the
+    coverage record -- "what did you examine" is structural, not a sentence the
+    model was asked to write.
+
+    Returns the same final_answer shape `run_langgraph_deep_dive` produces, so
+    the caller (and every gate downstream) is unchanged.
+    """
+    import domain_graph as dg
+
+    budget = dg.domain_step_budget()
+    per_domain: dict[str, dict] = {}
+    domain_history: list[dict] = []
+
+    def _node(state: dict, domain: dict) -> dict:
+        key = domain["key"]
+        _prompt = (
+            f"{system_prompt}\n\n"
+            f"## Domain under investigation: {domain['title']}\n\n"
+            f"{domain['question']}\n\n"
+            f"Domain-specific instructions:\n"
+            f"- Spend at most {budget} tool calls on THIS domain.\n"
+            f"- Answer for THIS domain only. Other domains are handled by their "
+            f"own nodes -- do not pre-empt them.\n"
+            f"- Cite the concrete evidence you used (tool, SQL, or offset).\n"
+            f"- If the evidence does not establish the behaviour, say so as "
+            f"\"not observed\" with what you checked. 'not observed' is a valid, "
+            f"useful answer; a guess is not.\n"
+            f"- Reply with a JSON object: {{\"status\": \"understood|partial|"
+            f"not-reconstructed|not-explored\", \"answer\": \"...\", "
+            f"\"evidence\": [\"...\"], \"reason\": \"...\"}}\n"
+            f"- 'not-explored' asserts nothing beyond not having looked. "
+            f"Anything else needs evidence.\n"
+        )
+        agent = create_react_agent(llm, tools=lc_tools, prompt=_prompt)
+        msgs = agent.invoke({"messages": [("user", f"Investigate {key} for "
+                                              f"{session.get('sample_path', '')}")]})
+        text = ""
+        for m in reversed(msgs.get("messages") or []):
+            c = getattr(m, "content", "")
+            if isinstance(c, str) and c.strip():
+                text = c
+                break
+        parsed = _coerce_final_answer(_llm_json(text)) if text else {}
+        entry = {
+            "status": str(parsed.get("status") or "partial"),
+            "answer": str(parsed.get("answer") or "")[:1200],
+            "evidence": [str(e)[:120] for e in (parsed.get("evidence") or [])[:8]],
+            "reason": str(parsed.get("reason") or "")[:400],
+        }
+        domain_history.append({"domain": key, "step_budget": budget,
+                               "result": entry, "engine": "domain-graph"})
+        return entry
+
+    try:
+        compiled = dg.build_domain_graph(_node)
+        state = compiled.invoke({"sha": sha, "session": session,
+                                 "file_type": file_type})
+        per_domain = state.get("domains") or {}
+    except Exception as exc:
+        print(f"[agentic_langgraph] domain graph failed: {exc}", flush=True)
+        history.append({"step": len(history) + 1,
+                        "error": f"domain graph failed: {exc}",
+                        "engine": "domain-graph"})
+        return {}
+
+    for entry in domain_history:
+        history.append({"step": len(history) + 1,
+                        "tool": f"domain:{entry['domain']}",
+                        "reason": entry["result"]["answer"][:120],
+                        "result": entry["result"],
+                        "error": entry["result"].get("reason") or None,
+                        "engine": "domain-graph"})
+    findings["domain_graph"] = dg.summarise(per_domain)
+    findings["domain_findings"] = dg.domain_findings_text(per_domain)
+    return _domain_final_answer(per_domain, helpers, verdict_model)
+
+
+def _domain_final_answer(per_domain: dict, helpers: dict,
+                         verdict_model: str | None) -> dict:
+    """One verdict from the per-domain picture.
+
+    The domains are evidence, not votes: each contributes what it found, and the
+    judgment call stays with the model exactly as it does on the flat path.
+    """
+    import depth_agent  # noqa: F401  (kept local to this path)
+    text = "\n".join(
+        f"- **{k}** [{v.get('status')}]: {v.get('answer', '')}"
+        for k, v in per_domain.items())
+    prompt = (
+        "A deep dive examined these capability domains, one node each:\n\n"
+        f"{text}\n\n"
+        "Render the final judgment as a JSON object with keys verdict, "
+        "confidence (0-100), summary, key_evidence (list of strings).\n"
+        "Coverage matters: name every domain the evidence supports AND the "
+        "domains that came back 'not observed'. A domain you never mention is a "
+        "coverage failure. The verdict follows the evidence, not the count of "
+        "domains.\n"
+        + VERDICT_CALIBRATION_CONTRACT
+    )
+    try:
+        raw = llm_judge(prompt, model=verdict_model)
+        return _coerce_final_answer(raw) or {}
+    except Exception as exc:
+        return {"verdict": "unknown", "confidence": 0,
+                "summary": f"domain synthesis failed: {exc}",
+                "key_evidence": []}
+
+
 def run_langgraph_deep_dive(sha: str, max_steps: int = 10, helpers: dict | None = None) -> dict:
     helpers = helpers or {}
     ensure_pipeline_runtime_env()
@@ -566,6 +703,31 @@ not found instead of recalling an answer.
 
 {skill_block}
 """
+
+    # Plan #20: the deep dive as named domain nodes, opt-in.
+    #
+    # The flat ReAct loop above asks the model to self-check every capability
+    # domain before answering -- a request, not a structure. A domain it never
+    # visits is a coverage failure the depth gate can only see afterwards, in
+    # the summary's prose. The domain graph makes it structural: one node per
+    # domain, its own budget, its own result.
+    #
+    # Off by default so the flat engine stays the validated path until this is
+    # exercised on a real sample. Both engines share the registry, the
+    # checklist and the gates.
+    if domain_graph_enabled():
+        print(f"[agentic_langgraph] domain graph ({len(DOMAINS)} domains, "
+              f"budget {domain_step_budget()} each)", flush=True)
+        _dom = run_domain_deep_dive(
+            sha, max_steps, helpers, registry, session, file_type,
+            history, findings, lc_tools, llm, system_prompt,
+            verdict_model=get_verdict_model())
+        if _dom:
+            return _finalize_agentic_result(
+                _dom, history, findings, verdict_model=get_verdict_model(),
+                label="langgraph-domains")
+        # An empty result means the graph itself failed: fall through to the
+        # flat engine rather than ending the dive with nothing.
 
     agent = create_react_agent(llm, tools=lc_tools, prompt=system_prompt)
     recursion_limit = max(8, int(max_steps) * 2 + 4)
