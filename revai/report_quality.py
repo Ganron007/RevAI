@@ -894,21 +894,36 @@ _ELIDED_REGISTRY_RE = re.compile(
     re.IGNORECASE)
 
 #: Imperative defender guidance. A registry path named inside one of these is a
-#: location the report tells the analyst to inspect or clean, not an indicator
-#: the report claims the sample produced. Both survivors on the real audits were
-#: exactly this:
+#: location the report tells the analyst to inspect, clean, or GO AND COLLECT
+#: EVIDENCE ABOUT -- not an indicator the report claims the sample produced.
+#: Both survivors on the real audits were exactly this:
 #:
 #:   winservices  "**Registry:** Monitor `RegSetValueExA` ... on
 #:                 `HKLM\...\FirewallPolicy` and the `Run` key"
 #:   win32k_dll   "2. Remove registry persistence entries:
 #:                 - HKLM\Software\Microsoft\Windows NT\...\UserList"
+#:   WannaCry     "Resolution: execute the sample in an isolated VM ... capture
+#:                 the full process tree, registry writes under
+#:                 HKLM\\SYSTEM\\CurrentControlSet\\Services\\*, and ..."
+#:
+#: The third is the same speech act as the first two and was the last one this
+#: exemption missed: the verbs that name COLLECTING FUTURE EVIDENCE (capture,
+#: collect, obtain, execute, re-run) were absent, so a path the report
+#: recommended gathering data about was read as an assertion that the sample
+#: wrote there. WannaCry's audit stayed red on
+#: `report:unverified_iocs:1` with exactly that path, across two reports where
+#: the SAME path was correctly excused in one and counted as a claim in the
+#: other.
 #:
 #: Same speech act as the canonical persistence template already exempted above
 #: ("a verification target, not an observed artifact"). Counted and reported
 #: under `guidance_references`, never silently dropped.
 _GUIDANCE_VERB_RE = re.compile(
     r"(?i)\b(?:monitor|watch|remove|delete|clean|inspect|scan|check|audit|"
-    r"remediate|remediation|verify|look\s+for|hunt|clear|close)\b")
+    r"remediate|remediation|verify|look\s+for|hunt|clear|close|"
+    # evidence-collection guidance: what the analyst should go and capture
+    r"capture|collect|obtain|execute|gather|re-?run|confirm|reproduce|"
+    r"triage|investigate|analyse|analyze|review)\b")
 
 #: A markdown/numbered list item, whose line is the unit of guidance.
 _BULLET_RE = re.compile(r"(?:[-*+]\s+|\d+[.)]\s+)")
@@ -1179,6 +1194,27 @@ def _provenance_commit() -> str:
     return commit.lower().removesuffix("-dirty")
 
 
+def _sample_sha256() -> str:
+    """The analysed sample's sha256, when the caller can tell us which it is.
+
+    Read from REVAI_CASE_DIR, which the stages set -- NOT from the report's own
+    `sha256:` line, because a claim must never be used to exempt itself.
+
+    The case dir is `logs/<sha>/<mode>/` (the mode-keyed layout), so the sha is
+    one level UP from the directory name, not the name itself. Returns '' when
+    unknown, which exempts nothing.
+    """
+    case = os.environ.get("REVAI_CASE_DIR", "").strip()
+    if not case:
+        return ""
+    # the deepest 64-hex component wins: logs/<sha>/<mode>/, but tolerate a bare
+    # logs/<sha> as well
+    for part in reversed(Path(case).parts):
+        if re.fullmatch(r"[0-9a-fA-F]{64}", part):
+            return part.lower()
+    return ""
+
+
 def verify_claimed_iocs(markdown: str, evidence_text: str, *,
                         provenance_commit: str | None = None) -> dict:
     """Check every indicator a report claims against the raw tool evidence.
@@ -1205,6 +1241,7 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
     banner_commits = {m.group(1).lower()
                       for m in _PROVENANCE_BANNER_RE.finditer(markdown or "")}
     evidence = (evidence_text or "").lower()
+    sample_sha = _sample_sha256()
     claims: dict[tuple[str, str], str] = {}
     claim_spans: dict[tuple[str, str], list[tuple[int, int]]] = {}
     for kind, regex in (
@@ -1250,6 +1287,17 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
     guidance: list[dict[str, str]] = []
     for (kind, plain), raw in sorted(claims.items()):
         if kind == "hash":
+            # The analysed sample's own sha256: identity, not an indicator.
+            # WannaCry's audit went red on exactly this -- the hash appears in
+            # the report's Sample Metadata (which the pipeline writes) but not
+            # in the tool-output corpus it is verified against. A report must
+            # never be red on the fact that it names the sample it analysed.
+            if sample_sha and plain == sample_sha:
+                excluded.append({
+                    "type": kind, "value": raw,
+                    "reason": "the analysed sample's own sha256, not an indicator",
+                })
+                continue
             cited = any(c.startswith(plain) or plain.startswith(c)
                         for c in banner_commits)
             if cited or (prov and (plain == prov or
