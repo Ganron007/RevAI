@@ -215,15 +215,28 @@ def _cli() -> int:
         if p.is_dir():
             case = p
         else:
+            # A sha resolves through case_dir() -- but case_dir() CREATES the
+            # directory, so `is_dir()` is always True afterwards and the
+            # "fail loudly when the case does not exist" branch below could
+            # never fire. The stage would resolve a sha that was never run,
+            # report an empty map and exit 0 -- the hollow green this whole
+            # path exists to prevent. Check whether the case existed BEFORE
+            # resolving, which is the only thing that distinguishes "a sample
+            # that was run" from "a sha nobody has analysed".
+            from v2_lib import LOGS_DIR
+            _logs = Path(os.environ.get("REVAI_LOGS_DIR") or LOGS_DIR)
+            _pre_existing = _logs.is_dir() and (_logs / target).exists()
             try:
                 from v2_lib import case_dir
                 case = case_dir(target)
             except Exception:
                 case = p
-        if not case.is_dir():
-            print(f"[depth] case dir not found: {target}", file=sys.stderr,
-                  flush=True)
-            return 3
+            if not _pre_existing:
+                print(f"[depth] case for {target[:16]}... does not exist under "
+                      f"{_logs}: the sample has not been run, so there is nothing "
+                      "to deepen. Run the pipeline first.",
+                      file=sys.stderr, flush=True)
+                return 3
 
     if case is None:
         print(f"depth enabled: {depth_enabled()}  "

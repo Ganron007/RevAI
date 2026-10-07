@@ -321,7 +321,8 @@ def _import_depth():
     return depth_agent
 
 
-def test_depth_cli_resolves_a_sha_to_a_case_dir_and_fails_loudly_when_absent(capsys, tmp_path):
+def test_depth_cli_resolves_a_sha_to_a_case_dir_and_fails_loudly_when_absent(
+        capsys, tmp_path, monkeypatch):
     """A sha passed to `depth_agent.py` must resolve, or exit 3 -- never rc=0
     with an empty map.
 
@@ -330,9 +331,15 @@ def test_depth_cli_resolves_a_sha_to_a_case_dir_and_fails_loudly_when_absent(cap
     `<cwd>/<sha>/understanding.json`, which never exists, so the stage reported
     `{"regions_total": 0}` and rc=0. That is indistinguishable in the trace from
     "the sample has no functions".
+
+    Hermetic: the log root is redirected at an empty directory, because
+    `case_dir()` CREATES the case directory -- so a probe run once against the
+    real root leaves `<logs>/<sha>` behind and the next run sees a case that
+    merely looks analysed. That is how this test passed while the guard could
+    not fire.
     """
     da = _import_depth()
-    rc = da._cli.__wrapped__ if hasattr(da._cli, "__wrapped__") else None
+    monkeypatch.setenv("REVAI_LOGS_DIR", str(tmp_path / "logs"))
     # invoke the CLI the way the stage does
     argv = sys.argv
     sys.argv = ["depth_agent.py", "f" * 64]
@@ -343,7 +350,7 @@ def test_depth_cli_resolves_a_sha_to_a_case_dir_and_fails_loudly_when_absent(cap
         sys.argv = argv
     err = capsys.readouterr()
     assert rc == 3, f"a sha with no case dir must fail loudly, got rc={rc}"
-    assert "not found" in (err.out + err.err), err
+    assert "has not been run" in err.err, err.err
 
 
 def test_depth_cli_reports_a_real_case_dir(capsys, tmp_path, monkeypatch):
