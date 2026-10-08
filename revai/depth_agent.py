@@ -250,21 +250,27 @@ def _cli() -> int:
     summary["stop_reason"] = st.get("stop_reason")
 
     # A depth run that has done nothing must not read as a depth run that
-    # finished. The convergence loop is plan #20 and is not implemented yet, so
-    # the honest report is an explicit one -- not rc=0 with an empty map and no
+    # finished. Plan #20 landed the capability-domain substrate the convergence
+    # loop runs on, but NOT the loop itself -- a domain node answers once, with
+    # no re-examination -- so this stage still has no investigation to perform.
+    # The honest report is an explicit one, not rc=0 with an empty map and no
     # artifact, which is exactly the hollow-success shape the rest of the
     # pipeline gates against.
     spend = st.get("spend") or {}
     if not st.get("regions") and not spend.get("llm_calls"):
         summary["stop_reason"] = (
-            "no-depth-analysis-performed: the convergence loop is plan #20 and "
-            "is not implemented yet. This run reported the case's depth state; "
-            "it did not investigate anything. regions_total=0 means nothing was "
-            "looked at, not that the sample has no functions."
+            "no-depth-analysis-performed: the deep dive's capability-domain "
+            "nodes (plan #20) answer each domain once and do not re-examine it; "
+            "the convergence loop that would drive them is still open. This run "
+            "reported the case's depth state; it did not investigate anything. "
+            "regions_total=0 means nothing was looked at, not that the sample "
+            "has no functions."
         )
-        summary["depth_deferred_to"] = "plan #20 (multi-agent domain-node loop)"
-        print("[depth] WARNING: no depth analysis ran. The convergence loop is "
-              "deferred to plan #20; this invocation only reports state.",
+        summary["depth_deferred_to"] = (
+            "the convergence loop over plan #20's domain nodes")
+        print("[depth] WARNING: no depth analysis ran. The convergence loop "
+              "over the domain nodes is still open; this invocation only "
+              "reports state.",
               file=sys.stderr, flush=True)
         # Write the artifact with that reason inside it. A stage that produced
         # nothing and left no trace is indistinguishable in the trace from one

@@ -167,6 +167,97 @@ def build_domain_graph(run_node: Any):
     return graph.compile()
 
 
+def _balanced_objects(s: str):
+    """Yield every top-level {...} span in `s`, longest first.
+
+    A model asked for JSON frequently wraps it: "Based on the 3 tool calls I
+    have, here is the result: {...}". Taking `find("{")`..`rfind("}")` breaks on
+    that when the prose contains a brace of its own, and taking the FIRST
+    balanced object breaks when the model wrote a summary object before the
+    answer. Trying each balanced span and keeping the first that parses as a dict
+    handles both, and preferring the longest biases toward the answer rather than
+    a nested fragment.
+    """
+    spans = []
+    depth = 0
+    start = -1
+    in_str = False
+    esc = False
+    for i, ch in enumerate(s):
+        if in_str:
+            if esc:
+                esc = False
+            elif ch == "\\":
+                esc = True
+            elif ch == '"':
+                in_str = False
+            continue
+        if ch == '"':
+            in_str = True
+        elif ch == "{":
+            if depth == 0:
+                start = i
+            depth += 1
+        elif ch == "}":
+            if depth > 0:
+                depth -= 1
+                if depth == 0 and start >= 0:
+                    spans.append(s[start:i + 1])
+                    start = -1
+    for span in sorted(spans, key=len, reverse=True):
+        yield span
+
+
+def parse_domain_reply(text: str) -> tuple[dict, str]:
+    """Extract a domain node's structured answer. Returns (parsed, why).
+
+    `why` is empty on success and otherwise names the failure, because a node
+    that produced nothing must be diagnosable from the artifact alone. The first
+    real run produced a correctly-formed answer wrapped in prose and recorded it
+    as `partial` with no way to tell a parser problem from a model problem --
+    which is the same unexamined-artifact failure this project keeps meeting.
+    """
+    import json as _json
+
+    s = (text or "").strip()
+    if not s:
+        return {}, "empty reply"
+
+    fenced = s
+    if fenced.startswith("```"):
+        lines = fenced.splitlines()
+        if lines and lines[0].startswith("```"):
+            lines = lines[1:]
+        if lines and lines[-1].strip() == "```":
+            lines = lines[:-1]
+        fenced = "\n".join(lines).strip()
+
+    for candidate in (s, fenced):
+        try:
+            parsed = _json.loads(candidate)
+            if isinstance(parsed, dict):
+                return parsed, ""
+        except Exception:
+            pass
+
+    for span in _balanced_objects(s) or _balanced_objects(fenced):
+        try:
+            parsed = _json.loads(span)
+            if isinstance(parsed, dict):
+                return parsed, ""
+        except Exception:
+            continue
+
+    # Nothing parsed. Say WHY, because the two causes need different fixes: a
+    # truncated reply needs a bigger budget or a smaller ask, a prose reply needs
+    # a better instruction.
+    if "{" in s and "}" not in s:
+        return {}, "reply appears truncated (no closing brace)"
+    if "{" in s:
+        return {}, "reply contains braces but no balanced object parsed"
+    return {}, "reply contained no JSON object"
+
+
 def domain_coverage(domains: dict[str, dict]) -> dict:
     """Coverage over the domain set: what was visited, what was answered.
 

@@ -86,10 +86,11 @@ HELPERS = {"_coerce_final_answer": _coerce}
 
 
 def _run(monkeypatch, reply=GOOD, tool_calls=0, seen=None, helpers=None,
-         judge=None, budget=None):
+         judge=None, budget=None, agent_factory=None):
     if budget is not None:
         monkeypatch.setenv("REVAI_DOMAIN_STEP_BUDGET", str(budget))
-    monkeypatch.setattr(A, "create_react_agent", _fake_react(reply, tool_calls, seen))
+    monkeypatch.setattr(A, "create_react_agent",
+                        agent_factory or _fake_react(reply, tool_calls, seen))
     monkeypatch.setattr(A, "llm_judge", judge or (lambda prompt, model=None: json.dumps({
         "verdict": "malicious", "confidence": 80,
         "summary": "persistence observed", "key_evidence": ["FLOSS"]})))
@@ -120,16 +121,83 @@ def test_a_correct_model_answer_survives_the_wiring(monkeypatch):
     assert not any("not-reconstructed" in json.dumps(h) for h in hist)
 
 
-def test_every_node_is_given_a_hard_step_ceiling(monkeypatch):
-    """The budget must be enforced by the runtime, not requested in the prompt."""
+def test_every_node_is_given_a_step_ceiling_with_room_to_answer(monkeypatch):
+    """A ceiling that bounds the node WITHOUT truncating it before it answers.
+
+    The first landing computed `2*budget + 2` = 8. The first real run spent 4-6
+    tool calls per node and SEVEN OF NINE nodes were cut off mid-investigation,
+    returning "Sorry, need more steps to process this request" -- recorded as a
+    finding when it was a truncated agent.
+    """
     seen = []
     _run(monkeypatch, seen=seen, budget=3)
     assert len(seen) == len(dg.DOMAIN_KEYS), (
         f"only {len(seen)} nodes ran; expected {len(dg.DOMAIN_KEYS)}")
+    limit = A._domain_recursion_limit(3)
+    assert limit >= 12, f"ceiling {limit} truncates a node before it can answer"
     for agent in seen:
-        limit = agent.config.get("recursion_limit")
-        assert limit, "no recursion_limit reached the node"
-        assert limit == A._domain_recursion_limit(3) == 8
+        got = agent.config.get("recursion_limit")
+        assert got, "no recursion_limit reached the node"
+        assert got == limit
+
+
+def test_a_node_that_ran_out_of_steps_says_so(monkeypatch):
+    """A truncated node must be identifiable as truncated, not as a finding.
+
+    `finish_reason=length` is the signal, and it is what tells "give the node a
+    bigger budget" apart from "the model would not answer".
+    """
+    class Truncated(FakeAgent):
+        def invoke(self, payload, config=None):
+            out = super().invoke(payload, config)
+            msg = SimpleNamespace(content="Sorry, need more steps to process "
+                                         "this request.", tool_calls=[],
+                                 response_metadata={"finish_reason": "length"})
+            out["messages"] = [msg]
+            return out
+
+    _out, hist, finds = _run(monkeypatch, judge=lambda p, model=None, **k: "{}",
+                             agent_factory=lambda llm, tools=None, prompt=None,
+                             **k: Truncated())
+    entries = [h["result"] for h in hist if "result" in h]
+    assert entries and all(e["status"] == dg.STATUS_PARTIAL for e in entries)
+    assert all(e["finish_reason"] == "length" for e in entries)
+    assert all("length" in e["parse_failure"] for e in entries)
+    assert finds["domain_graph"]["honest"] is False
+
+
+def test_a_well_formed_reply_wrapped_in_prose_is_recovered(monkeypatch):
+    """The real failure from the first sample run.
+
+    The model answered correctly and wrapped the JSON in a sentence of prose.
+    That was recorded as `partial` with nothing substantive, so the whole domain
+    path fell back -- a correct answer thrown away by the parser.
+    """
+    reply = ("Based on the 3 surface tool calls I have, here is the surface "
+             "domain investigation:  "
+             '{"status": "understood", "answer": "PE32 GUI, entry 0x401680",'
+             ' "evidence": ["ghidra: entry"], "reason": ""}')
+    out, _, finds = _run(monkeypatch, reply=reply)
+    assert out.get("verdict") == "malicious", (
+        "a correct prose-wrapped domain answer was lost")
+    assert finds["domain_graph"]["honest"] is True
+    assert set(finds["domain_graph"]["domains"].values()) == {"understood"}
+
+
+def test_a_failed_parse_keeps_enough_of_the_reply_to_diagnose(monkeypatch):
+    """400 chars was not enough: the JSON never closed inside the slice.
+
+    The artifact must be re-parseable, and must name the reason.
+    """
+    long_prose = ("I looked at the imports and the entry point and the strings "
+                  "but I am not able to reach a determination here. " * 12)
+    assert len(long_prose) > 400
+    _, hist, _ = _run(monkeypatch, reply=long_prose)
+    entries = {h["tool"]: h["result"] for h in hist if "result" in h}
+    e = entries["domain:surface"]
+    assert len(e["raw_excerpt"]) > 400, (
+        f"excerpt is {len(e['raw_excerpt'])} chars -- too short to re-parse")
+    assert e["parse_failure"], "a failed parse must say why"
 
 
 def test_actual_tool_spend_is_recorded_and_over_budget_is_flagged(monkeypatch):
@@ -363,3 +431,50 @@ def test_every_domain_declares_a_question():
     for d in dg.DOMAINS:
         assert d["key"] and d["title"] and d["question"].endswith("?"), d
     assert len(set(dg.DOMAIN_KEYS)) == len(dg.DOMAIN_KEYS)
+
+
+# ------------------------------------------------------------ reply extraction
+@pytest.mark.parametrize("name,reply,expect_status", [
+    ("prose_wrapped",
+     'Here is the result:  {"status": "understood", "answer": "a",'
+     ' "evidence": ["e"]}', "understood"),
+    ("summary_object_first",
+     '{"summary": "x"} then {"status": "understood", "answer": "a",'
+     ' "evidence": ["e"]}', "understood"),
+    ("brace_in_prose",
+     'The map {see below}: {"status": "partial", "answer": "a",'
+     ' "evidence": []}', "partial"),
+    ("fenced",
+     '```json\n{"status": "understood", "answer": "a", "evidence": ["e"]}\n```',
+     "understood"),
+    ("braces_inside_a_string",
+     '{"status": "understood", "answer": "uses {braces}", "evidence": ["e"]}',
+     "understood"),
+])
+def test_the_parser_recovers_the_shapes_models_actually_produce(name, reply,
+                                                                expect_status):
+    out, why = dg.parse_domain_reply(reply)
+    assert why == "", f"{name}: {why}"
+    assert out.get("status") == expect_status, out
+
+
+def test_truncation_is_distinguishable_from_prose():
+    """The two causes need different fixes, so they must not look alike."""
+    _, truncated = dg.parse_domain_reply('answer: {"status": "ok", "answer": "c')
+    _, prose = dg.parse_domain_reply("Sorry, need more steps.")
+    assert "truncated" in truncated, truncated
+    assert "no JSON object" in prose, prose
+    assert truncated != prose
+
+
+def test_the_parser_reports_why_rather_than_guessing():
+    assert dg.parse_domain_reply("")[1] == "empty reply"
+    out, why = dg.parse_domain_reply("no braces at all")
+    assert out == {} and why
+
+
+def test_a_longest_balanced_object_wins_over_a_nested_fragment():
+    reply = '{"inner": {"status": "understood"}}'
+    out, why = dg.parse_domain_reply(reply)
+    assert why == ""
+    assert "inner" in out, out

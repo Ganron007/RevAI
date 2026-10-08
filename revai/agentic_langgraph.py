@@ -470,11 +470,20 @@ def _need(helpers: dict, name: str):
 def _domain_recursion_limit(budget: int) -> int:
     """Super-step ceiling for one domain node.
 
-    The budget must be enforced by the runtime, not requested in the prompt. A
-    ReAct step is one agent node plus one tool node, so `budget` tool calls cost
-    2*budget steps, plus the opening and closing agent steps.
+    LangGraph counts super-steps, not tool calls: an agent node is one step and
+    each tool node another, and a single agent turn may fan out to several tools
+    at once. So this CANNOT express "at most N tool calls" -- the first real run
+    proved it, spending 4-6 calls against a budget of 3 under a limit computed as
+    2*budget+2.
+
+    What it does give is a ceiling that cannot run away, plus enough headroom for
+    the node to actually REACH AN ANSWER. That headroom matters: at the old size
+    seven of nine nodes were cut off mid-investigation and returned "Sorry, need
+    more steps to process this request", which is a truncated agent, not a
+    finding. The tool budget is therefore measured and flagged (over_budget)
+    rather than claimed as enforced.
     """
-    return max(4, int(budget) * 2 + 2)
+    return max(12, int(budget) * 2 + 8)
 
 
 def run_domain_deep_dive(sha: str, max_steps: int, helpers: dict,
@@ -545,7 +554,11 @@ def run_domain_deep_dive(sha: str, max_steps: int, helpers: dict,
         )
         history_msgs = msgs.get("messages") or []
         text = ""
+        finish = None
         for m in reversed(history_msgs):
+            meta = getattr(m, "response_metadata", None) or {}
+            if isinstance(meta, dict) and meta.get("finish_reason"):
+                finish = str(meta.get("finish_reason"))
             c = getattr(m, "content", "")
             if isinstance(c, str) and c.strip():
                 text = c
@@ -553,13 +566,15 @@ def run_domain_deep_dive(sha: str, max_steps: int, helpers: dict,
         # What the node ACTUALLY spent, as opposed to what it was asked for.
         used = sum(len(getattr(m, "tool_calls", None) or [])
                    for m in history_msgs)
-        parsed = coerce(_llm_json(text)) if text else {}
+        parsed, why = dg.parse_domain_reply(text)
+        parsed = coerce(parsed) if parsed else {}
         if not isinstance(parsed, dict):
-            parsed = {}
+            parsed, why = {}, (why or "coercer returned a non-dict")
         answer = str(parsed.get("answer") or "")
+        has_finding = bool(answer or parsed.get("evidence"))
         if not text:
             status = dg.STATUS_NOT_EXPLORED
-        elif not (answer or parsed.get("evidence")):
+        elif not has_finding:
             # The node ran but its reply carries no determination. Prose where
             # JSON was asked for is "looked, could not conclude" -- a partial,
             # never an answer -- and the raw text is kept so it is diagnosable.
@@ -573,9 +588,19 @@ def run_domain_deep_dive(sha: str, max_steps: int, helpers: dict,
             "reason": str(parsed.get("reason") or "")[:400],
             "tool_calls_used": used,
             "step_budget": budget,
+            "recursion_limit": limit,
         }
-        if not (answer or parsed.get("evidence")):
-            entry["raw_excerpt"] = text[:400]
+        if finish:
+            entry["finish_reason"] = finish
+        if not has_finding:
+            # Enough of the reply to diagnose, and the reason it did not parse.
+            # The first real run recorded a 400-char slice, which is not enough
+            # to tell a truncated reply from a prose one -- the JSON never
+            # closed inside the slice, so the artifact could not be re-parsed.
+            entry["raw_excerpt"] = text[:2000]
+            entry["parse_failure"] = why
+            if finish == "length":
+                entry["parse_failure"] += " (finish_reason=length)"
         if used > budget:
             entry["over_budget"] = True
         domain_history.append({"domain": key, "step_budget": budget,
