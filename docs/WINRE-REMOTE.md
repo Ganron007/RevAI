@@ -97,7 +97,9 @@ the resolved state (e.g. `flare_key_missing: …`).
 
 **CLI equivalents:** `REVAI_WINRE_ENABLED=1`, `FLARE_HOST`, `FLARE_USER`,
 `FLARE_SSH_PORT`, `FLARE_SSH_KEY`, `REVAI_WINRE_MODE`, `REVAI_WINRE_WINDOW`,
-`REVAI_WINRE_SNAPSHOT_GATE`, `REVAI_WINRE_LOGS`, `REVAI_WINRE_ROOT`,
+`REVAI_WINRE_SNAPSHOT_GATE` (unset by default; unset means WinRE's own
+`enforce` applies, because process env outranks this file), `REVAI_WINRE_LOGS`,
+`REVAI_WINRE_ROOT`,
 `REVAI_WINRE_PY`, `REVAI_WINRE_TIMEOUT` (full table in
 [`OPERATE.md`](OPERATE.md)).
 
@@ -111,7 +113,9 @@ WINRE_LLM_BASE_URL=https://<endpoint>/v1
 WINRE_LLM_MODEL=<model>
 WINRE_LLM_API_KEY=<key>
 WINRE_LLM_REASONING=high
-WINRE_SNAPSHOT_GATE=observe
+# Leave unset to inherit WinRE's own default (enforce). RevAI's bridge
+# does not set this; it only forwards an explicit REVAI_WINRE_SNAPSHOT_GATE.
+#WINRE_SNAPSHOT_GATE=observe
 ```
 
 Same key across RevAI and WinRE, or per-project keys: both are supported, and the

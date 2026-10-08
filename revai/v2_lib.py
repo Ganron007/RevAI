@@ -5774,6 +5774,13 @@ def _resolve_dynamic_dir(sha: str, logs_dir: Path | None = None,
     Search order (first dir containing a META or any file wins):
       1. RevAI mode sections: <revai>/<sha>/{agentic,scripted,ui}/dynamic, flat
       2. WinRE mode sections: <winre>/<sha>/{agentic,static,ui}/dynamic, flat
+      3. WinRE producer roots whose detonation stage is nested one level down:
+         <winre>/<sha>/{dynamic,dbg}/dynamic (section_root = the mode root)
+
+    Order (3) is appended rather than merged into (2) so an existing install
+    keeps resolving exactly as before; it only takes effect where (1) and (2)
+    found nothing, which is where the reader used to find the mode ROOT and
+    mistake its producer metadata for the pack.
 
     WinRE root comes from the ``winre_root`` arg, ``REVAI_WINRE_LOGS`` env, or
     the conventional ``/opt/winre/logs`` when present. Returns
@@ -5796,16 +5803,38 @@ def _resolve_dynamic_dir(sha: str, logs_dir: Path | None = None,
         if m not in revai_sections:
             revai_sections.append(m)
 
-    candidates: list[tuple[Path, str]] = []
+    # (pack_dir, source_label, section_root). The section root is explicit
+    # rather than `dyn.parent` because the nested-stage layouts below have a
+    # pack dir whose parent is the MODE root, not the section root.
+    candidates: list[tuple[Path, str, Path]] = []
     for m in revai_sections:
-        candidates.append((revai_root / sha / m / "dynamic", f"revai:{m}"))
-    candidates.append((revai_root / sha / "dynamic", "revai:flat"))
+        candidates.append((revai_root / sha / m / "dynamic", f"revai:{m}",
+                           revai_root / sha / m))
+    candidates.append((revai_root / sha / "dynamic", "revai:flat", revai_root / sha))
     if winre_root is not None:
         for m in ("agentic", "static", "ui"):
-            candidates.append((winre_root / sha / m / "dynamic", f"winre:{m}"))
-        candidates.append((winre_root / sha / "dynamic", "winre:flat"))
+            candidates.append((winre_root / sha / m / "dynamic", f"winre:{m}",
+                               winre_root / sha / m))
+        # Producer roots that carry their detonation stage one level down.
+        #
+        # These must be tested BEFORE the flat candidate above. The mode root
+        # has its own META.json (producer metadata), so the flat candidate
+        # matches it, reports "pack present", and every runtime field reads
+        # null -- the exact failure this fixes. They are safe to try first
+        # because each applies only when the nested stage actually exists; a
+        # legacy flat pack has no nested `dynamic/` and falls through.
+        for m in ("dynamic", "dbg"):
+            mode_root = winre_root / sha / m
+            nested = mode_root / "dynamic"
+            if nested.is_dir():
+                candidates.append((nested, f"winre:{m}", mode_root))
+            elif m == "dbg":
+                # `dbg` has no flat meaning, so the mode root is the pack.
+                candidates.append((mode_root, f"winre:{m}", mode_root))
+        candidates.append((winre_root / sha / "dynamic", "winre:flat",
+                           winre_root / sha))
 
-    for dyn, source in candidates:
+    for dyn, source, section_root in candidates:
         if not dyn.is_dir():
             continue
         try:
@@ -5826,7 +5855,7 @@ def _resolve_dynamic_dir(sha: str, logs_dir: Path | None = None,
             except Exception:
                 skipped_only = False
         if meta.is_file() or (has_files and not skipped_only):
-            return dyn, {"section_root": dyn.parent, "source": source}
+            return dyn, {"section_root": section_root, "source": source}
     return None, {}
 
 

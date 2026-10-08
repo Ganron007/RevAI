@@ -154,10 +154,16 @@ def settings() -> dict:
         "logs_root": Path(str(pick("logs_root", str(DEFAULT_LOGS)))),
         "mode": (str(pick("mode", "agentic")).strip().lower() or "agentic"),
         "window": _as_int(pick("window", 150), 150),
-        "adaptive": _as_bool(pick("adaptive", "1"), True),
+        # None means UNSET, and unset must reach WinRE as unset (see below).
+        "adaptive": _as_bool(pick("adaptive", None), None),
         "pesieve": _as_bool(pick("pesieve", "1"), True),
         "agentic_dbg": _as_bool(pick("agentic_dbg", "0"), False),
-        "snapshot_gate": (str(pick("snapshot_gate", "observe")).strip().lower() or "observe"),
+        # WinRE's own default is `enforce`; the bridge used to hard-default this
+        # to `observe` and export it, so simply opting into RevAI-driven dynamic
+        # analysis silently DISABLED the restore gate. Process env beats WinRE's
+        # env file, so WinRE's default could never reassert. Unset stays unset.
+        "snapshot_gate": (str(pick("snapshot_gate", "")).strip().lower()
+                          or None),
         "llm_source": (str(pick("llm_source", "inherit")).strip().lower() or "inherit"),
         "timeout": _as_int(pick("timeout", 3600), 3600),
     }
@@ -243,7 +249,9 @@ def availability(s: dict | None = None) -> tuple[bool, str]:
         return False, f"flare_key_missing: {cfg['flare_ssh_key']} not found (path only; key stays on disk)"
     if cfg["mode"] not in ("agentic", "static"):
         return False, f"winre_mode_invalid: {cfg['mode']}"
-    if cfg["snapshot_gate"] not in ("observe", "enforce", "off"):
+    # None = unset = WinRE applies its own default (enforce). Only an explicit
+    # operator choice is validated.
+    if cfg["snapshot_gate"] not in (None, "observe", "enforce", "off"):
         return False, f"winre_snapshot_gate_invalid: {cfg['snapshot_gate']}"
     if cfg.get("llm_source", "inherit") not in ("inherit", "winre_env"):
         return False, f"winre_llm_source_invalid: {cfg['llm_source']}"
@@ -372,7 +380,11 @@ def build_command(sample_path: str | Path, cfg: dict) -> list[str]:
         "--dynamic",
         "--max-seconds", str(cfg["window"]),
     ]
-    if cfg["adaptive"]:
+    if cfg["adaptive"] is True:
+        # --adaptive makes flare_dynamic_job.ps1 rewrite a zero adaptive idle
+        # interval to the historical 10s cutoff, which is the early-stop policy
+        # WinRE deliberately disabled for sleeping samples. A 150s window is then
+        # not 150s of observation. Unset must not opt in.
         cmd.append("--adaptive")
     if cfg["pesieve"]:
         cmd.append("--pesieve")
@@ -388,7 +400,11 @@ def _child_env(cfg: dict) -> dict:
     env["FLARE_USER"] = cfg["flare_user"]
     env["FLARE_SSH_PORT"] = str(cfg["flare_ssh_port"])
     env["FLARE_SSH_KEY"] = cfg["flare_ssh_key"]
-    env["WINRE_SNAPSHOT_GATE"] = cfg["snapshot_gate"]
+    if cfg["snapshot_gate"]:
+        env["WINRE_SNAPSHOT_GATE"] = cfg["snapshot_gate"]
+    else:
+        # Deliberately absent: WinRE reads its own default (enforce).
+        env.pop("WINRE_SNAPSHOT_GATE", None)
     # Keep WinRE's evidence root in sync with the root RevAI reads packs from
     # (default /opt/winre/logs); a Console override must land where we look.
     env["WINRE_PIPELINE_LOGS"] = str(cfg["logs_root"])
