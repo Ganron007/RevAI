@@ -7,26 +7,38 @@ after the fact (the depth gate reads the summary's prose).
 
 This module makes the domains STRUCTURAL. The graph has one node per capability
 domain; each node runs its own bounded investigation over the same tool
-registry and returns a finding plus whether it converged. A synthesis node
+registry and returns a determination. The nodes run in sequence, then synthesis
 combines them and the verdict follows from the combined picture.
 
 Why per-domain nodes and not one bigger loop:
-  * each domain gets its own step budget, so a stubborn injection question can
-    no longer starve the persistence question by timing the whole run out;
+  * each domain gets its own step budget, ENFORCED by the runtime's recursion
+    limit rather than requested in the prompt, so a stubborn injection question
+    can no longer starve the persistence question by timing the whole run out;
   * a domain can say "not observed" as a first-class result, which is what the
     depth gate has always wanted to check;
   * the graph's shape IS the coverage record -- the node list is the answer to
     "what did you look at", with no prose in between.
 
-Energate: REVAI_DOMAIN_GRAPH=1. Off by default, so the flat engine is unchanged
+There is no convergence loop here. Convergence (re-examining a domain until its
+answer holds) is a separate concern and lives with the depth mode; this module
+is the substrate it runs on, and it deliberately claims nothing about it.
+
+Coverage is reported as four separate facts, because collapsing them is how a
+total failure gets published as a success: `visited`, `answered`, `understood`
+and `substantive`. `complete` means every domain was investigated to a real
+determination; `honest` additionally requires that at least one domain actually
+said something and that no status was unrecognised. Nine nodes that were visited
+and answered but empty is `complete` and not `honest`, and the engine falls back
+to the flat ReAct loop in that case rather than synthesising a verdict from nine
+empty bullets.
+
+Opt-in: REVAI_DOMAIN_GRAPH=1. Off by default, so the flat engine is unchanged
 until this is validated on a real sample. The two engines read the same
 registry, the same checklist and the same gates.
 """
 from __future__ import annotations
 
-import json
 import os
-import sys
 import time
 from typing import Any, TypedDict
 
@@ -65,6 +77,21 @@ DOMAINS: list[dict[str, str]] = [
 
 DOMAIN_KEYS = [d["key"] for d in DOMAINS]
 DOMAIN_ENV = "REVAI_DOMAIN_GRAPH"
+
+#: The only statuses a node may report. Anything else is treated as a FAILURE,
+#: never as progress -- an unrecognised value must not be able to make an
+#: unexamined domain look answered.
+STATUS_UNDERSTOOD = "understood"      # investigated; behaviour determined
+STATUS_PARTIAL = "partial"            # investigated; inconclusive
+STATUS_NOT_RECONSTRUCTED = "not-reconstructed"  # the node could not run
+STATUS_NOT_EXPLORED = "not-explored"  # never looked
+
+KNOWN_STATUSES = (STATUS_UNDERSTOOD, STATUS_PARTIAL,
+                  STATUS_NOT_RECONSTRUCTED, STATUS_NOT_EXPLORED)
+
+#: Statuses that mean "this domain has no usable answer". These are errors or
+#: absences, not findings, and they must keep `complete` false.
+UNUSABLE_STATUSES = (STATUS_NOT_RECONSTRUCTED, STATUS_NOT_EXPLORED)
 
 
 def domain_graph_enabled() -> bool:
@@ -141,21 +168,120 @@ def build_domain_graph(run_node: Any):
 
 
 def domain_coverage(domains: dict[str, dict]) -> dict:
-    """Coverage over the domain set: what was addressed, and how.
+    """Coverage over the domain set: what was visited, what was answered.
 
-    An unrecognised status counts as not-understood rather than being dropped,
-    so a typo cannot make a missing domain look answered.
+    Three distinct questions, kept distinct because conflating them is how a
+    total failure gets reported as success:
+
+      * VISITED   -- a node ran and returned a result of any kind.
+      * ANSWERED  -- that result is a real determination (`understood`, or
+                     `partial`: looked, could not conclude). "not observed" is
+                     an ANSWER; it is not a gap.
+      * USABLE    -- neither `not-explored` (never looked) nor
+                     `not-reconstructed` (the node itself failed), and not an
+                     unrecognised status, which is counted as a failure rather
+                     than dropped so a typo cannot look like progress.
+
+    * `complete` requires every domain to be USABLE. A run in which all nine
+    nodes raised is visited-but-not-usable, and must read as incomplete.
+
+    A fourth distinction matters at the call site: SUBSTANTIVE. A node can be
+    visited and answered yet produce nothing -- prose where JSON was asked for,
+    or a status with an empty answer and no evidence. Nine such domains are not
+    a dive, so the caller falls back to the flat engine rather than synthesise a
+    verdict from nine empty bullets.
     """
-    out: dict[str, str] = {}
+    per_domain: dict[str, str] = {}
+    visited: list[str] = []
+    answered: list[str] = []
+    understood: list[str] = []
+    unusable: list[str] = []
+    substantive: list[str] = []
+
     for key in DOMAIN_KEYS:
         entry = domains.get(key) or {}
-        status = str(entry.get("status") or "not-explored")
-        out[key] = status if status != "understood" else "understood"
-    missing = [k for k, v in out.items() if v == "not-explored"]
-    return {"per_domain": out,
-            "missing": missing,
-            "complete": not missing,
-            "domains_total": len(DOMAIN_KEYS)}
+        status = str(entry.get("status") or "").strip().lower()
+        if not status:
+            status = STATUS_NOT_EXPLORED
+        per_domain[key] = status
+        if status != STATUS_NOT_EXPLORED:
+            visited.append(key)
+        if status in (STATUS_UNDERSTOOD, STATUS_PARTIAL):
+            answered.append(key)
+        else:
+            unusable.append(key)
+        if status == STATUS_UNDERSTOOD:
+            understood.append(key)
+        if status in (STATUS_UNDERSTOOD, STATUS_PARTIAL) and (
+                entry.get("answer") or entry.get("evidence")):
+            substantive.append(key)
+
+    return {
+        "per_domain": per_domain,
+        "visited": visited,
+        "answered": answered,
+        "understood": understood,
+        "substantive": substantive,
+        "unusable": unusable,
+        "missing": [k for k in DOMAIN_KEYS
+                    if per_domain[k] == STATUS_NOT_EXPLORED],
+        "failed": [k for k in DOMAIN_KEYS
+                   if per_domain[k] == STATUS_NOT_RECONSTRUCTED],
+        # An unrecognised status is a defect in the node, not a domain result.
+        "unknown_status": sorted({s for s in per_domain.values()
+                                  if s not in KNOWN_STATUSES}),
+        "complete": not unusable,
+        "understood_complete": len(understood) == len(DOMAIN_KEYS),
+        "domains_total": len(DOMAIN_KEYS),
+    }
+
+
+def coverage_is_honest(cov: dict) -> bool:
+    """Whether a coverage record may be presented as a finished dive.
+
+    Four ways to fail, each of which has shipped as green before:
+      * the graph did not run (`domains_total` absent/zero);
+      * a status the code does not recognise, which means the node contract and
+        the coverage rule disagree and neither can be trusted;
+      * a domain that was never investigated or whose node failed;
+      * nothing substantive anywhere -- every domain visited, none of them
+        saying anything, which is a total failure wearing a full set of nodes.
+    """
+    if not cov or int(cov.get("domains_total") or 0) != len(DOMAIN_KEYS):
+        return False
+    if cov.get("unknown_status"):
+        return False
+    if not cov.get("complete"):
+        return False
+    return bool(cov.get("substantive"))
+
+
+def summarise(domains: dict[str, dict]) -> dict:
+    """A compact, JSON-ready summary of a domain run."""
+    cov = domain_coverage(domains)
+    per_dom = domains.get(DOMAIN_KEYS[0]) if domains else None
+    used = sum(int((domains.get(k) or {}).get("tool_calls_used") or 0)
+               for k in DOMAIN_KEYS)
+    return {
+        "engine": "domain-graph",
+        "domains": cov["per_domain"],
+        "visited": cov["visited"],
+        "answered": cov["answered"],
+        "understood": cov["understood"],
+        "substantive": cov["substantive"],
+        "unusable": cov["unusable"],
+        "missing": cov["missing"],
+        "failed": cov["failed"],
+        "unknown_status": cov["unknown_status"],
+        "complete": cov["complete"],
+        "understood_complete": cov["understood_complete"],
+        # `honest` is the gate: coverage the audit and the report may cite.
+        # `complete` alone can be true while nothing was actually said.
+        "honest": coverage_is_honest(cov),
+        "domains_total": cov["domains_total"],
+        "step_budget": domain_step_budget(),
+        "tool_calls_used": used,
+    }
 
 
 def domain_findings_text(domains: dict[str, dict], max_chars: int = 12000) -> str:
@@ -164,22 +290,15 @@ def domain_findings_text(domains: dict[str, dict], max_chars: int = 12000) -> st
     for key in DOMAIN_KEYS:
         e = domains.get(key)
         if not e:
-            blocks.append(f"- **{key}**: not explored")
+            blocks.append(f"- **{key}**: NOT EXAMINED")
             continue
+        status = str(e.get("status") or STATUS_NOT_EXPLORED)
+        marker = "" if status in (STATUS_UNDERSTOOD, STATUS_PARTIAL) else \
+                 "  (no usable answer -- treat this domain as uncovered)"
         ev = ", ".join(str(x)[:80] for x in (e.get("evidence") or [])[:4])
-        blocks.append(f"- **{key}** [{e.get('status')}]: "
+        used = e.get("tool_calls_used")
+        spend = f" [{used}/{e.get('step_budget')} tools]" if used is not None else ""
+        blocks.append(f"- **{key}** [{status}]{spend}: "
                       f"{(e.get('answer') or '(no answer)')[:300]}"
-                      + (f" | evidence: {ev}" if ev else ""))
+                      + (f" | evidence: {ev}" if ev else "") + marker)
     return "\n".join(blocks)[:max_chars]
-
-
-def summarise(domains: dict[str, dict]) -> dict:
-    """A compact, JSON-ready summary of a domain run."""
-    cov = domain_coverage(domains)
-    return {
-        "engine": "domain-graph",
-        "domains": cov["per_domain"],
-        "missing": cov["missing"],
-        "complete": cov["complete"],
-        "step_budget": domain_step_budget(),
-    }

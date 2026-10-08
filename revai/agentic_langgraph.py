@@ -448,6 +448,35 @@ def _llm_json(text: str) -> dict:
     except Exception:
         return {}
 
+def _need(helpers: dict, name: str):
+    """Fetch a helper by name, failing loudly at the boundary.
+
+    The domain path used to call `_coerce_final_answer` as though it were
+    module level. It is a local of the flat engine, so every domain node raised
+    NameError, degraded to `not-reconstructed`, and synthesis then caught its own
+    NameError and returned a TRUTHY `{"verdict": "unknown"}` -- which suppressed
+    the flat-engine fallback, so the run reported a fabricated verdict at
+    confidence 0 instead of falling back to a real dive.
+
+    Resolving helpers through one function puts the failure here, where the
+    caller can still fall back, rather than nine times inside a graph.
+    """
+    fn = (helpers or {}).get(name)
+    if not callable(fn):
+        raise KeyError(f"domain graph requires helper {name!r}")
+    return fn
+
+
+def _domain_recursion_limit(budget: int) -> int:
+    """Super-step ceiling for one domain node.
+
+    The budget must be enforced by the runtime, not requested in the prompt. A
+    ReAct step is one agent node plus one tool node, so `budget` tool calls cost
+    2*budget steps, plus the opening and closing agent steps.
+    """
+    return max(4, int(budget) * 2 + 2)
+
+
 def run_domain_deep_dive(sha: str, max_steps: int, helpers: dict,
                          registry: Any, session: dict, file_type: str,
                          history: list, findings: dict, lc_tools: list,
@@ -462,11 +491,27 @@ def run_domain_deep_dive(sha: str, max_steps: int, helpers: dict,
     model was asked to write.
 
     Returns the same final_answer shape `run_langgraph_deep_dive` produces, so
-    the caller (and every gate downstream) is unchanged.
+    the caller (and every gate downstream) is unchanged. Returns FALSY when no
+    domain produced a usable answer, which is the caller's signal to fall back
+    to the flat engine: a real dive always beats a fabricated `unknown`.
     """
     import domain_graph as dg
 
+    # Resolve up front: a missing helper must abort the domain path BEFORE any
+    # node runs, not be discovered nine times as a swallowed NameError. It must
+    # also be FALSY to the caller, so the flat engine still runs -- an exception
+    # escaping here would take the whole deep dive with it.
+    try:
+        coerce = _need(helpers, "_coerce_final_answer")
+    except Exception as exc:
+        print(f"[agentic_langgraph] domain path unavailable: {exc}", flush=True)
+        history.append({"step": len(history) + 1,
+                        "error": f"domain path unavailable: {exc}",
+                        "engine": "domain-graph"})
+        return {}
+
     budget = dg.domain_step_budget()
+    limit = _domain_recursion_limit(budget)
     per_domain: dict[str, dict] = {}
     domain_history: list[dict] = []
 
@@ -477,7 +522,9 @@ def run_domain_deep_dive(sha: str, max_steps: int, helpers: dict,
             f"## Domain under investigation: {domain['title']}\n\n"
             f"{domain['question']}\n\n"
             f"Domain-specific instructions:\n"
-            f"- Spend at most {budget} tool calls on THIS domain.\n"
+            f"- You have a HARD allowance of {budget} tool calls on THIS domain. "
+            f"The runtime stops you at {limit} steps; exceeding the request is "
+            f"the only way to lose them, so answer with what you have.\n"
             f"- Answer for THIS domain only. Other domains are handled by their "
             f"own nodes -- do not pre-empt them.\n"
             f"- Cite the concrete evidence you used (tool, SQL, or offset).\n"
@@ -491,23 +538,49 @@ def run_domain_deep_dive(sha: str, max_steps: int, helpers: dict,
             f"Anything else needs evidence.\n"
         )
         agent = create_react_agent(llm, tools=lc_tools, prompt=_prompt)
-        msgs = agent.invoke({"messages": [("user", f"Investigate {key} for "
-                                              f"{session.get('sample_path', '')}")]})
+        msgs = agent.invoke(
+            {"messages": [("user", f"Investigate {key} for "
+                                     f"{session.get('sample_path', '')}")]},
+            config={"recursion_limit": limit},
+        )
+        history_msgs = msgs.get("messages") or []
         text = ""
-        for m in reversed(msgs.get("messages") or []):
+        for m in reversed(history_msgs):
             c = getattr(m, "content", "")
             if isinstance(c, str) and c.strip():
                 text = c
                 break
-        parsed = _coerce_final_answer(_llm_json(text)) if text else {}
+        # What the node ACTUALLY spent, as opposed to what it was asked for.
+        used = sum(len(getattr(m, "tool_calls", None) or [])
+                   for m in history_msgs)
+        parsed = coerce(_llm_json(text)) if text else {}
+        if not isinstance(parsed, dict):
+            parsed = {}
+        answer = str(parsed.get("answer") or "")
+        if not text:
+            status = dg.STATUS_NOT_EXPLORED
+        elif not (answer or parsed.get("evidence")):
+            # The node ran but its reply carries no determination. Prose where
+            # JSON was asked for is "looked, could not conclude" -- a partial,
+            # never an answer -- and the raw text is kept so it is diagnosable.
+            status = dg.STATUS_PARTIAL
+        else:
+            status = str(parsed.get("status") or dg.STATUS_PARTIAL)
         entry = {
-            "status": str(parsed.get("status") or "partial"),
-            "answer": str(parsed.get("answer") or "")[:1200],
+            "status": status,
+            "answer": answer[:1200],
             "evidence": [str(e)[:120] for e in (parsed.get("evidence") or [])[:8]],
             "reason": str(parsed.get("reason") or "")[:400],
+            "tool_calls_used": used,
+            "step_budget": budget,
         }
+        if not (answer or parsed.get("evidence")):
+            entry["raw_excerpt"] = text[:400]
+        if used > budget:
+            entry["over_budget"] = True
         domain_history.append({"domain": key, "step_budget": budget,
-                               "result": entry, "engine": "domain-graph"})
+                               "recursion_limit": limit, "result": entry,
+                               "engine": "domain-graph"})
         return entry
 
     try:
@@ -529,19 +602,38 @@ def run_domain_deep_dive(sha: str, max_steps: int, helpers: dict,
                         "result": entry["result"],
                         "error": entry["result"].get("reason") or None,
                         "engine": "domain-graph"})
-    findings["domain_graph"] = dg.summarise(per_domain)
+    summary = dg.summarise(per_domain)
+    findings["domain_graph"] = summary
     findings["domain_findings"] = dg.domain_findings_text(per_domain)
-    return _domain_final_answer(per_domain, helpers, verdict_model)
+
+    if not summary["substantive"]:
+        # Nothing was actually SAID. Every status alone would pass: nine
+        # `partial` nodes with an empty answer each are a total failure wearing
+        # a full set of nodes. Synthesising a verdict from nine empty bullets is
+        # fabrication, so fall back and run a real dive.
+        reason = (f"falling back to the flat engine: domain graph produced no "
+                  f"substantive answer (statuses="
+                  f"{sorted(set(summary['domains'].values()))}, "
+                  f"substantive={len(summary['substantive'])}/"
+                  f"{len(dg.DOMAIN_KEYS)})")
+        print(f"[agentic_langgraph] {reason}", flush=True)
+        history.append({"step": len(history) + 1, "tool": "domain:summary",
+                        "error": reason, "engine": "domain-graph"})
+        return {}
+
+    return _domain_final_answer(per_domain, helpers, verdict_model, coerce)
 
 
 def _domain_final_answer(per_domain: dict, helpers: dict,
-                         verdict_model: str | None) -> dict:
+                         verdict_model: str | None, coerce=None) -> dict:
     """One verdict from the per-domain picture.
 
     The domains are evidence, not votes: each contributes what it found, and the
     judgment call stays with the model exactly as it does on the flat path.
     """
-    import depth_agent  # noqa: F401  (kept local to this path)
+    coerce = coerce or _need(helpers, "_coerce_final_answer")
+    import domain_graph as dg
+    cov = dg.domain_coverage(per_domain)
     text = "\n".join(
         f"- **{k}** [{v.get('status')}]: {v.get('answer', '')}"
         for k, v in per_domain.items())
@@ -556,13 +648,22 @@ def _domain_final_answer(per_domain: dict, helpers: dict,
         "domains.\n"
         + VERDICT_CALIBRATION_CONTRACT
     )
+    if cov["unusable"]:
+        # Say it in the prompt rather than let the model read nine bullets and
+        # assume nine investigations.
+        prompt += (
+            "\n\nCOVERAGE HONESTY: these domains did NOT yield a usable "
+            f"answer: {', '.join(cov['unusable'])}. Do not describe them as "
+            "investigated, and do not let their absence inflate confidence.\n")
     try:
         raw = llm_judge(prompt, model=verdict_model)
-        return _coerce_final_answer(raw) or {}
+        return coerce(raw) or {}
     except Exception as exc:
-        return {"verdict": "unknown", "confidence": 0,
-                "summary": f"domain synthesis failed: {exc}",
-                "key_evidence": []}
+        # FALSY, not `unknown`: a synthesis that failed has produced no
+        # verdict, and returning a shaped one here suppresses the caller's
+        # flat-engine fallback.
+        print(f"[agentic_langgraph] domain synthesis failed: {exc}", flush=True)
+        return {}
 
 
 def run_langgraph_deep_dive(sha: str, max_steps: int = 10, helpers: dict | None = None) -> dict:
