@@ -317,6 +317,43 @@ def test_a_failed_synthesis_is_falsy_not_unknown(monkeypatch):
     assert out == {}, f"a failed synthesis must not return a verdict shape: {out!r}"
 
 
+def test_a_node_that_answers_while_claiming_it_did_not_investigate(monkeypatch):
+    """`not-reconstructed` alongside a complete analysis is self-contradictory.
+
+    Three of nine domains did exactly this on the first working run: they used
+    tools, wrote a full "not observed, here is what I checked" answer, and then
+    reported that they had not investigated. Taking the claim at face value
+    understates the work; calling it `understood` overstates the conclusion.
+    """
+    reply = ('{"status": "not-reconstructed", "answer": "No cryptographic '
+             'primitives or packing observed; the import table is minimal and '
+             'GUI-centric.", "evidence": ["imports: 24 GUI APIs"], '
+             '"reason": ""}')
+    _out, hist, finds = _run(monkeypatch, reply=reply)
+    entries = {h["tool"]: h["result"] for h in hist if "result" in h}
+    e = entries["domain:crypto"]
+    assert e["status"] == dg.STATUS_PARTIAL, (
+        "a domain that answered must not be filed as uninvestigated")
+    assert e["status_contradicts_answer"] is True
+    assert e["model_status"] == "not-reconstructed", (
+        "the model's own claim must be preserved, not overwritten")
+    assert "cryptographic primitives" in e["answer"]
+    assert finds["domain_graph"]["domains"]["crypto"] == "partial"
+
+
+def test_a_genuine_not_explored_stays_not_explored(monkeypatch):
+    """The contradiction rule must not rescue a domain that really said nothing."""
+    reply = ('{"status": "not-explored", "answer": "", "evidence": [], '
+             '"reason": "ran out of steps"}')
+    _out, hist, _ = _run(monkeypatch, reply=reply,
+                         agent_factory=lambda llm, tools=None, prompt=None,
+                         **k: FakeAgent(reply, tool_calls=0))
+    entries = {h["tool"]: h["result"] for h in hist if "result" in h}
+    e = entries["domain:crypto"]
+    assert e["status"] == dg.STATUS_NOT_EXPLORED
+    assert not e.get("status_contradicts_answer")
+
+
 def test_unparseable_prose_is_kept_and_marked_unstructured(monkeypatch):
     """Prose where JSON was asked for is kept and flagged, never a clean answer.
 

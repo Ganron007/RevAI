@@ -598,12 +598,29 @@ def run_domain_deep_dive(sha: str, max_steps: int, helpers: dict,
             fmt = "prose"
         answer = str(parsed.get("answer") or "")
         has_finding = bool(answer or parsed.get("evidence"))
+        model_status = str(parsed.get("status") or "").strip().lower() or None
+        contradict = False
         if not text:
             status = dg.STATUS_NOT_EXPLORED
+        elif model_status in (dg.STATUS_NOT_EXPLORED, dg.STATUS_NOT_RECONSTRUCTED) \
+                and not has_finding:
+            # Said it did not look, and supplied nothing. That is an honest
+            # report of an unfinished domain, not a plumbing failure.
+            status = model_status
         elif not has_finding:
             status = dg.STATUS_PARTIAL
+        elif model_status in (dg.STATUS_NOT_EXPLORED, dg.STATUS_NOT_RECONSTRUCTED):
+            # The node used tools, produced an answer, and then claimed it had
+            # not investigated. Three of nine domains did exactly this on the
+            # first working run -- "not-reconstructed" alongside a complete
+            # analysis. The claim is self-contradictory: the answer is evidence
+            # it WAS investigated. Recording the claim verbatim would understate
+            # the work, and recording `understood` would overstate the
+            # conclusion, so it becomes `partial` with the claim preserved.
+            status = dg.STATUS_PARTIAL
+            contradict = True
         else:
-            status = str(parsed.get("status") or dg.STATUS_PARTIAL)
+            status = model_status or dg.STATUS_PARTIAL
         entry = {
             "status": status,
             "answer": answer[:1200],
@@ -614,6 +631,10 @@ def run_domain_deep_dive(sha: str, max_steps: int, helpers: dict,
             "step_budget": budget,
             "recursion_limit": limit,
         }
+        if model_status:
+            entry["model_status"] = model_status
+        if contradict:
+            entry["status_contradicts_answer"] = True
         if finish:
             entry["finish_reason"] = finish
         if fmt != "json" or not has_finding:
