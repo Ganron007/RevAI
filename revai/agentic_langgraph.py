@@ -480,10 +480,15 @@ def _domain_recursion_limit(budget: int) -> int:
     the node to actually REACH AN ANSWER. That headroom matters: at the old size
     seven of nine nodes were cut off mid-investigation and returned "Sorry, need
     more steps to process this request", which is a truncated agent, not a
-    finding. The tool budget is therefore measured and flagged (over_budget)
-    rather than claimed as enforced.
+    finding. Even so a node that fans out to several tools per turn can still
+    exhaust it -- the second run truncated `c2_network` at 7 calls under a limit
+    of 14, and LangGraph reported no finish_reason for it. `finish_reason: None`
+    alongside the "need more steps" reply is therefore the truncation signal.
+
+    The tool budget is measured and flagged (`over_budget`) rather than claimed
+    as enforced.
     """
-    return max(12, int(budget) * 2 + 8)
+    return max(20, int(budget) * 4 + 8)
 
 
 def run_domain_deep_dive(sha: str, max_steps: int, helpers: dict,
@@ -531,20 +536,25 @@ def run_domain_deep_dive(sha: str, max_steps: int, helpers: dict,
             f"## Domain under investigation: {domain['title']}\n\n"
             f"{domain['question']}\n\n"
             f"Domain-specific instructions:\n"
-            f"- You have a HARD allowance of {budget} tool calls on THIS domain. "
-            f"The runtime stops you at {limit} steps; exceeding the request is "
-            f"the only way to lose them, so answer with what you have.\n"
+            f"- You have a budget of {budget} tool calls on THIS domain and a "
+            f"hard ceiling of {limit} steps. The runtime stops you at the "
+            f"ceiling and a truncated node returns nothing useful, so stop "
+            f"investigating and answer with what you have.\n"
             f"- Answer for THIS domain only. Other domains are handled by their "
             f"own nodes -- do not pre-empt them.\n"
             f"- Cite the concrete evidence you used (tool, SQL, or offset).\n"
             f"- If the evidence does not establish the behaviour, say so as "
             f"\"not observed\" with what you checked. 'not observed' is a valid, "
             f"useful answer; a guess is not.\n"
-            f"- Reply with a JSON object: {{\"status\": \"understood|partial|"
-            f"not-reconstructed|not-explored\", \"answer\": \"...\", "
-            f"\"evidence\": [\"...\"], \"reason\": \"...\"}}\n"
             f"- 'not-explored' asserts nothing beyond not having looked. "
             f"Anything else needs evidence.\n"
+            f"- Your ENTIRE reply must be one JSON object and nothing else: no "
+            f"preamble, no markdown, no code fence, no commentary before or "
+            f"after it. Prose instead of JSON is recorded as an unstructured "
+            f"partial answer.\n\n"
+            f"Reply with exactly this shape:\n"
+            f"{{\"status\": \"understood|partial|not-reconstructed|not-explored\","
+            f" \"answer\": \"...\", \"evidence\": [\"...\"], \"reason\": \"...\"}}\n"
         )
         agent = create_react_agent(llm, tools=lc_tools, prompt=_prompt)
         msgs = agent.invoke(
@@ -567,17 +577,30 @@ def run_domain_deep_dive(sha: str, max_steps: int, helpers: dict,
         used = sum(len(getattr(m, "tool_calls", None) or [])
                    for m in history_msgs)
         parsed, why = dg.parse_domain_reply(text)
-        parsed = coerce(parsed) if parsed else {}
-        if not isinstance(parsed, dict):
-            parsed, why = {}, (why or "coercer returned a non-dict")
+        # `_coerce_final_answer` is the VERDICT coercer: it takes the raw JSON
+        # string llm_judge returned. `parse_domain_reply` already returns a dict,
+        # and handing that dict to the coercer makes it return a non-dict -- which
+        # discarded 7 of 9 correctly-formed domain answers on the first real run.
+        # Use the coercer when it helps, and keep the parsed dict when it does not.
+        coerced = coerce(parsed) if parsed else {}
+        if isinstance(coerced, dict) and coerced:
+            parsed = coerced
+        elif not isinstance(parsed, dict):
+            parsed, why = {}, (why or "reply was not a dict")
+        fmt = "json"
+        if not parsed and text.strip():
+            # No JSON, but the node may still have ANSWERED -- and a markdown
+            # "not observed, here is what I checked" is a real finding, not
+            # nothing. Keep the prose as the answer instead of discarding the
+            # analysis, and mark it unstructured so the distinction survives.
+            parsed = {"status": dg.STATUS_PARTIAL, "answer": text.strip()[:1200],
+                      "evidence": [], "reason": why}
+            fmt = "prose"
         answer = str(parsed.get("answer") or "")
         has_finding = bool(answer or parsed.get("evidence"))
         if not text:
             status = dg.STATUS_NOT_EXPLORED
         elif not has_finding:
-            # The node ran but its reply carries no determination. Prose where
-            # JSON was asked for is "looked, could not conclude" -- a partial,
-            # never an answer -- and the raw text is kept so it is diagnosable.
             status = dg.STATUS_PARTIAL
         else:
             status = str(parsed.get("status") or dg.STATUS_PARTIAL)
@@ -586,13 +609,14 @@ def run_domain_deep_dive(sha: str, max_steps: int, helpers: dict,
             "answer": answer[:1200],
             "evidence": [str(e)[:120] for e in (parsed.get("evidence") or [])[:8]],
             "reason": str(parsed.get("reason") or "")[:400],
+            "format": fmt,
             "tool_calls_used": used,
             "step_budget": budget,
             "recursion_limit": limit,
         }
         if finish:
             entry["finish_reason"] = finish
-        if not has_finding:
+        if fmt != "json" or not has_finding:
             # Enough of the reply to diagnose, and the reason it did not parse.
             # The first real run recorded a 400-char slice, which is not enough
             # to tell a truncated reply from a prose one -- the JSON never
@@ -601,6 +625,10 @@ def run_domain_deep_dive(sha: str, max_steps: int, helpers: dict,
             entry["parse_failure"] = why
             if finish == "length":
                 entry["parse_failure"] += " (finish_reason=length)"
+            elif finish is None and "need more steps" in text[:200].lower():
+                # LangGraph reported no finish_reason, and the reply is its
+                # out-of-steps placeholder: this node was truncated.
+                entry["truncated"] = True
         if used > budget:
             entry["over_budget"] = True
         domain_history.append({"domain": key, "step_budget": budget,

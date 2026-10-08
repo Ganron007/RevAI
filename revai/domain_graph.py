@@ -336,7 +336,11 @@ def coverage_is_honest(cov: dict) -> bool:
         the coverage rule disagree and neither can be trusted;
       * a domain that was never investigated or whose node failed;
       * nothing substantive anywhere -- every domain visited, none of them
-        saying anything, which is a total failure wearing a full set of nodes.
+        saying anything, which is a total failure wearing a full set of nodes;
+      * nothing STRUCTURED anywhere. A node that answered in prose instead of
+        the requested JSON is recorded as `partial`, so a run where every domain
+        merely rambled is `complete` but has produced no evidence-backed
+        determination at all. Presenting that as a finished dive overstates it.
     """
     if not cov or int(cov.get("domains_total") or 0) != len(DOMAIN_KEYS):
         return False
@@ -344,7 +348,9 @@ def coverage_is_honest(cov: dict) -> bool:
         return False
     if not cov.get("complete"):
         return False
-    return bool(cov.get("substantive"))
+    if not cov.get("substantive"):
+        return False
+    return bool(cov.get("understood"))
 
 
 def summarise(domains: dict[str, dict]) -> dict:

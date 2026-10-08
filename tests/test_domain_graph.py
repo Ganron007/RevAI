@@ -166,6 +166,52 @@ def test_a_node_that_ran_out_of_steps_says_so(monkeypatch):
     assert finds["domain_graph"]["honest"] is False
 
 
+def test_a_prose_answer_is_kept_as_the_answer_not_discarded(monkeypatch):
+    """A markdown "not observed, here is what I checked" IS a finding.
+
+    The second real run lost a complete credential-access analysis -- three
+    specific queries, each with its negative result -- purely because the model
+    answered in prose. The information was real; only the format was wrong.
+    """
+    prose = ("Based on my three tool calls: 1. ghidra_query for "
+             "credential-related imports: none found. 2. ghidra_query for "
+             "credential strings: none. 3. capa: already run. So credential "
+             "access is NOT OBSERVED.")
+    _out, hist, finds = _run(monkeypatch, reply=prose,
+                             judge=lambda p, model=None, **k: "{}")
+    entries = {h["tool"]: h["result"] for h in hist if "result" in h}
+    e = entries["domain:surface"]
+    assert e["format"] == "prose", e
+    assert e["status"] == dg.STATUS_PARTIAL
+    assert "NOT OBSERVED" in e["answer"], "the prose analysis was discarded"
+    assert e["parse_failure"], "an unstructured answer must say so"
+    assert finds["domain_graph"]["substantive"], (
+        "a domain that answered in prose is substantive; only a node that said "
+        "nothing at all is not")
+
+
+def test_a_node_truncated_by_the_ceiling_is_flagged_as_truncated(monkeypatch):
+    """`finish_reason: None` plus the out-of-steps placeholder means truncated.
+
+    LangGraph reported no finish_reason for the node that hit the ceiling, so
+    the reply text is the only signal.
+    """
+    class NoFinish(FakeAgent):
+        def invoke(self, payload, config=None):
+            out = super().invoke(payload, config)
+            out["messages"] = [SimpleNamespace(
+                content="Sorry, need more steps to process this request.",
+                tool_calls=[], response_metadata={})]
+            return out
+
+    _out, hist, _ = _run(monkeypatch, judge=lambda p, model=None, **k: "{}",
+                         agent_factory=lambda llm, tools=None, prompt=None,
+                         **k: NoFinish())
+    entries = [h["result"] for h in hist if "result" in h]
+    assert entries and all(e.get("truncated") is True for e in entries), \
+        "a truncated node must be identifiable, not filed as a finding"
+
+
 def test_a_well_formed_reply_wrapped_in_prose_is_recovered(monkeypatch):
     """The real failure from the first sample run.
 
@@ -230,15 +276,38 @@ def test_a_missing_helper_aborts_before_any_node_runs(monkeypatch):
     assert any("helper" in str(h.get("error", "")) for h in hist), hist
 
 
-def test_when_no_domain_answers_the_run_falls_back_instead_of_faking(monkeypatch):
-    """All nodes unusable -> falsy, so the caller runs the flat engine.
+def test_when_no_domain_says_anything_the_run_falls_back(monkeypatch):
+    """All nodes empty -> falsy, so the caller runs the flat engine.
 
-    A shaped `unknown` verdict here is a fabricated result, not a fallback.
+    A shaped `unknown` verdict here is a fabricated result, not a fallback. Note
+    the case is EMPTY replies, not prose: a node that answers in prose without
+    JSON has still said something, and is kept.
     """
-    out, hist, finds = _run(monkeypatch, reply="I'm not sure, sorry.")
+    out, hist, finds = _run(monkeypatch, reply="",
+                            agent_factory=lambda llm, tools=None, prompt=None,
+                            **k: FakeAgent(""))
     assert out == {}, f"expected a falsy result to trigger the fallback, got {out!r}"
     assert any("falling back" in str(h.get("error", "")) for h in hist), hist
     assert finds["domain_graph"]["honest"] is False
+
+
+def test_a_json_answer_survives_the_verdict_coercer(monkeypatch):
+    """The coercer takes the raw JSON STRING; handed a dict it returns garbage.
+
+    Passing the parsed dict through it destroyed 7 of 9 correct answers on the
+    second real run -- the nodes had answered properly and the plumbing threw
+    the answers away.
+    """
+    def bad_coercer(raw):
+        # Reproduces the real coercer's contract: it wants a string.
+        return "not a dict" if not isinstance(raw, str) else {"ok": True}
+
+    _out, hist, _ = _run(monkeypatch,
+                         helpers={"_coerce_final_answer": bad_coercer})
+    entries = {h["tool"]: h["result"] for h in hist if "result" in h}
+    assert entries["domain:surface"]["status"] == dg.STATUS_UNDERSTOOD, (
+        "a dict answer was destroyed by a string-only coercer")
+    assert "Run key" in entries["domain:surface"]["answer"]
 
 
 def test_a_failed_synthesis_is_falsy_not_unknown(monkeypatch):
@@ -248,18 +317,35 @@ def test_a_failed_synthesis_is_falsy_not_unknown(monkeypatch):
     assert out == {}, f"a failed synthesis must not return a verdict shape: {out!r}"
 
 
-def test_unparseable_prose_is_partial_with_the_raw_text_kept(monkeypatch):
-    """Prose where JSON was asked for is 'looked, could not conclude'.
+def test_unparseable_prose_is_kept_and_marked_unstructured(monkeypatch):
+    """Prose where JSON was asked for is kept and flagged, never a clean answer.
 
-    It must not become an answer, and the text must survive for diagnosis.
+    Superseded in intent by the real-run case above; this pins the short form.
     """
     _, hist, _ = _run(monkeypatch, reply="Looking at this, it seems to persist.")
     entries = {h["tool"]: h["result"] for h in hist
                if str(h.get("tool", "")).startswith("domain:") and "result" in h}
     dom = entries["domain:persistence"]
-    assert dom["status"] == dg.STATUS_PARTIAL
-    assert dom["answer"] == "", "prose must not become a fabricated answer"
+    assert dom["format"] == "prose"
+    assert dom["status"] == dg.STATUS_PARTIAL, "prose is never `understood`"
+    assert dom["answer"].startswith("Looking at this")
     assert dom["raw_excerpt"].startswith("Looking at this")
+
+
+def test_a_run_where_every_domain_only_rambled_is_not_honest(monkeypatch):
+    """All nine visited, all nine talking, none of them structured.
+
+    `complete` is True here. Presenting it as a finished dive overstates it: no
+    domain produced an evidence-backed determination.
+    """
+    _out, _, finds = _run(monkeypatch,
+                          reply="I think it probably persists, but I cannot "
+                                "be certain.",
+                          judge=lambda p, model=None, **k: "{}")
+    dgv = finds["domain_graph"]
+    assert dgv["complete"] is True
+    assert len(dgv["substantive"]) == len(dg.DOMAIN_KEYS)
+    assert dgv["honest"] is False, "all-prose is not a finished dive"
 
 
 def test_the_synthesis_prompt_names_the_unusable_domains(monkeypatch):
@@ -360,13 +446,15 @@ def test_not_observed_in_the_answer_text_is_an_answer():
 def test_coverage_is_honest_rejects_an_empty_or_absent_record():
     assert dg.coverage_is_honest({}) is False
     assert dg.coverage_is_honest({"domains_total": 0, "complete": True}) is False
-    assert dg.coverage_is_honest({
-        "domains_total": len(dg.DOMAIN_KEYS), "complete": True,
-        "unknown_status": [], "substantive": ["persistence"]}) is True, \
-        "an honest record needs SOMETHING substantive, not just a count"
-    assert dg.coverage_is_honest({
-        "domains_total": len(dg.DOMAIN_KEYS), "complete": True,
-        "unknown_status": [], "substantive": []}) is False
+    base = {"domains_total": len(dg.DOMAIN_KEYS), "complete": True,
+            "unknown_status": [], "substantive": ["persistence"]}
+    assert dg.coverage_is_honest(base) is False, (
+        "an honest record needs a STRUCTURED determination, not just a count")
+    assert dg.coverage_is_honest({**base, "understood": ["persistence"]}) is True
+    assert dg.coverage_is_honest({**base, "understood": []}) is False, (
+        "nine prose answers are not a finished dive")
+    assert dg.coverage_is_honest({**base, "understood": ["x"],
+                                 "substantive": []}) is False
 
 
 def test_findings_text_marks_an_unusable_domain_loudly():
