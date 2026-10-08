@@ -27,10 +27,28 @@ import winre_runner as W  # noqa: E402
 
 
 @pytest.fixture(autouse=True)
-def _clean(monkeypatch):
+def _clean(monkeypatch, tmp_path):
     for k in list(os.environ):
         if k.startswith("REVAI_WINRE"):
             monkeypatch.delenv(k, raising=False)
+    # CONFIG_PATH is bound at import time, so the env var cannot redirect it.
+    # Without this the suite inherits the machine's real settings: on the lab VM
+    # /opt/samples/pipeline-config.json sets winre_snapshot_gate=enforce and
+    # winre_adaptive=true, and every "unset" assertion below would be testing the
+    # machine rather than the default path. These tests are ABOUT the default.
+    monkeypatch.setattr(W, "CONFIG_PATH", tmp_path / "no-such-config.json")
+
+
+def _write_config(monkeypatch, tmp_path, **winre):
+    """Point the settings loader at a config that makes explicit choices.
+
+    Keys are FLAT at the top level (`_load_config` reads `cfg.get(key)`), which
+    is the shape the Console Settings panel writes.
+    """
+    import json as _json
+    path = tmp_path / "pipeline-config.json"
+    path.write_text(_json.dumps(winre), encoding="utf-8")
+    monkeypatch.setattr(W, "CONFIG_PATH", path)
 
 
 def _cfg(**over):
@@ -126,3 +144,34 @@ def test_settings_report_null_rather_than_a_default():
     assert cfg["adaptive"] is None and cfg["snapshot_gate"] is None
     probe = W.probe(timeout=1, s=cfg)
     assert isinstance(probe, dict)
+
+
+# ------------------------------------------------- an explicit choice still wins
+def test_the_config_files_explicit_gate_is_honoured(monkeypatch, tmp_path):
+    """The lab VM's pipeline-config.json sets `enforce` explicitly.
+
+    That is an operator choice and must be forwarded, not second-guessed. R1 was
+    a defect in the DEFAULT path -- this pins that fixing it did not start
+    overriding a deliberate setting.
+    """
+    _write_config(monkeypatch, tmp_path, winre_snapshot_gate="enforce",
+                  winre_adaptive=True)
+    cfg = W.settings()
+    assert cfg["snapshot_gate"] == "enforce"
+    assert cfg["adaptive"] is True
+    assert W._child_env(cfg)["WINRE_SNAPSHOT_GATE"] == "enforce"
+    assert "--adaptive" in W.build_command("/tmp/x.exe", cfg)
+
+
+def test_the_config_files_explicit_observe_is_still_honoured(monkeypatch, tmp_path):
+    """Weakening the gate remains possible -- but only when asked for."""
+    _write_config(monkeypatch, tmp_path, winre_snapshot_gate="observe")
+    cfg = W.settings()
+    assert cfg["snapshot_gate"] == "observe"
+    assert W._child_env(cfg)["WINRE_SNAPSHOT_GATE"] == "observe"
+
+
+def test_the_environment_overrides_the_config_file(monkeypatch, tmp_path):
+    _write_config(monkeypatch, tmp_path, winre_snapshot_gate="enforce")
+    monkeypatch.setenv("REVAI_WINRE_SNAPSHOT_GATE", "off")
+    assert W.settings()["snapshot_gate"] == "off"
