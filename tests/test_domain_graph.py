@@ -224,8 +224,8 @@ def test_all_nodes_failing_is_not_complete():
     allfail = {k: {"status": dg.STATUS_NOT_RECONSTRUCTED} for k in dg.DOMAIN_KEYS}
     cov = dg.domain_coverage(allfail)
     assert cov["complete"] is False, "nine failed nodes reported complete"
-    assert cov["honest"] is False if "honest" in cov else True
     assert len(cov["failed"]) == len(dg.DOMAIN_KEYS)
+    assert len(cov["unusable"]) == len(dg.DOMAIN_KEYS)
     s = dg.summarise(allfail)
     assert s["complete"] is False and s["honest"] is False
     assert s["tool_calls_used"] == 0

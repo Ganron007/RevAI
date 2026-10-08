@@ -79,6 +79,25 @@ if [[ -d "$REPO_ROOT/tests" ]]; then
 fi
 
 # ---------------------------------------------------------------------------
+# Deploy docs/
+#
+# The VM test suite runs the same doc-consistency checks as the repo (the
+# harness asserts env.documented and docs.counts), and they read
+# /opt/scripts/docs. Those files used to reach the VM only by hand, so they
+# drifted: on 2026-10-08 two suite tests failed on the VM with a stale
+# FEATURES.md/CONFIGURE.md while passing locally -- a FALSE failure that says
+# nothing about the deploy. Either the deployed tree carries the docs the
+# checks read, or the checks do not run there; shipping them is the simpler of
+# the two, and it keeps a doc/code mismatch visible on the machine that runs
+# the pipeline.
+# ---------------------------------------------------------------------------
+if [[ -d "$REPO_ROOT/docs" ]]; then
+    ok "Deploying docs to /opt/scripts/docs/ ..."
+    sudo mkdir -p /opt/scripts/docs
+    sudo cp -a "$REPO_ROOT/docs"/. /opt/scripts/docs/
+fi
+
+# ---------------------------------------------------------------------------
 # Deploy the operator entry points from scripts/ (layout-aware helpers the docs
 # reference by their deployed path, e.g. /opt/scripts/verify-release.sh).
 # ---------------------------------------------------------------------------
@@ -133,15 +152,17 @@ if command -v git >/dev/null 2>&1 && git -C "$REPO_ROOT" rev-parse --verify HEAD
     #                      runtime behavior, and ui/ SOURCE, because the Console
     #                      bundle is built from it at deploy time)
     #   tests/            (tests/*.py are copied)
+    #   docs/             (the VM suite asserts doc/code consistency against
+    #                      these, so they are part of what a deploy installs)
     #   assets/api_index/ (bundled index + NOTICE)
     #   the three operator scripts and install/revai.service
     # Deliberately OUT of scope: config/ (never copied -- llm.env is manual),
     # install/setup-remnux.sh and extensions/ (deployed by setup, not here),
-    # docs/ and internal/.
+    # internal/.
     # Detection is whitespace-insensitive (`diff HEAD`, so CRLF noise on a
     # checkout cannot mark the build dirty) plus untracked files under the
     # scope (cp -a ships those too, so an uncommitted new module must count).
-    _dirty_paths=(revai tests assets/api_index
+    _dirty_paths=(revai tests docs assets/api_index
                   scripts/verify-release.sh scripts/winre-llm-env.sh scripts/run-watched.sh scripts/instrument-live-log.sh
                   scripts/validate-ghidrasql-sql.py
                   install/revai.service)
