@@ -152,3 +152,62 @@ def test_the_report_actually_gets_every_capability(tmp_path):
     import domain_graph as dg
     for d in dg.DOMAINS:
         assert d["key"].split("_")[0] in md.lower() or d["title"] in md, d["key"]
+
+
+# ---------------------------------------------------- #56 (b) provenance tiers
+def test_provenance_is_observed_only_with_evidence(tmp_path):
+    """understood + cited evidence = observed. understood with NO evidence is
+    not: a determination nobody can check is inference."""
+    _case(tmp_path, ALL)                      # every node cites 2 pieces
+    cov = v2_lib.build_capability_coverage(SHA, logs_dir=tmp_path / "logs")
+    assert cov["provenance_counts"]["observed"] == 3      # the 3 understood
+    assert cov["provenance_counts"]["inferred"] == 6      # the 6 partial
+
+    # Strip the evidence from one understood domain -> it becomes inferred.
+    assert v2_lib._capability_provenance(
+        "understood", 0, False, False) == v2_lib.PROV_INFERRED
+
+
+def test_provenance_is_unknown_when_never_examined(tmp_path):
+    d = dict(ALL)
+    d["crypto"] = "not-explored"
+    _case(tmp_path, d)
+    cov = v2_lib.build_capability_coverage(SHA, logs_dir=tmp_path / "logs")
+    assert cov["provenance_counts"]["unknown"] == 1
+    assert (cov["provenance"]["unknown"]) == ["crypto"]
+    md = v2_lib.format_capability_coverage(cov)
+    assert "Capabilities this run cannot speak to" in md
+    assert "gaps in the analysis, not findings about the sample" in md
+
+
+def test_a_truncated_or_contradicting_node_is_inferred_not_observed(tmp_path):
+    """A node that ran out of steps, or that claims it never looked while
+    answering, has not established anything."""
+    import v2_lib
+    assert v2_lib._capability_provenance("understood", 3, True, False) == \
+        v2_lib.PROV_INFERRED
+    assert v2_lib._capability_provenance("understood", 3, False, True) == \
+        v2_lib.PROV_INFERRED
+    assert v2_lib._capability_provenance("understood", 3, False, False) == \
+        v2_lib.PROV_OBSERVED
+
+
+def test_provenance_is_not_derived_from_the_answer_text():
+    """The #57 lesson: reading 'not observed' out of prose is over-matching.
+
+    The tier comes from status + evidence count only, never the answer text.
+    """
+    import v2_lib
+    # A 'not observed' determination WITH evidence is still OBSERVED -- the
+    # absence was established, not guessed.
+    assert v2_lib._capability_provenance("understood", 2, False, False) == \
+        v2_lib.PROV_OBSERVED
+
+
+def test_the_provenance_line_states_the_counts(tmp_path):
+    _case(tmp_path, ALL)
+    md = v2_lib.format_capability_coverage(
+        v2_lib.build_capability_coverage(SHA, logs_dir=tmp_path / "logs"))
+    assert "**Extraction provenance: 3 observed, 6 inferred, 0 unknown.**" in md
+    # No unknown set -> no "cannot speak to" block
+    assert "cannot speak to" not in md

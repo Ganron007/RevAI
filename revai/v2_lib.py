@@ -6798,6 +6798,34 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
     return out
 
 
+#: Provenance tiers for an extracted capability (#56 b).
+PROV_OBSERVED = "observed"    # determination backed by cited tool evidence
+PROV_INFERRED = "inferred"    # investigated, but no determination or no evidence
+PROV_UNKNOWN = "unknown"      # not examined, or the node failed
+PROVENANCE_TIERS = (PROV_OBSERVED, PROV_INFERRED, PROV_UNKNOWN)
+
+
+def _capability_provenance(status: str, evidence_n: int, truncated: bool,
+                           contradicts: bool) -> str:
+    """How a capability determination was reached -- from the record, not prose.
+
+    `observed` means the node cited evidence for its determination. `inferred`
+    means it looked and either could not conclude, or concluded without citing
+    anything -- including a truncated node and one whose status contradicts its
+    own answer. `unknown` means it was never examined to a determination.
+
+    Deliberately NOT derived from the answer text: reading "not observed" out of
+    prose is the over-matching class that produced the #57 calibration defect.
+    The tier comes from the node's own status and evidence count only.
+    """
+    if status in ("not-explored", "not-reconstructed"):
+        return PROV_UNKNOWN
+    if status == "understood" and evidence_n > 0 and not truncated \
+            and not contradicts:
+        return PROV_OBSERVED
+    return PROV_INFERRED
+
+
 def build_capability_coverage(sha: str, logs_dir: Path | None = None) -> dict:
     """Deterministic capability-coverage ledger for a run.
 
@@ -6853,6 +6881,13 @@ def build_capability_coverage(sha: str, logs_dir: Path | None = None) -> dict:
                 "format": r.get("format"),
                 "truncated": bool(r.get("truncated")),
                 "contradicts_answer": bool(r.get("status_contradicts_answer")),
+                # PROVENANCE (#56 b): how the determination was reached. This is
+                # the question the whole pipeline exists to answer -- is this
+                # capability backed by evidence, reasoned, or simply unknown?
+                "provenance": _capability_provenance(
+                    status, len(r.get("evidence") or []),
+                    bool(r.get("truncated")),
+                    bool(r.get("status_contradicts_answer"))),
             }
         break
 
@@ -6864,6 +6899,10 @@ def build_capability_coverage(sha: str, logs_dir: Path | None = None) -> dict:
     partial = [k for k, v in domains.items() if v["status"] == "partial"]
     unusable = [k for k, v in domains.items()
                 if v["status"] in ("not-explored", "not-reconstructed")]
+    prov: dict[str, list[str]] = {t: [] for t in PROVENANCE_TIERS}
+    for k in _dg.DOMAIN_KEYS:
+        if k in domains:
+            prov[domains[k]["provenance"]].append(k)
     cov = _dg.domain_coverage(domains)
     return {
         "engine": "domain-graph",
@@ -6874,6 +6913,10 @@ def build_capability_coverage(sha: str, logs_dir: Path | None = None) -> dict:
         "unusable": unusable,
         # The UNKNOWN set is the point: domains that yielded no determination.
         "unknown": unusable,
+        # PROVENANCE (#56 b): observed / inferred / unknown, and the counts that
+        # make extraction completeness a number rather than a prose claim.
+        "provenance": prov,
+        "provenance_counts": {t: len(v) for t, v in prov.items()},
         "complete": cov.get("complete"),
         "honest": cov.get("complete") and bool(understood),
         "step_budget": _dg.domain_step_budget(),
@@ -6901,15 +6944,22 @@ def format_capability_coverage(cov: dict) -> str:
              "determined. Generated from the analysis record, not authored. A "
              "domain marked **unknown** was not examined to a determination -- "
              "that is a gap in this run, not a finding about the sample.", ""]
-    lines.append("| Capability domain | Status | Determination | Evidence |")
-    lines.append("|---|---|---|---|")
+    lines.append("| Capability domain | Status | Provenance | Determination | Evidence |")
+    lines.append("|---|---|---|---|---|")
     for d in _dg.DOMAINS:
         e = cov["domains"].get(d["key"])
         if not e:
-            lines.append(f"| {d['title']} | **unknown** | not examined | 0 |")
+            lines.append(f"| {d['title']} | **unknown** | unknown | not examined | 0 |")
             continue
         st = e["status"]
+        prov = e.get("provenance") or PROV_UNKNOWN
         mark = "**unknown**" if st in ("not-explored", "not-reconstructed") else st
+        if prov == PROV_UNKNOWN:
+            prov_md = "**unknown**"
+        elif prov == PROV_INFERRED:
+            prov_md = "inferred"
+        else:
+            prov_md = "observed"
         det = " ".join(str(e.get("answer") or "").split())
         if len(det) > 150:
             det = det[:147] + "..."
@@ -6922,17 +6972,35 @@ def format_capability_coverage(cov: dict) -> str:
             flags.append("status contradicts its own answer")
         if flags:
             det += f" ({', '.join(flags)})"
-        lines.append(f"| {d['title']} | {mark} | {det} | {e.get('evidence') or 0} |")
+        lines.append(f"| {d['title']} | {mark} | {prov_md} | {det} | {e.get('evidence') or 0} |")
 
     u, p, k = cov.get("understood") or [], cov.get("partial") or [], \
         cov.get("unknown") or []
+    pc = cov.get("provenance_counts") or {}
+    obs = (cov.get("provenance") or {}).get(PROV_OBSERVED) or []
+    inf = (cov.get("provenance") or {}).get(PROV_INFERRED) or []
+    unk = (cov.get("provenance") or {}).get(PROV_UNKNOWN) or []
     lines += ["",
               f"**Coverage: {len(u)} understood, {len(p)} partial, "
               f"{len(k)} unknown, of {cov.get('domains_total')} capability "
               f"domains**"
               + (f" -- unknown: {', '.join(k)}" if k else "")
               + f". Tool calls spent: {cov.get('tool_calls_used')} across the "
-              f"domain nodes.", ""]
+              f"domain nodes.", "",
+              f"**Extraction provenance: {pc.get(PROV_OBSERVED, 0)} observed, "
+              f"{pc.get(PROV_INFERRED, 0)} inferred, "
+              f"{pc.get(PROV_UNKNOWN, 0)} unknown.** A capability is *observed* "
+              f"only when its determination is backed by cited tool evidence; "
+              f"*inferred* means the node investigated and either could not "
+              f"conclude or concluded without citing anything (including a "
+              f"truncated node); *unknown* means it was never examined to a "
+              f"determination.",
+              ""]
+    if unk:
+        lines += [f"**Capabilities this run cannot speak to ({len(unk)}):** "
+                  f"{', '.join(unk)}. These are gaps in the analysis, not "
+                  f"findings about the sample -- an unexamined capability is "
+                  f"unknown, never absent.", ""]
     return "\n".join(lines)
 
 
