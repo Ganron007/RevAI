@@ -593,6 +593,58 @@ def _affirmative_dynamic_claim(md: str) -> str | None:
     return None
 
 
+def evaluate_capability_disclosure(root: Path, sha: str,
+                                   reports: list[str]) -> dict[str, Any]:
+    """#56 (c): the report must disclose the capabilities it could not examine.
+
+    This is the gate the whole capability-coverage ledger exists to feed. The
+    ledger records which capability domains were examined to a determination and
+    which were not. A domain that was never examined is a gap in the ANALYSIS --
+    it must never be read as a finding about the sample, and it must never be
+    silently absent from the report.
+
+    The check is therefore graduated rather than absolute:
+
+      * no domain-graph run (flat engine) -> not applicable, no violation;
+      * unknown domains exist AND the report names them -> pass;
+      * unknown domains exist AND the report is silent -> FAIL.
+
+    It deliberately does not require zero unknowns: some domains genuinely
+    cannot be determined for some samples. What it requires is that the analyst
+    can see which ones.
+    """
+    from v2_lib import build_capability_coverage, format_capability_coverage
+    try:
+        cov = build_capability_coverage(sha, logs_dir=root.parent)
+    except Exception:
+        return {"ok": True, "applicable": False,
+                "reason": "capability ledger unreadable"}
+    if not cov or not cov.get("domains"):
+        return {"ok": True, "applicable": False,
+                "reason": "no domain-graph run (flat engine)"}
+
+    unknown = list((cov.get("provenance") or {}).get("unknown") or [])
+    if not unknown:
+        return {"ok": True, "applicable": True, "unknown": [],
+                "provenance_counts": cov.get("provenance_counts")}
+
+    blob = "\n".join(r or "" for r in reports).lower()
+    missing = [k for k in unknown if k not in blob]
+    if missing:
+        return {
+            "ok": False, "applicable": True, "unknown": unknown,
+            "undisclosed": missing,
+            "violation": (
+                "capability_disclosure_missing: the run could not examine "
+                f"{len(unknown)} capability domain(s) ({', '.join(unknown)}) and "
+                f"the report does not name {', '.join(missing)}. An unexamined "
+                "capability is a gap in the analysis, not a finding about the "
+                "sample, and a silent gap is worse than a stated one."),
+        }
+    return {"ok": True, "applicable": True, "unknown": unknown,
+            "provenance_counts": cov.get("provenance_counts")}
+
+
 def _cross_report_consistency(
     master_md: str,
     tech2_md: str,
@@ -795,6 +847,13 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str, *,
     checks["cross_report_consistency"] = consistency
     for _viol in consistency.get("violations") or []:
         issues.append(_viol)
+
+    # #56 (c): the report must disclose the capabilities it could not examine.
+    _capdisc = evaluate_capability_disclosure(
+        root, sha, [master_md, master_v3, tech2_md, tech3_md])
+    checks["capability_disclosure"] = _capdisc
+    if not _capdisc.get("ok"):
+        issues.append(_capdisc["violation"])
 
     # Deep agentic gates
     ag = _load(root / "deep_dive" / "agentic_deep_dive.json")
