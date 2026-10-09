@@ -25,6 +25,7 @@ from v2_lib import (  # noqa: E402
     LOGS_DIR,
     case_dir,
     calibrate_verdict,
+    calibration_evidence_text,
     capa_analyze,
     pe_import_signals,
     dotnet_analyze,
@@ -1816,12 +1817,15 @@ def _finalize_agentic_result(
     # floor: benign/legitimate WITH behavioral-intent evidence -> suspicious.
     # Applied BEFORE writes so agentic_deep_dive.json AND 05-deep-dive.json
     # both carry the calibrated verdict (audit reads 05-deep-dive.json).
-    _dd_ev = json.dumps({
-        "summary": final_answer.get("summary") or "",
-        "key_evidence": final_answer.get("key_evidence") or [],
-        "history_tools": [str(h.get("tool")) for h in history],
-        "findings": {k: v for k, v in list((findings or {}).items())[:50]},
-    }, default=str)
+    # The calibration gate must read EVIDENCE, not the agent's own API-lookup
+    # definitions -- see calibration_evidence_text. A packer-only sample stayed
+    # `malicious` because looking up CreateRemoteThread satisfied the intent scan.
+    _dd_ev = calibration_evidence_text(
+        final_answer.get("summary"),
+        final_answer.get("key_evidence"),
+        {k: v for k, v in list((findings or {}).items())[:50]},
+        [h.get("tool") for h in history],
+    )
     final_answer = calibrate_verdict(final_answer, _dd_ev)
 
     # Depth protocol (plan #7) — ONE bounded correction turn, engine-agnostic:

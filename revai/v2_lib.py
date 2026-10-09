@@ -2853,7 +2853,7 @@ def _post_llm_streaming(api_url: str, headers: dict, body: dict,
             for raw in resp:
                 if ttft is None:
                     ttft = time.time() - t0
-                line = raw.decode("utf-8", "replace").rstrip("\r\n")
+                line = raw.decode("utf-8", "replace").rstrip("\n")
                 if not line:
                     # Blank line = end of an SSE event: dispatch what gathered.
                     if data_lines:
@@ -5466,8 +5466,21 @@ def _signal_hits(text: str, signals, limit: int = 50) -> list[str]:
     for sig in signals:
         pat = r"(?<![a-z0-9_])" + re.escape(sig) + r"(?![a-z0-9_])"
         for m in re.finditer(pat, t):
+            # BACKWARD: "no persistence was observed"
             window = t[max(0, m.start() - 60):m.start()]
             if _NEGATION_RE.search(window):
+                continue
+            # FORWARD: the deep dive writes its capability summary as
+            # "Persistence: not observed - no registry Run-key mutations", i.e.
+            # the label FIRST and the negation AFTER it. A backward-only guard
+            # reads that as an intent signal and keeps `malicious` standing on
+            # packer-only evidence (ghyte.exe, 2026-10-10).
+            #
+            # Deliberately narrow: the negation must appear within a short
+            # window AND before any sentence/clause boundary, so "persistence
+            # was observed via a run key" is still an intent signal.
+            fwd = t[m.end():m.end() + 30]
+            if _NEGATION_RE.search(fwd.split(".")[0].split(";")[0]):
                 continue
             start = m.start()
             while start > 0 and not t[start - 1].isspace():
@@ -5500,6 +5513,53 @@ def _signal_hits(text: str, signals, limit: int = 50) -> list[str]:
 def _signal_matches(text: str, signals) -> bool:
     """True when any signal matches (see _signal_hits for the guards)."""
     return bool(_signal_hits(text, signals, limit=1))
+
+
+#: Finding keys that are the agent LOOKING SOMETHING UP, not evidence about the
+#: sample. `lg_api_lookup_24` holds the definition of CreateRemoteThread; feeding
+#: that to the behavioural-intent scan satisfies the gate with vocabulary rather
+#: than behaviour, which is how a packer-only sample stayed `malicious`
+#: (ghyte.exe, 2026-10-10). A lookup names an API to explain it -- it does not
+#: assert the sample calls it.
+_LOOKUP_FINDING_PREFIXES = (
+    "lg_api_lookup", "api_lookup", "lg_api_def", "api_def",
+    "lg_lookup", "rag_lookup", "lg_skill",
+)
+
+
+def _is_lookup_finding(key: str) -> bool:
+    k = str(key or "").lower()
+    return any(k.startswith(pre) or pre in k for pre in _LOOKUP_FINDING_PREFIXES)
+
+
+def calibration_evidence_text(summary: str, key_evidence, findings,
+                              history_tools=None) -> str:
+    """The evidence blob the verdict-calibration gate is allowed to read.
+
+    Two exclusions, both learned from a real over-statement:
+
+    * **Lookup-shaped findings.** `lg_api_lookup_24` holds the *definition* of
+      CreateRemoteThread; feeding that to the behavioural-intent scan satisfies
+      the gate with vocabulary rather than behaviour. An agent that investigates
+      a binary will look up injection APIs.
+    * **The tool history.** `history_tools` is provenance -- the names of what
+      the agent did (`ghidra_query`, `domain:persistence`). A tool NAME is not
+      a claim about the sample, and `domain:persistence` matching the intent
+      signal `persistence` is how a packer-only sample stayed `malicious`.
+
+    The signature keeps `history_tools` so existing call sites do not change
+    shape; it is deliberately not read.
+    """
+    keep = {}
+    for k, val in (findings or {}).items():
+        if _is_lookup_finding(k):
+            continue
+        keep[k] = val
+    return json.dumps({
+        "summary": summary or "",
+        "key_evidence": list(key_evidence or []),
+        "findings": keep,
+    }, default=str)
 
 
 def calibrate_verdict(verdict: dict, evidence_text: str) -> dict:
