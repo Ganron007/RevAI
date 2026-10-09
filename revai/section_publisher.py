@@ -115,10 +115,10 @@ def _section_prompt(section_name: str, description: str, evidence: str,
         "evidence bare. Hedge inferences ('likely', 'possibly', 'we assess'). "
         "A reader with no context must follow the section without asking the "
         "model for clarification.\n"
-        "DYNAMIC-ANALYSIS HONESTY: if Speakeasy/Frida tools RAN — even with "
-        "zero recorded events — state that they ran and what they recorded; "
-        "never write 'no dynamic analysis was performed' when the tools "
-        "executed.\n"
+        "DYNAMIC-ANALYSIS HONESTY: state the DYNAMIC-ANALYSIS STATUS line (in the "
+        "evidence) exactly as it reads. It distinguishes mechanisms that ran, "
+        "those that failed, and those not performed; a tool that failed or was "
+        "not run must not be described as having executed.\n"
         "ENTROPY UNITS: whole-file Shannon entropy in bits/byte (0-8); "
         "per-section values must name the section; never present an unlabeled "
         "tool metric as the file's entropy.\n"
@@ -161,6 +161,19 @@ def _build_cross_context(section_name: str, pass1_results: list) -> str:
     return "\n".join(lines)
 
 
+def _dynamic_status_sentence(sha: str) -> str:
+    """The authoritative one-line dynamic-analysis status for a run.
+
+    Empty when it cannot be read, so a missing fact is never presented as a
+    fabrication-free fact.
+    """
+    try:
+        from v2_lib import dynamic_analysis_status
+        return dynamic_analysis_status(sha).get("sentence", "")
+    except Exception:
+        return ""
+
+
 def _run_one_section(section_name: str, sha: str, tools_results: dict,
                     prior_summaries: dict,
                     pass1_results: list = None,
@@ -191,6 +204,19 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
     except Exception as e:
         evidence = f"(evidence gather failed: {e})"
         result["error"] = f"gather: {e}"
+    # Deterministic dynamic status: the report must state what dynamic analysis
+    # ACTUALLY happened, read from artifacts, not infer it from tool names.
+    # Without this the model once wrote "Speakeasy and Frida executed
+    # successfully" for a sample whose oracle failed and where no Frida or
+    # WinRE pack exists.
+    if ("Behavioral Analysis" in section_name
+            or "Dynamic Analysis" in section_name):
+        st_block = _dynamic_status_sentence(sha)
+        if st_block:
+            evidence = (f"DYNAMIC-ANALYSIS STATUS (authoritative, read from the "
+                        f"run's artifacts -- state it exactly, and do NOT claim a "
+                        f"tool ran when this says it failed or was not performed): "
+                        f"{st_block}\n\n{evidence}")
     # 3. Build prior-summaries for continuity
     prior_lines = []
     for n, m in list(prior_summaries.items())[-3:]:
@@ -379,9 +405,11 @@ TECHNICAL_SECTION_DESCRIPTIONS: dict[str, str] = {
         "Functions, decompilation, imports, strings, anomalies, entropy. "
         "Interpret the code: what it implements and what that implies."),
     "5. Behavioral & Dynamic Analysis": (
-        "What execution shows. If Speakeasy/Frida/UPX RAN, say so and report "
-        "what they recorded; never claim no dynamic analysis happened when the "
-        "tools did run. Empty results are 'not observed', stated plainly."),
+        "What execution shows. State the DYNAMIC-ANALYSIS STATUS line at the top "
+        "of the evidence verbatim: it says, from the run's own artifacts, which "
+        "mechanisms ran, which failed, and which were not performed. A tool that "
+        "FAILED or was not run is not 'executed' -- do not describe it as such. "
+        "Empty results are 'not observed', stated plainly."),
     "6. Network Indicators & C2": (
         "Network infrastructure: URLs, domains, IPs, protocols. State whether "
         "each item is a static string or observed traffic, and never present "
@@ -643,8 +671,9 @@ def _technical_section_prompt(name: str, description: str, evidence: str,
         "- Quote registry paths and IoCs in FULL. Never abbreviate a path with "
         "'...' -- an unverifiable indicator is worse than none.\n"
         "- If a tool did not run or produced nothing, write 'not observed'. "
-        "Never invent runtime behavior, and never claim no dynamic analysis "
-        "happened when the tools did run.\n"
+        "Never invent runtime behavior. State the DYNAMIC-ANALYSIS STATUS line "
+        "from the evidence verbatim; a tool that failed or was not run must not "
+        "be described as having executed.\n"
         "- The citation engine must match the evidence (a Malcat string is not "
         "an IDA SQL row).\n"
         "- FORBIDDEN: curly apostrophes in headings; 'see appendix' as the only "
@@ -682,6 +711,13 @@ def _generate_technical_section(
     except Exception as exc:                      # noqa: BLE001
         evidence = f"(evidence routing failed: {exc})"
         result["error"] = f"route: {exc}"
+    # Same deterministic dynamic-status fact as the master path: the report must
+    # state what dynamic analysis actually happened, not infer it.
+    if ("Behavioral Analysis" in name or "Dynamic Analysis" in name):
+        st_block = _dynamic_status_sentence(sha)
+        if st_block:
+            evidence = (f"DYNAMIC-ANALYSIS STATUS (authoritative, read from the "
+                        f"run's artifacts): {st_block}\n\n{evidence}")
 
     prior_lines = [f"  - {n}: {m[:200]}"
                    for n, m in list((prior_summaries or {}).items())[-3:] if m]

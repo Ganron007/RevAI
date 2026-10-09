@@ -394,9 +394,24 @@ _DYN_NEGATION_RE = re.compile(
     re.IGNORECASE,
 )
 
-_TECH_DYN_EVIDENCE_RE = re.compile(
-    r"speakeasy_ok:\s*True|emulation completed|hook candidates"
-    r"|identified the following hook",
+_DYN_EXECUTED_RE = re.compile(
+    r"(?:the dynamic (?:runs?|analysis) (?:executed|completed|ran|was performed))"
+    r"|(?:dynamic analysis (?:was|were) (?:performed|conducted|run))"
+    r"|(?:sandbox (?:execution|run|runs?) .{0,30}(?:executed|ran|invoked|completed))"
+    r"|(?:frida .{0,40}(?:instrumentation|trace|hook) .{0,30}"
+    r"(?:was|were|invoked|ran|executed|recorded))"
+    r"|(?:emulation (?:oracle )?(?:completed|succeeded|executed|ran|produced a trace))"
+    r"|(?:both invoked during)",
+    re.IGNORECASE,
+)
+
+# A negation that is qualified by context (limiting the claim, saying it would
+# be next, a missing host, etc.) is not a flat contradiction when dynamic work
+# did in fact run.
+_DYN_CAVEAT_RE = re.compile(
+    r"(?:would be the next step|without a patched|patched windows host)"
+    r"|(?:latent|sandboxed context|limitation|window-bounded)"
+    r"|(?:detonation pack|is the next|as a next step)",
     re.IGNORECASE,
 )
 
@@ -555,35 +570,57 @@ def _cross_report_consistency(
     tech2_md: str,
     tech3_md: str,
     file_entropy: float | None,
+    dyn_status: dict | None = None,
 ) -> dict[str, Any]:
     """Deterministic cross-report + fact-vs-file consistency checks.
 
-    Gate-failing violations (night-run #2 publication defects, 2026-08-12):
-    - master claims no dynamic analysis ran while the technical report carries
-      real Speakeasy/Frida execution evidence;
+    Gate-failing violations:
+    - a report claims dynamic analysis EXECUTED when the run performed none,
+      or the reverse;
     - master and technical verdict panels state different final verdicts;
     - entropy citations contradict the file's measured whole-file entropy.
+
+    The earlier version flagged this by word-matching a negation in one report
+    against "hook candidate identified" (a STATIC probe on a FAILED oracle) in
+    the other -- which misdiagnosed the actual defect: a report claiming a
+    dynamic run that did not happen. Both directions are now grounded on the
+    run's deterministic dynamic status.
     """
     violations: list[str] = []
-    master_neg = bool(_DYN_NEGATION_RE.search(master_md or ""))
-    tech_dyn_ev = bool(_TECH_DYN_EVIDENCE_RE.search((tech2_md or "") + "\n" + (tech3_md or "")))
-    checks = {
-        "master_dyn_negation": master_neg,
-        "tech_dyn_evidence": tech_dyn_ev,
-        "file_entropy": file_entropy,
-    }
-    if master_neg and tech_dyn_ev:
-        violations.append(
-            "cross_report:master_claims_no_dynamic_analysis_but_technical_has_dynamic_findings"
-        )
+    checks: dict[str, Any] = {"file_entropy": file_entropy}
+
+    all_md = "\n".join([master_md or "", tech2_md or "", tech3_md or ""])
+    any_dyn = (None if dyn_status is None
+               else bool(dyn_status.get("any_dynamic_performed")))
+    checks["dynamic_performed"] = any_dyn
+
+    if any_dyn is False:
+        # No dynamic analysis ran. An affirmative execution claim anywhere is a
+        # fabrication; name the phrase and the ground truth.
+        m = _DYN_EXECUTED_RE.search(all_md)
+        checks["dyn_executed_claim"] = bool(m)
+        if m:
+            gt = (f" (ground truth: {dyn_status.get('sentence')})"
+                  if dyn_status and dyn_status.get("sentence") else "")
+            violations.append(
+                "cross_report:dynamic_execution_claimed_but_none_performed"
+                f"('{m.group(0).strip()[:90]}'){gt}")
+    elif any_dyn is True:
+        # A mechanism DID run. A flat, uncaveated "no dynamic analysis was
+        # performed" is the contradiction.
+        negated = bool(_DYN_NEGATION_RE.search(all_md))
+        checks["dyn_negation"] = negated
+        if negated and not _DYN_CAVEAT_RE.search(all_md):
+            violations.append(
+                "cross_report:dynamic_performed_but_report_says_none")
+
     mv = _panel_final_verdict(master_md)
     tv = _panel_final_verdict(tech2_md) or _panel_final_verdict(tech3_md)
     checks["master_verdict"] = mv
     checks["tech_verdict"] = tv
     if mv and tv and mv != tv:
         violations.append(
-            f"cross_report:master_tech_verdict_mismatch(master={mv}, technical={tv})"
-        )
+            f"cross_report:master_tech_verdict_mismatch(master={mv}, technical={tv})")
     if file_entropy is not None:
         for md, label in (
             (master_md, "master"),
@@ -718,7 +755,13 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str, *,
     # publication gate): structural green is not enough — catch master-vs-tech
     # contradictions and claims that contradict the file's measured entropy.
     _entropy = _file_shannon_entropy(_sample_path_for(root, sha))
-    consistency = _cross_report_consistency(master_md, tech2_md, tech3_md, _entropy)
+    from v2_lib import dynamic_analysis_status
+    try:
+        _dyn_status = dynamic_analysis_status(sha)
+    except Exception:
+        _dyn_status = None
+    consistency = _cross_report_consistency(
+        master_md, tech2_md, tech3_md, _entropy, _dyn_status)
     checks["cross_report_consistency"] = consistency
     for _viol in consistency.get("violations") or []:
         issues.append(_viol)

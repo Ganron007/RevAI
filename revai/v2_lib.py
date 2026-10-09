@@ -6651,6 +6651,93 @@ def format_dynamic_analysis_section(pack: dict | None) -> str:
     return "\n".join(lines)
 
 
+def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
+                           winre_root: Path | None = None) -> dict:
+    """Deterministic record of what dynamic analysis ACTUALLY happened in a run.
+
+    The section report once described dynamic execution from the model's reading
+    of tool names in the evidence, and asserted that Speakeasy and Frida
+    "executed successfully" for a sample whose emulation oracle FAILED
+    ("Emulator not initialized" / ".NET assemblies not supported") and which had
+    no Frida or WinRE artifact. This returns the truth instead, read from
+    artifacts so that both the section prompt and the audit gate can STATE what
+    happened rather than infer it:
+
+      emulation : did the Speakeasy oracle succeed, fail, or not run?
+      frida     : is there a Frida trace? (only ever arrives in a WinRE pack)
+      winre     : is a WinRE detonation pack present?
+
+    Every value comes from an artifact; nothing is guessed, and an absent
+    artifact is reported as such rather than as "completed".
+    """
+    out: dict[str, Any] = {"emulation": {}, "frida": {}, "winre": {}}
+
+    # Emulation oracle: the deep-dive stage's 03-oracle.json.
+    root = Path(logs_dir) if logs_dir else LOGS_DIR
+    base = root / sha
+    oracle_cands: list[Path] = []
+    if (base / "deep_dive" / "03-oracle.json").is_file():
+        oracle_cands.append(base)
+    for mode in ("scripted", "agentic", "ui"):
+        p = base / mode
+        if (p / "deep_dive" / "03-oracle.json").is_file():
+            oracle_cands.append(p)
+    for cand in oracle_cands:
+        try:
+            o = json.loads((cand / "deep_dive" / "03-oracle.json")
+                           .read_text(encoding="utf-8", errors="replace"))
+        except Exception:
+            o = {}
+        if o:
+            em = {"present": True, "ok": bool(o.get("ok")),
+                  "engine": o.get("engine")}
+            for key in ("error", "run_note"):
+                if o.get(key):
+                    em[key] = str(o.get(key))[:400]
+            if em["ok"]:
+                em["state"] = "emulation produced a trace"
+            else:
+                em["state"] = "emulation NOT performed " + (
+                    f"(failed: {em.get('error') or em.get('run_note')})"
+                    if (em.get("error") or em.get("run_note"))
+                    else "(no trace)")
+            out["emulation"] = em
+            break
+    # Absent oracle means the stage did not produce one: say so, do not guess.
+    if not out["emulation"].get("present"):
+        out["emulation"] = {"present": False,
+                            "state": "emulation stage produced no oracle result"}
+
+    # WinRE detonation pack (frida traces and dropped files live only here).
+    try:
+        pack = load_dynamic_pack(sha, logs_dir=logs_dir, winre_root=winre_root) or {}
+    except Exception:
+        pack = {}
+    if pack.get("present"):
+        out["winre"] = {"present": True, "source": pack.get("source"),
+                        "frida_events": (pack.get("frida_summary") or {}).get("events")}
+        out["frida"] = {"present": bool(pack.get("frida_summary"))}
+    else:
+        out["winre"] = {"present": False,
+                        "state": "no WinRE detonation pack (dynamic not performed)"}
+        out["frida"] = {"present": False,
+                        "state": "no Frida trace (none exists without a WinRE pack)"}
+
+    # One authoritative sentence the report may mirror verbatim.
+    parts: list[str] = []
+    parts.append(out["emulation"].get("state") or "emulation status unknown")
+    parts.append("Frida: " + (out["frida"].get("state")
+                               if out["frida"].get("present") else "not performed"))
+    parts.append("WinRE detonation: "
+                 + (f"present ({out['winre'].get('source')})"
+                    if out["winre"].get("present") else "not performed"))
+    out["sentence"] = "Dynamic analysis in this run -- " + "; ".join(parts) + "."
+    out["any_dynamic_performed"] = bool(
+        out["emulation"].get("ok") or out["frida"].get("present")
+        or out["winre"].get("present"))
+    return out
+
+
 def attach_dynamic_analysis_section(technical_md: str, sha: str, *,
                                     logs_dir: Path | None = None,
                                     winre_root: Path | None = None) -> str:
