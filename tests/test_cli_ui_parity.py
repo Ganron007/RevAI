@@ -47,6 +47,9 @@ EXEMPT = {
     "REVAI_STEERING_FILE": "the Console records a note instead (POST /api/steer)",
     "REVAI_DISABLE_DYNAMIC_CORROBORATION": "WinRE settings: winre_dynamic=off",
     "REVAI_DISABLE_DYNAMIC_SECTION": "WinRE settings: winre_dynamic=off",
+    "REVAI_DISABLE_CAPABILITY_COVERAGE": "operator-only off-switch for a "
+    "deterministic report section; the coverage ledger itself has no setting "
+    "to configure",
     "REVAI_WINRE_RUN": "run_config.winre_run",
 }
 

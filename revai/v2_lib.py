@@ -6738,6 +6738,171 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
     return out
 
 
+def build_capability_coverage(sha: str, logs_dir: Path | None = None) -> dict:
+    """Deterministic capability-coverage ledger for a run.
+
+    Answers the question the deep dive exists to answer: **which capability
+    domains were examined, what was determined for each, and what remains
+    unknown.** Read from the domain graph's own record -- never authored by the
+    model, never inferred from report prose.
+
+    The gap this closes (measured 2026-10-09, tiny_msil_dotnet): the domain graph
+    produced a complete 9-domain coverage record and only **4 of the 9**
+    capability names appeared anywhere in the published report, because
+    `05-deep-dive.json` -- the artifact the report reads -- carried no
+    `domain_graph` key. The structural answer was computed and then discarded.
+
+    Returns {} when no domain-graph run exists (e.g. the flat engine, or
+    REVAI_DOMAIN_GRAPH off). Absence is reported as such; it is never padded
+    into a fabricated coverage record.
+    """
+    try:
+        import domain_graph as _dg
+    except Exception:
+        return {}
+
+    base = (Path(logs_dir) if logs_dir else LOGS_DIR) / sha
+    cands = [base]
+    for mode in ("scripted", "agentic", "ui"):
+        p = base / mode
+        if p.is_dir():
+            cands.append(p)
+
+    domains: dict[str, dict] = {}
+    for cand in cands:
+        p = cand / "deep_dive" / "agentic_deep_dive.json"
+        if not p.is_file():
+            continue
+        try:
+            d = json.loads(p.read_text(encoding="utf-8", errors="replace"))
+        except Exception:
+            continue
+        dg = (d.get("findings") or {}).get("domain_graph") or {}
+        if not dg.get("domains"):
+            continue
+        hist = {str(h.get("tool", "")): (h.get("result") or {})
+                for h in (d.get("history") or [])}
+        for key in _dg.DOMAIN_KEYS:
+            r = hist.get(f"domain:{key}") or {}
+            status = str((dg.get("domains") or {}).get(key) or "not-explored")
+            domains[key] = {
+                "status": status,
+                "answer": str(r.get("answer") or "")[:400],
+                "evidence": len(r.get("evidence") or []),
+                "tool_calls_used": r.get("tool_calls_used"),
+                "format": r.get("format"),
+                "truncated": bool(r.get("truncated")),
+                "contradicts_answer": bool(r.get("status_contradicts_answer")),
+            }
+        break
+
+    if not domains:
+        return {}
+
+    total = len(_dg.DOMAIN_KEYS)
+    understood = [k for k, v in domains.items() if v["status"] == "understood"]
+    partial = [k for k, v in domains.items() if v["status"] == "partial"]
+    unusable = [k for k, v in domains.items()
+                if v["status"] in ("not-explored", "not-reconstructed")]
+    cov = _dg.domain_coverage(domains)
+    return {
+        "engine": "domain-graph",
+        "domains": domains,
+        "domains_total": total,
+        "understood": understood,
+        "partial": partial,
+        "unusable": unusable,
+        # The UNKNOWN set is the point: domains that yielded no determination.
+        "unknown": unusable,
+        "complete": cov.get("complete"),
+        "honest": cov.get("complete") and bool(understood),
+        "step_budget": _dg.domain_step_budget(),
+        "tool_calls_used": sum(int(domains[k]["tool_calls_used"] or 0)
+                               for k in _dg.DOMAIN_KEYS if k in domains),
+    }
+
+
+def format_capability_coverage(cov: dict) -> str:
+    """Render the capability-coverage ledger as markdown. Deterministic.
+
+    One row per capability domain, with its status and what was determined.
+    A domain that was never examined or whose node failed is named as UNKNOWN
+    rather than omitted -- an unexamined capability must be visible, not absent.
+    """
+    if not cov or not cov.get("domains"):
+        return ""
+    try:
+        import domain_graph as _dg
+    except Exception:
+        return ""
+
+    lines = ["## Capability Coverage", "",
+             "What the deep dive examined, per capability domain, and what it "
+             "determined. Generated from the analysis record, not authored. A "
+             "domain marked **unknown** was not examined to a determination -- "
+             "that is a gap in this run, not a finding about the sample.", ""]
+    lines.append("| Capability domain | Status | Determination | Evidence |")
+    lines.append("|---|---|---|---|")
+    for d in _dg.DOMAINS:
+        e = cov["domains"].get(d["key"])
+        if not e:
+            lines.append(f"| {d['title']} | **unknown** | not examined | 0 |")
+            continue
+        st = e["status"]
+        mark = "**unknown**" if st in ("not-explored", "not-reconstructed") else st
+        det = " ".join(str(e.get("answer") or "").split())
+        if len(det) > 150:
+            det = det[:147] + "..."
+        if not det:
+            det = "not examined to a determination"
+        flags = []
+        if e.get("truncated"):
+            flags.append("truncated")
+        if e.get("contradicts_answer"):
+            flags.append("status contradicts its own answer")
+        if flags:
+            det += f" ({', '.join(flags)})"
+        lines.append(f"| {d['title']} | {mark} | {det} | {e.get('evidence') or 0} |")
+
+    u, p, k = cov.get("understood") or [], cov.get("partial") or [], \
+        cov.get("unknown") or []
+    lines += ["",
+              f"**Coverage: {len(u)} understood, {len(p)} partial, "
+              f"{len(k)} unknown, of {cov.get('domains_total')} capability "
+              f"domains**"
+              + (f" -- unknown: {', '.join(k)}" if k else "")
+              + f". Tool calls spent: {cov.get('tool_calls_used')} across the "
+              f"domain nodes.", ""]
+    return "\n".join(lines)
+
+
+def attach_capability_coverage(technical_md: str, sha: str, *,
+                               logs_dir: Path | None = None) -> str:
+    """Append the capability-coverage ledger to a technical report.
+
+    This is the fix for the measured gap: the deep dive examined nine capability
+    domains and the report named four of them. The ledger is generated from the
+    analysis record, so it cannot drift from what was actually examined, and it
+    names the UNKNOWN domains instead of letting them be silently absent.
+
+    No-ops when there is no domain-graph run (flat engine, or
+    REVAI_DOMAIN_GRAPH off) -- an absent ledger is reported as absent rather
+    than padded into a fabricated coverage record. Opt out with
+    REVAI_DISABLE_CAPABILITY_COVERAGE=1.
+    """
+    if os.environ.get("REVAI_DISABLE_CAPABILITY_COVERAGE", "").strip().lower() \
+            in ("1", "true", "yes", "on"):
+        return technical_md
+    try:
+        cov = build_capability_coverage(sha, logs_dir=logs_dir)
+        block = format_capability_coverage(cov)
+        if not block:
+            return technical_md
+        return (technical_md or "").rstrip() + "\n\n" + block
+    except Exception:
+        return technical_md
+
+
 def attach_dynamic_analysis_section(technical_md: str, sha: str, *,
                                     logs_dir: Path | None = None,
                                     winre_root: Path | None = None) -> str:

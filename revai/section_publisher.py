@@ -57,7 +57,8 @@ from v2_lib import (
     append_technical_evidence_appendix,
     attach_analysis_scripts,
     attach_dynamic_corroboration,
-    attach_dynamic_analysis_section,
+    attach_capability_coverage,
+attach_dynamic_analysis_section,
     attach_ioc_confidence,
     attach_what_we_dont_know,
     build_technical_evidence_block,
@@ -1210,6 +1211,7 @@ def _finalize_technical(sha: str, technical_report: dict,
     # as the LLM wrote it, so it cannot quote our own caveats.
     _report_scan_text = tech_md
     tech_md = attach_ioc_confidence(tech_md, sha)
+    tech_md = attach_capability_coverage(tech_md, sha)
     tech_md = attach_dynamic_analysis_section(tech_md, sha)
     tech_md = attach_alignment_sections(
         tech_md, case_root=case_dir(sha),

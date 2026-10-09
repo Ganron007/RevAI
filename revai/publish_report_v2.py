@@ -27,7 +27,8 @@ from v2_lib import (  # noqa: E402
     append_technical_evidence_appendix,
     attach_analysis_scripts,
     attach_dynamic_corroboration,
-    attach_dynamic_analysis_section,
+    attach_capability_coverage,
+attach_dynamic_analysis_section,
     attach_ioc_confidence,
     attach_what_we_dont_know,
     audit_write,
@@ -1528,6 +1529,7 @@ def main():
         # as the LLM wrote it, so the gap scan cannot quote our own caveats.
         _report_scan_text = tech_md
         tech_md = attach_ioc_confidence(tech_md, args.sha256)
+        tech_md = attach_capability_coverage(tech_md, args.sha256)
         tech_md = attach_dynamic_analysis_section(tech_md, args.sha256)
         tech_md = attach_alignment_sections(
             tech_md, case_root=case, sample_path=sample_path,

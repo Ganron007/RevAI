@@ -1,0 +1,154 @@
+"""#56 capability-coverage ledger -- the report must show what was examined.
+
+The measured defect (2026-10-09, tiny_msil_dotnet): the domain graph produced a
+complete 9-domain coverage record and only 4 of the 9 capability names appeared
+anywhere in the published report, because 05-deep-dive.json -- the artifact the
+report reads -- carried no domain_graph key. The structural answer to "did we
+extract every capability" was computed and then discarded.
+
+These pin the ledger: deterministic, generated from the analysis record, names
+the UNKNOWN domains rather than omitting them, and reports honest absence when
+there is no domain-graph run.
+"""
+import json
+import sys
+from pathlib import Path
+
+import pytest
+
+TESTS = Path(__file__).resolve().parent
+sys.path.insert(0, str(TESTS))
+from _layout import resolve  # noqa: E402
+
+sys.path.insert(0, str(resolve("revai/v2_lib.py").parent))
+import v2_lib  # noqa: E402
+
+SHA = "a" * 64
+
+
+def _case(tmp_path, domains, answers=None):
+    """Write a domain-graph run in the layout v2_lib reads."""
+    case = tmp_path / "logs" / SHA / "scripted"
+    (case / "deep_dive").mkdir(parents=True)
+    hist = []
+    for k, st in domains.items():
+        hist.append({"tool": f"domain:{k}",
+                     "result": {"status": st,
+                                "answer": (answers or {}).get(k, f"{k} answer"),
+                                "evidence": ["e1", "e2"],
+                                "tool_calls_used": 3,
+                                "format": "json"}})
+    (case / "deep_dive" / "agentic_deep_dive.json").write_text(
+        json.dumps({"findings": {"domain_graph": {"domains": domains,
+                                                  "complete": True}},
+                    "history": hist}), encoding="utf-8")
+    return case
+
+
+ALL = {"surface": "understood", "persistence": "understood",
+       "c2_network": "partial", "evasion": "partial",
+       "execution_injection": "partial", "credential_access": "partial",
+       "exfiltration": "partial", "defense_impairment": "understood",
+       "crypto": "partial"}
+
+
+def test_the_ledger_reads_the_domain_record(tmp_path):
+    _case(tmp_path, ALL)
+    cov = v2_lib.build_capability_coverage(SHA, logs_dir=tmp_path / "logs")
+    assert cov["domains_total"] == 9
+    assert len(cov["understood"]) == 3 and len(cov["partial"]) == 6
+    assert cov["unknown"] == []
+    assert cov["honest"] is True
+    assert cov["tool_calls_used"] == 27
+
+
+def test_a_domain_missing_from_the_record_still_gets_a_row(tmp_path):
+    """A key ABSENT from the domain record is not the same as a bad status.
+
+    The renderer has a separate branch for it, and it must still name the
+    domain -- a capability the graph never visited is exactly the gap the
+    ledger exists to expose.
+    """
+    _case(tmp_path, ALL)
+    cov = v2_lib.build_capability_coverage(SHA, logs_dir=tmp_path / "logs")
+    del cov["domains"]["crypto"]
+    md = v2_lib.format_capability_coverage(cov)
+    assert "Encryption / obfuscation" in md, (
+        "a domain absent from the record was dropped from the ledger")
+    assert "**unknown**" in md
+    assert "not examined" in md
+
+
+def test_an_unexamined_domain_is_named_unknown_not_omitted(tmp_path):
+    d = dict(ALL)
+    d["crypto"] = "not-explored"
+    d["credential_access"] = "not-reconstructed"
+    _case(tmp_path, d)
+    cov = v2_lib.build_capability_coverage(SHA, logs_dir=tmp_path / "logs")
+    assert set(cov["unknown"]) == {"crypto", "credential_access"}
+    md = v2_lib.format_capability_coverage(cov)
+    assert "**unknown**" in md
+    assert "Encryption / obfuscation" in md, (
+        "an unexamined domain must appear in the table, not be dropped")
+    # unknown follows DOMAIN_KEYS order, not the dict's insertion order
+    import domain_graph as dg
+    expect = ", ".join(k for k in dg.DOMAIN_KEYS if k in cov["unknown"])
+    assert f"unknown: {expect}" in md
+
+
+def test_the_rendered_section_names_every_capability_domain(tmp_path):
+    _case(tmp_path, ALL)
+    md = v2_lib.format_capability_coverage(
+        v2_lib.build_capability_coverage(SHA, logs_dir=tmp_path / "logs"))
+    for title in ("Surface", "Persistence", "C2 / network", "Evasion",
+                  "Execution / injection", "Credential access", "Exfiltration",
+                  "Defense impairment", "Encryption / obfuscation"):
+        assert title in md, title
+    assert md.count("|") > 20, "one row per domain plus the header"
+
+
+def test_a_truncated_or_self_contradicting_domain_is_flagged(tmp_path):
+    case = tmp_path / "logs" / SHA / "scripted"
+    (case / "deep_dive").mkdir(parents=True)
+    (case / "deep_dive" / "agentic_deep_dive.json").write_text(json.dumps({
+        "findings": {"domain_graph": {"domains": ALL}},
+        "history": [{"tool": "domain:c2_network",
+                     "result": {"status": "partial", "answer": "x",
+                                "truncated": True}},
+                    {"tool": "domain:crypto",
+                     "result": {"status": "partial", "answer": "y",
+                                "status_contradicts_answer": True}}],
+    }), encoding="utf-8")
+    md = v2_lib.format_capability_coverage(
+        v2_lib.build_capability_coverage(SHA, logs_dir=tmp_path / "logs"))
+    assert "truncated" in md
+    assert "contradicts its own answer" in md
+
+
+def test_no_domain_graph_run_is_honest_absence(tmp_path):
+    """Flat engine / REVAI_DOMAIN_GRAPH off: absent, never fabricated."""
+    cov = v2_lib.build_capability_coverage(SHA, logs_dir=tmp_path / "logs")
+    assert cov == {}
+    assert v2_lib.format_capability_coverage(cov) == ""
+    assert v2_lib.attach_capability_coverage("BODY", SHA) == "BODY"
+
+
+def test_the_section_is_appended_and_opt_out_is_honoured(tmp_path, monkeypatch):
+    _case(tmp_path, ALL)
+    body = "## Report\n\ncontent\n"
+    out = v2_lib.attach_capability_coverage(body, SHA, logs_dir=tmp_path / "logs")
+    assert out.startswith(body.rstrip())
+    assert "## Capability Coverage" in out
+    monkeypatch.setenv("REVAI_DISABLE_CAPABILITY_COVERAGE", "1")
+    assert v2_lib.attach_capability_coverage(
+        body, SHA, logs_dir=tmp_path / "logs") == body
+
+
+def test_the_report_actually_gets_every_capability(tmp_path):
+    """The measured fix: 4/9 capability names reached the report; now 9/9."""
+    _case(tmp_path, ALL)
+    cov = v2_lib.build_capability_coverage(SHA, logs_dir=tmp_path / "logs")
+    md = v2_lib.format_capability_coverage(cov)
+    import domain_graph as dg
+    for d in dg.DOMAINS:
+        assert d["key"].split("_")[0] in md.lower() or d["title"] in md, d["key"]
