@@ -82,6 +82,39 @@ def test_gate_does_not_flag_the_honest_status_sentence():
         c["violations"]
 
 
+def test_gate_does_not_flag_a_negated_dynamic_claim():
+    """The honest negation this fix is meant to produce.
+
+    The first re-run produced exactly this sentence and my own regex flagged
+    it: 'No dynamic/Speakeasy/Frida trace was captured for this sample'. A
+    negation is not a claim -- this is the _signal_hits negation-guard class.
+    """
+    st = {"any_dynamic_performed": False, "sentence": "emulation NOT performed"}
+    honest = ("No dynamic/Speakeasy/Frida trace was captured for this sample; "
+              "the runtime behaviour described above is inferred from static IL "
+              "and string recovery, not observed in a sandbox.")
+    c = RQ._cross_report_consistency(honest, "", "", None, st)
+    assert not any("dynamic_execution_claimed" in v for v in c["violations"]), \
+        f"an honest negation was flagged as a fabrication: {c['violations']}"
+
+
+def test_gate_still_flags_a_genuine_affirmative_claim():
+    """The negation guard must not make the gate blind."""
+    st = {"any_dynamic_performed": False, "sentence": "emulation NOT performed"}
+    c = RQ._cross_report_consistency(
+        "The dynamic runs executed successfully during triage.", "", "", None, st)
+    assert any("dynamic_execution_claimed_but_none_performed" in v
+               for v in c["violations"]), c["violations"]
+
+
+def test_negation_guard_helper():
+    assert RQ._affirmative_dynamic_claim("No Frida trace was captured") is None
+    assert RQ._affirmative_dynamic_claim("") is None
+    assert RQ._affirmative_dynamic_claim("we did not run frida") is None
+    got = RQ._affirmative_dynamic_claim("The dynamic runs executed successfully")
+    assert got and "executed" in got
+
+
 def test_gate_does_not_fire_on_a_static_hook_candidate():
     """The original mislabel: a STATIC 'hook candidate identified' on a failed
     oracle must not be read as dynamic evidence."""

@@ -565,6 +565,34 @@ def _panel_final_verdict(md: str) -> str:
     return (m.group(1) or "").strip().lower() if m else ""
 
 
+# Words that make a dynamic-execution phrase a NEGATION rather than a claim.
+# Without this, "No dynamic/Speakeasy/Frida trace was captured for this sample"
+# matches the affirmative pattern and the gate reports a fabrication that does
+# not exist -- the same over-matching the _signal_hits negation guard fixed
+# for behavioral signals (2026-09-21).
+_DYN_NEGATION_MARKERS = (
+    "no ", "not ", "zero ", "without", "none", "never", "nor ",
+    "did not", "didn't", "was not", "were not", "not been", "not any",
+    "absent", "no dynamic", "no runtime",
+)
+
+
+def _affirmative_dynamic_claim(md: str) -> str | None:
+    """The first dynamic-execution claim in `md` that is NOT negated.
+
+    Returns the matched phrase, or None. A claim whose preceding context negates
+    it ("no Frida trace was captured") is honest and must not be flagged.
+    """
+    if not md:
+        return None
+    for m in _DYN_EXECUTED_RE.finditer(md):
+        window = md[max(0, m.start() - 45):m.start()].lower()
+        if any(neg in window for neg in _DYN_NEGATION_MARKERS):
+            continue
+        return m.group(0).strip()
+    return None
+
+
 def _cross_report_consistency(
     master_md: str,
     tech2_md: str,
@@ -596,15 +624,17 @@ def _cross_report_consistency(
 
     if any_dyn is False:
         # No dynamic analysis ran. An affirmative execution claim anywhere is a
-        # fabrication; name the phrase and the ground truth.
-        m = _DYN_EXECUTED_RE.search(all_md)
-        checks["dyn_executed_claim"] = bool(m)
-        if m:
+        # fabrication; name the phrase and the ground truth. The claim must be
+        # AFFIRMATIVE -- a negation ("no Frida trace was captured") is the
+        # honest statement this fix is meant to produce.
+        claim = _affirmative_dynamic_claim(all_md)
+        checks["dyn_executed_claim"] = bool(claim)
+        if claim:
             gt = (f" (ground truth: {dyn_status.get('sentence')})"
                   if dyn_status and dyn_status.get("sentence") else "")
             violations.append(
                 "cross_report:dynamic_execution_claimed_but_none_performed"
-                f"('{m.group(0).strip()[:90]}'){gt}")
+                f"('{claim[:90]}'){gt}")
     elif any_dyn is True:
         # A mechanism DID run. A flat, uncaveated "no dynamic analysis was
         # performed" is the contradiction.
