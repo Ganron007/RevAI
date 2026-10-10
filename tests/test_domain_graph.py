@@ -129,16 +129,28 @@ def test_every_node_is_given_a_step_ceiling_with_room_to_answer(monkeypatch):
     returning "Sorry, need more steps to process this request" -- recorded as a
     finding when it was a truncated agent.
     """
+    monkeypatch.delenv("REVAI_DOMAIN_MAX_STEPS", raising=False)
     seen = []
     _run(monkeypatch, seen=seen, budget=3)
     assert len(seen) == len(dg.DOMAIN_KEYS), (
         f"only {len(seen)} nodes ran; expected {len(dg.DOMAIN_KEYS)}")
     limit = A._domain_recursion_limit(3)
-    assert limit >= 12, f"ceiling {limit} truncates a node before it can answer"
+    assert limit >= 60, (
+        f"ceiling {limit} truncates a thorough node; packed_rook lost "
+        f"persistence (12 tool calls) and c2_network (10) at 20")
     for agent in seen:
         got = agent.config.get("recursion_limit")
         assert got, "no recursion_limit reached the node"
         assert got == limit
+
+
+def test_the_ceiling_is_overridable_and_falls_back(monkeypatch):
+    monkeypatch.setenv("REVAI_DOMAIN_MAX_STEPS", "120")
+    assert A._domain_recursion_limit(3) == 120
+    for bad in ("abc", "0", "-5", ""):
+        monkeypatch.setenv("REVAI_DOMAIN_MAX_STEPS", bad)
+        assert A._domain_recursion_limit(3) == 60, (
+            f"a bad ceiling {bad!r} must fall back, not disable the node")
 
 
 def test_a_node_that_ran_out_of_steps_says_so(monkeypatch):

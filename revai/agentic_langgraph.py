@@ -528,15 +528,27 @@ def _domain_recursion_limit(budget: int) -> int:
     the node to actually REACH AN ANSWER. That headroom matters: at the old size
     seven of nine nodes were cut off mid-investigation and returned "Sorry, need
     more steps to process this request", which is a truncated agent, not a
-    finding. Even so a node that fans out to several tools per turn can still
-    exhaust it -- the second run truncated `c2_network` at 7 calls under a limit
-    of 14, and LangGraph reported no finish_reason for it. `finish_reason: None`
-    alongside the "need more steps" reply is therefore the truncation signal.
+    finding.
 
-    The tool budget is measured and flagged (`over_budget`) rather than claimed
-    as enforced.
+    Measured on packed_rook_native (2026-10-10): a budget of 3 still left
+    `persistence` (12 tool calls) and `c2_network` (10) truncated under a limit
+    of 20, and a truncated node can NEVER be `observed` -- so the ceiling was
+    silently costing evidence. The tool budget is a REQUEST the node is asked to
+    respect; the ceiling is what stops a runaway. Sizing the ceiling off the
+    budget conflates them and penalises the node that investigates most
+    thoroughly. It is now generous and independently settable.
     """
-    return max(20, int(budget) * 4 + 8)
+    raw = os.environ.get("REVAI_DOMAIN_MAX_STEPS", "").strip()
+    if raw:
+        try:
+            val = int(raw)
+            if val > 0:
+                return val
+        except ValueError:
+            pass
+    # ~25-30 tool calls of headroom: a node that fans out or works in parallel
+    # spends several super-steps per turn.
+    return max(60, int(budget) * 12 + 8)
 
 
 def run_domain_deep_dive(sha: str, max_steps: int, helpers: dict,
