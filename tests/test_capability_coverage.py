@@ -26,16 +26,21 @@ import v2_lib  # noqa: E402
 SHA = "a" * 64
 
 
-def _case(tmp_path, domains, answers=None):
+def _case(tmp_path, domains, answers=None, evidence_for_partial=False):
     """Write a domain-graph run in the layout v2_lib reads."""
     case = tmp_path / "logs" / SHA / "scripted"
     (case / "deep_dive").mkdir(parents=True)
     hist = []
     for k, st in domains.items():
+        # `understood` nodes cite evidence; `partial` nodes cite none unless
+        # asked -- that is the distinction the provenance tier measures. (A
+        # `partial` node WITH evidence is still observed: the label is the
+        # model's mood, the citation is the measurement.)
+        ev = ["e1", "e2"] if (st == "understood" or evidence_for_partial) else []
         hist.append({"tool": f"domain:{k}",
                      "result": {"status": st,
                                 "answer": (answers or {}).get(k, f"{k} answer"),
-                                "evidence": ["e1", "e2"],
+                                "evidence": ev,
                                 "tool_calls_used": 3,
                                 "format": "json"}})
     (case / "deep_dive" / "agentic_deep_dive.json").write_text(
@@ -156,16 +161,27 @@ def test_the_report_actually_gets_every_capability(tmp_path):
 
 # ---------------------------------------------------- #56 (b) provenance tiers
 def test_provenance_is_observed_only_with_evidence(tmp_path):
-    """understood + cited evidence = observed. understood with NO evidence is
-    not: a determination nobody can check is inference."""
-    _case(tmp_path, ALL)                      # every node cites 2 pieces
-    cov = v2_lib.build_capability_coverage(SHA, logs_dir=tmp_path / "logs")
-    assert cov["provenance_counts"]["observed"] == 3      # the 3 understood
-    assert cov["provenance_counts"]["inferred"] == 6      # the 6 partial
+    """The tier measures the CITATION, not the model's self-assessed label.
 
-    # Strip the evidence from one understood domain -> it becomes inferred.
-    assert v2_lib._capability_provenance(
-        "understood", 0, False, False) == v2_lib.PROV_INFERRED
+    Measured on stealers_redline_stealc: a node that found the HKCU Run key
+    with RegSetValueExA, the rundll32 string at 0x40E9A4 and two citing
+    functions (six evidence items) labelled itself `partial` because it was
+    hedging -- and was scored `inferred`. So was the node that found WinINet,
+    the XOR-0x59 payload and the full POST chain with three evidence items.
+    Gating on the label under-reported extraction by three domains.
+    """
+    _case(tmp_path, ALL)          # understood cite, partial do not
+    cov = v2_lib.build_capability_coverage(SHA, logs_dir=tmp_path / "logs")
+    assert cov["provenance_counts"]["observed"] == 3
+    assert cov["provenance_counts"]["inferred"] == 6
+
+    # A node that labels itself `partial` but DOES cite evidence is observed.
+    assert v2_lib._capability_provenance("partial", 6, False, False) == \
+        v2_lib.PROV_OBSERVED, (
+            "a hedge label must not downgrade an evidence-backed determination")
+    # A node with no citation is inference whatever it calls itself.
+    assert v2_lib._capability_provenance("understood", 0, False, False) == \
+        v2_lib.PROV_INFERRED
 
 
 def test_provenance_is_unknown_when_never_examined(tmp_path):

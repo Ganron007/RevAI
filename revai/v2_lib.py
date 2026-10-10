@@ -6809,7 +6809,7 @@ def _capability_provenance(status: str, evidence_n: int, truncated: bool,
                            contradicts: bool) -> str:
     """How a capability determination was reached -- from the record, not prose.
 
-    `observed` means the node cited evidence for its determination. `inferred`
+    `observed` means the node cited evidence for a determination. `inferred`
     means it looked and either could not conclude, or concluded without citing
     anything -- including a truncated node and one whose status contradicts its
     own answer. `unknown` means it was never examined to a determination.
@@ -6817,11 +6817,20 @@ def _capability_provenance(status: str, evidence_n: int, truncated: bool,
     Deliberately NOT derived from the answer text: reading "not observed" out of
     prose is the over-matching class that produced the #57 calibration defect.
     The tier comes from the node's own status and evidence count only.
+
+    It also does NOT require the node's self-assessed status to be `understood`.
+    Measured on stealers_redline_stealc (2026-10-10): a node that found the
+    HKCU Run key with RegSetValueExA, the rundll32 sideload string at offset
+    0x40E9A4 and two citing functions -- six evidence items -- labelled itself
+    `partial` because it was hedging. Another found WinINet, the XOR-0x59
+    payload and the full POST chain with three evidence items, also `partial`.
+    Gating on the label scored real, evidence-backed extractions as `inferred`
+    and under-reported capability extraction by three domains. The label is the
+    model's mood; the cited evidence is the measurement.
     """
     if status in ("not-explored", "not-reconstructed"):
         return PROV_UNKNOWN
-    if status == "understood" and evidence_n > 0 and not truncated \
-            and not contradicts:
+    if evidence_n > 0 and not truncated and not contradicts:
         return PROV_OBSERVED
     return PROV_INFERRED
 
