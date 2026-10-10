@@ -467,6 +467,54 @@ def _need(helpers: dict, name: str):
     return fn
 
 
+def _unpacked_image_context(findings: dict) -> str:
+    """The unpacked image's evidence, as context for every capability domain.
+
+    Measured on packed_rook_native (2026-10-10): `unpack_pass` succeeded
+    (UPX0/UPX1/UPX2) and the unpacked capa rules carried the real behavioural
+    evidence, yet all nine domain answers reasoned over the PACKED stub -- "no
+    persistence in the packed binary", "4 imports" -- and reported 0 observed /
+    9 inferred while the deep dive's own summary cited a C2 domain and unpacked
+    behavioural rules. The domains were analysing the wrong image.
+
+    Returns "" when nothing was unpacked, so an unpacked-less run is unchanged.
+    """
+    if not findings:
+        return ""
+    up = findings.get("unpack_pass") or {}
+    upx = findings.get("checklist_upx_unpack") or {}
+    if not (up.get("ok") or upx.get("upx_ok")):
+        return ""
+
+    lines = ["## UNPACKED IMAGE (authoritative for behaviour)",
+             "",
+             "This sample is PACKED. The import table and strings you will read "
+             "from the original binary belong to the packer stub, not to the "
+             "sample's real logic. The unpacked image below is what the "
+             "behaviour actually lives in.",
+             ""]
+    if up.get("ok"):
+        secs = up.get("sections") or []
+        if secs:
+            lines.append("Unpacked sections: " + ", ".join(
+                f"{s.get('name')} (rva {s.get('rva')}, "
+                f"vsize {s.get('virtual_size')})" for s in secs[:8]))
+        for key in ("imports", "strings", "capa", "notes"):
+            v = up.get(key)
+            if v:
+                lines.append(f"Unpacked {key}: {str(v)[:600]}")
+    if upx.get("upx_ok"):
+        lines.append(f"UPX unpack: succeeded ({str(upx.get('sample'))[-60:]})")
+    lines += ["",
+              "Reason over BOTH images. When you cite a finding, say which image "
+              "it came from (\"unpacked:\" or \"packed stub:\"). A capability "
+              "absent from the stub but present in the unpacked image is "
+              "OBSERVED, not absent -- the stub's four imports prove nothing "
+              "about the sample.",
+              ""]
+    return "\n".join(lines)
+
+
 def _domain_recursion_limit(budget: int) -> int:
     """Super-step ceiling for one domain node.
 
@@ -526,6 +574,10 @@ def run_domain_deep_dive(sha: str, max_steps: int, helpers: dict,
 
     budget = dg.domain_step_budget()
     limit = _domain_recursion_limit(budget)
+    # #58: on a packed sample the domains used to reason over the stub. Give
+    # every node the unpacked image so a capability hidden by the packer is not
+    # reported as absent.
+    _unpack_ctx = _unpacked_image_context(findings)
     per_domain: dict[str, dict] = {}
     domain_history: list[dict] = []
 
@@ -533,6 +585,7 @@ def run_domain_deep_dive(sha: str, max_steps: int, helpers: dict,
         key = domain["key"]
         _prompt = (
             f"{system_prompt}\n\n"
+            f"{_unpack_ctx}"
             f"## Domain under investigation: {domain['title']}\n\n"
             f"{domain['question']}\n\n"
             f"Domain-specific instructions:\n"
@@ -630,6 +683,10 @@ def run_domain_deep_dive(sha: str, max_steps: int, helpers: dict,
             "tool_calls_used": used,
             "step_budget": budget,
             "recursion_limit": limit,
+            # Whether this node was given the unpacked image. A packed sample
+            # whose nodes were NOT given it is exactly the #58 defect, and this
+            # makes that visible in the artifact rather than inferable.
+            "unpack_evidence": bool(_unpack_ctx),
         }
         if model_status:
             entry["model_status"] = model_status

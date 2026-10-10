@@ -6881,6 +6881,8 @@ def build_capability_coverage(sha: str, logs_dir: Path | None = None) -> dict:
                 "format": r.get("format"),
                 "truncated": bool(r.get("truncated")),
                 "contradicts_answer": bool(r.get("status_contradicts_answer")),
+                # Whether the node was given the unpacked image (#58).
+                "unpack_evidence": bool(r.get("unpack_evidence")),
                 # PROVENANCE (#56 b): how the determination was reached. This is
                 # the question the whole pipeline exists to answer -- is this
                 # capability backed by evidence, reasoned, or simply unknown?
@@ -6904,9 +6906,17 @@ def build_capability_coverage(sha: str, logs_dir: Path | None = None) -> dict:
         if k in domains:
             prov[domains[k]["provenance"]].append(k)
     cov = _dg.domain_coverage(domains)
+    # #58: a packed sample whose nodes were NOT given the unpacked image is the
+    # defect itself. Surface it rather than leaving it inferable.
+    _unpack_given = [k for k in _dg.DOMAIN_KEYS
+                     if k in domains and domains[k].get("unpack_evidence")]
+    _packed = bool(_unpack_given) or bool(
+        (domains.get("surface") or {}).get("unpack_evidence"))
     return {
         "engine": "domain-graph",
         "domains": domains,
+        "unpack_evidence_given": bool(_unpack_given),
+        "unpack_evidence_domains": _unpack_given,
         "domains_total": total,
         "understood": understood,
         "partial": partial,
