@@ -1299,6 +1299,44 @@ if __name__ == "__main__":
     v = _first_existing([mode_dir / "verdict.json", sha_log / "verdict.json"])
     if v is not None:
         tools_results["verdict"] = json.loads(v.read_text())
+    # #59: apply the cross-stage verdict lock BEFORE any section is written.
+    #
+    # verdict.json carries the TRIAGE verdict (source: llm_judge, score 35 ->
+    # "suspicious"). The deep dive may raise it -- packed_rook_native's deep dive
+    # said `malicious` on unpacked capa behavioural rules while verdict.json
+    # still said `suspicious`. The section-wise publisher was fed the pre-lock
+    # value, so the v3 narrative panels authored "Suspicious" while the v2
+    # reports (which do apply the lock) said "malicious" -- and the hollow gate
+    # went red on the disagreement.
+    #
+    # The LLM was faithfully reporting what it was handed; it was handed the
+    # wrong verdict.
+    try:
+        from v2_lib import cross_stage_verdict_lock
+        _q = tools_results.get("verdict") or {}
+        _quick = _q.get("verdict")
+        _deep = None
+        for _p in (mode_dir / "deep_dive" / "05-deep-dive.json",
+                   sha_log / "deep_dive" / "05-deep-dive.json",
+                   mode_dir / "deep-dive.json",
+                   sha_log / "deep-dive.json"):
+            try:
+                if _p.is_file():
+                    _deep = (json.loads(_p.read_text()) or {}).get("verdict")
+                    if _deep:
+                        break
+            except Exception:
+                continue
+        _lock = cross_stage_verdict_lock(_quick, quick_verdict=_quick,
+                                         deep_verdict=_deep)
+        _locked = (_lock or {}).get("upstream") or _quick
+        if _locked and _locked != _quick:
+            tools_results["verdict"] = dict(_q)
+            tools_results["verdict"]["verdict"] = _locked
+            tools_results["verdict"]["locked_from"] = _quick
+            tools_results["verdict"]["verdict_lock"] = _lock
+    except Exception:
+        pass
     # P0.7: agentic/large runs write deep evidence under deep_dive/, not the
     # root deep-dive.json — resolve in preference order so MASTER-v3 never
     # silently publishes with empty deep evidence. Mode-keyed runs (#15/R1)

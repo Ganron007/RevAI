@@ -918,6 +918,26 @@ def main():
     deep = load_json(_pref("deep-dive.json"))
     if not deep:
         deep = load_json(_pref("deep_dive/05-deep-dive.json"))
+    # #59: verdict.json carries the TRIAGE verdict. The deep dive may raise it
+    # (packed_rook_native: triage `suspicious` score 35, deep dive `malicious`
+    # on unpacked capa behavioural rules). Both the report narrative and the
+    # technical evidence block -- which the section-wise v3 report reads -- were
+    # being fed the pre-lock value, so the v3 panels authored "suspicious"
+    # while the v2 reports (which lock) said "malicious". Apply the lock here,
+    # once, before anything downstream reads `verdict`.
+    try:
+        from v2_lib import cross_stage_verdict_lock
+        _qv = (verdict or {}).get("verdict")
+        _dv = (deep or {}).get("verdict")
+        _lk = cross_stage_verdict_lock(_qv, quick_verdict=_qv, deep_verdict=_dv)
+        _up = (_lk or {}).get("upstream") or _qv
+        if _up and _up != _qv:
+            verdict = dict(verdict or {})
+            verdict["verdict"] = _up
+            verdict["locked_from"] = _qv
+            verdict["verdict_lock"] = _lk
+    except Exception:
+        pass
     yara_meta = load_json(_pref("rule.yara.json"))
     sample_path = session.get("sample_path", "")
 
