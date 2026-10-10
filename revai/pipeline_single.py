@@ -258,6 +258,13 @@ def _stage_timeout(env: str, default: int) -> int:
     1422s, 2 MB took 2122s, and a 3.5 MB sample projects past the 3600s default.
     Hardcoding a larger number only moves the wall, so it becomes a knob --
     REVAI_STAGE_TIMEOUT_<NAME> wins, the historical default otherwise.
+
+    publish_v2 alone now makes 26 large LLM calls -- 17 master sections (4-29 KB
+    each) plus a 9-part technical body -- and on packed_rook_native the last of
+    those completed at ~925s for the technical body alone, then the stage was
+    killed at 3600s on the wrap and ALL of that work was discarded. The default
+    is therefore sized for the work the stage actually does, not for the
+    smallest sample it has seen.
     """
     raw = os.environ.get(env, "").strip()
     if not raw:
@@ -336,9 +343,9 @@ def build_stages(sha: str, intake_cmd: list[str] | None) -> list[tuple[str, list
     stages.extend([
         ("yara_gen", [sys.executable, str(SCRIPTS / "yara_gen_v2.py"), sha], 1800),
         ("publish_v2", [sys.executable, str(SCRIPTS / "publish_report_v2.py"), sha, "--template", "full"],
-         _stage_timeout("REVAI_STAGE_TIMEOUT_PUBLISH", 3600)),
+         _stage_timeout("REVAI_STAGE_TIMEOUT_PUBLISH", 7200)),
         ("publish_v3", [sys.executable, str(SCRIPTS / "section_publisher.py"), sha],
-         _stage_timeout("REVAI_STAGE_TIMEOUT_PUBLISH", 3600)),
+         _stage_timeout("REVAI_STAGE_TIMEOUT_PUBLISH", 7200)),
         ("audit", [sys.executable, str(SCRIPTS / "audit_pipeline.py"), sha, "--mode", "single"],
          _stage_timeout("REVAI_STAGE_TIMEOUT_AUDIT", 600)),
     ])
