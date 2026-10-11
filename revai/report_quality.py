@@ -848,6 +848,24 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str, *,
     for _viol in consistency.get("violations") or []:
         issues.append(_viol)
 
+    # #6: claim-level entailment. A claim that cites the analysis's own prose
+    # as its evidence is unverifiable by construction -- measured at 1-20 per
+    # report across five real runs. The unresolved-row and unresolved-source
+    # classes are REPORTED as counts and deliberately not gated: both are
+    # dominated by checker artifacts (the citation parser truncates at commas,
+    # and provenance-label spellings the alias map does not cover).
+    try:
+        from entailment import check_report_entailment
+        _ent = check_report_entailment(sha, case_root=root)
+    except Exception as _ent_exc:
+        _ent = {"ok": True, "applicable": False,
+                "reason": f"entailment check unavailable: {_ent_exc}"}
+    checks["claim_entailment"] = _ent
+    if not _ent.get("ok"):
+        for _v in (_ent.get("violations") or [])[:20]:
+            issues.append(f"entailment:{_v.get('status')}:"
+                          f"{str(_v.get('claim'))[:120]}")
+
     # #56 (c): the report must disclose the capabilities it could not examine.
     _capdisc = evaluate_capability_disclosure(
         root, sha, [master_md, master_v3, tech2_md, tech3_md])
