@@ -54,6 +54,22 @@ _CLAIM_SPLIT = re.compile(r"(?<=[.!?])\s+|\n+")
 #: Words that make a sentence a claim about the SAMPLE rather than about the
 #: analysis. A sentence about the pipeline ("we ran Ghidra") is not a claim
 #: about the binary and must not be gated as one.
+#: Discourse connectives that open a sentence ABOUT THE ANALYSIS rather than a
+#: claim about the sample. Measured on wiper_wipe32p: 4 of 6 circular
+#: "violations" were sentences like "However, no evidence of malicious delivery
+#: ... was observed" and "The likely reason for the divergence is ..." -- the
+#: report discussing its own findings. A claim about the sample opens with its
+#: subject.
+_DISCOURSE_MARKERS = (
+    "however", "although", "though", "whereas", "while", "moreover",
+    "furthermore", "therefore", "thus", "hence", "consequently",
+    "in addition", "by contrast", "on the other hand", "the likely reason",
+    "this suggests", "it appears", "it is worth", "note that", "in summary",
+    "overall", "in conclusion", "as a result", "nevertheless", "nonetheless",
+    "that said", "in this section", "for this section", "out of scope",
+    "the remainder", "the rest of",
+)
+
 _ANALYSIS_WORDS = (
     "we ", "this report", "this analysis", "the pipeline", "the run",
     "the examiner", "the analyst", "this section", "as shown above",
@@ -96,6 +112,17 @@ def extract_claims(md: str, limit: int = 200) -> list[dict]:
             continue
         low = sent.lower()
         if any(w in low[:60] for w in _ANALYSIS_WORDS):
+            continue
+        # A sentence opening with a discourse connective is commentary about the
+        # analysis, not a claim about the sample. Single words match the first
+        # token; multi-word markers ("the likely reason") must prefix-match,
+        # because splitting on whitespace leaves "the" and the marker is never
+        # seen.
+        _stripped = low.strip()
+        _first = re.split(r"[\s,;:]+", _stripped, maxsplit=1)[0]
+        if _first in _DISCOURSE_MARKERS or any(
+                _stripped.startswith(m) for m in _DISCOURSE_MARKERS
+                if " " in m):
             continue
         out.append({
             "text": sent[:400],
@@ -300,10 +327,22 @@ def verify_claim(claim: dict, evidence_text: str,
     # with zero window APIs (anomaly)"}` -- the summary offered as the evidence
     # for a statement in the summary. That is not evidence, and it is the one
     # claim in a 496-claim report the checker could not ground at all.
+    # Circular means the claim offers the analysis's own PROSE as its evidence.
+    # `source: llm_judge` alone is NOT circular: the model routinely reports what
+    # a tool found and cites that tool's table
+    # (`source: llm_judge, query_or_table: pe_imports_signals, row_or_rule:
+    # IsDebuggerPresent / T1622`), which is a legitimate citation. Measured on
+    # wiper_wipe32p: 12 violations, of which 1 was a real circular citation
+    # (`query_or_table: verdict.summary`) and 11 were this over-match.
     _q = _norm(claim.get("query") or "")
-    if src in ("llm_judge", "llm", "summary") or (
-            _q in ("summary", "verdict") or (
-                "summary" in _q and len(_q) < 40)):
+    _prose_query = (
+        not _q
+        or _q in ("summary", "verdict", "the summary", "the verdict")
+        or ("summary" in _q and len(_q) < 40)
+        or _q.startswith("verdict.")
+    )
+    if src in ("summary", "the summary", "prose", "narrative") or (
+            src in ("llm_judge", "llm", "llm verdict") and _prose_query):
         res["status"] = "circular"
         res["reason"] = ("the claim cites the analysis's own prose "
                          f"({claim.get('source')}/{claim.get('query')}) as its "
