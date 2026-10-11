@@ -338,12 +338,32 @@ def investigate_region(case: Path, name: str, region: dict) -> dict:
     return region
 
 
+def _max_attempts() -> int:
+    """How many times one region may be investigated. Default 1.
+
+    Retrying a region that just came back unknown is how the loop spins: the
+    same question, the same tools, the same answer, forever -- measured on
+    packed_rook_native at 27 MILLION llm_calls for three regions, because a
+    non-converging region was picked again and again. A region that stays
+    unknown after its attempts is COSTED, not retried; that is what makes the
+    run terminate.
+    """
+    raw = os.environ.get("REVAI_DEPTH_MAX_ATTEMPTS", "").strip()
+    if not raw:
+        return 1
+    try:
+        val = int(raw)
+    except ValueError:
+        return 1
+    return val if val > 0 else 1
+
+
 def run_depth_loop(case: Path, ceiling: int | None = None) -> dict:
     """The convergence loop: deepen every seeded region until understood or costed.
 
-    Terminates on ANY of: every region understood, the wall-clock ceiling, or the
-    examiner's stop file. Every exit consolidates -- a cutoff yields a
-    partial-but-honest map, never nothing.
+    Terminates on ANY of: every region understood, every region attempted, the
+    wall-clock ceiling, or the examiner's stop file. Every exit consolidates --
+    a cutoff yields a partial-but-honest map, never nothing.
 
     Checkpoints after EVERY region, so a pause is a resume rather than a restart.
     """
@@ -367,27 +387,41 @@ def run_depth_loop(case: Path, ceiling: int | None = None) -> dict:
         save_state(case, st)
         return st
 
+    attempts_allowed = _max_attempts()
     stop_reason = None
     while True:
-        pending = unknown_set(st["regions"])
+        # Only regions that have NOT exhausted their attempts. A region that was
+        # investigated and came back unknown stays in the unknown set -- it is
+        # reported as a cost, not retried into an infinite loop.
+        pending = [
+            n for n in unknown_set(st["regions"])
+            if int((st["regions"].get(n) or {}).get("attempts") or 0)
+            < attempts_allowed
+        ]
         if not pending:
-            stop_reason = "converged: every region understood"
+            remaining = unknown_set(st["regions"])
+            stop_reason = (
+                "converged: every region understood" if not remaining else
+                f"costed: {len(remaining)} region(s) investigated and still "
+                f"unknown ({', '.join(remaining)}) -- declared, not retried")
             break
         if _stop_requested(case):
             stop_reason = (f"stopped by examiner (depth.stop); "
-                           f"{len(pending)} region(s) still unknown")
+                           f"{len(pending)} region(s) still unattempted")
             break
         elapsed = time.time() - t0
         if elapsed >= ceiling:
             stop_reason = (
                 f"ceiling reached after {int(elapsed)}s; "
-                f"{len(pending)} region(s) still unknown -- consolidated, "
+                f"{len(pending)} region(s) unattempted -- consolidated, "
                 "not truncated")
             break
 
         name = pending[0]
+        region = st["regions"][name]
+        region["attempts"] = int(region.get("attempts") or 0) + 1
         before = time.time()
-        st["regions"][name] = investigate_region(case, name, st["regions"][name])
+        st["regions"][name] = investigate_region(case, name, region)
         st["spend"]["llm_calls"] = int(st["spend"].get("llm_calls", 0)) + 1
         st["spend"]["seconds"] = round(
             float(st["spend"].get("seconds", 0.0)) + (time.time() - before), 1)
@@ -397,6 +431,7 @@ def run_depth_loop(case: Path, ceiling: int | None = None) -> dict:
     st["stop_reason"] = stop_reason
     st["converged"] = has_converged(st["regions"])
     st["cost"] = cost_summary(st["regions"], st["spend"])
+    st["attempts_allowed"] = attempts_allowed
     save_state(case, st)
     return st
 

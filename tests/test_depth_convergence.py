@@ -235,3 +235,78 @@ def test_no_regions_is_reported_not_silently_empty(tmp_path, monkeypatch):
     st = D.run_depth_loop(case, ceiling=600)
     assert st["regions"] == {}
     assert "no-regions-to-deepen" in st["stop_reason"]
+
+
+def test_a_region_that_stays_unknown_is_costed_not_retried(tmp_path, monkeypatch):
+    """THE defect the unit tests missed and the first live run found.
+
+    A region that comes back unknown used to be picked again forever: measured
+    on packed_rook_native at 27,162,541 llm_calls for three regions, because
+    `unknown_set()` kept returning the same name and nothing tracked attempts.
+    The tests passed because they mocked investigate_region to CONVERGE, so the
+    non-converging path -- the only one that can spin -- was never exercised.
+    """
+    case, logs = _case(tmp_path)
+    monkeypatch.setenv("REVAI_LOGS_DIR", str(logs))
+    calls = []
+
+    def _never_converges(c, n, r):
+        calls.append(n)
+        return {**r, "status": D.STATUS_PARTIAL, "answer": "inconclusive",
+                "evidence": ["e"]}
+
+    monkeypatch.setattr(D, "investigate_region", _never_converges)
+    st = D.run_depth_loop(case, ceiling=600)
+
+    assert len(calls) == 8, (
+        f"each of the 8 regions must be investigated ONCE; got {len(calls)} "
+        f"calls -- a non-converging region is being retried, which is the spin "
+        "that cost 27M llm_calls")
+    assert len(set(calls)) == 8, "no region may be attempted twice by default"
+    assert st["converged"] is False
+    assert st["stop_reason"].startswith("costed:")
+    assert "declared, not retried" in st["stop_reason"]
+    assert st["spend"]["llm_calls"] == 8
+    assert st["cost"]["unknown_remaining"] == 8
+
+
+def test_attempts_are_bounded_and_settable(tmp_path, monkeypatch):
+    case, logs = _case(tmp_path)
+    monkeypatch.setenv("REVAI_LOGS_DIR", str(logs))
+    calls = []
+
+    def _never_converges(c, n, r):
+        calls.append(n)
+        return {**r, "status": D.STATUS_PARTIAL, "answer": "x",
+                "evidence": ["e"]}
+
+    monkeypatch.setattr(D, "investigate_region", _never_converges)
+    monkeypatch.setenv("REVAI_DEPTH_MAX_ATTEMPTS", "2")
+    st = D.run_depth_loop(case, ceiling=600)
+    assert len(calls) == 16, f"8 regions x 2 attempts; got {len(calls)}"
+    assert st["attempts_allowed"] == 2
+
+    for bad in ("abc", "0", "-3", ""):
+        monkeypatch.setenv("REVAI_DEPTH_MAX_ATTEMPTS", bad)
+        assert D._max_attempts() == 1, (
+            f"a bad attempts value {bad!r} must fall back to 1, not disable "
+            "the bound")
+
+
+def test_a_stop_mid_run_is_honoured_with_attempt_tracking(tmp_path, monkeypatch):
+    case, logs = _case(tmp_path)
+    monkeypatch.setenv("REVAI_LOGS_DIR", str(logs))
+    seen = {"n": 0}
+
+    def _inv(c, n, r):
+        seen["n"] += 1
+        if seen["n"] == 3:
+            (Path(c) / "depth.stop").write_text("", encoding="utf-8")
+        return {**r, "status": D.STATUS_PARTIAL, "answer": "x",
+                "evidence": ["e"]}
+
+    monkeypatch.setattr(D, "investigate_region", _inv)
+    st = D.run_depth_loop(case, ceiling=600)
+    assert "stopped by examiner" in st["stop_reason"]
+    assert seen["n"] == 3
+    assert st["spend"]["llm_calls"] == 3

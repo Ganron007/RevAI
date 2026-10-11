@@ -50,6 +50,8 @@ EXEMPT = {
     "REVAI_DISABLE_CAPABILITY_COVERAGE": "operator-only off-switch for a "
     "deterministic report section; the coverage ledger itself has no setting "
     "to configure",
+    "REVAI_DEPTH_MAX_ATTEMPTS": "operator-only loop bound for depth mode; it "
+    "changes how many times a region is retried, not what the run does",
     "REVAI_WINRE_RUN": "run_config.winre_run",
 }
 
