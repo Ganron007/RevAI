@@ -193,6 +193,214 @@ def cost_summary(regions: dict, spend: dict) -> dict:
              "spend": spend}
 
 
+def _domain_questions() -> dict[str, dict]:
+    """The capability domains, from the vocabulary the pipeline already enforces."""
+    try:
+        import domain_graph as dg
+        return {d["key"]: d for d in dg.DOMAINS}
+    except Exception:
+        return {}
+
+
+def seed_regions(case: Path) -> dict[str, dict]:
+    """The regions this depth run must deepen, seeded from the capability ledger.
+
+    A region is a capability domain the main pipeline could NOT establish to an
+    evidence-backed determination -- provenance `inferred` or `unknown` (#56).
+    A domain already `observed` needs no depth: the evidence is already cited.
+    That is what makes this loop converge on something measurable rather than
+    re-deriving what the deep dive already established.
+
+    Returns the seeded region map; a case with no ledger (flat engine, or
+    REVAI_DOMAIN_GRAPH off) seeds nothing and the caller says so rather than
+    inventing regions.
+    """
+    regions: dict[str, dict] = {}
+    try:
+        from v2_lib import build_capability_coverage, LOGS_DIR
+        _logs = Path(os.environ.get("REVAI_LOGS_DIR") or LOGS_DIR)
+        # case is <logs>/<sha>[/<mode>]; build_capability_coverage wants <logs>+<sha>
+        sha = case.name if len(case.name) == 64 else case.parent.name
+        cov = build_capability_coverage(sha, logs_dir=_logs)
+    except Exception:
+        return regions
+    if not cov or not cov.get("domains"):
+        return regions
+
+    questions = _domain_questions()
+    for key, entry in (cov.get("domains") or {}).items():
+        prov = entry.get("provenance") or "unknown"
+        if prov == "observed":
+            continue
+        d = questions.get(key) or {}
+        regions[key] = {
+            "status": STATUS_NOT_EXPLORED,
+            "reason": "",
+            "evidence": [],
+            "title": d.get("title", key),
+            "question": d.get("question", ""),
+            "seeded_from_provenance": prov,
+            "pipeline_determination": str(entry.get("answer") or "")[:400],
+            "pipeline_evidence_count": entry.get("evidence") or 0,
+        }
+    return regions
+
+
+def _stop_requested(case: Path) -> bool:
+    """The examiner's stop switch. Touching <case>/depth.stop ends the loop."""
+    return (Path(case) / "depth.stop").exists()
+
+
+def investigate_region(case: Path, name: str, region: dict) -> dict:
+    """One bounded investigation of one region. Returns the updated region.
+
+    The honesty rule is enforced HERE, not trusted: a status that claims
+    something must cite evidence, and a status outside the vocabulary is not
+    silently accepted. 'understood' with no citation is downgraded to 'partial'
+    with the reason recorded -- a confident wrong answer must not enter the map.
+    """
+    from v2_lib import llm_judge
+    title = region.get("title") or name
+    question = region.get("question") or f"What does this sample do for {title}?"
+    prior = str(region.get("pipeline_determination") or "")
+    prompt = (
+        "You are deepening ONE capability domain of a malware reverse-engineering "
+        "analysis. The main pipeline already examined it and could NOT establish "
+        "an evidence-backed determination. Your job is to close that gap or say "
+        "honestly that it cannot be closed from the available evidence.\n\n"
+        f"## Domain: {title}\n{question}\n\n"
+        f"## What the main pipeline concluded (provenance: "
+        f"{region.get('seeded_from_provenance')})\n{prior or '(nothing recorded)'}\n\n"
+        "## Rules\n"
+        "- Cite CONCRETE evidence for every claim: a tool, a SQL query, a "
+        "function name, an offset, a string. 'understood' with no citation is "
+        "not accepted and will be downgraded.\n"
+        "- If the evidence does not establish the behaviour, say 'not observed' "
+        "and name what you checked. 'not observed' with the checks named IS a "
+        "determination.\n"
+        "- Never infer a capability from the sample's family or filename.\n"
+        "- Reply with ONE JSON object: "
+        '{"status": "understood|partial|not-reconstructed", '
+        '"answer": "...", "evidence": ["...", "..."], "reason": "..."}\n'
+        "- 'not-reconstructed' means the available tools could not reach the "
+        "answer (packed, unsupported format, no SQL server).\n"
+    )
+    try:
+        raw = llm_judge(prompt)
+    except Exception as exc:
+        region["status"] = STATUS_NOT_RECONSTRUCTED
+        region["reason"] = f"investigation call failed: {type(exc).__name__}: {exc}"
+        region["evidence"] = []
+        return region
+
+    text = raw if isinstance(raw, str) else json.dumps(raw, default=str)
+    parsed = {}
+    try:
+        from v2_lib import normalize_llm_json
+        parsed = normalize_llm_json(text) or {}
+        if not isinstance(parsed, dict):
+            parsed = {}
+    except Exception:
+        parsed = {}
+
+    status = str(parsed.get("status") or "").strip().lower()
+    evidence = [str(e)[:160] for e in (parsed.get("evidence") or [])[:8]]
+    answer = str(parsed.get("answer") or "")[:1200]
+    reason = str(parsed.get("reason") or "")[:400]
+
+    if status not in VALID_STATUSES or status == STATUS_NOT_EXPLORED:
+        # Not in the vocabulary, or claiming "I never looked" while answering:
+        # both are the model over- or under-stating. Record what it said and
+        # take the conservative grade.
+        region["model_status"] = status or "(none)"
+        region["status"] = STATUS_PARTIAL
+        region["reason"] = reason or (
+            f"model returned status {status!r}, outside the vocabulary or "
+            "contradicting its own answer")
+        region["status_contradicts_answer"] = True
+    else:
+        region["status"] = status
+        region["reason"] = reason
+
+    # THE rule: a claim needs a citation. Enforced here so a confident wrong
+    # answer cannot enter the map.
+    if status_requires_evidence(region["status"]) and not evidence:
+        if region["status"] == STATUS_UNDERSTOOD:
+            region["status"] = STATUS_PARTIAL
+            region["reason"] = (
+                (region.get("reason") or "")
+                + " | downgraded from understood: no evidence cited")
+            region["downgraded_for_no_evidence"] = True
+
+    region["answer"] = answer
+    region["evidence"] = evidence
+    region["investigated_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+    return region
+
+
+def run_depth_loop(case: Path, ceiling: int | None = None) -> dict:
+    """The convergence loop: deepen every seeded region until understood or costed.
+
+    Terminates on ANY of: every region understood, the wall-clock ceiling, or the
+    examiner's stop file. Every exit consolidates -- a cutoff yields a
+    partial-but-honest map, never nothing.
+
+    Checkpoints after EVERY region, so a pause is a resume rather than a restart.
+    """
+    case = Path(case)
+    ceiling = ceiling if ceiling is not None else ceiling_seconds()
+    t0 = time.time()
+    st = load_state(case)
+    st.setdefault("regions", {})
+    st.setdefault("spend", {"llm_calls": 0, "seconds": 0.0, "tokens": 0})
+
+    # Resume: regions already carried keep their status; only re-seed the ones
+    # that were never investigated.
+    seeded = seed_regions(case)
+    for name, region in seeded.items():
+        st["regions"].setdefault(name, region)
+    if not st["regions"]:
+        st["stop_reason"] = (
+            "no-regions-to-deepen: every capability domain the main pipeline "
+            "examined already carries an evidence-backed determination, or the "
+            "run produced no capability ledger. Nothing to converge on.")
+        save_state(case, st)
+        return st
+
+    stop_reason = None
+    while True:
+        pending = unknown_set(st["regions"])
+        if not pending:
+            stop_reason = "converged: every region understood"
+            break
+        if _stop_requested(case):
+            stop_reason = (f"stopped by examiner (depth.stop); "
+                           f"{len(pending)} region(s) still unknown")
+            break
+        elapsed = time.time() - t0
+        if elapsed >= ceiling:
+            stop_reason = (
+                f"ceiling reached after {int(elapsed)}s; "
+                f"{len(pending)} region(s) still unknown -- consolidated, "
+                "not truncated")
+            break
+
+        name = pending[0]
+        before = time.time()
+        st["regions"][name] = investigate_region(case, name, st["regions"][name])
+        st["spend"]["llm_calls"] = int(st["spend"].get("llm_calls", 0)) + 1
+        st["spend"]["seconds"] = round(
+            float(st["spend"].get("seconds", 0.0)) + (time.time() - before), 1)
+        # Checkpoint after EVERY region: a pause is a resume.
+        save_state(case, st)
+
+    st["stop_reason"] = stop_reason
+    st["converged"] = has_converged(st["regions"])
+    st["cost"] = cost_summary(st["regions"], st["spend"])
+    save_state(case, st)
+    return st
+
+
 def _cli() -> int:
     import argparse
     ap = argparse.ArgumentParser(description="depth mode")
@@ -200,6 +408,9 @@ def _cli() -> int:
                     help="case directory (default: read REVAI_CASE_DIR)")
     ap.add_argument("--status", action="store_true",
                     help="report the depth state as JSON and exit")
+    ap.add_argument("--run", action="store_true",
+                    help="run the convergence loop (deepen every region the "
+                         "main pipeline could not establish)")
     args = ap.parse_args()
 
     # Resolve the case dir the SAME way the other stages do. The first version
@@ -243,6 +454,24 @@ def _cli() -> int:
               f"ceiling: {ceiling_seconds()}s")
         return 0
 
+    if args.run:
+        if case is None:
+            print("[depth] --run needs a case directory or a run sha",
+                  file=sys.stderr, flush=True)
+            return 2
+        st = run_depth_loop(case)
+        summary = cost_summary(st.get("regions"), st.get("spend") or {})
+        summary["case_dir"] = str(case)
+        summary["converged"] = st.get("converged")
+        summary["stop_reason"] = st.get("stop_reason")
+        print(json.dumps(summary, indent=2))
+        # rc=0 only when the loop actually ran. An empty region set is an honest
+        # outcome, not a failure, but it is reported on stderr so a hollow run
+        # cannot look like a converged one.
+        if not st.get("regions"):
+            print(f"[depth] {st.get('stop_reason')}", file=sys.stderr, flush=True)
+        return 0
+
     st = load_state(case)
     summary = cost_summary(st["regions"], st["spend"])
     summary["case_dir"] = str(case)
@@ -250,27 +479,24 @@ def _cli() -> int:
     summary["stop_reason"] = st.get("stop_reason")
 
     # A depth run that has done nothing must not read as a depth run that
-    # finished. Plan #20 landed the capability-domain substrate the convergence
-    # loop runs on, but NOT the loop itself -- a domain node answers once, with
-    # no re-examination -- so this stage still has no investigation to perform.
-    # The honest report is an explicit one, not rc=0 with an empty map and no
-    # artifact, which is exactly the hollow-success shape the rest of the
-    # pipeline gates against.
+    # finished. This invocation REPORTED state; it did not investigate anything
+    # (no regions, no spend). The convergence loop exists and is driven by
+    # --run; an empty map here means no depth run has been performed on this
+    # case, which is exactly the hollow-success shape the rest of the pipeline
+    # gates against.
     spend = st.get("spend") or {}
     if not st.get("regions") and not spend.get("llm_calls"):
         summary["stop_reason"] = (
-            "no-depth-analysis-performed: the deep dive's capability-domain "
-            "nodes (plan #20) answer each domain once and do not re-examine it; "
-            "the convergence loop that would drive them is still open. This run "
-            "reported the case's depth state; it did not investigate anything. "
-            "regions_total=0 means nothing was looked at, not that the sample "
-            "has no functions."
+            "no-depth-analysis-performed: this invocation reported the case's "
+            "depth state and investigated nothing. The convergence loop exists "
+            "and is driven by `depth_agent.py <case> --run`; no depth run has "
+            "been performed on this case. regions_total=0 means nothing was "
+            "looked at, not that the sample has no functions."
         )
-        summary["depth_deferred_to"] = (
-            "the convergence loop over plan #20's domain nodes")
-        print("[depth] WARNING: no depth analysis ran. The convergence loop "
-              "over the domain nodes is still open; this invocation only "
-              "reports state.",
+        summary["depth_run_with"] = "depth_agent.py <case> --run"
+        print("[depth] WARNING: no depth analysis has been performed on this "
+              "case. Run `depth_agent.py <case> --run` to deepen the capability "
+              "domains the main pipeline could not establish.",
               file=sys.stderr, flush=True)
         # Write the artifact with that reason inside it. A stage that produced
         # nothing and left no trace is indistinguishable in the trace from one

@@ -368,9 +368,13 @@ def build_stages(sha: str, intake_cmd: list[str] | None) -> list[tuple[str, list
     # The stage is deliberately absent from `abort_on`, so a timeout it cannot
     # recover from does not fail the pipeline it follows.
     if depth_enabled():
+        # --run drives the convergence loop (plan #26). Without it the stage
+        # only reported state, which is the hollow shape #26 existed to remove:
+        # the vocabulary, checkpointing and cost accounting were all built and
+        # nothing ever called the loop.
         stages.append((
             "depth_understanding",
-            [sys.executable, str(SCRIPTS / "depth_agent.py"), sha],
+            [sys.executable, str(SCRIPTS / "depth_agent.py"), sha, "--run"],
             depth_ceiling_seconds() + 300,
         ))
     return stages
