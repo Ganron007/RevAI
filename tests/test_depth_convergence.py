@@ -310,3 +310,86 @@ def test_a_stop_mid_run_is_honoured_with_attempt_tracking(tmp_path, monkeypatch)
     assert "stopped by examiner" in st["stop_reason"]
     assert seen["n"] == 3
     assert st["spend"]["llm_calls"] == 3
+
+
+def test_the_region_prompt_carries_the_pipelines_cited_evidence(tmp_path, monkeypatch):
+    """A region handed only the CONCLUSION cannot re-derive or challenge it.
+
+    Measured on packed_rook_native: the evasion region reported "no sample was
+    provided, no strings/imports/disassembly output was available" while the
+    pipeline had plainly examined one -- because it was given the conclusion and
+    a count, not the citations.
+    """
+    import v2_lib
+    case = tmp_path / "logs" / SHA / "scripted"
+    (case / "deep_dive").mkdir(parents=True)
+    hist = []
+    for k, st in DOMAINS.items():
+        # surface is observed (understood + evidence). The rest are `inferred`
+        # because they CONTRADICT themselves -- which is the packed_rook shape,
+        # and the one case where a seeded region still has evidence to carry.
+        if st == "understood":
+            ev = [f"{k}: import_table row 1", f"{k}: strings row 2"]
+            contra = False
+        else:
+            ev = [f"{k}: import_table row 1", f"{k}: strings row 2"]
+            contra = True
+        hist.append({"tool": f"domain:{k}",
+                     "result": {"status": st, "answer": f"{k} answer",
+                                "evidence": ev,
+                                "status_contradicts_answer": contra,
+                                "tool_calls_used": 3, "format": "json"}})
+    (case / "deep_dive" / "agentic_deep_dive.json").write_text(json.dumps(
+        {"findings": {"domain_graph": {"domains": DOMAINS}},
+         "history": hist}), encoding="utf-8")
+    monkeypatch.setattr(v2_lib, "LOGS_DIR", tmp_path / "logs")
+    monkeypatch.setenv("REVAI_RUN_MODE", "scripted")
+
+    regions = D.seed_regions(case)
+    r = regions["persistence"]
+    assert r["pipeline_evidence"], (
+        "the seeded region must carry what the pipeline CITED")
+    assert any("import_table" in e for e in r["pipeline_evidence"])
+
+    seen = {}
+
+    def _cap(prompt, **kw):
+        seen["prompt"] = prompt
+        return {"choices": [{"message": {"content": json.dumps(
+            {"status": "understood", "answer": "a", "evidence": ["e"]})}}]}
+
+    monkeypatch.setattr(v2_lib, "llm_judge", _cap)
+    D.investigate_region(case, "persistence", r)
+    p = seen["prompt"]
+    assert "Evidence the pipeline cited for it" in p
+    assert "import_table row 1" in p, (
+        "the region must see the citations, not just the conclusion")
+    assert "persistence answer" in p
+
+
+def test_a_region_with_no_citations_says_so(tmp_path, monkeypatch):
+    """An absent evidence list must be stated, not silently omitted."""
+    import v2_lib
+    case = tmp_path / "logs" / SHA / "scripted"
+    (case / "deep_dive").mkdir(parents=True)
+    (case / "deep_dive" / "agentic_deep_dive.json").write_text(json.dumps(
+        {"findings": {"domain_graph": {"domains": DOMAINS}},
+         "history": [{"tool": f"domain:{k}",
+                      "result": {"status": "partial", "answer": "a",
+                                 "evidence": [], "tool_calls_used": 1,
+                                 "format": "json"}}
+                     for k in DOMAINS]}), encoding="utf-8")
+    monkeypatch.setattr(v2_lib, "LOGS_DIR", tmp_path / "logs")
+    monkeypatch.setenv("REVAI_RUN_MODE", "scripted")
+
+    seen = {}
+
+    def _cap(prompt, **kw):
+        seen["prompt"] = prompt
+        return {"choices": [{"message": {"content": json.dumps(
+            {"status": "understood", "answer": "a", "evidence": ["e"]})}}]}
+
+    monkeypatch.setattr(v2_lib, "llm_judge", _cap)
+    r = D.seed_regions(case)["persistence"]
+    D.investigate_region(case, "persistence", r)
+    assert "cited nothing" in seen["prompt"]

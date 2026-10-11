@@ -242,6 +242,9 @@ def seed_regions(case: Path) -> dict[str, dict]:
             "seeded_from_provenance": prov,
             "pipeline_determination": str(entry.get("answer") or "")[:400],
             "pipeline_evidence_count": entry.get("evidence") or 0,
+            # What the pipeline CITED, not just what it concluded. A region
+            # handed only the conclusion cannot re-derive or challenge it.
+            "pipeline_evidence": list(entry.get("evidence_items") or [])[:8],
         }
     return regions
 
@@ -282,6 +285,11 @@ def investigate_region(case: Path, name: str, region: dict) -> dict:
         f"## Domain: {title}\n{question}\n\n"
         f"## What the main pipeline concluded (provenance: "
         f"{region.get('seeded_from_provenance')})\n{prior or '(nothing recorded)'}\n\n"
+        f"## Evidence the pipeline cited for it\n"
+        + ("\n".join(f"- {e}" for e in
+                      (region.get("pipeline_evidence") or [])[:8])
+           or "- (the pipeline cited nothing for this domain)\n")
+        + "\n"
         "## Rules\n"
         "- Cite CONCRETE evidence for every claim: a tool, a SQL query, a "
         "function name, an offset, a string. 'understood' with no citation is "

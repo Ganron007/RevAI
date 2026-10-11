@@ -6886,6 +6886,13 @@ def build_capability_coverage(sha: str, logs_dir: Path | None = None) -> dict:
                 "status": status,
                 "answer": str(r.get("answer") or "")[:400],
                 "evidence": len(r.get("evidence") or []),
+                # The cited evidence itself, not just its count. A depth region
+                # given only the conclusion and a number cannot re-derive
+                # anything -- measured on packed_rook_native, where the evasion
+                # region reported "no sample was provided" while the pipeline
+                # had plainly examined one.
+                "evidence_items": [str(e)[:200]
+                                   for e in (r.get("evidence") or [])[:8]],
                 "tool_calls_used": r.get("tool_calls_used"),
                 "format": r.get("format"),
                 "truncated": bool(r.get("truncated")),
