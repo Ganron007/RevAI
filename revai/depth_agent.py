@@ -259,6 +259,17 @@ def investigate_region(case: Path, name: str, region: dict) -> dict:
     silently accepted. 'understood' with no citation is downgraded to 'partial'
     with the reason recorded -- a confident wrong answer must not enter the map.
     """
+    # The depth stage runs as its own process, so it must load the pipeline's
+    # runtime env (llm.env) itself. Without this every investigation fails with
+    # "LLM API key not configured" and the whole loop reports
+    # not-reconstructed -- found on the first live run, where the loop
+    # terminated correctly and all three regions failed for this reason alone.
+    try:
+        from v2_lib import ensure_pipeline_runtime_env
+        ensure_pipeline_runtime_env()
+    except Exception:
+        pass
+
     from v2_lib import llm_judge
     title = region.get("title") or name
     question = region.get("question") or f"What does this sample do for {title}?"
@@ -293,11 +304,31 @@ def investigate_region(case: Path, name: str, region: dict) -> dict:
         region["evidence"] = []
         return region
 
-    text = raw if isinstance(raw, str) else json.dumps(raw, default=str)
+    # llm_judge returns the FULL response dict, not the content string. Taking
+    # `raw` directly (or json.dumps of it) hands parse_domain_reply the
+    # {"choices": [...]} envelope, whose keys are not the answer -- so every
+    # region reported status '' on the first live runs even though the model
+    # answered. The content is at choices[0].message.content.
+    text = ""
+    if isinstance(raw, dict):
+        try:
+            text = str(raw["choices"][0]["message"]["content"] or "")
+        except Exception:
+            text = json.dumps(raw, default=str)
+    elif isinstance(raw, str):
+        text = raw
+    else:
+        text = json.dumps(raw, default=str)
+    # domain_graph.parse_domain_reply, not normalize_llm_json: it scans for
+    # BALANCED top-level objects, so a correctly-formed answer wrapped in prose
+    # ("Based on the three queries I ran: {...}") is recovered. normalize_llm_json
+    # returned {} for exactly that shape on the first live run -- the model
+    # answered and the parser threw it away, reporting status '' for all three
+    # regions.
     parsed = {}
     try:
-        from v2_lib import normalize_llm_json
-        parsed = normalize_llm_json(text) or {}
+        from domain_graph import parse_domain_reply
+        parsed, _why = parse_domain_reply(text)
         if not isinstance(parsed, dict):
             parsed = {}
     except Exception:
