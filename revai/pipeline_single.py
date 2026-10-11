@@ -341,6 +341,16 @@ def build_stages(sha: str, intake_cmd: list[str] | None) -> list[tuple[str, list
             1800,
         ))
     stages.extend([
+        # Optional behavioural-model stage (#8): what the sample DOES, assembled
+        # from the capability ledger, the IoCs and the observations. It runs
+        # after the analysis that feeds it and before the stages that consume
+        # it -- yara rules derive from the model, and the report cites it as an
+        # artifact. Gated like the other opt-in stages; with the flag off the
+        # list is byte-identical to the previous spine.
+        *([("behavioural_model",
+            [sys.executable, str(SCRIPTS / "behavioural_model.py"), sha], 1800)]
+          if os.environ.get("REVAI_ENABLE_BEHAVIOURAL_MODEL", "").strip().lower()
+          in ("1", "true", "yes", "on") else []),
         ("yara_gen", [sys.executable, str(SCRIPTS / "yara_gen_v2.py"), sha], 1800),
         ("publish_v2", [sys.executable, str(SCRIPTS / "publish_report_v2.py"), sha, "--template", "full"],
          _stage_timeout("REVAI_STAGE_TIMEOUT_PUBLISH", 7200)),

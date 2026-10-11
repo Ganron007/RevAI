@@ -202,6 +202,24 @@ STAGE_DETAILS = {
         "artifacts": ["artifact-gen.json", "03-generated.py", "05-verification.json"],
         "dir": "artifact_gen",
     },
+    "behavioural_model": {
+        "num": 4, "title": "Behavioural Model (optional)",
+        "desc": "Assemble what the sample does from the run's evidence",
+        "long_desc": (
+            "Optional stage (plan #8): what the sample DOES, assembled from the "
+            "capability-coverage ledger, the extracted IoCs and the observations "
+            "behind each observed capability -- capabilities with their provenance "
+            "(observed / inferred / unknown), the concrete objects they act on "
+            "(registry keys, URLs, domains, IPs, files, mutexes), the observations, "
+            "and the gaps. Deterministic, never authored by the model: a "
+            "model-authored behavioural model is a plausible story, and a plausible "
+            "story about a malware sample is the most expensive kind of wrong. Runs "
+            "only when enabled via REVAI_ENABLE_BEHAVIOURAL_MODEL=1 (Settings -> run "
+            "config); self-skips with rc=0 otherwise and never gates the verdict."
+        ),
+        "artifacts": ["behavioural_model.json"],
+        "dir": None,
+    },
     "yara_gen": {
         "num": 4, "title": "YARA Gen",
         "desc": "Generate YARA + Sigma detection rules",
@@ -1371,6 +1389,10 @@ _RUN_CONFIG_KEYS = (
     # key list, so an operator could only set them by exporting a variable by
     # hand. CLI/UI parity is a must, so they join run_config with the rest.
     "ti_enrich", "depth_ceiling_seconds", "ioc_factcheck",
+    # #8: the behavioural-model stage was CLI-only -- read by the pipeline but
+    # absent from every persisted key list, so an operator could only set it by
+    # exporting a variable. CLI/UI parity is a must, so it joins the rest.
+    "behavioural_model",
 )
 
 

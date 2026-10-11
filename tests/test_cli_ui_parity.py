@@ -52,6 +52,8 @@ EXEMPT = {
     "to configure",
     "REVAI_DEPTH_MAX_ATTEMPTS": "operator-only loop bound for depth mode; it "
     "changes how many times a region is retried, not what the run does",
+    "REVAI_DISABLE_BEHAVIOURAL_MODEL": "operator-only off-switch for a "
+    "deterministic report section; the model itself has no setting to configure",
     "REVAI_WINRE_RUN": "run_config.winre_run",
 }
 
