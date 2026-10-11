@@ -16,7 +16,7 @@ import {
   type Sample,
 } from './schema'
 
-async function raw(path: string, init?: RequestInit): Promise<unknown> {
+export async function raw(path: string, init?: RequestInit): Promise<unknown> {
   const res = await fetch(path, {
     ...init,
     headers: {

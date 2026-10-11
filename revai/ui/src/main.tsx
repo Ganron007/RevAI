@@ -13,6 +13,7 @@ import OrchCommandCenter from './modules/orch/OrchCommandCenter'
 import ArtifactsView from './modules/artifacts/ArtifactsView'
 import HitlReview from './modules/hitl/HitlReview'
 import ManualStages from './modules/manual/ManualStages'
+import SteeringPanel from './modules/steering/SteeringPanel'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -25,6 +26,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="help" element={<HelpPage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="cases/:sha" element={<CaseWorkspace />}>
+          <Route path="steering" element={<SteeringPanel />} />
             <Route index element={<Navigate to="orch" replace />} />
             <Route path="orch" element={<OrchCommandCenter />} />
             <Route path="reports" element={<ArtifactsView key="reports" initialMode="reports" />} />

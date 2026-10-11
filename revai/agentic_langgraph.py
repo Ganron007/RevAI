@@ -467,6 +467,34 @@ def _need(helpers: dict, name: str):
     return fn
 
 
+def _steering_context(sha: str) -> str:
+    """The analyst's steering note for this case, as a prompt block.
+
+    Empty when there is none, so an unsteered run is byte-identical. The block's
+    wording is `steering_block`'s and is load-bearing: CONTEXT not instructions,
+    it may be wrong about any specific fact, and it must never be reported as a
+    finding.
+    """
+    if not sha:
+        return ""
+    try:
+        from steering import effective_steering_note, steering_block
+        note = effective_steering_note(_case_dir_for(sha)) or ""
+        if not note.strip():
+            return ""
+        return steering_block(note) + "\n\n"
+    except Exception:
+        return ""
+
+
+def _case_dir_for(sha: str):
+    try:
+        from v2_lib import case_dir
+        return case_dir(sha)
+    except Exception:
+        return None
+
+
 def _unpacked_image_context(findings: dict) -> str:
     """The unpacked image's evidence, as context for every capability domain.
 
@@ -590,6 +618,10 @@ def run_domain_deep_dive(sha: str, max_steps: int, helpers: dict,
     # every node the unpacked image so a capability hidden by the packer is not
     # reported as absent.
     _unpack_ctx = _unpacked_image_context(findings)
+    # #47/#13: analyst steering reaches the DOMAIN NODES, which are the thing
+    # that can act on it. Triage-only consumption meant "look at persistence
+    # first" was read and then discarded before the stage that could redirect.
+    _steer_ctx = _steering_context(sha)
     per_domain: dict[str, dict] = {}
     domain_history: list[dict] = []
 
@@ -598,6 +630,7 @@ def run_domain_deep_dive(sha: str, max_steps: int, helpers: dict,
         _prompt = (
             f"{system_prompt}\n\n"
             f"{_unpack_ctx}"
+            f"{_steer_ctx}"
             f"## Domain under investigation: {domain['title']}\n\n"
             f"{domain['question']}\n\n"
             f"Domain-specific instructions:\n"

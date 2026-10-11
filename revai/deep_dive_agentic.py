@@ -453,6 +453,7 @@ def build_messages(
     *,
     checklist_ok: bool = False,
     sql_ok: bool = False,
+    steering: str = "",
 ) -> list:
     system = (
         "You are an agentic malware reverse-engineering assistant. "
@@ -470,6 +471,16 @@ def build_messages(
         "observed\"). A domain you never mention is a coverage failure.\n"
         + VERDICT_CALIBRATION_CONTRACT
     )
+    # Analyst steering reaches the deep dive, not only triage. An analyst who
+    # writes "look at the persistence mechanism, the domain nodes keep skipping
+    # it" was previously read by quick_scan and then discarded -- the note never
+    # reached the one stage that could act on it (#47/#13).
+    if steering and steering.strip():
+        try:
+            from steering import steering_block
+            system += "\n\n" + steering_block(steering)
+        except Exception:
+            pass
     tool_desc = "\n".join(tool_list)
     findings_text = _truncate(json.dumps(findings, default=str), MAX_FINDINGS_CHARS)
     history_text = "\n".join(
@@ -1440,6 +1451,18 @@ def _custom_loop_body(sha: str, max_steps: int = MAX_STEPS) -> dict:
     final_answer = None
     checklist_ok = bool(tool_gate.get("ok"))
 
+    # Analyst steering (#47/#13): read ONCE and record it as an artifact, the
+    # same way quick_scan does, so the report can cite the direction the deep
+    # dive actually saw rather than one it never received.
+    _steering = ""
+    try:
+        from steering import effective_steering_note, record_steering
+        _steering = effective_steering_note(case_dir(sha)) or ""
+        if _steering:
+            record_steering(case_dir(sha), _steering)
+    except Exception:
+        _steering = ""
+
     # flash = agentic planner loop; Pro = final verdict / validation
     planner_model = get_planner_model()
     verdict_model = get_verdict_model()
@@ -1504,7 +1527,7 @@ def _custom_loop_body(sha: str, max_steps: int = MAX_STEPS) -> dict:
         sql_ok = _history_has_sql_deep(history)
         messages = build_messages(
             session, step, max_steps, history, findings, source_decisions, tool_list, file_type,
-            checklist_ok=checklist_ok, sql_ok=sql_ok,
+            checklist_ok=checklist_ok, sql_ok=sql_ok, steering=_steering,
         )
         # Feature 1: budget convergence warning (benchmark pattern)
         _bw = _budget_warning(step, max_steps)
@@ -1647,7 +1670,7 @@ def _custom_loop_body(sha: str, max_steps: int = MAX_STEPS) -> dict:
     if not final_answer:
         messages = build_messages(
             session, max_steps, max_steps, history, findings, source_decisions, tool_list, file_type,
-            checklist_ok=checklist_ok, sql_ok=sql_ok,
+            checklist_ok=checklist_ok, sql_ok=sql_ok, steering=_steering,
         )
         messages[1]["content"] += (
             "\n\nYou have used all steps. Return ONLY a flat JSON object with "

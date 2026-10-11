@@ -14,6 +14,7 @@ const RAIL = [
   { to: 'evidence', label: 'Evidence', icon: <Icon.evidence /> },
   { to: 'review', label: 'HITL Review', icon: <Icon.hitl /> },
   { to: 'manual', label: 'Manual Stages', icon: <Icon.manual /> },
+  { to: 'steering', label: 'Steering', icon: <Icon.steering /> },
 ] as const
 
 export default function CaseWorkspace() {
