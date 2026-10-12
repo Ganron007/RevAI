@@ -15,7 +15,7 @@ are **vendor / licensed** and must be placed manually.
 
 | Component | Expected path | How to get it |
 |-----------|---------------|---------------|
-| **Ghidra** | `/opt/ghidra` (with `support/analyzeHeadless`) | Official NSA/Ghidra build or REMnux package; symlink to `/opt/ghidra` if needed. **Ghidra 12.1+** required for ghidrasql v0.0.4 |
+| **Ghidra** | `/opt/ghidra` (with `support/analyzeHeadless`) | Official NSA/Ghidra build or REMnux package; symlink to `/opt/ghidra` if needed. **Ghidra 12.1+** required for ghidrasql v0.0.7 |
 | **CADRE PE Loader** | `/opt/ghidra/Ghidra/Extensions/CADRE/` | Custom Ghidra PE loader extension — ensures import references are created for packed/binder PEs. Pre-installed on the deployment VM; source in `extensions/cadre-pe-loader/`. |
 | **ghidrasql** | `/usr/local/bin/ghidrasql` | Built by `install/install-ghidrasql.sh` (clones [0xeb/libghidra](https://github.com/0xeb/libghidra) + [0xeb/ghidrasql](https://github.com/0xeb/ghidrasql); uses Ghidra's bundled Gradle wrapper). **Current on the deployment VM: ghidrasql 0.0.7 + libghidra 0.0.8.** ghidrasql is by Elias Bachaalany, used under the Human-Origin Source License v1.0 |
 | **LLM API** | `/opt/revai/config/llm.env` | Copy `config/llm.env.template` and fill model / URL / key |
@@ -89,7 +89,10 @@ Full per-sample table is in the top-level [`README.md`](../README.md#why-malcats
 
 ## Extended tool stack (V7)
 
-These tools are wired into `TOOL_MANIFEST` and run automatically per file format. Installed on the deployment VM; the exact install steps vary by tool (see below).
+These tools are wired into `TOOL_MANIFEST` and run automatically per file format
+when the standard-mode deep-dive battery runs; the agentic deep dive reaches the
+static ones through its deterministic checklist instead. Installed on the
+deployment VM; the exact install steps vary by tool (see below).
 
 | Tool | Applies to | What it does |
 |------|-----------|--------------|

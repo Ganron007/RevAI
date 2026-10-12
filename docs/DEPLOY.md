@@ -1,6 +1,6 @@
 # Deployment Guide
 
-RevAI deploys to a single REMnux VM. The `revai/` package is copied to `/opt/scripts/` (the conventional REMnux analysis-scripts location), the React Console UI is built and deployed to `/opt/scripts/ui/`, and tests are copied to `/opt/scripts/tests/`.
+RevAI deploys to a single REMnux VM. The `revai/` package is copied to `/opt/scripts/` (the conventional REMnux analysis-scripts location), the React Console UI is built and deployed to `/opt/scripts/ui/`, tests and docs are copied to `/opt/scripts/tests/` and `/opt/scripts/docs/`, and the operator tools (including `run-watched.sh`, the recommended way to launch a watched run) are installed to `/opt/scripts/`.
 
 ## Prerequisites
 
@@ -37,10 +37,14 @@ See [`CONFIGURE.md`](CONFIGURE.md) for the full variable reference.
 ```
 
 This command:
-- Copies `revai/*` to `/opt/scripts/`.
+- Copies `revai/*` to `/opt/scripts/` (flat — includes `skills/`, `prompts/`, `recovery/` and `signatures/`).
 - Builds the React Console UI via npm (`revai/ui`) and deploys it to `/opt/scripts/ui/`.
-- Copies `tests/*` to `/opt/scripts/tests/`.
-- Installs `install/revai.service` and reloads systemd.
+- Copies every `tests/*.py` to `/opt/scripts/tests/` — the helpers (`_layout.py`, `conftest.py`) ship too, or VM collection aborts.
+- Copies `docs/` to `/opt/scripts/docs/`, so the VM runs the same documentation checks the repo does.
+- Installs the operator tools — `run-watched.sh`, `instrument-live-log.sh`, `validate-ghidrasql-sql.py`, `winre-llm-env.sh`, `verify-release.sh` — to `/opt/scripts/`.
+- Deploys the bundled API lookup index to `/opt/revai/api_index/`; an index already on the VM is preserved unless `REVAI_FORCE_API_INDEX=1`.
+- Writes the pipeline commit to `/opt/revai/config/REVAI_COMMIT` (the provenance banner every artifact carries).
+- Installs `install/revai.service`, reloads systemd and **enables** it (boot persistence).
 - Restarts the `revai` service.
 - Sets ownership to `remnux:remnux` on `/opt/scripts/`, `/opt/revai/`, and `/opt/samples/`.
 
@@ -70,6 +74,25 @@ For a more thorough check, run the verification script:
 ```bash
 ./install/verify-remnux.sh
 ```
+
+And the full release gate (wiring harness + test suite + optional PE parity + VM
+harness when `REVAI_VM_SSH` is set):
+
+```bash
+./scripts/verify-release.sh
+```
+
+Run a sample end-to-end under the watchdog (reboots when the VM is not fresh,
+streams stages, classifies the first anomaly, refuses to start over a live run):
+
+```bash
+./scripts/run-watched.sh /path/to/sample
+```
+
+> The VM test suite must run from `/opt/scripts` — the flat runtime layout has no
+> `revai/` package, and the tests resolve their imports from the working
+> directory. Use a venv interpreter (`/tmp/rtvenv/bin/python -m pytest tests/ -q`)
+> on PEP-668-managed systems.
 
 ## Re-deploying after updates
 

@@ -21,7 +21,7 @@ The pipeline deliberately separates what must be deterministic from what benefit
 
 ## 2. Three Run Modes
 
-One shared set of stage scripts, two of them optional; three ways to drive them:
+One shared set of stage scripts, five of them optional; three ways to drive them:
 
 | Mode | Driver | Stage order decided by | Retries | Best for |
 |---|---|---|---|---|
@@ -46,7 +46,7 @@ RevAI Console (Flask + React) ────────► LLM Judge & Agentic Pl
 ┌──────▼─────────────────────────────────────│──────────▼────────────────┐
 │ REMnux Malware Analysis Pipeline           │                           │
 │ 1. Intake ──► 2. Triage ──► 3. Deep Dive ──┤                           │
-│  (Ghidra/IDA)  (28 tools)   (LangGraph)    │                           │
+│  (Ghidra/IDA)  (8-tool pool)  (LangGraph)   │                           │
 │       │            │              │        │                           │
 │       └────────────┼──────────────┘        │                           │
 │                    ▼                       │                           │
@@ -54,10 +54,15 @@ RevAI Console (Flask + React) ────────► LLM Judge & Agentic Pl
 │            │ Evidence Pack │ ──────────────┘                           │
 │            └───────┬───────┘                                           │
 │                    ▼                                                   │
-│ 4. Rule Gen ──► 5. Publish ──► 6. Correlate ──► 7. Audit & Quality Gate   │
-│  (YARA/Sigma)   (LLM Report)   (Map-Reduce)      (truly_green)         │
+│ 4. Rule Gen ──► 5. Publish ──► 6. Sections ──► 7. Audit & Quality Gate  │
+│  (YARA/Sigma)   (LLM Report)   (per-section)     (truly_green)         │
 └────────────────────────────────────────────────────────────────────────┘
 ```
+
+The diagram shows the core flow; the numbered table below is the full set,
+including the five opt-in stages (Dynamic Analysis, Function Recovery,
+Analysis Scripts, Behavioural Model, Depth Mode) that skip themselves when
+their flag is off.
 
 ### A. Control & Intelligence Layer
 * **Analyst Interface**: React Console UI (`http://<host>:5000`) or CLI entry points (`pipeline_single.py` for deterministic runs, `stage_orchestrator.py` for agentic runs).
@@ -71,28 +76,30 @@ RevAI contains exactly **two LangGraph ReAct loops** (same `create_react_agent` 
 | Loop | Tools it orchestrates | Decides |
 |---|---|---|
 | **Deep-dive agent** (`deep_dive_agentic.py`) | 26 RE tools in the registry; **15 bound to the LangGraph graph** (the default engine) — `ghidra_query`, `ida_query`, `ghidra_decompile`, `capa_analyze`, `malcat_analyze`, `yara_scan`, `floss_extract`, `pe_import_signals`, `speakeasy_emulate`, `r2_decompile`, `z3_solve`, `angr_analyze`, `api_lookup`, `compare_files`, `load_skill`. The other 11 (`xor_string_search`, `frida_static_probe`, `signature_match`, `upx_unpack`, `shellcode_extract`, `olevba_analyze`, `peepdf_analyze`, `dotnet_analyze`, `revai_tools_sec`, `revai_tools_sinks`, `revai_tools_audit`) run in the deterministic checklist instead, which already covers the static scanners. `REVAI_AGENTIC_ENGINE=custom` binds the whole registry | which tool to call next, with what arguments, based on previous results |
-| **Stage planner** (`stage_orchestrator.py`) | 12 stage tools: `run_intake`, `run_quick_scan`, `run_deep_dive_agentic`, `run_function_recovery`, `run_artifact_gen`, `run_yara_gen`, `run_publish`, `run_section_publish`, `run_audit`, `check_quality`, `read_verdicts`, `read_evidence` | which stage to execute next, within a policy-pinned order (never skips mandatory stages) |
+| **Stage planner** (`stage_orchestrator.py`) | 14 stage tools: `run_intake`, `run_quick_scan`, `run_deep_dive_agentic`, `run_function_recovery`, `run_artifact_gen`, `run_behavioural_model`, `run_yara_gen`, `run_winre_dynamic`, `run_publish`, `run_section_publish`, `run_audit`, `check_quality`, `read_verdicts`, `read_evidence` | which stage to execute next, within a policy-pinned order (never skips mandatory stages) |
 
-`run_function_recovery` and `run_artifact_gen` are **optional** planner tools — each
-skips itself when its `REVAI_ENABLE_*` flag is off and is never required for green.
+`run_function_recovery`, `run_artifact_gen`, `run_behavioural_model` and
+`run_winre_dynamic` are **optional** planner tools — each skips itself when its
+`REVAI_ENABLE_*` / `REVAI_WINRE_RUN` flag is off and is never required for green.
 
 **LangChain vs LangGraph here**: LangChain supplies the components (message types `AIMessage`/`HumanMessage`/`SystemMessage`/`ToolMessage`, `StructuredTool` adapters, `ChatOpenAI` client). LangGraph supplies the loop that runs the LLM's chosen tool calls and returns results. Everything outside these two loops — quick_scan, publish, section, audit, yara, intake, function recovery, every retry, every gate — is plain Python.
 
-### C. The Stage Spine (8 stages + 2 optional)
+### C. The Stage Spine (12 stages, 5 optional)
 
 | Stage | Script | Role & Functionality |
 | :--- | :--- | :--- |
 | **1. Intake** | `intake_v2.py` | Normalizes sample, initializes session, runs Ghidra headless and (optional, licensed) IDA Pro to populate `ghidrasql` / `idasql` databases. IDA absence is a documented soft-fail, not an error. |
-| **2. Triage** | `quick_scan_v2.py` | Executes 28 tools in parallel (capa, Malcat, YARA, FLOSS, radare2, revai-tools sec/sinks, etc.). Packages findings into the Evidence Pack; one LLM judge call writes the quick verdict. |
-| **3. Dynamic Analysis** *(optional)* | `winre_dynamic` / `winre_runner.py` | Opt-in FlareVM detonation (`REVAI_WINRE_RUN=1`), ordered **between triage and the deep dive** so the detonation is evidence the dive can reason over rather than only text in a report. Produces a versioned artifact pack (`load_dynamic_pack()`) that is rendered into the deep-dive prompt outside the findings budget and added to `deep_dive/evidence-pack.md`. Presence-gated: with no pack the deep-dive prompt is byte-identical to a static run. Corroborating only — a dynamic observation never overrides a static finding (`static_yara_wins`). |
+| **2. Triage** | `quick_scan_v2.py` | Runs a fixed **8-tool phase-A pool** in parallel — capa (Malcat→capa-rs→Mandiant chain), yara, floss, malcat, pe_imports, packer_intake, revai-tools sec/sinks — plus the Ghidra/IDA SQL queries, then packages findings into the Evidence Pack; one LLM judge call writes the quick verdict (v1 fallback + calibration + citation grounding). The full format-aware battery (`TOOL_MANIFEST`) runs in the standard-mode deep dive, not here. |
+| **3. Dynamic Analysis** *(optional)* | `winre_dynamic` / `winre_runner.py` | Opt-in FlareVM detonation (`REVAI_WINRE_RUN=1`), ordered **between triage and the deep dive** so the detonation is evidence the dive can reason over rather than only text in a report. Produces a versioned artifact pack (`load_dynamic_pack()`) that is rendered into the deep-dive prompt outside the findings budget and added to `deep_dive/evidence-pack.md`. Presence-gated: with no pack the deep-dive prompt is byte-identical to a static run. Corroborating only — a dynamic observation never overrides a static finding (`static_yara_wins`). Order differs by driver, deliberately: the scripted spine runs it **between triage and the deep dive**; the agentic planner is instructed to call it **after the deep dive and before publish**, so the pack is still evidence the dive can reason over where the scripted order allows it, and publish attaches the block either way. |
 | **4. Deep Dive** | `deep_dive_agentic.py` | LangGraph ReAct agent over the RE tool registry — SQL-first evidence, adaptive tool selection, agent-loop discipline (see §7). API behaviour/abuse claims are grounded on demand via `api_lookup` (offline local index) rather than model recall, and RE procedures are loaded on demand via `load_skill` rather than recalled from the model's training data. |
-| **3.5. Function Recovery** *(optional)* | `agentic_recover_v4.py` (+ `recovery/` package + `anti_analysis_signals.py` + `dynamic_resolve_detect.py`) | Opt-in agentic function-name recovery: relevance-based triage (score = call-in × 2 + string refs + high-value imports × 3 + anti-analysis signals; matched by prefix) → hybrid pool with guaranteed slots for API callers, largest functions, and dynamic-import-resolve sites → call-graph bottom-up tiers → per-function LLM naming with typed signatures → SQL writeback (`ghidra_sql_client`/idasql, confidence ≥ 0.7, never deletes). Gated by `REVAI_ENABLE_AGENTIC_RECOVERY=1` (legacy `ENABLE_AGENTIC_RECOVERY` honored). Produces `function_recovery.json`; recovered names are fed into publish prompts and cited in reports. |
-| **3.6. Analysis Scripts** *(optional)* | `artifact_gen.py` | Opt-in verifiable artifact generation: the LLM authors one small, sample-specific extraction script from **structural** evidence (section table, high-entropy regions with offsets, strings with offsets, bounded decompile excerpts — never a decoded answer), the pipeline runs it in a bounded sandbox (isolated interpreter, scrubbed env with no RevAI secrets, address-space/file-size rlimits, timeout, `unshare -n` when available) and then **re-derives every claimed value from the sample bytes** with its own code. Three anti-cheat measurements: the script must read its input argument, hardcoded output literals are flagged, and values already visible in the generation prompt are flagged as not independent. Gated by `REVAI_ENABLE_ARTIFACT_GEN=1`; self-skips with rc=0 otherwise; never gates the verdict. Publish attaches a presence-gated *Appendix: Analysis Scripts* listing only re-derived values. |
-| **4. Rule Gen** | `yara_gen_v2.py` | Generates YARA + Sigma rules from evidence, provenance-stamped, validated in-process; `iocs.json` extended with revai-tools wallets + defanged IOC merge. |
-| **5. Publish** | `publish_report_v2.py` | LLM Judge authors `REPORT-MASTER-v2.md` (17 sections) and `REPORT-TECHNICAL-v2.md` (13 sections) with the evidence pack appended. |
-| **6. Correlate** | `section_publisher.py` | Section map-reduce: per-section LLM passes with cross-section context → `REPORT-MASTER-v3.md` / `REPORT-TECHNICAL-v3.md`. **Both** reports are generated one section per call. Technical evidence is routed to the sections that need it (`TECHNICAL_SECTION_EVIDENCE`) instead of being sent whole to a single call, and each section's evidence is capped. `REVAI_TECHNICAL_SECTIONWISE=0` restores the single-call technical assembly, retained only as a rollback lever. |
-| **7. Audit** | `audit_pipeline.py` & `report_quality.py` | Per-stage audit (`all_green`), engine-citation honesty, verdict lock, style gates, depth gate, `truly_green`. |
-| **8. Depth Mode** *(optional)* | `depth_agent.py` | Opt-in, **runs after the audit** (`REVAI_DEPTH=1`). Objective is UNDERSTANDING, not a verdict: it produces a function map (`understanding.json`) and never a judgment, and never gates the pipeline. Every region carries a status from a fixed vocabulary with a reason and an evidence citation, and the loop terminates on a declared unknown set. The ceiling consolidates rather than truncates, so a cutoff yields a partial-but-honest map. |
+| **5. Function Recovery** *(optional)* | `agentic_recover_v4.py` (+ `recovery/` package + `anti_analysis_signals.py` + `dynamic_resolve_detect.py`) | Opt-in agentic function-name recovery: relevance-based triage (score = call-in × 2 + string refs + high-value imports × 3 + anti-analysis signals; matched by prefix) → hybrid pool with guaranteed slots for API callers, largest functions, and dynamic-import-resolve sites → call-graph bottom-up tiers → per-function LLM naming with typed signatures → SQL writeback (`ghidra_sql_client`/idasql, confidence ≥ 0.7, never deletes). Gated by `REVAI_ENABLE_AGENTIC_RECOVERY=1` (legacy `ENABLE_AGENTIC_RECOVERY` honored). Produces `function_recovery.json`; recovered names are fed into publish prompts and cited in reports. |
+| **6. Analysis Scripts** *(optional)* | `artifact_gen.py` | Opt-in verifiable artifact generation: the LLM authors one small, sample-specific extraction script from **structural** evidence (section table, high-entropy regions with offsets, strings with offsets, bounded decompile excerpts — never a decoded answer), the pipeline runs it in a bounded sandbox (isolated interpreter, scrubbed env with no RevAI secrets, address-space/file-size rlimits, timeout, `unshare -n` when available) and then **re-derives every claimed value from the sample bytes** with its own code. Three anti-cheat measurements: the script must read its input argument, hardcoded output literals are flagged, and values already visible in the generation prompt are flagged as not independent. Gated by `REVAI_ENABLE_ARTIFACT_GEN=1`; self-skips with rc=0 otherwise; never gates the verdict. Publish attaches a presence-gated *Appendix: Analysis Scripts* listing only re-derived values. |
+| **7. Behavioural Model** *(optional)* | `behavioural_model.py` | Opt-in (`REVAI_ENABLE_BEHAVIOURAL_MODEL=1`): assembles what the sample *does* from the run's own artifacts into `behavioural_model.json` — capabilities with their provenance, the concrete objects they act on (registry keys, URLs, domains, IPs, files, mutexes), the observations backing each, and the gaps. Built deterministically, never authored by the model: a model-authored behavioural model is a plausible story, and a plausible story about a malware sample is the most expensive kind of wrong. Never gates the verdict; off by default, so a run without it is byte-identical. |
+| **8. Rule Gen** | `yara_gen_v2.py` | Generates YARA + Sigma rules from evidence, provenance-stamped, validated in-process; `iocs.json` extended with revai-tools wallets + defanged IOC merge. |
+| **9. Publish** | `publish_report_v2.py` | LLM Judge authors `REPORT-MASTER-v2.md` (17 sections) and `REPORT-TECHNICAL-v2.md` (13 sections) with the evidence pack appended. |
+| **10. Section reports** | `section_publisher.py` | Section map-reduce: per-section LLM passes with cross-section context → `REPORT-MASTER-v3.md` / `REPORT-TECHNICAL-v3.md`. **Both** reports are generated one section per call. Technical evidence is routed to the sections that need it (`TECHNICAL_SECTION_EVIDENCE`) instead of being sent whole to a single call, and each section's evidence is capped. `REVAI_TECHNICAL_SECTIONWISE=0` restores the single-call technical assembly, retained only as a rollback lever. |
+| **11. Audit** | `audit_pipeline.py` & `report_quality.py` | Per-stage audit (`all_green`), engine-citation honesty, verdict lock, style gates, depth gate, `truly_green`. |
+| **12. Depth Mode** *(optional)* | `depth_agent.py` | Opt-in, **runs after the audit** (`REVAI_DEPTH=1`). Objective is UNDERSTANDING, not a verdict: it produces a function map (`understanding.json`) and never a judgment, and never gates the pipeline. Every region carries a status from a fixed vocabulary with a reason and an evidence citation, and the loop terminates on a declared unknown set. The ceiling consolidates rather than truncates, so a cutoff yields a partial-but-honest map. |
 
 ---
 

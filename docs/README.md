@@ -6,7 +6,7 @@
 - [`INSTALL.md`](INSTALL.md) — install dependencies on REMnux.
 - [`DEPLOY.md`](DEPLOY.md) — deploy the pipeline and start the service.
 - [`CONFIGURE.md`](CONFIGURE.md) — LLM and optional IDA settings.
-- [`OPERATE.md`](OPERATE.md) — daily use: staging samples, running stages, optional function-recovery stage + env, depth gate, tests.
+- [`OPERATE.md`](OPERATE.md) — daily use: staging samples, running stages, the run watchdog (`run-watched.sh`) and its exit contract, `instrument-live-log.sh` for reading a finished run in one command, optional stages + env, depth gate, tests.
 - [`cadre-pe-loader.md`](cadre-pe-loader.md) — custom Ghidra PE loader extension (import fixup for packed/binder PEs).
 - [`agent-loop-discipline.md`](agent-loop-discipline.md) — budget warnings, redundant-call detection, hallucination check, failure taxonomy.
 - [`tool-stack.md`](tool-stack.md) — the 28-tool manifest + agent-callable ToolRegistry (incl. revai-tools sec/sinks/audit and the offline Windows-API lookup index).
@@ -22,10 +22,14 @@ different, and the install/deploy scripts translate between them.
 
 | Repo (source) | → | VM (runtime) | Via |
 |---|---|---|---|
-| `revai/*.py` | → | `/opt/scripts/` (flat) | `scripts/deploy.sh` |
+| `revai/*.py` | → | `/opt/scripts/` (flat — includes `revai/skills/`, `revai/prompts/`, `revai/recovery/` and `revai/signatures/`, which the skills layer, function recovery and `signature_match` depend on) | `scripts/deploy.sh` |
 | `revai/hitl/` | → | `/opt/revai/hitl/` | `scripts/deploy.sh` |
 | `revai/ui/` | → | `/opt/scripts/ui/` (npm build) | `scripts/deploy.sh` |
-| `assets/api_index/` | → | `/opt/revai/api_index/` | `scripts/deploy.sh` |
+| `docs/` | → | `/opt/scripts/docs/` (so the VM can run the same documentation checks) | `scripts/deploy.sh` |
+| `tests/*.py` | → | `/opt/scripts/tests/` (every `tests/*.py`, not just `test_*.py` — the helpers must ship too or VM collection aborts) | `scripts/deploy.sh` |
+| `scripts/run-watched.sh`, `scripts/instrument-live-log.sh`, `scripts/validate-ghidrasql-sql.py`, `scripts/winre-llm-env.sh`, `scripts/verify-release.sh` | → | `/opt/scripts/` (operator tools) | `scripts/deploy.sh` |
+| pipeline git HEAD | → | `/opt/revai/config/REVAI_COMMIT` (the provenance banner every artifact carries) | `scripts/deploy.sh` |
+| `assets/api_index/` | → | `/opt/revai/api_index/` (an existing VM index is preserved unless `REVAI_FORCE_API_INDEX=1`) | `scripts/deploy.sh` |
 | `config/llm.env.template` | → | `/opt/revai/config/llm.env` (user fills) | manual copy |
 | `extensions/cadre-pe-loader/` | → | `/opt/ghidra/Ghidra/Extensions/CADRE/` | `install/setup-remnux.sh` |
 | `extensions/deobfuscation/` | → | `/opt/revai/deobfuscation/` | `install/setup-remnux.sh` |
@@ -57,11 +61,15 @@ RevAI supports three modes of execution, all using the same tool stack and LLM b
 
 | Mode | Script | Stages | Deep Dive |
 |------|--------|--------|-----------|
-| **Scripted** | `pipeline_single.py` | Fixed order (intake -> quick_scan -> deep_dive -> function_recovery* -> yara_gen -> publish -> section -> audit) | LangGraph agentic (always) |
-| **Agentic** | `stage_orchestrator.py` | LLM decides which stage to call; retries on failure; HITL before publish if verdicts disagree | LangGraph agentic |
+| **Scripted** | `pipeline_single.py` | Fixed order: intake -> quick_scan -> [winre_dynamic] -> deep_dive -> [function_recovery] -> [artifact_gen] -> [behavioural_model] -> yara_gen -> publish v2 -> section v3 -> audit -> [depth_understanding] | LangGraph agentic (always) |
+| **Agentic** | `stage_orchestrator.py` | LLM planner decides which stage to call (14 stage tools, policy-pinned order); retries on failure; HITL before publish if verdicts disagree | LangGraph agentic |
 | **Web Console** | `http://<host>:5000` | User clicks individual stage buttons, or **Run orch** for full agentic | LangGraph agentic |
 
-*`function_recovery` is optional (opt-in via `REVAI_ENABLE_AGENTIC_RECOVERY=1`; self-skips when off).
+*Bracketed stages are optional: `winre_dynamic` (`REVAI_WINRE_RUN=1`),
+`function_recovery` (`REVAI_ENABLE_AGENTIC_RECOVERY=1`), `artifact_gen`
+(`REVAI_ENABLE_ARTIFACT_GEN=1`), `behavioural_model`
+(`REVAI_ENABLE_BEHAVIOURAL_MODEL=1`) and `depth_understanding`
+(`REVAI_DEPTH=1`) each self-skip when their flag is off.
 
 The deep dive always runs through the LangGraph ReAct agent — only the stage ordering differs between modes. Usage details: [`OPERATE.md`](OPERATE.md).
 

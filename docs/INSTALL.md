@@ -13,9 +13,13 @@
 
 - System RE packages (radare2, yara, ghidra, python3-*, build tools, common utilities).
 - Python deps from `requirements.txt` (Flask UI, triage wrappers, LangGraph + `langchain-openai` for large mode).
-- **ghidrasql** via `install/install-ghidrasql.sh` (builds [0xeb/libghidra](https://github.com/0xeb/libghidra) + [0xeb/ghidrasql](https://github.com/0xeb/ghidrasql) when Ghidra is present; uses Ghidra's bundled Gradle wrapper — system Gradle is not required).
+- **ghidrasql** via `install/install-ghidrasql.sh` (builds [0xeb/libghidra](https://github.com/0xeb/libghidra) + [0xeb/ghidrasql](https://github.com/0xeb/ghidrasql) when Ghidra is present; prefers Ghidra's bundled Gradle wrapper and falls back to a system `gradle` when the wrapper is unavailable — setup installs one via apt regardless).
 - **angr** via `pipx` (deobfuscation / symbolic execution; the wrapper runs it from its pipx venv).
 - Extended static stack: **GoReSym**, **RIFT**, **FindCrypt** — downloaded and installed to their expected paths when absent.
+- Deobfuscation extensions: **z3 MBA verification** and **CFF-deflatten** to `/opt/revai/deobfuscation/` and `/opt/revai/cff-deflatten/` (the latter with its own venv).
+- **force_pe_imports** GhidraScript — re-runs the PE ImportTable analyzer when the stock one misses references (the packed/binder import fixup).
+- **LibGhidraHost patch** — external symbols in the `ListSymbols` RPC (VB6 / packed PE imports).
+- **capa-signatures** at `/opt/capa-signatures` (empty by design, so standalone capa does not error on missing signatures).
 - **idasql** CLI + IDA plugin — only when IDA Pro is installed (version-matched 9.2/9.3/9.4 build of v0.0.18.1).
 - **WinRE (optional dynamic companion)** — off by default: `REVAI_WITH_WINRE=1 sudo -E ./install/setup-remnux.sh` clones the public [WinRE](https://github.com/Ganron007/WinRE) repo to `/opt/winre`, creates its venv and scaffolds `.env`. Without it, RevAI stays static-only (reports byte-identical) and the step just warns.
 - capa-rules + flattened YARA under `/opt/samples/rules/flat/`.
@@ -45,7 +49,7 @@ See [`PREREQUISITES.md`](PREREQUISITES.md) for the full contract.
 ```bash
 git clone https://github.com/Ganron007/RevAI.git
 cd RevAI
-sudo chmod +x install/*.sh scripts/deploy.sh
+sudo chmod +x install/*.sh scripts/*.sh
 sudo ./install/setup-remnux.sh
 ```
 
@@ -72,6 +76,21 @@ Do not commit IDA installers or licenses.
 ```
 
 Expect `Result: PASS` (ghidrasql + Ghidra + deployed scripts + smoke preflight; Malcat optional).
+
+For the full release gate — wiring harness, test suite, optional pefile parity, and
+the VM harness + smoke when `REVAI_VM_SSH` is set:
+
+```bash
+./scripts/verify-release.sh
+```
+
+To run a sample end-to-end under the watchdog (streams stages, classifies the
+first anomaly with the stage it belongs to, honours the reboot-before-every-run
+rule, and refuses to start over a live run):
+
+```bash
+./scripts/run-watched.sh /path/to/sample
+```
 
 ## Next step
 

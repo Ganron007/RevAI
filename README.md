@@ -133,18 +133,23 @@ React Console / CLI
    |         api_lookup, load_skill)
    |- 4.5 function_recovery      [REVAI_ENABLE_AGENTIC_RECOVERY=1]
    |        agentic function-name recovery, names cited in reports
+   |- 4.6 artifact_gen           [REVAI_ENABLE_ARTIFACT_GEN=1]
+   |        LLM-authored extraction script, run sandboxed, every claimed
+   |        value re-derived from the sample bytes
+   |- 4.7 behavioural_model      [REVAI_ENABLE_BEHAVIOURAL_MODEL=1]
+   |        deterministic model of what the sample does -> behavioural_model.json
    |- 5.  yara_gen_v2.py         YARA + Sigma generation
    |- 6.  publish_report_v2.py   REPORT-MASTER (LLM-authored, source-tagged)
-   |- 7.  section_publisher.py   correlate - section Map-Reduce report
+   |- 7.  section_publisher.py   section-wise v3 reports (one LLM call per section)
    |- 8.  audit_pipeline.py      all_green per-stage audit
    |        '- report_quality.py -> truly_green quality gate
    '- 8.5 depth_understanding    [REVAI_DEPTH=1]
             post-pipeline depth run -> understanding.json
 ```
 
-Stages 3, 4.5 and 8.5 are opt-in and skip themselves when their variable is
-unset, so a static-only run is `intake` -> `quick_scan` -> `deep_dive` ->
-`yara_gen` -> `publish` -> `section` -> `audit`.
+Stages 3, 4.5, 4.6, 4.7 and 8.5 are opt-in and skip themselves when their
+variable is unset, so a static-only run is `intake` -> `quick_scan` ->
+`deep_dive` -> `yara_gen` -> `publish` -> `section` -> `audit`.
 
 ---
 
@@ -161,7 +166,7 @@ Distinctive capabilities — the things that set RevAI apart. For the full featu
 | **Honest `truly_green` gate** | Green requires the audit, the report quality checks, and zero failed tools to all pass together |
 | **Indicator scrubber** | Code deletes any indicator the tools never observed from the report before it is published, and records what it removed |
 | **Published-artifact hygiene** | Published reports never name the model; the audit trail still does |
-| **Run watchdog** | `scripts/run-watched.sh` streams a run and stops it early on a fatal error instead of letting it burn the time budget |
+| **Run watchdog** | `scripts/run-watched.sh` streams a run, attributes each anomaly to the stage that emitted it, stops it early on a fatal error, and refuses to quarantine a live case dir |
 | **Depth gate (capability coverage)** | The deep dive must address every capability domain — as evidence or as stated 'not observed' — [`docs/architecture.md`](docs/architecture.md#10-quality-verification-gate-truly_green) |
 | **Publication-quality gates** | Deterministic checks that the reports agree with each other and with the evidence |
 | **Agentic function recovery** | Opt-in: recovers readable function names and writes them back, with a confidence floor |

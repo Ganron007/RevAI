@@ -1,14 +1,16 @@
 # Tool Stack (28 tools)
 
-The pipeline runs **28 tools automatically** via `TOOL_MANIFEST`, plus **26 agent-callable
-tools** in the deep-dive `ToolRegistry`. All tools are format-aware — each runs only
+The standard-mode deep dive runs **28 tools automatically** via `TOOL_MANIFEST`,
+plus **26 agent-callable tools** in the deep-dive `ToolRegistry`. The agentic deep
+dive binds the 15-tool LangGraph graph over that registry and runs the rest
+through the deterministic checklist. All tools are format-aware — each runs only
 when it applies to the sample's file type.
 
 ## Core tools
 
 | Tool | What it does |
 | :--- | :--- |
-| **Ghidra** (SQL-first) | Static analysis via ghidrasql v0.0.4 — functions, imports, strings, decompile. ghidrasql is by Elias Bachaalany (github.com/0xeb/ghidrasql), used under the Human-Origin Source License v1.0 |
+| **Ghidra** (SQL-first) | Static analysis via ghidrasql v0.0.7 — functions, imports, strings, decompile. ghidrasql is by Elias Bachaalany (github.com/0xeb/ghidrasql), used under the Human-Origin Source License v1.0 |
 | **IDA Pro** (optional) | Same SQL-first analysis via idasql v0.0.18.1 (IDA 9.3 build) when installed. idasql is by Elias Bachaalany (github.com/allthingsida/idasql), used under the Human-Origin Source License v1.0 |
 | **Malcat** | Native capa engine + full MCP analysis (triage views, constants, anomalies, decompile). Note: its `entropy` field is not whole-file entropy — `malcat_analyze` replaces it with computed whole-file Shannon bits/byte and preserves the original as `entropy_malcat_raw` |
 | **capa** | Capability detection (Mandiant fallback when Malcat absent) |
@@ -41,6 +43,9 @@ when it applies to the sample's file type.
 | **ilspycmd** | dotnet | .NET C# decompilation (headless ILSpy) |
 | **pycdc** | unknown | Python bytecode (.pyc) decompilation |
 | **scdbg** | PE (shellcode) | x86 shellcode emulation via Wine console exe |
+| **upx_unpack** | PE (packed) | UPX unpacking for samples the packer checklist flags, so the unpacked image — not the stub — is what gets analysed |
+| **dotnet_analyze** | dotnet | .NET assembly analysis: metadata, entry point, and a bounded ILSpy decompile excerpt for the agent |
+| **xor_string_search** | PE / ELF | XOR-encoded string search (single- and multi-byte keys, bounded results) — encoded configs and C2 strings that plain strings miss |
 | **unpack_oracle** (`unpack_oracle.py`) | PE (packed) | Emulation-assisted generic unpacking: detects memory-only executable sections, polls the emulated PC for the OEP transition, and carves the unpacked image from emulated memory (FixDump-style raw=virtual rebuild). Output: `unpacked_<name>` payload + OEP + in-memory import/IAT readout. Env-gated (`REVAI_ENABLE_UNPACK_PASS=1`), runs in deep-dive when the packer checklist flags the sample; artifacts under `logs/<sha>/unpack/` |
 | **ELF wrapper** | ELF | readelf/objdump/nm structural summary |
 | **signature_match** | agent-callable | Function matching vs crypto/stdlib/winapi DBs |

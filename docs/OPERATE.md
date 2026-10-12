@@ -50,7 +50,7 @@ CADRE_PIPELINE_MODE=large python3 /opt/scripts/intake_v2.py /path/to/sample.exe
 > cd ~/RevAI && sudo ./scripts/deploy.sh --restart && python3 /opt/scripts/v2_validate.py --smoke-only
 > ```
 
-The recommended way to run the whole spine is the **LangGraph ReAct orchestrator** — it plans and executes intake → quick_scan → agentic deep dive → yara → publish → correlate → audit → quality gate, and retries a stage that fails. This is what the Console's **Run orch** button drives.
+The recommended way to run the whole spine is the **LangGraph ReAct orchestrator** — it plans and executes intake → quick_scan → (winre_dynamic) → agentic deep dive → (function_recovery) → (artifact_gen) → (behavioural_model) → yara_gen → publish v2 → section publish v3 → audit → quality gate, and retries a stage that fails. Parenthesised stages are opt-in and skip themselves when their flag is off. This is what the Console's **Run orch** button drives.
 
 ```bash
 # Full agentic spine from a sample path (runs intake first)
@@ -63,7 +63,7 @@ python3 /opt/scripts/stage_orchestrator.py --sha <sha256>
 python3 /opt/scripts/pipeline_single.py /path/to/sample.exe
 ```
 
-The run writes `orchestrator_trace.json` and `quality-gate.json` under `/opt/samples/logs/<sha256>/`; the final `truly_green` is the honest pass/fail.
+The run writes `orchestrator_trace.json` and the stage trace under `logs/<sha256>/<mode>/` — mode-keyed like every other artifact; the trace's final line carries `all_green` / `quality_green` / `truly_green`, and `truly_green` is the honest pass/fail.
 
 ### Running a sample under a watcher
 
@@ -99,14 +99,33 @@ the sidecar table:
 ```
 
 Signals classified: stage rc≠0, stage kill (`===== TIMEOUT`), LLM read timeout,
-empty LLM response, HTTP 429, HTTP 5xx, and a hollow-success failure. Exit codes:
-`0` every stage rc=0 · `1` a stage failed · `2` a fatal signal aborted the run ·
-`3` usage or environment error.
+empty LLM response, HTTP 429, HTTP 5xx, and a hollow-success failure. The first
+two groups are **fatal** — they fail the run. An empty LLM response, 429 or 5xx
+is **non-fatal**: recorded, counted, and noted, but a run whose stages all
+return rc=0 still exits `0` with the anomaly stated. Exit codes: `0` every stage
+rc=0 · `1` a stage failed, a fatal-class signal fired, or the audit found hollow
+output · `2` the watcher killed the run (a fatal signal under
+`--abort-on-error`, or the watch timed out) · `3` usage or environment error —
+including a refused start when a driver for the same sample is already running.
+
+On agentic runs the signal log is `orchestrator.log`, not `pipeline_single.log`:
+the orchestrator never writes the latter (it redirects each tool's stdout into
+the former), and stage attribution falls back to the orchestrator's own
+`TOOL run_x` lines because agentic runs emit no `CMD` banners.
+
+The script refuses to start (exit 3) when a driver for the same sample is
+already live: a second watcher would quarantine the case directory out from
+under a running pipeline and start a duplicate. If the ssh session carrying the
+watcher drops, the watcher itself dies of SIGHUP while the run continues (the
+driver is started in its own process group) — launch it under
+`nohup ... >/path/console.log 2>&1 &` when the session may drop, and read the
+run from the console log and the watched log afterwards.
 
 The reboot step cannot continue across the reboot itself, so the script exits
 after issuing it — re-run the same command once SSH is back and it will detect
-the fresh boot. It warns when uptime exceeds 20 minutes, because a run on a
-loaded VM is not comparable with a fresh-boot one.
+the fresh boot (uptime under 600 s skips the reboot entirely). It warns when
+uptime exceeds 20 minutes, because a run on a loaded VM is not comparable with
+a fresh-boot one.
 
 ### Mode-keyed outputs
 
@@ -133,11 +152,6 @@ indistinguishable:
 | no line at all | the stage did not call the LLM |
 
 A non-streaming request carries no bytes until the response is complete, so
-"slow" and "dead" are the same observation without this. Set
-`REVAI_LLM_STREAM=0` to restore plain POSTs, at the cost of losing the
-distinction.
-
-  A non-streaming request carries no bytes until the response is complete, so
 "slow" and "dead" are the same observation without this. Set
 `REVAI_LLM_STREAM=0` to restore plain POSTs, at the cost of losing the
 distinction.
@@ -312,6 +326,8 @@ nothing looks like it heard something.
 3. **winre_dynamic** - *(optional, `REVAI_WINRE_RUN=1`)* Flare detonation. Runs **between triage and the deep dive** so the deep dive ingests it as evidence: the pack's observed domains, dropped paths and unpack artifact are rendered into the deep-dive prompt under their own heading, outside the findings budget, and added to `deep_dive/evidence-pack.md`. They are **corroborating only** - a static finding is never overridden by a dynamic observation (`static_yara_wins`). With no pack the prompt is byte-identical to a static-only run. Auto-skips when WinRE is not installed.
 4. **deep_dive** - agentic LangGraph ReAct deep dive (`deep_dive_agentic`; `deep_dive_v2` for standard mode) - checklist + agent callable include **revai-tools sec/sinks/audit**
 4.5. **function_recovery** - *(optional, `REVAI_ENABLE_AGENTIC_RECOVERY=1`)* agentic function-name recovery (see below)
+4.6. **artifact_gen** - *(optional, `REVAI_ENABLE_ARTIFACT_GEN=1`)* verifiable analysis scripts: the LLM authors a sample-specific extraction script, the pipeline runs it sandboxed and re-derives every claimed value from the sample bytes
+4.7. **behavioural_model** - *(optional, `REVAI_ENABLE_BEHAVIOURAL_MODEL=1`)* deterministic behavioural model assembled from the run's own artifacts into `behavioural_model.json` — capabilities with provenance, the concrete objects they act on, and the gaps. Never authored by the model, never gates the verdict
 5. **yara_gen** - YARA + Sigma
 6. **publish** - REPORT-MASTER (LLM-authored, source-tagged)
 7. **correlate** - section Map-Reduce report
@@ -420,9 +436,6 @@ Tunables (all optional, defaults shown):
 | `REVAI_AGENTIC_RECOVERY_CONF_THRESHOLD` | 0.7 | minimum confidence for a recovered name to be written back |
 | `REVAI_AGENTIC_RECOVERY_SIG_THRESHOLD` | 0.80 | similarity threshold for the signature-DB naming pass |
 | `REVAI_AUTO_WRITEBACK` | 0 | `1` lets standard-mode deep dives write recovered names into the Ghidra/IDA DB automatically |
-| `REVAI_AGENTIC_RECOVERY_CONF_THRESHOLD` | 0.7 | minimum confidence for a recovered name to be written back |
-| `REVAI_AGENTIC_RECOVERY_SIG_THRESHOLD` | 0.80 | similarity threshold for the signature-DB naming pass |
-| `REVAI_AUTO_WRITEBACK` | 0 | `1` lets standard-mode deep dives write recovered names into the Ghidra/IDA DB automatically |
 
 **Analysis-stage extras (all off by default, all opt-in):**
 
@@ -490,8 +503,6 @@ Tunables (all optional, defaults shown):
 | `REVAI_LLM_VERDICT_MODEL` | `REVAI_LLM_MODEL` | model for the judgment role: the quick-scan triage verdict, the scripted deep-dive judge and the agentic final judge. Function recovery, the reports and the v3 sections stay on `REVAI_LLM_MODEL` |
 | `REVAI_LLM_USAGE_JOURNAL` | unset | path to a JSONL file; when set, every LLM call is journalled (used by the provider benchmark) |
 | `REVAI_LLM_ENV` | `/opt/revai/config/llm.env` | path of the LLM env file the Console reads the API key from (override for tests/alternate installs) |
-| `REVAI_CAPA_RULES` | `/opt/capa-rules` | capa rule directory (override for a custom ruleset) |
-| `REVAI_CAPA_SIGNATURES` | `/opt/capa-signatures` | capa signature directory (override) |
 | `REVAI_API_INDEX` | unset | override the offline API lookup index path (default: `assets/api_index/api_index.db` in the repo, `/opt/revai/api_index/api_index.db` on the VM). The bundled index covers the 369 malapi.io-catalogued APIs; a full-corpus index (~46k APIs, built from Microsoft's sdk-api + driver-ddi documentation) can be deployed over it — see [`api-index.md`](api-index.md). Absent index degrades `api_lookup` to `available:false` — the pipeline is unaffected |
 | `REVAI_FORCE_API_INDEX` | 0 | deploy-time only: `scripts/deploy.sh` keeps an existing VM index (so a full-corpus build survives a deploy); set to 1 to overwrite it with the bundled default |
 | `REVAI_IOC_FACTCHECK` | enforce | unverified report IOC claims fail the quality gate; `advisory` records them without failing (escape hatch for a report citing sources outside the evidence pack) |
