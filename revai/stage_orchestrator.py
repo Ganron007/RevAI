@@ -382,6 +382,44 @@ class StageRunner:
             600,
         )
 
+    def run_behavioural_model(self) -> dict:
+        """Stage 3.7: behavioural model (plan #8), gated by
+        REVAI_ENABLE_BEHAVIOURAL_MODEL.
+
+        Mirrors run_artifact_gen's contract: an opt-in stage that self-skips with
+        rc=0 when the gate is off, so an absent run is byte-identical. The case
+        dir is passed explicitly because behavioural_model resolves a sha through
+        case_dir(), which needs REVAI_RUN_MODE -- in agentic mode that is
+        `agentic`, not the scripted default.
+        """
+        try:
+            from behavioural_model import behavioural_model_enabled
+        except Exception as exc:  # pragma: no cover - not deployed
+            return {"ok": True, "skipped": True,
+                    "reason": f"behavioural_model unavailable: {exc}"}
+        if not behavioural_model_enabled():
+            out = {"ok": True, "skipped": True,
+                   "reason": "REVAI_ENABLE_BEHAVIOURAL_MODEL is not set",
+                   "note": "the behavioural model is opt-in; set "
+                           "REVAI_ENABLE_BEHAVIOURAL_MODEL=1 to enable"}
+            self.events.append({"type": "observe",
+                                "tool": "behavioural_model", "data": out,
+                                "ts": _utc()})
+            return out
+        case = case_dir(self.sha)
+        env = dict(os.environ)
+        env["REVAI_CASE_DIR"] = str(case)
+        env["REVAI_ENABLE_BEHAVIOURAL_MODEL"] = "1"
+        try:
+            out = _run_stage("behavioural_model",
+                             [sys.executable,
+                              str(SCRIPTS / "behavioural_model.py"), self.sha],
+                             env=env)
+            out.setdefault("ok", out.get("rc") == 0)
+            return out
+        except Exception as exc:  # pragma: no cover - defensive
+            return {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
+
     def run_depth(self) -> dict:
         """Stage 9: depth mode (plan #48), gated by REVAI_DEPTH.
 
@@ -583,6 +621,14 @@ def _build_lc_tools(runner: StageRunner, need_intake: bool) -> list:
         "re-derive every claimed value from the sample bytes. Call it after "
         "run_deep_dive_agentic and BEFORE run_yara_gen. Skips itself (rc=0) unless "
         "REVAI_ENABLE_ARTIFACT_GEN=1; never gates the verdict.",
+    )
+    _add(
+        "run_behavioural_model",
+        runner.run_behavioural_model,
+        "Optional stage 3.7: behavioural model (plan #8) -- assemble what the "
+        "sample DOES from the capability ledger, the IoCs and the observations. "
+        "Call it after run_artifact_gen and BEFORE run_yara_gen. Skips itself "
+        "(rc=0) unless REVAI_ENABLE_BEHAVIOURAL_MODEL=1; never gates the verdict.",
     )
     _add(
         "run_yara_gen",

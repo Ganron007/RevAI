@@ -335,9 +335,12 @@ def verify_claim(claim: dict, evidence_text: str,
     # wiper_wipe32p: 12 violations, of which 1 was a real circular citation
     # (`query_or_table: verdict.summary`) and 11 were this over-match.
     _q = _norm(claim.get("query") or "")
+    # A POSITIVE prose query. An absent query is NOT prose: `(source: llm_judge)
+    # cross_engine_notes` is a short but legitimate citation, and 8 of the rats
+    # report's violations were exactly that. The query must name the analysis's
+    # own prose, not merely fail to name a table.
     _prose_query = (
-        not _q
-        or _q in ("summary", "verdict", "the summary", "the verdict")
+        _q in ("summary", "verdict", "the summary", "the verdict")
         or ("summary" in _q and len(_q) < 40)
         or _q.startswith("verdict.")
     )
