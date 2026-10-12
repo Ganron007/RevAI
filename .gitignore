@@ -64,7 +64,7 @@ _archive/
 
 # Local-only internal artifacts
 internal/
-
+docs/internal/
 
 # Internal project log (course references and operational detail stay local)
 CHANGELOG.md

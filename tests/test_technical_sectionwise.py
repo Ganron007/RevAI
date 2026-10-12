@@ -179,6 +179,30 @@ def test_prompt_records_absence_rather_than_inventing():
     assert "not observed" in p
 
 
+def test_prompt_forbids_citing_the_analysis_own_narrative():
+    """wiper_wipe32p: three table rows cited the verdict's own prose
+    (`llm_judge/summary`, `verdict.summary`) as the evidence for facts malcat
+    and YARA had already observed. The prompt the section writer reads must
+    name the rule; the gate catching it afterwards is not prevention."""
+    p = sp._technical_section_prompt("7. Capabilities Assessment", "desc",
+                                     "evidence", "a" * 64)
+    assert "NARRATIVE CONTEXT" in p
+    assert "Never cite" in p
+    assert "not observed" in p
+
+
+def test_every_prompt_path_carries_the_narrative_rule():
+    """All three authoring paths: master sections, technical sections, and the
+    monolithic technical rollback. A rule in one path is a hole in two."""
+    src = source("revai/section_publisher.py")
+    assert src.count("NARRATIVE CONTEXT") >= 3, (
+        "the narrative-context rule must appear in the master prompt, the "
+        "technical section prompt and the monolithic technical prompt")
+    master = sp._section_prompt("5. Network Indicators", "desc", "evidence",
+                                "prior", "")
+    assert "NARRATIVE CONTEXT" in master
+
+
 # ------------------------------------------------------------------ behaviour
 
 class _Resp:

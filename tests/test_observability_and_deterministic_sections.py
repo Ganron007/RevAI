@@ -107,7 +107,11 @@ def test_the_sse_endpoint_exists_and_streams(case, monkeypatch):
     import app as A  # noqa: PLC0415
     c = A.app.test_client()
     sha = case.parent.name
-    r = c.get(f"/api/orch/{sha}/progress/stream")
+    # Mode-keyed cases live under logs/<sha>/<mode>/, and every real consumer
+    # passes ?mode= (client.ts appends it to every orch call). Without it the
+    # endpoint resolves the legacy flat dir by design (pinned separately in
+    # test_agent_observability), which a modern mode-keyed case does not have.
+    r = c.get(f"/api/orch/{sha}/progress/stream?mode={case.name}")
     assert r.status_code == 200, r.status_code
     assert "text/event-stream" in (r.headers.get("Content-Type") or ""), (
         "the progress endpoint is not an SSE stream -- a poller cannot use it")

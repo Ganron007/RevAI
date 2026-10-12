@@ -40,6 +40,28 @@ def test_the_watcher_dispatches_on_mode_not_a_hardcoded_driver():
         "the launch must use the dispatched driver, not a hardcoded one")
 
 
+def test_the_watcher_skips_the_reboot_when_the_boot_is_already_fresh():
+    """The "re-run once SSH is back" message promised detection that never existed.
+
+    Found 2026-10-12: the reboot block exited after `sudo reboot` and told the
+    operator the re-run "will detect the fresh boot and skip the reboot" --
+    but no detection was implemented (REBOOT=1 rebooted unconditionally).
+    Two launches in a row both rebooted and exited; no run ever started, and
+    an operator following the message would loop reboots forever. The rule is
+    "the run starts on a fresh boot", so a young boot must satisfy it.
+    """
+    src = WATCHER.read_text(encoding="utf-8")
+    idx = src.find('if [[ "$REBOOT" == "1" ]]; then')
+    assert idx != -1, "the reboot block is gone -- the mandatory-reboot rule"
+    window = src[idx:idx + 1400]
+    assert "/proc/uptime" in window, (
+        "the reboot block does not inspect the boot age; REBOOT=1 reboots "
+        "unconditionally again and the 'will detect the fresh boot' message "
+        "is a lie -- a re-run after SSH comes back reboots, forever")
+    assert "already satisfied" in window, (
+        "the fresh-boot skip branch is gone from the reboot block")
+
+
 def test_an_unknown_mode_fails_loudly_instead_of_running_the_wrong_spine():
     src = WATCHER.read_text(encoding="utf-8")
     assert "unknown mode" in src and "exit 3" in src, (

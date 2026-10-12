@@ -38,11 +38,21 @@ from typing import Any
 #: fabricating it -- and 12 of packed_rook's 16 unresolved rows were exactly
 #: that. A quoted string wins outright; otherwise a run that may contain one
 #: balanced parenthetical.
+#:
+#: The house format ENDS with `, why: <text>`, and the closer used to be
+#: demanded immediately after row_or_rule -- so a citation only parsed when an
+#: in-row `)` happened to sit at the right spot. Measured on wiper_wipe32p's
+#: technical report: 244 raw citations, 32 extracted, and 18 of the 21
+#: prose-citing rows were silently dropped there (an unquoted row
+#: `size=20480, why: ...`, a quoted row whose parens contain a comma, ...),
+#: so the gate certified a report whose largest defect class it could not see.
+#: The optional why-tail lets the closer land inside the why-text instead.
 _CITE_RE = re.compile(
     r"[({\[]\s*source:\s*(?P<source>[^,}\])]+)"
     r"(?:,\s*query_or_table:\s*(?P<query>[^,}\])]+))?"
     r"(?:,\s*row_or_rule:\s*(?P<row>\"[^\"]*\"|'[^']*'|[^,}\]]*?"
     r"(?:\([^)]*\)[^,}\]]*)*))?"
+    r"(?:,\s*why:[^)}\]]*)?"
     r"\s*[)}\]]",
     re.IGNORECASE,
 )

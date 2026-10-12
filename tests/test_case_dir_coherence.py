@@ -145,3 +145,25 @@ def test_indicator_scrubber_receives_the_case_directory():
                 "iocs.json *under* that root, so anything but the mode-keyed "
                 "case directory empties the evidence corpus and scrubs every "
                 "indicator the report legitimately cites.")
+
+
+def test_section_publisher_saved_lines_name_the_mode_keyed_path():
+    """The 'saved:' lines must announce where the file actually landed.
+
+    Found 2026-10-12 while regenerating the wiper case: section_publisher
+    wrote REPORT-MASTER-v3.md and REPORT-TECHNICAL-v3.md through
+    case_dir(sha) (mode-keyed, correct) but printed `sha_log` -- the flat
+    path logs/<sha>/, where no such file exists. The pipeline was fine; the
+    log lied. An operator who trusts "saved: logs/<sha>/..." hunts for a
+    missing file in a directory that was never written to -- the same debug
+    detour this project's mode-keyed path class has already caused twice.
+    """
+    src = source("revai/section_publisher.py")
+    for name in ("REPORT-MASTER-v3.md", "REPORT-TECHNICAL-v3.md"):
+        assert f"saved: {{mode_dir / '{name}'}}" in src, (
+            f"section_publisher no longer announces the mode-keyed save "
+            f"path for {name}; the print must name mode_dir (= case_dir(sha))")
+        assert f"sha_log / '{name}'" not in src, (
+            f"section_publisher prints `sha_log / '{name}'` as the save "
+            "location, but the write goes through case_dir(sha) -- the log "
+            "must not name a path that was never written")

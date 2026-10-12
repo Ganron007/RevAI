@@ -360,7 +360,7 @@ TOOL_DESCRIPTIONS = {
     "dotnet_analyze": "Run .NET analysis. Args: sample_path",
     "speakeasy_emulate": "Run Speakeasy emulation. Args: sample_path",
     "shellcode_extract": "Extract shellcode sections from PE (high-entropy) and emulate with scdbg. Args: timeout (default 30). Use when docs/macros/decoded buffers or RWX sections suggest shellcode.",
-    "frida_static_probe": "Run Frida static probe. Args: sample_path",
+    "frida_static_probe": "Run Frida STATIC probe: availability + PE import-derived hook candidates. No injection, no execution, no runtime events — it never runs the sample. Args: sample_path",
     "r2_decompile": "Run radare2 disassembly. Args: sample_path, function_addrs",
     "upx_unpack": "Run UPX packer detection. Args: sample_path",
     "xor_string_search": "Run xorsearch XOR string search. Args: sample_path",

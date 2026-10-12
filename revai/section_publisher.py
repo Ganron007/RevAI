@@ -112,6 +112,9 @@ def _section_prompt(section_name: str, description: str, evidence: str,
         "## Your task\n"
         f"Write the '{section_name}' section in markdown. Cite evidence as "
         "(source: ghidra_query / capa / yara / malcat / cross-section:section_name). "
+        "Verdict/summary prose is NARRATIVE CONTEXT, never a claim's "
+        "(source: ...): cite the tool row that observed the fact or write "
+        "'not observed'. "
         "Be concise (200-500 words). Use tables where appropriate. "
         "ASCII apostrophe only in headings. Do NOT write 'see appendix' stubs.\n"
         "EXPLAIN, DON'T DUMP: every evidence row / code block you include must "
@@ -680,6 +683,11 @@ def _technical_section_prompt(name: str, description: str, evidence: str,
         "be described as having executed.\n"
         "- The citation engine must match the evidence (a Malcat string is not "
         "an IDA SQL row).\n"
+        "- The Verdict and Deep-Dive blocks are NARRATIVE CONTEXT, not "
+        "evidence: their `summary` / `verdict.summary` prose was written by an "
+        "earlier stage. Never cite it as a claim's (source: ...). Cite the tool "
+        "artifact that observed the fact (malcat, yara, floss, capa, ghidra, "
+        "deep_dive_agentic); if no tool observed it, write 'not observed'.\n"
         "- FORBIDDEN: curly apostrophes in headings; 'see appendix' as the only "
         "body of a section.\n"
         "- EXPLAIN, DON'T DUMP: every disassembly block, string table or "
@@ -1075,6 +1083,11 @@ Rules (evidence-first, MORE detail preferred):
   UPX stdout + unpacked_path, function metrics, EP/decompress disasm.
 - Empty Speakeasy/Frida → write 'not observed'. Never invent runtime behavior.
 - Citation engine must match evidence (Malcat string ≠ IDA SQL).
+- The Verdict and Deep-Dive blocks are NARRATIVE CONTEXT, not evidence: their
+  `summary` / `verdict.summary` prose was written by an earlier stage. Never
+  cite it as a claim's (source: ...). Cite the tool artifact that observed the
+  fact (malcat, yara, floss, capa, ghidra, deep_dive_agentic); if no tool
+  observed it, write 'not observed'.
 - FORBIDDEN: curly apostrophes in headings; "see appendix" as the only body of a section.
 - EXPLAIN, DON'T DUMP: every disassembly block / string table / evidence row is
   introduced with a sentence and followed by an interpretation paragraph
@@ -1385,13 +1398,13 @@ if __name__ == "__main__":
     )
     print(f"  report: {result['report_size']} chars, "
           f"{sum(1 for s in result['sections'] if s.get('llm_ok'))} LLM calls ok")
-    print(f"  saved: {sha_log / 'REPORT-MASTER-v3.md'}")
+    print(f"  saved: {mode_dir / 'REPORT-MASTER-v3.md'}")
     tech = result.get("technical", {})
     if tech:
         print(f"  technical: {tech.get('technical_size', 0)} chars, "
               f"{tech.get('sections_complete', 0)}/{len(TECHNICAL_REPORT_SECTIONS)} sections "
               f"source={tech.get('source')} quality_ok={tech.get('ok')}")
-        print(f"  saved: {sha_log / 'REPORT-TECHNICAL-v3.md'}")
+        print(f"  saved: {mode_dir / 'REPORT-TECHNICAL-v3.md'}")
     llm_ok_n = sum(1 for s in result["sections"] if s.get("llm_ok"))
     section_fail = any(
         (not s.get("llm_ok")) and s.get("error")

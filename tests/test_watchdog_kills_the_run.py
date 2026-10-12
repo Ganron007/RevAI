@@ -103,7 +103,14 @@ def test_a_failed_reboot_does_not_exit_zero():
     """B2: 0 means 'every stage rc=0', so it must not mean 'reboot failed'."""
     src = _src()
     assert "if ! sudo reboot; then" in src, "the reboot's status must be tested"
-    assert "exit 1" in src.split("if ! sudo reboot; then")[1][:400], (
+    # The branch body, not a char-count window: the comments documenting WHY
+    # the exit exists grew past the old [:400] slice, which flagged the test
+    # while the invariant (exit 1 inside the branch, before any fall-through)
+    # held. Line-level `fi` only -- a bare .split("fi") matches the substring
+    # in "defines" and truncates the branch before the exit it must find.
+    m = re.search(r"if ! sudo reboot; then(.*?)\n\s*fi\b", src, re.S)
+    assert m, "the reboot branch must be present and close"
+    assert "exit 1" in m.group(1), (
         "a failed reboot must exit non-zero, not fall through to exit 0")
 
 
@@ -138,6 +145,125 @@ def test_a_valid_timeout_is_not_rejected_by_the_validator():
     proc = _run_watcher("/tmp/no-such-sample.bin", "--timeout-minutes", "30")
     assert proc.returncode == 3
     assert "whole number" not in proc.stderr, proc.stderr
+
+
+def test_non_fatal_signals_do_not_flip_the_exit_code():
+    """A green run must not exit 1 because a recovered transient was seen.
+
+    Found 2026-10-12 on coinminer_lolbot (scripted): three llm-empty attempts
+    inside publish recovered via retry, all nine stages rc=0, but
+    check_signal set FIRST_ERROR for ANY signal -- fatal or not -- and the
+    exit block treats FIRST_ERROR as failure. The header contract says
+    "1 = a stage failed", and callers gate on that exit code: a green run
+    exiting 1 is a lie in the direction that blocks automation, and it
+    trains operators to ignore the code. Non-fatal is a classification the
+    script already makes (fatal=0 controls the abort); the exit path must
+    honour the same classification.
+    """
+    src = _src()
+    body = src.split("check_signal() {", 1)[1].split("\n}", 1)[0]
+    assert '"$fatal" == "1" && -z "$FIRST_ERROR"' in body, (
+        "FIRST_ERROR (which drives exit 1) must be set only for fatal signals")
+    assert '[[ -z "$FIRST_ERROR" ]] && FIRST_ERROR="$label' not in body, (
+        "a non-fatal signal still sets FIRST_ERROR unconditionally -- a "
+        "recovered llm-empty/429/5xx will exit 1 on an all-rc=0 run")
+    assert "FIRST_ANOMALY" in body, (
+        "non-fatal signals must still be recorded for the exit-0 note, "
+        "otherwise they are only visible if someone reads the raw log")
+
+
+def test_attribution_understands_absolute_path_cmd_lines():
+    """`CMD /usr/bin/python3 /opt/scripts/x.py` never matched, so attribution
+    always printed ? / "unknown".
+
+    The regex demanded the script name right after the first token; real CMD
+    lines carry interpreter AND absolute path. The header promises the stage
+    an anomaly belongs to -- with the broken pattern that promise was
+    unfulfillable (2026-10-12: "first error: llm-empty during unknown" while
+    publish_report_v2.py was the running stage).
+    """
+    import re as _re
+
+    src = _src()
+    fn = src.split("current_stage() {", 1)[1].split("\n}", 1)[0]
+    m = _re.search(r"grep -aoE '([^']+)'", fn)
+    assert m, "current_stage must grep with an explicit pattern"
+    pattern = m.group(1)
+    line = ("===== 2026-10-12T11:54:55Z CMD /usr/bin/python3 "
+            "/opt/scripts/publish_report_v2.py")
+    hit = _re.search(pattern, line)
+    assert hit, (
+        f"pattern {pattern!r} does not match a real absolute-path CMD line: "
+        f"{line}")
+    stage = _re.sub(r".*[ /]([a-z_0-9]+)\.py.*", r"\1", hit.group(0))
+    assert stage == "publish_report_v2", stage
+    # The bare form must keep working too.
+    hit2 = _re.search(pattern, "CMD python3 yara_gen_v2.py")
+    assert hit2 and _re.sub(r".*[ /]([a-z_0-9]+)\.py.*", r"\1",
+                            hit2.group(0)) == "yara_gen_v2"
+    # Agentic: no CMD banners exist, so attribution must fall back to the
+    # orchestrator's TOOL line in RUN_LOG -- otherwise every agentic anomaly
+    # is attributed to ?/unknown even with the CMD pattern fixed.
+    assert "TOOL run_" in fn, (
+        "current_stage has no agentic fallback; stage_orchestrator writes no "
+        "CMD banners, so attribution on agentic runs can only come from the "
+        "`[orchestrator] TOOL run_x` line in RUN_LOG")
+
+
+def test_the_signal_log_is_chosen_by_mode():
+    """On agentic runs the watcher grepped a file that does not exist.
+
+    Found 2026-10-12 during the coinminer_lolbot agentic run:
+    stage_orchestrator.py redirects each tool's stdout into
+    CASE_DIR/orchestrator.log (stdout=lf) and never writes
+    pipeline_single.log at all -- so every signal grep (TIMEOUT, llm-judge
+    empty, HTTP) and the attribution looked at a missing file and would
+    report zero anomalies on a run nobody had actually inspected. The old
+    comment claimed the agentic trace was written "alongside" this path;
+    it was not (4th doc-vs-code lie of the session).
+    """
+    src = _src()
+    block = src.split("LOG_DIR=/opt/samples/logs", 1)[1].split("AUDIT_JSON=", 1)[0]
+    assert "orchestrator.log" in block, (
+        "STAGE_LOG is not switched to the orchestrator trace on agentic runs")
+    assert 'MODE" == "agentic"' in block, (
+        "the mode branch selecting the signal log is gone")
+
+
+def test_the_watcher_refuses_to_quarantine_a_live_run():
+    """Relaunching over a live driver mv's the case dir out from under a
+    running pipeline (found 2026-10-12: this script dies silently on ssh
+    SIGHUP while the setsid'd driver survives -- the natural response,
+    relaunch, would have destroyed the coinminer agentic run mid-publish).
+    """
+    src = _src()
+    try:
+        between = src.split("already live", 1)[1].split(
+            "# Quarantine any previous", 1)[0]
+    except IndexError:
+        raise AssertionError(
+            "the live-run guard (refuse to start while a driver for this "
+            "sample is running) is gone") from None
+    assert "pgrep -f" in between, "no liveness probe before quarantine"
+    assert "exit 3" in between, "the guard does not exit 3 on a live run"
+    assert re.search(
+        r'pgrep -f "\((pipeline_single\|stage_orchestrator)\)\\\.py\.\*',
+        between
+    ), "pgrep pattern changed; re-pin this test against the new pattern"
+    # Behavioural check of the pinned pattern, not just its presence: a live
+    # driver of either kind must match, while this script's own launcher and
+    # a different sample must not (self-match would brick every start).
+    pat = r"(pipeline_single|stage_orchestrator)\.py.*coinminer_lolbot"
+    base = "/opt/samples/xfer-2026-10-09/payload/"
+    assert re.search(pat, "python3 stage_orchestrator.py " + base
+                     + "coinminer_lolbot"), "misses a live orchestrator"
+    assert re.search(pat, "python3 pipeline_single.py " + base
+                     + "coinminer_lolbot"), "misses a live pipeline_single"
+    assert not re.search(pat, "bash /opt/scripts/run-watched.sh " + base
+                         + "coinminer_lolbot --mode agentic"), \
+        "matches its own launcher"
+    assert not re.search(pat, "python3 pipeline_single.py " + base
+                         + "msil_crypt_dotnet"), "blocks a different sample"
 
 
 if __name__ == "__main__":

@@ -14,21 +14,31 @@
 #   3. optionally aborts on a fatal signal, so a doomed run stops burning time
 #
 # Where the signals live (fixed 2026-10-03, they were grepped in the wrong
-# file and could never fire): pipeline_single.py redirects every stage's
-# stdout/stderr into CASE_DIR/pipeline_single.log — the TIMEOUT marker, the
-# llm_judge timeout/empty messages and the HTTP errors are all in THERE, while
-# RUN_LOG (this script's capture of pipeline_single's own stdout) only ever
-# holds the `[pipeline_single] <stage> rc=<rc> <secs>s` lines. The hollow gate
-# result is not printed anywhere: it lives in CASE_DIR/pipeline-audit.json,
-# written by the audit stage, so it is polled as JSON.
+# file and could never fire; extended 2026-10-12 for the agentic path): on
+# scripted runs pipeline_single.py redirects every stage's stdout/stderr into
+# CASE_DIR/pipeline_single.log -- the TIMEOUT marker, the llm_judge
+# timeout/empty messages and the HTTP errors are all in THERE. On agentic
+# runs stage_orchestrator.py never writes that file; it redirects each tool's
+# stdout into CASE_DIR/orchestrator.log, which is where those same messages
+# are. STAGE_LOG below is chosen by mode for exactly this reason. RUN_LOG
+# (this script's capture of the driver's own stdout) only ever holds the
+# `[pipeline_single] <stage> rc=...` / `[orchestrator] TOOL ...` lines. The
+# hollow gate result is not printed anywhere: it lives in
+# CASE_DIR/pipeline-audit.json, written by the audit stage, so it is polled
+# as JSON.
 #
 # Usage:
 #   scripts/run-watched.sh <sample-path> [--sha <sha256>] [--mode scripted]
 #                          [--abort-on-error] [--timeout-minutes N] [--no-reboot]
 #
-# Exit codes: 0 run completed and every stage rc=0 · 1 a stage failed ·
-#             2 a fatal signal fired or the watch timed out (run killed) ·
-#             3 usage/environment error.
+# Exit codes: 0 run completed and every stage rc=0 (non-fatal anomalies --
+#             llm-empty/429/5xx -- are printed, counted and noted, but do not
+#             change this) · 1 a stage failed, or a fatal-class signal
+#             (stage-kill/llm-timeout) was observed, or the audit found hollow
+#             output · 2 the watcher killed the run (--abort-on-error fatal
+#             signal, or the watch timed out) · 3 usage/environment error
+#             (bad args, missing files, or a driver for this sample already
+#             running -- refused before any quarantine).
 #
 # REBOOT BEFORE EVERY SAMPLE RUN (docs/OPERATE.md). --no-reboot exists only for
 # the case where the operator has just rebooted by hand; passing it on a loaded
@@ -96,18 +106,32 @@ fail() { printf '[watch] ERROR: %s\n' "$*" >&2; }
 
 # --------------------------------------------------------------------- reboot
 if [[ "$REBOOT" == "1" ]]; then
-  log "rebooting before the run (mandatory; see docs/OPERATE.md)"
-  if ! sudo reboot; then
-    # A failed reboot used to exit 0, which this script's header defines as
-    # "every stage rc=0" — so a caller scripting `run-watched.sh … && deploy`
-    # treated the reboot rule as honoured when it had not happened at all. The
-    # rule is load-bearing, so its failure must not look like success.
-    fail "reboot failed; the reboot-before-every-run rule did NOT happen"
-    exit 1
+  # The rule is "the run starts on a FRESH boot" -- not "always reboot
+  # unconditionally". Without the check below, the message at the bottom of
+  # this block was false: it told the operator the re-run "will detect the
+  # fresh boot and skip the reboot", but no detection existed, so a second
+  # launch rebooted again, forever (found 2026-10-12: two launches in a row,
+  # both died at this block and no run ever started). A boot younger than
+  # FRESH_BOOT_SEC already satisfies the rule; one older does not.
+  FRESH_BOOT_SEC=600
+  BOOT_SEC="$(cut -d. -f1 /proc/uptime 2>/dev/null || echo 999999)"
+  if [[ "${BOOT_SEC:-999999}" -lt "$FRESH_BOOT_SEC" ]]; then
+    log "fresh boot (${BOOT_SEC}s since boot < ${FRESH_BOOT_SEC}s) -- the"
+    log "reboot-before-run rule is already satisfied; not rebooting again."
+  else
+    log "rebooting before the run (mandatory; see docs/OPERATE.md)"
+    if ! sudo reboot; then
+      # A failed reboot used to exit 0, which this script's header defines as
+      # "every stage rc=0" — so a caller scripting `run-watched.sh … && deploy`
+      # treated the reboot rule as honoured when it had not happened at all. The
+      # rule is load-bearing, so its failure must not look like success.
+      fail "reboot failed; the reboot-before-every-run rule did NOT happen"
+      exit 1
+    fi
+    log "reboot issued — this script cannot continue across it. Re-run it once SSH"
+    log "is back; it will detect the fresh boot and skip the reboot."
+    exit 0
   fi
-  log "reboot issued — this script cannot continue across it. Re-run it once SSH"
-  log "is back; it will detect the fresh boot and skip the reboot."
-  exit 0
 fi
 
 # /proc/uptime, not `uptime -p`: the -p output's first number is HOURS once the
@@ -142,11 +166,38 @@ log "mode: $MODE"
 
 LOG_DIR=/opt/samples/logs
 CASE_DIR="$LOG_DIR/$SHA/$MODE"
-# Named after the scripted driver so existing tooling keeps working; in
-# agentic mode the orchestrator writes its own trace alongside it.
-STAGE_LOG="$CASE_DIR/pipeline_single.log"
+# The scripted driver redirects every stage's stdout here. The orchestrator
+# NEVER writes this file: it redirects each tool's stdout into
+# orchestrator.log instead (stage_orchestrator.py, stdout=lf). The old
+# comment claimed the agentic trace was written "alongside" this path; it
+# never was -- so on agentic runs every signal grep (TIMEOUT / llm-judge
+# empty / HTTP) ran against a file that does not exist, the attribution
+# grepped it too, and a run could show zero anomalies while nobody had
+# looked. Found 2026-10-12: agentic/pipeline_single.log absent while
+# orchestrator.log held 30 llm_judge lines the watcher could not see.
+if [[ "$MODE" == "agentic" ]]; then
+  STAGE_LOG="$CASE_DIR/orchestrator.log"
+else
+  STAGE_LOG="$CASE_DIR/pipeline_single.log"
+fi
 AUDIT_JSON="$CASE_DIR/pipeline-audit.json"
 RUN_LOG="$LOG_DIR/_watched_${SHA:0:12}.log"
+
+# Refuse to start if a driver for THIS sample is already live. Relaunching
+# over a running pipeline would quarantine the case dir out from under it
+# (mv on a live dir corrupts both the run and its artifacts) and then start
+# a duplicate. Not hypothetical: this script dies silently when its ssh
+# session drops (SIGHUP) while the setsid'd driver keeps running --
+# observed 2026-10-12 on the coinminer_lolbot agentic run -- and the
+# natural next action, relaunching, would have destroyed a live run.
+# The pattern needs a driver name AND the sample basename in the SAME
+# cmdline, so this script's own process and monitoring probes that mention
+# only one of the two cannot match it (pgrep -f self-match trap).
+if pgrep -f "(pipeline_single|stage_orchestrator)\.py.*$(basename "$SAMPLE")" >/dev/null 2>&1; then
+  fail "a driver for this sample is already running; refusing to quarantine a live case dir"
+  fail "wait for it to finish, or stop it first if it is truly stuck"
+  exit 3
+fi
 
 # Quarantine any previous case dir so the run starts clean and the previous
 # artifacts stay available for comparison.
@@ -232,6 +283,8 @@ log "pid: $RUN_PID"
 # other signal comes from STAGE_LOG (the stages' own output) or AUDIT_JSON.
 declare -A SEEN
 FIRST_ERROR=""
+# Set only for NON-fatal signals: worth a sentence at exit, never worth exit 1.
+FIRST_ANOMALY=""
 START=$(date +%s)
 
 kill_run() {
@@ -263,12 +316,27 @@ kill_run() {
   kill -KILL "$RUN_PID" 2>/dev/null
 }
 
-# The stage a signal belongs to: the last `CMD <python> <stage>.py` line in the
-# stage log. These lines are written by pipeline_single into STAGE_LOG (not
-# stdout), so attribution used to always print "?".
+# The stage a signal belongs to. Scripted: the last `CMD <python> <stage>.py`
+# line in the stage log (written by pipeline_single into STAGE_LOG, not
+# stdout). Agentic: no CMD banners exist anywhere -- RUN_LOG carries the
+# orchestrator's own `TOOL run_x (attempt N): <cmd>` line, so that is the
+# fallback source (without it every agentic attribution printed ?/unknown).
 current_stage() {
-  grep -aoE 'CMD \S+ ([a-z_0-9]+)\.py' "$STAGE_LOG" 2>/dev/null \
-    | tail -1 | sed -E 's/.* ([a-z_0-9]+)\.py/\1/'
+  # \S* before the script name: real CMD lines read `CMD /usr/bin/python3
+  # /opt/scripts/x.py`, and the old `CMD \S+ name.py` demanded the name
+  # IMMEDIATELY after the interpreter -- it never matched an absolute path,
+  # so attribution always printed ? / "unknown" (found 2026-10-12: "first
+  # error: llm-empty during unknown" while publish_report_v2.py was running).
+  # The sed class is [ /] for the same reason: only a bare CMD line has a
+  # SPACE before the name; an absolute path has a slash.
+  local s
+  s=$(grep -aoE 'CMD \S+ \S*([a-z_0-9]+)\.py' "$STAGE_LOG" 2>/dev/null \
+      | tail -1 | sed -E 's/.*[ /]([a-z_0-9]+)\.py.*/\1/')
+  if [[ -z "$s" ]]; then
+    s=$(grep -aoE 'TOOL run_[a-z_0-9]+' "$RUN_LOG" 2>/dev/null \
+        | tail -1 | sed -E 's/.*TOOL //')
+  fi
+  printf '%s' "$s"
 }
 
 # A stage that exited non-zero. One report per stage.
@@ -301,7 +369,19 @@ check_signal() {
   SEEN[$label]=$current
   stage=$(current_stage)
   printf '[watch]   ! %s x%s (in: %s)\n' "$label" "$current" "${stage:-?}"
-  [[ -z "$FIRST_ERROR" ]] && FIRST_ERROR="$label during ${stage:-unknown}"
+  # ONLY a fatal signal becomes FIRST_ERROR (=exit 1). llm-empty/429/5xx are
+  # classified fatal=0 because the retries recover them; setting FIRST_ERROR
+  # for ANY signal made a green run (every stage rc=0) exit 1, contradicting
+  # the header contract "1 = a stage failed" and blocking callers that gate
+  # on the exit code. Found 2026-10-12 on coinminer_lolbot scripted: 3
+  # recovered llm-empty attempts inside publish, all nine stages rc=0,
+  # watcher exited 1 anyway. Non-fatal signals keep their live line and their
+  # summary counter, and get a note at exit -- but do not change the code.
+  if [[ "$fatal" == "1" && -z "$FIRST_ERROR" ]]; then
+    FIRST_ERROR="$label during ${stage:-unknown}"
+  elif [[ "$fatal" != "1" && -z "$FIRST_ANOMALY" ]]; then
+    FIRST_ANOMALY="$label during ${stage:-unknown}"
+  fi
   if [[ "$fatal" == "1" && "$ABORT_ON_ERROR" == "1" ]]; then
     printf '[watch] aborting on first error (--abort-on-error)\n'
     kill_run
@@ -424,8 +504,16 @@ for p in sorted(case.glob("report-*.json")):
 PY
 fi
 
+# A green run that SAW non-fatal anomalies says so without changing the exit
+# code -- the counters above are the record; this is the sentence.
+if [[ -z "$FIRST_ERROR" && -n "$FIRST_ANOMALY" ]]; then
+  log "note: non-fatal anomaly observed: $FIRST_ANOMALY"
+  log "every stage rc=0 -- reported, not failed (exit 0 per contract)"
+fi
+
 # Exit contract: 2 = this script killed the run (fatal signal or watch
-# timeout); 1 = the run ended on its own with a failure; 0 = clean.
+# timeout); 1 = a stage failed, a fatal-class signal fired, or hollow output;
+# 0 = clean (a non-fatal anomaly noted above does not fail it).
 if [[ "$WATCH_RC" == "2" ]]; then
   printf '\n'
   fail "run killed: $FIRST_ERROR"

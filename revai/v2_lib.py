@@ -7497,6 +7497,20 @@ def build_technical_evidence_block(
 
     if verdict:
         lines.append("## Verdict")
+        # The verdict's prose was written by an earlier stage. Left unlabeled it
+        # reads as citable evidence, and the report writer paired this block's
+        # `source`/`summary` bullets into real citations -- three rows of the
+        # wiper technical report cited `llm_judge/summary` for facts malcat and
+        # YARA had already observed. State the rule inside the block: only this
+        # block reaches every section, the pack-level note above does not.
+        lines.append(
+            "> NARRATIVE CONTEXT, not citable evidence: these fields are prose "
+            "written by an earlier stage. Never cite `summary`, "
+            "`verdict.summary` or this block as a claim's (source: ...). Cite "
+            "the tool row that observed the fact (malcat / yara / floss / capa "
+            "/ ghidra / deep_dive_agentic); if no tool observed it, write "
+            "'not observed'."
+        )
         for k in (
             "verdict", "score", "family_guess", "confidence", "agreement",
             "numeric_score", "cross_engine_notes", "summary", "source", "model",
@@ -7510,6 +7524,16 @@ def build_technical_evidence_block(
                 if k == "model":
                     from report_quality import PUBLIC_MODEL_LABEL
                     v = PUBLIC_MODEL_LABEL
+                if k == "source":
+                    # Provenance of the narrative above, never a citation key.
+                    # Rendered plainly next to `summary` before, it is exactly
+                    # the pairing a writer copies into
+                    # `(source: llm_judge, query_or_table: summary, ...)`.
+                    lines.append(
+                        "- **source** (provenance of this narrative -- not a "
+                        f"claim citation): {v}"
+                    )
+                    continue
                 lines.append(f"- **{k}**: {v}")
         ke = verdict.get("key_evidence") or []
         if ke:
@@ -7528,7 +7552,15 @@ def build_technical_evidence_block(
 
     if deep:
         lines.append("## Deep-Dive Summary Evidence")
-        lines.append(f"- **source**: {deep.get('source', '?')}")
+        lines.append(
+            "> NARRATIVE CONTEXT, not citable evidence (same rule as the "
+            "Verdict block): cite the tool row that observed the fact, never "
+            "this summary."
+        )
+        lines.append(
+            "- **source** (provenance of this narrative -- not a claim "
+            f"citation): {deep.get('source', '?')}"
+        )
         lines.append(f"- **confidence**: {deep.get('confidence', '?')}")
         if deep.get("summary"):
             lines.append(f"- **summary**: {deep.get('summary')}")
@@ -7969,7 +8001,13 @@ def _sec_behavioral_evidence(tools_results: dict) -> str:
                 lines.append(f"    - {api.get('dll', '?')}.{api.get('name', '?')}: {api.get('count', 0)} calls")
     fp = behavioral.get("frida_probe") or {}
     if fp:
-        lines.append(f"  Frida probe: {len(fp.get('hooked_calls', []))} hooked calls")
+        cands = (fp.get("pe_probe") or {}).get("hook_candidates") or []
+        lines.append(
+            f"  Frida static probe: available={fp.get('frida_available')} "
+            f"version={fp.get('frida_version', '?')}; {len(cands)} hook "
+            f"candidate(s) from the import table — static analysis only, no "
+            f"injection, no execution, no runtime events"
+        )
     mc = tools_results.get("malcat") or {}
     anoms = mc.get("anomalies") or []
     if anoms:
@@ -8314,8 +8352,28 @@ except Exception as e:
 
 
 def frida_static_probe(sample_path: str) -> dict:
-    """Lightweight Frida availability + PE import probe (no live injection)."""
-    out: dict[str, Any] = {"frida_available": False}
+    """Lightweight Frida availability + PE import probe (no live injection).
+
+    The output labels itself explicitly, because this result is cited by the
+    report author: a static availability/import probe must never be narratable
+    as a runtime execution. Found 2026-10-12 on msil_crypt_dotnet: the report
+    claimed "Frida probing (version 17.18.0) with a hook on
+    `mscoree.dll!_CorExeMain` ran but observed no runtime events" from exactly
+    this output — a fabricated dynamic execution the cross-report gate caught.
+    """
+    out: dict[str, Any] = {
+        "frida_available": False,
+        "probe_kind": "static",
+        "executed": False,
+        "runtime_events": None,
+        "note": (
+            "Static probe only: Frida availability/version plus PE "
+            "import-derived hook CANDIDATES. No sample code was executed, no "
+            "injection happened, and no runtime events exist; hook_candidates "
+            "are import references a future runtime probe COULD hook, not "
+            "hooks that ran."
+        ),
+    }
     try:
         proc = subprocess.run(
             ["frida-ps", "--version"],
