@@ -430,21 +430,24 @@ class StageRunner:
         agentic mode that is `agentic` -- not the scripted default.
         """
         try:
-            from depth_agent import ceiling_seconds, depth_enabled
+            from depth_agent import ceiling_seconds, depth_profile, depth_requested
         except Exception as exc:  # pragma: no cover - not deployed
             return {"ok": True, "skipped": True,
                     "reason": f"depth_agent unavailable: {exc}"}
-        if not depth_enabled():
+        if not depth_requested():
             out = {"ok": True, "skipped": True,
                    "reason": "REVAI_DEPTH is not set",
-                   "note": "depth mode is opt-in; set REVAI_DEPTH=1 to enable"}
+                   "note": "depth mode is opt-in; set REVAI_DEPTH=1 (or "
+                           "REVAI_DEPTH=full for the #26 profile) to enable"}
             self.events.append({"type": "observe", "tool": "depth_understanding",
                                 "data": out, "ts": _utc()})
             return out
         case = case_dir(self.sha)
         env = dict(os.environ)
         env["REVAI_CASE_DIR"] = str(case)
-        env["REVAI_DEPTH"] = "1"
+        # Pass the PROFILE through, not a flattened "1": REVAI_DEPTH=full must
+        # reach depth_agent as "full" or the domain-node substrate never runs.
+        env["REVAI_DEPTH"] = depth_profile() or "1"
         try:
             proc = subprocess.run(
                 [sys.executable, str(SCRIPTS / "depth_agent.py"), self.sha],

@@ -228,6 +228,8 @@ export const LlmSettingsSchema = z
     run_config: z
       .object({
         profile: optStr,
+        depth_profile: optStr,
+        depth_full_max_steps: optNum,
         stage_retries: optNum,
         tool_retries: optNum,
         timeout_scale: optNum,

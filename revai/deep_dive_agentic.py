@@ -2000,6 +2000,39 @@ def _run_custom_engine(sha: str, max_steps: int) -> dict:
     return _agentic_deep_dive_custom(sha, max_steps=max_steps)
 
 
+def langgraph_helpers() -> dict:
+    """The shared helper/registry dict the LangGraph engine needs.
+
+    Extracted so the depth-full profile (#26) can drive the SAME domain-node
+    substrate (`run_langgraph_deep_dive`) instead of a second copy of this
+    wiring. One definition: a dict built in two places drifts, and the drift
+    would surface as a domain path that silently falls back to the flat
+    engine (`domain path unavailable`) in exactly one of the two callers.
+    """
+    return {
+        "ToolRegistry": ToolRegistry,
+        "CHECKLIST_PE": CHECKLIST_PE,
+        "SQL_DEEP_TOOLS": SQL_DEEP_TOOLS,
+        "_run_standard_checklist": _run_standard_checklist,
+        "_history_has_sql_deep": _history_has_sql_deep,
+        "_tool_call_ok": _tool_call_ok,
+        "_coerce_final_answer": _coerce_final_answer,
+        "_final_answer_complete": _final_answer_complete,
+        "_complete_final_answer_retry": _complete_final_answer_retry,
+        "_finalize_agentic_result": _finalize_agentic_result,
+        "_normalize_confidence": _normalize_confidence,
+        # agent-loop discipline helpers (shared with custom engine)
+        "_loop_flag": _loop_flag,
+        "_call_signature": _call_signature,
+        "_call_with_tool_retry": _call_with_tool_retry,
+        "_unsupported_claims": _unsupported_claims,
+        "GHIDRA_SCHEMA": GHIDRA_SCHEMA,
+        "IDA_SCHEMA": IDA_SCHEMA,
+        "load_intake_validation": load_intake_validation,
+        "MAX_TOOL_RESULT_CHARS": MAX_TOOL_RESULT_CHARS,
+    }
+
+
 def agentic_deep_dive(sha: str, max_steps: int = MAX_STEPS) -> dict:
     engine = (os.environ.get("REVAI_AGENTIC_ENGINE") or "langgraph").strip().lower()
     if engine not in ("langgraph", "custom"):
@@ -2015,28 +2048,7 @@ def agentic_deep_dive(sha: str, max_steps: int = MAX_STEPS) -> dict:
                 sha,
                 max_steps=max_steps,
                 # inject shared helpers / registry from this module
-                helpers={
-                    "ToolRegistry": ToolRegistry,
-                    "CHECKLIST_PE": CHECKLIST_PE,
-                    "SQL_DEEP_TOOLS": SQL_DEEP_TOOLS,
-                    "_run_standard_checklist": _run_standard_checklist,
-                    "_history_has_sql_deep": _history_has_sql_deep,
-                    "_tool_call_ok": _tool_call_ok,
-                    "_coerce_final_answer": _coerce_final_answer,
-                    "_final_answer_complete": _final_answer_complete,
-                    "_complete_final_answer_retry": _complete_final_answer_retry,
-                    "_finalize_agentic_result": _finalize_agentic_result,
-                    "_normalize_confidence": _normalize_confidence,
-                    # agent-loop discipline helpers (shared with custom engine)
-                    "_loop_flag": _loop_flag,
-                    "_call_signature": _call_signature,
-                    "_call_with_tool_retry": _call_with_tool_retry,
-                    "_unsupported_claims": _unsupported_claims,
-                    "GHIDRA_SCHEMA": GHIDRA_SCHEMA,
-                    "IDA_SCHEMA": IDA_SCHEMA,
-                    "load_intake_validation": load_intake_validation,
-                    "MAX_TOOL_RESULT_CHARS": MAX_TOOL_RESULT_CHARS,
-                },
+                helpers=langgraph_helpers(),
             )
         except Exception as e:
             print(f"[deep_dive_agentic] langgraph failed ({e}); falling back to custom", flush=True)

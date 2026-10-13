@@ -11,6 +11,8 @@ const PROFILES: Array<{ value: string; label: string; hint: string }> = [
 
 const DEFAULT_RUN_CONFIG: RunConfig = {
   profile: 'standard',
+  depth_profile: 'd0',
+  depth_full_max_steps: 16,
   stage_retries: 1,
   tool_retries: 1,
   timeout_scale: 1,
@@ -95,6 +97,8 @@ export default function SettingsPage() {
         winre_llm_source: cfg.winre_llm_source || 'inherit',
         run_config: {
           profile: rc.profile || 'standard',
+          depth_profile: rc.depth_profile || 'd0',
+          depth_full_max_steps: Number(rc.depth_full_max_steps ?? 16),
           stage_retries: Number(rc.stage_retries ?? 1),
           tool_retries: Number(rc.tool_retries ?? 1),
           timeout_scale: Number(rc.timeout_scale ?? 1),
@@ -303,6 +307,31 @@ export default function SettingsPage() {
                   </option>
                 ))}
               </Select>
+            </Field>
+            <Field
+              label="Depth profile"
+              hint="post-pipeline: d0 deepens the pipeline's own evidence; full (#26) investigates every capability domain on the domain-node substrate with tools, a raised ceiling and forced emulation/unpack/solver — long runtimes expected"
+            >
+              <Select
+                value={rc.depth_profile || 'd0'}
+                onChange={(e) => setRc({ ...rc, depth_profile: e.target.value })}
+              >
+                <option value="d0">d0 — vocabulary loop over the pipeline's evidence</option>
+                <option value="full">full — domain-node substrate (plan #26)</option>
+              </Select>
+            </Field>
+            <Field
+              label="Full-profile step budget"
+              hint="deep-dive steps per domain-node pass (REVAI_DEPTH_FULL_MAX_STEPS); the per-domain tool budget is the domain step budget"
+            >
+              <Input
+                type="number"
+                min={1}
+                value={rc.depth_full_max_steps ?? 16}
+                onChange={(e) =>
+                  setRc({ ...rc, depth_full_max_steps: Number(e.target.value) })
+                }
+              />
             </Field>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--sp-3)' }}>
             <Field label="Stage retries" hint="transient failures only (0 = none)">

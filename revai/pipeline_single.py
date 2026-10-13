@@ -33,7 +33,7 @@ from v2_lib import (  # noqa: E402
     update_session,
 )
 from depth_agent import ceiling_seconds as depth_ceiling_seconds
-from depth_agent import depth_enabled
+from depth_agent import depth_requested
 
 SCRIPTS = Path("/opt/scripts")
 
@@ -377,7 +377,11 @@ def build_stages(sha: str, intake_cmd: list[str] | None) -> list[tuple[str, list
     # on a non-numeric value the inline `int(...)` this replaced did not have.
     # The stage is deliberately absent from `abort_on`, so a timeout it cannot
     # recover from does not fail the pipeline it follows.
-    if depth_enabled():
+    #
+    # `depth_requested()`, not `depth_enabled()`: REVAI_DEPTH=full (#26) is a
+    # PROFILE, not a truthy alias, and the full profile runs this same stage
+    # with the domain-node substrate and the raised ceiling.
+    if depth_requested():
         # --run drives the convergence loop (plan #26). Without it the stage
         # only reported state, which is the hollow shape #26 existed to remove:
         # the vocabulary, checkpointing and cost accounting were all built and

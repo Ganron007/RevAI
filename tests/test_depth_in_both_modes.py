@@ -33,11 +33,17 @@ def test_the_agentic_spine_has_a_depth_stage():
 
 
 def test_both_spines_gate_depth_the_same_way():
-    """One gate, two drivers. Two copies is how they drift apart."""
+    """One gate, two drivers. Two copies is how they drift apart.
+
+    The gate is `depth_requested()` — true for BOTH profiles (`REVAI_DEPTH=1`
+    and `REVAI_DEPTH=full`). `depth_enabled()` keeps its narrow meaning ("on",
+    not "which profile") inside depth_agent; gating a spine on it would make
+    the full profile silently skip the stage.
+    """
     ps = source("revai/pipeline_single.py")
     so = source("revai/stage_orchestrator.py")
-    assert "depth_enabled()" in ps, "the scripted spine lost the shared gate"
-    assert "depth_enabled" in so, "the agentic spine must use the shared gate too"
+    assert "depth_requested()" in ps, "the scripted spine lost the shared gate"
+    assert "depth_requested()" in so, "the agentic spine must use the shared gate too"
 
 
 def test_a_skipped_depth_stage_is_visible_not_silent():

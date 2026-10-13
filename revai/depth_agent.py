@@ -77,6 +77,55 @@ def depth_enabled() -> bool:
     return os.environ.get(DEPTH_ENV, "").strip().lower() in ("1", "true", "on")
 
 
+#: The #26 full profile's spelling and its label.
+PROFILE_FULL = "full"
+PROFILE_D0 = "d0"
+
+#: The full profile's own default ceiling. The operator's directive is
+#: explicit -- a depth run taking hours is not a failure -- so the full
+#: profile defaults far above D0's. An explicit REVAI_DEPTH_CEILING_SECONDS
+#: still wins for both profiles.
+FULL_DEFAULT_CEILING_SECONDS = 14400
+
+#: What the full profile forces ON for its own investigation. setdefault
+#: semantics: an operator's explicit value wins, and the forced list is
+#: recorded in the artifact so the run states what it enabled rather than
+#: leaving it to be inferred from the trace.
+_FULL_FORCED_FEATURES = (
+    ("REVAI_DOMAIN_GRAPH", "1"),              # the #20 substrate itself
+    ("REVAI_DOMAIN_STEP_BUDGET", "8"),        # the very-high budget lever
+    ("REVAI_ENABLE_EMULATION_ORACLE", "1"),   # forced emulator
+    ("REVAI_ENABLE_UNPACK_PASS", "1"),        # forced unpack
+    ("ENABLE_DEOBFUSCATION_PASS", "1"),       # forced solver
+)
+
+
+def depth_profile() -> str:
+    """Which depth profile `REVAI_DEPTH` asks for: "full", "d0", or "".
+
+    `REVAI_DEPTH=full` is the #26 profile spelling, reserved since the
+    vocabulary was built. It is deliberately NOT a truthy alias for "on":
+    `depth_enabled()` keeps its narrow meaning so the two profiles can never
+    be confused at a call site, and the stage gates use `depth_requested()`.
+    """
+    raw = (os.environ.get(DEPTH_ENV) or "").strip().lower()
+    if raw == PROFILE_FULL:
+        return PROFILE_FULL
+    if raw in ("1", "true", "on"):
+        return PROFILE_D0
+    return ""
+
+
+def depth_requested() -> bool:
+    """Whether ANY depth run was asked for -- either profile.
+
+    This is what the stage gates use. `depth_enabled()` keeps its narrow
+    meaning ("on", not "which profile"), because widening it would make the
+    two profiles indistinguishable everywhere it is checked.
+    """
+    return bool(depth_profile())
+
+
 def status_requires_evidence(status: str) -> bool:
     """Whether a status must carry a citation.
 
@@ -157,13 +206,22 @@ def save_state(case_dir: Path, state: dict) -> None:
     tmp.replace(p)  # atomic: a stop mid-write must not corrupt the resume
 
 
-def ceiling_seconds() -> int:
-    raw = os.environ.get("REVAI_DEPTH_CEILING_SECONDS", "") or str(
-        DEFAULT_CEILING_SECONDS)
+def ceiling_seconds(profile: str | None = None) -> int:
+    """The wall-clock ceiling for a depth run.
+
+    The full profile (#26) defaults far higher -- long runtimes are expected
+    there by design -- and an explicit REVAI_DEPTH_CEILING_SECONDS wins for
+    both. A non-numeric value falls back to the profile's default rather
+    than failing a run.
+    """
+    profile = profile if profile is not None else depth_profile()
+    default = (FULL_DEFAULT_CEILING_SECONDS if profile == PROFILE_FULL
+               else DEFAULT_CEILING_SECONDS)
+    raw = os.environ.get("REVAI_DEPTH_CEILING_SECONDS", "") or str(default)
     try:
         return max(60, int(raw))
     except (TypeError, ValueError):
-        return DEFAULT_CEILING_SECONDS
+        return default
 
 
 def cost_summary(regions: dict, spend: dict) -> dict:
@@ -377,6 +435,275 @@ def investigate_region(case: Path, name: str, region: dict) -> dict:
     return region
 
 
+def _force_full_profile_features() -> list[str]:
+    """Force the investigation features the full profile promises.
+
+    setdefault, so an operator's explicit value still wins; the forced list
+    is recorded in the artifact so the run states what it enabled.
+    """
+    forced = []
+    for key, val in _FULL_FORCED_FEATURES:
+        if not (os.environ.get(key) or "").strip():
+            os.environ[key] = val
+            forced.append(f"{key}={val}")
+    return forced
+
+
+def _quarantine_deep_dive_artifacts(case: Path) -> list[str]:
+    """Move the pipeline's deep-dive artifacts aside before a full pass.
+
+    The full pass re-runs the deep dive on the domain-node substrate and
+    would overwrite `agentic_deep_dive.json` -- the record of what the MAIN
+    pipeline's dive concluded, which the published reports cite. The depth
+    run must add to the case, not erase what the reports were written from.
+    Same shape as run-watched's quarantine.
+    """
+    moved: list[str] = []
+    dd = Path(case) / "deep_dive"
+    if not dd.is_dir():
+        return moved
+    stamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
+    for name in ("agentic_deep_dive.json", "05-deep-dive.json",
+                 "deep-dive-progress.jsonl"):
+        p = dd / name
+        if p.is_file():
+            try:
+                p.replace(dd / f"{name}.pre-depth-full-{stamp}")
+                moved.append(f"{name}.pre-depth-full-{stamp}")
+            except OSError:
+                pass
+    return moved
+
+
+def _full_max_steps() -> int:
+    """The deep-dive step budget the full profile asks the substrate for."""
+    raw = os.environ.get("REVAI_DEPTH_FULL_MAX_STEPS", "").strip()
+    try:
+        val = int(raw)
+        if val > 0:
+            return val
+    except ValueError:
+        pass
+    return 16
+
+
+def run_domain_depth_pass(sha: str, case: Path) -> dict:
+    """One #20 domain-graph investigation pass -- the full profile's substrate.
+
+    Each capability domain is investigated by its own bounded tool-calling
+    node (the structure the operator asked for), instead of one flat loop or
+    one evidence-only LLM call. Returns the finalized deep-dive result --
+    `findings.domain_graph` carries the per-domain determinations -- or {}
+    when the substrate could not run. An empty result is NOT papered over
+    with the flat investigation: a stated failure beats a fabricated unknown.
+    """
+    try:
+        from deep_dive_agentic import langgraph_helpers
+        from agentic_langgraph import run_langgraph_deep_dive
+    except Exception as exc:
+        print(f"[depth] domain substrate unavailable: {exc}",
+              file=sys.stderr, flush=True)
+        return {}
+    try:
+        result = run_langgraph_deep_dive(
+            sha, max_steps=_full_max_steps(), helpers=langgraph_helpers())
+    except Exception as exc:
+        print(f"[depth] domain pass failed: {type(exc).__name__}: {exc}",
+              file=sys.stderr, flush=True)
+        return {}
+    return result or {}
+
+
+def _fold_domain_results(st: dict, dom: dict) -> dict[str, dict]:
+    """Fold a domain-graph pass into the understanding map.
+
+    The per-domain entries become regions under the SAME four-status
+    vocabulary and the SAME citation rule as D0, so both profiles' maps are
+    read by the same consumers. A node's status outside the vocabulary, or a
+    claim with no evidence, is graded conservatively here exactly as
+    `investigate_region` grades it -- the substrate changes, the honesty rule
+    does not.
+    """
+    folded: dict[str, dict] = {}
+    findings = (dom or {}).get("findings") or {}
+    dg = findings.get("domain_graph") or {}
+    per_domain = dg.get("domains") or {}
+    findings_text = str(findings.get("domain_findings") or "")
+    for key, entry in per_domain.items():
+        entry = entry or {}
+        status = str(entry.get("status") or "").strip().lower()
+        evidence = [str(e)[:160] for e in (entry.get("evidence") or [])[:8]]
+        answer = str(entry.get("answer") or "")[:1200]
+        reason = str(entry.get("reason") or "")[:400]
+        region = {
+            "status": status,
+            "answer": answer,
+            "evidence": evidence,
+            "reason": reason,
+            "substrate": "domain-graph",
+            "tool_calls_used": entry.get("tool_calls_used"),
+            "investigated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ",
+                                             time.gmtime()),
+        }
+        has_answer = bool(answer) or bool(evidence)
+        if status not in VALID_STATUSES:
+            region["model_status"] = status or "(none)"
+            region["status"] = STATUS_PARTIAL
+            region["reason"] = reason or (
+                f"node returned status {status!r}, outside the vocabulary")
+            region["status_contradicts_answer"] = True
+        elif status == STATUS_NOT_EXPLORED and has_answer:
+            # Claimed it did not look, and supplied an answer anyway: the
+            # answer is evidence it WAS investigated. Same grading the domain
+            # nodes apply (agentic_langgraph) and investigate_region applies.
+            region["model_status"] = status
+            region["status"] = STATUS_PARTIAL
+            region["reason"] = reason or (
+                "node claimed not-explored while supplying an answer")
+            region["status_contradicts_answer"] = True
+        # else: the claimed status stands -- including an honest not-explored
+        # with nothing supplied.
+        if status_requires_evidence(region["status"]) and not evidence:
+            if region["status"] == STATUS_UNDERSTOOD:
+                region["status"] = STATUS_PARTIAL
+                region["reason"] = (
+                    (region.get("reason") or "")
+                    + " | downgraded from understood: no evidence cited")
+                region["downgraded_for_no_evidence"] = True
+        if findings_text:
+            region["domain_findings_excerpt"] = findings_text[:4000]
+        folded[key] = region
+    return folded
+
+
+def _stream_emit(case: Path, event: dict) -> None:
+    """Append one event to the Phase 0 state stream (best-effort).
+
+    The stream is the audit trail of the depth run; a failure to write it
+    must never fail the investigation, so this is deliberately silent on
+    error -- understanding.json remains the artifact of record.
+    """
+    try:
+        import re_state
+        fields = {k: v for k, v in (event or {}).items() if k != "kind"}
+        re_state.append_event(Path(case) / re_state.EVENT_FILE,
+                              event.get("kind", "note"), **fields)
+    except Exception:
+        pass
+
+
+def _stream_region(case: Path, name: str, region: dict) -> None:
+    """Emit a region's status (and its spend) to the stream."""
+    try:
+        import re_state
+        ev = re_state.region_event({}, name, region.get("status", ""),
+                                   region.get("reason", ""),
+                                   region.get("evidence") or [])
+        _stream_emit(case, ev)
+        _stream_emit(case, {"kind": "spend", "llm_calls": 1,
+                            "seconds": float(region.get("seconds") or 0.0)})
+    except Exception:
+        pass
+
+
+def _stream_snapshot(case: Path) -> None:
+    """Fold the log into the snapshot beside it (best-effort)."""
+    try:
+        import re_state
+        events, _dropped = re_state.load_log(Path(case) / re_state.EVENT_FILE)
+        re_state.save_checkpoint(Path(case), re_state.fold_events(events))
+    except Exception:
+        pass
+
+
+def _run_full_profile(case: Path, ceiling: int, st: dict,
+                      t0: float) -> str | None:
+    """Drive the full profile: domain-graph passes until costed or ceiling.
+
+    One pass investigates every domain on the #20 substrate; the loop's
+    normal termination rules then apply (attempts, examiner stop, ceiling),
+    and every exit consolidates. Returns the stop_reason, or None to fall
+    through to the shared tail.
+    """
+    import re_state  # noqa: F401  (availability probe; import errors surface below)
+
+    sha = case.name if len(case.name) == 64 else case.parent.name
+    forced = _force_full_profile_features()
+    quarantined = _quarantine_deep_dive_artifacts(case)
+    st["profile"] = PROFILE_FULL
+    st["substrate"] = "domain-graph (#20)"
+    st["forced_features"] = forced
+    st["quarantined_deep_dive"] = quarantined
+    _stream_emit(case, {"kind": "init", "sample_sha256": sha,
+                        "run_id": str(int(time.time()))})
+    _stream_emit(case, {"kind": "phase", "phase": "investigate"})
+
+    attempts_allowed = _max_attempts()
+    stop_reason = None
+    while True:
+        pending = [n for n in unknown_set(st["regions"])
+                   if int((st["regions"].get(n) or {}).get("attempts") or 0)
+                   < attempts_allowed]
+        if not pending:
+            remaining = unknown_set(st["regions"])
+            stop_reason = (
+                "converged: every region understood" if not remaining else
+                f"costed: {len(remaining)} region(s) investigated and still "
+                f"unknown ({', '.join(remaining)}) -- declared, not retried")
+            break
+        if _stop_requested(case):
+            stop_reason = (f"stopped by examiner (depth.stop); "
+                           f"{len(pending)} region(s) still unattempted")
+            break
+        elapsed = time.time() - t0
+        if elapsed >= ceiling:
+            stop_reason = (
+                f"ceiling reached after {int(elapsed)}s; "
+                f"{len(pending)} region(s) unattempted -- consolidated, "
+                "not truncated")
+            break
+        before = time.time()
+        dom = run_domain_depth_pass(sha, case)
+        if not dom:
+            stop_reason = (
+                "domain-graph pass produced no usable result; the flat "
+                "evidence-only investigation was NOT substituted for it -- "
+                "a stated failure beats a fabricated unknown")
+            _stream_emit(case, {"kind": "phase", "phase": "failed"})
+            break
+        folded = _fold_domain_results(st, dom)
+        pass_seconds = round(time.time() - before, 1)
+        for name, region in folded.items():
+            region["attempts"] = int(
+                (st["regions"].get(name) or {}).get("attempts") or 0) + 1
+            region["seconds"] = round(
+                pass_seconds / max(1, len(folded)), 1)
+            st["regions"][name] = region
+            _stream_region(case, name, region)
+        st["spend"]["llm_calls"] = int(st["spend"].get("llm_calls", 0)) + len(folded)
+        st["spend"]["seconds"] = round(
+            float(st["spend"].get("seconds", 0.0)) + pass_seconds, 1)
+        save_state(case, st)
+        _stream_snapshot(case)
+
+    st["stop_reason"] = stop_reason
+    st["converged"] = has_converged(st["regions"])
+    st["cost"] = cost_summary(st["regions"], st["spend"])
+    st["attempts_allowed"] = attempts_allowed
+    # The gap section is REQUIRED for the full profile: every region carries
+    # a status and a reason, and the unknown set is declared with its cost.
+    st["gap_section"] = {
+        "unknown_regions": unknown_set(st["regions"]),
+        "by_status": st["cost"]["by_status"],
+        "regions_total": st["cost"]["regions_total"],
+        "unknown_remaining": st["cost"]["unknown_remaining"],
+    }
+    _stream_emit(case, {"kind": "phase", "phase": "consolidated"})
+    _stream_snapshot(case)
+    save_state(case, st)
+    return stop_reason
+
+
 def _max_attempts() -> int:
     """How many times one region may be investigated. Default 1.
 
@@ -405,13 +732,21 @@ def run_depth_loop(case: Path, ceiling: int | None = None) -> dict:
     a cutoff yields a partial-but-honest map, never nothing.
 
     Checkpoints after EVERY region, so a pause is a resume rather than a restart.
+
+    `REVAI_DEPTH=full` (#26) drives the SAME loop with the domain-node
+    substrate: one graph pass investigates every region with tool access,
+    under the raised ceiling, emitting the Phase 0 state stream. The
+    vocabulary, the termination rules and the honesty rules are shared; only
+    the investigation substrate and the budget differ.
     """
     case = Path(case)
-    ceiling = ceiling if ceiling is not None else ceiling_seconds()
+    profile = depth_profile()
+    ceiling = ceiling if ceiling is not None else ceiling_seconds(profile)
     t0 = time.time()
     st = load_state(case)
     st.setdefault("regions", {})
     st.setdefault("spend", {"llm_calls": 0, "seconds": 0.0, "tokens": 0})
+    st["profile"] = profile or PROFILE_D0
 
     # Resume: regions already carried keep their status; only re-seed the ones
     # that were never investigated.
@@ -423,7 +758,15 @@ def run_depth_loop(case: Path, ceiling: int | None = None) -> dict:
             "no-regions-to-deepen: every capability domain the main pipeline "
             "examined already carries an evidence-backed determination, or the "
             "run produced no capability ledger. Nothing to converge on.")
+        st["gap_section"] = {"unknown_regions": [], "regions_total": 0,
+                             "note": st["stop_reason"]}
         save_state(case, st)
+        _stream_emit(case, {"kind": "phase", "phase": "no-regions"})
+        _stream_snapshot(case)
+        return st
+
+    if profile == PROFILE_FULL:
+        _run_full_profile(case, ceiling, st, t0)
         return st
 
     attempts_allowed = _max_attempts()
@@ -471,6 +814,20 @@ def run_depth_loop(case: Path, ceiling: int | None = None) -> dict:
     st["converged"] = has_converged(st["regions"])
     st["cost"] = cost_summary(st["regions"], st["spend"])
     st["attempts_allowed"] = attempts_allowed
+    # The gap section, and the Phase 0 stream, for D0 as well: the two
+    # profiles' maps and trails are read by the same consumers.
+    st["gap_section"] = {
+        "unknown_regions": unknown_set(st["regions"]),
+        "by_status": st["cost"]["by_status"],
+        "regions_total": st["cost"]["regions_total"],
+        "unknown_remaining": st["cost"]["unknown_remaining"],
+    }
+    _stream_emit(case, {"kind": "init", "sample_sha256": st.get("sha256") or "",
+                        "run_id": str(int(t0))})
+    for _name, _r in st["regions"].items():
+        _stream_region(case, _name, _r)
+    _stream_emit(case, {"kind": "phase", "phase": "consolidated"})
+    _stream_snapshot(case)
     save_state(case, st)
     return st
 
@@ -525,6 +882,7 @@ def _cli() -> int:
 
     if case is None:
         print(f"depth enabled: {depth_enabled()}  "
+              f"profile: {depth_profile() or PROFILE_D0}  "
               f"ceiling: {ceiling_seconds()}s")
         return 0
 
@@ -538,6 +896,11 @@ def _cli() -> int:
         summary["case_dir"] = str(case)
         summary["converged"] = st.get("converged")
         summary["stop_reason"] = st.get("stop_reason")
+        summary["profile"] = st.get("profile") or depth_profile() or PROFILE_D0
+        if st.get("substrate"):
+            summary["substrate"] = st["substrate"]
+        if st.get("gap_section"):
+            summary["gap_section"] = st["gap_section"]
         print(json.dumps(summary, indent=2))
         # rc=0 only when the loop actually ran. An empty region set is an honest
         # outcome, not a failure, but it is reported on stderr so a hollow run

@@ -955,6 +955,19 @@ def get_stage_env(rc: dict | None = None) -> dict[str, str]:
             int(rc.get("depth_ceiling_seconds") or 7200))
     except (TypeError, ValueError):
         env["REVAI_DEPTH_CEILING_SECONDS"] = "7200"
+    # The depth profile (#26): "d0" or "full". Absent leaves the exported
+    # env (or the default) in place, so a CLI-exported REVAI_DEPTH=full is
+    # never silently downgraded by a Console run that did not choose one.
+    _dp = str(rc.get("depth_profile") or "").strip().lower()
+    if _dp in ("d0", "full"):
+        env["REVAI_DEPTH"] = _dp
+    # The full profile's step budget. A bad value must not kill a run -- it
+    # falls back to depth_agent's own default, which is what it does.
+    try:
+        env["REVAI_DEPTH_FULL_MAX_STEPS"] = str(
+            int(rc.get("depth_full_max_steps") or 16))
+    except (TypeError, ValueError):
+        env["REVAI_DEPTH_FULL_MAX_STEPS"] = "16"
     # The IoC fact-check's mode: blocking (the default) or advisory. The CLI
     # escape hatch is REVAI_IOC_FACTCHECK=advisory; an operator who wants a run
     # to continue past unverified claims should be able to say so in the UI
@@ -1013,9 +1026,11 @@ def build_stage_command(stage: str, sha: str, sample_path: str) -> list:
         # Depth is opt-in, so the button must set the gate itself: an operator
         # clicking "Depth" in the Console has already opted in, and requiring
         # them to ALSO export REVAI_DEPTH=1 by hand is the parity gap.
+        # An EXPLICIT exported value passes through untouched: REVAI_DEPTH=full
+        # is a profile (#26), and flattening it to 1 here would silently run
+        # the D0 substrate from a click that asked for the full one.
         cmd = ["python3", script, sha]
-        if not (os.environ.get("REVAI_DEPTH") or "").strip().lower() in (
-                "1", "true", "yes", "on"):
+        if not (os.environ.get("REVAI_DEPTH") or "").strip():
             cmd = ["env", "REVAI_DEPTH=1"] + cmd
         return cmd
     if stage == "audit":
@@ -1389,6 +1404,11 @@ _RUN_CONFIG_KEYS = (
     # key list, so an operator could only set them by exporting a variable by
     # hand. CLI/UI parity is a must, so they join run_config with the rest.
     "ti_enrich", "depth_ceiling_seconds", "ioc_factcheck",
+    # #26: the depth PROFILE. "d0" is the vocabulary loop over the pipeline's
+    # own evidence; "full" is the domain-node substrate with the raised
+    # ceiling and the forced emulation/unpack/solver. A string, not a boolean,
+    # because the two profiles are different investigations, not on/off.
+    "depth_profile", "depth_full_max_steps",
     # #8: the behavioural-model stage was CLI-only -- read by the pipeline but
     # absent from every persisted key list, so an operator could only set it by
     # exporting a variable. CLI/UI parity is a must, so it joins the rest.
