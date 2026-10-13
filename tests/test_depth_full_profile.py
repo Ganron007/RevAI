@@ -75,8 +75,21 @@ def test_forced_features_use_setdefault_semantics(monkeypatch):
 
 # ------------------------------------------------------------- the fold's rules
 def _dom_result(domains: dict) -> dict:
-    return {"findings": {"domain_graph": {"domains": domains},
-                         "domain_findings": "- **persistence**: ..."}}
+    """The substrate's real shape, pinned by the live crash it caused: the
+    summary maps keys to status STRINGS (`domain_coverage`'s per_domain),
+    and the per-domain RESULT dicts live in the deep-dive history under
+    `domain:<key>`. Folding the summary's values as dicts raised
+    AttributeError on the first live pass."""
+    return {
+        "findings": {
+            "domain_graph": {
+                "domains": {k: v["status"] for k, v in domains.items()},
+            },
+            "domain_findings": "- **persistence**: ...",
+        },
+        "history": [{"tool": "domain:%s" % k, "result": v}
+                    for k, v in domains.items()],
+    }
 
 
 def test_fold_maps_domains_under_the_shared_vocabulary():
@@ -117,6 +130,21 @@ def test_fold_grades_conservatively_exactly_like_d0():
     assert folded["surface"]["status_contradicts_answer"] is True
     # a properly cited claim survives.
     assert folded["exfiltration"]["status"] == "understood"
+
+
+def test_fold_reads_status_from_the_summary_and_detail_from_history():
+    """A domain the graph recorded as failed appears in the summary with no
+    history entry; the fold must not lose it (and must not fabricate detail
+    for it)."""
+    dom = {
+        "findings": {"domain_graph": {"domains": {"crypto": "not-reconstructed"}},
+                     "domain_findings": ""},
+        "history": [],
+    }
+    folded = DA._fold_domain_results({}, dom)
+    assert folded["crypto"]["status"] == "not-reconstructed"
+    assert folded["crypto"]["evidence"] == []
+    assert folded["crypto"]["answer"] == ""
 
 
 # ------------------------------------------------------------- the quarantine
@@ -177,10 +205,20 @@ def test_run_depth_loop_full_profile_drives_the_substrate(tmp_path, monkeypatch)
     assert st["regions"]["persistence"]["status"] == "understood"
     assert st["regions"]["persistence"]["evidence"] == ["iocs.json"]
     assert st["regions"]["c2_network"]["status"] == "partial"
-    assert st["spend"]["llm_calls"] == 2
-    # The gap section is REQUIRED for the full profile.
-    assert st["gap_section"]["unknown_regions"] == ["c2_network"]
-    assert st["gap_section"]["regions_total"] == 2
+    # Every pending region spends an attempt, returned or not: the pass
+    # investigated it. A substrate that never answers a region must not
+    # leave its attempts at zero (the loop would spin on it forever).
+    assert st["spend"]["llm_calls"] == len(DA._domain_questions())
+    assert st["regions"]["evasion"]["attempts"] == 1
+    assert "no determination" in st["regions"]["evasion"]["reason"]
+    # The full profile maps EVERY capability domain: the two seeded regions
+    # plus every domain the vocabulary carries, whether or not the flat
+    # pipeline's ledger established it.
+    assert st["gap_section"]["regions_total"] == len(DA._domain_questions())
+    # partial is an unknown status, so only the understood domain leaves the
+    # unknown set.
+    assert set(st["gap_section"]["unknown_regions"]) == (
+        set(DA._domain_questions()) - {"persistence"})
     assert st["stop_reason"] and "costed" in st["stop_reason"]
     # The Phase 0 stream: events appended and the snapshot folded beside them.
     import re_state
@@ -188,13 +226,41 @@ def test_run_depth_loop_full_profile_drives_the_substrate(tmp_path, monkeypatch)
     assert dropped == 0
     kinds = [e.get("kind") for e in events]
     assert kinds[0] == "init" and "phase" in kinds
-    assert kinds.count("region_status") == 2
-    assert kinds.count("spend") == 2
+    # Every pending region is recorded -- returned or not: a region the
+    # substrate did not answer is a fact the trail must carry.
+    n_domains = len(DA._domain_questions())
+    assert kinds.count("region_status") == n_domains
+    assert kinds.count("spend") == n_domains
     snap = json.loads((case / re_state.STATE_SNAPSHOT).read_text())
     assert snap["schema"] == re_state.SCHEMA
     assert snap["regions"]["persistence"]["status"] == "understood"
     # The forced features are recorded.
     assert st["forced_features"]
+
+
+def test_full_profile_seeds_every_domain_even_with_no_ledger(tmp_path, monkeypatch):
+    """The measured defect: on the UPX sample the flat pipeline's coverage
+    was null (`depth_coverage: null`), D0's gap-only seeding mapped NOTHING,
+    and the full profile ran in 0.1s producing an empty map. Its objective
+    is a complete understanding map, so every domain is a region regardless
+    of what the flat pipeline established.
+    """
+    monkeypatch.setenv("REVAI_DEPTH", "full")
+    case = tmp_path / ("b" * 64) / "scripted"
+    case.mkdir(parents=True)
+    # No understanding.json at all: a case the flat pipeline never deepened.
+    st = DA.load_state(case)
+    added = DA._seed_all_domains(st)
+    assert set(added) == set(DA._domain_questions()), added
+    assert all(st["regions"][k]["status"] == DA.STATUS_NOT_EXPLORED
+               for k in added)
+    # And a carried region keeps its own status (resume semantics).
+    st2 = DA.load_state(case)
+    st2["regions"]["persistence"] = {"status": "understood", "reason": "cited",
+                                     "evidence": ["iocs.json"]}
+    added2 = DA._seed_all_domains(st2)
+    assert "persistence" not in added2, "a carried region is not re-seeded"
+    assert st2["regions"]["persistence"]["status"] == "understood"
 
 
 def test_full_profile_does_not_paper_over_a_failed_substrate(tmp_path, monkeypatch):

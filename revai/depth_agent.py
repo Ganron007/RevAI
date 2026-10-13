@@ -517,6 +517,14 @@ def run_domain_depth_pass(sha: str, case: Path) -> dict:
 def _fold_domain_results(st: dict, dom: dict) -> dict[str, dict]:
     """Fold a domain-graph pass into the understanding map.
 
+    Two sources, because the substrate publishes them separately: the
+    summary's `domains` map carries the per-domain STATUS (a string -- the
+    coverage record), and the deep-dive history carries the per-domain
+    RESULT (answer, evidence, reason, tool spend) under `domain:<key>`.
+    Reading only the summary would produce statuses with nothing behind
+    them; reading only the history would miss a domain the graph recorded
+    as failed.
+
     The per-domain entries become regions under the SAME four-status
     vocabulary and the SAME citation rule as D0, so both profiles' maps are
     read by the same consumers. A node's status outside the vocabulary, or a
@@ -525,13 +533,21 @@ def _fold_domain_results(st: dict, dom: dict) -> dict[str, dict]:
     does not.
     """
     folded: dict[str, dict] = {}
-    findings = (dom or {}).get("findings") or {}
+    dom = dom or {}
+    findings = dom.get("findings") or {}
     dg = findings.get("domain_graph") or {}
-    per_domain = dg.get("domains") or {}
+    statuses = dg.get("domains") or {}
+    details: dict[str, dict] = {}
+    for h in dom.get("history") or []:
+        tool = str(h.get("tool") or "")
+        if tool.startswith("domain:"):
+            res = h.get("result")
+            details[tool.split(":", 1)[1]] = res if isinstance(res, dict) else {}
     findings_text = str(findings.get("domain_findings") or "")
-    for key, entry in per_domain.items():
-        entry = entry or {}
-        status = str(entry.get("status") or "").strip().lower()
+    for key, status in statuses.items():
+        entry = details.get(key) or {}
+        status = str(status or "").strip().lower() or str(
+            entry.get("status") or "").strip().lower()
         evidence = [str(e)[:160] for e in (entry.get("evidence") or [])[:8]]
         answer = str(entry.get("answer") or "")[:1200]
         reason = str(entry.get("reason") or "")[:400]
@@ -673,14 +689,27 @@ def _run_full_profile(case: Path, ceiling: int, st: dict,
             break
         folded = _fold_domain_results(st, dom)
         pass_seconds = round(time.time() - before, 1)
-        for name, region in folded.items():
-            region["attempts"] = int(
-                (st["regions"].get(name) or {}).get("attempts") or 0) + 1
-            region["seconds"] = round(
-                pass_seconds / max(1, len(folded)), 1)
-            st["regions"][name] = region
-            _stream_region(case, name, region)
-        st["spend"]["llm_calls"] = int(st["spend"].get("llm_calls", 0)) + len(folded)
+        for name in pending:
+            region = st["regions"].get(name) or {}
+            # EVERY pending region spends an attempt, returned or not: the
+            # pass investigated it. Without this a substrate that never
+            # answers a region leaves its attempts at zero and the loop
+            # spins on it forever -- the 27M-call defect the attempts bound
+            # exists to prevent.
+            region["attempts"] = int(region.get("attempts") or 0) + 1
+            if name in folded:
+                new = dict(folded[name])
+                new["attempts"] = region["attempts"]
+                st["regions"][name] = new
+                _stream_region(case, name, new)
+            else:
+                region["reason"] = (
+                    (region.get("reason") or "")
+                    + " | the domain-node pass returned no determination "
+                    "for this region; it stays unknown and costed").lstrip(" |")
+                st["regions"][name] = region
+                _stream_region(case, name, region)
+        st["spend"]["llm_calls"] = int(st["spend"].get("llm_calls", 0)) + len(pending)
         st["spend"]["seconds"] = round(
             float(st["spend"].get("seconds", 0.0)) + pass_seconds, 1)
         save_state(case, st)
@@ -724,6 +753,38 @@ def _max_attempts() -> int:
     return val if val > 0 else 1
 
 
+def _seed_all_domains(st: dict) -> list[str]:
+    """Seed EVERY capability domain as a region (the full profile's seeding).
+
+    D0 seeds only what the flat pipeline could NOT establish, because D0's
+    objective is gap-filling. The full profile's objective is a COMPLETE
+    understanding map, so every domain in the #20 vocabulary is a region:
+    on a packed sample the flat pipeline's domains are "observed" from the
+    STUB (#58) or the ledger is absent entirely (`depth_coverage: null`,
+    measured on the UPX sample 2026-10-13), and gap-only seeding would map
+    nothing -- a depth run that produces no map has failed its objective.
+
+    A region the flat pipeline DID establish keeps that provenance recorded,
+    so the map distinguishes what the substrate established from what it
+    inherited. Returns the names added.
+    """
+    added = []
+    questions = _domain_questions()
+    for key in questions:
+        if key in st["regions"]:
+            continue
+        st["regions"][key] = {
+            "status": STATUS_NOT_EXPLORED,
+            "reason": "seeded by the full profile: every capability domain "
+                      "is a region of the understanding map",
+            "evidence": [],
+            "attempts": 0,
+            "substrate": "domain-graph",
+        }
+        added.append(key)
+    return added
+
+
 def run_depth_loop(case: Path, ceiling: int | None = None) -> dict:
     """The convergence loop: deepen every seeded region until understood or costed.
 
@@ -753,6 +814,11 @@ def run_depth_loop(case: Path, ceiling: int | None = None) -> dict:
     seeded = seed_regions(case)
     for name, region in seeded.items():
         st["regions"].setdefault(name, region)
+    if profile == PROFILE_FULL:
+        # The full profile maps EVERY capability domain, not just the gaps
+        # (see _seed_all_domains: a packed sample's ledger is stub-derived or
+        # absent, and gap-only seeding would produce an empty map).
+        _seed_all_domains(st)
     if not st["regions"]:
         st["stop_reason"] = (
             "no-regions-to-deepen: every capability domain the main pipeline "
