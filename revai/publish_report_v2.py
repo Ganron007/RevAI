@@ -68,6 +68,7 @@ from report_quality import (  # noqa: E402
     PUBLIC_MODEL_LABEL,
     redact_model_names,
     scrub_report_indicators,
+    scrub_dynamic_execution_claims,
     source_is_fallback,
     stub_sections,
 )
@@ -1278,6 +1279,11 @@ def main():
     # has to be failed for asserting invented registry paths. Recorded in the
     # report JSON so the removal is auditable.
     md, _ioc_scrub = scrub_report_indicators(case, md, "master_v2")
+    # A fabricated dynamic-execution claim is replaced with the run's ground
+    # truth (measured 2026-10-12/13: the claim appeared in 3 of 4 publish
+    # passes across both publishers). Recorded beside the indicator scrub.
+    md, _dyn_scrub = scrub_dynamic_execution_claims(case, md, "master_v2")
+    report["dynamic_claim_scrub"] = _dyn_scrub
     # Vendor/model names are scrubbed from published markdown (docs hygiene).
     # Done AFTER the scrub because the model may have copied the name into its
     # own prose while writing from evidence that still carried it.
@@ -1581,6 +1587,9 @@ def main():
         tech_md, _tech_ioc_scrub = scrub_report_indicators(
             case, tech_md, "technical_v2")
         technical_report["indicator_scrub"] = _tech_ioc_scrub
+        tech_md, _tech_dyn_scrub = scrub_dynamic_execution_claims(
+            case, tech_md, "technical_v2")
+        technical_report["dynamic_claim_scrub"] = _tech_dyn_scrub
         tech_md, _tech_models = redact_model_names(tech_md)
         if _tech_models:
             technical_report["model_names_redacted"] = _tech_models

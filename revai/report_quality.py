@@ -576,18 +576,53 @@ _DYN_NEGATION_MARKERS = (
     "absent", "no dynamic", "no runtime",
 )
 
+# A negation can also sit AFTER the matched verb phrase: "Frida
+# instrumentation was not performed" matches _DYN_EXECUTED_RE (frida ...
+# instrumentation ... was) and negates only in what FOLLOWS. The pre-2026-10-13
+# version looked exclusively backwards, so the truthful sentence this whole
+# fix exists to produce was flagged as a fabrication -- a correct report went
+# red and the orchestrator burned a retry cycle re-publishing it (msil
+# agentic, 2026-10-13). The negation must arrive before the next verb word:
+# "in fact, not performed" is negated; "performed without errors" is an
+# affirmative claim whose "without" describes the claim, not negates it.
+_DYN_NEGATED_AFTER_RE = re.compile(
+    r"^(?:[a-z,]+\s+){0,3}?(?:not|no|never|n't|nor)\s", re.IGNORECASE)
+
+
+def _negation_window_before(md: str, start: int) -> str:
+    """The current sentence's text before `start`, lowercased.
+
+    The negation context must stop at the SENTENCE boundary: a blind
+    character window leaks a negation from the previous sentence ("...no
+    runtime API hooking occurred.") into the next one and suppresses a real
+    claim there. A negation in the same sentence negates; a negation in the
+    sentence before does not.
+    """
+    lb = max(md.rfind(c, 0, start) for c in (".", "!", "?", "\n"))
+    return md[lb + 1:start].lower()
+
 
 def _affirmative_dynamic_claim(md: str) -> str | None:
     """The first dynamic-execution claim in `md` that is NOT negated.
 
-    Returns the matched phrase, or None. A claim whose preceding context negates
-    it ("no Frida trace was captured") is honest and must not be flagged.
+    Returns the matched phrase, or None. A claim whose context negates it
+    ("no Frida trace was captured", "Frida instrumentation was not
+    performed") is honest and must not be flagged. The negation is checked
+    on BOTH sides of the match: the current sentence before it, and a
+    negation arriving before the next verb word after it. Checking only
+    backwards flagged the exact sentence this fix is meant to produce --
+    measured on msil_crypt_dotnet agentic 2026-10-13, where a report that
+    correctly said "Frida instrumentation was not performed" was failed as
+    a fabrication.
     """
     if not md:
         return None
     for m in _DYN_EXECUTED_RE.finditer(md):
-        window = md[max(0, m.start() - 45):m.start()].lower()
+        window = _negation_window_before(md, m.start())
+        after = md[m.end():m.end() + 45].lstrip()
         if any(neg in window for neg in _DYN_NEGATION_MARKERS):
+            continue
+        if _DYN_NEGATED_AFTER_RE.match(after):
             continue
         return m.group(0).strip()
     return None
@@ -1924,6 +1959,106 @@ def scrub_report_indicators(
               f"{meta['unverified_before']} -> {meta['remaining_unverified']}",
               flush=True)
     return scrubbed, meta
+
+
+#: The deterministic replacement for a fabricated dynamic-execution claim. It
+#: states, in published-report language, what the run record carries; the
+#: removal record keeps the internal ground-truth sentence beside the exact
+#: text removed, so an auditor can see both.
+_DYN_CLAIM_TRUTH = (
+    "No dynamic analysis was performed in this run (no emulation, no Frida "
+    "instrumentation, and no detonation), so no runtime behaviour is reported "
+    "here; the findings in this section are from static analysis."
+)
+
+
+def _iter_affirmative_dynamic_claims(md: str):
+    """Every affirmative dynamic-execution claim, negated ones excluded.
+
+    The same predicate the gate uses, but ALL matches rather than the first:
+    a scrub that stopped at the first fabrication would leave the rest of the
+    report asserting them.
+    """
+    if not md:
+        return
+    for m in _DYN_EXECUTED_RE.finditer(md):
+        window = _negation_window_before(md, m.start())
+        after = md[m.end():m.end() + 45].lstrip()
+        if any(neg in window for neg in _DYN_NEGATION_MARKERS):
+            continue
+        if _DYN_NEGATED_AFTER_RE.match(after):
+            continue
+        yield m
+
+
+def _sentence_span(md: str, start: int, end: int) -> tuple[int, int]:
+    """The sentence containing [start, end): back to the previous boundary,
+    forward to the next. Newlines count as boundaries, so a table row is
+    replaced as a unit rather than half a row."""
+    lb = max(md.rfind(c, 0, start) for c in (".", "!", "?", "\n"))
+    cands = [md.find(c, end) for c in (".", "!", "?", "\n")]
+    cands = [c for c in cands if c != -1]
+    ra = min(cands) if cands else len(md)
+    return lb + 1, ra + 1
+
+
+def scrub_dynamic_execution_claims(
+    case: Path, markdown: str, label: str,
+) -> tuple[str, dict]:
+    """Replace fabricated dynamic-execution claims with the run's ground truth.
+
+    The indicator-scrubber pattern (G23) applied to a different claim class.
+    The cross-report gate detects a report claiming an execution the run
+    record says never happened; measured 2026-10-12/13, the model produced
+    exactly that claim in 3 of 4 publish passes across BOTH publishers, from
+    a static probe's availability + hook-candidate output. Evidence labelling
+    and prompt rules reduced but did not eliminate it, so the claim is now
+    removed deterministically at publish time and every removal is recorded
+    -- the gate stays the backstop, and a scrub that fails to take effect is
+    visible rather than assumed.
+
+    Only the "claimed but none performed" direction: a report that UNDERSTATES
+    a dynamic run that did happen is a contradiction for the gate to report,
+    not a sentence to rewrite.
+    """
+    meta: dict[str, Any] = {"label": label, "claims_removed": 0}
+    try:
+        from v2_lib import dynamic_analysis_status
+        dyn = dynamic_analysis_status(case.parent.name)
+    except Exception as exc:  # noqa: BLE001
+        meta["error"] = f"dynamic status unavailable: {type(exc).__name__}"
+        return markdown, meta
+    if dyn.get("any_dynamic_performed") is not False:
+        meta["applicable"] = False
+        return markdown, meta
+    claims = list(_iter_affirmative_dynamic_claims(markdown))
+    if not claims:
+        return markdown, meta
+    out = markdown
+    removals: list[dict] = []
+    done: list[tuple[int, int]] = []
+    # Right-to-left: replacing a later span leaves earlier positions valid.
+    for m in reversed(claims):
+        if any(a <= m.start() < b for a, b in done):
+            continue  # same sentence as an already-replaced claim
+        lb, rb = _sentence_span(out, m.start(), m.end())
+        original = out[lb:rb].strip()
+        if not original:
+            continue
+        out = out[:lb] + _DYN_CLAIM_TRUTH + out[rb:]
+        done.append((lb, rb))
+        removals.append({
+            "removed": original[:300],
+            "replacement": _DYN_CLAIM_TRUTH,
+            "ground_truth": dyn.get("sentence", ""),
+        })
+    meta["claims_removed"] = len(removals)
+    meta["removals"] = removals
+    if removals:
+        print(f"[report_quality] {label}: replaced {len(removals)} fabricated "
+              f"dynamic-execution claim(s) with the run's ground truth",
+              flush=True)
+    return out, meta
 
 
 def _ioc_factcheck_issue(claims: dict) -> str | None:

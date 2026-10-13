@@ -91,6 +91,7 @@ controls it, where it runs, what artifact it produces, and its status in the
 | G37 | **Sample-identity exemption** | The analysed sample's own sha256 is no longer counted as an unverified indicator. Every report states it in Sample Metadata, but it is not in the tool-output corpus the claims are verified against, so it was flagged. Read from `REVAI_CASE_DIR`, never from the report's own `sha256:` line, so a claim cannot exempt itself | always on | publish/audit quality gate | `pipeline-audit.json` `claimed_ioc_verification.excluded_items` |
 | G38 | **Evidence-collection guidance** | The defender-guidance exemption covered inspect/clean verbs but not evidence-collection ones, so a path the report recommended *gathering data about* ("Resolution: execute the sample ... capture ... registry writes under `<path>`") was read as an assertion that the sample wrote there. Same speech act, now classified the same way. A sentence that asserts the write stays a claim and is still verified | always on | publish/audit quality gate | `pipeline-audit.json` `claimed_ioc_verification.guidance_references` |
 | G39 | **Capability-domain deep dive** (plan #20) | The deep dive runs as a LangGraph StateGraph with one node per capability domain (surface, persistence, C2/network, evasion, execution/injection, credential access, exfiltration, defense impairment, encryption/obfuscation) instead of one flat ReAct loop that was *asked* to self-check every domain. Each node runs under a runtime super-step ceiling sized to leave room to REACH AN ANSWER (a tighter ceiling truncates the agent mid-investigation, which is not a finding), and its actual tool spend is measured and flagged `over_budget` -- the tool budget is a request rather than a cap, because super-steps and tool calls are not the same unit; a failing node degrades to `not-reconstructed` instead of ending the dive; actual tool spend is recorded per domain. Coverage is reported as four separate facts -- visited, answered, understood, substantive -- because nine nodes visited and empty is not a dive: `complete` says every domain was investigated to a determination, `honest` additionally requires an unrecognised-status-free run with at least one substantive answer. When nothing substantive is produced the path returns falsy and the flat engine runs, so a failure can never surface as a verdict-shaped result. Opt-in via `REVAI_DOMAIN_GRAPH=1`, off by default so the flat engine stays the validated path | `REVAI_DOMAIN_GRAPH=1`, `REVAI_DOMAIN_STEP_BUDGET` (default 3) | deep_dive agent | `agentic_deep_dive.json` (`domain_graph`, `domain_findings`) |
+| G40 | **Dynamic-execution claim scrub** | A report that claims a dynamic execution the run record says never happened is corrected at publish time: the fabricated sentence is replaced with the run's ground truth and the removal is recorded beside the indicator scrub. Measured 2026-10-12/13 on msil_crypt_dotnet: the model produced that claim in 3 of 4 publish passes across BOTH publishers from a static Frida probe's availability + hook-candidate output, so evidence labelling and prompt rules reduced but did not eliminate it. The claim detector is negation-aware on both sides of the matched verb -- "Frida instrumentation was not performed" is the honest statement, not a fabrication, and a negation in the previous sentence does not negate a claim in this one. The cross-report gate stays the backstop; a scrub that fails to take effect is visible rather than assumed | always on | publish (v2 + v3) | `report-*.json` `dynamic_claim_scrub`, `section-results-v3.json` `master_v3_dynamic_claim_scrub` |
 
 
 ## External integrations
@@ -145,3 +146,66 @@ documented reason rather than analysed.
 > **Not validated by this campaign:** L3 steering's `/api/steer` endpoint (needs
 > the Console), the R1 dynamic-pack ingestion (needs WinRE), and the Console UI
 > itself — the wiring is tested, no browser has exercised it.
+
+---
+
+## Run status (2026-10-12/13 sample campaign — both modes, reboot before each run)
+
+Four samples, each on its own fresh boot, scripted and agentic spines, all
+gates on. Every stage `rc=0` unless noted.
+
+| Sample | scripted | agentic |
+|---|---|---|
+| wiper `12c39f05` | green — claim entailment **273 claims / 0 violations** after the circular-citation parser fix (the citation parser now reads the `, why:` tail: 3 circular citations visible as-is, 10 with the fix, all fixed at the source) | n/a (adjudication case) |
+| coinminer_lolbot `1d60b82e` | green — entailment **319 / 0**; sidecars 17/17 + 13/13 + 13/13 all `source=llm_judge` | green — 8/8 stages rc=0, entailment **264 / 0**, `truly_green=True`, verdict malicious 92, 0 LLM anomalies across 75 judge calls |
+| msil_crypt_dotnet `1dcf264b` | **red, then green** — audit rc=1 on a fabricated dynamic-execution claim; fixed structurally, re-run green | **red, then green** — the same claim class recurred in the v3 publisher; gate + scrub fixes landed, final re-run green (13/13 sections, `llm_judge`) |
+
+**The red is the value evidence.** The msil scripted audit failed on
+`cross_report:dynamic_execution_claimed_but_none_performed` — the technical
+report claimed "Frida probing (version 17.18.0) with a hook on
+`mscoree.dll!_CorExeMain` ran" when the run record says only a *static* Frida
+probe ran (availability + import-derived hook candidates), the emulation
+oracle failed, and no detonation pack exists. Every sidecar check passed
+(all `llm_judge`, complete, `quality_ok=True`); only the cross-report gate
+saw it. The agentic run then produced the same class of claim in the v3
+publisher (3 of 4 publish passes across both publishers fabricated it), the
+gate caught it every time, and the orchestrator's recovery loop re-ran
+publish on its own.
+
+**What the loop exposed, in order** — each fix uncovered the next case:
+
+1. The static probe's output invited the misreading (no self-label; the
+   behavioral evidence line printed `Frida probe: 0 hooked calls`, a key the
+   tool never produces). Fixed: the output labels itself
+   (`probe_kind`/`executed`/`runtime_events`), the renderer states "static
+   analysis only, no injection, no execution, no runtime events", and the
+   registry description says the probe never runs the sample (G40).
+2. Fixing the evidence exposed a **false positive in the gate itself**: the
+   claim regex matched inside the truthful sentence "Frida instrumentation
+   was **not** performed", and the negation guard only looked *backwards*.
+   The guard is now negation-aware on both sides of the matched verb, with
+   the context bounded to the current sentence (a negation in the previous
+   sentence does not negate a claim in this one).
+3. Fixing the gate left one genuine claim in v3, so the G23 pattern was
+   extended to this claim class: a deterministic scrub replaces a fabricated
+   dynamic-execution sentence with the run's ground truth at publish time and
+   records every removal (G40). On the final pass the regenerated report was
+   clean and the scrub recorded zero removals — the backstop held without
+   needing to fire.
+4. The scrub's first wiring crashed the v3 publisher (`NameError` at the
+   master_v3 call site — a scrub record assigned to a variable that does not
+   exist in that scope). No unit test of the scrub can see that; a
+   source-shape tripwire now pins all four call sites and their record keys.
+
+Also validated live in this campaign: the run watchdog found three defects in
+itself by being run (the agentic signal log pointed at a file that never
+existed, the exit contract mis-classified non-fatal anomalies, the attribution
+regex never matched absolute paths), the fresh-boot skip and the mode-aware
+signal log fired correctly on every launch, and the layout tripwire caught its
+fourteenth instance in a test written the same hour.
+
+> **Not validated by this campaign:** the scrub's replacement path is proven by
+> unit tests (the final pass needed zero removals); the agentic planner skipped
+> `artifact_gen` and `function_recovery` on msil (optional planner tools —
+> selection varies per sample); the Console UI remains operator-driven (item
+> #2); dynamic corroboration still needs WinRE.

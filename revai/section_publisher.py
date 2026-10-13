@@ -30,6 +30,7 @@ from report_quality import (  # noqa: E402
     missing_sections,
     redact_model_names,
     scrub_report_indicators,
+    scrub_dynamic_execution_claims,
     source_is_fallback,
     stub_sections,
 )
@@ -941,6 +942,8 @@ def run_section_based_publish(sha: str, tools_results: dict,
     # scrubbed every indicator the master legitimately cited.
     report_markdown, _master_ioc_scrub = scrub_report_indicators(
         case_dir(sha), report_markdown, "master_v3")
+    report_markdown, _master_dyn_scrub = scrub_dynamic_execution_claims(
+        case_dir(sha), report_markdown, "master_v3")
     report_markdown, _master_models = redact_model_names(report_markdown)
     if _master_models:
         print(f"[section_publisher] master_v3: redacted model name(s) "
@@ -959,7 +962,8 @@ def run_section_based_publish(sha: str, tools_results: dict,
     (root_dir / "section-results-v3.json").write_text(
         json.dumps({"sections": section_results, "timings": section_timings,
                     "pass1_count": len(pass1_results), "pass2_count": len(pass2_results),
-                    "master_v3_indicator_scrub": _master_ioc_scrub},
+                    "master_v3_indicator_scrub": _master_ioc_scrub,
+                    "master_v3_dynamic_claim_scrub": _master_dyn_scrub},
                    indent=2, default=str)
     )
 
@@ -1248,6 +1252,9 @@ def _finalize_technical(sha: str, technical_report: dict,
         case_dir(sha), tech_md, "technical_v3")
     technical_report["markdown"] = tech_md
     technical_report["indicator_scrub"] = _tech_ioc_scrub
+    tech_md, _tech_dyn_scrub = scrub_dynamic_execution_claims(
+        case_dir(sha), tech_md, "technical_v3")
+    technical_report["dynamic_claim_scrub"] = _tech_dyn_scrub
     tech_md, _tech_models = redact_model_names(tech_md)
     if _tech_models:
         technical_report["model_names_redacted"] = _tech_models

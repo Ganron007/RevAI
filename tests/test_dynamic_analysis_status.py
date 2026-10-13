@@ -18,7 +18,7 @@ import pytest
 
 TESTS = Path(__file__).resolve().parent
 sys.path.insert(0, str(TESTS))
-from _layout import resolve  # noqa: E402
+from _layout import resolve, source  # noqa: E402
 
 sys.path.insert(0, str(resolve("revai/v2_lib.py").parent))
 import v2_lib  # noqa: E402
@@ -113,6 +113,159 @@ def test_negation_guard_helper():
     assert RQ._affirmative_dynamic_claim("we did not run frida") is None
     got = RQ._affirmative_dynamic_claim("The dynamic runs executed successfully")
     assert got and "executed" in got
+
+
+def test_negation_after_the_verb_is_not_a_claim():
+    """The msil_crypt_dotnet agentic case (2026-10-13): the truthful sentence
+    "Frida instrumentation was not performed" MATCHES _DYN_EXECUTED_RE
+    (frida ... instrumentation ... was) and negates only in what follows. The
+    guard looked exclusively backwards, so a correct report was failed as a
+    fabrication and the orchestrator burned a retry cycle re-publishing it.
+    """
+    assert RQ._affirmative_dynamic_claim(
+        "Frida instrumentation was not performed") is None
+    assert RQ._affirmative_dynamic_claim(
+        "Frida instrumentation was, in fact, not performed") is None
+    assert RQ._affirmative_dynamic_claim(
+        "Frida instrumentation was not performed, and WinRE detonation "
+        "was not run") is None
+    # The affirmative form must still be caught, including a "without" that
+    # describes the claim rather than negating the verb.
+    assert RQ._affirmative_dynamic_claim(
+        "Frida instrumentation was performed") is not None
+    assert RQ._affirmative_dynamic_claim(
+        "Frida instrumentation was performed without errors") is not None
+
+
+def test_gate_flags_the_genuine_claim_in_a_mixed_report():
+    """A report that states the truth AND carries one genuine claim is failed
+    for the claim, not for the truth: the first NON-negated match wins."""
+    st = {"any_dynamic_performed": False,
+          "sentence": "emulation NOT performed; Frida: not performed"}
+    tech3 = (
+        "Frida instrumentation was not performed, so no runtime API hooking "
+        "or memory access monitoring occurred. "
+        "Frida instrumentation probe was configured for the analysis "
+        "environment, with results as follows: the hook fired twice."
+    )
+    c = RQ._cross_report_consistency("", "", tech3, None, st)
+    assert any("dynamic_execution_claimed_but_none_performed" in v
+               for v in c["violations"]), c["violations"]
+
+
+def test_gate_passes_a_truthful_only_report():
+    """The mirror image: every mention negated -> no violation at all."""
+    st = {"any_dynamic_performed": False,
+          "sentence": "emulation NOT performed; Frida: not performed"}
+    tech3 = (
+        "Frida instrumentation was not performed, so no runtime API hooking, "
+        "memory access monitoring, or managed code execution tracing took "
+        "place. Frida instrumentation was not performed, and WinRE detonation "
+        "was not run, so no network traffic or C2 handshake patterns were "
+        "observed."
+    )
+    c = RQ._cross_report_consistency("", "", tech3, None, st)
+    assert not any("dynamic_execution_claimed" in v
+                   for v in c["violations"]), c["violations"]
+
+
+# ------------------------------------------------- dynamic-claim scrubber
+def test_scrub_replaces_the_fabricated_claim_and_keeps_the_truth():
+    """The measured defect: the model narrates a static probe's availability +
+    hook candidates as a runtime execution. The scrub replaces the SENTENCE
+    with the run's ground truth and records exactly what was removed."""
+    md = (
+        "Frida instrumentation was not performed, so no runtime API hooking "
+        "occurred.\n"
+        "Frida instrumentation probe was configured for the analysis "
+        "environment, with results as follows: the hook fired twice.\n"
+        "The sample imports CreateProcessW, which is consistent with "
+        "injection."
+    )
+    out, meta = RQ.scrub_dynamic_execution_claims(
+        Path("/opt/samples/logs/abc123/agentic"), md, "technical_v3")
+    assert meta["claims_removed"] == 1, meta
+    assert "the hook fired twice" not in out, out
+    assert "Frida instrumentation was not performed, so no runtime API hooking" in out, (
+        "the truthful sentence must survive the scrub")
+    assert "No dynamic analysis was performed in this run" in out, out
+    assert meta["removals"][0]["ground_truth"], meta
+    assert "CreateProcessW" in out
+
+
+def test_scrub_leaves_a_truthful_report_unchanged():
+    md = ("Frida instrumentation was not performed, and WinRE detonation was "
+          "not run, so no network traffic was observed.")
+    out, meta = RQ.scrub_dynamic_execution_claims(
+        Path("/opt/samples/logs/abc123/agentic"), md, "technical_v3")
+    assert out == md
+    assert meta["claims_removed"] == 0
+
+
+def test_scrub_is_inert_when_dynamic_did_run(monkeypatch):
+    """Only the 'claimed but none performed' direction is scrubbed; a report
+    that understates a real dynamic run is the gate's contradiction to
+    report, not a sentence to rewrite."""
+    monkeypatch.setattr(v2_lib, "dynamic_analysis_status",
+                        lambda sha, **kw: {"any_dynamic_performed": True,
+                                           "sentence": "emulation ran"})
+    md = "The dynamic runs executed successfully during triage."
+    out, meta = RQ.scrub_dynamic_execution_claims(
+        Path("/opt/samples/logs/abc123/agentic"), md, "technical_v3")
+    assert out == md
+    assert meta.get("applicable") is False
+
+
+def test_scrub_is_idempotent():
+    """The replacement sentence must not itself read as a claim, or a second
+    publish pass would 'fix' the fix."""
+    md = ("Frida instrumentation probe was configured for the analysis "
+          "environment, with results as follows: the hook fired twice.")
+    case = Path("/opt/samples/logs/abc123/agentic")
+    once, _ = RQ.scrub_dynamic_execution_claims(case, md, "technical_v3")
+    twice, meta2 = RQ.scrub_dynamic_execution_claims(case, once, "technical_v3")
+    assert twice == once
+    assert meta2["claims_removed"] == 0
+
+
+def test_scrub_handles_two_claims_without_double_replacing():
+    """Two claims in ONE sentence: one replacement, not two overlapping ones
+    leaving half a sentence behind."""
+    md = ("Frida instrumentation was invoked and the sandbox execution "
+          "completed, recording twelve API calls. Static findings follow.")
+    out, meta = RQ.scrub_dynamic_execution_claims(
+        Path("/opt/samples/logs/abc123/agentic"), md, "technical_v3")
+    assert meta["claims_removed"] == 1, meta
+    assert "Static findings follow." in out
+    assert "twelve API calls" not in out
+
+
+def test_the_scrub_is_wired_and_recorded_at_every_publish_site():
+    """The NameError class, pinned.
+
+    The msil agentic re-run (2026-10-13) crashed in section_publisher: the
+    master_v3 call site assigned its record to `report[...]` -- a variable
+    that does not exist in that scope (the record belongs in
+    section-results-v3.json, the e879318 lesson: a scrub record assigned and
+    read nowhere is a lost tripwire). py_compile passes on that; only a
+    source-shape pin catches it. All four call sites must both call the
+    scrubber AND persist the record.
+    """
+    pub = source("revai/publish_report_v2.py")
+    assert 'scrub_dynamic_execution_claims(case, md, "master_v2")' in pub
+    assert 'report["dynamic_claim_scrub"] = _dyn_scrub' in pub
+    assert 'scrub_dynamic_execution_claims(\n            case, tech_md, "technical_v2")' in pub
+    assert 'technical_report["dynamic_claim_scrub"] = _tech_dyn_scrub' in pub
+    sec = source("revai/section_publisher.py")
+    assert 'scrub_dynamic_execution_claims(\n        case_dir(sha), report_markdown, "master_v3")' in sec
+    # master_v3's record is persisted into section-results-v3.json -- there is
+    # no `report` variable in that scope, and assigning to one crashed the
+    # publisher mid-run.
+    assert '"master_v3_dynamic_claim_scrub": _master_dyn_scrub' in sec
+    assert "report[" not in sec.split("master_v3")[1].split("redact_model_names")[0], (
+        "the master_v3 site must not assign to an undefined `report` variable")
+    assert 'scrub_dynamic_execution_claims(\n        case_dir(sha), tech_md, "technical_v3")' in sec
+    assert 'technical_report["dynamic_claim_scrub"] = _tech_dyn_scrub' in sec
 
 
 def test_gate_does_not_fire_on_a_static_hook_candidate():
