@@ -672,6 +672,19 @@ def _build_lc_tools(runner: StageRunner, need_intake: bool) -> list:
         "run_section_publish then check_quality again (max 1 retry).",
     )
     _add(
+        "run_depth",
+        runner.run_depth,
+        "Stage 9, LAST, once, and only meaningful when REVAI_DEPTH is set: "
+        "post-pipeline depth mode. REVAI_DEPTH=1 deepens the capability domains "
+        "the pipeline could not establish; REVAI_DEPTH=full runs the #26 profile "
+        "on the domain-node substrate -- every capability domain investigated by "
+        "its own bounded tool-calling node, a raised ceiling, and "
+        "emulation/unpack/solver forced on. Call it AFTER run_audit and "
+        "check_quality, as the final stage; it never gates the pipeline and a "
+        "partial map is a result. Skips itself (rc=0, recorded) when REVAI_DEPTH "
+        "is unset.",
+    )
+    _add(
         "read_verdicts",
         runner.read_verdicts,
         "Observe quick vs deep verdicts; check for conflict before publish",

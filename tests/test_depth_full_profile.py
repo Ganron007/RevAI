@@ -276,6 +276,23 @@ def test_full_profile_does_not_paper_over_a_failed_substrate(tmp_path, monkeypat
 
 
 # ------------------------------------------------------------- the stage gates
+def test_the_agentic_planner_can_reach_the_depth_stage():
+    """The measured gap: `run_depth` existed as a StageRunner METHOD but was
+    never registered as a planner tool, so REVAI_DEPTH=full with --mode
+    agentic was silently ignored -- the plan's "the agentic spine runs it
+    too" was true of the method and false of the wiring. The upx agentic run
+    (2026-10-13) ended truly_green with no depth stage in its trace.
+    """
+    orch = source("revai/stage_orchestrator.py")
+    assert '_add(\n        "run_depth",' in orch, (
+        "the agentic planner has no depth tool: REVAI_DEPTH in agentic mode "
+        "is silently ignored")
+    # The tool must be described as the LAST stage, or the planner may call
+    # it before publish and produce a map the reports never saw.
+    desc = orch.split('_add(\n        "run_depth"', 1)[1].split(")", 1)[0]
+    assert "LAST" in desc and "AFTER run_audit" in desc, desc
+
+
 def test_the_stage_gates_accept_the_profile():
     """Both drivers must run the depth stage for REVAI_DEPTH=full, and the
     orchestrator must pass the PROFILE through rather than flattening it."""
