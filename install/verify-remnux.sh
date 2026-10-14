@@ -11,6 +11,9 @@ WARN=0
 ok()   { echo "  [OK]   $1"; }
 warn() { echo "  [WARN] $1"; ((WARN++)) || true; }
 fail() { echo "  [FAIL] $1"; ((ERR++)) || true; }
+nft_read() {
+  if [[ $EUID -eq 0 ]]; then nft "$@"; else sudo -n nft "$@"; fi
+}
 
 echo "=== RevAI / REMnux verification ==="
 
@@ -132,7 +135,12 @@ PY
   done
   if systemctl is-active --quiet winre-guest-guard.service; then
     ok "WinRE guest firewall/NAT policy active"
-    if nft -j list table inet winre_guest_guard 2>/dev/null | python3 -c '
+    if nft_read list table inet winre_guest_guard >/dev/null 2>&1; then
+      ok "gateway nftables rules readable by the verifier/runtime user"
+    else
+      fail "gateway nftables rules are not readable without an interactive prompt — rerun install/setup-winre-gateway.sh"
+    fi
+    if nft_read -j list table inet winre_guest_guard 2>/dev/null | python3 -c '
 import json, sys
 data = json.load(sys.stdin)
 chains = [item["chain"] for item in data["nftables"] if "chain" in item]
@@ -144,23 +152,34 @@ assert any(c.get("name") == "forward" and c.get("hook") == "forward" and c.get("
     fi
     GW_IFACE="$(python3 -c "import json; print(json.load(open('/etc/revai/winre-gateway.json'))['interface'])" 2>/dev/null || true)"
     if [[ -n "$GW_IFACE" ]] && grep -Fq "iifname \"$GW_IFACE\" drop" \
-      < <(nft list chain inet winre_guest_guard input 2>/dev/null); then
+      < <(nft_read list chain inet winre_guest_guard input 2>/dev/null); then
       ok "gateway input drops other guest ingress, including IPv6"
     else
       fail "gateway input chain must drop all other guest ingress"
     fi
     GW_MGMT="$(python3 -c "import json; print(json.load(open('/etc/revai/winre-gateway.json'))['management_ip'])" 2>/dev/null || true)"
     if [[ -n "$GW_IFACE" && -n "$GW_MGMT" ]] && grep -Fq "iifname \"$GW_IFACE\" ip saddr $GW_MGMT tcp dport 22 accept" \
-      < <(nft list chain inet winre_guest_guard input 2>/dev/null); then
+      < <(nft_read list chain inet winre_guest_guard input 2>/dev/null); then
       ok "REMnux SSH retained for management host $GW_MGMT"
     else
       fail "REMnux management SSH exception missing from guest-facing firewall"
     fi
     if grep -Fq 'ct state established,related accept' \
-      < <(nft list chain inet winre_guest_guard input 2>/dev/null); then
+      < <(nft_read list chain inet winre_guest_guard input 2>/dev/null); then
       ok "gateway accepts replies on established flows"
     else
       fail "gateway drops established guest-flow replies"
+    fi
+    GW_IP_FOR_NAT="$(python3 -c "import json; print(json.load(open('/etc/revai/winre-gateway.json'))['gateway_ip'])" 2>/dev/null || true)"
+    NAT_RULES="$(nft_read list chain ip winre_guest_nat prerouting 2>/dev/null || true)"
+    if [[ -n "$GW_IP_FOR_NAT" ]] && \
+      grep -Fq "udp dport 53 dnat to $GW_IP_FOR_NAT:53" <<<"$NAT_RULES" && \
+      grep -Fq "tcp dport 53 dnat to $GW_IP_FOR_NAT:53" <<<"$NAT_RULES" && \
+      grep -Fq 'tcp dport { 21, 25, 80' <<<"$NAT_RULES" && \
+      grep -Fq "dnat to $GW_IP_FOR_NAT" <<<"$NAT_RULES"; then
+      ok "DNS and HTTP simulator redirects target $GW_IP_FOR_NAT"
+    else
+      fail "gateway DNS/HTTP simulator redirects are missing — rerun install/setup-winre-gateway.sh"
     fi
   else
     fail "WinRE guest firewall/NAT policy inactive"

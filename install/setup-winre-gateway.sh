@@ -37,7 +37,7 @@ if management not in network or management in {gateway, guest}:
     raise SystemExit("WINRE_MANAGEMENT_IP must be another address in the gateway /24")
 PY
 
-for bin in ip nft sysctl systemctl python3 dumpcap setcap getcap ss dnsmasq; do
+for bin in ip nft sysctl systemctl python3 dumpcap setcap getcap ss dnsmasq sudo visudo su; do
   command -v "$bin" >/dev/null || { echo "Required command missing: $bin" >&2; exit 2; }
 done
 [[ -x "$(command -v inetsim || true)" ]] || { echo "INetSim is not installed" >&2; exit 2; }
@@ -237,6 +237,34 @@ systemctl restart winre-dnsmasq.service
 # starting it, so enable and restart explicitly, then validate the listeners.
 systemctl enable inetsim.service
 systemctl restart inetsim.service
+
+# The RevAI service and normal WinRE CLI run as `remnux`, while nftables
+# inspection requires CAP_NET_ADMIN. Give that worker account only the exact
+# read-only rule-list commands used by external_capture.verify_gateway.
+CAPTURE_USER=remnux
+id "$CAPTURE_USER" >/dev/null 2>&1 || {
+  echo "Required RevAI/WinRE service user is missing: $CAPTURE_USER" >&2
+  exit 2
+}
+NFT_BIN="$(command -v nft)"
+cat > /etc/sudoers.d/winre-gateway-nft <<EOF
+$CAPTURE_USER ALL=(root) NOPASSWD: \\
+  $NFT_BIN list table inet winre_guest_guard, \\
+  $NFT_BIN list table ip winre_guest_nat, \\
+  $NFT_BIN list chain inet winre_guest_guard input, \\
+  $NFT_BIN list chain ip winre_guest_nat prerouting, \\
+  $NFT_BIN -j list table inet winre_guest_guard
+EOF
+chmod 0440 /etc/sudoers.d/winre-gateway-nft
+visudo -cf /etc/sudoers.d/winre-gateway-nft >/dev/null || {
+  echo "Read-only WinRE nftables sudo policy is invalid" >&2
+  exit 1
+}
+if ! su -s /bin/sh "$CAPTURE_USER" -c \
+  "sudo -n '$NFT_BIN' list table inet winre_guest_guard >/dev/null && sudo -n '$NFT_BIN' list table ip winre_guest_nat >/dev/null && sudo -n '$NFT_BIN' list chain inet winre_guest_guard input >/dev/null && sudo -n '$NFT_BIN' list chain ip winre_guest_nat prerouting >/dev/null && sudo -n '$NFT_BIN' -j list table inet winre_guest_guard >/dev/null"; then
+  echo "WinRE service user cannot inspect the gateway firewall non-interactively" >&2
+  exit 1
+fi
 
 if [[ "$(sysctl -n net.ipv4.ip_forward)" != "0" ]]; then
   echo "IPv4 forwarding is not disabled" >&2
