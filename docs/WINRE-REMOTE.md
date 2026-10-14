@@ -24,8 +24,9 @@ RevAI host (this machine)                    Windows analysis VM (FlareVM-based)
   winre.remote_driver process                  tools only, air-gapped
   - LangGraph agent + all LLM calls      ───►  Ghidra/IDA/Malcat SQL+MCP
   - WinRE package + Python deps          SSH   x64dbg/WinDbg MCP
-  - SSH/SCP to the Windows VM            SCP   detonation job (FakeNet,
-  - the only machine holding LLM keys          Procmon, Frida, pe-sieve)
+  - SSH/SCP to the Windows VM            SCP   detonation job (Procmon,
+  - gateway capture + INetSim                  Frida, pe-sieve)
+  - the only machine holding LLM keys          standalone mode uses FakeNet
 ```
 
 The driver process runs on the RevAI host; the Windows VM only executes tools.
@@ -49,12 +50,39 @@ creates `/opt/winre/venv`, installs the driver extras, and scaffolds
 archive at `internal/winre.zip` instead. Without the flag, the step just warns —
 RevAI stays static-only.
 
+When WinRE is present, setup also runs `install/setup-winre-gateway.sh`.
+That script binds no-upstream dnsmasq and INetSim to the private analysis interface, installs a
+persistent nftables policy that drops forwarding and redirects supported
+simulation ports, and writes `/etc/revai/winre-gateway.json` for the driver.
+The default lab addresses are Flare `.42` and REMnux `.43` on `192.168.77.0/24`;
+set `WINRE_GUEST_IP`, `WINRE_GATEWAY_IP`, and `WINRE_ANALYSIS_INTERFACE` when
+deploying elsewhere; `WINRE_MANAGEMENT_IP` (default `192.168.77.1`) identifies
+the host allowed to SSH to REMnux over VMnet2. The gateway accepts established
+replies from Flare so RevAI can SSH into the guest; new guest connections to
+REMnux are limited to simulator ports. IPv4/IPv6 forwarding stays disabled, so
+`.43`'s separate NAT interface cannot provide guest Internet access.
+
 ### 2. Windows VM (FlareVM)
 
 Provision the Windows VM with WinRE's own scripts (from the WinRE repository):
 `install/setup-flarevm.ps1` then `install/verify-flarevm.ps1`. Keep WinRE's
 `.env` on the Windows side free of LLM keys and make SSH reachable from the
 RevAI host (`docs/SSH-CONTRACT.md` in WinRE).
+
+The setup script persists the private gateway and DNS, blocks inbound traffic
+by default, permits routed outbound packets to the gateway, blocks other
+on-link VMnet2 peers, including the workstation host, and limits SSH/x64dbg
+inbound access to the gateway. Workstation-side sync and reapply must reach
+Flare through `.43` as an SSH jump host; RevAI connects directly because it
+runs on `.43`.
+REMnux has IPv4/IPv6 forwarding disabled and drops all guest forwarding, so the
+guest cannot use its NAT-facing interface for Internet access. Remote-driver
+runs on the configured REMnux host use off-box capture, dnsmasq for DNS, and
+INetSim for supported service simulation;
+standalone Flare runs continue using guest-side FakeNet. Before sample
+detonation, verify the selected route and run the documented benign DNS/HTTP
+packet-visibility and no-egress checks in WinRE's
+[`DYNAMIC-ORCHESTRATOR.md`](https://github.com/Ganron007/WinRE/blob/master/docs/DYNAMIC-ORCHESTRATOR.md).
 
 Manual alternative for the RevAI host (if you prefer):
 

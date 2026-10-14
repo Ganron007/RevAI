@@ -32,7 +32,7 @@ apt-get install -y --no-install-recommends \
   libssl-dev libffi-dev zlib1g-dev python3-dev \
   python3-venv python3-pip python3-olefile python3-oletools python3-requests python3-yaml \
   radare2 yara openjdk-21-jdk gradle \
-  ghidra || true
+  ghidra inetsim dnsmasq-base nftables tcpdump tshark libcap2-bin || true
 # ghidra apt package may place files outside /opt/ghidra — normalize below
 ok "apt packages installed"
 
@@ -53,6 +53,7 @@ if [[ ! -x /opt/ghidra/support/analyzeHeadless ]]; then
     ok "symlinked $FOUND → /opt/ghidra"
   fi
 fi
+
 if [[ -x /opt/ghidra/support/analyzeHeadless || -x /opt/ghidra/support/ghidraRun ]]; then
   export GHIDRA_INSTALL_DIR=/opt/ghidra
   ok "GHIDRA_INSTALL_DIR=$GHIDRA_INSTALL_DIR"
@@ -460,6 +461,24 @@ else
     warn "      The FlareVM itself must NOT hold any LLM configuration."
   else
     warn "WinRE install failed (optional) — static-only; see docs/WINRE-REMOTE.md"
+  fi
+fi
+
+# =========================================================================
+# Optional WinRE network gateway / off-box capture service
+# =========================================================================
+# When WinRE is installed, REMnux is the guest's private-network gateway and
+# capture point. Forwarding stays disabled; unknown flows are observed and
+# dropped, while configured INetSim ports are redirected to local simulators.
+if [[ -f "$WINRE_DIR/winre/pipeline.py" ]]; then
+  if [[ -x "$REPO_ROOT/install/setup-winre-gateway.sh" ]]; then
+    if "$REPO_ROOT/install/setup-winre-gateway.sh"; then
+      ok "WinRE gateway/capture policy configured"
+    else
+      warn "WinRE gateway/capture setup failed; remote dynamic capture is not ready"
+    fi
+  else
+    warn "setup-winre-gateway.sh missing; WinRE gateway/capture not configured"
   fi
 fi
 

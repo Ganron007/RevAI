@@ -21,7 +21,7 @@
 - **LibGhidraHost patch** — external symbols in the `ListSymbols` RPC (VB6 / packed PE imports).
 - **capa-signatures** at `/opt/capa-signatures` (empty by design, so standalone capa does not error on missing signatures).
 - **idasql** CLI + IDA plugin — only when IDA Pro is installed (version-matched 9.2/9.3/9.4 build of v0.0.18.1).
-- **WinRE (optional dynamic companion)** — off by default: `REVAI_WITH_WINRE=1 sudo -E ./install/setup-remnux.sh` clones the public [WinRE](https://github.com/Ganron007/WinRE) repo to `/opt/winre`, creates its venv and scaffolds `.env`. Without it, RevAI stays static-only (reports byte-identical) and the step just warns.
+- **WinRE (optional dynamic companion)** — off by default: `REVAI_WITH_WINRE=1 sudo -E ./install/setup-remnux.sh` clones the public [WinRE](https://github.com/Ganron007/WinRE) repo to `/opt/winre`, creates its venv, scaffolds `.env`, and configures the private REMnux gateway/capture policy when WinRE is present. Forwarding remains disabled; the guest cannot use the control plane's NAT interface. Without WinRE, RevAI stays static-only (reports byte-identical) and the optional step just warns. See [WinRE Remote](WINRE-REMOTE.md) for guest setup and gateway-mode validation.
 - capa-rules + flattened YARA under `/opt/samples/rules/flat/`.
 - Lab dirs: `/opt/samples/`, `/opt/scripts/`, `/opt/revai/`.
 

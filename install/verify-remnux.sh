@@ -101,6 +101,113 @@ else
 fi
 
 echo ""
+echo "--- WinRE gateway / off-box capture ---"
+if [[ -f /opt/winre/winre/pipeline.py ]]; then
+  if [[ -f /etc/revai/winre-gateway.json ]]; then
+    if python3 - <<'PY'
+import json
+from pathlib import Path
+cfg = json.loads(Path('/etc/revai/winre-gateway.json').read_text())
+assert cfg.get('enabled') is True and cfg.get('forwarding') is False
+assert cfg.get('interface') and cfg.get('guest_ip') and cfg.get('gateway_ip') and cfg.get('management_ip')
+print('gateway config OK:', cfg['interface'], cfg['guest_ip'], '->', cfg['gateway_ip'])
+PY
+    then ok "WinRE gateway capture config"
+    else fail "WinRE gateway config invalid — rerun install/setup-winre-gateway.sh"
+    fi
+  else
+    fail "WinRE installed but gateway config missing — rerun install/setup-remnux.sh"
+  fi
+  if [[ "$(sysctl -n net.ipv4.ip_forward 2>/dev/null || echo unknown)" == "0" ]]; then
+    ok "IPv4 forwarding disabled"
+  else
+    fail "IPv4 forwarding must remain disabled for guest isolation"
+  fi
+  for key in net.ipv6.conf.all.forwarding net.ipv6.conf.default.forwarding; do
+    if [[ "$(sysctl -n "$key" 2>/dev/null || echo unknown)" == "0" ]]; then
+      ok "$key disabled"
+    else
+      fail "$key must remain 0 for guest isolation"
+    fi
+  done
+  if systemctl is-active --quiet winre-guest-guard.service; then
+    ok "WinRE guest firewall/NAT policy active"
+    if nft -j list table inet winre_guest_guard 2>/dev/null | python3 -c '
+import json, sys
+data = json.load(sys.stdin)
+chains = [item["chain"] for item in data["nftables"] if "chain" in item]
+assert any(c.get("name") == "forward" and c.get("hook") == "forward" and c.get("policy") == "drop" for c in chains)
+' >/dev/null 2>&1; then
+      ok "nftables forward chain drops guest routing"
+    else
+      fail "nftables forward chain does not enforce drop policy"
+    fi
+    GW_IFACE="$(python3 -c "import json; print(json.load(open('/etc/revai/winre-gateway.json'))['interface'])" 2>/dev/null || true)"
+    if [[ -n "$GW_IFACE" ]] && grep -Fq "iifname \"$GW_IFACE\" drop" \
+      < <(nft list chain inet winre_guest_guard input 2>/dev/null); then
+      ok "gateway input drops other guest ingress, including IPv6"
+    else
+      fail "gateway input chain must drop all other guest ingress"
+    fi
+    GW_MGMT="$(python3 -c "import json; print(json.load(open('/etc/revai/winre-gateway.json'))['management_ip'])" 2>/dev/null || true)"
+    if [[ -n "$GW_IFACE" && -n "$GW_MGMT" ]] && grep -Fq "iifname \"$GW_IFACE\" ip saddr $GW_MGMT tcp dport 22 accept" \
+      < <(nft list chain inet winre_guest_guard input 2>/dev/null); then
+      ok "REMnux SSH retained for management host $GW_MGMT"
+    else
+      fail "REMnux management SSH exception missing from guest-facing firewall"
+    fi
+    if grep -Fq 'ct state established,related accept' \
+      < <(nft list chain inet winre_guest_guard input 2>/dev/null); then
+      ok "gateway accepts replies on established flows"
+    else
+      fail "gateway drops established guest-flow replies"
+    fi
+  else
+    fail "WinRE guest firewall/NAT policy inactive"
+  fi
+  if systemctl is-enabled --quiet winre-guest-guard.service; then
+    ok "WinRE guest firewall/NAT policy enabled at boot"
+  else
+    fail "WinRE guest firewall/NAT policy not enabled at boot"
+  fi
+  if systemctl is-active --quiet inetsim.service; then
+    ok "INetSim active"
+  else
+    fail "INetSim inactive — rerun install/setup-winre-gateway.sh"
+  fi
+  if systemctl is-enabled --quiet inetsim.service; then
+    ok "INetSim enabled at boot"
+  else
+    fail "INetSim not enabled at boot"
+  fi
+  if systemctl is-active --quiet winre-dnsmasq.service && systemctl is-enabled --quiet winre-dnsmasq.service; then
+    ok "WinRE dnsmasq active and enabled at boot"
+  else
+    fail "WinRE dnsmasq inactive or not enabled — rerun install/setup-winre-gateway.sh"
+  fi
+  if command -v dumpcap >/dev/null 2>&1; then
+    ok "dumpcap available"
+    DUMPCAP_CAPS="$(getcap "$(command -v dumpcap)" 2>/dev/null || true)"
+    if grep -q 'cap_net_admin,cap_net_raw' <<<"$DUMPCAP_CAPS"; then
+      ok "dumpcap capture capabilities configured"
+    else
+      fail "dumpcap capture capabilities missing — rerun install/setup-winre-gateway.sh"
+    fi
+  else
+    fail "dumpcap missing"
+  fi
+  GW_IP="$(python3 -c "import json; print(json.load(open('/etc/revai/winre-gateway.json'))['gateway_ip'])" 2>/dev/null || true)"
+  LISTENERS="$(ss -H -lntup 2>/dev/null || true)"
+  if [[ -n "$GW_IP" ]] && grep -Fq "$GW_IP:53" <<<"$LISTENERS" && grep -Fq "$GW_IP:80" <<<"$LISTENERS"; then
+    ok "WinRE DNS and INetSim HTTP bound to $GW_IP"
+  else
+    fail "WinRE DNS or INetSim HTTP listener missing on $GW_IP"
+  fi
+else
+  warn "WinRE gateway not required without the optional WinRE runtime"
+fi
+
+echo ""
 echo "--- YARA engine (required for quick_scan) ---"
 if python3 -c "import yara_x" >/dev/null 2>&1; then
   ok "yara_x Python module present (in-process scan engine)"
