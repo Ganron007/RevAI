@@ -21,6 +21,7 @@ Checks
 from __future__ import annotations
 
 import argparse
+import ast
 import json
 import py_compile
 import re
@@ -414,6 +415,145 @@ _ENV_ALLOWLIST = {
     "REVAI_HOME", "REVAI_LLM_MODEL_REQUESTED",
 }
 
+# These documented variables are consumed by shell/deployment tooling rather
+# than Python modules under revai/. They remain in the user-facing contract,
+# but are not expected to appear as Python environment reads.
+_ENV_NON_PYTHON_ALLOWLIST = {
+    "REVAI_PE_PARITY_SAMPLE", "REVAI_PIPELINE_TEST_SHA", "REVAI_PYTHON",
+    "REVAI_VM_SSH", "REVAI_WINRE_REF", "REVAI_WINRE_REPO",
+    "REVAI_WITH_WINRE",
+}
+
+
+def _env_reads_in_python(path: Path) -> set[str]:
+    """Find literal and module-constant environment reads in one Python file.
+
+    This deliberately does not claim to prove arbitrary data flow. The
+    verifier reports the remaining limit so helper-indirected or dynamically
+    composed keys still receive a manual review.
+    """
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))
+    except (OSError, SyntaxError):
+        return set()
+
+    os_modules = {"os"}
+    getenv_names = {"getenv"}
+    environ_names = {"environ"}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                if alias.name == "os":
+                    os_modules.add(alias.asname or "os")
+        elif isinstance(node, ast.ImportFrom) and node.module == "os":
+            for alias in node.names:
+                if alias.name == "getenv":
+                    getenv_names.add(alias.asname or alias.name)
+                elif alias.name == "environ":
+                    environ_names.add(alias.asname or alias.name)
+
+    constants: dict[str, str] = {}
+    for _ in range(max(1, len(tree.body))):
+        changed = False
+        for node in tree.body:
+            if isinstance(node, ast.Assign):
+                targets = node.targets
+                value = node.value
+            elif isinstance(node, ast.AnnAssign):
+                targets = [node.target]
+                value = node.value
+            else:
+                continue
+            if value is None:
+                continue
+            resolved = (value.value if isinstance(value, ast.Constant)
+                        and isinstance(value.value, str)
+                        else constants.get(value.id) if isinstance(value, ast.Name)
+                        else None)
+            if resolved is None:
+                continue
+            for target in targets:
+                if isinstance(target, ast.Name) and constants.get(target.id) != resolved:
+                    constants[target.id] = resolved
+                    changed = True
+        if not changed:
+            break
+
+    def key_value(expr: ast.AST | None) -> str | None:
+        if isinstance(expr, ast.Constant) and isinstance(expr.value, str):
+            return expr.value
+        if isinstance(expr, ast.Name):
+            return constants.get(expr.id)
+        return None
+
+    def env_lookup_key(node: ast.AST) -> ast.AST | None:
+        if isinstance(node, ast.Call):
+            fn = node.func
+            if isinstance(fn, ast.Attribute) and node.args:
+                owner = fn.value
+                if (isinstance(owner, ast.Name) and owner.id in os_modules
+                        and fn.attr == "getenv"):
+                    return node.args[0]
+                if (isinstance(owner, ast.Attribute) and fn.attr == "get"
+                        and owner.attr == "environ"
+                        and isinstance(owner.value, ast.Name)
+                        and owner.value.id in os_modules):
+                    return node.args[0]
+                if (isinstance(owner, ast.Name) and owner.id in environ_names
+                        and fn.attr == "get"):
+                    return node.args[0]
+            if isinstance(fn, ast.Name) and fn.id in getenv_names and node.args:
+                return node.args[0]
+        if isinstance(node, ast.Subscript):
+            owner = node.value
+            if (isinstance(owner, ast.Attribute) and owner.attr == "environ"
+                    and isinstance(owner.value, ast.Name)
+                    and owner.value.id in os_modules):
+                return node.slice
+            if isinstance(owner, ast.Name) and owner.id in environ_names:
+                return node.slice
+        return None
+
+    functions = {node.name: node for node in tree.body
+                 if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))}
+    helper_key_params: dict[str, set[int]] = {name: set() for name in functions}
+    for _ in range(max(1, len(functions))):
+        changed = False
+        for name, function in functions.items():
+            params = [arg.arg for arg in function.args.posonlyargs + function.args.args]
+            for child in ast.walk(function):
+                key_expr = env_lookup_key(child)
+                if isinstance(key_expr, ast.Name) and key_expr.id in params:
+                    index = params.index(key_expr.id)
+                    if index not in helper_key_params[name]:
+                        helper_key_params[name].add(index)
+                        changed = True
+                if isinstance(child, ast.Call) and isinstance(child.func, ast.Name):
+                    for index in helper_key_params.get(child.func.id, set()):
+                        if index < len(child.args) and isinstance(child.args[index], ast.Name):
+                            if child.args[index].id in params:
+                                parent_index = params.index(child.args[index].id)
+                                if parent_index not in helper_key_params[name]:
+                                    helper_key_params[name].add(parent_index)
+                                    changed = True
+        if not changed:
+            break
+
+    reads: set[str] = set()
+    for node in ast.walk(tree):
+        key_expr = env_lookup_key(node)
+        value = key_value(key_expr) if key_expr is not None else None
+        if value and value.startswith("REVAI_"):
+            reads.add(value)
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+            indices = helper_key_params.get(node.func.id, set())
+            for index in indices:
+                if index < len(node.args):
+                    value = key_value(node.args[index])
+                    if value and value.startswith("REVAI_"):
+                        reads.add(value)
+    return reads
+
 
 def check_env_contract() -> None:
     docs_dir = REPO / "docs"
@@ -437,9 +577,10 @@ def check_env_contract() -> None:
              "no operator docs deployed (flat VM layout) - skipped")
         return
     documented: set[str] = set()
+    env_name_re = re.compile(r"REVAI_[A-Z][A-Z0-9_]*[A-Z0-9](?![A-Z0-9_])")
     for path in list(docs_dir.glob("*.md")) + [REPO / "README.md"]:
         if path.is_file():
-            documented |= set(re.findall(r"REVAI_[A-Z_]+", path.read_text(
+            documented |= set(env_name_re.findall(path.read_text(
                 encoding="utf-8", errors="replace")))
     in_code: set[str] = set()
     # Only actual environment lookups count - literal marker strings such as
@@ -447,16 +588,34 @@ def check_env_contract() -> None:
     lookup_re = re.compile(
         r"os\.environ(?:\.get)?[\(\[]\s*[\"'](REVAI_[A-Z_]+)[\"']"
         r"|os\.getenv\(\s*[\"'](REVAI_[A-Z_]+)[\"']")
-    for path in CODE.glob("*.py"):
+    python_sources = [path for path in CODE.rglob("*.py")
+                      if "tests" not in path.relative_to(CODE).parts
+                      and "__pycache__" not in path.parts]
+    for path in python_sources:
         text = path.read_text(encoding="utf-8", errors="replace")
         for match in lookup_re.finditer(text):
             name = match.group(1) or match.group(2)
             if name:
                 in_code.add(name)
+        in_code |= _env_reads_in_python(path)
     undocumented = sorted(in_code - documented - _ENV_ALLOWLIST)
-    check("env.documented", not undocumented,
-          f"{len(in_code)} env vars in code" if not undocumented
-          else f"read by code but not documented: {', '.join(undocumented[:6])}")
+    # The reverse direction catches stale or invented exact variable names.
+    # Ops-only values are checked in shell/deployment reviews, outside CODE.
+    source_names = set()
+    for path in python_sources:
+        source_names |= set(env_name_re.findall(path.read_text(
+            encoding="utf-8", errors="replace")))
+    undocumented_claims = sorted(
+        documented - source_names - _ENV_ALLOWLIST - _ENV_NON_PYTHON_ALLOWLIST)
+    ok = not undocumented and not undocumented_claims
+    detail = (f"{len(in_code)} Python environment reads; exact docs/source names agree; "
+              "dynamic key construction and non-literal helper flows still need manual review"
+              if ok else "; ".join(filter(None, (
+                  f"read by code but not documented: {', '.join(undocumented[:6])}"
+                  if undocumented else "",
+                  f"documented but absent from Python source: {', '.join(undocumented_claims[:6])}"
+                  if undocumented_claims else ""))))
+    check("env.documented", ok, detail)
 
 
 # --- main ------------------------------------------------------------------

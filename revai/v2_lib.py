@@ -9560,18 +9560,28 @@ def signature_match(func_name: str, imports: list | None = None,
     from pathlib import Path
 
     sig_dirs = [
+        # Explicit operator overrides remain first. In both the source tree
+        # (`revai/v2_lib.py`) and the flat VM deployment (`/opt/scripts/v2_lib.py`),
+        # the shipped databases are siblings of this module.
         Path("/opt/revai/signatures"),
+        Path(__file__).resolve().parent / "signatures",
         Path(__file__).resolve().parent.parent / "v4-deploy" / "signatures",
     ]
 
     entries = []
+    seen_files = set()
     for d in sig_dirs:
         if not d.exists():
             continue
         for path in sorted(d.glob("*.json")):
+            resolved = path.resolve()
+            if resolved in seen_files:
+                continue
+            seen_files.add(resolved)
             try:
                 data = _json.loads(path.read_text())
-                entries.extend(data.get("signatures", []))
+                entries.extend((entry, path.stem)
+                               for entry in data.get("signatures", []))
             except Exception:
                 continue
 
@@ -9584,7 +9594,7 @@ def signature_match(func_name: str, imports: list | None = None,
     threshold = 0.80
 
     best = None
-    for entry in entries:
+    for entry, source_db in entries:
         ind = entry.get("indicators", {})
         heur = entry.get("heuristics", {})
         score = 0.0
@@ -9644,7 +9654,7 @@ def signature_match(func_name: str, imports: list | None = None,
                     "score": round(score, 3),
                     "matched_rules": hits,
                     "notes": ind.get("notes", ""),
-                    "source_db": path.stem if 'path' in dir() else "unknown",
+                    "source_db": source_db,
                 }
 
     return best or {"matched": False}

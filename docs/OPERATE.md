@@ -700,8 +700,11 @@ Two layers, both deterministic and safe to run any time:
 * README / architecture / tool-stack / SVG tool counts match the code;
 * no private-repo references, lab IPs, model names or literal secrets in published
   files (local-only, gitignored files are excluded by design);
-* every `REVAI_*` variable read by code is documented in `docs/` (or allowlisted as
-  internal).
+* the harness checks direct and simple constant/helper-indirected Python env
+  reads against operator docs, and catches exact documented variable names that
+  have no Python source reference. Shell/deployment-only variables have an
+  explicit allowlist. Dynamic key construction and more complex data flow still
+  need manual review.
 
 The same checks run inside pytest (`tests/test_wiring_coherence.py`), so registry
 drift fails the suite instead of waiting for review.
