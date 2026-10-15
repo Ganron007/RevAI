@@ -73,7 +73,9 @@ def new_state(sample_sha256: str = "", run_id: str = "") -> dict:
         "phase": "init",
         "hypothesis": "",
         "regions": {},
-        "spend": {"llm_calls": 0, "seconds": 0.0, "tokens": 0},
+        "spend": {"llm_calls": 0, "seconds": 0.0, "tokens": 0,
+                  "domain_investigations": 0,
+                  "token_usage_complete": None},
         "started_at": time.time(),
     }
 
@@ -147,10 +149,22 @@ def fold_events(events: Iterable[dict]) -> dict:
             }
         elif kind == "spend":
             sp = state["spend"]
-            sp["llm_calls"] += int(ev.get("llm_calls", 0) or 0)
+            calls = int(ev.get("llm_calls", 0) or 0)
+            sp["llm_calls"] += calls
             sp["seconds"] = round(float(sp.get("seconds", 0.0))
                                   + float(ev.get("seconds", 0.0) or 0.0), 1)
             sp["tokens"] += int(ev.get("tokens", 0) or 0)
+            sp["domain_investigations"] += int(
+                ev.get("domain_investigations", 0) or 0)
+            if "token_usage_complete" in ev:
+                reported = bool(ev.get("token_usage_complete"))
+                prior = sp.get("token_usage_complete")
+                sp["token_usage_complete"] = (
+                    reported if prior is None else bool(prior) and reported)
+            elif calls:
+                # A stage that does not emit measured token usage cannot claim
+                # that the accumulated token total is complete.
+                sp["token_usage_complete"] = False
     return state
 
 

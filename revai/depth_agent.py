@@ -251,6 +251,71 @@ def cost_summary(regions: dict, spend: dict) -> dict:
              "spend": spend}
 
 
+def _case_sample_sha(case: Path, existing: object = None) -> str | None:
+    """Resolve the sample identity from its canonical case directory.
+
+    Agentic cases live at ``logs/<sha>/agentic`` while scripted cases live at
+    ``logs/<sha>``. The path is the source of truth; an old/null state field
+    must not erase the identity from a newly written understanding artifact.
+    """
+    for candidate in (Path(case).name, Path(case).parent.name):
+        if (len(candidate) == 64
+                and all(c in "0123456789abcdefABCDEF" for c in candidate)):
+            return candidate.lower()
+    if isinstance(existing, str) and len(existing) == 64 and all(
+            c in "0123456789abcdefABCDEF" for c in existing):
+        return existing.lower()
+    return None
+
+
+def _depth_progress_usage(case: Path) -> dict:
+    """Read successful LLM response usage emitted by the depth graph.
+
+    The domain graph can make several provider requests per capability region.
+    Counting regions as ``llm_calls`` and writing zero tokens hid the actual
+    usage. The progress stream is reset for each domain pass, so this helper
+    must be called immediately after each pass and its result accumulated.
+    """
+    progress = Path(case) / "deep_dive" / "deep-dive-progress.jsonl"
+    calls = 0
+    tokens = 0
+    missing_usage = 0
+    malformed = 0
+    try:
+        lines = progress.read_text(encoding="utf-8", errors="replace").splitlines()
+    except OSError:
+        lines = []
+    for line in lines:
+        if not line.strip():
+            continue
+        try:
+            event = json.loads(line)
+        except (TypeError, ValueError):
+            malformed += 1
+            continue
+        if not isinstance(event, dict) or event.get("event") != "llm_end":
+            continue
+        calls += 1
+        usage = event.get("tokens")
+        total = usage.get("total_tokens") if isinstance(usage, dict) else None
+        try:
+            total = int(total)
+        except (TypeError, ValueError):
+            missing_usage += 1
+            continue
+        if total < 0:
+            missing_usage += 1
+            continue
+        tokens += total
+    return {
+        "llm_calls": calls,
+        "tokens": tokens,
+        "token_usage_complete": bool(calls) and missing_usage == 0 and malformed == 0,
+        "token_usage_missing_responses": missing_usage,
+        "progress_malformed_lines": malformed,
+    }
+
+
 def _domain_questions() -> dict[str, dict]:
     """The capability domains, from the vocabulary the pipeline already enforces."""
     try:
@@ -608,7 +673,8 @@ def _stream_emit(case: Path, event: dict) -> None:
         pass
 
 
-def _stream_region(case: Path, name: str, region: dict) -> None:
+def _stream_region(case: Path, name: str, region: dict, *,
+                   include_spend: bool = True) -> None:
     """Emit a region's status (and its spend) to the stream."""
     try:
         import re_state
@@ -616,8 +682,11 @@ def _stream_region(case: Path, name: str, region: dict) -> None:
                                    region.get("reason", ""),
                                    region.get("evidence") or [])
         _stream_emit(case, ev)
-        _stream_emit(case, {"kind": "spend", "llm_calls": 1,
-                            "seconds": float(region.get("seconds") or 0.0)})
+        if include_spend:
+            _stream_emit(case, {"kind": "spend", "llm_calls": 1,
+                                "seconds": float(region.get("seconds") or 0.0),
+                                "domain_investigations": 1,
+                                "token_usage_complete": False})
     except Exception:
         pass
 
@@ -643,7 +712,9 @@ def _run_full_profile(case: Path, ceiling: int, st: dict,
     """
     import re_state  # noqa: F401  (availability probe; import errors surface below)
 
-    sha = case.name if len(case.name) == 64 else case.parent.name
+    sha = _case_sample_sha(case)
+    if sha:
+        st["sha256"] = sha
     forced = _force_full_profile_features()
     quarantined = _quarantine_deep_dive_artifacts(case)
     st["profile"] = PROFILE_FULL
@@ -680,6 +751,33 @@ def _run_full_profile(case: Path, ceiling: int, st: dict,
             break
         before = time.time()
         dom = run_domain_depth_pass(sha, case)
+        pass_seconds = round(time.time() - before, 1)
+        usage = _depth_progress_usage(case)
+        spend = st["spend"]
+        spend["llm_calls"] = int(spend.get("llm_calls") or 0) + usage["llm_calls"]
+        spend["tokens"] = int(spend.get("tokens") or 0) + usage["tokens"]
+        spend["seconds"] = round(
+            float(spend.get("seconds") or 0.0) + pass_seconds, 1)
+        spend["domain_investigations"] = (
+            int(spend.get("domain_investigations") or 0) + len(pending))
+        spend["token_usage_missing_responses"] = (
+            int(spend.get("token_usage_missing_responses") or 0)
+            + usage["token_usage_missing_responses"])
+        previous_complete = spend.get("token_usage_complete")
+        spend["token_usage_complete"] = (
+            usage["token_usage_complete"] if previous_complete is None
+            else bool(previous_complete) and usage["token_usage_complete"])
+        spend["progress_malformed_lines"] = (
+            int(spend.get("progress_malformed_lines") or 0)
+            + usage["progress_malformed_lines"])
+        _stream_emit(case, {
+            "kind": "spend",
+            "llm_calls": usage["llm_calls"],
+            "seconds": pass_seconds,
+            "tokens": usage["tokens"],
+            "domain_investigations": len(pending),
+            "token_usage_complete": usage["token_usage_complete"],
+        })
         if not dom:
             stop_reason = (
                 "domain-graph pass produced no usable result; the flat "
@@ -701,17 +799,14 @@ def _run_full_profile(case: Path, ceiling: int, st: dict,
                 new = dict(folded[name])
                 new["attempts"] = region["attempts"]
                 st["regions"][name] = new
-                _stream_region(case, name, new)
+                _stream_region(case, name, new, include_spend=False)
             else:
                 region["reason"] = (
                     (region.get("reason") or "")
                     + " | the domain-node pass returned no determination "
                     "for this region; it stays unknown and costed").lstrip(" |")
                 st["regions"][name] = region
-                _stream_region(case, name, region)
-        st["spend"]["llm_calls"] = int(st["spend"].get("llm_calls", 0)) + len(pending)
-        st["spend"]["seconds"] = round(
-            float(st["spend"].get("seconds", 0.0)) + pass_seconds, 1)
+                _stream_region(case, name, region, include_spend=False)
         save_state(case, st)
         _stream_snapshot(case)
 
@@ -806,7 +901,21 @@ def run_depth_loop(case: Path, ceiling: int | None = None) -> dict:
     t0 = time.time()
     st = load_state(case)
     st.setdefault("regions", {})
-    st.setdefault("spend", {"llm_calls": 0, "seconds": 0.0, "tokens": 0})
+    if not isinstance(st.get("spend"), dict):
+        st["spend"] = {"llm_calls": 0, "seconds": 0.0, "tokens": 0}
+    else:
+        st["spend"].setdefault("llm_calls", 0)
+        st["spend"].setdefault("seconds", 0.0)
+        st["spend"].setdefault("tokens", 0)
+    for key, default in (
+            ("domain_investigations", 0),
+            ("token_usage_complete", None),
+            ("token_usage_missing_responses", 0),
+            ("progress_malformed_lines", 0)):
+        st["spend"].setdefault(key, default)
+    sample_sha = _case_sample_sha(case, st.get("sha256"))
+    if sample_sha:
+        st["sha256"] = sample_sha
     st["profile"] = profile or PROFILE_D0
 
     # Resume: regions already carried keep their status; only re-seed the ones
@@ -871,6 +980,9 @@ def run_depth_loop(case: Path, ceiling: int | None = None) -> dict:
         before = time.time()
         st["regions"][name] = investigate_region(case, name, region)
         st["spend"]["llm_calls"] = int(st["spend"].get("llm_calls", 0)) + 1
+        st["spend"]["domain_investigations"] = (
+            int(st["spend"].get("domain_investigations", 0) or 0) + 1)
+        st["spend"]["token_usage_complete"] = False
         st["spend"]["seconds"] = round(
             float(st["spend"].get("seconds", 0.0)) + (time.time() - before), 1)
         # Checkpoint after EVERY region: a pause is a resume.

@@ -189,6 +189,12 @@ def test_run_depth_loop_full_profile_drives_the_substrate(tmp_path, monkeypatch)
 
     def fake_pass(sha, case_dir):
         calls.append(sha)
+        progress = Path(case_dir) / "deep_dive" / "deep-dive-progress.jsonl"
+        progress.parent.mkdir(parents=True, exist_ok=True)
+        progress.write_text(
+            '{"event":"llm_end","tokens":{"total_tokens":101}}\n'
+            '{"event":"llm_end","tokens":{"total_tokens":349}}\n',
+            encoding="utf-8")
         return _dom_result({
             "persistence": {"status": "understood", "answer": "run key",
                             "evidence": ["iocs.json"], "reason": "cited"},
@@ -208,7 +214,11 @@ def test_run_depth_loop_full_profile_drives_the_substrate(tmp_path, monkeypatch)
     # Every pending region spends an attempt, returned or not: the pass
     # investigated it. A substrate that never answers a region must not
     # leave its attempts at zero (the loop would spin on it forever).
-    assert st["spend"]["llm_calls"] == len(DA._domain_questions())
+    assert st["sha256"] == "a" * 64
+    assert st["spend"]["llm_calls"] == 2
+    assert st["spend"]["tokens"] == 450
+    assert st["spend"]["token_usage_complete"] is True
+    assert st["spend"]["domain_investigations"] == len(DA._domain_questions())
     assert st["regions"]["evasion"]["attempts"] == 1
     assert "no determination" in st["regions"]["evasion"]["reason"]
     # The full profile maps EVERY capability domain: the two seeded regions
@@ -230,10 +240,15 @@ def test_run_depth_loop_full_profile_drives_the_substrate(tmp_path, monkeypatch)
     # substrate did not answer is a fact the trail must carry.
     n_domains = len(DA._domain_questions())
     assert kinds.count("region_status") == n_domains
-    assert kinds.count("spend") == n_domains
+    assert kinds.count("spend") == 1
     snap = json.loads((case / re_state.STATE_SNAPSHOT).read_text())
     assert snap["schema"] == re_state.SCHEMA
+    assert snap["sample_sha256"] == "a" * 64
     assert snap["regions"]["persistence"]["status"] == "understood"
+    assert snap["spend"]["llm_calls"] == 2
+    assert snap["spend"]["tokens"] == 450
+    assert snap["spend"]["domain_investigations"] == n_domains
+    assert snap["spend"]["token_usage_complete"] is True
     # The forced features are recorded.
     assert st["forced_features"]
 
@@ -261,6 +276,26 @@ def test_full_profile_seeds_every_domain_even_with_no_ledger(tmp_path, monkeypat
     added2 = DA._seed_all_domains(st2)
     assert "persistence" not in added2, "a carried region is not re-seeded"
     assert st2["regions"]["persistence"]["status"] == "understood"
+
+
+def test_depth_progress_usage_marks_missing_usage_incomplete(tmp_path):
+    """A missing or malformed usage event must not be presented as zero cost."""
+    case = tmp_path / ("c" * 64) / "agentic"
+    progress = case / "deep_dive" / "deep-dive-progress.jsonl"
+    progress.parent.mkdir(parents=True)
+    progress.write_text(
+        '{"event":"llm_end","tokens":{"total_tokens":42}}\n'
+        '{"event":"llm_end","tokens":{}}\n'
+        '{broken json\n',
+        encoding="utf-8")
+    usage = DA._depth_progress_usage(case)
+    assert usage == {
+        "llm_calls": 2,
+        "tokens": 42,
+        "token_usage_complete": False,
+        "token_usage_missing_responses": 1,
+        "progress_malformed_lines": 1,
+    }
 
 
 def test_full_profile_does_not_paper_over_a_failed_substrate(tmp_path, monkeypatch):

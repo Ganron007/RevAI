@@ -38,7 +38,10 @@ def test_new_state_leads_with_the_schema():
     assert list(st.keys())[0] == "schema", st
     assert st["schema"] == re_state.SCHEMA
     assert st["regions"] == {}
-    assert st["spend"] == {"llm_calls": 0, "seconds": 0.0, "tokens": 0}
+    assert st["spend"] == {
+        "llm_calls": 0, "seconds": 0.0, "tokens": 0,
+        "domain_investigations": 0, "token_usage_complete": None,
+    }
 
 
 def test_append_only_history_folds_deterministically(tmp_path):
@@ -51,7 +54,9 @@ def test_append_only_history_folds_deterministically(tmp_path):
                                reason="imports only",
                                citations=["deep_dive/05-deep-dive.json"])
     re_state.append_event(log, **ev)
-    re_state.append_event(log, "spend", llm_calls=2, seconds=3.5, tokens=900)
+    re_state.append_event(log, "spend", llm_calls=2, seconds=3.5, tokens=900,
+                          domain_investigations=4,
+                          token_usage_complete=True)
 
     events, dropped = re_state.load_log(log)
     assert dropped == 0
@@ -60,7 +65,10 @@ def test_append_only_history_folds_deterministically(tmp_path):
     assert st1 == st2, "the fold must be deterministic"
     assert st1["phase"] == "investigate"
     assert st1["regions"]["persistence"]["status"] == "partial"
-    assert st1["spend"] == {"llm_calls": 2, "seconds": 3.5, "tokens": 900}
+    assert st1["spend"] == {
+        "llm_calls": 2, "seconds": 3.5, "tokens": 900,
+        "domain_investigations": 4, "token_usage_complete": True,
+    }
 
     # The log itself still holds every event - history is not collapsed.
     lines = [l for l in log.read_text().splitlines() if l.strip()]
