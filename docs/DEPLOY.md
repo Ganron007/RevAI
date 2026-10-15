@@ -19,13 +19,17 @@ RevAI deploys to a single REMnux VM. The `revai/` package is copied to `/opt/scr
    REVAI_LLM_MODEL=<your-model-name>
    REVAI_LLM_API_URL=<provider-base-url>
    REVAI_LLM_API_KEY=<REDACTED_API_KEY>
-   REVAI_LLM_REASONING=<low|medium|high|max>
+   # For the Agnes endpoint, use enabled or disabled.
+   REVAI_LLM_REASONING=<enabled|disabled>
    # Optional role pins - each falls back to REVAI_LLM_MODEL when blank.
    # The planner drives the agentic tool loop; the verdict pin drives the
    # agentic final judge only.
    REVAI_LLM_PLANNER_MODEL=<tool-loop-model>
    REVAI_LLM_VERDICT_MODEL=<judgment-model>
    ```
+   On the Agnes endpoint, `enabled` turns Thinking on and `disabled` turns it
+   off. Its Chat Completions API does not define effort levels such as `high`
+   or `low`; those older values remain accepted as aliases for `enabled`.
    Note: `REVAI_LLM_API_URL` is the **base URL** — the pipeline appends `/chat/completions` internally. Do not include the full endpoint path.
 
 See [`CONFIGURE.md`](CONFIGURE.md) for the full variable reference.

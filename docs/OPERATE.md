@@ -518,15 +518,22 @@ All of the above are exposed in the web console **Run configuration** panel (Set
 **Optional dynamic corroboration (WinRE companion — run-config toggle):**
 
 When a sample has been detonated with the optional [WinRE](https://github.com/Ganron007/WinRE)
-companion, reports gain a deterministic "Dynamic Corroboration (WinRE detonation)"
-block: the window actually used (with a coverage caveat), runtime network
-indicators, dropped file paths, and the agentic-dbg unpack artifact (with a
-pefile + capa static pass when PE-valid). The block is **presence-gated** — no
-pack for the sample means reports are byte-identical to a WinRE-less install. The
-Console shows the state for the open case: the orchestrator panel's **winre
+companion, the master and technical reports receive an artifact-derived
+component-specific execution status in their prompts and a deterministic WinRE
+section with the sample-launch record, observation window and coverage caveat,
+Frida runtime events, runtime
+network indicators, captured packet files, file activity, and any agentic-dbg
+unpack artifact (with a pefile + capa static pass when PE-valid). The master
+and technical prompts receive this evidence before writing; contradictory
+claims remain unchanged and fail the audit when they conflict with run
+artifacts. The section is **presence-gated** — no
+pack for the sample leaves WinRE evidence out of the report. The Console shows
+the state for the open case: the orchestrator panel's **winre
 dynamic** chip (`pack · N DNS` / `no pack` / `not configured` / `off`) and
 `GET /api/winre/status/<sha>` for scripts. —
-and corroborates only (`static_yara_wins` never yields).
+and corroborates only (`static_yara_wins` never yields). RevAI's Frida static
+hook-candidate probe is not a runtime trace and is never treated as proof that
+the sample executed.
 
 | Env | Default | Meaning |
 |---|---|---|

@@ -32,9 +32,12 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import sys
 import time
+from contextlib import contextmanager
 from pathlib import Path
+from typing import Iterator
 
 #: The env knob. Operator requirement: a separate mode with an ON/OFF switch.
 DEPTH_ENV = "REVAI_DEPTH"
@@ -514,30 +517,47 @@ def _force_full_profile_features() -> list[str]:
     return forced
 
 
-def _quarantine_deep_dive_artifacts(case: Path) -> list[str]:
-    """Move the pipeline's deep-dive artifacts aside before a full pass.
+@contextmanager
+def _preserve_pipeline_deep_dive(case: Path) -> Iterator[Path]:
+    """Keep full-profile graph output separate from the main pipeline record.
 
-    The full pass re-runs the deep dive on the domain-node substrate and
-    would overwrite `agentic_deep_dive.json` -- the record of what the MAIN
-    pipeline's dive concluded, which the published reports cite. The depth
-    run must add to the case, not erase what the reports were written from.
-    Same shape as run-watched's quarantine.
+    The domain graph uses the regular case directory for its tools and output.
+    Renaming just the two summary files before that pass made the main audit
+    unable to find its required deep-dive artifacts; leaving them in place let
+    the graph overwrite evidence already cited by published reports. Snapshot
+    the whole directory, let the graph use the normal working path, then retain
+    its complete output under ``depth_runs/full/<run-id>/`` and restore the
+    exact pipeline directory, even when the graph raises.
     """
-    moved: list[str] = []
-    dd = Path(case) / "deep_dive"
-    if not dd.is_dir():
-        return moved
-    stamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
-    for name in ("agentic_deep_dive.json", "05-deep-dive.json",
-                 "deep-dive-progress.jsonl"):
-        p = dd / name
-        if p.is_file():
+    case = Path(case)
+    pipeline_dir = case / "deep_dive"
+    run_id = (
+        time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
+        + f"-{time.time_ns() % 1_000_000_000:09d}"
+    )
+    run_dir = case / "depth_runs" / "full" / run_id
+    run_dir.mkdir(parents=True, exist_ok=False)
+    baseline = run_dir / "pipeline-deep_dive"
+    depth_output = run_dir / "deep_dive"
+    had_pipeline_dir = pipeline_dir.is_dir()
+    if had_pipeline_dir:
+        shutil.copytree(pipeline_dir, baseline)
+    try:
+        yield run_dir
+    finally:
+        # Move the potentially overwritten working tree aside as the depth
+        # record, then atomically put the saved pipeline tree back in place.
+        if pipeline_dir.exists():
             try:
-                p.replace(dd / f"{name}.pre-depth-full-{stamp}")
-                moved.append(f"{name}.pre-depth-full-{stamp}")
+                pipeline_dir.replace(depth_output)
             except OSError:
-                pass
-    return moved
+                # Same-volume directory rename is expected. If an external
+                # process prevents it, retain output by copy before clearing
+                # the temporary working tree so the baseline can be restored.
+                shutil.copytree(pipeline_dir, depth_output, dirs_exist_ok=True)
+                shutil.rmtree(pipeline_dir)
+        if had_pipeline_dir and baseline.exists():
+            baseline.replace(pipeline_dir)
 
 
 def _full_max_steps() -> int:
@@ -716,11 +736,9 @@ def _run_full_profile(case: Path, ceiling: int, st: dict,
     if sha:
         st["sha256"] = sha
     forced = _force_full_profile_features()
-    quarantined = _quarantine_deep_dive_artifacts(case)
     st["profile"] = PROFILE_FULL
     st["substrate"] = "domain-graph (#20)"
     st["forced_features"] = forced
-    st["quarantined_deep_dive"] = quarantined
     _stream_emit(case, {"kind": "init", "sample_sha256": sha,
                         "run_id": str(int(time.time()))})
     _stream_emit(case, {"kind": "phase", "phase": "investigate"})
@@ -941,7 +959,11 @@ def run_depth_loop(case: Path, ceiling: int | None = None) -> dict:
         return st
 
     if profile == PROFILE_FULL:
-        _run_full_profile(case, ceiling, st, t0)
+        with _preserve_pipeline_deep_dive(case) as depth_artifacts:
+            _run_full_profile(case, ceiling, st, t0)
+        st["depth_artifact_dir"] = str(depth_artifacts.relative_to(case))
+        st["pipeline_deep_dive_preserved"] = True
+        save_state(case, st)
         return st
 
     attempts_allowed = _max_attempts()

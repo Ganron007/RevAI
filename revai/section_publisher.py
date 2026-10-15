@@ -30,7 +30,6 @@ from report_quality import (  # noqa: E402
     missing_sections,
     redact_model_names,
     scrub_report_indicators,
-    scrub_dynamic_execution_claims,
     source_is_fallback,
     stub_sections,
 )
@@ -217,13 +216,14 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
     # Without this the model once wrote "Speakeasy and Frida executed
     # successfully" for a sample whose oracle failed and where no Frida or
     # WinRE pack exists.
-    if ("Behavioral Analysis" in section_name
-            or "Dynamic Analysis" in section_name):
+    if any(marker in section_name for marker in (
+            "Behavioral Analysis", "Dynamic Analysis", "Network Analysis",
+            "Network Indicators", "What We Don't Know")):
         st_block = _dynamic_status_sentence(sha)
         if st_block:
             evidence = (f"DYNAMIC-ANALYSIS STATUS (authoritative, read from the "
                         f"run's artifacts -- state it exactly, and do NOT claim a "
-                        f"tool ran when this says it failed or was not performed): "
+                        f"tool ran or evidence was absent when this says otherwise): "
                         f"{st_block}\n\n{evidence}")
     # 3. Build prior-summaries for continuity
     prior_lines = []
@@ -255,13 +255,9 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
     try:
         resp = llm_judge(prompt)
         content = resp["choices"][0]["message"]["content"]
-        try:
-            v = json.loads(content)
-            result["markdown"] = normalize_llm_content(v) or content
-            result["title"] = v.get("title", section_name)
-        except json.JSONDecodeError:
-            result["markdown"] = content
-            result["title"] = section_name
+        v = normalize_llm_json(content)
+        result["markdown"] = normalize_llm_content(v) or content
+        result["title"] = v.get("title", section_name)
         # Audit: capture response-side model + reasoning tokens
         result["llm_audit"] = llm_call_metadata(resp)
         result["llm_audit"]["request_model"] = get_llm_model()
@@ -402,10 +398,12 @@ TECHNICAL_SECTION_EVIDENCE: dict[str, tuple[str, ...]] = {
 TECHNICAL_SECTION_DESCRIPTIONS: dict[str, str] = {
     "1. Executive Summary": (
         "What this sample is, what it does, and why it matters. Ground every "
-        "claim in the verdict and the deep-dive key evidence."),
+        "claim in the verdict and the deep-dive key evidence. State the run's "
+        "authoritative dynamic-analysis status accurately."),
     "2. Sample Metadata": (
         "Identity facts: filename, size, hashes, format, arch, compile/link "
-        "times, signed or not, packer."),
+        "times, signed or not, packer. If describing dynamic analysis, use the "
+        "authoritative run status and distinguish WinRE from RevAI components."),
     "3. File Layout & Structural Analysis": (
         "Section layout, regions, entry point, virtual files and structures. "
         "Explain what the structure implies about how the binary was built."),
@@ -419,9 +417,9 @@ TECHNICAL_SECTION_DESCRIPTIONS: dict[str, str] = {
         "FAILED or was not run is not 'executed' -- do not describe it as such. "
         "Empty results are 'not observed', stated plainly."),
     "6. Network Indicators & C2": (
-        "Network infrastructure: URLs, domains, IPs, protocols. State whether "
-        "each item is a static string or observed traffic, and never present "
-        "one as the other."),
+        "Network infrastructure: URLs, domains, IPs, protocols. State the "
+        "authoritative DYNAMIC-ANALYSIS STATUS line and whether each item is a "
+        "static string or observed traffic; never present one as the other."),
     "7. Capabilities Assessment": (
         "What the sample is capable of, tied to capa rules and MITRE "
         "techniques, with evidence for each capability."),
@@ -434,8 +432,10 @@ TECHNICAL_SECTION_DESCRIPTIONS: dict[str, str] = {
     "10. MITRE ATT&CK Mapping": (
         "Tactic/technique table. Map only techniques the evidence supports."),
     "11. What We Don't Know": (
-        "Explicit gaps: what was not analysed, which tools did not run, and "
-        "what would resolve each gap. No speculation presented as fact."),
+        "Explicit gaps: distinguish what the run did from what it did not "
+        "examine. State the authoritative DYNAMIC-ANALYSIS STATUS line, and "
+        "do not claim that a recorded detonation, runtime trace, or capture "
+        "was absent. Explain remaining coverage limits and how to resolve them."),
     "12. Appendix A: Tool Evidence Trail": (
         "Which engine produced which claim, so any statement can be traced back "
         "to its source."),
@@ -679,9 +679,14 @@ def _technical_section_prompt(name: str, description: str, evidence: str,
         "- Quote registry paths and IoCs in FULL. Never abbreviate a path with "
         "'...' -- an unverifiable indicator is worse than none.\n"
         "- If a tool did not run or produced nothing, write 'not observed'. "
-        "Never invent runtime behavior. State the DYNAMIC-ANALYSIS STATUS line "
-        "from the evidence verbatim; a tool that failed or was not run must not "
-        "be described as having executed.\n"
+        "Never invent runtime behavior. The authoritative DYNAMIC-ANALYSIS "
+        "STATUS block, when present in the evidence, is ground truth for the "
+        "whole run: state it faithfully. A component-specific absence (for "
+        "example, RevAI's static Frida probe did not execute the sample) does "
+        "not mean another path such as WinRE did not run. Do not say dynamic "
+        "analysis or sandbox execution was not performed when the status block "
+        "records an executed mechanism. Use 'not observed' for behavior absent "
+        "from the recorded window, and state the coverage limit.\n"
         "- The citation engine must match the evidence (a Malcat string is not "
         "an IDA SQL row).\n"
         "- The Verdict and Deep-Dive blocks are NARRATIVE CONTEXT, not "
@@ -724,13 +729,16 @@ def _generate_technical_section(
     except Exception as exc:                      # noqa: BLE001
         evidence = f"(evidence routing failed: {exc})"
         result["error"] = f"route: {exc}"
-    # Same deterministic dynamic-status fact as the master path: the report must
-    # state what dynamic analysis actually happened, not infer it.
-    if ("Behavioral Analysis" in name or "Dynamic Analysis" in name):
-        st_block = _dynamic_status_sentence(sha)
-        if st_block:
-            evidence = (f"DYNAMIC-ANALYSIS STATUS (authoritative, read from the "
-                        f"run's artifacts): {st_block}\n\n{evidence}")
+    # Every model-authored section gets the same deterministic execution fact.
+    # Otherwise the executive summary or metadata can contradict the dedicated
+    # dynamic section even when that section has the right status. The status is
+    # short, authoritative evidence and is included again in pass 2.
+    st_block = _dynamic_status_sentence(sha)
+    if st_block:
+        evidence = (f"DYNAMIC-ANALYSIS STATUS (authoritative, read from the "
+                    f"run's artifacts -- state it exactly, and do NOT claim "
+                    f"a tool ran or evidence was absent when this says otherwise): "
+                    f"{st_block}\n\n{evidence}")
 
     prior_lines = [f"  - {n}: {m[:200]}"
                    for n, m in list((prior_summaries or {}).items())[-3:] if m]
@@ -743,11 +751,9 @@ def _generate_technical_section(
     try:
         resp = llm_judge(prompt)
         content = resp["choices"][0]["message"]["content"]
-        try:
-            v = json.loads(content)
-            result["markdown"] = normalize_llm_content(v) or content
-        except json.JSONDecodeError:
-            result["markdown"] = content
+        v = normalize_llm_json(content)
+        result["markdown"] = normalize_llm_content(v) or content
+        result["title"] = v.get("title", name)
         meta = llm_call_metadata(resp)
         if meta:
             meta["request_model"] = get_llm_model()
@@ -942,8 +948,6 @@ def run_section_based_publish(sha: str, tools_results: dict,
     # scrubbed every indicator the master legitimately cited.
     report_markdown, _master_ioc_scrub = scrub_report_indicators(
         case_dir(sha), report_markdown, "master_v3")
-    report_markdown, _master_dyn_scrub = scrub_dynamic_execution_claims(
-        case_dir(sha), report_markdown, "master_v3")
     report_markdown, _master_models = redact_model_names(report_markdown)
     if _master_models:
         print(f"[section_publisher] master_v3: redacted model name(s) "
@@ -953,17 +957,10 @@ def run_section_based_publish(sha: str, tools_results: dict,
     # Backward compatibility: also write at logs root
     root_dir = case_dir(sha)
     (root_dir / "REPORT-MASTER-v3.md").write_text(report_markdown)
-    # PERSIST the scrub record. It was assigned here and read nowhere, which
-    # removed the only tripwire the e879318 bug had: for master_v3 the removal
-    # was invisible, and REPORT-MASTER-v3 is not the report
-    # `claimed_ioc_verification` reads (report_quality picks tech3 -> tech2 ->
-    # master), so the audit would never have seen the loss either. The sibling
-    # publish paths all record theirs; this one had been left out.
     (root_dir / "section-results-v3.json").write_text(
         json.dumps({"sections": section_results, "timings": section_timings,
                     "pass1_count": len(pass1_results), "pass2_count": len(pass2_results),
-                    "master_v3_indicator_scrub": _master_ioc_scrub,
-                    "master_v3_dynamic_claim_scrub": _master_dyn_scrub},
+                    "master_v3_indicator_scrub": _master_ioc_scrub},
                    indent=2, default=str)
     )
 
@@ -1252,9 +1249,6 @@ def _finalize_technical(sha: str, technical_report: dict,
         case_dir(sha), tech_md, "technical_v3")
     technical_report["markdown"] = tech_md
     technical_report["indicator_scrub"] = _tech_ioc_scrub
-    tech_md, _tech_dyn_scrub = scrub_dynamic_execution_claims(
-        case_dir(sha), tech_md, "technical_v3")
-    technical_report["dynamic_claim_scrub"] = _tech_dyn_scrub
     tech_md, _tech_models = redact_model_names(tech_md)
     if _tech_models:
         technical_report["model_names_redacted"] = _tech_models

@@ -162,11 +162,14 @@ export default function SettingsPage() {
                   : 'not configured — create /opt/revai/config/llm.env and set REVAI_LLM_API_KEY'}
               </div>
             </Field>
-            <Field label="Reasoning">
+            <Field
+              label="Thinking / reasoning"
+              hint="Agnes endpoint: use enabled or disabled; high, medium, and low all mean Thinking on. Other providers may support effort levels."
+            >
               <Input
                 value={cfg.llm_reasoning || ''}
                 onChange={(e) => setCfg({ ...cfg, llm_reasoning: e.target.value })}
-                placeholder="max"
+                placeholder="enabled"
               />
             </Field>
             <Muted>

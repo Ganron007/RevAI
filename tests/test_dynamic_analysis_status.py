@@ -24,6 +24,7 @@ sys.path.insert(0, str(resolve("revai/v2_lib.py").parent))
 import v2_lib  # noqa: E402
 import report_quality as RQ  # noqa: E402
 import section_publisher as SP  # noqa: E402
+import publish_report_v2 as PR  # noqa: E402
 
 
 # ------------------------------------------------------------- the status helper
@@ -59,6 +60,66 @@ def test_status_with_no_oracle_says_so(tmp_path, monkeypatch):
     st = v2_lib.dynamic_analysis_status("zz", logs_dir=tmp_path / "logs")
     assert st["emulation"]["present"] is False
     assert st["any_dynamic_performed"] is False
+
+
+def test_status_separates_winre_launch_runtime_trace_and_gateway_capture(
+        tmp_path, monkeypatch):
+    sha = "e" * 64
+    winre = tmp_path / "winre"
+    dyn = winre / sha / "agentic" / "dynamic"
+    dyn.mkdir(parents=True)
+    (dyn / "META.json").write_text(json.dumps({"ok": True}))
+    (dyn / "META.job.json").write_text(json.dumps({
+        "detonation_ran": True, "sample_pid": 7368, "frida_events": 577,
+    }))
+    (dyn / "frida_summary.json").write_text(json.dumps({"events": 577}))
+    (dyn / "frida_trace.jsonl").write_text('{"event":"call"}\n')
+    (dyn / "off_box" / "network_raw").mkdir(parents=True)
+    (dyn / "off_box" / "network_raw" / "gateway.pcapng").write_bytes(b"pcapng")
+    monkeypatch.setenv("REVAI_WINRE_LOGS", str(winre))
+
+    st = v2_lib.dynamic_analysis_status(sha, logs_dir=tmp_path / "logs")
+    assert st["any_dynamic_performed"] is True
+    assert st["winre"]["detonation_ran"] is True
+    assert st["winre"]["sample_pid"] == 7368
+    assert st["frida_runtime"]["observed_runtime_events"] is True
+    assert st["frida_runtime"]["events"] == 577
+    assert st["packet_capture"]["present"] is True
+    assert "static-only" in st["sentence"]
+    assert "sample launch confirmed" in st["sentence"]
+
+
+def test_pack_without_launch_attestation_is_not_reported_as_a_run(
+        tmp_path, monkeypatch):
+    sha = "f" * 64
+    dyn = tmp_path / "winre" / sha / "agentic" / "dynamic"
+    dyn.mkdir(parents=True)
+    (dyn / "META.json").write_text(json.dumps({"ok": True}))
+    monkeypatch.setenv("REVAI_WINRE_LOGS", str(tmp_path / "winre"))
+
+    st = v2_lib.dynamic_analysis_status(sha, logs_dir=tmp_path / "logs")
+    assert st["winre"]["pack_present"] is True
+    assert st["winre"]["detonation_ran"] is None
+    assert st["any_dynamic_performed"] is None
+
+
+def test_unmatched_run_status_is_not_used_as_current_launch_proof(
+        tmp_path, monkeypatch):
+    sha = "1" * 64
+    case = tmp_path / "logs" / sha / "agentic"
+    case.mkdir(parents=True)
+    (case / "winre-run.json").write_text(json.dumps({
+        "state": "skipped", "finished_at": "2026-10-14T10:00:00+00:00",
+    }))
+    monkeypatch.setenv("REVAI_RUN_MODE", "agentic")
+    monkeypatch.setenv("REVAI_WINRE_LOGS", str(tmp_path / "nowhere"))
+
+    st = v2_lib.dynamic_analysis_status(sha, logs_dir=tmp_path / "logs")
+    assert st["winre"]["detonation_ran"] is None
+    assert "not correlated to this analysis run" in st["winre"]["state"]
+    assert "latest recorded WinRE request was skipped" in st["winre"]["state"]
+    assert "launch did not occur" not in st["sentence"]
+    assert "sample launch confirmed" not in st["sentence"]
 
 
 # ------------------------------------------------------------- the audit gate
@@ -105,6 +166,22 @@ def test_gate_still_flags_a_genuine_affirmative_claim():
         "The dynamic runs executed successfully during triage.", "", "", None, st)
     assert any("dynamic_execution_claimed_but_none_performed" in v
                for v in c["violations"]), c["violations"]
+
+
+def test_gate_preserves_unverified_dynamic_status_as_unknown():
+    st = {
+        "any_dynamic_performed": None,
+        "winre": {"pack_present": True, "detonation_ran": None},
+        "sentence": "WinRE pack present; launch state unverified.",
+    }
+    c = RQ._cross_report_consistency(
+        "Dynamic analysis executed successfully.", "", "", None, st)
+    assert c["checks"]["dynamic_performed"] is None
+    assert c["checks"]["dynamic_status_unverified"] is True
+    assert any("dynamic_execution_status_unverified" in v
+               for v in c["violations"]), c["violations"]
+    assert not any("dynamic_execution_claimed_but_none_performed" in v
+                   for v in c["violations"]), c["violations"]
 
 
 def test_negation_guard_helper():
@@ -169,103 +246,62 @@ def test_gate_passes_a_truthful_only_report():
                    for v in c["violations"]), c["violations"]
 
 
-# ------------------------------------------------- dynamic-claim scrubber
-def test_scrub_replaces_the_fabricated_claim_and_keeps_the_truth():
-    """The measured defect: the model narrates a static probe's availability +
-    hook candidates as a runtime execution. The scrub replaces the SENTENCE
-    with the run's ground truth and records exactly what was removed."""
-    md = (
-        "Frida instrumentation was not performed, so no runtime API hooking "
-        "occurred.\n"
-        "Frida instrumentation probe was configured for the analysis "
-        "environment, with results as follows: the hook fired twice.\n"
-        "The sample imports CreateProcessW, which is consistent with "
-        "injection."
-    )
-    out, meta = RQ.scrub_dynamic_execution_claims(
-        Path("/opt/samples/logs/abc123/agentic"), md, "technical_v3")
-    assert meta["claims_removed"] == 1, meta
-    assert "the hook fired twice" not in out, out
-    assert "Frida instrumentation was not performed, so no runtime API hooking" in out, (
-        "the truthful sentence must survive the scrub")
-    assert "No dynamic analysis was performed in this run" in out, out
-    assert meta["removals"][0]["ground_truth"], meta
-    assert "CreateProcessW" in out
+# ------------------------------------------- no post-generation claim rewriting
+def test_gate_flags_a_fabricated_claim_without_rewriting_report_text():
+    """Contradictory model prose stays visible and makes the run fail quality.
 
-
-def test_scrub_leaves_a_truthful_report_unchanged():
-    md = ("Frida instrumentation was not performed, and WinRE detonation was "
-          "not run, so no network traffic was observed.")
-    out, meta = RQ.scrub_dynamic_execution_claims(
-        Path("/opt/samples/logs/abc123/agentic"), md, "technical_v3")
-    assert out == md
-    assert meta["claims_removed"] == 0
-
-
-def test_scrub_is_inert_when_dynamic_did_run(monkeypatch):
-    """Only the 'claimed but none performed' direction is scrubbed; a report
-    that understates a real dynamic run is the gate's contradiction to
-    report, not a sentence to rewrite."""
-    monkeypatch.setattr(v2_lib, "dynamic_analysis_status",
-                        lambda sha, **kw: {"any_dynamic_performed": True,
-                                           "sentence": "emulation ran"})
-    md = "The dynamic runs executed successfully during triage."
-    out, meta = RQ.scrub_dynamic_execution_claims(
-        Path("/opt/samples/logs/abc123/agentic"), md, "technical_v3")
-    assert out == md
-    assert meta.get("applicable") is False
-
-
-def test_scrub_is_idempotent():
-    """The replacement sentence must not itself read as a claim, or a second
-    publish pass would 'fix' the fix."""
-    md = ("Frida instrumentation probe was configured for the analysis "
-          "environment, with results as follows: the hook fired twice.")
-    case = Path("/opt/samples/logs/abc123/agentic")
-    once, _ = RQ.scrub_dynamic_execution_claims(case, md, "technical_v3")
-    twice, meta2 = RQ.scrub_dynamic_execution_claims(case, once, "technical_v3")
-    assert twice == once
-    assert meta2["claims_removed"] == 0
-
-
-def test_scrub_handles_two_claims_without_double_replacing():
-    """Two claims in ONE sentence: one replacement, not two overlapping ones
-    leaving half a sentence behind."""
-    md = ("Frida instrumentation was invoked and the sandbox execution "
-          "completed, recording twelve API calls. Static findings follow.")
-    out, meta = RQ.scrub_dynamic_execution_claims(
-        Path("/opt/samples/logs/abc123/agentic"), md, "technical_v3")
-    assert meta["claims_removed"] == 1, meta
-    assert "Static findings follow." in out
-    assert "twelve API calls" not in out
-
-
-def test_the_scrub_is_wired_and_recorded_at_every_publish_site():
-    """The NameError class, pinned.
-
-    The msil agentic re-run (2026-10-13) crashed in section_publisher: the
-    master_v3 call site assigned its record to `report[...]` -- a variable
-    that does not exist in that scope (the record belongs in
-    section-results-v3.json, the e879318 lesson: a scrub record assigned and
-    read nowhere is a lost tripwire). py_compile passes on that; only a
-    source-shape pin catches it. All four call sites must both call the
-    scrubber AND persist the record.
+    A publisher must never turn a bad answer into a superficially green one by
+    replacing the sentence after generation. The artifact-backed gate is the
+    backstop; the report remains the model's original output for review.
     """
+    st = {"any_dynamic_performed": False,
+          "sentence": "WinRE detonation: sample did not launch"}
+    md = "The dynamic runs executed successfully during triage."
+    c = RQ._cross_report_consistency(md, "", "", None, st)
+    assert any("dynamic_execution_claimed_but_none_performed" in v
+               for v in c["violations"]), c["violations"]
+    assert "The dynamic runs executed successfully" in md
+
+
+def test_publishers_do_not_rewrite_dynamic_claims_after_generation():
+    """The prompt and quality gate own accuracy; publishers keep model prose."""
     pub = source("revai/publish_report_v2.py")
-    assert 'scrub_dynamic_execution_claims(case, md, "master_v2")' in pub
-    assert 'report["dynamic_claim_scrub"] = _dyn_scrub' in pub
-    assert 'scrub_dynamic_execution_claims(\n            case, tech_md, "technical_v2")' in pub
-    assert 'technical_report["dynamic_claim_scrub"] = _tech_dyn_scrub' in pub
     sec = source("revai/section_publisher.py")
-    assert 'scrub_dynamic_execution_claims(\n        case_dir(sha), report_markdown, "master_v3")' in sec
-    # master_v3's record is persisted into section-results-v3.json -- there is
-    # no `report` variable in that scope, and assigning to one crashed the
-    # publisher mid-run.
-    assert '"master_v3_dynamic_claim_scrub": _master_dyn_scrub' in sec
-    assert "report[" not in sec.split("master_v3")[1].split("redact_model_names")[0], (
-        "the master_v3 site must not assign to an undefined `report` variable")
-    assert 'scrub_dynamic_execution_claims(\n        case_dir(sha), tech_md, "technical_v3")' in sec
-    assert 'technical_report["dynamic_claim_scrub"] = _tech_dyn_scrub' in sec
+    for publisher in (pub, sec):
+        assert "scrub_dynamic_execution_claims" not in publisher
+        assert "dynamic_claim_scrub" not in publisher
+
+
+def test_v3_dynamic_status_is_injected_into_every_authored_technical_section(monkeypatch):
+    sentinel = "STATUS SENTINEL: WinRE sample launch confirmed; 577 events; pcap present."
+    captured = []
+
+    class Response:
+        def __getitem__(self, key):
+            payload = json.dumps({
+                "markdown": "## Section\n\nEvidence-grounded section.",
+            })
+            return [{"message": {"content": f"```json\n{payload}\n```"},
+                     "finish_reason": "stop"}]
+
+    def fake_llm(prompt):
+        captured.append(prompt)
+        return Response()
+
+    monkeypatch.setattr(SP, "_dynamic_status_sentence", lambda sha: sentinel)
+    monkeypatch.setattr(SP, "llm_judge", fake_llm)
+    monkeypatch.setattr(SP, "llm_call_metadata", lambda response: {})
+    monkeypatch.setattr(SP, "get_llm_model", lambda: "configured-llm")
+
+    for name in SP.TECHNICAL_SECTION_DESCRIPTIONS:
+        if name == "8. Indicators of Compromise":
+            # This section is rendered deterministically from iocs.json and
+            # does not make model-authored execution claims.
+            continue
+        result = SP._generate_technical_section(name, [], "context", "a" * 64)
+        assert result["llm_ok"], result
+        assert result["markdown"] == "## Section\n\nEvidence-grounded section."
+        assert sentinel in captured[-1]
 
 
 def test_gate_does_not_fire_on_a_static_hook_candidate():
@@ -292,6 +328,202 @@ def test_gate_flags_a_flat_negation_when_dynamic_did_run():
                for v in c["violations"]), c["violations"]
 
 
+def test_gate_flags_report_that_omits_recorded_winre_run_and_capture():
+    st = {
+        "any_dynamic_performed": True,
+        "sentence": "WinRE detonation: sample launch confirmed; WinRE Frida "
+                    "runtime: runtime events captured (577); packet capture: "
+                    "1 capture file(s) present.",
+        "winre": {"detonation_ran": True},
+        "frida_runtime": {"observed_runtime_events": True, "events": 577},
+        "packet_capture": {"present": True, "files": 1},
+    }
+    report = (
+        "No sandbox execution, no network capture, no registry monitoring, "
+        "no credential-access monitoring, no process-tree tracing was "
+        "performed for this sample."
+    )
+    c = RQ._cross_report_consistency("", "", report, None, st)
+    assert any("dynamic_performed_but_report_says_none" in v
+               for v in c["violations"]), c["violations"]
+
+
+# ------------------------------------------------------------- scope-aware checks
+def test_full_master_prompt_receives_component_status_and_winre_evidence():
+    prompt = PR.build_prompt_full(
+        {"sha256": "a" * 64, "sample_path": "sample.exe"},
+        verdict=None, deep=None, yara_meta=None, audit=[],
+        dynamic_status={
+            "sentence": "WinRE detonation: sample launch confirmed; "
+                        "Frida runtime: runtime events captured (577).",
+            "frida_static_probe": {"state": "static-only"},
+        },
+        dynamic_evidence="## Dynamic Analysis (WinRE detonation)\n- events: 577",
+    )
+    assert "authoritative execution status" in prompt
+    assert "candidate hooks" in prompt
+    assert "sample launch confirmed" in prompt
+    assert "WinRE runtime record" in prompt
+    assert "events: 577" in prompt
+
+
+def test_gate_catches_winre_contradictions_even_if_other_section_has_caveat():
+    st = {
+        "any_dynamic_performed": True,
+        "emulation": {"ok": False},
+        "winre": {"detonation_ran": True},
+        "frida_runtime": {"observed_runtime_events": True,
+                           "trace_artifact_present": True, "events": 577},
+        "packet_capture": {"present": True},
+    }
+    master = (
+        "No dynamic-analysis tool (Speakeasy, Frida, sandbox VM) was invoked.\n"
+        "No Speakeasy or Frida dynamic-instrumentation trace is present.\n"
+        "No network traffic capture (pcap) was collected.\n"
+        "Coverage is window-bounded and delayed behavior may be missed."
+    )
+    c = RQ._cross_report_consistency(master, "", "", None, st)
+    assert not c["ok"]
+    assert any("dynamic_performed_but_report_says_none" in v
+               for v in c["violations"]), c["violations"]
+
+
+def test_gate_allows_absent_speakeasy_when_winre_ran():
+    st = {
+        "any_dynamic_performed": True,
+        "emulation": {"ok": False},
+        "winre": {"detonation_ran": True},
+        "frida_runtime": {"observed_runtime_events": True,
+                           "trace_artifact_present": True, "events": 577},
+        "packet_capture": {"present": True},
+    }
+    report = (
+        "No RevAI Speakeasy emulation was performed. The RevAI Frida static "
+        "probe is static-only. WinRE detonation ran and its Frida trace "
+        "recorded 577 events."
+    )
+    c = RQ._cross_report_consistency(report, "", "", None, st)
+    assert not any("dynamic_performed_but_report_says_none" in v
+                   for v in c["violations"]), c["violations"]
+
+
+def test_gate_allows_explanation_that_static_probe_absence_does_not_mean_no_dynamic():
+    st = {
+        "any_dynamic_performed": True,
+        "winre": {"detonation_ran": True},
+        "frida_runtime": {"observed_runtime_events": True,
+                           "trace_artifact_present": True, "events": 577},
+        "packet_capture": {"present": True},
+    }
+    report = (
+        "No execution is proven by this component. (source: execution_status, "
+        "query_or_table: frida_static_probe, row_or_rule: execution_proven=false, "
+        'state="static candidate analysis only", why: the absence of execution '
+        "here does not mean no dynamic analysis was performed; WinRE and Frida "
+        "runtime are separate paths.)"
+    )
+    c = RQ._cross_report_consistency("", "", report, None, st)
+    assert not any("dynamic_performed_but_report_says_none" in v
+                   for v in c["violations"]), c["violations"]
+
+
+def test_gate_still_catches_real_contradiction_after_meta_negated_clause():
+    st = {
+        "any_dynamic_performed": True,
+        "winre": {"detonation_ran": True},
+        "frida_runtime": {"observed_runtime_events": True, "events": 577},
+    }
+    report = (
+        "The static probe's absence does not mean no dynamic analysis was "
+        "performed; WinRE and Frida runtime are separate paths, but no WinRE "
+        "detonation was performed."
+    )
+    c = RQ._cross_report_consistency("", "", report, None, st)
+    assert any("dynamic_performed_but_report_says_none" in v
+               for v in c["violations"]), c["violations"]
+
+
+def test_gate_allows_frida_absence_scoped_to_static_probe_when_winre_ran():
+    st = {
+        "any_dynamic_performed": True,
+        "winre": {"detonation_ran": True},
+        "frida_runtime": {"observed_runtime_events": True, "events": 577},
+        "packet_capture": {"present": True, "files": 1},
+    }
+    report = (
+        "Because the probe was explicitly marked static-only, no Frida "
+        "instrumentation was attached to a live process and no runtime events "
+        "were captured by this component. Any Frida-derived runtime data in "
+        "this report comes exclusively from the WinRE detonation path."
+    )
+    c = RQ._cross_report_consistency("", "", report, None, st)
+    assert not any("dynamic_performed_but_report_says_none" in v
+                   for v in c["violations"]), c["violations"]
+
+
+def test_gate_allows_frida_table_row_scoped_to_probe_path_when_winre_ran():
+    st = {
+        "any_dynamic_performed": True,
+        "winre": {"detonation_ran": True},
+        "frida_runtime": {"observed_runtime_events": True, "events": 577},
+    }
+    report = (
+        "| RevAI Frida probe | Static-only; sample not executed | "
+        "No runtime events from this path. |"
+    )
+    c = RQ._cross_report_consistency("", "", report, None, st)
+    assert not any("dynamic_performed_but_report_says_none" in v
+                   for v in c["violations"]), c["violations"]
+
+
+def test_gate_allows_inner_pe_dynamic_gap_when_outer_sample_ran():
+    st = {
+        "any_dynamic_performed": True,
+        "winre": {"detonation_ran": True},
+        "frida_runtime": {"observed_runtime_events": True, "events": 577},
+    }
+    report = (
+        "The embedded 34 KB PE was not extracted by this pass. No subsequent "
+        "dynamic execution of the inner PE is therefore available in this run."
+    )
+    c = RQ._cross_report_consistency("", "", report, None, st)
+    assert not any("dynamic_performed_but_report_says_none" in v
+                   for v in c["violations"]), c["violations"]
+
+
+def test_inner_pe_gap_exemption_does_not_hide_blanket_dynamic_denial():
+    st = {
+        "any_dynamic_performed": True,
+        "winre": {"detonation_ran": True},
+    }
+    report = (
+        "No subsequent dynamic execution of the inner PE is available in this "
+        "run, but no dynamic analysis of the sample was performed."
+    )
+    c = RQ._cross_report_consistency("", "", report, None, st)
+    assert any("dynamic_performed_but_report_says_none" in v
+               for v in c["violations"]), c["violations"]
+
+
+def test_gate_rejects_zero_frida_event_claim_when_runtime_events_exist():
+    st = {
+        "any_dynamic_performed": True,
+        "emulation": {"ok": False},
+        "winre": {"detonation_ran": True},
+        "frida_runtime": {"observed_runtime_events": True,
+                           "trace_artifact_present": True, "events": 577},
+        "packet_capture": {"present": True},
+    }
+    report = (
+        "Dynamic analysis was performed in this triage (Speakeasy emulation "
+        "and Frida probing ran); both tools recorded zero runtime events. "
+        "Neither Speakeasy nor Frida was executed on this sample."
+    )
+    c = RQ._cross_report_consistency(report, "", "", None, st)
+    assert any("dynamic_performed_but_report_says_none" in v
+               for v in c["violations"]), c["violations"]
+
+
 # ------------------------------------------------------------- section injection
 def test_the_dynamic_section_prompt_carries_the_status(monkeypatch):
     """The section prompt must receive the authoritative status line, so the
@@ -312,10 +544,11 @@ def test_the_dynamic_section_prompt_carries_the_status(monkeypatch):
         SP, "_dynamic_status_sentence",
         lambda sha: "Dynamic analysis in this run -- emulation NOT performed; "
                     "Frida: not performed; WinRE detonation: not performed.")
-    SP._run_one_section("5. Behavioral Analysis", "ab", {}, {})
+    result = SP._run_one_section("5. Behavioral Analysis", "ab", {}, {})
     assert "DYNAMIC-ANALYSIS STATUS" in captured["prompt"], (
         "the authoritative status was not injected into the section prompt")
     assert "emulation NOT performed" in captured["prompt"]
+    assert result["markdown"] == "m"
 
 
 def test_the_dynamic_status_is_not_injected_into_other_sections(monkeypatch):

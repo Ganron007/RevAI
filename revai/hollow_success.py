@@ -100,6 +100,40 @@ _PANEL_RE = re.compile(
     re.IGNORECASE,
 )
 
+# The same vocabulary, anchored to the START of a line: a panel is a line
+# whose content IS the verdict marker (a table row, a bold verdict line, a
+# ticker row). Prose that QUOTES a verdict mid-sentence is not a panel.
+#
+# The dotnet_342a88bc false positive (2026-10-13): the report quoted the
+# triage summary in its own prose -- "the triage summary text states
+# 'Verdict: clean' but the formal verdict field is 'suspicious'" -- and the
+# loose pattern's FIRST match in the document was the quote, so a correct
+# report (panel: suspicious, like every other report) failed the hollow gate
+# on its own quoted evidence. Panels are read first; the loose pattern is
+# the fallback for a layout we have not seen, never the primary.
+_PANEL_LINE_RE = re.compile(
+    r"^[ \t>|*_-]*\**\s*(?:verdict|final)\b[^\n]{0,80}?\b("
+    + "|".join(re.escape(v).replace(r"\ ", r"[ _]") for v in _VERDICT_VOCAB)
+    + r")\b",
+    re.IGNORECASE | re.MULTILINE,
+)
+
+
+def _read_panel_verdict(md: str) -> str:
+    """A report's verdict: the PANEL's word, not a quoted one.
+
+    Line-anchored first, loose second. Normalised the way the caller
+    normalises it (`not malicious` -> `not_malicious`).
+    """
+    for pattern in (_PANEL_LINE_RE, _PANEL_RE):
+        m = pattern.search(md or "")
+        if m:
+            verdict = (m.group(1) or "").strip().lower().replace(" ", "_")
+            if verdict:
+                return verdict
+    return ""
+
+
 #: Retained for callers that read a table row specifically (the older v2 shape).
 _TICKER_RE = _PANEL_RE
 
@@ -365,13 +399,12 @@ def check_verdict_panel_agreement(case: Path) -> list[Finding]:
             continue
         current.append(path)
         try:
-            m = _PANEL_RE.search(path.read_text(errors="replace")[:200000])
+            verdict = _read_panel_verdict(
+                path.read_text(errors="replace")[:200000])
         except OSError:
             continue
-        if m:
-            verdict = (m.group(1) or "").strip().lower().replace(" ", "_")
-            if verdict:
-                panels[path.name] = verdict
+        if verdict:
+            panels[path.name] = verdict
 
     findings: list[Finding] = []
     distinct = set(panels.values())

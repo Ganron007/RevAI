@@ -900,9 +900,7 @@ def audit_publish(log: Path, deep_mtime: float) -> dict:
         checks["tech2_source_llm"] = (not source_is_fallback(t2s)) and t2s in (
             "llm_judge", "llm_raw_markdown",
         )
-        checks["tech3_source_ok"] = (not source_is_fallback(t3s)) and t3s not in (
-            "llm_incomplete",
-        ) and not (tech3_j.get("sections_missing") or [])
+        checks.update(_technical_v3_quality_checks(tech3_j, tech3, deep_mtime))
         checks["tech2_no_stubs"] = not (tech2_j.get("sections_stub") or [])
         checks["no_tech2_fallback"] = not source_is_fallback(t2s)
         checks["quality_issues"] = list(qpack.get("issues") or [])
@@ -939,6 +937,9 @@ def audit_publish(log: Path, deep_mtime: float) -> dict:
             "master_source_llm",
             "tech2_source_llm",
             "tech3_source_ok",
+            "tech3_fresh_vs_deep",
+            "tech3_no_missing_sections",
+            "tech3_no_stubs",
             "tech2_no_stubs",
             "no_tech2_fallback",
         )
@@ -973,6 +974,31 @@ def audit_publish(log: Path, deep_mtime: float) -> dict:
             "v2_excerpt": _excerpt(text2, 900),
             "v3_excerpt": _excerpt(text3, 900),
         },
+    }
+
+
+def _technical_v3_quality_checks(
+    technical_json: dict, technical_path: Path, deep_mtime: float
+) -> dict[str, bool]:
+    """Gate the actual technical-v3 artifact, not just the master report.
+
+    Section publishing is a required report stage. The report's own machine
+    metadata is the durable evidence of its completeness and provenance, and
+    its mtime must show that it belongs to the current deep-dive run.
+    """
+    from report_quality import source_is_llm_ok
+
+    missing = technical_json.get("sections_missing")
+    stubs = technical_json.get("sections_stub")
+    return {
+        "tech3_source_ok": source_is_llm_ok(technical_json.get("source")),
+        "tech3_fresh_vs_deep": bool(
+            technical_path.exists()
+            and deep_mtime
+            and _mtime(technical_path) >= deep_mtime - 5
+        ),
+        "tech3_no_missing_sections": isinstance(missing, list) and not missing,
+        "tech3_no_stubs": isinstance(stubs, list) and not stubs,
     }
 
 

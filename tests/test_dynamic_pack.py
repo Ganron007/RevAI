@@ -124,6 +124,24 @@ def test_dynamic_pack_counts(tmp_path):
         "dumps": 0, "unpack_artifact": None}
 
 
+def test_gateway_pcapng_in_off_box_layout_is_loaded(tmp_path):
+    """The gateway collector's off-box pcapng must reach RevAI reporting."""
+    dyn = _make_pack(tmp_path)
+    off_box = dyn / "off_box"
+    (off_box / "network_raw").mkdir(parents=True)
+    (off_box / "network_raw" / "gateway.pcapng").write_bytes(b"pcapng")
+    (off_box / "capture.json").write_text(json.dumps({
+        "requested": True, "status": "collected", "elapsed_s": 129.7,
+    }))
+
+    pack = load_dynamic_pack(SHA, winre_root=tmp_path)
+    assert pack and pack["pcaps"] == ["off_box/network_raw/gateway.pcapng"]
+    assert pack["external_capture"]["status"] == "collected"
+    assert dynamic_pack_counts(pack)["present"] is True
+    md = format_flare_dynamic_evidence(pack)
+    assert "1 pcap(s)" in md
+
+
 def test_no_dump_run_is_reported_honestly(tmp_path):
     """A pe-sieve report without dumps must not read as captured memory."""
     _make_pack(tmp_path, with_dumps=False)

@@ -90,6 +90,24 @@ def test_full_prompt_still_requests_every_section():
     assert "ONE PART of a larger report" not in prompt
 
 
+def test_technical_prompt_separates_static_probe_from_runtime_status():
+    """Every technical chunk must see the same component-level ground truth."""
+    status = {
+        "sentence": (
+            "RevAI Speakeasy: no oracle result; RevAI Frida probe: static-only, "
+            "not sample execution; WinRE detonation: sample launch confirmed; "
+            "WinRE Frida runtime: runtime events captured (577); packet capture: "
+            "1 capture file present."
+        )
+    }
+    evidence = pub.append_dynamic_status_to_technical_evidence("EVIDENCE", status)
+    prompt = pub.build_prompt_technical(
+        {"sha256": "a" * 64, "sample_path": "/x", "project_name": "p"},
+        {}, {}, {}, [], evidence, sections=SECTIONS[4:5])
+    assert "STATIC, not sample execution" in prompt
+    assert status["sentence"] in prompt
+
+
 def test_prior_sections_context_is_included_when_supplied():
     prompt = pub.build_prompt_technical(
         {"sha256": "a" * 64, "sample_path": "/x", "project_name": "p"},

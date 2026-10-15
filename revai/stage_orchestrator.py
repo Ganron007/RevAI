@@ -765,7 +765,9 @@ def _build_lc_tools(runner: StageRunner, need_intake: bool) -> list:
     _add(
         "run_publish",
         runner.run_publish,
-        "Stage 5: REPORT-MASTER v2 publish (static evidence only). Respects HITL if quick≠deep.",
+        "Stage 5: REPORT-MASTER v2 publish from static evidence plus any current WinRE runtime pack. "
+        "Keep Speakeasy, the RevAI Frida static probe, and WinRE detonation as separate scopes; "
+        "do not infer execution from static hook candidates. Respects HITL if quick≠deep.",
     )
     _add(
         "run_section_publish",

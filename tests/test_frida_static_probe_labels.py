@@ -35,8 +35,9 @@ def test_frida_static_probe_output_labels_itself_static():
     assert out.get("executed") is False, out
     assert out.get("runtime_events") is None, out
     note = str(out.get("note", "")).lower()
-    assert "no injection" in note and "was executed" in note, out
-    assert "no runtime events" in note, out
+    assert "no injection occurred through this component" in note, out
+    assert "no sample code was executed" in note, out
+    assert "separate paths such as winre" in note, out
     assert "candidates" in note, out
 
 
@@ -69,7 +70,8 @@ def test_behavioral_evidence_renders_the_static_probe_honestly():
     assert "hooked calls" not in text, (
         "the Frida line still reads like a runtime probe report: " + text)
     assert "static analysis only" in text, text
-    assert "no execution" in text, text
+    assert "no execution or injection by this revai component" in text.lower(), text
+    assert "runtime traces from separate paths such as winre" in text.lower(), text
     assert "1 hook candidate" in text, text
     # The Speakeasy half of the same section must keep rendering.
     assert "Speakeasy: 3 API calls" in text, text

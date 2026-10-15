@@ -83,37 +83,57 @@ def missing_sections(md: str, required: list[str]) -> list[str]:
 
 
 def _section_bodies(md: str, required: list[str]) -> dict[str, str]:
-    """Split markdown by required section titles; return body text per section."""
+    """Split markdown at exact required headings; return each section body.
+
+    Do not search for titles in arbitrary prose. A narrative commonly mentions
+    a later section (for example, "see What We Don't Know below"); treating
+    that mention as a boundary truncates the real section and can turn a
+    substantive report into a false stub.
+    """
     norm_md = normalize_heading_text(md)
-    # Find ## or # headings that match required titles
     bodies: dict[str, str] = {s: "" for s in required}
-    # Build search positions for each required section
+    wanted: dict[str, str] = {}
+    for section in required:
+        key = _section_heading_key(section)
+        if key:
+            wanted.setdefault(key, section)
+
+    # A section boundary must be a Markdown heading on its own line. This
+    # deliberately avoids the old loose substring fallback, which could match
+    # references inside paragraphs, tables, or evidence quotes.
     positions: list[tuple[int, str]] = []
-    low = norm_md.lower()
-    for s in required:
-        full = normalize_heading_text(s).lower()
-        key = full.split(".", 1)[-1].strip() if full[:1].isdigit() else full
-        # prefer "## N. Title" style
-        for pat in (
-            f"## {full}",
-            f"# {full}",
-            f"## {key}",
-            f"# {key}",
-        ):
-            idx = low.find(pat.lower())
-            if idx >= 0:
-                positions.append((idx, s))
-                break
-        else:
-            # loose: title substring as its own line start
-            idx = low.find(key)
-            if idx >= 0:
-                positions.append((idx, s))
-    positions.sort(key=lambda x: x[0])
-    for i, (start, name) in enumerate(positions):
-        end = positions[i + 1][0] if i + 1 < len(positions) else len(norm_md)
+    offset = 0
+    for line in norm_md.splitlines(keepends=True):
+        match = re.match(r"^\s{0,3}#{1,6}\s+(.+?)\s*#*\s*$", line.rstrip("\r\n"))
+        if match:
+            section = wanted.get(_section_heading_key(match.group(1)))
+            if section is not None:
+                positions.append((offset, section))
+        offset += len(line)
+
+    # If a required heading appears more than once, the first occurrence owns
+    # its body. Duplicates remain visible to other report-quality checks.
+    unique_positions: list[tuple[int, str]] = []
+    seen: set[str] = set()
+    for position, section in positions:
+        if section not in seen:
+            unique_positions.append((position, section))
+            seen.add(section)
+    unique_positions.sort(key=lambda item: item[0])
+
+    for i, (start, name) in enumerate(unique_positions):
+        end = unique_positions[i + 1][0] if i + 1 < len(unique_positions) else len(norm_md)
         bodies[name] = norm_md[start:end]
     return bodies
+
+
+def _section_heading_key(title: str) -> str:
+    """Canonicalize a Markdown heading for exact required-title matching."""
+    value = normalize_heading_text(title).strip()
+    value = re.sub(r"[*_`~]", "", value)
+    value = re.sub(r"^\d+\s*\.\s*", "", value)
+    value = re.sub(r"\s+", " ", value)
+    return value.casefold()
 
 
 def stub_sections(md: str, required: list[str], *, min_body_chars: int = 180) -> list[str]:
@@ -388,9 +408,69 @@ def evaluate_report_markdown(
 
 
 _DYN_NEGATION_RE = re.compile(
-    r"(?:no dynamic analysis.{0,60}?(?:was|were).{0,15}?(?:performed|conducted|run))"
-    r"|(?:dynamic analysis (?:was|were)\s+not (?:performed|conducted|run))"
-    r"|(?:dynamic analysis was not performed)",
+    r"\bno\b.{0,140}\b(?:dynamic[- ]analysis(?:\s+tool)?|dynamic execution|"
+    r"sandbox (?:analysis|execution))\b.{0,140}\b(?:performed|conducted|run|"
+    r"invoked|executed|present|available|captured|collected)\b"
+    r"|\b(?:dynamic[- ]analysis|dynamic execution)\b.{0,45}\b"
+    r"(?:was|were|is|are)\s+not\s+(?:performed|conducted|run|invoked|"
+    r"executed|present|available|captured|collected)\b",
+    re.IGNORECASE,
+)
+
+_DYN_META_NEGATION_RE = re.compile(
+    r"\b(?:does\s+not|doesn't|do\s+not|don't|did\s+not|didn't)\s+"
+    r"(?:mean|imply|indicate|establish|show)\s+(?:that\s+)?"
+    r"(?:there\s+is\s+)?no\s+(?:dynamic[- ]analysis(?:\s+tool)?|"
+    r"dynamic execution|sandbox (?:analysis|execution))\b.{0,100}\b"
+    r"(?:performed|conducted|run|invoked|executed|present|available|"
+    r"captured|collected)\b",
+    re.IGNORECASE,
+)
+
+_DYN_INNER_PAYLOAD_GAP_RE = re.compile(
+    r"\bno\b[^\n.!?;,]{0,80}\b(?:dynamic|sandbox)\s+"
+    r"(?:analysis|execution|detonation)\b[^\n.!?;,]{0,100}\b(?:of|for)\s+"
+    r"(?:the\s+)?(?:inner|embedded)\s+(?:pe|payload)\b"
+    r"(?:[^\n.!?;,]{0,100}\b(?:performed|conducted|run|executed|available|"
+    r"present|captured|collected|in this run)\b)?"
+    r"|\b(?:dynamic|sandbox)\s+(?:analysis|execution|detonation)\b"
+    r"[^\n.!?;,]{0,70}\b(?:of|for)\s+(?:the\s+)?(?:inner|embedded)\s+"
+    r"(?:pe|payload)\b[^\n.!?;,]{0,45}\b(?:was|were|is|are)\s+not\s+"
+    r"(?:performed|conducted|run|executed|available|present)\b"
+    r"|\b(?:inner|embedded)\s+(?:pe|payload)\b[^\n.!?;,]{0,70}\b"
+    r"(?:was|were|is|are)\s+not\s+(?:dynamically\s+)?"
+    r"(?:executed|detonated|run)\b",
+    re.IGNORECASE,
+)
+
+_DYN_FRIDA_NEGATION_RE = re.compile(
+    r"\bno\b.{0,80}\bfrida\b.{0,100}\b(?:trace|session|instrumentation|"
+    r"runtime events?)\b.{0,55}\b(?:present|performed|invoked|run|executed|"
+    r"recorded|captured)\b"
+    r"|\bfrida\b.{0,55}\b(?:trace|session|instrumentation|runtime events?)\b"
+    r".{0,45}\b(?:was|were|is|are)\s+not\b"
+    r"|\bneither\b.{0,70}\bfrida\b.{0,55}\b(?:was|were|is|are)\s+"
+    r"(?:not\s+)?(?:performed|invoked|run|executed|recorded|captured)\b"
+    r"|\b(?:frida|both tools?)\b.{0,80}\b(?:zero|0|no)\s+"
+    r"(?:runtime\s+)?events?\b",
+    re.IGNORECASE,
+)
+
+_DYN_WINRE_NEGATION_RE = re.compile(
+    r"\bno\b.{0,80}\bwinre\b.{0,80}\b(?:detonation|sample execution|"
+    r"runtime run)\b.{0,55}\b(?:performed|conducted|run|invoked|executed|"
+    r"present|captured)\b"
+    r"|\bwinre\b.{0,55}\b(?:detonation|sample execution|runtime run)\b"
+    r".{0,45}\b(?:was|were|is|are)\s+not\s+(?:performed|conducted|run|"
+    r"invoked|executed|captured)\b",
+    re.IGNORECASE,
+)
+
+_DYN_PCAP_NEGATION_RE = re.compile(
+    r"\bno\b.{0,80}\b(?:pcap|packet capture|network traffic capture)\b"
+    r".{0,55}\b(?:present|collected|captured|recorded)\b"
+    r"|\b(?:pcap|packet capture|network traffic capture)\b.{0,45}\b"
+    r"(?:was|were|is|are)\s+not\s+(?:present|collected|captured|recorded)\b",
     re.IGNORECASE,
 )
 
@@ -402,16 +482,6 @@ _DYN_EXECUTED_RE = re.compile(
     r"(?:was|were|invoked|ran|executed|recorded))"
     r"|(?:emulation (?:oracle )?(?:completed|succeeded|executed|ran|produced a trace))"
     r"|(?:both invoked during)",
-    re.IGNORECASE,
-)
-
-# A negation that is qualified by context (limiting the claim, saying it would
-# be next, a missing host, etc.) is not a flat contradiction when dynamic work
-# did in fact run.
-_DYN_CAVEAT_RE = re.compile(
-    r"(?:would be the next step|without a patched|patched windows host)"
-    r"|(?:latent|sandboxed context|limitation|window-bounded)"
-    r"|(?:detonation pack|is the next|as a next step)",
     re.IGNORECASE,
 )
 
@@ -628,6 +698,66 @@ def _affirmative_dynamic_claim(md: str) -> str | None:
     return None
 
 
+def _dynamic_absence_claim(md: str, dyn_status: dict) -> str | None:
+    """Find an execution-absence statement contradicted by run artifacts.
+
+    Check the sentence containing each claim. A caveat elsewhere in a long
+    report must not cancel a contradiction. A clearly scoped statement that
+    only the absent Speakeasy engine did not run, or that the RevAI Frida probe
+    was static-only, remains valid when WinRE separately detonated the sample.
+    """
+    emulation_ran = bool((dyn_status.get("emulation") or {}).get("ok"))
+    winre_ran = (dyn_status.get("winre") or {}).get("detonation_ran") is True
+    frida = dyn_status.get("frida_runtime") or {}
+    frida_ran = bool(frida.get("observed_runtime_events")
+                     or frida.get("trace_artifact_present"))
+    capture = dyn_status.get("packet_capture") or {}
+    pcap_present = bool(capture.get("present"))
+
+    for sentence in re.split(r"(?<=[.!?])\s+|\n+", md or ""):
+        lower = sentence.lower()
+        # A missing runtime stream attributed only to the RevAI static-only
+        # probe is true even when WinRE separately generated runtime events.
+        # Exempt that component-level Frida statement only; the broader dynamic,
+        # WinRE, and packet-capture checks below still run on this sentence.
+        static_probe_scoped_frida_absence = (
+            "frida" in lower
+            and "probe" in lower
+            and re.search(r"\bstatic[- ]only\b", lower) is not None
+            and re.search(
+                r"\b(?:by|from|through)\s+(?:this|that)\s+"
+                r"(?:frida\s+)?(?:static[- ]only\s+)?(?:probe|component|path)\b",
+                lower,
+            ) is not None
+        )
+        # A statement limited to the absent RevAI emulator is compatible with
+        # a separate WinRE detonation. Broad statements that mention multiple
+        # engines or a sandbox do not qualify for this exception.
+        speakeasy_only = (
+            not emulation_ran
+            and re.search(r"\bno\s+(?:revai(?:'s)?\s+)?speakeasy\b", lower)
+            and not re.search(r"\b(frida|winre|sandbox|dynamic execution)\b", lower)
+        )
+        if speakeasy_only:
+            continue
+        # Reports can state a component-level gap (RevAI's static-only Frida
+        # probe) or an unexecuted nested payload (the embedded PE) while the
+        # outer sample was run through WinRE. Remove only those scoped clauses;
+        # a separate blanket denial in the same sentence must still fail.
+        dynamic_claim_text = _DYN_META_NEGATION_RE.sub("", sentence)
+        dynamic_claim_text = _DYN_INNER_PAYLOAD_GAP_RE.sub("", dynamic_claim_text)
+        if _DYN_NEGATION_RE.search(dynamic_claim_text):
+            return sentence.strip()[:180]
+        if (frida_ran and not static_probe_scoped_frida_absence
+                and _DYN_FRIDA_NEGATION_RE.search(sentence)):
+            return sentence.strip()[:180]
+        if winre_ran and _DYN_WINRE_NEGATION_RE.search(sentence):
+            return sentence.strip()[:180]
+        if pcap_present and _DYN_PCAP_NEGATION_RE.search(sentence):
+            return sentence.strip()[:180]
+    return None
+
+
 def evaluate_capability_disclosure(root: Path, sha: str,
                                    reports: list[str]) -> dict[str, Any]:
     """#56 (c): the report must disclose the capabilities it could not examine.
@@ -705,8 +835,9 @@ def _cross_report_consistency(
     checks: dict[str, Any] = {"file_entropy": file_entropy}
 
     all_md = "\n".join([master_md or "", tech2_md or "", tech3_md or ""])
-    any_dyn = (None if dyn_status is None
-               else bool(dyn_status.get("any_dynamic_performed")))
+    raw_any_dyn = (None if dyn_status is None
+                   else dyn_status.get("any_dynamic_performed"))
+    any_dyn = None if raw_any_dyn is None else bool(raw_any_dyn)
     checks["dynamic_performed"] = any_dyn
 
     if any_dyn is False:
@@ -723,13 +854,18 @@ def _cross_report_consistency(
                 "cross_report:dynamic_execution_claimed_but_none_performed"
                 f"('{claim[:90]}'){gt}")
     elif any_dyn is True:
-        # A mechanism DID run. A flat, uncaveated "no dynamic analysis was
-        # performed" is the contradiction.
-        negated = bool(_DYN_NEGATION_RE.search(all_md))
-        checks["dyn_negation"] = negated
-        if negated and not _DYN_CAVEAT_RE.search(all_md):
+        # A mechanism DID run. Check execution-absence statements per sentence
+        # and against component status; report-wide caveats cannot mask them.
+        claim = _dynamic_absence_claim(all_md, dyn_status or {})
+        checks["dyn_absence_claim"] = claim
+        if claim:
             violations.append(
-                "cross_report:dynamic_performed_but_report_says_none")
+                "cross_report:dynamic_performed_but_report_says_none"
+                f"('{claim[:120]}')")
+    elif any_dyn is None and dyn_status is not None:
+        checks["dynamic_status_unverified"] = True
+        if (dyn_status.get("winre") or {}).get("pack_present"):
+            violations.append("cross_report:dynamic_execution_status_unverified")
 
     mv = _panel_final_verdict(master_md)
     tv = _panel_final_verdict(tech2_md) or _panel_final_verdict(tech3_md)
@@ -1959,106 +2095,6 @@ def scrub_report_indicators(
               f"{meta['unverified_before']} -> {meta['remaining_unverified']}",
               flush=True)
     return scrubbed, meta
-
-
-#: The deterministic replacement for a fabricated dynamic-execution claim. It
-#: states, in published-report language, what the run record carries; the
-#: removal record keeps the internal ground-truth sentence beside the exact
-#: text removed, so an auditor can see both.
-_DYN_CLAIM_TRUTH = (
-    "No dynamic analysis was performed in this run (no emulation, no Frida "
-    "instrumentation, and no detonation), so no runtime behaviour is reported "
-    "here; the findings in this section are from static analysis."
-)
-
-
-def _iter_affirmative_dynamic_claims(md: str):
-    """Every affirmative dynamic-execution claim, negated ones excluded.
-
-    The same predicate the gate uses, but ALL matches rather than the first:
-    a scrub that stopped at the first fabrication would leave the rest of the
-    report asserting them.
-    """
-    if not md:
-        return
-    for m in _DYN_EXECUTED_RE.finditer(md):
-        window = _negation_window_before(md, m.start())
-        after = md[m.end():m.end() + 45].lstrip()
-        if any(neg in window for neg in _DYN_NEGATION_MARKERS):
-            continue
-        if _DYN_NEGATED_AFTER_RE.match(after):
-            continue
-        yield m
-
-
-def _sentence_span(md: str, start: int, end: int) -> tuple[int, int]:
-    """The sentence containing [start, end): back to the previous boundary,
-    forward to the next. Newlines count as boundaries, so a table row is
-    replaced as a unit rather than half a row."""
-    lb = max(md.rfind(c, 0, start) for c in (".", "!", "?", "\n"))
-    cands = [md.find(c, end) for c in (".", "!", "?", "\n")]
-    cands = [c for c in cands if c != -1]
-    ra = min(cands) if cands else len(md)
-    return lb + 1, ra + 1
-
-
-def scrub_dynamic_execution_claims(
-    case: Path, markdown: str, label: str,
-) -> tuple[str, dict]:
-    """Replace fabricated dynamic-execution claims with the run's ground truth.
-
-    The indicator-scrubber pattern (G23) applied to a different claim class.
-    The cross-report gate detects a report claiming an execution the run
-    record says never happened; measured 2026-10-12/13, the model produced
-    exactly that claim in 3 of 4 publish passes across BOTH publishers, from
-    a static probe's availability + hook-candidate output. Evidence labelling
-    and prompt rules reduced but did not eliminate it, so the claim is now
-    removed deterministically at publish time and every removal is recorded
-    -- the gate stays the backstop, and a scrub that fails to take effect is
-    visible rather than assumed.
-
-    Only the "claimed but none performed" direction: a report that UNDERSTATES
-    a dynamic run that did happen is a contradiction for the gate to report,
-    not a sentence to rewrite.
-    """
-    meta: dict[str, Any] = {"label": label, "claims_removed": 0}
-    try:
-        from v2_lib import dynamic_analysis_status
-        dyn = dynamic_analysis_status(case.parent.name)
-    except Exception as exc:  # noqa: BLE001
-        meta["error"] = f"dynamic status unavailable: {type(exc).__name__}"
-        return markdown, meta
-    if dyn.get("any_dynamic_performed") is not False:
-        meta["applicable"] = False
-        return markdown, meta
-    claims = list(_iter_affirmative_dynamic_claims(markdown))
-    if not claims:
-        return markdown, meta
-    out = markdown
-    removals: list[dict] = []
-    done: list[tuple[int, int]] = []
-    # Right-to-left: replacing a later span leaves earlier positions valid.
-    for m in reversed(claims):
-        if any(a <= m.start() < b for a, b in done):
-            continue  # same sentence as an already-replaced claim
-        lb, rb = _sentence_span(out, m.start(), m.end())
-        original = out[lb:rb].strip()
-        if not original:
-            continue
-        out = out[:lb] + _DYN_CLAIM_TRUTH + out[rb:]
-        done.append((lb, rb))
-        removals.append({
-            "removed": original[:300],
-            "replacement": _DYN_CLAIM_TRUTH,
-            "ground_truth": dyn.get("sentence", ""),
-        })
-    meta["claims_removed"] = len(removals)
-    meta["removals"] = removals
-    if removals:
-        print(f"[report_quality] {label}: replaced {len(removals)} fabricated "
-              f"dynamic-execution claim(s) with the run's ground truth",
-              flush=True)
-    return out, meta
 
 
 def _ioc_factcheck_issue(claims: dict) -> str | None:

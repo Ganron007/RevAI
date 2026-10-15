@@ -2326,11 +2326,12 @@ def get_llm_api_url() -> str:
 
 
 def get_llm_reasoning() -> str | None:
-    """Return the requested reasoning/thinking effort from env, or None.
+    """Return the provider-specific reasoning / Thinking setting, or None.
 
-    Some models support reasoning with effort values such as 'high' or 'max'.
-    Set REVAI_LLM_REASONING=max to request the highest reasoning effort.
-    Set it to 'disabled' or 'none' to disable thinking.
+    Providers with effort controls may use values such as 'high' or 'max'.
+    The Agnes endpoint documents a Thinking on/off control, so use 'enabled'
+    or 'disabled' there. Legacy effort labels still map to Thinking enabled
+    for Agnes, but do not select different reasoning levels.
     """
     return os.environ.get("REVAI_LLM_REASONING")
 
@@ -2427,15 +2428,16 @@ def _build_reasoning_body(reasoning: str | None,
         return {}
     r = reasoning.strip().lower()
     if _is_agnes_api(api_url):
-        if r in ("disabled", "none", "off"):
+        if r in ("disabled", "none", "off", "false"):
             return {"chat_template_kwargs": {"enable_thinking": False}}
-        if r in ("low", "medium", "high", "max"):
+        if r in ("enabled", "on", "true", "low", "medium", "high", "max"):
             # Agnes documents a boolean Thinking-mode switch, not an effort
-            # level. Preserve the configured on/off intent without sending an
-            # undocumented `reasoning_effort` field.
+            # level. The effort values are accepted only as legacy aliases.
             return {"chat_template_kwargs": {"enable_thinking": True}}
         return {}
-    if r in ("disabled", "none", "off"):
+    if r in ("enabled", "on", "true"):
+        return {}
+    if r in ("disabled", "none", "off", "false"):
         return {"thinking": {"type": "disabled"}}
     # OpenAI-format reasoning_effort: values include 'max' and 'high'.
     return {
@@ -3037,10 +3039,11 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
       - REVAI_LLM_MODEL    (required)
       - REVAI_LLM_API_URL  (required)
       - REVAI_LLM_API_KEY  (required; falls back to REVAI_LLM_API_KEY in cadre.env)
-      - REVAI_LLM_REASONING (optional: 'max', 'high', 'low', 'disabled', etc.)
+      - REVAI_LLM_REASONING (optional; Agnes: 'enabled'/'disabled',
+        other providers may support effort values such as 'high' or 'max')
 
-    Pass `reasoning` to override the configured effort for this one call (used
-    for bounded completeness retries with thinking disabled).
+    Pass `reasoning` to override the configured provider setting for this one
+    call (used for bounded completeness retries with thinking disabled).
     """
     import time
     import urllib.request
@@ -3110,7 +3113,7 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
         return str((data.get("choices") or [{}])[0].get("finish_reason") or "")
 
     last_error: Exception | None = None
-    # Long report prompts can legitimately exceed 2-3 min at reasoning=max.
+    # Long report prompts can legitimately exceed 2-3 min with Thinking enabled.
     # Default 300s; override with REVAI_LLM_TIMEOUT (seconds). A caller that
     # knows its own remaining budget (artifact_gen had GEN_TIMEOUT_S=180,
     # defined and never applied) can pass timeout_s to bound a single attempt.
@@ -6065,11 +6068,28 @@ def load_dynamic_pack(sha: str, logs_dir: Path | None = None, *,
         except Exception:
             analyst_md = ""
 
-    pcap_dir = dyn / "network_raw"
-    pcaps = sorted(p.name for p in pcap_dir.glob("*.pcap")) if pcap_dir.is_dir() else []
+    # WinRE guest captures use dynamic/network_raw; the REMnux gateway capture
+    # is explicitly off-box and lives at dynamic/off_box/network_raw. Include
+    # pcapng, which is the gateway collector's native output format.
+    pcap_dirs = (dyn / "network_raw", dyn / "off_box" / "network_raw")
+    pcaps = sorted({
+        str(p.relative_to(dyn)).replace("\\", "/")
+        for pcap_dir in pcap_dirs if pcap_dir.is_dir()
+        for p in pcap_dir.iterdir()
+        if p.is_file() and p.suffix.lower() in (".pcap", ".pcapng")
+    })
 
     meta = _j("META.json") or {}
     job_meta = _j("META.job.json") or {}
+    external_capture = _j("external_capture.json")
+    if external_capture is None:
+        capture_path = dyn / "off_box" / "capture.json"
+        if capture_path.is_file():
+            try:
+                external_capture = json.loads(
+                    capture_path.read_text(encoding="utf-8-sig"))
+            except Exception:
+                external_capture = None
 
     # Detonation window (WinRE adaptive/capped). May live in either META.
     window = job_meta.get("window") or meta.get("window") or {}
@@ -6094,6 +6114,7 @@ def load_dynamic_pack(sha: str, logs_dir: Path | None = None, *,
         "verdict_policy": meta.get("verdict_policy") or {},
         "frida_summary": _j("frida_summary.json"),
         "procmon_summary": _j("procmon_summary.json"),
+        "external_capture": external_capture,
         "network": _j("network.json"),
         "network_intel": _j("network_intel.json"),
         "process_snapshot": _j("process_snapshot.json"),
@@ -6662,6 +6683,17 @@ def format_dynamic_analysis_section(pack: dict | None) -> str:
     ok = meta.get("ok", job.get("ok"))
     lines.append(f"- **status**: {'ran' if ok else (meta.get('error') or 'recorded')}")
     lines.append(f"- **source**: `{pack.get('source') or 'winre'}`")
+    detonation_ran = job.get("detonation_ran", meta.get("detonation_ran"))
+    sample_pid = job.get("sample_pid") or meta.get("sample_pid")
+    if isinstance(detonation_ran, bool):
+        launch_state = "sample launch confirmed" if detonation_ran else "sample did not launch"
+    elif sample_pid:
+        launch_state = "sample launch confirmed (legacy PID record)"
+    else:
+        launch_state = "pack present; sample launch unverified"
+    if sample_pid:
+        launch_state += f"; PID={sample_pid}"
+    lines.append(f"- **sample execution**: {launch_state}")
     if meta.get("schema_version"):
         lines.append(f"- **schema**: {meta.get('schema_version')}")
 
@@ -6709,6 +6741,8 @@ def format_dynamic_analysis_section(pack: dict | None) -> str:
 
     fs = pack.get("frida_summary") or {}
     if isinstance(fs, dict):
+        if fs.get("events") is not None:
+            lines.append(f"- **Frida runtime events**: {fs.get('events')}")
         scalars = [(k, v) for k, v in fs.items() if isinstance(v, (int, float, str))]
         if scalars:
             lines.append("- **Frida instrumentation**: "
@@ -6722,6 +6756,16 @@ def format_dynamic_analysis_section(pack: dict | None) -> str:
                     else:
                         pairs.append(f"`{str(item)[:60]}`")
                 lines.append(f"- **Frida {key}** ({len(value)}): " + ", ".join(pairs))
+
+    capture = pack.get("external_capture") or {}
+    if isinstance(capture, dict) and capture:
+        capture_status = capture.get("status") or "recorded"
+        details = [f"status={capture_status}"]
+        for key in ("elapsed_s", "pcap_size"):
+            value = capture.get(key)
+            if isinstance(value, (int, float)):
+                details.append(f"{key}={value}")
+        lines.append("- **gateway packet capture**: " + ", ".join(details))
 
     proc = pack.get("procmon_summary") or {}
     if isinstance(proc, dict) and proc:
@@ -6768,28 +6812,50 @@ def format_dynamic_analysis_section(pack: dict | None) -> str:
 
 def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
                            winre_root: Path | None = None) -> dict:
-    """Deterministic record of what dynamic analysis ACTUALLY happened in a run.
+    """Return artifact-derived status for each distinct runtime-analysis path.
 
-    The section report once described dynamic execution from the model's reading
-    of tool names in the evidence, and asserted that Speakeasy and Frida
-    "executed successfully" for a sample whose emulation oracle FAILED
-    ("Emulator not initialized" / ".NET assemblies not supported") and which had
-    no Frida or WinRE artifact. This returns the truth instead, read from
-    artifacts so that both the section prompt and the audit gate can STATE what
-    happened rather than infer it:
-
-      emulation : did the Speakeasy oracle succeed, fail, or not run?
-      frida     : is there a Frida trace? (only ever arrives in a WinRE pack)
-      winre     : is a WinRE detonation pack present?
-
-    Every value comes from an artifact; nothing is guessed, and an absent
-    artifact is reported as such rather than as "completed".
+    A RevAI Frida static probe is candidate analysis, not sample execution. A
+    WinRE pack can also exist when detonation failed to launch the sample, so
+    pack presence alone is not proof that runtime analysis happened. Keep the
+    Speakeasy oracle, WinRE launch record, Frida runtime trace, and packet
+    capture separate; consumers must not collapse them into a single boolean
+    until the source artifacts support that conclusion.
     """
-    out: dict[str, Any] = {"emulation": {}, "frida": {}, "winre": {}}
+    out: dict[str, Any] = {
+        "emulation": {}, "frida_static_probe": {
+            "execution_proven": False,
+            "state": "static candidate analysis only; does not execute the sample",
+        },
+        "frida_runtime": {}, "winre": {}, "packet_capture": {},
+    }
 
     # Emulation oracle: the deep-dive stage's 03-oracle.json.
     root = Path(logs_dir) if logs_dir else LOGS_DIR
     base = root / sha
+    mode = os.environ.get("REVAI_RUN_MODE", "").strip()
+    status_paths: list[Path] = []
+    if mode:
+        status_paths.append(base / mode / "winre-run.json")
+    status_paths.extend(base / m / "winre-run.json"
+                        for m in ("agentic", "scripted", "ui"))
+    status_paths.append(base / "winre-run.json")
+    run_status: dict[str, Any] = {}
+    run_status_stamp = ""
+    for status_path in dict.fromkeys(status_paths):
+        if not status_path.is_file():
+            continue
+        try:
+            candidate = json.loads(status_path.read_text(
+                encoding="utf-8", errors="replace"))
+        except Exception:
+            continue
+        if not isinstance(candidate, dict):
+            continue
+        stamp = str(candidate.get("finished_at") or candidate.get("started_at")
+                     or candidate.get("ts") or "")
+        if not run_status or stamp >= run_status_stamp:
+            run_status, run_status_stamp = candidate, stamp
+
     oracle_cands: list[Path] = []
     if (base / "deep_dive" / "03-oracle.json").is_file():
         oracle_cands.append(base)
@@ -6823,33 +6889,110 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
         out["emulation"] = {"present": False,
                             "state": "emulation stage produced no oracle result"}
 
-    # WinRE detonation pack (frida traces and dropped files live only here).
+    # WinRE detonation and runtime-telemetry artifacts.
     try:
         pack = load_dynamic_pack(sha, logs_dir=logs_dir, winre_root=winre_root) or {}
     except Exception:
         pack = {}
     if pack.get("present"):
-        out["winre"] = {"present": True, "source": pack.get("source"),
-                        "frida_events": (pack.get("frida_summary") or {}).get("events")}
-        out["frida"] = {"present": bool(pack.get("frida_summary"))}
-    else:
-        out["winre"] = {"present": False,
-                        "state": "no WinRE detonation pack (dynamic not performed)"}
-        out["frida"] = {"present": False,
-                        "state": "no Frida trace (none exists without a WinRE pack)"}
+        meta = pack.get("meta") or {}
+        job = pack.get("job_meta") or {}
+        raw_ran = job.get("detonation_ran", meta.get("detonation_ran"))
+        sample_pid = job.get("sample_pid") or meta.get("sample_pid")
+        if isinstance(raw_ran, bool):
+            detonation_ran: bool | None = raw_ran
+        elif sample_pid:
+            detonation_ran = True
+        else:
+            # Older packs may not carry a launch marker. Keep the state
+            # explicitly unverified rather than treating a directory as a run.
+            detonation_ran = None
+        out["winre"] = {
+            "pack_present": True,
+            "detonation_ran": detonation_ran,
+            "source": pack.get("source"),
+            "sample_pid": sample_pid,
+        }
 
-    # One authoritative sentence the report may mirror verbatim.
-    parts: list[str] = []
-    parts.append(out["emulation"].get("state") or "emulation status unknown")
-    parts.append("Frida: " + (out["frida"].get("state")
-                               if out["frida"].get("present") else "not performed"))
-    parts.append("WinRE detonation: "
-                 + (f"present ({out['winre'].get('source')})"
-                    if out["winre"].get("present") else "not performed"))
-    out["sentence"] = "Dynamic analysis in this run -- " + "; ".join(parts) + "."
-    out["any_dynamic_performed"] = bool(
-        out["emulation"].get("ok") or out["frida"].get("present")
-        or out["winre"].get("present"))
+        fr = pack.get("frida_summary") or {}
+        raw_events = fr.get("events", job.get("frida_events", meta.get("frida_events")))
+        try:
+            frida_events = int(raw_events) if raw_events is not None else None
+        except (TypeError, ValueError):
+            frida_events = None
+        trace_present = bool(pack.get("has_frida_trace"))
+        frida_observed = bool(frida_events and frida_events > 0)
+        out["frida_runtime"] = {
+            "trace_artifact_present": trace_present,
+            "events": frida_events,
+            "observed_runtime_events": frida_observed,
+            "state": (
+                f"runtime events captured ({frida_events})" if frida_observed
+                else "trace artifact present; no runtime events recorded" if trace_present
+                else "no runtime trace artifact present"
+            ),
+        }
+
+        pcaps = pack.get("pcaps") or []
+        out["packet_capture"] = {
+            "present": bool(pcaps),
+            "files": len(pcaps),
+            "state": f"{len(pcaps)} capture file(s) present" if pcaps
+                     else "no packet capture artifact present",
+        }
+    else:
+        run_state = str(run_status.get("state") or "").strip().lower()
+        # The bridge status has no run-id correlation with this analysis pack.
+        # It can describe a previous request, so never use it as proof that the
+        # current sample did or did not launch.
+        detonation_ran = None
+        frida_events = None
+        frida_observed = False
+        if run_state == "skipped":
+            winre_state = ("no runtime pack; latest recorded WinRE request was "
+                           "skipped (not correlated to this analysis run)")
+        elif run_state:
+            winre_state = ("no runtime pack; latest recorded WinRE request state="
+                           f"{run_state} (not correlated to this analysis run)")
+        else:
+            winre_state = "no runtime pack or run status; launch unverified"
+        out["winre"] = {
+            "pack_present": False,
+            "detonation_ran": detonation_ran,
+            "state": winre_state,
+            "run_state": run_state or None,
+        }
+        out["frida_runtime"] = {
+            "trace_artifact_present": False, "events": None,
+            "observed_runtime_events": False,
+            "state": "no runtime trace artifact present",
+        }
+        out["packet_capture"] = {
+            "present": False, "files": 0,
+            "state": "no packet capture artifact present",
+        }
+
+    # Keep the compatibility field for existing report gates, but make an
+    # old pack without a launch marker indeterminate instead of claiming it ran.
+    performed = bool(
+        out["emulation"].get("ok") or detonation_ran is True or frida_observed
+    )
+    out["any_dynamic_performed"] = (
+        True if performed else
+        None if pack.get("present") and detonation_ran is None else False
+    )
+    out["sentence"] = (
+        "Run-scoped status -- RevAI Speakeasy: "
+        f"{out['emulation'].get('state') or 'status unknown'}; "
+        "RevAI Frida probe: static-only, not sample execution; "
+        "WinRE detonation: "
+        + ("sample launch confirmed" if detonation_ran is True else
+           (out["winre"].get("state") or "sample launch unverified"))
+        + "; WinRE Frida runtime: "
+        + (out["frida_runtime"].get("state") or "status unknown")
+        + "; packet capture: "
+        + (out["packet_capture"].get("state") or "status unknown") + "."
+    )
     return out
 
 
@@ -8060,8 +8203,10 @@ def _sec_behavioral_evidence(tools_results: dict) -> str:
         lines.append(
             f"  Frida static probe: available={fp.get('frida_available')} "
             f"version={fp.get('frida_version', '?')}; {len(cands)} hook "
-            f"candidate(s) from the import table — static analysis only, no "
-            f"injection, no execution, no runtime events"
+            f"candidate(s) from the import table — static analysis only; no "
+            f"execution or injection by this RevAI component. "
+            f"Runtime traces from separate paths such as WinRE are reported "
+            f"independently."
         )
     mc = tools_results.get("malcat") or {}
     anoms = mc.get("anomalies") or []
@@ -8422,11 +8567,12 @@ def frida_static_probe(sample_path: str) -> dict:
         "executed": False,
         "runtime_events": None,
         "note": (
-            "Static probe only: Frida availability/version plus PE "
-            "import-derived hook CANDIDATES. No sample code was executed, no "
-            "injection happened, and no runtime events exist; hook_candidates "
-            "are import references a future runtime probe COULD hook, not "
-            "hooks that ran."
+            "This RevAI component is a static probe only: Frida "
+            "availability/version plus PE import-derived hook CANDIDATES. "
+            "No sample code was executed and no injection occurred through "
+            "this component. Runtime traces are collected and attributed "
+            "through separate paths such as WinRE. hook_candidates are import "
+            "references a future runtime probe COULD hook, not hooks that ran."
         ),
     }
     try:

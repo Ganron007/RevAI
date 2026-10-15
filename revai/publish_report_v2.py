@@ -27,8 +27,8 @@ from v2_lib import (  # noqa: E402
     append_technical_evidence_appendix,
     attach_analysis_scripts,
     attach_dynamic_corroboration,
-attach_capability_coverage,
-attach_dynamic_analysis_section,
+    attach_dynamic_analysis_section,
+    attach_capability_coverage,
     attach_ioc_confidence,
     attach_what_we_dont_know,
     audit_write,
@@ -39,6 +39,8 @@ attach_dynamic_analysis_section,
     align_publish_markdown_to_upstream,
     calibrate_publish_claim,
     cross_stage_verdict_lock,
+    dynamic_analysis_status,
+    format_dynamic_analysis_section,
     infer_publish_verdict_from_markdown,
     strip_accuracy_hold_banner,
     surface_verdict_sources_panel,
@@ -48,6 +50,7 @@ attach_dynamic_analysis_section,
     hitl_checkpoint,
     llm_judge,
     llm_call_metadata,
+    load_dynamic_pack,
     load_session,
     normalize_llm_json,
     provenance_block,
@@ -68,7 +71,6 @@ from report_quality import (  # noqa: E402
     PUBLIC_MODEL_LABEL,
     redact_model_names,
     scrub_report_indicators,
-    scrub_dynamic_execution_claims,
     source_is_fallback,
     stub_sections,
 )
@@ -109,6 +111,8 @@ def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, ya
                       capa_result: dict | None = None, yara_result: dict | None = None,
                       floss_result: dict | None = None, pe_imports_result: dict | None = None,
                       recovery_evidence: str = "",
+                      dynamic_status: dict | None = None,
+                      dynamic_evidence: str = "",
                       sections: list[str] | None = None) -> str:
     """Master report prompt.
 
@@ -137,6 +141,24 @@ def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, ya
             "## Evidence — recovered function names (v4 agentic recovery)",
             "Use these recovered names in reports instead of FUN_ addresses where applicable.",
             recovery_evidence,
+            "",
+        ]
+    if dynamic_status:
+        lines += [
+            "## Evidence — authoritative execution status (from run artifacts)",
+            "Use the component-specific status below. The RevAI Frida static probe "
+            "only analyzes candidate hooks; it does not execute the sample. A WinRE "
+            "detonation is a separate runtime path. Do not describe one component's "
+            "absence as absence of all dynamic analysis.",
+            compact_json_for_prompt(dynamic_status, max_chars=3500),
+            "",
+        ]
+    if dynamic_evidence:
+        lines += [
+            "## Evidence — WinRE runtime record",
+            "This block is generated from the WinRE run artifacts; treat its "
+            "observations and coverage limits as authoritative.",
+            dynamic_evidence,
             "",
         ]
     lines += [
@@ -299,6 +321,18 @@ Deep dive excerpt: {json.dumps(deep or {}, indent=2)[:4000]}
 Return JSON: {{"title": "...", "markdown": "..."}}"""
 
 
+def append_dynamic_status_to_technical_evidence(
+    technical_evidence: str, dynamic_status: dict | None,
+) -> str:
+    """Add the component-specific runtime state to every technical chunk."""
+    sentence = str((dynamic_status or {}).get("sentence") or "").strip()
+    if not sentence:
+        return technical_evidence
+    return (technical_evidence.rstrip()
+            + "\n\n## Authoritative component-specific dynamic status\n\n"
+            + sentence + "\n")
+
+
 def build_prompt_technical(session: dict, verdict: dict | None, deep: dict | None,
                            yara_meta: dict | None, audit: list,
                            technical_evidence: str,
@@ -343,6 +377,7 @@ def build_prompt_technical(session: dict, verdict: dict | None, deep: dict | Non
         "- REQUIRED embeds when present in evidence: section layout table, full IAT, capa+YARA tables,",
         "  high-signal strings WITH engine+ea, UPX stdout + unpacked_path, function metrics, EP/decompress disasm.",
         "- If Speakeasy/Frida show zero events, write 'not observed' — never invent runtime behavior.",
+        "- RevAI's Frida hook-candidate probe is STATIC, not sample execution. Keep it separate from WinRE runtime events, Speakeasy traces, and packet-capture evidence; never infer one component from another or from tool availability.",
         "- Citation source must match the evidence engine (e.g. Malcat string ≠ IDA SQL).",
         "- RULE-NAME ATTRIBUTION: YARA rule names (anti_dbg, screenshot, win_registry, win_token, IsPE64, ...) belong to source=yara ONLY. capa rules have descriptive names (modify access privileges, delete registry key, ...) and come from capa/malcat-capa. Never list YARA rule names under capa, and never list capa rules under yara. Quote each engine's rules exactly as its own table shows them.",
         "- Use tables heavily. Include code fences for disasm/decompilation excerpts from evidence.",
@@ -618,57 +653,6 @@ def generate_technical_chunked(
 
 def verify_technical_sections(md: str) -> list[str]:
     return missing_sections(md, TECHNICAL_REPORT_SECTIONS)
-
-
-_DYN_NEGATION_RE = re.compile(
-    r"no dynamic analysis.{0,60}?(?:was|were).{0,15}?(?:performed|conducted|run)"
-    r"|dynamic analysis (?:was|were)\s+not (?:performed|conducted|run)"
-    r"|dynamic analysis was not performed",
-    re.IGNORECASE,
-)
-
-_DYN_HONEST_SENTENCE = (
-    "Dynamic analysis was performed in this triage (Speakeasy emulation and "
-    "Frida probing ran); both tools recorded zero runtime events"
-)
-
-
-def _dynamic_analysis_ran(tools_results: dict) -> tuple[bool, str]:
-    """Did Speakeasy/Frida actually run? Evidence-driven, deterministic."""
-    speakeasy = tools_results.get("speakeasy")
-    if isinstance(speakeasy, dict):
-        if speakeasy.get("speakeasy_ok") is True or str(speakeasy.get("speakeasy_ok") or "").lower() == "true":
-            return True, "speakeasy_ok=True"
-        if "emulation completed" in str(speakeasy.get("report") or ""):
-            return True, "speakeasy_report_emulation_completed"
-    frida = tools_results.get("frida_probe")
-    if isinstance(frida, dict):
-        if (frida.get("hook_candidates") or frida.get("candidates") or
-                frida.get("probe_ran")) and not frida.get("error"):
-            return True, "frida_hook_candidates"
-        if "hook candidates" in str(frida.get("summary") or ""):
-            return True, "frida_summary_hook_candidates"
-    return False, ""
-
-
-def _repair_dyn_negation(md: str) -> tuple[str, int, list[str]]:
-    """Replace 'no dynamic analysis was performed' with the honest phrasing.
-
-    Only called when the evidence proves the tools ran. Returns
-    (repaired_md, replace_count, original_snippets).
-    """
-    original: list[str] = []
-    count = 0
-
-    def _sub(m) -> str:
-        nonlocal count
-        count += 1
-        original.append(m.group(0))
-        return _DYN_HONEST_SENTENCE
-
-    repaired = _DYN_NEGATION_RE.sub(_sub, md)
-    return repaired, count, original
-
 
 
 def _extract_report_json(content: str) -> dict:
@@ -997,6 +981,9 @@ def main():
             print(f"[publish_report_v2] function_recovery read warn: {e}", flush=True)
 
     if args.template == "full":
+        dynamic_status = dynamic_analysis_status(args.sha256)
+        dynamic_pack = load_dynamic_pack(args.sha256)
+        dynamic_evidence = format_dynamic_analysis_section(dynamic_pack)
         prompt = build_prompt_full(session, verdict, deep, yara_meta, audit,
                                    dotnet_result=dotnet_result, r2_decomp=r2_decomp,
                                    r2_ai=r2_ai, frida_trace=frida_trace,
@@ -1006,7 +993,9 @@ def main():
                                    capa_result=capa_result, yara_result=yara_result,
                                    floss_result=floss_result,
                                    pe_imports_result=pe_imports_result,
-                                   recovery_evidence=recovery_evidence)
+                                   recovery_evidence=recovery_evidence,
+                                   dynamic_status=dynamic_status,
+                                   dynamic_evidence=dynamic_evidence)
     elif args.template == "triage":
         prompt = build_prompt_triage(session, verdict)
     else:
@@ -1039,6 +1028,8 @@ def main():
                 yara_result=yara_result, floss_result=floss_result,
                 pe_imports_result=pe_imports_result,
                 recovery_evidence=recovery_evidence,
+                dynamic_status=dynamic_status,
+                dynamic_evidence=dynamic_evidence,
                 sections=[title])
             try:
                 r = llm_judge(one)
@@ -1152,26 +1143,13 @@ def main():
         report["sections_stub"] = stubs
         report["sections_complete"] = len(REPORT_MASTER_SECTIONS) - len(missing)
 
-    # Deterministic dynamic-analysis honesty repair (2026-08-12, getdown-class):
-    # when Speakeasy/Frida demonstrably RAN (speakeasy_ok True / frida probes
-    # present in the evidence), a master claiming "no dynamic analysis was
-    # performed" is factually wrong. The LLM produces this phrasing despite the
-    # style contract, so repair it deterministically — honest wording, original
-    # text preserved in the report JSON for provenance.
-    _dyn_ran, _dyn_why = _dynamic_analysis_ran(tools_results)
-    if _dyn_ran and md:
-        md, _dyn_repaired, _dyn_orig = _repair_dyn_negation(md)
-        report["dynamic_analysis_ran"] = True
-        report["dynamic_analysis_ran_why"] = _dyn_why
-        report["dynamic_analysis_negation_repaired"] = _dyn_repaired
-        if _dyn_orig:
-            report["dynamic_analysis_negation_original"] = _dyn_orig[:400]
-        if _dyn_repaired:
-            print(
-                "[publish_report_v2] repaired dynamic-analysis negation in master "
-                "(tools ran, text claimed not-performed)",
-                flush=True,
-            )
+    # Put the artifact-derived WinRE run record in the master report as well as
+    # the technical report. The prompt above receives the same status/evidence;
+    # contradictory narrative remains visible to the quality gate instead of
+    # being rewritten after generation.
+    if args.template == "full" and dynamic_evidence:
+        if "## Dynamic Analysis (WinRE detonation)" not in md:
+            md = md.rstrip() + "\n\n" + dynamic_evidence
 
     # V5.12.7 / V5.12.13 — cross-stage verdict lock (honest multi-source surface)
     quick_v = (verdict or {}).get("verdict") if isinstance(verdict, dict) else None
@@ -1260,6 +1238,8 @@ def main():
     report["markdown"] = md
 
     report["provenance"] = revai_provenance()
+    if args.template == "full":
+        report["dynamic_analysis_status"] = dynamic_status
     md = provenance_block() + md
     # Force the panel to the locked label. The lock fixed the structured verdict
     # but not the prose the audit reads (win32k_dll: lock_ok=True with the panel
@@ -1279,14 +1259,10 @@ def main():
     # has to be failed for asserting invented registry paths. Recorded in the
     # report JSON so the removal is auditable.
     md, _ioc_scrub = scrub_report_indicators(case, md, "master_v2")
-    # A fabricated dynamic-execution claim is replaced with the run's ground
-    # truth (measured 2026-10-12/13: the claim appeared in 3 of 4 publish
-    # passes across both publishers). Recorded beside the indicator scrub.
-    md, _dyn_scrub = scrub_dynamic_execution_claims(case, md, "master_v2")
-    report["dynamic_claim_scrub"] = _dyn_scrub
     # Vendor/model names are scrubbed from published markdown (docs hygiene).
-    # Done AFTER the scrub because the model may have copied the name into its
-    # own prose while writing from evidence that still carried it.
+    # Dynamic-analysis claims remain as generated and are judged by the
+    # artifact-backed cross-report quality gate; report text is never rewritten
+    # to make a contradictory run look clean.
     md, _models_redacted = redact_model_names(md)
     if _models_redacted:
         report["model_names_redacted"] = _models_redacted
@@ -1337,6 +1313,8 @@ def main():
         technical_evidence = attach_analysis_scripts(technical_evidence, args.sha256)
         technical_evidence = attach_dynamic_corroboration(
             technical_evidence, args.sha256)
+        technical_evidence = append_dynamic_status_to_technical_evidence(
+            technical_evidence, dynamic_status)
         (ev_dir / "03-technical-evidence.md").write_text(technical_evidence)
         # Standalone filled evidence bundle (V5.16.6)
         (case / "EVIDENCE-BUNDLE.md").write_text(technical_evidence)
@@ -1567,6 +1545,7 @@ def main():
         tech_md = attach_what_we_dont_know(tech_md, args.sha256,
                                            scan_text=_report_scan_text)
         technical_report["markdown"] = tech_md
+        technical_report["dynamic_analysis_status"] = dynamic_status
         technical_report["evidence_appendix"] = True
         technical_report["sections_missing"] = tech_missing
         technical_report["sections_stub"] = tech_stubs
@@ -1587,9 +1566,6 @@ def main():
         tech_md, _tech_ioc_scrub = scrub_report_indicators(
             case, tech_md, "technical_v2")
         technical_report["indicator_scrub"] = _tech_ioc_scrub
-        tech_md, _tech_dyn_scrub = scrub_dynamic_execution_claims(
-            case, tech_md, "technical_v2")
-        technical_report["dynamic_claim_scrub"] = _tech_dyn_scrub
         tech_md, _tech_models = redact_model_names(tech_md)
         if _tech_models:
             technical_report["model_names_redacted"] = _tech_models

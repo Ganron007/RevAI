@@ -104,11 +104,9 @@ def _probe_docs_tree(mutate) -> str:
     * `write_text` is not atomic on Windows, so a reader can observe a
       truncated README.
 
-    Copying into tmp_path also makes the probes RUNNABLE wherever the docs
-    exist. The old version skipped whenever `README.md` was not beside the
-    tests -- and on the VM, where deploy ships `revai/*` and `tests/*.py` and
-    never the docs, that skip was the normal case, so the guard the file was
-    written to pin executed nothing there while looking layout-aware.
+    Copying into tmp_path also makes the probes runnable in both a source
+    checkout and the deployed flat layout, which carries README.md and docs/
+    alongside the test files.
 
     On the flat VM layout there is genuinely nothing to probe, so this SKIPS
     rather than failing: a test that fails for an absent artefact is the same

@@ -97,6 +97,16 @@ if [[ -d "$REPO_ROOT/docs" ]]; then
     sudo cp -a "$REPO_ROOT/docs"/. /opt/scripts/docs/
 fi
 
+# The flat-layout verification harness reads README.md from its runtime root
+# as well as the docs/ tree. Shipping docs without the root README makes the
+# deployed verify-release gate fail even though source-checkout checks pass.
+if [[ -f "$REPO_ROOT/README.md" ]]; then
+    ok "Deploying README.md to /opt/scripts/ ..."
+    sudo cp -a "$REPO_ROOT/README.md" /opt/scripts/README.md
+else
+    fail "README.md is missing from the source checkout"
+fi
+
 # ---------------------------------------------------------------------------
 # Deploy the operator entry points from scripts/ (layout-aware helpers the docs
 # reference by their deployed path, e.g. /opt/scripts/verify-release.sh).
@@ -152,7 +162,7 @@ if command -v git >/dev/null 2>&1 && git -C "$REPO_ROOT" rev-parse --verify HEAD
     #                      runtime behavior, and ui/ SOURCE, because the Console
     #                      bundle is built from it at deploy time)
     #   tests/            (tests/*.py are copied)
-    #   docs/             (the VM suite asserts doc/code consistency against
+    #   docs/ + README.md (the VM suite asserts doc/code consistency against
     #                      these, so they are part of what a deploy installs)
     #   assets/api_index/ (bundled index + NOTICE)
     #   the three operator scripts and install/revai.service
@@ -162,7 +172,7 @@ if command -v git >/dev/null 2>&1 && git -C "$REPO_ROOT" rev-parse --verify HEAD
     # Detection is whitespace-insensitive (`diff HEAD`, so CRLF noise on a
     # checkout cannot mark the build dirty) plus untracked files under the
     # scope (cp -a ships those too, so an uncommitted new module must count).
-    _dirty_paths=(revai tests docs assets/api_index
+    _dirty_paths=(revai tests docs README.md assets/api_index
                   scripts/verify-release.sh scripts/winre-llm-env.sh scripts/run-watched.sh scripts/instrument-live-log.sh
                   scripts/validate-ghidrasql-sql.py
                   install/revai.service)

@@ -9,7 +9,7 @@ producing a map whose gap section is required rather than optional.
 
 These tests pin the profile's contract without an LLM: the parsing, the
 budget levers, the fold's honesty rules (the substrate changes, the honesty
-rule does not), the quarantine that keeps the main pipeline's record, and a
+rule does not), isolation of the depth-run artifact tree, and a
 driven `_run_full_profile` with the substrate monkeypatched.
 """
 from __future__ import annotations
@@ -17,6 +17,8 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
+
+import pytest
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -147,19 +149,50 @@ def test_fold_reads_status_from_the_summary_and_detail_from_history():
     assert folded["crypto"]["answer"] == ""
 
 
-# ------------------------------------------------------------- the quarantine
-def test_quarantine_keeps_the_main_pipelines_record(tmp_path):
-    """The full pass overwrites agentic_deep_dive.json; the published reports
-    cite the original, so it is moved aside rather than erased."""
-    dd = tmp_path / "deep_dive"
-    dd.mkdir()
-    (dd / "agentic_deep_dive.json").write_text('{"original": true}')
-    (dd / "05-deep-dive.json").write_text("{}")
-    moved = DA._quarantine_deep_dive_artifacts(tmp_path)
-    assert len(moved) == 2, moved
-    assert not (dd / "agentic_deep_dive.json").exists()
-    kept = list(dd.glob("agentic_deep_dive.json.pre-depth-full-*"))
-    assert kept and json.loads(kept[0].read_text())["original"] is True
+# ---------------------------------------------------------- artifact isolation
+def test_full_profile_saves_its_tree_and_restores_pipeline_artifacts(tmp_path):
+    """A full-profile run must not hide or replace the deep dive reports cite."""
+    case = tmp_path / ("d" * 64) / "agentic"
+    dd = case / "deep_dive"
+    dd.mkdir(parents=True)
+    main_json = dd / "agentic_deep_dive.json"
+    compat_json = dd / "05-deep-dive.json"
+    raw_tools = dd / "01-tools-raw.json"
+    main_json.write_text('{"source": "main"}', encoding="utf-8")
+    compat_json.write_text('{"checklist_ok": true}', encoding="utf-8")
+    raw_tools.write_text('{"origin": "main-tool-run"}', encoding="utf-8")
+
+    with DA._preserve_pipeline_deep_dive(case) as run_dir:
+        main_json.write_text('{"source": "depth"}', encoding="utf-8")
+        compat_json.write_text('{"checklist_ok": false}', encoding="utf-8")
+        raw_tools.write_text('{"origin": "depth-tool-run"}', encoding="utf-8")
+        (dd / "depth-only.json").write_text("{}", encoding="utf-8")
+
+    assert json.loads(main_json.read_text()) == {"source": "main"}
+    assert json.loads(compat_json.read_text()) == {"checklist_ok": True}
+    assert json.loads(raw_tools.read_text()) == {"origin": "main-tool-run"}
+    depth_tree = run_dir / "deep_dive"
+    assert json.loads((depth_tree / "agentic_deep_dive.json").read_text()) == {
+        "source": "depth"}
+    assert json.loads((depth_tree / "01-tools-raw.json").read_text()) == {
+        "origin": "depth-tool-run"}
+    assert (depth_tree / "depth-only.json").is_file()
+
+
+def test_full_profile_restores_pipeline_artifacts_when_graph_raises(tmp_path):
+    case = tmp_path / ("e" * 64) / "agentic"
+    dd = case / "deep_dive"
+    dd.mkdir(parents=True)
+    main_json = dd / "agentic_deep_dive.json"
+    main_json.write_text('{"source": "main"}', encoding="utf-8")
+
+    with pytest.raises(RuntimeError, match="simulated domain failure"):
+        with DA._preserve_pipeline_deep_dive(case):
+            main_json.write_text('{"source": "partial depth"}',
+                                 encoding="utf-8")
+            raise RuntimeError("simulated domain failure")
+
+    assert json.loads(main_json.read_text()) == {"source": "main"}
 
 
 # ------------------------------------------------------------- the driven loop
@@ -230,6 +263,9 @@ def test_run_depth_loop_full_profile_drives_the_substrate(tmp_path, monkeypatch)
     assert set(st["gap_section"]["unknown_regions"]) == (
         set(DA._domain_questions()) - {"persistence"})
     assert st["stop_reason"] and "costed" in st["stop_reason"]
+    depth_tree = case / st["depth_artifact_dir"] / "deep_dive"
+    assert st["pipeline_deep_dive_preserved"] is True
+    assert (depth_tree / "deep-dive-progress.jsonl").is_file()
     # The Phase 0 stream: events appended and the snapshot folded beside them.
     import re_state
     events, dropped = re_state.load_log(case / re_state.EVENT_FILE)

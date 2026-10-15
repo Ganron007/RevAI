@@ -92,6 +92,34 @@ def test_verdict_panel_disagreement_detected(tmp_path):
     assert "verdict.panel_disagreement" in got, got
 
 
+def test_a_quoted_verdict_in_prose_is_not_the_panel(tmp_path):
+    """The dotnet_342a88bc false positive (2026-10-13): the report quotes the
+    triage summary in its own prose -- "the triage summary text states
+    'Verdict: clean' but the formal verdict field is 'suspicious'" -- and the
+    loose reader's first match in the document was the QUOTE. A correct
+    report (panel suspicious, like every other report) failed the hollow gate
+    on its own quoted evidence. The panel is line-anchored and wins.
+    """
+    master = (
+        "# RE Report\n\n"
+        "| **Final (locked)** | **suspicious** |\n\n"
+        "## 2. Classification\n\n"
+        "Upstream triage assigns a verdict of `suspicious` with a score of "
+        "50. Note that the triage summary text states 'Verdict: clean' but "
+        "the formal verdict field is 'suspicious', which is the "
+        "authoritative classification for this report.\n"
+    )
+    (tmp_path / "REPORT-MASTER-v2.md").write_text(master, encoding="utf-8")
+    (tmp_path / "REPORT-TECHNICAL-v2.md").write_text(
+        "| **Final** | **suspicious** |\n", encoding="utf-8")
+    assert hs.check_verdict_panel_agreement(tmp_path) == [], (
+        "a quoted verdict in prose must not be read as the report's panel")
+    assert hs._read_panel_verdict(master) == "suspicious"
+    # The loose pattern remains the fallback for an unseen layout.
+    assert hs._read_panel_verdict("Verdict: malicious, confidence high") \
+        == "malicious"
+
+
 def test_exhausted_llm_calls_detected(tmp_path):
     (tmp_path / "pipeline_single.log").write_text(
         "[llm_judge] attempt 1/3 failed (HTTPError: 500)\n"

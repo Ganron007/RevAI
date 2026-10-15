@@ -140,7 +140,7 @@ WinRE keeps its LLM/detonation config in `/opt/winre/.env` (600; never commit):
 WINRE_LLM_BASE_URL=https://<endpoint>/v1
 WINRE_LLM_MODEL=<model>
 WINRE_LLM_API_KEY=<key>
-WINRE_LLM_REASONING=high
+WINRE_LLM_REASONING=enabled
 # Leave unset to inherit WinRE's own default (enforce). RevAI's bridge
 # does not set this; it only forwards an explicit REVAI_WINRE_SNAPSHOT_GATE.
 #WINRE_SNAPSHOT_GATE=observe
@@ -154,6 +154,10 @@ WinRE-owned LLM settings to the child process, resolved in this order:
 2. WinRE's own env file (`WINRE_ENV` or `/opt/winre/.env`).
 
 RevAI's provider, model and API key are never used to fill missing WinRE values.
+For the Agnes Chat Completions endpoint, `enabled` turns Thinking on and
+`disabled` turns it off; `low`, `medium`, `high`, and `max` are accepted only
+as legacy aliases for `enabled`, not as reasoning levels. Its Messages API has
+a separate token-budget field, which this Chat Completions integration does not use.
 `Test connection` reports the source and whether an agentic pass could run,
 without echoing the key. Missing WinRE LLM settings are refused up front with
 `winre_llm_unset`.
@@ -188,7 +192,8 @@ settings:
 Failure semantics are honest and soft: unavailable FlareVM, missing key, snapshot
 gate refusal, timeout, or a non-zero WinRE exit are **recorded**
 (`logs/<sha>/<mode>/winre-run.json` + `winre-run.log`) and never block the static
-pipeline. Without a pack the reports stay byte-identical to a WinRE-less install.
+pipeline. Without a pack, runtime observations are omitted; the master report's
+artifact-derived status states that WinRE execution is unavailable or unverified.
 
 Standalone WinRE (no RevAI trigger), for reference:
 

@@ -38,6 +38,13 @@ def test_agnes_reasoning_maps_to_documented_thinking_extension():
     assert v2_lib._build_reasoning_body("high", endpoint) == {
         "chat_template_kwargs": {"enable_thinking": True},
     }
+    assert v2_lib._build_reasoning_body("enabled", endpoint) == {
+        "chat_template_kwargs": {"enable_thinking": True},
+    }
+    for legacy_level in ("low", "medium", "high", "max"):
+        assert v2_lib._build_reasoning_body(legacy_level, endpoint) == {
+            "chat_template_kwargs": {"enable_thinking": True},
+        }
     assert v2_lib._build_reasoning_body("disabled", endpoint) == {
         "chat_template_kwargs": {"enable_thinking": False},
     }
@@ -55,6 +62,7 @@ def test_non_agnes_reasoning_contract_is_unchanged():
     }
     assert v2_lib.get_llm_chat_options(4096, endpoint, "high") == {
         "max_tokens": 4096}
+    assert v2_lib._build_reasoning_body("enabled", endpoint) == {}
 
 
 def test_agnes_llm_judge_sends_only_documented_reasoning_and_output_cap(
@@ -71,7 +79,7 @@ def test_agnes_llm_judge_sends_only_documented_reasoning_and_output_cap(
     monkeypatch.setenv("REVAI_LLM_API_URL", "https://apihub.agnes-ai.com/v1")
     monkeypatch.setenv("REVAI_LLM_API_KEY", "test-key")
     monkeypatch.setenv("REVAI_LLM_MODEL", "agnes-3.0-flash")
-    monkeypatch.setenv("REVAI_LLM_REASONING", "high")
+    monkeypatch.setenv("REVAI_LLM_REASONING", "enabled")
     monkeypatch.setenv("REVAI_LLM_MAX_TOKENS", "100000")
     monkeypatch.setenv("REVAI_LLM_STREAM", "0")
 
