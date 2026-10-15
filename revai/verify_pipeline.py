@@ -347,8 +347,9 @@ def _looks_like_secret(value: str) -> bool:
     return bool(re.fullmatch(r"[A-Za-z0-9_\-\.+/=]+", value))
 
 
-def check_hygiene() -> None:
-    if not (REPO / "docs").is_dir():
+def check_hygiene(root: Path | None = None) -> None:
+    scan_root = REPO if root is None else Path(root)
+    if not (scan_root / "docs").is_dir():
         warn("hygiene", "no docs dir (flat VM layout) - skipped")
         return
     bad: list[str] = []
@@ -357,7 +358,7 @@ def check_hygiene() -> None:
     # never published, so they are excluded from the published-content scan. The
     # harness itself necessarily contains the forbidden tokens as its patterns.
     skip_names = {"AGENTS.md", "CHANGELOG.md", "verify_pipeline.py"}
-    for path in REPO.rglob("*"):
+    for path in scan_root.rglob("*"):
         if not path.is_file() or path.suffix not in _SCANNED_SUFFIXES:
             continue
         # `case-studies` used to be skipped here, which is how 2260 published
@@ -373,7 +374,7 @@ def check_hygiene() -> None:
             continue
         text = path.read_text(encoding="utf-8", errors="replace")
         scanned += 1
-        rel = path.relative_to(REPO)
+        rel = path.relative_to(scan_root)
         for token in _FORBIDDEN:
             if token in text:
                 bad.append(f"{rel}: {token}")
