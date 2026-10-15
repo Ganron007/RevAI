@@ -8,6 +8,7 @@ conflated, because a report listing capabilities without saying what the binary
 touches is not a behavioural model.
 """
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -99,6 +100,17 @@ def test_nothing_to_assemble_reports_absence_not_a_model(tmp_path):
     case = tmp_path / "logs" / SHA / "scripted"
     case.mkdir(parents=True)
     assert B.build_behavioural_model(SHA, case_root=case) == {}
+
+
+def test_cli_handles_case_with_nothing_to_assemble(tmp_path):
+    case = tmp_path / "logs" / SHA / "agentic"
+    case.mkdir(parents=True)
+    proc = subprocess.run(
+        [sys.executable, str(resolve("revai/behavioural_model.py")), str(case)],
+        capture_output=True, text=True, check=False)
+    assert proc.returncode == 0, proc.stderr
+    assert "nothing to assemble" in proc.stderr
+    assert "NameError" not in proc.stderr
 
 
 def test_an_unknown_domain_is_listed_as_a_gap(tmp_path):
