@@ -493,6 +493,7 @@ Tunables (all optional, defaults shown):
 | `REVAI_CAPA_RULES` | `/opt/capa-rules` | capa rule directory (override for a custom ruleset) |
 | `REVAI_CAPA_SIGNATURES` | `/opt/capa-signatures` | capa signature directory (override) |
 | `REVAI_RUN_MODE` | set by the entry point | case-directory key: `scripted` (pipeline_single), `agentic` (stage_orchestrator), `ui` (Console). Set it explicitly only when driving a stage script by hand |
+| `REVAI_STAGE_TIMEOUT_PUBLISH` | `7200` | maximum seconds for each report-generation stage in scripted and agentic runs. Agentic publish stages record a timeout without restarting the whole non-resumable report generation stage |
 | `REVAI_STRICT_MD_ENGINE_CITE` | 0 | `1` makes every engine citation in a report mandatory (used for research audits; stricter than the default quality gate) |
 | `REVAI_OLLAMA_URL` | `http://127.0.0.1:11434` | endpoint for the optional r2ai decompilation helper |
 | `REVAI_SAMPLES` | `/opt/samples` | sample root used by document triage when the corpus lives elsewhere |

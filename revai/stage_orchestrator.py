@@ -93,6 +93,55 @@ def _verdict_label(v: str) -> str:
     return v.split()[0] if v.split() else ""
 
 
+def _planner_stage_order(
+    *,
+    need_intake: bool,
+    winre: bool,
+    function_recovery: bool,
+    artifact_gen: bool,
+    behavioural_model: bool,
+    depth: bool,
+) -> str:
+    """Return the agentic plan order, including every enabled optional stage."""
+    stages: list[str] = []
+    if need_intake:
+        stages.append("run_intake")
+    stages.append("run_quick_scan")
+    if winre:
+        stages.append("run_winre_dynamic")
+    stages.extend(("run_deep_dive_agentic", "read_verdicts"))
+    if function_recovery:
+        stages.append("run_function_recovery")
+    if artifact_gen:
+        stages.append("run_artifact_gen")
+    if behavioural_model:
+        stages.append("run_behavioural_model")
+    stages.extend((
+        "run_yara_gen", "run_publish",
+        "run_section_publish", "run_audit", "check_quality",
+    ))
+    if depth:
+        stages.append("run_depth")
+    return " → ".join(stages)
+
+
+def _stage_timeout(env_name: str, default: int) -> int:
+    """Resolve a positive per-stage timeout override, falling back safely."""
+    raw = os.environ.get(env_name, "").strip()
+    if not raw:
+        return default
+    try:
+        value = int(raw)
+    except ValueError:
+        print(
+            f"[orchestrator] {env_name}={raw!r} is not a number; using {default}",
+            file=sys.stderr,
+            flush=True,
+        )
+        return default
+    return value if value > 0 else default
+
+
 def _verdicts(sha: str) -> dict[str, str]:
     qv = dv = ""
     try:
@@ -127,7 +176,14 @@ class StageRunner:
         self.run_log = case_dir(sha) / "orchestrator.log"
         self.run_log.parent.mkdir(parents=True, exist_ok=True)
 
-    def _run(self, name: str, cmd: list[str], timeout: int) -> dict[str, Any]:
+    def _run(
+        self,
+        name: str,
+        cmd: list[str],
+        timeout: int,
+        *,
+        retry_timeouts: bool = True,
+    ) -> dict[str, Any]:
         """Execute one spine stage with bounded transient retries.
 
         Retry policy (run_profile): rc!=0 whose failure text classifies as
@@ -135,6 +191,8 @@ class StageRunner:
         up to `stage_retries` times. Non-transient failures are NEVER retried
         (would burn budget, not fix the cause). Attempts are recorded on the
         tool_result event so the trace + provenance show retry visibility.
+        Report stages can disable whole-stage timeout retries because their
+        partial output has no reliable resume state.
         """
         profile = run_profile()
         retries = int(profile.get("stage_retries") or 0)
@@ -142,12 +200,15 @@ class StageRunner:
         attempts = 0
         last_rc = -1
         reason = ""
+        timed_out = False
+        retry_suppressed = False
         while True:
             attempts += 1
             marker = f"===== {_utc()} {name} ATTEMPT {attempts} CMD {' '.join(cmd)}\n"
             print(f"[orchestrator] TOOL {name} (attempt {attempts}): {' '.join(cmd)}", flush=True)
             st = time.time()
             rc = None
+            timed_out = False
             with self.run_log.open("a", encoding="utf-8") as lf:
                 lf.write(marker)
                 lf.flush()
@@ -163,6 +224,7 @@ class StageRunner:
                     lf.write(f"===== rc={rc}\n")
                 except subprocess.TimeoutExpired:
                     rc = 124
+                    timed_out = True
                     lf.write("===== TIMEOUT\n")
             reason = self._failure_reason(marker)
             last_rc = rc
@@ -175,9 +237,19 @@ class StageRunner:
                 "elapsed_s": round(time.time() - st, 1),
                 "ts": _utc(),
                 "attempt": attempts,
+                "timed_out": timed_out,
             }
             self.events.append(entry)
             print(f"[orchestrator] {name} rc={rc} {entry['elapsed_s']}s", flush=True)
+            if timed_out and not retry_timeouts:
+                retry_suppressed = True
+                entry["retry_suppressed"] = "timed_out_non_resumable_stage"
+                print(
+                    f"[orchestrator] {name} timed out; not retrying the "
+                    "non-resumable stage",
+                    flush=True,
+                )
+                break
             if rc == 0 or attempts > retries:
                 break
             if transient_only and not is_transient_failure(reason):
@@ -200,7 +272,10 @@ class StageRunner:
             "tool": name,
             "attempts": attempts,
             "failure_reason": (reason or "")[:500],
+            "timed_out": timed_out,
         }
+        if retry_suppressed:
+            out["retry_suppressed"] = "timed_out_non_resumable_stage"
         if attempts > 1:
             out["retried"] = True
             out["retry_reason"] = (reason or "")[:500]
@@ -247,6 +322,23 @@ class StageRunner:
     def run_deep_dive_agentic(self) -> dict:
         # Nested LangGraph ReAct (REVAI_AGENTIC_ENGINE=langgraph)
         env_note = os.environ.get("REVAI_AGENTIC_ENGINE") or "langgraph"
+        winre_requested = (os.environ.get("REVAI_WINRE_RUN") or "").strip().lower() in (
+            "1", "true", "yes",
+        )
+        winre_recorded = any(
+            e.get("type") == "tool_result" and e.get("tool") == "run_winre_dynamic"
+            for e in self.events
+        )
+        if winre_requested and not winre_recorded:
+            # The dynamic pack is an input to the deep-dive prompt. Enforce this
+            # dependency at the stage boundary in case the planner omits the
+            # optional tool despite the configured plan.
+            print(
+                "[orchestrator] WinRE is enabled but was not run before deep dive; "
+                "running the configured pre-dive stage now",
+                flush=True,
+            )
+            self.run_winre_dynamic()
         out = self._run(
             "run_deep_dive_agentic",
             [
@@ -320,23 +412,44 @@ class StageRunner:
                 "[orchestrator] run_winre_dynamic skipped (REVAI_WINRE_RUN not set)",
                 flush=True,
             )
-            return {
+            out = {
                 "ok": True, "rc": 0, "skipped": True,
                 "tool": "run_winre_dynamic",
                 "reason": "REVAI_WINRE_RUN not set",
             }
+            self.events.append({"type": "tool_result", **out, "ts": _utc()})
+            return out
         try:
             from winre_runner import availability, run_dynamic
         except Exception as e:
             print(f"[orchestrator] run_winre_dynamic unavailable: {e}", flush=True)
-            return {"ok": True, "rc": 0, "skipped": True, "tool": "run_winre_dynamic",
-                    "reason": f"winre_runner import failed: {e}"}
-        ok, reason = availability()
+            out = {"ok": True, "rc": 0, "skipped": True,
+                   "tool": "run_winre_dynamic", "reason": f"winre_runner import failed: {e}"}
+            self.events.append({"type": "tool_result", **out, "ts": _utc()})
+            return out
+        try:
+            ok, reason = availability()
+        except Exception as e:
+            out = {"ok": True, "rc": 0, "skipped": True,
+                   "tool": "run_winre_dynamic",
+                   "reason": f"availability check failed: {type(e).__name__}: {e}"}
+            self.events.append({"type": "tool_result", **out, "ts": _utc()})
+            return out
         if not ok:
             print(f"[orchestrator] run_winre_dynamic skipped: {reason}", flush=True)
-            return {"ok": True, "rc": 0, "skipped": True, "tool": "run_winre_dynamic",
-                    "reason": reason}
-        out = run_dynamic(self.sha, sample_path=str(self.sample) if self.sample else None)
+            out = {"ok": True, "rc": 0, "skipped": True,
+                   "tool": "run_winre_dynamic", "reason": reason}
+            self.events.append({"type": "tool_result", **out, "ts": _utc()})
+            return out
+        try:
+            out = run_dynamic(self.sha, sample_path=str(self.sample) if self.sample else None)
+        except Exception as e:
+            out = {
+                "rc": 1,
+                "state": "error",
+                "error": f"{type(e).__name__}: {e}",
+                "pack_present": False,
+            }
         self.events.append({
             "type": "tool_result", "tool": "run_winre_dynamic",
             "rc": out.get("rc"), "ok": True, "state": out.get("state"),
@@ -363,14 +476,16 @@ class StageRunner:
                 sys.executable, str(SCRIPTS / "publish_report_v2.py"),
                 self.sha, "--template", "full",
             ],
-            3600,
+            _stage_timeout("REVAI_STAGE_TIMEOUT_PUBLISH", 7200),
+            retry_timeouts=False,
         )
 
     def run_section_publish(self) -> dict:
         return self._run(
             "run_section_publish",
             [sys.executable, str(SCRIPTS / "section_publisher.py"), self.sha],
-            3600,
+            _stage_timeout("REVAI_STAGE_TIMEOUT_PUBLISH", 7200),
+            retry_timeouts=False,
         )
 
     def run_audit(self) -> dict:
@@ -446,7 +561,7 @@ class StageRunner:
         env["REVAI_DEPTH"] = depth_profile() or "1"
         try:
             proc = subprocess.run(
-                [sys.executable, str(SCRIPTS / "depth_agent.py"), self.sha],
+                [sys.executable, str(SCRIPTS / "depth_agent.py"), self.sha, "--run"],
                 capture_output=True, text=True, timeout=ceiling_seconds() + 300,
                 env=env, cwd=str(SCRIPTS),
             )
@@ -603,7 +718,9 @@ def _build_lc_tools(runner: StageRunner, need_intake: bool) -> list:
     _add(
         "run_deep_dive_agentic",
         runner.run_deep_dive_agentic,
-        "Stage 3: LangGraph ReAct deep RE (ToolRegistry: SQL, capa, malcat, …). REQUIRED.",
+        "Stage 3: LangGraph ReAct deep RE (ToolRegistry: SQL, capa, malcat, …). "
+        "WinRE detonation, when enabled, must precede this stage so its evidence "
+        "is loaded into the deep-dive prompt. REQUIRED.",
     )
     _add(
         "run_function_recovery",
@@ -626,7 +743,7 @@ def _build_lc_tools(runner: StageRunner, need_intake: bool) -> list:
         runner.run_behavioural_model,
         "Optional stage 3.7: behavioural model (plan #8) -- assemble what the "
         "sample DOES from the capability ledger, the IoCs and the observations. "
-        "Call it after run_artifact_gen and BEFORE run_yara_gen. Skips itself "
+        "Call it after any enabled run_artifact_gen stage and BEFORE run_yara_gen. Skips itself "
         "(rc=0) unless REVAI_ENABLE_BEHAVIOURAL_MODEL=1; never gates the verdict.",
     )
     _add(
@@ -638,9 +755,10 @@ def _build_lc_tools(runner: StageRunner, need_intake: bool) -> list:
         "run_winre_dynamic",
         runner.run_winre_dynamic,
         "Optional dynamic corroboration: detonate the sample on the WinRE FlareVM "
-        "(remote driver) and pull the detonation pack so publish attaches the "
-        "presence-gated dynamic-analysis block. Call it after run_deep_dive_agentic "
-        "and BEFORE run_publish. Skips itself (rc=0) unless REVAI_WINRE_RUN=1 and the "
+        "(remote driver) and pull the detonation pack before deep dive so the "
+        "agent can reason over its evidence; publish also attaches the presence-gated "
+        "dynamic-analysis block. Call it after run_quick_scan and BEFORE "
+        "run_deep_dive_agentic. Skips itself (rc=0) unless REVAI_WINRE_RUN=1 and the "
         "Console's Dynamic analysis (WinRE) settings are configured; Flare-side "
         "failures are recorded in winre-run.json and never block the pipeline.",
     )
@@ -759,14 +877,30 @@ def run_langgraph_orchestrator(sample: Path | None, sha: str | None) -> dict:
     artifact_gen_on = (os.environ.get("REVAI_ENABLE_ARTIFACT_GEN") or "").strip().lower() in (
         "1", "true", "yes", "on",
     )
-    order = (
-        "run_intake → " if need_intake else ""
-    ) + (
-        "run_quick_scan → run_deep_dive_agentic → "
-        + ("run_winre_dynamic → " if os.environ.get("REVAI_WINRE_RUN", "").strip().lower() in ("1", "true", "yes") else "")
-        + ("run_artifact_gen → " if artifact_gen_on else "")
-        + "run_yara_gen → read_verdicts → "
-        "run_publish → run_section_publish → run_audit → check_quality"
+    behavioural_model_on = (
+        (os.environ.get("REVAI_ENABLE_BEHAVIOURAL_MODEL") or "").strip().lower()
+        in ("1", "true", "yes", "on")
+    )
+    winre_on = (os.environ.get("REVAI_WINRE_RUN") or "").strip().lower() in (
+        "1", "true", "yes",
+    )
+    function_recovery_on = (
+        (os.environ.get("REVAI_ENABLE_AGENTIC_RECOVERY")
+         or os.environ.get("ENABLE_AGENTIC_RECOVERY", "0"))
+        .strip().lower() in ("1", "true", "yes")
+    )
+    try:
+        from depth_agent import depth_requested
+        depth_on = bool(depth_requested())
+    except Exception:
+        depth_on = False
+    order = _planner_stage_order(
+        need_intake=need_intake,
+        winre=winre_on,
+        function_recovery=function_recovery_on,
+        artifact_gen=artifact_gen_on,
+        behavioural_model=behavioural_model_on,
+        depth=depth_on,
     )
 
     system_prompt = f"""You are the RevAI stage orchestrator (LangGraph ReAct).
@@ -781,18 +915,24 @@ Policy (non-negotiable — industry agentic + deterministic gates):
    {order}
 2. deep_dive MUST use run_deep_dive_agentic (nested LangGraph RE tools) — never skip.
 3. run_yara_gen is MANDATORY — the audit hard-requires rule.yar. Never skip it.
-4. After deep, call read_verdicts. If conflict and HITL env is on, run_publish may skip — then stop and report.
-5. No Flare/dynamic tools. RAG is off. Evidence = tool outputs + scorecard only.
+4. Call read_verdicts immediately after deep. If conflict and HITL env is on,
+   run_publish may skip — then stop and report.
+5. Follow the ordered plan for optional stages. When enabled, run_winre_dynamic
+   appears between quick scan and deep dive so the deep-dive prompt receives its
+   evidence. Do not call optional stages absent from the plan. RAG is off. Evidence = tool outputs + scorecard only.
 6. rc==0 is NOT success. After run_audit you MUST call check_quality.
 7. If check_quality.ok is false (fallback / stub sections / llm_incomplete / checklist fail):
-   you may retry run_publish → run_section_publish → check_quality ONCE, then stop.
+   you may retry run_publish → run_section_publish → check_quality ONCE, then stop,
+   unless either publish tool reports timed_out=true; those report stages are not
+   resumable and MUST NOT be invoked again after a timeout.
 8. FINAL JSON only when done:
    {{"status":"ok|hitl_stop|failed","sha256":"...","stages_run":["..."],
      "all_green":true|false,"quality_green":true|false,"issues":[],"summary":"..."}}
    Set quality_green from check_quality. Never invent quality_green=true.
 9. BUDGET DISCIPLINE: you have a limited tool-call budget. Converge — never re-run a
-   stage that already succeeded (rc=0); after a successful retry, proceed to check_quality
-   then FINAL JSON. Wasting calls on redundant stage re-runs is a failure mode.
+   stage that already succeeded (rc=0); after a successful retry, proceed to check_quality.
+   If run_depth appears in the ordered plan, call it once after check_quality, then emit
+   FINAL JSON. Wasting calls on redundant stage re-runs is a failure mode.
 
 Use tools. Do not claim success without check_quality.ok=true.
 """
@@ -967,10 +1107,17 @@ Use tools. Do not claim success without check_quality.ok=true.
             _audit_now = json.loads(aj.read_text())
             _pub = (_audit_now.get("stages") or {}).get("publish") or {}
             _eng = _pub.get("engine_citation") or {}
+            publish_timeout_seen = any(
+                e.get("type") == "tool_result"
+                and e.get("tool") in ("run_publish", "run_section_publish")
+                and e.get("timed_out")
+                for e in events
+            )
             if (
                 not _pub.get("ok")
                 and not _eng.get("ok", True)
                 and int(_eng.get("corrections", {}).get("corrected") or 0) == 0
+                and not publish_timeout_seen
             ):
                 print(
                     "[orchestrator] engine_citation unrecoverable by auto-correct — "
@@ -980,6 +1127,21 @@ Use tools. Do not claim success without check_quality.ok=true.
                 runner.run_publish()
                 runner.run_section_publish()
                 _recovery_run = True
+            elif (
+                publish_timeout_seen
+                and not _pub.get("ok")
+                and not _eng.get("ok", True)
+                and int(_eng.get("corrections", {}).get("corrected") or 0) == 0
+            ):
+                events.append({
+                    "type": "observe",
+                    "tool": "publish_recovery",
+                    "data": {
+                        "skipped": True,
+                        "reason": "publish stage timed out and is not resumable",
+                    },
+                    "ts": _utc(),
+                })
         except Exception:
             pass
     if _recovery_run:
