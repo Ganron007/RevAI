@@ -389,9 +389,8 @@ class StageRunner:
 
         Mirrors run_artifact_gen's contract: an opt-in stage that self-skips with
         rc=0 when the gate is off, so an absent run is byte-identical. The case
-        dir is passed explicitly because behavioural_model resolves a sha through
-        case_dir(), which needs REVAI_RUN_MODE -- in agentic mode that is
-        `agentic`, not the scripted default.
+        directory is passed as the CLI target so the child reads this mode's
+        evidence even if an inherited REVAI_RUN_MODE names another mode.
         """
         try:
             from behavioural_model import behavioural_model_enabled
@@ -408,16 +407,12 @@ class StageRunner:
                                 "ts": _utc()})
             return out
         case = case_dir(self.sha)
-        env = dict(os.environ)
-        env["REVAI_CASE_DIR"] = str(case)
-        env["REVAI_ENABLE_BEHAVIOURAL_MODEL"] = "1"
         try:
-            out = _run_stage("behavioural_model",
-                             [sys.executable,
-                              str(SCRIPTS / "behavioural_model.py"), self.sha],
-                             env=env)
-            out.setdefault("ok", out.get("rc") == 0)
-            return out
+            return self._run(
+                "behavioural_model",
+                [sys.executable, str(SCRIPTS / "behavioural_model.py"), str(case)],
+                1800,
+            )
         except Exception as exc:  # pragma: no cover - defensive
             return {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
 

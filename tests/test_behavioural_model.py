@@ -11,6 +11,8 @@ import json
 import sys
 from pathlib import Path
 
+import pytest
+
 TESTS = Path(__file__).resolve().parent
 sys.path.insert(0, str(TESTS))
 from _layout import resolve  # noqa: E402
@@ -163,3 +165,52 @@ def test_the_feature_gate_is_off_by_default(monkeypatch):
     assert B.behavioural_model_enabled() is False
     monkeypatch.setenv("REVAI_ENABLE_BEHAVIOURAL_MODEL", "1")
     assert B.behavioural_model_enabled() is True
+
+
+@pytest.mark.parametrize("mode", ["scripted", "agentic"])
+def test_stage_runner_executes_model_for_the_selected_case(tmp_path, monkeypatch, mode):
+    """Execute the real child CLI: rc=0 alone cannot prove the model was built.
+
+    Deliberately set the inherited mode and case env to a different directory.
+    The selected case must receive the model and its subprocess trace.
+    """
+    import stage_orchestrator as so
+
+    case = _case(tmp_path, ALL, evidence_for=_ev("surface"),
+                 iocs={"urls": ["http://observed.example/"]})
+    if mode == "agentic":
+        case = case.rename(case.with_name(mode))
+    monkeypatch.setenv("REVAI_ENABLE_BEHAVIOURAL_MODEL", "1")
+    monkeypatch.setenv("REVAI_RUN_MODE", "agentic" if mode == "scripted" else "scripted")
+    monkeypatch.setenv("REVAI_CASE_DIR", str(tmp_path / "wrong-case"))
+    monkeypatch.setattr(so, "case_dir", lambda sha: case)
+    monkeypatch.setattr(so, "SCRIPTS", resolve("revai/behavioural_model.py").parent)
+    monkeypatch.setattr(so, "run_profile", lambda: {"stage_retries": 0})
+    runner = so.StageRunner(SHA, None, [])
+    result = runner.run_behavioural_model()
+    assert result.get("ok") is True, result
+    assert result.get("rc") == 0
+    model = json.loads((case / "behavioural_model.json").read_text(encoding="utf-8"))
+    assert model["observations"]
+    assert model["objects"]["URLs"] == ["http://observed.example/"]
+    assert any(e.get("tool") == "behavioural_model" and e.get("rc") == 0
+               for e in runner.events)
+    assert not (tmp_path / "wrong-case" / "behavioural_model.json").exists()
+
+
+def test_stage_runner_records_model_child_failure(tmp_path, monkeypatch):
+    import stage_orchestrator as so
+
+    case = tmp_path / "case"
+    case.mkdir()
+    scripts = tmp_path / "scripts"
+    scripts.mkdir()
+    (scripts / "behavioural_model.py").write_text("raise SystemExit(7)\n", encoding="utf-8")
+    monkeypatch.setenv("REVAI_ENABLE_BEHAVIOURAL_MODEL", "1")
+    monkeypatch.setattr(so, "case_dir", lambda sha: case)
+    monkeypatch.setattr(so, "SCRIPTS", scripts)
+    monkeypatch.setattr(so, "run_profile", lambda: {"stage_retries": 0})
+    runner = so.StageRunner(SHA, None, [])
+    result = runner.run_behavioural_model()
+    assert result["ok"] is False and result["rc"] == 7
+    assert runner.events[-1]["rc"] == 7
