@@ -146,21 +146,17 @@ WINRE_LLM_REASONING=high
 #WINRE_SNAPSHOT_GATE=observe
 ```
 
-Same key across RevAI and WinRE, or per-project keys: both are supported, and the
-model is written in **one place** by default. When RevAI drives WinRE, the runner
-passes the LLM variables to the child process, resolved in this order:
+RevAI and WinRE each maintain their own LLM configuration, including when both
+use the same provider or model. When RevAI drives WinRE, the runner passes only
+WinRE-owned LLM settings to the child process, resolved in this order:
 
-1. the process environment,
-2. an explicit `WINRE_LLM_*` in `/opt/winre/.env` — so WinRE can deliberately run
-   on its own model,
-3. RevAI's shared config `/opt/revai/config/llm.env`
-   (`REVAI_LLM_API_URL` → `WINRE_LLM_BASE_URL`, plus model, key and reasoning).
+1. `WINRE_LLM_*` process exports,
+2. WinRE's own env file (`WINRE_ENV` or `/opt/winre/.env`).
 
-Set **Settings → Dynamic analysis → Share RevAI LLM config** to `WinRE .env only`
-to turn step 3 off. `Test connection` reports which source is in effect (and
-whether an agentic pass could run) without ever echoing the key. An agentic pass
-with no LLM resolved is refused up front with `winre_llm_unset` instead of dying
-mid-run.
+RevAI's provider, model and API key are never used to fill missing WinRE values.
+`Test connection` reports the source and whether an agentic pass could run,
+without echoing the key. Missing WinRE LLM settings are refused up front with
+`winre_llm_unset`.
 
 WinRE's own CLI is not spawned by RevAI, so it gets the same resolution through
 a helper:

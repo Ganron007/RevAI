@@ -547,7 +547,7 @@ and corroborates only (`static_yara_wins` never yields).
 | `REVAI_DEPTH_CEILING_SECONDS` | `7200` | depth mode's ceiling. The ceiling does not truncate — hitting it forces a *consolidate and declare* phase, so a cutoff yields a partial-but-honest map with the remaining unknowns explicitly costed. A non-numeric value falls back to the default rather than failing a run |
 | `ioc_factcheck` (Console) | `blocking` | `blocking` or `advisory`; maps to `REVAI_IOC_FACTCHECK` |
 | `REVAI_IOC_FACTCHECK` | `blocking` | `advisory` records an unverified literal claim without failing the quality gate (`report:unverified_iocs:<n>`); the default blocks. The CLI escape hatch |
-| `REVAI_LLM_ENV` | `/opt/revai/config/llm.env` | the shared LLM config WinRE inherits from (path only; the key is never echoed or stored in the Console) |
+| `REVAI_LLM_ENV` | `/opt/revai/config/llm.env` | RevAI's own LLM config path; WinRE uses its separate env file/exports. The key is never echoed or stored in the Console |
 | `REVAI_WINRE_ROOT` / `REVAI_WINRE_PY` / `REVAI_WINRE_TIMEOUT` | `/opt/winre` / `<root>/venv/bin/python` / `3600` | install + venv locations, subprocess timeout seconds |
 | `REVAI_WITH_WINRE` / `REVAI_WINRE_REPO` / `REVAI_WINRE_REF` | off / `https://github.com/Ganron007/WinRE.git` / `master` | install-time only: the optional WinRE step in `setup-remnux.sh` |
 | `REVAI_PIPELINE_CONFIG` | `/opt/samples/pipeline-config.json` | path of the Console settings file (override for tests / alternate installs) |

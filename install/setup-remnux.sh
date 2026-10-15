@@ -455,9 +455,8 @@ else
     warn "Next: set up the FlareVM side (WinRE install/setup-flarevm.ps1), then"
     warn "      Console -> Settings -> Dynamic analysis (WinRE): address, user, SSH key"
     warn "      (or env: FLARE_HOST / FLARE_USER / FLARE_SSH_KEY)"
-    warn "LLM:   WinRE's agentic mode inherits /opt/revai/config/llm.env (fill it in"
-    warn "      step 2 of the summary below) - to give WinRE its own model instead,"
-    warn "      set WINRE_LLM_BASE_URL/MODEL/API_KEY/REASONING in $WINRE_DIR/.env (600)."
+    warn "LLM:   WinRE keeps its own configuration, separate from RevAI's llm.env."
+    warn "      Set WINRE_LLM_BASE_URL/MODEL/API_KEY/REASONING in $WINRE_DIR/.env (600)."
     warn "      The FlareVM itself must NOT hold any LLM configuration."
   else
     warn "WinRE install failed (optional) — static-only; see docs/WINRE-REMOTE.md"

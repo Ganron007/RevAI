@@ -34,6 +34,7 @@ from report_quality import VERDICT_CALIBRATION_CONTRACT  # noqa: E402
 from v2_lib import (  # noqa: E402
     case_dir,
     ensure_pipeline_runtime_env,
+    get_llm_chat_options,
     get_llm_temperature,
     get_planner_model,
     get_verdict_model,
@@ -930,7 +931,7 @@ def run_langgraph_deep_dive(sha: str, max_steps: int = 10, helpers: dict | None 
         # REVAI_LLM_TEMPERATURE, honoured here too: this site hardcoded 0.0,
         # so the setting only ever applied to the urllib request path.
         temperature=get_llm_temperature(),
-        max_tokens=4096,
+        **get_llm_chat_options(4096, api_url=api_url),
         callbacks=[_UsageCallback(planner_model, progress_path)],
     )
 

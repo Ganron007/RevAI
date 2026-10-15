@@ -24,6 +24,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, cast
+from urllib.parse import urlsplit
 
 # Imported at module level, not lazily: `run_packer_scan` was referenced in the
 # packed-stub acceptance path (line ~4113) without ever being imported here, so
@@ -2362,6 +2363,12 @@ def _llm_max_tokens() -> int:
         return 32768
 
 
+def _llm_max_tokens_for_url(api_url: str) -> int:
+    """Apply Agnes 3.0 Flash's documented Chat Completions output ceiling."""
+    tokens = _llm_max_tokens()
+    return min(tokens, 65536) if _is_agnes_api(api_url) else tokens
+
+
 def _llm_temperature() -> float:
     """Sampling temperature, overridable with REVAI_LLM_TEMPERATURE.
 
@@ -2401,7 +2408,17 @@ def get_llm_temperature() -> float:
     return _llm_temperature()
 
 
-def _build_reasoning_body(reasoning: str | None) -> dict:
+def _is_agnes_api(api_url: str | None = None) -> bool:
+    """Match Agnes's documented API hostname, including a full endpoint URL."""
+    try:
+        candidate = api_url or os.environ.get("REVAI_LLM_API_URL", "")
+        return urlsplit(candidate).hostname == "apihub.agnes-ai.com"
+    except ValueError:
+        return False
+
+
+def _build_reasoning_body(reasoning: str | None,
+                          api_url: str | None = None) -> dict:
     """Build the reasoning/thinking control parameters for the LLM body.
 
     Returns a dict that can be merged into the chat-completions request body.
@@ -2409,6 +2426,15 @@ def _build_reasoning_body(reasoning: str | None) -> dict:
     if not reasoning:
         return {}
     r = reasoning.strip().lower()
+    if _is_agnes_api(api_url):
+        if r in ("disabled", "none", "off"):
+            return {"chat_template_kwargs": {"enable_thinking": False}}
+        if r in ("low", "medium", "high", "max"):
+            # Agnes documents a boolean Thinking-mode switch, not an effort
+            # level. Preserve the configured on/off intent without sending an
+            # undocumented `reasoning_effort` field.
+            return {"chat_template_kwargs": {"enable_thinking": True}}
+        return {}
     if r in ("disabled", "none", "off"):
         return {"thinking": {"type": "disabled"}}
     # OpenAI-format reasoning_effort: values include 'max' and 'high'.
@@ -2416,6 +2442,23 @@ def _build_reasoning_body(reasoning: str | None) -> dict:
         "thinking": {"type": "enabled"},
         "reasoning_effort": r,
     }
+
+
+def get_llm_chat_options(max_tokens: int, api_url: str | None = None,
+                         reasoning: str | None = None) -> dict:
+    """LangChain options preserving the provider's documented wire fields."""
+    if not _is_agnes_api(api_url):
+        return {"max_tokens": max_tokens}
+    configured = (reasoning if reasoning is not None else
+                  (os.environ.get("REVAI_LLM_PLANNER_REASONING")
+                   or get_llm_reasoning()))
+    # ChatOpenAI rewrites its max_tokens option to max_completion_tokens.
+    # Send the documented provider field through extra_body, which the SDK
+    # merges after that rewrite, and leave the constructor option unset.
+    return {"extra_body": {
+        "max_tokens": min(65536, max(1, max_tokens)),
+        **_build_reasoning_body(configured or "disabled", api_url),
+    }}
 
 
 def _looks_degenerate(text: str) -> bool:
@@ -3006,10 +3049,15 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
     api_key = load_api_key()
     effective_model = (model or get_llm_model()).strip()
     api_url = get_llm_api_url()
-    # Pro judgment: use REVAI_LLM_REASONING (max/high). Flash agentic: no Pro reasoning
-    # unless REVAI_LLM_PLANNER_REASONING is set.
+    # Agnes documents Thinking mode through chat_template_kwargs. Honor the
+    # configured level as an on/off request there; its API does not document a
+    # per-request effort value. Other Flash providers keep the existing
+    # no-thinking default unless a planner-specific setting is supplied.
     if reasoning is None:
-        if "flash" in effective_model.lower():
+        if _is_agnes_api(api_url):
+            reasoning = (os.environ.get("REVAI_LLM_PLANNER_REASONING")
+                         or get_llm_reasoning() or "disabled")
+        elif "flash" in effective_model.lower():
             reasoning = os.environ.get("REVAI_LLM_PLANNER_REASONING") or "disabled"
         else:
             # Default effort: "high". Providers commonly support low/medium/high
@@ -3031,22 +3079,29 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
             {"role": "user", "content": prompt},
         ],
         "temperature": _llm_temperature(),
-        # Output cap -- see _llm_max_tokens() for the full value history and for
-        # why the previous 16384 default was wrong. Short version: there is no
-        # provider output ceiling (the model stops voluntarily at ~6,900 tokens
-        # even when told to write "many thousands of words"), and the calls that
-        # used to overflow 16384 were oversized REQUESTS, now split per section.
-        # This is a guard rail, not a tuned limit.
-        "max_tokens": _llm_max_tokens(),
+        # Per-call output guard rail, clamped to the published provider ceiling.
+        # Large report requests are split per section rather than relying on
+        # an oversized output allowance.
+        "max_tokens": _llm_max_tokens_for_url(api_url),
         "response_format": {"type": "json_object"},
     }
-    body.update(_build_reasoning_body(reasoning))
+    if _is_agnes_api(api_url):
+        # `response_format` is not listed in Agnes's documented request fields;
+        # the system prompt still requires JSON and the parser tolerates the
+        # provider's OpenAI-compatible message response.
+        body.pop("response_format", None)
+    body.update(_build_reasoning_body(reasoning, api_url))
 
     def _next_lower_effort(effort: str | None) -> str | None:
         order = ["max", "high", "medium", "low", "disabled"]
         if not effort:
             return effort
         e = effort.strip().lower()
+        if _is_agnes_api(api_url):
+            # Agnes exposes Thinking as a boolean, so walking high -> medium ->
+            # low would resend the exact same request. Jump once to its
+            # documented disabled mode instead.
+            return "disabled" if e != "disabled" else effort
         if e in order and order.index(e) < len(order) - 1:
             return order[order.index(e) + 1]
         return effort
@@ -3147,7 +3202,7 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
     last_aborted: dict | None = None
     last_empty: dict | None = None
     for attempt in range(1, max_retries + 1):
-        body.update(_build_reasoning_body(current_reasoning))
+        body.update(_build_reasoning_body(current_reasoning, api_url))
         # Stay inside the client-side budget before every attempt: this is what
         # keeps parallel stages (section map-reduce, function recovery) from
         # throttling each other. 2026-09-28: a 4-way x 17-section burst against
@@ -3407,7 +3462,7 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
             f"thinking disabled (window {fallback_window_s}s)",
             flush=True,
         )
-        body.update({"thinking": {"type": "disabled"}})
+        body.update(_build_reasoning_body("disabled", api_url))
         try:
             req = urllib.request.Request(
                 api_url,

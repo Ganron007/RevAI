@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
-"""WinRE's LLM variables, resolved from the one shared place.
+"""WinRE's LLM variables, resolved from its own control-plane config.
 
 WinRE's own CLI (`python -m winre.pipeline ...`) is not spawned by RevAI, so it
-cannot inherit RevAI's LLM config by itself. This resolves the same four
-variables with the same precedence the runner uses - process environment >
-WinRE's own `.env` > RevAI's shared `llm.env` - and either prints shell exports
-or runs a command with them, so an operator running WinRE directly still
-configures the model in exactly one place.
+uses its own WINRE_LLM_* exports or env file. This applies the same resolver
+as the RevAI bridge; neither path borrows RevAI's provider, model or key.
 
     python3 winre_llm_env.py --check
     eval "$(python3 winre_llm_env.py)"
@@ -22,12 +19,12 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from winre_runner import SHARED_LLM_ENV, resolve_winre_llm, settings  # noqa: E402
+from winre_runner import resolve_winre_llm, settings  # noqa: E402
 
 
 def main() -> int:
     ap = argparse.ArgumentParser(
-        description="Resolve WinRE LLM variables from RevAI's shared config.")
+        description="Resolve WinRE LLM variables from its own config.")
     ap.add_argument("--check", action="store_true",
                     help="print the resolution state only (no exports)")
     ap.add_argument("--run", nargs=argparse.REMAINDER, default=[],
@@ -41,7 +38,7 @@ def main() -> int:
         print(f"# source={meta['source']} configured={meta['configured']} "
               f"model={meta['model']} mode={cfg.get('mode')}")
     if not meta.get("configured"):
-        print(f"# no LLM configured: set {SHARED_LLM_ENV}, or WINRE_LLM_* in "
+        print("# no LLM configured: set WINRE_LLM_* exports or configure "
               f"{_winre_env(cfg)}", file=sys.stderr)
         return 1
     if args.check:
@@ -50,7 +47,8 @@ def main() -> int:
         # Never print exports on the exec path: the key would land in the caller's
         # stdout, a log file, or a terminal scrollback.
         cmd = args.run[1:] if args.run[0] == "--" else args.run
-        env = os.environ.copy()
+        env = {key: value for key, value in os.environ.items()
+               if not key.startswith("REVAI_LLM_")}
         env.update(values)
         return subprocess.run(cmd, env=env).returncode
     # Eval path: the whole point is to hand the variables to the shell.

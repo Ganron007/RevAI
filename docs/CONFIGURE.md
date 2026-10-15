@@ -15,11 +15,11 @@ You can also override settings per run through the React Console **Settings** ta
 | `REVAI_LLM_MODEL` | Yes | OpenAI-compatible model name — use whatever your provider exposes. This is the **default** model: the agentic tool loop plus every call that does not ask for a specific role (triage verdict, scripted deep dive, function recovery, reports, v3 sections). |
 | `REVAI_LLM_API_URL` | Yes | OpenAI-compatible **base URL** (not the full endpoint). The pipeline appends `/chat/completions` internally. |
 | `REVAI_LLM_API_KEY` | Yes | API key for the above endpoint. |
-| `REVAI_LLM_REASONING` | No | Reasoning effort (`low` / `medium` / `high` / `max` / `disabled`), if your model supports it. Aborts, timeouts and empty responses retry with a step-down through the effort levels and a final no-thinking attempt, so a flaky thinking mode degrades gracefully. |
+| `REVAI_LLM_REASONING` | No | Reasoning preference (`low` / `medium` / `high` / `max` / `disabled`). RevAI maps this to the configured provider's supported request fields; providers that expose only a Thinking on/off switch receive that boolean, while providers with effort levels receive the selected level. Retries step down where the provider supports levels, then make a final no-thinking attempt. |
 | `REVAI_LLM_TEMPERATURE` | No | Temperature for LLM judge calls. Default `0.0` — the value that makes runs reproducible — clamped to `[0.0, 2.0]`. The key **is read and applied**: it is written into every judge request body and into the LangGraph paths. A non-numeric value falls back to the default rather than failing a run. `config/llm.env.template` ships it commented out on purpose: an active non-zero value silently makes runs non-reproducible, and no measurement has shown a benefit. |
 | `REVAI_LLM_TIMEOUT` | No | Read timeout (seconds) for LLM judge calls. Default `300`; raise it for very long report prompts at high reasoning effort. A timeout earns one retry at the **same** reasoning effort with a **doubled** window, then a no-thinking fallback — a slow generation and a provider stall look identical from inside the client, and the doubling covers both. |
 | `REVAI_GHIDRA_CONTEXT_TIMEOUT_S` | No | Per-query timeout (seconds) for the Ghidra / IDAsql lookups that build function-recovery context. Default `120`, floored at `15`; an unparseable value falls back to the default rather than failing a stage. It exists because one hanging context query would otherwise stall a whole recovery run — raise it only on a project large enough that legitimate queries time out. |
-| `REVAI_LLM_MAX_TOKENS` | No | Per-request **output** cap (`max_tokens`), per call — not a run budget. Default `32768`. It is a guard rail against a pathological prompt, deliberately set above anything legitimate work has produced, and **not** a tuned limit: there is no provider output ceiling. Asked to "write many thousands of words" the model stops voluntarily at ~6,900 tokens, under both the old `16384` cap and this one. Raising it is not a substitute for splitting an oversized request — the calls that used to overflow `16384` came back `finish_reason=length` and were rejected and retried, which cost one report stage ~1,331s of its 3,600s budget on responses that were discarded. Oversized report calls are now split per section. |
+| `REVAI_LLM_MAX_TOKENS` | No | Per-request **output** cap (`max_tokens`), per call — not a run budget. Default `32768`. The value is clamped to the configured model's published output limit when RevAI has a provider-specific limit implemented. It remains a guard rail against pathological requests, not a run-wide budget. Raising it is not a substitute for splitting oversized requests — calls that exceeded the prior `16384` limit were rejected as truncated and retried, costing one report stage ~1,331s of its 3,600s budget. Oversized report calls are now split per section. |
 | `REVAI_FLOSS_MAX_STRINGS` | No | How many FLOSS strings reach the prompt. Default `300` (was `80`). Indicator-shaped strings — registry paths, URLs, IPs, emails, file paths, `Global\`/`Local\` mutexes, script and executable names — claim this budget **first**, in any FLOSS category, and the artifact records `ioc_shaped_total` / `ioc_shaped_sampled` / `ioc_shaped_dropped` so a truncated indicator set is visible rather than silent. The ordering matters more than the number: taking strings in FLOSS category order starved `static_strings` last, which is where plain registry paths and URLs live. On win32k_dll that dropped all seven real UTF-16 registry paths — including `...\Winlogon\SpecialAccounts\UserList` — from the evidence the report was written from. |
 | `REVAI_LLM_STREAM` | No | `1` (default) sends LLM requests with `stream=True` and logs time-to-first-token, total seconds and tokens/sec per call. `0` restores plain non-streaming requests. Streaming is on by default because a non-streaming socket carries no bytes until the response is complete, so "slow" and "dead" are the same observation; with streaming, a slow generation is visible as a slow generation. If the endpoint ignores `stream=True` the client falls back to a plain POST automatically. |
 | `REVAI_DEPTH` | No | `1` / `true` / `on` enables **depth mode** — a separate, opt-in run that follows the main pipeline and aims to understand HOW the sample works, not whether it is malicious. Off by default. `full` selects the **full depth profile** (plan #26): the same post-pipeline run on the domain-node substrate — every capability domain investigated by its own bounded tool-calling node, a raised ceiling, and emulation/unpack/solver forced on for the investigation. Long runtimes are expected there by design. Its output is a function map (`understanding.json`), never a verdict, and it never gates the main pipeline. Costs more and takes longer by design. |
@@ -53,28 +53,24 @@ If `REVAI_LLM_API_KEY` is not set, the fallback chain is:
 
 ### Optional: WinRE (the dynamic companion)
 
-WinRE is an optional second product on this same host (`/opt/winre`), and its
-agentic passes need an LLM too. **The model is written in one place by default:**
-WinRE inherits `llm.env` above, so an operator who filled that file has a working
-agentic WinRE with nothing extra to configure. Resolution order, first match wins
-per variable:
+WinRE is an optional second product on this same host (`/opt/winre`). Its LLM
+configuration stays separate from RevAI in every mode. Resolution order, first
+match wins per variable:
 
 1. the process environment (`WINRE_LLM_*`),
-2. `/opt/winre/.env` — set these to give WinRE its **own** model or provider,
-3. `/opt/revai/config/llm.env` (`REVAI_LLM_API_URL` maps to `WINRE_LLM_BASE_URL`,
-   plus model, key and reasoning).
+2. WinRE's own env file: `WINRE_ENV` when set, otherwise `/opt/winre/.env`.
 
 | Where | What to write |
 |---|---|
-| `/opt/revai/config/llm.env` | required for RevAI; also WinRE's default source |
+| `/opt/revai/config/llm.env` | RevAI provider, model, key and reasoning only |
 | `/opt/winre/.env` (chmod 600, never commit) | `WINRE_LLM_BASE_URL`, `WINRE_LLM_MODEL`, `WINRE_LLM_API_KEY`, `WINRE_LLM_REASONING` — any value set here wins |
 | FlareVM | **nothing** — the Windows VM never holds LLM configuration; all LLM calls happen in the driver process on this host |
 
-Switch it off entirely with **Settings → Dynamic analysis → Share RevAI LLM
-config** = `WinRE .env only` (or `REVAI_WINRE_LLM_SOURCE=winre_env`). An agentic
-pass with nothing resolved is refused up front with `winre_llm_unset` instead of
-failing mid-run, and **Test connection** reports which source is in effect
-without echoing the key. Running WinRE's CLI directly instead of through RevAI:
+RevAI never fills missing WinRE settings from its own configuration. The legacy
+`REVAI_WINRE_LLM_SOURCE=inherit` setting is treated as `winre_env`; it cannot
+enable sharing. An agentic pass without WinRE's required settings is refused
+up front with `winre_llm_unset`. **Test connection** reports the source without
+echoing the key. Running WinRE's CLI directly instead of through RevAI:
 
 ```bash
 /opt/scripts/winre-llm-env.sh --check     # what would be used

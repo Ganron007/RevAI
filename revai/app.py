@@ -75,9 +75,8 @@ DEFAULT_CONFIG = {
     "winre_pesieve": True,
     "winre_agentic_dbg": False,
     "winre_snapshot_gate": "observe",
-    # LLM config source: inherit RevAI's llm.env for WinRE's agentic passes
-    # (one place to write the model), or keep WinRE on its own .env only.
-    "winre_llm_source": "inherit",
+    # WinRE always uses its own LLM config on the driver host.
+    "winre_llm_source": "winre_env",
 }
 
 # Settings keys exposed to SPA (no RAG URLs / toggles on the wire).

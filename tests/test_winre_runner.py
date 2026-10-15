@@ -11,6 +11,8 @@ import json
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "revai"))
 
@@ -149,38 +151,43 @@ def test_child_env_mapping():
 
 
 def _llm_env(tmp_path, monkeypatch, shared: dict, winre: dict | None = None):
+    for key in list(wr.os.environ):
+        if key.startswith("WINRE_LLM_") or key == "WINRE_ENV":
+            monkeypatch.delenv(key, raising=False)
     shared_path = tmp_path / "llm.env"
     shared_path.write_text("\n".join(f"{k}={v}" for k, v in shared.items()))
-    monkeypatch.setattr(wr, "SHARED_LLM_ENV", shared_path)
+    monkeypatch.setenv("REVAI_LLM_ENV", str(shared_path))
+    for key, value in shared.items():
+        monkeypatch.setenv(key, value)
     root = tmp_path / "winre"
     (root / "winre").mkdir(parents=True, exist_ok=True)
     (root / ".env").write_text("\n".join(f"{k}={v}" for k, v in (winre or {}).items()))
     return {"root": root, "mode": "agentic", "llm_source": "inherit"}
 
 
-def test_llm_inherits_from_the_shared_config(tmp_path, monkeypatch):
-    """One place: RevAI's llm.env supplies WinRE's four variables."""
+@pytest.mark.parametrize("mode", ["static", "agentic"])
+def test_revai_llm_is_not_used_even_with_legacy_inherit_setting(tmp_path, monkeypatch, mode):
+    """RevAI's file and process secrets must not become WinRE defaults."""
     for key in ("WINRE_LLM_BASE_URL", "WINRE_LLM_MODEL", "WINRE_LLM_API_KEY"):
         monkeypatch.delenv(key, raising=False)
     cfg = _llm_env(tmp_path, monkeypatch, {
         "REVAI_LLM_API_URL": "https://provider/v1", "REVAI_LLM_MODEL": "m-1",
         "REVAI_LLM_API_KEY": "k-1", "REVAI_LLM_REASONING": "high",
     })
+    cfg["mode"] = mode
     values, meta = wr.resolve_winre_llm(cfg)
-    assert values["WINRE_LLM_BASE_URL"] == "https://provider/v1"
-    assert values["WINRE_LLM_MODEL"] == "m-1"
-    assert values["WINRE_LLM_API_KEY"] == "k-1"
-    assert values["WINRE_LLM_REASONING"] == "high"
-    assert meta["source"] == "shared" and meta["configured"] is True
+    assert values == {}
+    assert meta["source"] == "none" and meta["configured"] is False
     # The key never leaves the resolver: meta is what the Console sees.
     assert "k-1" not in json.dumps(meta)
     env = wr._child_env({**cfg, "flare_host": "h", "flare_user": "u",
                          "flare_ssh_port": 22, "flare_ssh_key": "/tmp/k",
                          "snapshot_gate": "observe", "logs_root": "/opt/winre/logs"})
-    assert env["WINRE_LLM_MODEL"] == "m-1"
+    assert "WINRE_LLM_MODEL" not in env
+    assert not any(key.startswith("REVAI_LLM_") for key in env)
 
 
-def test_winre_own_env_wins_over_the_shared_config(tmp_path, monkeypatch):
+def test_winre_uses_its_own_provider_and_key(tmp_path, monkeypatch):
     for key in ("WINRE_LLM_BASE_URL", "WINRE_LLM_MODEL", "WINRE_LLM_API_KEY"):
         monkeypatch.delenv(key, raising=False)
     cfg = _llm_env(tmp_path, monkeypatch,
@@ -192,6 +199,27 @@ def test_winre_own_env_wins_over_the_shared_config(tmp_path, monkeypatch):
     assert values["WINRE_LLM_MODEL"] == "winre-model"
     assert values["WINRE_LLM_API_KEY"] == "wk"
     assert meta["source"] == "winre_env"
+
+
+def test_partial_winre_config_does_not_borrow_revai_key(tmp_path, monkeypatch):
+    cfg = _llm_env(tmp_path, monkeypatch, {"REVAI_LLM_API_KEY": "revai-secret"},
+                   winre={"WINRE_LLM_BASE_URL": "https://winre/v1",
+                          "WINRE_LLM_MODEL": "winre-model"})
+    values, meta = wr.resolve_winre_llm(cfg)
+    assert "WINRE_LLM_API_KEY" not in values
+    assert meta["configured"] is False
+
+
+def test_winre_process_overrides_and_role_pins_are_preserved(tmp_path, monkeypatch):
+    cfg = _llm_env(tmp_path, monkeypatch, {}, winre={
+        "WINRE_LLM_BASE_URL": "https://winre/v1", "WINRE_LLM_MODEL": "winre-model",
+        "WINRE_LLM_API_KEY": "file-secret", "WINRE_LLM_VERDICT_MODEL": "winre-judge"})
+    monkeypatch.setenv("WINRE_LLM_API_KEY", "process-secret")
+    values, meta = wr.resolve_winre_llm(cfg)
+    assert values["WINRE_LLM_API_KEY"] == "process-secret"
+    assert values["WINRE_LLM_VERDICT_MODEL"] == "winre-judge"
+    assert meta["source"] == "mixed"
+    assert "secret" not in json.dumps(meta)
 
 
 def test_llm_source_winre_env_disables_inheritance(tmp_path, monkeypatch):
@@ -225,7 +253,7 @@ def test_availability_refuses_agentic_without_an_llm(tmp_path, monkeypatch):
         "flare_host": "10.0.0.1", "flare_ssh_key": str(key_file),
         "mode": "agentic", "snapshot_gate": "observe", "llm_source": "inherit",
     }
-    monkeypatch.setattr(wr, "SHARED_LLM_ENV", tmp_path / "absent.env")
+    monkeypatch.setenv("REVAI_LLM_ENV", str(tmp_path / "absent.env"))
     ok, reason = wr.availability(cfg)
     assert not ok and "winre_llm_unset" in reason
     # static mode needs no LLM at all
@@ -247,8 +275,13 @@ def test_helper_exec_path_never_prints_the_key(tmp_path, monkeypatch, capsys):
                       "REVAI_LLM_API_KEY=secret-key\n")
     root = tmp_path / "winre"
     (root / "winre").mkdir(parents=True)
-    (root / ".env").write_text("")
-    monkeypatch.setattr(wr, "SHARED_LLM_ENV", shared)
+    (root / ".env").write_text("WINRE_LLM_BASE_URL=https://w/v1\nWINRE_LLM_MODEL=m-1\n"
+                               "WINRE_LLM_API_KEY=secret-key\n")
+    monkeypatch.setenv("REVAI_LLM_ENV", str(shared))
+    monkeypatch.setenv("REVAI_LLM_API_KEY", "separate-revai-secret")
+    for key in list(wr.os.environ):
+        if key.startswith("WINRE_LLM_") or key == "WINRE_ENV":
+            monkeypatch.delenv(key, raising=False)
     monkeypatch.setattr(envmod, "settings", lambda: {
         "root": root, "mode": "agentic", "llm_source": "inherit"})
     seen: dict = {}
@@ -263,6 +296,7 @@ def test_helper_exec_path_never_prints_the_key(tmp_path, monkeypatch, capsys):
     assert envmod.main() == 0
     assert "secret-key" not in capsys.readouterr().out
     assert seen["env"]["WINRE_LLM_API_KEY"] == "secret-key"
+    assert "REVAI_LLM_API_KEY" not in seen["env"]
     assert seen["cmd"] == ["true"]
 
     # The eval path still hands the variables to the shell - that is its purpose.

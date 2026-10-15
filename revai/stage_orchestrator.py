@@ -35,6 +35,7 @@ from v2_lib import (  # noqa: E402
     SESSIONS_DIR,
     case_dir,
     ensure_pipeline_runtime_env,
+    get_llm_chat_options,
     get_llm_temperature,
     get_planner_model,
     get_verdict_model,
@@ -757,7 +758,7 @@ def run_langgraph_orchestrator(sample: Path | None, sha: str | None) -> dict:
         base_url=api_url,
         # REVAI_LLM_TEMPERATURE, honoured here too (see agentic_langgraph).
         temperature=get_llm_temperature(),
-        max_tokens=2048,
+        **get_llm_chat_options(2048, api_url=api_url),
     )
 
     artifact_gen_on = (os.environ.get("REVAI_ENABLE_ARTIFACT_GEN") or "").strip().lower() in (
