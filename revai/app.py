@@ -71,10 +71,12 @@ DEFAULT_CONFIG = {
     "winre_logs": "/opt/winre/logs",
     "winre_mode": "agentic",
     "winre_window": 150,
-    "winre_adaptive": True,
+    # A 150s window is a cap, not a promise, when the legacy 10s idle-stop is
+    # enabled. Keep adaptive stopping opt-in so delayed behavior gets observed.
+    "winre_adaptive": False,
     "winre_pesieve": True,
     "winre_agentic_dbg": False,
-    "winre_snapshot_gate": "observe",
+    "winre_snapshot_gate": "enforce",
     # WinRE always uses its own LLM config on the driver host.
     "winre_llm_source": "winre_env",
 }

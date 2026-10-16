@@ -19,10 +19,10 @@ Settings resolution — non-secret values live in the Console config
   winre_logs           REVAI_WINRE_LOGS           /opt/winre/logs
   winre_mode           REVAI_WINRE_MODE           agentic   static|agentic
   winre_window         REVAI_WINRE_WINDOW         150       --max-seconds
-  winre_adaptive       REVAI_WINRE_ADAPTIVE       1         --adaptive
+  winre_adaptive       REVAI_WINRE_ADAPTIVE       0/unset  --adaptive (opt-in)
   winre_pesieve        REVAI_WINRE_PESIEVE        1         --pesieve
   winre_agentic_dbg    REVAI_WINRE_AGENTIC_DBG    0         --agentic-dbg
-  winre_snapshot_gate  REVAI_WINRE_SNAPSHOT_GATE  observe   observe|enforce|off
+  winre_snapshot_gate  REVAI_WINRE_SNAPSHOT_GATE  enforce   observe|enforce|off
                        REVAI_WINRE_ROOT           /opt/winre
                        REVAI_WINRE_PY             <root>/venv/bin/python
                        REVAI_WINRE_TIMEOUT        3600      subprocess seconds

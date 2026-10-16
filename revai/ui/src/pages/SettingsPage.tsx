@@ -90,10 +90,10 @@ export default function SettingsPage() {
         winre_logs: cfg.winre_logs || '/opt/winre/logs',
         winre_mode: cfg.winre_mode || 'agentic',
         winre_window: Number(cfg.winre_window ?? 150),
-        winre_adaptive: Boolean(cfg.winre_adaptive ?? true),
+        winre_adaptive: Boolean(cfg.winre_adaptive ?? false),
         winre_pesieve: Boolean(cfg.winre_pesieve ?? true),
         winre_agentic_dbg: Boolean(cfg.winre_agentic_dbg),
-        winre_snapshot_gate: cfg.winre_snapshot_gate || 'observe',
+        winre_snapshot_gate: cfg.winre_snapshot_gate || 'enforce',
         winre_llm_source: 'winre_env',
         run_config: {
           profile: rc.profile || 'standard',
@@ -255,11 +255,11 @@ export default function SettingsPage() {
               hint="enforce blocks detonation without a clean FlareVM snapshot marker"
             >
               <Select
-                value={cfg.winre_snapshot_gate || 'observe'}
+                value={cfg.winre_snapshot_gate || 'enforce'}
                 onChange={(e) => setCfg({ ...cfg, winre_snapshot_gate: e.target.value })}
               >
-                <option value="observe">observe (default, advisory)</option>
-                <option value="enforce">enforce</option>
+                <option value="enforce">enforce (default)</option>
+                <option value="observe">observe (advisory)</option>
                 <option value="off">off</option>
               </Select>
             </Field>

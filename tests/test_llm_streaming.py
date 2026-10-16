@@ -414,6 +414,85 @@ def test_stream_ending_without_a_finish_reason_is_recorded_as_unknown(monkeypatc
     assert metrics["chunks"] == 1
 
 
+def test_missing_stream_finish_retries_once_before_disabling_thinking(monkeypatch):
+    """Provider EOF gets one longer retry before disabling Thinking."""
+    seen_thinking = []
+    seen_timeouts = []
+    responses = [
+        ({"choices": [{"message": {"content": '{"ok": true}'},
+                       "finish_reason": None}]},
+         {"streamed": True, "finish_reason": None}),
+        ({"choices": [{"message": {"content": '{"ok": true}'},
+                       "finish_reason": "stop"}]},
+         {"streamed": True, "finish_reason": "stop"}),
+    ]
+
+    def fake_stream(url, headers, body, timeout_s):
+        seen_thinking.append(
+            body.get("chat_template_kwargs", {}).get("enable_thinking"))
+        seen_timeouts.append(timeout_s)
+        return responses.pop(0)
+
+    monkeypatch.setattr(v2_lib, "_post_llm_streaming", fake_stream)
+    monkeypatch.setattr(v2_lib.time, "sleep", lambda *_: None)
+    monkeypatch.setenv("REVAI_LLM_STREAM", "1")
+    monkeypatch.setenv("REVAI_LLM_API_KEY", "test-key")
+    monkeypatch.setenv(
+        "REVAI_LLM_API_URL", "https://apihub.agnes-ai.com/v1/chat/completions")
+    monkeypatch.setenv("REVAI_LLM_MODEL", "agnes-3.0-flash")
+    monkeypatch.setenv("REVAI_LLM_REASONING", "enabled")
+    monkeypatch.setenv("REVAI_LLM_TIMEOUT", "120")
+
+    result = v2_lib.llm_judge("prompt", max_retries=2)
+
+    assert result["choices"][0]["finish_reason"] == "stop"
+    assert seen_thinking == [True, True], seen_thinking
+    assert seen_timeouts == [120, 240], seen_timeouts
+
+
+def test_missing_finish_retry_respects_the_remaining_stage_budget(monkeypatch):
+    """An extended Thinking retry must not overrun its caller's deadline."""
+    clock = {"t": 1000.0}
+    stream_timeouts = []
+    fallback_requests = []
+
+    def fake_stream(url, headers, body, timeout_s):
+        stream_timeouts.append(timeout_s)
+        clock["t"] += timeout_s
+        return (
+            {"choices": [{"message": {"content": '{"ok": true}'},
+                          "finish_reason": None}]},
+            {"streamed": True, "finish_reason": None},
+        )
+
+    def fake_urlopen(req, timeout=None):
+        fallback_requests.append((timeout, json.loads(req.data)))
+        return _json_resp({"choices": [{"message": {"content": '{"ok": true}'},
+                                        "finish_reason": "stop"}]})
+
+    monkeypatch.setattr(v2_lib, "_post_llm_streaming", fake_stream)
+    monkeypatch.setattr(v2_lib.time, "monotonic", lambda: clock["t"])
+    monkeypatch.setattr(v2_lib.time, "sleep", lambda *_: None)
+    _patch_urlopen(monkeypatch, fake_urlopen)
+    monkeypatch.setenv("REVAI_LLM_STREAM", "1")
+    monkeypatch.setenv("REVAI_LLM_API_KEY", "test-key")
+    monkeypatch.setenv(
+        "REVAI_LLM_API_URL", "https://apihub.agnes-ai.com/v1/chat/completions")
+    monkeypatch.setenv("REVAI_LLM_MODEL", "agnes-3.0-flash")
+    monkeypatch.setenv("REVAI_LLM_REASONING", "enabled")
+    monkeypatch.setenv("REVAI_LLM_TIMEOUT", "120")
+    monkeypatch.setenv("REVAI_LLM_BUDGET", "0")
+
+    result = v2_lib.llm_judge("prompt", max_retries=2, budget_s=200)
+
+    assert result["choices"][0]["finish_reason"] == "stop"
+    assert stream_timeouts == [120], stream_timeouts
+    assert len(fallback_requests) == 1
+    fallback_timeout, fallback_body = fallback_requests[0]
+    assert fallback_timeout == 80, fallback_timeout
+    assert fallback_body["chat_template_kwargs"]["enable_thinking"] is False
+
+
 def test_stream_reader_stops_at_finish_reason_without_done(monkeypatch):
     """A provider that omits [DONE] must not turn a complete answer into a
     read timeout: once finish_reason arrived, the reader stops."""

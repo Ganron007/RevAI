@@ -427,6 +427,16 @@ _DYN_META_NEGATION_RE = re.compile(
     re.IGNORECASE,
 )
 
+_DYN_META_AFFIRMATION_RE = re.compile(
+    # "No dynamic analysis was skipped" is a double negative that affirms the
+    # stages ran. Remove only that meta-clause before checking for a component
+    # denial later in the same sentence.
+    r"\bno\s+(?:dynamic[- ]analysis(?:\s+tool)?|dynamic execution|"
+    r"sandbox (?:analysis|execution))\s+(?:was|were|is|are)\s+"
+    r"(?:skipped|omitted|missed)\b",
+    re.IGNORECASE,
+)
+
 _DYN_INNER_PAYLOAD_GAP_RE = re.compile(
     r"\bno\b[^\n.!?;,]{0,80}\b(?:dynamic|sandbox)\s+"
     r"(?:analysis|execution|detonation)\b[^\n.!?;,]{0,100}\b(?:of|for)\s+"
@@ -753,6 +763,7 @@ def _dynamic_absence_claim(md: str, dyn_status: dict) -> str | None:
         # outer sample was run through WinRE. Remove only those scoped clauses;
         # a separate blanket denial in the same sentence must still fail.
         dynamic_claim_text = _DYN_META_NEGATION_RE.sub("", sentence)
+        dynamic_claim_text = _DYN_META_AFFIRMATION_RE.sub("", dynamic_claim_text)
         dynamic_claim_text = _DYN_INNER_PAYLOAD_GAP_RE.sub("", dynamic_claim_text)
         if _DYN_NEGATION_RE.search(dynamic_claim_text):
             return sentence.strip()[:180]

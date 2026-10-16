@@ -171,6 +171,28 @@ def test_the_config_files_explicit_observe_is_still_honoured(monkeypatch, tmp_pa
     assert W._child_env(cfg)["WINRE_SNAPSHOT_GATE"] == "observe"
 
 
+def test_console_defaults_keep_full_window_and_enforced_restore_gate(
+    monkeypatch, tmp_path,
+):
+    """The Console defaults must match the documented safe bridge defaults."""
+    import app as app_mod
+
+    defaults = app_mod.DEFAULT_CONFIG
+    assert defaults["winre_adaptive"] is False
+    assert defaults["winre_snapshot_gate"] == "enforce"
+
+    _write_config(
+        monkeypatch,
+        tmp_path,
+        winre_adaptive=defaults["winre_adaptive"],
+        winre_snapshot_gate=defaults["winre_snapshot_gate"],
+    )
+    cfg = W.settings()
+    assert cfg["adaptive"] is False
+    assert "--adaptive" not in W.build_command("/tmp/sample.exe", cfg)
+    assert W._child_env(cfg)["WINRE_SNAPSHOT_GATE"] == "enforce"
+
+
 def test_the_environment_overrides_the_config_file(monkeypatch, tmp_path):
     _write_config(monkeypatch, tmp_path, winre_snapshot_gate="enforce")
     monkeypatch.setenv("REVAI_WINRE_SNAPSHOT_GATE", "off")

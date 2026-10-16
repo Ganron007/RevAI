@@ -2365,7 +2365,7 @@ def _llm_max_tokens() -> int:
 
 
 def _llm_max_tokens_for_url(api_url: str) -> int:
-    """Apply Agnes 3.0 Flash's documented Chat Completions output ceiling."""
+    """Apply Agnes Chat Completions models' documented 65,536-token output cap."""
     tokens = _llm_max_tokens()
     return min(tokens, 65536) if _is_agnes_api(api_url) else tokens
 
@@ -3126,6 +3126,7 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
         timeout_s = 300
     current_reasoning = reasoning
     same_effort_retry_done = False
+    same_effort_stream_retry_done = False
     # The same-effort retry gets a LONGER window, not an identical one. A
     # transient stall is fixed by any retry, but a genuinely slow generation
     # needs more room: win32k_dll's technical prompt is 1.5x nspack's (35.6KB
@@ -3286,6 +3287,51 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                 break
             if not _llm_response_has_usable_content(data):
                 if attempt < max_retries:
+                    stream_missing_finish = (
+                        bool(smetrics.get("streamed"))
+                        and not _finish_reason(data)
+                    )
+                    if stream_missing_finish and not same_effort_stream_retry_done:
+                        # An SSE stream that closes without finish_reason is
+                        # incomplete. The provider may have closed a slow
+                        # generation at the client's read deadline, so retry
+                        # once at the same Thinking setting with a longer
+                        # window before using the step-down ladder.
+                        same_effort_stream_retry_done = True
+                        sleep_s = 2 ** attempt + random.uniform(0, 1.0)
+                        remaining = (
+                            _budget_remaining() - int(sleep_s)
+                            if budget_deadline is not None
+                            else base_timeout_s * 2
+                        )
+                        window = min(base_timeout_s * 2, max(0, remaining))
+                        if (budget_deadline is not None
+                                and window < base_timeout_s):
+                            print(
+                                f"[llm_judge] attempt {attempt}/{max_retries} "
+                                "stream ended without finish_reason; only "
+                                f"{window}s remain after backoff, under the "
+                                f"{base_timeout_s}s same-effort retry window — "
+                                "skipping to the no-thinking fallback",
+                                flush=True,
+                            )
+                            last_empty = data
+                            break
+                        attempt_timeout_s = window
+                        print(
+                            f"[llm_judge] attempt {attempt}/{max_retries} "
+                            "stream ended without finish_reason; retrying once "
+                            f"with the same reasoning={current_reasoning} and "
+                            f"a {attempt_timeout_s}s window",
+                            flush=True,
+                        )
+                        if not _can_retry_after(
+                                sleep_s,
+                                why="stream ended without finish_reason"):
+                            last_empty = data
+                            break
+                        time.sleep(sleep_s)
+                        continue
                     nxt = _next_lower_effort(current_reasoning)
                     print(
                         f"[llm_judge] attempt {attempt}/{max_retries} returned "

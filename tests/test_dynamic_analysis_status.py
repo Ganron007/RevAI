@@ -487,6 +487,39 @@ def test_gate_allows_evidence_limited_dynamic_claim_with_winre_and_capture():
                    for v in c["violations"]), c["violations"]
 
 
+def test_gate_allows_double_negative_for_completed_dynamic_paths():
+    st = {
+        "any_dynamic_performed": True,
+        "emulation": {"ok": True},
+        "winre": {"detonation_ran": True},
+        "frida_runtime": {"observed_runtime_events": True, "events": 577},
+        "packet_capture": {"present": True, "files": 1},
+    }
+    report = (
+        "No dynamic analysis was skipped: all four runtime paths (emulation, "
+        "Frida static probe, Frida runtime, WinRE detonation) were available "
+        "and executed."
+    )
+    c = RQ._cross_report_consistency(report, "", "", None, st)
+    assert not any("dynamic_performed_but_report_says_none" in v
+                   for v in c["violations"]), c["violations"]
+
+
+def test_double_negative_does_not_hide_a_later_dynamic_denial():
+    st = {
+        "any_dynamic_performed": True,
+        "winre": {"detonation_ran": True},
+        "frida_runtime": {"observed_runtime_events": True, "events": 577},
+    }
+    report = (
+        "No dynamic analysis was skipped: all four paths ran, but no WinRE "
+        "detonation was performed."
+    )
+    c = RQ._cross_report_consistency(report, "", "", None, st)
+    assert any("dynamic_performed_but_report_says_none" in v
+               for v in c["violations"]), c["violations"]
+
+
 def test_gate_still_rejects_direct_winre_and_capture_denials():
     st = {
         "any_dynamic_performed": True,
