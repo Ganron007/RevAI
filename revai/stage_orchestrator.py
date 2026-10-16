@@ -166,6 +166,68 @@ def _verdicts(sha: str) -> dict[str, str]:
     }
 
 
+def _reconcile_deep_verdict(sha: str, *, hitl_enabled: bool = False) -> dict[str, Any]:
+    """Persist the deterministic verdict reconciliation before report stages.
+
+    The deep-dive artifact is evidence consumed by both publishers. Mutating it
+    after publication makes the reports stale and fails the freshness audit, so
+    every publish entry point runs this idempotent step first.
+    """
+    if hitl_enabled:
+        return {"ok": True, "changed": False, "reason": "hitl_verdict_enabled"}
+
+    verdicts = _verdicts(sha)
+    if not verdicts.get("conflict"):
+        return {"ok": True, "changed": False, "reason": "verdicts_aligned"}
+
+    strict = {"malicious": 3, "suspicious": 2, "benign": 1}
+    quick_label = verdicts.get("quick_label") or ""
+    deep_label = verdicts.get("deep_label") or ""
+    if strict.get(quick_label, 0) <= strict.get(deep_label, 0):
+        return {"ok": True, "changed": False, "reason": "deep_verdict_not_less_severe"}
+
+    deep_path = case_dir(sha) / "deep_dive" / "05-deep-dive.json"
+    if not deep_path.is_file():
+        return {"ok": False, "changed": False,
+                "reason": "deep_artifact_missing", "path": str(deep_path)}
+    temporary: Path | None = None
+    try:
+        deep = json.loads(deep_path.read_text(encoding="utf-8"))
+        if not isinstance(deep, dict):
+            raise ValueError("deep artifact must contain a JSON object")
+        deep["verdict"] = verdicts["quick"]
+        deep["verdict_reconciled"] = {
+            "from": verdicts["deep"],
+            "to": verdicts["quick"],
+            "quick_label": quick_label,
+            "reason": (
+                "Deterministic quick-triage evidence (capa/YARA/Malcat/imports) "
+                f"outranks the conflicting deep-dive label ({deep_label})."
+            ),
+        }
+        prior_summary = str(deep.get("summary") or "")
+        marker = f"[VERDICT RECONCILED: deep={deep_label} -> {quick_label}"
+        if marker not in prior_summary:
+            deep["summary"] = f"{prior_summary} {marker} from quick triage]".strip()
+        temporary = deep_path.with_name(f".{deep_path.name}.{os.getpid()}.tmp")
+        temporary.write_text(json.dumps(deep, indent=2, default=str), encoding="utf-8")
+        os.replace(temporary, deep_path)
+        return {
+            "ok": True, "changed": True,
+            "from": verdicts["deep"], "to": verdicts["quick"],
+            "path": str(deep_path),
+        }
+    except Exception as exc:
+        if temporary is not None:
+            try:
+                temporary.unlink(missing_ok=True)
+            except Exception:
+                pass
+        return {"ok": False, "changed": False,
+                "reason": f"deep_artifact_reconciliation_failed:{type(exc).__name__}:{exc}",
+                "path": str(deep_path)}
+
+
 class StageRunner:
     """Execute one spine stage; record every call for orchestrator_trace."""
 
@@ -459,6 +521,9 @@ class StageRunner:
         return {"ok": True, "rc": 0, "soft": True, "tool": "run_winre_dynamic", **out}
 
     def run_publish(self) -> dict:
+        preflight = self._prepare_publish("run_publish")
+        if preflight is not None:
+            return preflight
         hitl = os.environ.get("REVAI_HITL_VERDICT", "").strip().lower() in ("1", "true", "yes")
         v = _verdicts(self.sha)
         if hitl and v.get("conflict"):
@@ -481,12 +546,42 @@ class StageRunner:
         )
 
     def run_section_publish(self) -> dict:
+        preflight = self._prepare_publish("run_section_publish")
+        if preflight is not None:
+            return preflight
         return self._run(
             "run_section_publish",
             [sys.executable, str(SCRIPTS / "section_publisher.py"), self.sha],
             _stage_timeout("REVAI_STAGE_TIMEOUT_PUBLISH", 7200),
             retry_timeouts=False,
         )
+
+    def _prepare_publish(self, stage: str) -> dict[str, Any] | None:
+        hitl = os.environ.get("REVAI_HITL_VERDICT", "").strip().lower() in (
+            "1", "true", "yes",
+        )
+        result = _reconcile_deep_verdict(self.sha, hitl_enabled=hitl)
+        self.events.append({
+            "type": "observe", "tool": "verdict_reconciliation",
+            "data": {"stage": stage, **result}, "ts": _utc(),
+        })
+        if result.get("changed"):
+            print(
+                f"[orchestrator] verdict reconciled before {stage}: "
+                f"{result.get('from')} -> {result.get('to')}",
+                flush=True,
+            )
+        if result.get("ok"):
+            return None
+        failure = {
+            "type": "tool_result", "tool": stage,
+            "cmd": ["pre_publish_verdict_reconciliation"],
+            "rc": 1, "ok": False, "elapsed_s": 0.0,
+            "ts": _utc(), "attempt": 1, "timed_out": False,
+            "failure_reason": str(result.get("reason") or "verdict reconciliation failed"),
+        }
+        self.events.append(failure)
+        return {key: value for key, value in failure.items() if key != "type"}
 
     def run_audit(self) -> dict:
         return self._run(
@@ -1036,54 +1131,25 @@ Use tools. Do not claim success without check_quality.ok=true.
         else:
             print(f"[orchestrator] deterministic yara_gen failed: {yr}", flush=True)
 
-    # Part A — deterministic verdict reconciliation.
-    # Real-world RE principle: deterministic tool evidence (capa/YARA/Malcat/
-    # imports — the quick triage) outranks an LLM deep-dive interpretation when
-    # they disagree. A deep "benign" on a sample whose quick triage is
-    # malicious/suspicious is almost always a masquerade read (fake Microsoft
-    # metadata, legit-looking surface) — the cross_stage_verdict_lock already
-    # refuses to publish benign against malicious upstream. We apply the same
-    # principle to the deep verdict itself so the pipeline never dead-ends on
-    # the conflict: reconcile deep -> stricter label, recorded honestly.
-    # Explicit HITL boundary is preserved when REVAI_HITL_VERDICT=1.
+    # Part A — deterministic verdict reconciliation is normally completed by
+    # the publish-stage preflight. Keep an idempotent final guard for planners
+    # that skipped publication or changed evidence after publishing. If it
+    # changes the deep artifact here, regenerate reports before the final audit.
     _hitl_env = os.environ.get("REVAI_HITL_VERDICT", "").strip().lower() in ("1", "true", "yes")
-    _vv = _verdicts(sha)
-    if not _hitl_env and _vv.get("conflict"):
-        _strict = {"malicious": 3, "suspicious": 2, "benign": 1}
-        _qs = _strict.get(_vv.get("quick_label") or "", 0)
-        _ds = _strict.get(_vv.get("deep_label") or "", 0)
-        if _qs > _ds:
-            _reconciled_to = _vv.get("quick_label")
-            _deep_p = case_dir(sha) / "deep_dive" / "05-deep-dive.json"
-            if _deep_p.exists():
-                try:
-                    _deep = json.loads(_deep_p.read_text())
-                    _deep["verdict"] = _reconciled_to
-                    _deep["verdict_reconciled"] = {
-                        "from": _vv.get("deep_label"),
-                        "to": _reconciled_to,
-                        "quick_label": _vv.get("quick_label"),
-                        "reason": (
-                            "HITL verdict conflict resolved deterministically: quick triage "
-                            f"({_vv.get('quick_label')}) carries deterministic tool evidence "
-                            "(capa/YARA/Malcat/imports) which outranks the deep-dive LLM read "
-                            f"({_vv.get('deep_label')}). Deep dive may have taken a metadata "
-                            "masquerade at face value; the stricter tool-backed verdict wins."
-                        ),
-                    }
-                    _deep["summary"] = (
-                        str(_deep.get("summary") or "") +
-                        f" [VERDICT RECONCILED: deep={_vv.get('deep_label')} -> "
-                        f"{_reconciled_to} from quick triage (deterministic tool evidence)]"
-                    )
-                    _deep_p.write_text(json.dumps(_deep, indent=2, default=str))
-                    print(
-                        f"[orchestrator] VERDICT RECONCILED: deep={_vv.get('deep_label')} "
-                        f"-> {_reconciled_to} (deterministic tool evidence outranks LLM read)",
-                        flush=True,
-                    )
-                except Exception as _rec_err:
-                    print(f"[orchestrator] verdict reconciliation failed: {_rec_err}", flush=True)
+    _reconciliation = _reconcile_deep_verdict(sha, hitl_enabled=_hitl_env)
+    if not _reconciliation.get("ok"):
+        events.append({
+            "type": "error", "tool": "verdict_reconciliation",
+            "error": _reconciliation.get("reason"), "ts": _utc(),
+        })
+    elif _reconciliation.get("changed"):
+        print(
+            "[orchestrator] late verdict reconciliation detected; "
+            "regenerating reports before final audit",
+            flush=True,
+        )
+        runner.run_publish()
+        runner.run_section_publish()
 
     # Part B — mandatory publish/section enforcement (planner may skip publish;
     # the audit then fails on missing reports with no retry path). Same pattern

@@ -1,6 +1,7 @@
 """Agentic planning must schedule every enabled product stage exactly once."""
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -76,6 +77,60 @@ def test_agentic_publish_stages_use_the_shared_timeout_and_disable_timeout_retri
         ("run_publish", 8100, False),
         ("run_section_publish", 8100, False),
     ]
+
+
+def test_publish_stages_reconcile_deep_verdict_before_reading_evidence(
+    monkeypatch, tmp_path,
+):
+    case = tmp_path / SHA
+    deep_dir = case / "deep_dive"
+    deep_dir.mkdir(parents=True)
+    (case / "verdict.json").write_text(json.dumps({"verdict": "suspicious"}))
+    deep_path = deep_dir / "05-deep-dive.json"
+    deep_path.write_text(json.dumps({
+        "verdict": "undetermined_packed",
+        "summary": "Packed sample; behavior is unknown.",
+    }))
+    monkeypatch.setattr(so, "case_dir", lambda _sha: case)
+    monkeypatch.delenv("REVAI_HITL_VERDICT", raising=False)
+    observed = []
+
+    def publish_after_reconciliation(self, name, cmd, timeout, *, retry_timeouts=True):
+        observed.append((name, json.loads(deep_path.read_text())["verdict"]))
+        return {"ok": True, "rc": 0}
+
+    monkeypatch.setattr(so.StageRunner, "_run", publish_after_reconciliation)
+    runner = so.StageRunner(SHA, None, [])
+    assert runner.run_publish()["ok"]
+    assert runner.run_section_publish()["ok"]
+
+    assert observed == [
+        ("run_publish", "suspicious"),
+        ("run_section_publish", "suspicious"),
+    ]
+    reconciled = json.loads(deep_path.read_text())
+    assert reconciled["verdict_reconciled"]["from"] == "undetermined_packed"
+    assert reconciled["verdict_reconciled"]["to"] == "suspicious"
+    assert not list(deep_dir.glob("*.tmp"))
+
+
+def test_hitl_publish_keeps_conflicting_deep_verdict_unmodified(monkeypatch, tmp_path):
+    case = tmp_path / SHA
+    deep_dir = case / "deep_dive"
+    deep_dir.mkdir(parents=True)
+    (case / "verdict.json").write_text(json.dumps({"verdict": "suspicious"}))
+    deep_path = deep_dir / "05-deep-dive.json"
+    original = {"verdict": "undetermined_packed", "summary": "Packed sample."}
+    deep_path.write_text(json.dumps(original))
+    monkeypatch.setattr(so, "case_dir", lambda _sha: case)
+    monkeypatch.setenv("REVAI_HITL_VERDICT", "1")
+    runner = so.StageRunner(SHA, None, [])
+
+    result = runner.run_publish()
+
+    assert result["skipped"] is True
+    assert json.loads(deep_path.read_text()) == original
+    assert runner.events[0]["data"]["reason"] == "hitl_verdict_enabled"
 
 
 def test_non_resumable_publish_timeout_is_not_retried(monkeypatch, tmp_path):
