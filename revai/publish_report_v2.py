@@ -547,8 +547,8 @@ def _technical_heading_key(title: str) -> str:
     return re.sub(r"\s+", " ", value).casefold()
 
 
-def _technical_section_span(markdown: str, title: str) -> tuple[int, int] | None:
-    """Locate one report section by its real Markdown heading boundary."""
+def _report_section_span(markdown: str, title: str) -> tuple[int, int] | None:
+    """Locate one numbered report section by its Markdown heading boundary."""
     heading_re = re.compile(r"(?m)^\s{0,3}(#{1,6})\s+(.+?)\s*#*\s*$")
     target = _technical_heading_key(title)
     headings = list(heading_re.finditer(markdown or ""))
@@ -565,12 +565,17 @@ def _technical_section_span(markdown: str, title: str) -> tuple[int, int] | None
     return None
 
 
-def retry_technical_stub_sections(
+def _technical_section_span(markdown: str, title: str) -> tuple[int, int] | None:
+    """Compatibility name for the shared v2/v3 report section locator."""
+    return _report_section_span(markdown, title)
+
+
+def retry_report_stub_sections(
     markdown: str,
     sections: list[str],
     retry_section,
 ) -> tuple[str, list[dict[str, Any]]]:
-    """Regenerate only stubbed v2 sections and retain the first draft on failure.
+    """Regenerate only stubbed report sections; retain the draft on failure.
 
     The callback receives the section title and its original section text, and
     returns a one-section draft. A retry replaces the original only when the
@@ -581,7 +586,7 @@ def retry_technical_stub_sections(
     current = markdown or ""
     attempts: list[dict[str, Any]] = []
     for section in sections:
-        span = _technical_section_span(current, section)
+        span = _report_section_span(current, section)
         if span is None:
             attempts.append({"section": section, "accepted": False,
                              "reason": "original section heading not found"})
@@ -594,7 +599,7 @@ def retry_technical_stub_sections(
             attempts.append({"section": section, "accepted": False,
                              "reason": f"retry raised {type(exc).__name__}: {exc}"})
             continue
-        candidate_span = _technical_section_span(candidate_md, section)
+        candidate_span = _report_section_span(candidate_md, section)
         if candidate_span is None:
             attempts.append({"section": section, "accepted": False,
                              "reason": "retry did not return the required section heading"})
@@ -609,6 +614,24 @@ def retry_technical_stub_sections(
         attempts.append({"section": section, "accepted": True,
                          "reason": "retry section passes stub quality gate"})
     return current, attempts
+
+
+def retry_technical_stub_sections(
+    markdown: str,
+    sections: list[str],
+    retry_section,
+) -> tuple[str, list[dict[str, Any]]]:
+    """Regenerate only stubbed technical sections using the shared gate."""
+    return retry_report_stub_sections(markdown, sections, retry_section)
+
+
+def retry_master_stub_sections(
+    markdown: str,
+    sections: list[str],
+    retry_section,
+) -> tuple[str, list[dict[str, Any]]]:
+    """Regenerate only stubbed v2 master sections using the same quality gate."""
+    return retry_report_stub_sections(markdown, sections, retry_section)
 
 
 def generate_technical_chunked(
@@ -1244,6 +1267,72 @@ def main():
                         f"{_retry_err}",
                         flush=True,
                     )
+            # A complete report can still contain pointer-only or very short
+            # sections. Repair those individually with the same evidence pack
+            # used for initial generation; keep the original draft if the
+            # bounded retry still fails the publication stub gate.
+            missing = verify_sections(md)
+            stubs = stub_sections(md, REPORT_MASTER_SECTIONS) if md else []
+            if stubs and md:
+                present_stubs = [
+                    title for title in stubs
+                    if _report_section_span(md, title) is not None
+                ]
+                stub_retry_counter = [0]
+
+                def _retry_master_section(title: str, original: str) -> str:
+                    repair_prompt = build_prompt_full(
+                        session, verdict, deep, yara_meta, audit,
+                        dotnet_result=dotnet_result, r2_decomp=r2_decomp,
+                        r2_ai=r2_ai, frida_trace=frida_trace, upx=upx,
+                        xor_hits=xor_hits, olevba=olevba, peepdf=peepdf,
+                        malcat_result=malcat_result, capa_result=capa_result,
+                        yara_result=yara_result, floss_result=floss_result,
+                        pe_imports_result=pe_imports_result,
+                        recovery_evidence=recovery_evidence,
+                        dynamic_status=dynamic_status,
+                        dynamic_evidence=dynamic_evidence,
+                        sections=[title],
+                    )
+                    repair_prompt += (
+                        "\n\n## Targeted section repair\n"
+                        "The first draft of this section was too short or only "
+                        "pointed elsewhere. Rewrite this section alone as "
+                        "analyst-grade prose grounded in the structured evidence "
+                        "above. Do not invent facts, indicators, or ATT&CK IDs. "
+                        "For MITRE ATT&CK Mapping, assign only techniques that "
+                        "the evidence supports; if none is supportable, explain "
+                        "what evidence was considered and why no mapping is "
+                        "assigned. Do not substitute an appendix pointer for "
+                        "analysis. Keep the exact required heading and return "
+                        'JSON with a "markdown" field.\n\n'
+                        "Original section for context:\n"
+                        f"{original}"
+                    )
+                    response = llm_judge(repair_prompt)
+                    stub_retry_counter[0] += 1
+                    (ev_dir / f"01-master-stub-retry-{stub_retry_counter[0]:02d}-raw.json").write_text(
+                        json.dumps(response, indent=2, default=str)
+                    )
+                    content = response["choices"][0]["message"]["content"]
+                    parsed = _extract_report_json(content)
+                    return str(parsed.get("markdown") or "") if isinstance(parsed, dict) else ""
+
+                md, repair_results = retry_master_stub_sections(
+                    md, present_stubs, _retry_master_section
+                )
+                report["markdown"] = md
+                report["master_stub_repair_attempts"] = repair_results
+                for result in repair_results:
+                    print(
+                        f"[publish_report_v2] master stub retry "
+                        f"{result['section'][:44]}: "
+                        f"{'accepted' if result['accepted'] else 'retained original'} "
+                        f"({result['reason']})",
+                        flush=True,
+                    )
+                missing = verify_sections(md)
+                stubs = stub_sections(md, REPORT_MASTER_SECTIONS)
             if missing or stubs:
                 report["source"] = "llm_incomplete"
                 report["quality_fail"] = {"missing": missing, "stubs": stubs}

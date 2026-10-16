@@ -24,6 +24,7 @@ sys.path.insert(0, str(ROOT / "revai"))
 
 import publish_report_v2 as pub  # noqa: E402
 from v2_lib import TECHNICAL_REPORT_SECTIONS as SECTIONS  # noqa: E402
+from v2_lib import REPORT_MASTER_SECTIONS as MASTER_SECTIONS  # noqa: E402
 
 
 def _substantive_body(title: str) -> str:
@@ -216,6 +217,53 @@ def test_failed_stub_retry_keeps_original_and_remains_a_quality_failure(monkeypa
     assert any(a.get("part") == "stub-retry-result" and
                a.get("section") == target and a.get("accepted") is False
                for a in audits)
+
+
+def test_master_stub_retry_replaces_only_the_stubbed_section():
+    target = "11. MITRE ATT&CK Mapping"
+    original = f"# {target}\n\nSee Appendix A for the ATT&CK mapping."
+    markdown = (
+        "# Executive Summary\n\n"
+        + _substantive_body("Executive Summary")
+        + "\n\n"
+        + original
+    )
+    calls: list[str] = []
+
+    def retry(section: str, original_section: str) -> str:
+        calls.append(section)
+        assert original_section == original
+        return f"# {target}\n\n{_substantive_body(target)}"
+
+    repaired, attempts = pub.retry_master_stub_sections(
+        markdown, [target], retry
+    )
+
+    assert calls == [target]
+    assert attempts == [{
+        "section": target,
+        "accepted": True,
+        "reason": "retry section passes stub quality gate",
+    }]
+    assert "See Appendix A for the ATT&CK mapping." not in repaired
+    assert not pub.stub_sections(repaired, [target])
+    assert "Evidence-grounded analysis of Executive Summary" in repaired
+
+
+def test_failed_master_stub_retry_retains_stub_and_quality_failure():
+    target = "11. MITRE ATT&CK Mapping"
+    original = f"# {target}\n\nSee Appendix A for the ATT&CK mapping."
+    markdown = f"# Executive Summary\n\n{_substantive_body('Executive Summary')}\n\n{original}"
+
+    repaired, attempts = pub.retry_master_stub_sections(
+        markdown,
+        [target],
+        lambda _section, original_section: original_section,
+    )
+
+    assert repaired == markdown
+    assert attempts[0]["accepted"] is False
+    assert pub.stub_sections(repaired, [target]) == [target]
 
 
 def test_a_failed_group_is_recorded_and_omits_its_sections(monkeypatch):

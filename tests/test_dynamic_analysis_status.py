@@ -486,6 +486,13 @@ def test_gate_allows_evidence_limited_dynamic_claim_with_winre_and_capture():
     assert not any("dynamic_performed_but_report_says_none" in v
                    for v in c["violations"]), c["violations"]
 
+    # Scope limits must not be mistaken for a denial that dynamic analysis ran.
+    limited = RQ._cross_report_consistency(
+        "No behavior beyond captured evidence is asserted.", "", "", None, st
+    )
+    assert not any("dynamic_performed_but_report_says_none" in v
+                   for v in limited["violations"]), limited["violations"]
+
 
 def test_gate_allows_double_negative_for_completed_dynamic_paths():
     st = {
