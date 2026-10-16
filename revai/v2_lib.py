@@ -6915,11 +6915,27 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
         }
 
         fr = pack.get("frida_summary") or {}
-        raw_events = fr.get("events", job.get("frida_events", meta.get("frida_events")))
-        try:
-            frida_events = int(raw_events) if raw_events is not None else None
-        except (TypeError, ValueError):
-            frida_events = None
+        frida_events = None
+        # Different producers write the same count at different stages. A
+        # present-but-null JSON field is not an authoritative zero and must not
+        # mask a valid count in a later metadata file. Conversely, an explicit
+        # zero is a valid count and must remain authoritative.
+        for raw_events in (
+            fr.get("events"),
+            job.get("frida_events"),
+            meta.get("frida_events"),
+        ):
+            if isinstance(raw_events, bool):
+                continue
+            if isinstance(raw_events, int):
+                candidate = raw_events
+            elif isinstance(raw_events, str) and re.fullmatch(r"\s*\d+\s*", raw_events):
+                candidate = int(raw_events)
+            else:
+                continue
+            if candidate >= 0:
+                frida_events = candidate
+                break
         trace_present = bool(pack.get("has_frida_trace"))
         frida_observed = bool(frida_events and frida_events > 0)
         out["frida_runtime"] = {

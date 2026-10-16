@@ -457,20 +457,28 @@ _DYN_FRIDA_NEGATION_RE = re.compile(
 )
 
 _DYN_WINRE_NEGATION_RE = re.compile(
-    r"\bno\b.{0,80}\bwinre\b.{0,80}\b(?:detonation|sample execution|"
-    r"runtime run)\b.{0,55}\b(?:performed|conducted|run|invoked|executed|"
-    r"present|captured)\b"
-    r"|\bwinre\b.{0,55}\b(?:detonation|sample execution|runtime run)\b"
-    r".{0,45}\b(?:was|were|is|are)\s+not\s+(?:performed|conducted|run|"
-    r"invoked|executed|captured)\b",
+    # Bind the negation to the WinRE execution noun. A sentence may begin
+    # "No dynamic behaviour has been asserted beyond what the WinRE
+    # detonation ... recorded"; a broad `no ... winre ... recorded` pattern
+    # mistakes that scope limitation for a denial that detonation occurred.
+    r"\bno\s+(?:(?:the\s+)?winre(?:'s)?\s+)?(?:sample\s+)?"
+    r"(?:detonation|sample execution|runtime execution|runtime run)\b"
+    r".{0,80}\b(?:performed|conducted|run|invoked|executed|occurred|"
+    r"completed|present|captured|recorded)\b"
+    r"|\bwinre\b.{0,55}\b(?:detonation|sample execution|runtime execution|"
+    r"runtime run)\b.{0,45}\b(?:(?:was|were|is|are)\s+not\s+"
+    r"(?:performed|conducted|run|invoked|executed|occurred|completed|"
+    r"captured|recorded)|did\s+not\s+(?:run|occur|happen|complete))\b",
     re.IGNORECASE,
 )
 
 _DYN_PCAP_NEGATION_RE = re.compile(
-    r"\bno\b.{0,80}\b(?:pcap|packet capture|network traffic capture)\b"
-    r".{0,55}\b(?:present|collected|captured|recorded)\b"
+    r"\bno\s+(?:network traffic capture(?:\s*\(pcap\))?|packet capture|"
+    r"pcap(?:ng)?(?:\s+file)?)\b.{0,55}\b"
+    r"(?:present|collected|captured|recorded|exists)\b"
     r"|\b(?:pcap|packet capture|network traffic capture)\b.{0,45}\b"
-    r"(?:was|were|is|are)\s+not\s+(?:present|collected|captured|recorded)\b",
+    r"(?:(?:was|were|is|are)\s+not\s+"
+    r"(?:present|collected|captured|recorded)|does\s+not\s+exist)\b",
     re.IGNORECASE,
 )
 

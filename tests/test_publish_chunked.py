@@ -26,6 +26,11 @@ import publish_report_v2 as pub  # noqa: E402
 from v2_lib import TECHNICAL_REPORT_SECTIONS as SECTIONS  # noqa: E402
 
 
+def _substantive_body(title: str) -> str:
+    return (f"Evidence-grounded analysis of {title} explains the observed "
+            "artifact, its source, and the limits of the conclusion. " * 8)
+
+
 def test_groups_tile_every_section_exactly_once():
     """No section may be written twice, and none may be dropped."""
     covered: list[int] = []
@@ -126,7 +131,7 @@ def test_chunked_generation_orders_document_and_records_audits(monkeypatch):
         head = prompt.split("Rules", 1)[0]
         wanted = [t for t in SECTIONS if f"- {t}" in head]
         calls.append((wanted, {"prompt": prompt}))
-        body = "\n\n".join(f"# {t}\n\ncontent for {t}" for t in wanted)
+        body = "\n\n".join(f"# {t}\n\n{_substantive_body(t)}" for t in wanted)
         return {"choices": [{"message": {"content": json.dumps(
             {"markdown": body})}}]}
 
@@ -153,6 +158,66 @@ def test_chunked_generation_orders_document_and_records_audits(monkeypatch):
         "no call received prior-section context; the summary would be guessed")
 
 
+def test_chunked_generation_retries_a_stubbed_section_with_full_context(monkeypatch):
+    target = "10. MITRE ATT&CK Mapping"
+    targeted_retries: list[str] = []
+
+    def fake_llm(prompt):
+        head = prompt.split("Rules", 1)[0]
+        wanted = [title for title in SECTIONS if f"- {title}" in head]
+        repair = "## Targeted section repair" in prompt
+        if repair:
+            targeted_retries.extend(wanted)
+        bodies = []
+        for title in wanted:
+            body = ("MITRE coverage is listed in Appendix A."
+                    if title == target and not repair else _substantive_body(title))
+            bodies.append(f"# {title}\n\n{body}")
+        return {"choices": [{"message": {"content": json.dumps(
+            {"markdown": "\n\n".join(bodies)})}}]}
+
+    monkeypatch.setattr(pub, "llm_judge", fake_llm)
+    md, audits, errors = pub.generate_technical_chunked(
+        {"sha256": "f" * 64, "sample_path": "/x", "project_name": "p"},
+        {}, {}, {}, [], "AUTHORITATIVE EVIDENCE")
+
+    assert not errors, errors
+    assert targeted_retries == [target]
+    assert "MITRE coverage is listed in Appendix A." not in md
+    assert _substantive_body(target)[:100] in md
+    assert not pub.stub_sections(md, [target])
+    assert any(a.get("part") == "stub-retry-result" and
+               a.get("section") == target and a.get("accepted") is True
+               for a in audits)
+
+
+def test_failed_stub_retry_keeps_original_and_remains_a_quality_failure(monkeypatch):
+    target = "10. MITRE ATT&CK Mapping"
+
+    def fake_llm(prompt):
+        head = prompt.split("Rules", 1)[0]
+        wanted = [title for title in SECTIONS if f"- {title}" in head]
+        repair = "## Targeted section repair" in prompt
+        bodies = []
+        for title in wanted:
+            body = ("No ATT&CK technique is established by this evidence."
+                    if repair or title == target else _substantive_body(title))
+            bodies.append(f"# {title}\n\n{body}")
+        return {"choices": [{"message": {"content": json.dumps(
+            {"markdown": "\n\n".join(bodies)})}}]}
+
+    monkeypatch.setattr(pub, "llm_judge", fake_llm)
+    md, audits, errors = pub.generate_technical_chunked(
+        {"sha256": "1" * 64, "sample_path": "/x", "project_name": "p"},
+        {}, {}, {}, [], "AUTHORITATIVE EVIDENCE")
+
+    assert "No ATT&CK technique is established by this evidence." in md
+    assert errors and any(target in error for error in errors), errors
+    assert any(a.get("part") == "stub-retry-result" and
+               a.get("section") == target and a.get("accepted") is False
+               for a in audits)
+
+
 def test_a_failed_group_is_recorded_and_omits_its_sections(monkeypatch):
     """Fail-open per group: record the error, do not invent filler text."""
     def fake_llm(prompt):
@@ -160,7 +225,7 @@ def test_a_failed_group_is_recorded_and_omits_its_sections(monkeypatch):
         if "- 5. Behavioral & Dynamic Analysis" in head:
             raise RuntimeError("provider exploded")
         wanted = [t for t in SECTIONS if f"- {t}" in head]
-        body = "\n\n".join(f"# {t}\n\ncontent for {t}" for t in wanted)
+        body = "\n\n".join(f"# {t}\n\n{_substantive_body(t)}" for t in wanted)
         return {"choices": [{"message": {"content": json.dumps(
             {"markdown": body})}}]}
 

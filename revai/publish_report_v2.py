@@ -73,6 +73,7 @@ from report_quality import (  # noqa: E402
     scrub_report_indicators,
     source_is_fallback,
     stub_sections,
+    normalize_heading_text,
 )
 
 LOGS = Path("/opt/samples/logs")
@@ -339,7 +340,8 @@ def build_prompt_technical(session: dict, verdict: dict | None, deep: dict | Non
                            recovery_evidence: str = "",
                            final_verdict: str | None = None,
                            sections: list[str] | None = None,
-                           prior_sections_md: str = "") -> str:
+                           prior_sections_md: str = "",
+                           retry_instruction: str = "") -> str:
     """Build a prompt for a technical analyst-grade report with evidence snippets.
 
     `sections` restricts the call to a subset of TECHNICAL_REPORT_SECTIONS, which
@@ -447,6 +449,8 @@ def build_prompt_technical(session: dict, verdict: dict | None, deep: dict | Non
         "When in doubt, explain more — never paste evidence bare. "
         "CRITICAL: heading `## 11. What We Don't Know` must use ASCII apostrophe (U+0027)."
     )
+    if retry_instruction:
+        lines += ["", "## Targeted section repair", retry_instruction]
     return "\n".join(lines)
 
 
@@ -534,6 +538,77 @@ TECHNICAL_BODY_GROUPS: tuple[tuple[int, int], ...] = tuple(
 #: and Metadata lead the document but depend on the findings that follow.
 TECHNICAL_WRAP_RANGE = (0, 2)
 TECHNICAL_TAIL_RANGE = (11, 13)
+
+
+def _technical_heading_key(title: str) -> str:
+    value = normalize_heading_text(title).strip()
+    value = re.sub(r"[*_`~]", "", value)
+    value = re.sub(r"^\d+\s*\.\s*", "", value)
+    return re.sub(r"\s+", " ", value).casefold()
+
+
+def _technical_section_span(markdown: str, title: str) -> tuple[int, int] | None:
+    """Locate one report section by its real Markdown heading boundary."""
+    heading_re = re.compile(r"(?m)^\s{0,3}(#{1,6})\s+(.+?)\s*#*\s*$")
+    target = _technical_heading_key(title)
+    headings = list(heading_re.finditer(markdown or ""))
+    for index, match in enumerate(headings):
+        if _technical_heading_key(match.group(2)) != target:
+            continue
+        level = len(match.group(1))
+        end = len(markdown)
+        for following in headings[index + 1:]:
+            if len(following.group(1)) <= level:
+                end = following.start()
+                break
+        return match.start(), end
+    return None
+
+
+def retry_technical_stub_sections(
+    markdown: str,
+    sections: list[str],
+    retry_section,
+) -> tuple[str, list[dict[str, Any]]]:
+    """Regenerate only stubbed v2 sections and retain the first draft on failure.
+
+    The callback receives the section title and its original section text, and
+    returns a one-section draft. A retry replaces the original only when the
+    exact section can be found and it passes the same stub detector as the
+    published report. Missing evidence or another stub remains a visible
+    quality failure; this helper never supplies substitute prose.
+    """
+    current = markdown or ""
+    attempts: list[dict[str, Any]] = []
+    for section in sections:
+        span = _technical_section_span(current, section)
+        if span is None:
+            attempts.append({"section": section, "accepted": False,
+                             "reason": "original section heading not found"})
+            continue
+        start, end = span
+        original = current[start:end].strip()
+        try:
+            candidate_md = str(retry_section(section, original) or "")
+        except Exception as exc:  # the first report remains intact on retry failure
+            attempts.append({"section": section, "accepted": False,
+                             "reason": f"retry raised {type(exc).__name__}: {exc}"})
+            continue
+        candidate_span = _technical_section_span(candidate_md, section)
+        if candidate_span is None:
+            attempts.append({"section": section, "accepted": False,
+                             "reason": "retry did not return the required section heading"})
+            continue
+        candidate = candidate_md[candidate_span[0]:candidate_span[1]].strip()
+        if stub_sections(candidate, [section]):
+            attempts.append({"section": section, "accepted": False,
+                             "reason": "retry section still fails stub quality gate"})
+            continue
+        current = (current[:start].rstrip() + "\n\n" + candidate + "\n\n"
+                   + current[end:].lstrip("\r\n"))
+        attempts.append({"section": section, "accepted": True,
+                         "reason": "retry section passes stub quality gate"})
+    return current, attempts
 
 
 def generate_technical_chunked(
@@ -648,7 +723,42 @@ def generate_technical_chunked(
     # Document order: front matter, analytical body, appendices. The wrap call
     # runs last so it can summarise the body, but its output leads the document.
     ordered = slots["wrap"] + slots["body"] + slots["tail"]
-    return "\n\n".join(ordered).strip() + "\n", audits, errors
+    markdown = "\n\n".join(ordered).strip() + "\n"
+    stubs = [
+        section for section in stub_sections(markdown, TECHNICAL_REPORT_SECTIONS)
+        if _technical_section_span(markdown, section) is not None
+    ]
+    if stubs:
+        def _retry_stub(section: str, previous: str) -> str:
+            instruction = (
+                f"The previous draft for '{section}' was classified as a stub "
+                "by the report's section-quality gate. Rewrite ONLY this "
+                "section with substantive analysis grounded in the structured "
+                "evidence below. If no technique is supported, state what the "
+                "available evidence does and does not establish, with source "
+                "references; do not invent a mapping. Do not use a generic "
+                "appendix pointer or a short placeholder. Preserve the exact "
+                "required heading.\n\nPrevious section:\n" + previous[:4000]
+            )
+            prompt = build_prompt_technical(
+                session, verdict, deep, yara_meta, audit, technical_evidence,
+                recovery_evidence, final_verdict, sections=[section],
+                retry_instruction=instruction,
+            )
+            return _call(prompt, f"stub-retry-{section[:24]}",
+                         f"05-stub-retry-{len(audits):02d}.json",
+                         titles=[section])
+
+        markdown, repair_results = retry_technical_stub_sections(
+            markdown, stubs, _retry_stub)
+        for result in repair_results:
+            audits.append({"part": "stub-retry-result", **result})
+            if not result["accepted"]:
+                errors.append(
+                    f"stub retry for {result['section']!r} not accepted: "
+                    f"{result['reason']}"
+                )
+    return markdown, audits, errors
 
 
 def verify_technical_sections(md: str) -> list[str]:
@@ -1400,6 +1510,70 @@ def main():
         tech_md = technical_report.get("markdown", "") or ""
         tech_missing = verify_technical_sections(tech_md)
         tech_stubs = stub_sections(tech_md, TECHNICAL_REPORT_SECTIONS) if tech_md else list(TECHNICAL_REPORT_SECTIONS)
+        # The default chunked generator performs this repair before returning.
+        # Keep the explicitly supported monolithic comparison path under the
+        # same section-quality contract so it cannot publish known stubs merely
+        # because the caller selected the rollback mode.
+        if (not chunked and tech_stubs
+                and not source_is_fallback(technical_report.get("source"))):
+            present_stubs = [
+                section for section in tech_stubs
+                if _technical_section_span(tech_md, section) is not None
+            ]
+            if present_stubs:
+                retry_llm_audits: list[dict[str, Any]] = []
+
+                def _retry_monolithic_stub(section: str, previous: str) -> str:
+                    instruction = (
+                        f"The previous draft for '{section}' was classified as "
+                        "a stub by the report's section-quality gate. Rewrite "
+                        "ONLY this section with substantive analysis grounded "
+                        "in the structured evidence below. If no technique is "
+                        "supported, state what the available evidence does "
+                        "and does not establish, with source references; do "
+                        "not invent a mapping. Preserve the exact required "
+                        "heading.\n\nPrevious section:\n" + previous[:4000]
+                    )
+                    retry_prompt = build_prompt_technical(
+                        session, verdict, deep, yara_meta, audit,
+                        tech_evidence_for_prompt, recovery_evidence,
+                        report.get("final_verdict"), sections=[section],
+                        retry_instruction=instruction,
+                    )
+                    response = llm_judge(retry_prompt)
+                    raw_path = ev_dir / f"05c-technical-stub-retry-{len(retry_llm_audits):02d}.json"
+                    raw_path.write_text(
+                        json.dumps(response, indent=2, default=str),
+                        encoding="utf-8",
+                    )
+                    meta = llm_call_metadata(response)
+                    meta["request_model"] = get_llm_model()
+                    retry_llm_audits.append({
+                        "section": section,
+                        "prompt_chars": len(retry_prompt),
+                        "response_chars": len(str(response)),
+                        "llm_audit": meta,
+                    })
+                    parsed = _extract_report_json(
+                        response["choices"][0]["message"].get("content") or ""
+                    )
+                    return str((parsed or {}).get("markdown") or "")
+
+                tech_md, repair_results = retry_technical_stub_sections(
+                    tech_md, present_stubs, _retry_monolithic_stub)
+                technical_report["markdown"] = tech_md
+                technical_report["stub_repair_attempts"] = repair_results
+                if retry_llm_audits:
+                    technical_report["stub_repair_llm_audits"] = retry_llm_audits
+                tech_missing = verify_technical_sections(tech_md)
+                tech_stubs = stub_sections(tech_md, TECHNICAL_REPORT_SECTIONS)
+                if any(not result["accepted"] for result in repair_results):
+                    tech_err = "; ".join(
+                        f"stub retry for {result['section']!r} not accepted: "
+                        f"{result['reason']}"
+                        for result in repair_results if not result["accepted"]
+                    )
+
         if tech_missing or tech_stubs or source_is_fallback(technical_report.get("source")):
             print(
                 f"[publish_report_v2] QUALITY FAIL technical: "

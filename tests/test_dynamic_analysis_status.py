@@ -89,6 +89,47 @@ def test_status_separates_winre_launch_runtime_trace_and_gateway_capture(
     assert "sample launch confirmed" in st["sentence"]
 
 
+def test_status_uses_meta_event_count_when_job_count_is_explicitly_null(
+        tmp_path, monkeypatch):
+    sha = "2" * 64
+    dyn = tmp_path / "winre" / sha / "agentic" / "dynamic"
+    dyn.mkdir(parents=True)
+    (dyn / "META.json").write_text(json.dumps({
+        "ok": True, "detonation_ran": True, "frida_events": 639,
+    }))
+    (dyn / "META.job.json").write_text(json.dumps({
+        "detonation_ran": True, "sample_pid": 1948, "frida_events": None,
+    }))
+    (dyn / "frida_summary.json").write_text(json.dumps({"status": "ok"}))
+    (dyn / "frida_trace.jsonl").write_text('{"event":"call"}\n')
+    monkeypatch.setenv("REVAI_WINRE_LOGS", str(tmp_path / "winre"))
+
+    st = v2_lib.dynamic_analysis_status(sha, logs_dir=tmp_path / "logs")
+
+    assert st["frida_runtime"]["events"] == 639
+    assert st["frida_runtime"]["observed_runtime_events"] is True
+    assert st["any_dynamic_performed"] is True
+
+
+def test_status_preserves_explicit_zero_event_count(tmp_path, monkeypatch):
+    sha = "3" * 64
+    dyn = tmp_path / "winre" / sha / "agentic" / "dynamic"
+    dyn.mkdir(parents=True)
+    (dyn / "META.json").write_text(json.dumps({
+        "ok": True, "detonation_ran": True, "frida_events": 639,
+    }))
+    (dyn / "META.job.json").write_text(json.dumps({
+        "detonation_ran": True, "frida_events": 0,
+    }))
+    (dyn / "frida_summary.json").write_text(json.dumps({"status": "ok"}))
+    monkeypatch.setenv("REVAI_WINRE_LOGS", str(tmp_path / "winre"))
+
+    st = v2_lib.dynamic_analysis_status(sha, logs_dir=tmp_path / "logs")
+
+    assert st["frida_runtime"]["events"] == 0
+    assert st["frida_runtime"]["observed_runtime_events"] is False
+
+
 def test_pack_without_launch_attestation_is_not_reported_as_a_run(
         tmp_path, monkeypatch):
     sha = "f" * 64
@@ -425,6 +466,43 @@ def test_gate_allows_explanation_that_static_probe_absence_does_not_mean_no_dyna
     c = RQ._cross_report_consistency("", "", report, None, st)
     assert not any("dynamic_performed_but_report_says_none" in v
                    for v in c["violations"]), c["violations"]
+
+
+def test_gate_allows_evidence_limited_dynamic_claim_with_winre_and_capture():
+    st = {
+        "any_dynamic_performed": True,
+        "winre": {"detonation_ran": True},
+        "frida_runtime": {"observed_runtime_events": True,
+                           "trace_artifact_present": True, "events": 639},
+        "packet_capture": {"present": True, "files": 1},
+    }
+    report = (
+        "No dynamic behaviour has been asserted beyond what the WinRE "
+        "detonation and packet capture recorded."
+    )
+
+    c = RQ._cross_report_consistency(report, "", "", None, st)
+
+    assert not any("dynamic_performed_but_report_says_none" in v
+                   for v in c["violations"]), c["violations"]
+
+
+def test_gate_still_rejects_direct_winre_and_capture_denials():
+    st = {
+        "any_dynamic_performed": True,
+        "winre": {"detonation_ran": True},
+        "frida_runtime": {"observed_runtime_events": True, "events": 639},
+        "packet_capture": {"present": True, "files": 1},
+    }
+    report = (
+        "No WinRE detonation was performed. No network traffic capture "
+        "(pcap) was collected."
+    )
+
+    c = RQ._cross_report_consistency(report, "", "", None, st)
+
+    assert any("dynamic_performed_but_report_says_none" in v
+               for v in c["violations"]), c["violations"]
 
 
 def test_gate_still_catches_real_contradiction_after_meta_negated_clause():

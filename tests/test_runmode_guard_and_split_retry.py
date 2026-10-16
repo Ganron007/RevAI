@@ -95,6 +95,11 @@ def _session() -> dict:
     return {"sha256": "e" * 64, "sample_path": "/x", "project_name": "p"}
 
 
+def _substantive_body(title: str) -> str:
+    return (f"Evidence-grounded analysis of {title} explains the observed "
+            "artifact, its source, and the limits of the conclusion. " * 8)
+
+
 def test_a_failed_chunk_is_retried_one_section_at_a_time(monkeypatch):
     """A group that returns nothing must not take its sections down with it."""
     asked: list[list[str]] = []
@@ -105,7 +110,7 @@ def test_a_failed_chunk_is_retried_one_section_at_a_time(monkeypatch):
         asked.append(wanted)
         if len(wanted) > 1:
             return {"choices": [{"message": {"content": "{}"}}]}   # empty
-        body = "\n\n".join(f"# {t}\n\ncontent for {t}" for t in wanted)
+        body = "\n\n".join(f"# {t}\n\n{_substantive_body(t)}" for t in wanted)
         import json
         return {"choices": [{"message": {"content": json.dumps(
             {"markdown": body})}}]}
@@ -137,7 +142,7 @@ def test_split_retry_does_not_run_when_every_group_succeeds(monkeypatch):
                        if f"- {t}" in head)
         asked.append(wanted)
         import json
-        body = "\n\n".join(f"# {t}\n\ncontent" for t in wanted)
+        body = "\n\n".join(f"# {t}\n\n{_substantive_body(t)}" for t in wanted)
         return {"choices": [{"message": {"content": json.dumps(
             {"markdown": body})}}]}
 
@@ -166,7 +171,7 @@ def test_a_section_that_fails_alone_is_recorded_exactly_once(monkeypatch):
         if any("5. Behavioral" in t for t in wanted):
             return {"choices": [{"message": {"content": "{}"}}]}
         import json
-        body = "\n\n".join(f"# {t}\n\ncontent" for t in wanted)
+        body = "\n\n".join(f"# {t}\n\n{_substantive_body(t)}" for t in wanted)
         return {"choices": [{"message": {"content": json.dumps(
             {"markdown": body})}}]}
 
