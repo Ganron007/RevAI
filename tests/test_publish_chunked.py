@@ -23,6 +23,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "revai"))
 
 import publish_report_v2 as pub  # noqa: E402
+import section_publisher as pub3  # noqa: E402
 from v2_lib import TECHNICAL_REPORT_SECTIONS as SECTIONS  # noqa: E402
 from v2_lib import REPORT_MASTER_SECTIONS as MASTER_SECTIONS  # noqa: E402
 
@@ -309,6 +310,78 @@ def test_uncited_section_retry_rejects_marker_only_change():
     assert repaired == original
     assert attempts[0]["accepted"] is False
     assert attempts[0]["reason"] == "retry did not reduce uncited claim count"
+
+
+def test_citation_retry_preserves_following_required_section_with_mixed_heading_levels():
+    target = "6. Network Analysis & C2"
+    following = "7. Capability Assessment"
+    claim = "The sample contacts a remote host using an embedded URL string."
+    original = (
+        f"# {target}\n\n{claim} {claim}\n\n"
+        f"## {following}\n\n"
+        + ("Capabilities were derived from observed artifacts. " * 8)
+    )
+
+    def retry(section: str, _original: str, _uncited: list[str]) -> str:
+        assert section == target
+        cited = (
+            "The sample contacts a remote host using an embedded URL string. "
+            "(source: strings, query_or_table: URL strings, "
+            "row_or_rule: embedded URL value) "
+        ) * 12
+        return f"# {target}\n\n{cited}"
+
+    repaired, attempts = pub.retry_report_uncited_sections(
+        original, [target], retry
+    )
+
+    assert attempts[0]["accepted"] is True
+    assert f"## {following}" in repaired
+    assert "Capabilities were derived" in repaired
+
+
+def test_section_metadata_is_recomputed_from_final_markdown():
+    required = ["1. Executive Summary", "2. Sample Metadata"]
+    markdown = (
+        f"## {required[0]}\n\n"
+        + ("The summary is grounded in the available evidence. " * 12)
+    )
+    report = {
+        "source": "llm_judge",
+        "sections_missing": [],
+        "sections_stub": [],
+        "sections_complete": len(required),
+    }
+
+    missing, stubs = pub._refresh_section_metadata(report, markdown, required)
+
+    assert missing == [required[1]]
+    assert stubs == []
+    assert report["sections_missing"] == missing
+    assert report["sections_total"] == len(required)
+    assert report["sections_complete"] == 1
+    assert report["source"] == "llm_incomplete"
+
+
+def test_section_publisher_counts_llm_generations_and_local_sections_truthfully():
+    pass1 = [
+        {"name": name, "citation_repair": {"accepted": False} if index == 0 else None}
+        for index, name in enumerate(pub3.REPORT_SECTION_SPECS)
+    ]
+    pass2 = [
+        {"name": name, "citation_repair": {"accepted": False} if index == 0 else None}
+        for index, (name, spec) in enumerate(pub3.REPORT_SECTION_SPECS.items())
+        if spec[3]
+    ]
+
+    counts = pub3._section_invocation_counts(pass1, pass2)
+
+    assert counts == {
+        "pass1_llm_generation_calls": 14,
+        "pass2_llm_generation_calls": 14,
+        "local_sections": 3,
+        "citation_repair_calls": 2,
+    }
 
 
 def test_a_failed_group_is_recorded_and_omits_its_sections(monkeypatch):

@@ -903,6 +903,23 @@ def generate_technical_sectionwise(
     return results, "\n".join(parts)
 
 
+def _section_invocation_counts(pass1_results: list, pass2_results: list) -> dict[str, int]:
+    """Count LLM section generations separately from local section builders."""
+    def _requires_llm(result: dict) -> bool:
+        spec = REPORT_SECTION_SPECS.get(result.get("name"), (None, None, None, False))
+        return bool(spec[3])
+
+    return {
+        "pass1_llm_generation_calls": sum(1 for result in pass1_results if _requires_llm(result)),
+        "pass2_llm_generation_calls": sum(1 for result in pass2_results if _requires_llm(result)),
+        "local_sections": sum(1 for result in pass1_results if not _requires_llm(result)),
+        "citation_repair_calls": sum(
+            1 for result in (*pass1_results, *pass2_results)
+            if result.get("citation_repair") is not None
+        ),
+    }
+
+
 def run_section_based_publish(sha: str, tools_results: dict,
                               parallel: bool = True,
                               hitl_between: bool = False,
@@ -961,6 +978,10 @@ def run_section_based_publish(sha: str, tools_results: dict,
             pass1_results.append(r)
             pass1_timings.append({"name": name, "pass": 1, "runtime_sec": dt})
 
+    # Preserve the first-pass records before pass 2 replaces those entries in
+    # the final assembly. Counts must represent the work actually performed.
+    pass1_initial_results = list(pass1_results)
+
     # === PASS 2: re-generate LLM-required sections with cross-section context ===
     pass2_results: list = []
     pass2_timings: list = []
@@ -994,6 +1015,9 @@ def run_section_based_publish(sha: str, tools_results: dict,
                     pass1_results[i] = r2
                     break
 
+    invocation_counts = _section_invocation_counts(
+        pass1_initial_results, pass2_results
+    )
     section_results = pass1_results
     section_timings = pass1_timings + pass2_timings
 
@@ -1002,9 +1026,10 @@ def run_section_based_publish(sha: str, tools_results: dict,
         f"# RE Report — {sha[:12]}",
         f"_Generated {datetime.now(timezone.utc).isoformat()}_  ",
         f"_Pipeline: section-based Map-Reduce, "
-        f"{len([r for r in section_results if r.get('llm_ok') and r.get('pass') == 1])} pass-1 LLM calls"
-        + (f" + {len(pass2_results)} pass-2 calls with cross-section context" if cross_refs else "")
-        + " + 2 local sections_",
+        f"{invocation_counts['pass1_llm_generation_calls']} pass-1 LLM section calls"
+        + (f" + {invocation_counts['pass2_llm_generation_calls']} pass-2 LLM section calls with cross-section context" if cross_refs else "")
+        + f" + {invocation_counts['local_sections']} local sections"
+        + f" + {invocation_counts['citation_repair_calls']} citation-repair calls_",
         "",
     ]
     for r in section_results:
@@ -1024,7 +1049,8 @@ def run_section_based_publish(sha: str, tools_results: dict,
         json.dumps(tools_results, indent=2, default=str))
     (out_dir / "01-section-results.json").write_text(
         json.dumps({"sections": section_results, "timings": section_timings,
-                    "pass1_count": len(pass1_results), "pass2_count": len(pass2_results)},
+                    "pass1_count": len(pass1_initial_results), "pass2_count": len(pass2_results),
+                    "invocation_counts": invocation_counts},
                    indent=2, default=str)
     )
     # Plan #42: drop indicator values no tool observed, so the published v3 master
@@ -1053,7 +1079,8 @@ def run_section_based_publish(sha: str, tools_results: dict,
     (root_dir / "REPORT-MASTER-v3.md").write_text(report_markdown)
     (root_dir / "section-results-v3.json").write_text(
         json.dumps({"sections": section_results, "timings": section_timings,
-                    "pass1_count": len(pass1_results), "pass2_count": len(pass2_results),
+                    "pass1_count": len(pass1_initial_results), "pass2_count": len(pass2_results),
+                    "invocation_counts": invocation_counts,
                     "master_v3_indicator_scrub": _master_ioc_scrub,
                     "master_v3_quality": master_quality,
                     "dynamic_analysis_status": status_artifact},
@@ -1067,7 +1094,9 @@ def run_section_based_publish(sha: str, tools_results: dict,
         "sections": section_results,
         "timings": section_timings,
         "pass1_results": pass1_results,
+        "pass1_initial_results": pass1_initial_results,
         "pass2_results": pass2_results,
+        "invocation_counts": invocation_counts,
         "report_markdown": report_markdown,
         "report_size": len(report_markdown),
         "master_quality": master_quality,

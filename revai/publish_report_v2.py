@@ -467,6 +467,26 @@ def verify_sections(md: str) -> list[str]:
     return missing_sections(md, REPORT_MASTER_SECTIONS)
 
 
+def _refresh_section_metadata(
+    report: dict[str, Any], markdown: str, required_sections: list[str],
+) -> tuple[list[str], list[str]]:
+    """Recompute completeness from the exact markdown that will be published."""
+    missing = missing_sections(markdown, required_sections)
+    stubs = stub_sections(markdown, required_sections) if not missing else []
+    incomplete = set(missing) | set(stubs)
+    report["sections_missing"] = missing
+    report["sections_stub"] = stubs
+    report["sections_total"] = len(required_sections)
+    report["sections_complete"] = len(required_sections) - len(incomplete)
+    if missing or stubs:
+        if not source_is_fallback(report.get("source")):
+            report["source"] = "llm_incomplete"
+        report["quality_fail"] = {"missing": missing, "stubs": stubs}
+    else:
+        report.pop("quality_fail", None)
+    return missing, stubs
+
+
 #: The verdict panel row the audit reads. Must stay in step with
 #: report_quality._VERDICT_PANEL_RE, which is what
 #: cross_report:master_tech_verdict_mismatch compares between the two reports.
@@ -560,6 +580,10 @@ def _report_section_span(markdown: str, title: str) -> tuple[int, int] | None:
     """Locate one numbered report section by its Markdown heading boundary."""
     heading_re = re.compile(r"(?m)^\s{0,3}(#{1,6})\s+(.+?)\s*#*\s*$")
     target = _technical_heading_key(title)
+    required_heading_keys = {
+        _technical_heading_key(required_title)
+        for required_title in (*REPORT_MASTER_SECTIONS, *TECHNICAL_REPORT_SECTIONS)
+    }
     headings = list(heading_re.finditer(markdown or ""))
     for index, match in enumerate(headings):
         if _technical_heading_key(match.group(2)) != target:
@@ -567,7 +591,12 @@ def _report_section_span(markdown: str, title: str) -> tuple[int, int] | None:
         level = len(match.group(1))
         end = len(markdown)
         for following in headings[index + 1:]:
-            if len(following.group(1)) <= level:
+            following_key = _technical_heading_key(following.group(2))
+            # Model output does not keep heading levels consistent. A required
+            # report section always starts a new replaceable span, even when a
+            # previous section used `#` and the next uses `##` (or vice versa).
+            if (len(following.group(1)) <= level
+                    or following_key in required_heading_keys):
                 end = following.start()
                 break
         return match.start(), end
@@ -1624,6 +1653,10 @@ def main():
               f"{_models_redacted} -> {PUBLIC_MODEL_LABEL}", flush=True)
     report["markdown"] = md
     report["indicator_scrub"] = _ioc_scrub
+    if args.template == "full":
+        report["sections_missing"], report["sections_stub"] = (
+            _refresh_section_metadata(report, md, REPORT_MASTER_SECTIONS)
+        )
     md_path = case / "REPORT-v2.md"
     md_path.write_text(md)
     (ev_dir / "02-REPORT-MASTER-v2.md").write_text(md)
@@ -2014,6 +2047,10 @@ def main():
             technical_report["model_names_redacted"] = _tech_models
             print(f"[publish_report_v2] technical_v2: redacted model name(s) "
                   f"{_tech_models} -> {PUBLIC_MODEL_LABEL}", flush=True)
+        tech_missing, tech_stubs = _refresh_section_metadata(
+            technical_report, tech_md, TECHNICAL_REPORT_SECTIONS
+        )
+        technical_report["markdown"] = tech_md
         q_tech = evaluate_report_markdown(
             tech_md,
             required_sections=TECHNICAL_REPORT_SECTIONS,

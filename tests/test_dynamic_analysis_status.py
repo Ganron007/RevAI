@@ -605,6 +605,26 @@ def test_gate_allows_frida_absence_scoped_to_static_probe_when_winre_ran():
                    for v in c["violations"]), c["violations"]
 
 
+def test_gate_allows_frida_static_probe_absence_in_following_sentence():
+    st = {
+        "any_dynamic_performed": True,
+        "emulation": {"ok": True},
+        "winre": {"detonation_ran": True},
+        "frida_runtime": {"observed_runtime_events": True, "events": 133},
+        "packet_capture": {"present": True, "files": 1},
+    }
+    report = (
+        "The Frida probe component operated in static-only mode and did not "
+        "execute the sample. No Frida-instrumented execution trace or hook "
+        "output is recorded for this probe."
+    )
+
+    c = RQ._cross_report_consistency("", "", report, None, st)
+
+    assert not any("dynamic_performed_but_report_says_none" in v
+                   for v in c["violations"]), c["violations"]
+
+
 def test_gate_allows_frida_table_row_scoped_to_probe_path_when_winre_ran():
     st = {
         "any_dynamic_performed": True,

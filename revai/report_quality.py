@@ -780,7 +780,7 @@ def _dynamic_absence_claim(md: str, dyn_status: dict) -> str | None:
     capture = dyn_status.get("packet_capture") or {}
     pcap_present = bool(capture.get("present"))
 
-    sentences = []
+    sentences: list[tuple[str, str]] = []
     for line in (md or "").splitlines():
         table_line = line.lstrip()
         while table_line.startswith(">"):
@@ -795,10 +795,15 @@ def _dynamic_absence_claim(md: str, dyn_status: dict) -> str | None:
         else:
             fragments = [line]
         for fragment in fragments:
-            sentences.extend(re.split(r"(?<=[.!?])\s+|\n+", fragment))
+            parts = re.split(r"(?<=[.!?])\s+|\n+", fragment)
+            sentences.extend(
+                (part, parts[index - 1] if index else "")
+                for index, part in enumerate(parts)
+            )
 
-    for sentence in sentences:
+    for sentence, previous_sentence in sentences:
         lower = sentence.lower()
+        previous_lower = previous_sentence.lower()
         # A missing runtime stream attributed only to the RevAI static-only
         # probe is true even when WinRE separately generated runtime events.
         # Exempt that component-level Frida statement only; the broader dynamic,
@@ -806,10 +811,19 @@ def _dynamic_absence_claim(md: str, dyn_status: dict) -> str | None:
         static_probe_scoped_frida_absence = (
             "frida" in lower
             and "probe" in lower
-            and re.search(r"\bstatic[- ]only\b", lower) is not None
+            and (
+                re.search(r"\bstatic[- ]only\b", lower) is not None
+                or (
+                    "frida" in previous_lower
+                    and "probe" in previous_lower
+                    and re.search(r"\bstatic[- ]only\b", previous_lower) is not None
+                )
+            )
             and re.search(
                 r"\b(?:by|from|through)\s+(?:this|that)\s+"
-                r"(?:frida\s+)?(?:static[- ]only\s+)?(?:probe|component|path)\b",
+                r"(?:frida\s+)?(?:static[- ]only\s+)?(?:probe|component|path)\b"
+                r"|\bfor\s+(?:this|that)\s+(?:frida\s+)?"
+                r"(?:static[- ]only\s+)?(?:probe|component|path)\b",
                 lower,
             ) is not None
         )

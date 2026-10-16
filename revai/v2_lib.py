@@ -2102,6 +2102,24 @@ def load_session(sha256: str) -> dict:
     return json.loads(path.read_text())
 
 
+def load_session_for_id(session_id: str) -> dict:
+    """Load a session from its type-tagged ID or bare SHA-256.
+
+    Intake stores Ghidra IDs as ``ghidra-<format>-<sha>``. Removing only the
+    leading ``ghidra-`` leaves ``pe-<sha>`` and makes the registry lookup fail,
+    even though the canonical ``<sha>.json`` session exists.
+    """
+    value = str(session_id or "").strip()
+    for prefix in (
+        "ghidra-dotnet-", "ghidra-macho-", "ghidra-elf-", "ghidra-pe-",
+        "ghidra-",
+    ):
+        if value.startswith(prefix):
+            value = value[len(prefix):]
+            break
+    return load_session(value)
+
+
 # --- Pipeline modes (standard vs large) ------------------------------------
 # See docs/PIPELINE-MODES.md
 PIPELINE_MODE_STANDARD = "standard"
@@ -5418,9 +5436,7 @@ def _malcat_analyze_once(sample_path: str, views: list[str] | None = None,
 
 def ghidra_decompile(session_id: str, function: str) -> dict:
     """Decompile one function via ghidra-rpc MCP (v2 thin tool)."""
-    session = load_session(
-        session_id.replace("ghidra-", "") if session_id.startswith("ghidra-") else session_id
-    )
+    session = load_session_for_id(session_id)
     sha = session["sha256"]
     binary = Path(session["sample_path"]).name
 
