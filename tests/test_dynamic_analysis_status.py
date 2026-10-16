@@ -587,6 +587,27 @@ def test_gate_allows_frida_table_row_scoped_to_probe_path_when_winre_ran():
                    for v in c["violations"]), c["violations"]
 
 
+def test_gate_does_not_join_dynamic_claims_across_markdown_table_cells():
+    st = {
+        "any_dynamic_performed": True,
+        "winre": {"detonation_ran": True},
+        "frida_runtime": {"observed_runtime_events": True, "events": 286},
+    }
+    report = (
+        "| RevAI Frida probe | Static-only, no execution | "
+        "DYNAMIC-ANALYSIS STATUS | Re-run in exec mode or use WinRE trace |"
+    )
+    c = RQ._cross_report_consistency(report, "", "", None, st)
+    assert not any("dynamic_performed_but_report_says_none" in v
+                   for v in c["violations"]), c["violations"]
+
+    # Keep a real denial in one cell gated; only cross-cell inference is invalid.
+    denied = "| Dynamic analysis | No dynamic analysis was performed |"
+    c = RQ._cross_report_consistency(denied, "", "", None, st)
+    assert any("dynamic_performed_but_report_says_none" in v
+               for v in c["violations"]), c["violations"]
+
+
 def test_gate_allows_inner_pe_dynamic_gap_when_outer_sample_ran():
     st = {
         "any_dynamic_performed": True,

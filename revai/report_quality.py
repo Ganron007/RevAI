@@ -732,7 +732,24 @@ def _dynamic_absence_claim(md: str, dyn_status: dict) -> str | None:
     capture = dyn_status.get("packet_capture") or {}
     pcap_present = bool(capture.get("present"))
 
-    for sentence in re.split(r"(?<=[.!?])\s+|\n+", md or ""):
+    sentences = []
+    for line in (md or "").splitlines():
+        table_line = line.lstrip()
+        while table_line.startswith(">"):
+            table_line = table_line[1:].lstrip()
+        if table_line.startswith("|"):
+            # A Markdown row is a set of independent cells. Joining its prose
+            # lets a true "no execution" in one component cell combine with
+            # "dynamic-analysis status" / "re-run" in later cells and create
+            # a false blanket-denial match. Check each cell on its own; escaped
+            # pipes remain part of their cell.
+            fragments = re.split(r"(?<!\\)\|", table_line)
+        else:
+            fragments = [line]
+        for fragment in fragments:
+            sentences.extend(re.split(r"(?<=[.!?])\s+|\n+", fragment))
+
+    for sentence in sentences:
         lower = sentence.lower()
         # A missing runtime stream attributed only to the RevAI static-only
         # probe is true even when WinRE separately generated runtime events.
