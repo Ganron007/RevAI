@@ -388,23 +388,33 @@ def test_report_style_gates() -> None:
     good_md = (
         "> **RevAI provenance** — commit abc · engine langgraph\n\n"
         "# 1. Executive Summary\n\nWe observed the sample resolving APIs "
-        "dynamically (source: capa, top_rules), which indicates packed "
-        "execution flow (source: pe_imports). The import table is minimal "
-        "(source: pe_imports, imports), consistent with a loader that "
-        "resolves the real API surface at runtime (source: floss, strings). "
+        "dynamically (source: capa, query_or_table: top_rules, row_or_rule: "
+        "API resolution indicators), which indicates packed execution flow "
+        "(source: pe_imports, query_or_table: imports, row_or_rule: limited "
+        "static imports). The import table is minimal (source: pe_imports, "
+        "query_or_table: imports, row_or_rule: minimal import set), consistent "
+        "with a loader that resolves the real API surface at runtime "
+        "(source: floss, query_or_table: strings, row_or_rule: resolved API names). "
         "This classification is consistent with upstream triage "
-        "(source: verdict.json).\n\n"
+        "(source: verdict.json, query_or_table: verdict, row_or_rule: "
+        "suspicious classification).\n\n"
         "# 2. Sample Metadata\n\nThe binary is a 32-bit PE with a suspicious "
-        "import table (source: pe_imports, imports). This matters because "
-        "delay-imports are typical of packers (source: malcat, anomalies). "
+        "import table (source: pe_imports, query_or_table: imports, row_or_rule: "
+        "PE32 import table). This matters because delay-imports are typical "
+        "of packers (source: malcat, query_or_table: anomalies, row_or_rule: "
+        "delay imports). "
         "The section layout shows a single writable+executable section "
-        "(source: malcat, static_profile), which the unpacking stub targets "
-        "(source: ghidra_query, sections).\n\n"
+        "(source: malcat, query_or_table: static_profile, row_or_rule: "
+        "writable executable section), which the unpacking stub targets "
+        "(source: ghidra_query, query_or_table: sections, row_or_rule: "
+        "target section reference).\n\n"
         "```asm\npush ebp\nmov ebp, esp\n```\n\nThe stub above is the "
         "standard prologue; the unusual part is the call to 0x401000, which "
-        "resolves to the unpacking loop (source: ghidra_query, functions). "
+        "resolves to the unpacking loop (source: ghidra_query, "
+        "query_or_table: functions, row_or_rule: 0x401000 unpacking loop). "
         "We assess this loop writes the second-stage payload in memory "
-        "(source: capa, anti-analysis), though we could not confirm the "
+        "(source: capa, query_or_table: anti-analysis, row_or_rule: "
+        "memory payload behavior), though we could not confirm the "
         "dropped artifact on disk (likely stage is memory-only)."
     )
     q = evaluate_report_markdown(
@@ -422,17 +432,22 @@ def test_report_style_gates() -> None:
         "> **RevAI provenance** — commit abc · engine langgraph\n\n"
         "# 1. Executive Summary\n\n"
         + ("We observed the sample resolving APIs dynamically (source: capa, "
-           "top_rules), consistent with a packed loader whose import table is "
-           "minimal; the section layout explains the entropy (source: malcat, "
-           "anomalies) and the protector stub is documented below. ") * 5
+           "query_or_table: top_rules, row_or_rule: API resolution indicators), "
+           "consistent with a packed loader whose import table is minimal; the "
+           "section layout explains the entropy (source: malcat, query_or_table: "
+           "anomalies, row_or_rule: section layout) and the protector stub is "
+           "documented below. ") * 5
         + "\n\n# 2. Sample Metadata\n\n"
         + ("The binary is a 32-bit PE with a suspicious import table "
-           "(source: pe_imports, imports) and a single writable+executable "
-           "section (source: malcat, static_profile). ") * 4
+           "(source: pe_imports, query_or_table: imports, row_or_rule: "
+           "suspicious import set) and a single writable+executable "
+           "section (source: malcat, query_or_table: static_profile, "
+           "row_or_rule: writable executable section). ") * 4
         + "\n\n| addr | name | why |\n|------|------|-----|\n"
         + "".join(
             f"| 0x4010{i:02x} | sub_4010{i:02x} | resolves APIs dynamically "
-            f"(source: ghidra_query) |\n"
+            f"(source: ghidra_query, query_or_table: functions, "
+            f"row_or_rule: sub_4010{i:02x}) |\n"
             for i in range(25)
         )
     )
@@ -505,7 +520,10 @@ def test_quality_gate_reads_mode_dir() -> None:
         mode_dir = _Path(td) / "logs" / sha / "agentic"
         mode_dir.mkdir(parents=True)
         (mode_dir / "REPORT-MASTER-v2.md").write_text(
-            "# Executive Summary\n\n" + "We assess the sample (source: capa). " * 200
+            "# Executive Summary\n\n" + (
+                "We assess the sample (source: capa, query_or_table: rules, "
+                "row_or_rule: rule observation). "
+            ) * 200
         )
         orig_case_dir = v2_lib.case_dir
         v2_lib.case_dir = lambda s, mode=None: mode_dir

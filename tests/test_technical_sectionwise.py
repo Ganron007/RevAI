@@ -270,6 +270,38 @@ def test_section_8_is_included_in_the_assembled_report(monkeypatch):
     assert "## 8. Indicators of Compromise" in md
 
 
+def test_model_section_repairs_source_only_claims_with_measured_improvement(monkeypatch):
+    title = "4. Static Code Analysis"
+    claim = "The sample imports an API associated with process creation."
+    initial = "\n".join([f"## {title}", "", (claim + " ") * 5])
+    repaired = "\n".join([
+        f"## {title}",
+        "",
+        (claim + " (source: pe_imports, query_or_table: imports, "
+         "row_or_rule: CreateProcessA). ") * 5,
+    ])
+    calls = []
+
+    def fake(prompt, *a, **kw):
+        calls.append(prompt)
+        markdown = initial if len(calls) == 1 else repaired
+        return _Resp(json.dumps({"title": title, "markdown": markdown,
+                                 "source": "llm_judge"}))
+
+    monkeypatch.setattr(sp, "llm_judge", fake)
+    monkeypatch.setattr(sp, "llm_call_metadata", lambda r: {})
+    monkeypatch.setattr(sp, "get_llm_model", lambda: "test-model")
+
+    blocks = sp._split_evidence_blocks(REAL_EVIDENCE)
+    result = sp._generate_technical_section(
+        title, blocks, "", "a" * 64)
+
+    assert len(calls) == 2
+    assert result["citation_repair"]["accepted"] is True
+    assert result["citation_repair"]["uncited_after"] == 0
+    assert result["markdown"] == repaired
+
+
 def test_sectionwise_is_the_default_and_the_rollback_flag_works(monkeypatch):
     monkeypatch.delenv("REVAI_TECHNICAL_SECTIONWISE", raising=False)
     assert sp._technical_sectionwise_enabled() is True

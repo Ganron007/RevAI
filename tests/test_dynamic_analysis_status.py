@@ -641,6 +641,21 @@ def test_gate_does_not_join_dynamic_claims_across_markdown_table_cells():
                for v in c["violations"]), c["violations"]
 
 
+def test_gate_understands_explicit_double_negation_of_dynamic_absence():
+    st = {
+        "any_dynamic_performed": True,
+        "winre": {"detonation_ran": True},
+        "frida_runtime": {"observed_runtime_events": True, "events": 577},
+    }
+    report = (
+        "WinRE captured runtime behavior; it is not the case that no dynamic "
+        "analysis was performed in this run."
+    )
+    result = RQ._cross_report_consistency(report, "", "", None, st)
+    assert not any("dynamic_performed_but_report_says_none" in violation
+                   for violation in result["violations"]), result
+
+
 def test_gate_allows_inner_pe_dynamic_gap_when_outer_sample_ran():
     st = {
         "any_dynamic_performed": True,

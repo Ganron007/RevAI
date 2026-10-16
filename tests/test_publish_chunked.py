@@ -266,6 +266,51 @@ def test_failed_master_stub_retry_retains_stub_and_quality_failure():
     assert pub.stub_sections(repaired, [target]) == [target]
 
 
+def test_uncited_section_retry_is_accepted_only_when_claim_count_drops():
+    target = "11. MITRE ATT&CK Mapping"
+    claim_a = "The sample creates a scheduled task to persist after reboot."
+    claim_b = "It then contacts a remote host using an embedded URL string."
+    original = f"# {target}\n\n{claim_a} {claim_b} " * 4
+    assert len(pub.uncited_report_claims(original)) >= 2
+
+    def retry(section: str, _original: str, uncited: list[str]) -> str:
+        assert section == target
+        assert uncited
+        cited = ("The sample creates a scheduled task to persist after reboot. "
+                 "(source: task_scheduler, query_or_table: task registration, "
+                 "row_or_rule: observed task name)\n\n")
+        retained = ("It then contacts a remote host using an embedded URL string. "
+                    "(source: strings, query_or_table: URL strings, "
+                    "row_or_rule: embedded URL value) " * 4)
+        return f"# {target}\n\n{cited}{retained}"
+
+    repaired, attempts = pub.retry_report_uncited_sections(
+        original, [target], retry
+    )
+
+    assert attempts[0]["accepted"] is True
+    assert attempts[0]["uncited_after"] < attempts[0]["uncited_before"]
+    assert not pub.uncited_report_claims(repaired)
+
+
+def test_uncited_section_retry_rejects_marker_only_change():
+    target = "11. MITRE ATT&CK Mapping"
+    claim = "The sample creates a scheduled task to persist after reboot."
+    original = f"# {target}\n\n{claim} {claim} {claim}"
+
+    def retry(_section: str, _original: str, _uncited: list[str]) -> str:
+        return (f"# {target}\n\n<!-- (source: yara) -->\n"
+                f"{claim} {claim} {claim}")
+
+    repaired, attempts = pub.retry_report_uncited_sections(
+        original, [target], retry
+    )
+
+    assert repaired == original
+    assert attempts[0]["accepted"] is False
+    assert attempts[0]["reason"] == "retry did not reduce uncited claim count"
+
+
 def test_a_failed_group_is_recorded_and_omits_its_sections(monkeypatch):
     """Fail-open per group: record the error, do not invent filler text."""
     def fake_llm(prompt):

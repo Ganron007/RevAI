@@ -447,6 +447,19 @@ _DYN_NEGATION_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Explicit double-negation wording is affirmative: "it is not the case that no
+# dynamic analysis was performed" means some dynamic analysis did run. Remove
+# only that complete clause before checking for a blanket execution denial.
+_DYN_NEGATED_NEGATION_RE = re.compile(
+    r"\bit(?:'s| is| was)\s+not\s+the\s+case\s+that\s+"
+    r"(?:there\s+(?:was|is)\s+)?no\s+"
+    r"(?:dynamic[- ]analysis(?:\s+tool)?|dynamic execution|"
+    r"sandbox (?:analysis|execution))\b.{0,100}\b"
+    r"(?:performed|conducted|run|invoked|executed|present|available|"
+    r"captured|collected)\b",
+    re.IGNORECASE,
+)
+
 _DYN_META_NEGATION_RE = re.compile(
     r"\b(?:does\s+not|doesn't|do\s+not|don't|did\s+not|didn't)\s+"
     r"(?:mean|imply|indicate|establish|show)\s+(?:that\s+)?"
@@ -817,6 +830,7 @@ def _dynamic_absence_claim(md: str, dyn_status: dict) -> str | None:
         dynamic_claim_text = _DYN_META_NEGATION_RE.sub("", sentence)
         dynamic_claim_text = _DYN_META_AFFIRMATION_RE.sub("", dynamic_claim_text)
         dynamic_claim_text = _DYN_INNER_PAYLOAD_GAP_RE.sub("", dynamic_claim_text)
+        dynamic_claim_text = _DYN_NEGATED_NEGATION_RE.sub("", dynamic_claim_text)
         if _DYN_NEGATION_RE.search(dynamic_claim_text):
             return sentence.strip()[:180]
         if (frida_ran and not static_probe_scoped_frida_absence
@@ -1556,7 +1570,12 @@ def _looks_like_domain(value: str) -> bool:
     return tld in _KNOWN_TLDS
 
 
-_REPORT_SOURCE_MARKER_RE = re.compile(r"[({\[]\s*source\s*:", re.IGNORECASE)
+_REPORT_CITATION_LOCATOR_RE = re.compile(
+    r"[({\[]\s*source\s*:[^,}\])]+,\s*"
+    r"(?:query_or_table\s*:[^,}\])]+,\s*)?"
+    r"row_or_rule\s*:\s*(?:\"[^\"]+\"|'[^']+'|[^,}\])]+)",
+    re.IGNORECASE,
+)
 _REPORT_METADATA_PREFIX_RE = re.compile(
     r"^(?:>\s*)?(?:\*\*(?:sha-?256|generated_at|pipeline|source|run_id)"
     r"\*\*\s*:|_(?:generated|pipeline)\b|<!--\s*section:|"
@@ -1565,12 +1584,14 @@ _REPORT_METADATA_PREFIX_RE = re.compile(
 )
 
 
-def _uncited_report_claims(markdown: str) -> list[str]:
+def uncited_report_claims(markdown: str) -> list[str]:
     """Return narrative assertions that lack a nearby source citation.
 
     Tables may carry a dedicated Source, Citation, or Evidence column instead
-    of an inline marker. Fenced evidence dumps are excluded because they are
-    source material, while narrative that interprets them must remain cited.
+    of an inline marker. Inline narrative and table citations require a concrete
+    row/rule locator, because a source name alone cannot locate the evidence.
+    Fenced evidence dumps are excluded because they are source material, while
+    narrative that interprets them must remain cited.
     This is a structural coverage check; it does not claim that a citation
     semantically entails the sentence.
     """
@@ -1614,7 +1635,7 @@ def _uncited_report_claims(markdown: str) -> list[str]:
                 i < len(cells) and cells[i].strip(" `*_—-")
                 for i in table_source_columns
             )
-            if not source_value and not _REPORT_SOURCE_MARKER_RE.search(line):
+            if not source_value and not _REPORT_CITATION_LOCATOR_RE.search(line):
                 excerpt = re.sub(r"\s+", " ", line)
                 uncited.append(excerpt[:240])
             continue
@@ -1636,7 +1657,12 @@ def _uncited_report_claims(markdown: str) -> list[str]:
         for sentence in sentences:
             claim = re.sub(r"\s+", " ", sentence).strip()
             claim = re.sub(r"^(?:[-*+]\s+|>\s*)+", "", claim)
-            if len(claim) < 25 or _REPORT_SOURCE_MARKER_RE.search(claim):
+            # A source label alone is not a traceable citation. The entailment
+            # checker classifies it as source-only because a reviewer cannot
+            # locate the observation. Require a concrete row/rule locator in
+            # narrative citations; table rows may still use a dedicated source
+            # column because each row itself is the observed item.
+            if len(claim) < 25 or _REPORT_CITATION_LOCATOR_RE.search(claim):
                 continue
             if _REPORT_METADATA_PREFIX_RE.match(claim):
                 continue
@@ -1648,6 +1674,10 @@ def _uncited_report_claims(markdown: str) -> list[str]:
                 continue
             uncited.append(claim[:240])
     return uncited
+
+
+# Backwards compatibility for existing in-repo callers and focused tests.
+_uncited_report_claims = uncited_report_claims
 
 #: Evidence files worth searching, most specific first. Anything absent is
 #: skipped, so a scripted run without a dynamic pack still verifies statically.
