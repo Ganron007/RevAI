@@ -10,7 +10,11 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "revai"))
 
 from audit_pipeline import _technical_v3_quality_checks  # noqa: E402
-from report_quality import _section_bodies, stub_sections  # noqa: E402
+from report_quality import (  # noqa: E402
+    _section_bodies,
+    missing_sections,
+    stub_sections,
+)
 
 
 def test_narrative_mention_does_not_truncate_required_section():
@@ -44,6 +48,31 @@ def test_short_pointer_section_still_fails_stub_gate():
         + ("The file metadata was independently extracted and verified. " * 12)
     )
     assert stub_sections(report, required) == ["1. Executive Summary"]
+
+
+def test_heading_mention_in_prose_or_evidence_does_not_satisfy_section():
+    required = ["4. Static Code Analysis", "5. Behavioral Analysis"]
+    report = (
+        "# Report\n\n"
+        "The report should include 4. Static Code Analysis in the final output.\n\n"
+        "```json\n"
+        '{"section": "4. Static Code Analysis", "body": "evidence"}\n'
+        "```\n\n"
+        "## 5. Behavioral Analysis\n"
+        + ("Behavioral evidence is summarized here. " * 8)
+    )
+    assert missing_sections(report, required) == ["4. Static Code Analysis"]
+    assert _section_bodies(report, required)[required[0]] == ""
+
+
+def test_required_heading_inside_fenced_markdown_is_not_a_boundary():
+    required = ["1. Summary", "2. Details"]
+    report = (
+        "# 1. Summary\n"
+        + ("A substantive summary paragraph. " * 8)
+        + "\n\n```markdown\n## 2. Details\nexample only\n```\n"
+    )
+    assert missing_sections(report, required) == ["2. Details"]
 
 
 def test_audit_rejects_technical_v3_stub_metadata(tmp_path):

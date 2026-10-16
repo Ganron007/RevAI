@@ -452,6 +452,37 @@ def test_report_style_gates() -> None:
     check("fallback exempt from style gates", not any("dump_style" in i or "no_byline" in i for i in fb.get("issues", [])), str(fb.get("issues"))[:200])
 
 
+def test_report_style_requires_a_citation_on_each_claim_sentence() -> None:
+    required = ["1. Executive Summary"]
+    md = (
+        "> **RevAI provenance** — commit abc · engine langgraph\n\n"
+        "# 1. Executive Summary\n\n"
+        "The sample creates a service (source: procmon, query_or_table: events, "
+        "row_or_rule: service creation). The sample also opens a remote socket.\n"
+        "| Finding | Source |\n|---|---|\n"
+        "| Creates a service | Procmon event 12 |\n"
+    )
+    result = evaluate_report_markdown(
+        md, required_sections=required, source="llm_judge",
+        min_total_chars=10, label="master_v3_test",
+    )
+
+    assert result["style"]["uncited_claim_count"] == 1, result["style"]
+    assert any("uncited_claims:1" in issue for issue in result["issues"])
+
+
+def test_report_style_does_not_require_citations_for_provenance_metadata() -> None:
+    from report_quality import _uncited_report_claims
+
+    md = (
+        "**sha256**: " + "a" * 64 + "\n"
+        "**generated_at**: 2026-10-16T12:00:00Z\n"
+        "_(local build - no LLM call)_\n"
+        "**RevAI provenance**: commit abc123\n"
+    )
+    assert _uncited_report_claims(md) == []
+
+
 # ---------------------------------------------------------------------------
 # 11. G2 — deep-dive transparent tool retry (fake registry, both directions).
 # ---------------------------------------------------------------------------

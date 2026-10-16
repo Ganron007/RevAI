@@ -90,6 +90,17 @@ def test_claims_are_extracted_with_their_citation():
     assert claims[0]["row"] == "RegSetValueExA"
 
 
+def test_claim_extraction_does_not_truncate_a_report_by_default():
+    md = "\n".join(
+        f"The sample has observed marker_{i:03d} "
+        f"(source: yara, query_or_table: strings, row_or_rule: marker_{i:03d})."
+        for i in range(250)
+    )
+
+    assert len(E.extract_claims(md)) == 250
+    assert len(E.extract_claims(md, limit=40)) == 40
+
+
 # The house citation format ends with `, why: ...`. Until 2026-10-11 the closer
 # was demanded right after row_or_rule, so these three shapes -- all copied
 # verbatim from wiper_wipe32p's technical report -- did not parse at all and

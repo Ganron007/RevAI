@@ -139,6 +139,25 @@ def test_collect_evidence_text_reads_known_files(tmp_path):
     assert "REPORT" not in text
 
 
+def test_collect_evidence_text_includes_generated_yara_imphash(tmp_path):
+    """A YARA artifact's imphash is evidence and must survive IOC scrubbing."""
+    imphash = "e60d0e6577962a1096407913ed128742"
+    (tmp_path / "rule.yara.json").write_text(json.dumps({"imphash": imphash}))
+    markdown = (
+        f"Block the imphash `{imphash}` at the EDR level "
+        "(source: rule.yara.json)."
+    )
+
+    evidence, used = rq.collect_evidence_text(tmp_path)
+    assert imphash in evidence
+    assert "rule.yara.json" in used
+    assert rq.verify_claimed_iocs(markdown, evidence)["unverified"] == 0
+
+    scrubbed, _meta = rq.scrub_report_indicators(tmp_path, markdown, "master_v2")
+    assert imphash in scrubbed
+    assert "[hash not observed in evidence]" not in scrubbed
+
+
 def test_collect_evidence_text_is_bounded(tmp_path):
     (tmp_path / "iocs.json").write_text("x" * 5000)
     text, _used = rq.collect_evidence_text(tmp_path, max_bytes=1000)

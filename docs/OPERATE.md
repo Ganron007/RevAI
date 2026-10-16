@@ -156,6 +156,22 @@ A non-streaming request carries no bytes until the response is complete, so
 `REVAI_LLM_STREAM=0` to restore plain POSTs, at the cost of losing the
 distinction.
 
+### Report evidence and completeness gates
+
+The publication gate checks every report version that can be delivered: the v2
+master, v3 master, and v2/v3 technical reports. Required section names must be
+real Markdown headings outside fenced examples; a title mentioned in prose or
+an evidence dump does not satisfy the section. Each factual narrative sentence
+and each evidence-table row needs an inline `(source: ...)` marker or a
+dedicated Source, Citation, or Evidence column. Missing sections and uncited
+claims keep the report red so the publisher can regenerate the affected
+content from the original evidence.
+
+This is a structural traceability check: it verifies that a claim points to a
+source, not that the cited source proves the claim. The audit's separate
+indicator and consistency checks cover specific claim classes, while an analyst
+must still inspect source artifacts for semantic support and interpretation.
+
 ### Indicator scrubber and published-name redaction
 
 Reports are made accurate after they are written, by code rather than by

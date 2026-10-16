@@ -92,7 +92,7 @@ _ANALYSIS_WORDS = (
 _VERDICT_WORDS = ("benign", "legitimate", "suspicious", "malicious")
 
 
-def extract_claims(md: str, limit: int = 200) -> list[dict]:
+def extract_claims(md: str, limit: int | None = None) -> list[dict]:
     """Every citation-bearing sentence in a report, with its citation.
 
     Returns [{text, source, query, row, index}]. Sentences with no citation are
@@ -142,7 +142,7 @@ def extract_claims(md: str, limit: int = 200) -> list[dict]:
             "index": idx,
         })
         idx += 1
-        if len(out) >= limit:
+        if limit is not None and len(out) >= limit:
             break
     return out
 
@@ -156,6 +156,7 @@ def extract_claims(md: str, limit: int = 200) -> list[dict]:
 #: Aliases are needed because models shorten and re-spell: `agentic_recover_v4`,
 #: `recovered function names` and `function_recovery` all name the same stage.
 _SOURCE_ARTIFACTS: dict[str, tuple[str, ...]] = {
+    "dynamic_analysis_status": ("dynamic-analysis-status.json",),
     "agentic_recover_v4": ("function_recovery.json",),
     "agentic_recover": ("function_recovery.json",),
     "recover_v4": ("function_recovery.json",),
@@ -439,6 +440,7 @@ _EVIDENCE_ARTIFACTS = (
     "deep_dive/agentic_deep_dive.json",
     "quick_scan/00-tools-raw.json",
     "quick_scan/verdict.json",
+    "dynamic-analysis-status.json",
     "iocs.json",
     "function_recovery.json",
     "rule.yara.json",

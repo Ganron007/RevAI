@@ -55,6 +55,32 @@ def test_status_reports_a_successful_oracle(tmp_path, monkeypatch):
     assert "produced a trace" in st["emulation"]["state"]
 
 
+def test_dynamic_status_is_persisted_as_citable_evidence(tmp_path, monkeypatch):
+    status = {
+        "sentence": "Run-scoped status -- WinRE detonation: sample launch confirmed.",
+        "any_dynamic_performed": True,
+    }
+    monkeypatch.setattr(v2_lib, "dynamic_analysis_status", lambda *_a, **_k: status)
+    monkeypatch.setattr(v2_lib, "case_dir", lambda _sha: tmp_path)
+
+    record = v2_lib.persist_dynamic_analysis_status("a" * 64)
+    persisted = json.loads((tmp_path / "dynamic-analysis-status.json").read_text())
+    import entailment
+
+    evidence, used = RQ.collect_evidence_text(tmp_path)
+    claim = {
+        "source": "dynamic_analysis_status",
+        "query": "run-scoped status",
+        "row": "run-scoped status",
+        "text": status["sentence"],
+    }
+
+    assert record == persisted
+    assert persisted["status"] == status
+    assert "dynamic-analysis-status.json" in used
+    assert entailment.verify_claim(claim, evidence, tmp_path)["checks"]["row_resolves"]
+
+
 def test_status_with_no_oracle_says_so(tmp_path, monkeypatch):
     monkeypatch.setenv("REVAI_WINRE_LOGS", str(tmp_path / "nowhere"))
     st = v2_lib.dynamic_analysis_status("zz", logs_dir=tmp_path / "logs")
@@ -663,6 +689,25 @@ def test_gate_rejects_zero_frida_event_claim_when_runtime_events_exist():
                for v in c["violations"]), c["violations"]
 
 
+def test_gate_allows_absence_of_one_api_event_after_positive_runtime_count():
+    st = {
+        "any_dynamic_performed": True,
+        "winre": {"detonation_ran": True},
+        "frida_runtime": {"observed_runtime_events": True,
+                           "trace_artifact_present": True, "events": 133},
+        "packet_capture": {"present": True, "files": 1},
+    }
+    report = (
+        "The WinRE Frida runtime captured 133 events, but no event "
+        "corresponded to a socket call."
+    )
+
+    result = RQ._cross_report_consistency("", "", report, None, st)
+
+    assert not any("dynamic_performed_but_report_says_none" in violation
+                   for violation in result["violations"]), result
+
+
 # ------------------------------------------------------------- section injection
 def test_the_dynamic_section_prompt_carries_the_status(monkeypatch):
     """The section prompt must receive the authoritative status line, so the
@@ -690,8 +735,8 @@ def test_the_dynamic_section_prompt_carries_the_status(monkeypatch):
     assert result["markdown"] == "m"
 
 
-def test_the_dynamic_status_is_not_injected_into_other_sections(monkeypatch):
-    """The injection is scoped to the dynamic section only."""
+def test_the_dynamic_status_is_injected_into_every_master_section(monkeypatch):
+    """A filtered section must not mistake omitted evidence for run absence."""
     captured = {}
 
     def fake_judge(prompt, **kw):
@@ -702,6 +747,22 @@ def test_the_dynamic_status_is_not_injected_into_other_sections(monkeypatch):
     monkeypatch.setattr(SP, "llm_judge", fake_judge)
     monkeypatch.setattr(SP, "_dynamic_status_sentence", lambda sha: "STATUS")
     SP._run_one_section("4. Static Analysis", "ab", {}, {})
-    # The shared prompt always instructs the author to state the status line;
-    # what must NOT be present is the INJECTED block carrying the value.
-    assert "DYNAMIC-ANALYSIS STATUS (authoritative" not in captured.get("prompt", "")
+    assert "DYNAMIC-ANALYSIS STATUS (authoritative" in captured.get("prompt", "")
+    assert "STATUS (source: dynamic_analysis_status" in captured.get("prompt", "")
+
+
+def test_master_v3_dynamic_consistency_checks_the_master_v3_report():
+    status = {
+        "any_dynamic_performed": False,
+        "sentence": "WinRE detonation: sample did not launch",
+    }
+    report = "Dynamic analysis was performed during this run."
+
+    result = RQ._cross_report_consistency(
+        "", "", "", None, status, master_v3_md=report,
+    )
+
+    assert any(
+        "dynamic_execution_claimed_but_none_performed" in violation
+        for violation in result["violations"]
+    ), result

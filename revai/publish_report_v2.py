@@ -39,7 +39,7 @@ from v2_lib import (  # noqa: E402
     align_publish_markdown_to_upstream,
     calibrate_publish_claim,
     cross_stage_verdict_lock,
-    dynamic_analysis_status,
+    persist_dynamic_analysis_status,
     format_dynamic_analysis_section,
     infer_publish_verdict_from_markdown,
     strip_accuracy_hold_banner,
@@ -150,7 +150,8 @@ def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, ya
             "Use the component-specific status below. The RevAI Frida static probe "
             "only analyzes candidate hooks; it does not execute the sample. A WinRE "
             "detonation is a separate runtime path. Do not describe one component's "
-            "absence as absence of all dynamic analysis.",
+            "absence as absence of all dynamic analysis. Cite run-wide status as "
+            "(source: dynamic_analysis_status, query_or_table: run-scoped status).",
             compact_json_for_prompt(dynamic_status, max_chars=3500),
             "",
         ]
@@ -331,7 +332,8 @@ def append_dynamic_status_to_technical_evidence(
         return technical_evidence
     return (technical_evidence.rstrip()
             + "\n\n## Authoritative component-specific dynamic status\n\n"
-            + sentence + "\n")
+            + sentence + " (source: dynamic_analysis_status, "
+            "query_or_table: run-scoped status, row_or_rule: run-scoped status)\n")
 
 
 def build_prompt_technical(session: dict, verdict: dict | None, deep: dict | None,
@@ -375,7 +377,8 @@ def build_prompt_technical(session: dict, verdict: dict | None, deep: dict | Non
         "Rules (V5.16 — evidence-first, MORE detail preferred):",
         "- This is a TECHNICAL report for reverse engineers. Prefer MORE evidence over less.",
         "- COPY tables/rows from Structured Evidence into the matching sections (do not summarize away addresses).",
-        "- Every claim MUST include (source: <engine>) and an address, rule name, or table row when available.",
+        "- Every factual claim sentence and every evidence-table row MUST carry "
+        "(source: <engine>) with an address, rule name, or table row when available.",
         "- REQUIRED embeds when present in evidence: section layout table, full IAT, capa+YARA tables,",
         "  high-signal strings WITH engine+ea, UPX stdout + unpacked_path, function metrics, EP/decompress disasm.",
         "- If Speakeasy/Frida show zero events, write 'not observed' — never invent runtime behavior.",
@@ -1114,7 +1117,8 @@ def main():
             print(f"[publish_report_v2] function_recovery read warn: {e}", flush=True)
 
     if args.template == "full":
-        dynamic_status = dynamic_analysis_status(args.sha256)
+        dynamic_status_record = persist_dynamic_analysis_status(args.sha256)
+        dynamic_status = dynamic_status_record.get("status") or {}
         dynamic_pack = load_dynamic_pack(args.sha256)
         dynamic_evidence = format_dynamic_analysis_section(dynamic_pack)
         prompt = build_prompt_full(session, verdict, deep, yara_meta, audit,

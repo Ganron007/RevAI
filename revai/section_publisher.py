@@ -70,6 +70,7 @@ attach_dynamic_analysis_section,
     normalize_llm_content,
     normalize_llm_json,
     provenance_block,
+    persist_dynamic_analysis_status,
     revai_provenance,
     _categorize_string,
 )
@@ -105,27 +106,37 @@ def _section_prompt(section_name: str, description: str, evidence: str,
         parts.append(prior_sections_summary)
         parts.append("")
     if cross_context:
-        parts.append("## Cross-section context (from other sections in pass 1)")
+        parts.append("## Cross-section context (draft context from other sections in pass 1)")
         parts.append(cross_context)
         parts.append("")
     parts.append(
         "## Your task\n"
         f"Write the '{section_name}' section in markdown. Cite evidence as "
-        "(source: ghidra_query / capa / yara / malcat / cross-section:section_name). "
+        "(source: ghidra_query / capa / yara / malcat). "
         "Verdict/summary prose is NARRATIVE CONTEXT, never a claim's "
         "(source: ...): cite the tool row that observed the fact or write "
         "'not observed'. "
         "Be concise (200-500 words). Use tables where appropriate. "
         "ASCII apostrophe only in headings. Do NOT write 'see appendix' stubs.\n"
+        "CITATION SCOPE: put an evidence citation on every factual claim sentence "
+        "and every evidence-table row, not merely once per paragraph. Use the "
+        "original tool/artifact citation shown in the evidence; never cite "
+        "cross-section prose as evidence. Cross-section context is draft text "
+        "for consistency only, not a source of facts. If a source row is not "
+        "available, state the limitation or unknown instead of repeating an "
+        "uncited claim.\n"
         "EXPLAIN, DON'T DUMP: every evidence row / code block you include must "
         "be introduced and interpreted (what + why + confidence); never paste "
         "evidence bare. Hedge inferences ('likely', 'possibly', 'we assess'). "
         "A reader with no context must follow the section without asking the "
         "model for clarification.\n"
-        "DYNAMIC-ANALYSIS HONESTY: state the DYNAMIC-ANALYSIS STATUS line (in the "
-        "evidence) exactly as it reads. It distinguishes mechanisms that ran, "
-        "those that failed, and those not performed; a tool that failed or was "
-        "not run must not be described as having executed.\n"
+        "DYNAMIC-ANALYSIS HONESTY: the DYNAMIC-ANALYSIS STATUS line (in the "
+        "evidence) is authoritative for the whole run. When discussing runtime, "
+        "cite it as source: dynamic_analysis_status and state its status exactly. "
+        "The filtered evidence for a section is not the complete run corpus; do "
+        "not claim that a mechanism did not run or that evidence is unavailable "
+        "overall only because it is absent from this section's filtered evidence. "
+        "A tool that failed or was not run must not be described as having executed.\n"
         "ENTROPY UNITS: whole-file Shannon entropy in bits/byte (0-8); "
         "per-section values must name the section; never present an unlabeled "
         "tool metric as the file's entropy.\n"
@@ -216,15 +227,12 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
     # Without this the model once wrote "Speakeasy and Frida executed
     # successfully" for a sample whose oracle failed and where no Frida or
     # WinRE pack exists.
-    if any(marker in section_name for marker in (
-            "Behavioral Analysis", "Dynamic Analysis", "Network Analysis",
-            "Network Indicators", "What We Don't Know")):
-        st_block = _dynamic_status_sentence(sha)
-        if st_block:
-            evidence = (f"DYNAMIC-ANALYSIS STATUS (authoritative, read from the "
-                        f"run's artifacts -- state it exactly, and do NOT claim a "
-                        f"tool ran or evidence was absent when this says otherwise): "
-                        f"{st_block}\n\n{evidence}")
+    st_block = _dynamic_status_sentence(sha)
+    if st_block:
+        evidence = (f"DYNAMIC-ANALYSIS STATUS (authoritative, read from the "
+                    f"run's artifacts; applies to the whole run): {st_block} "
+                    f"(source: dynamic_analysis_status, query_or_table: "
+                    f"run-scoped status, row_or_rule: run-scoped status)\n\n{evidence}")
     # 3. Build prior-summaries for continuity
     prior_lines = []
     for n, m in list(prior_summaries.items())[-3:]:
@@ -674,8 +682,10 @@ def _technical_section_prompt(name: str, description: str, evidence: str,
         "less.\n"
         "- COPY tables/rows from the evidence into the section, keeping "
         "addresses and eas exactly.\n"
-        "- Every claim MUST include (source: <engine>) plus an address, rule or "
-        "table row.\n"
+        "- Every factual claim sentence and every evidence-table row MUST include "
+        "(source: <engine>) plus an address, rule or table row.\n"
+        "- Cross-section context is draft text for consistency only; cite the "
+        "original tool artifact and row, never cross-section prose.\n"
         "- Quote registry paths and IoCs in FULL. Never abbreviate a path with "
         "'...' -- an unverifiable indicator is worse than none.\n"
         "- If a tool did not run or produced nothing, write 'not observed'. "
@@ -846,6 +856,7 @@ def run_section_based_publish(sha: str, tools_results: dict,
          "pass1_results": [...], "pass2_results": [...]}
     """
     os.environ.setdefault("_SECTION_SHA", sha)
+    status_artifact = persist_dynamic_analysis_status(sha)
 
     def _run(name, pass1_results, pass_num):
         import time as _t
@@ -953,6 +964,13 @@ def run_section_based_publish(sha: str, tools_results: dict,
         print(f"[section_publisher] master_v3: redacted model name(s) "
               f"{_master_models}", flush=True)
     (out_dir / "02-REPORT-MASTER-v3.md").write_text(report_markdown)
+    master_quality = evaluate_report_markdown(
+        report_markdown,
+        required_sections=REPORT_MASTER_SECTIONS,
+        source="llm_judge",
+        min_total_chars=1500,
+        label="master_v3",
+    )
 
     # Backward compatibility: also write at logs root
     root_dir = case_dir(sha)
@@ -960,7 +978,9 @@ def run_section_based_publish(sha: str, tools_results: dict,
     (root_dir / "section-results-v3.json").write_text(
         json.dumps({"sections": section_results, "timings": section_timings,
                     "pass1_count": len(pass1_results), "pass2_count": len(pass2_results),
-                    "master_v3_indicator_scrub": _master_ioc_scrub},
+                    "master_v3_indicator_scrub": _master_ioc_scrub,
+                    "master_v3_quality": master_quality,
+                    "dynamic_analysis_status": status_artifact},
                    indent=2, default=str)
     )
 
@@ -974,6 +994,7 @@ def run_section_based_publish(sha: str, tools_results: dict,
         "pass2_results": pass2_results,
         "report_markdown": report_markdown,
         "report_size": len(report_markdown),
+        "master_quality": master_quality,
         "technical": technical,
     }
 
@@ -1412,7 +1433,7 @@ if __name__ == "__main__":
         for s in result["sections"]
     )
     tech_ok = bool((tech or {}).get("ok"))
-    master_ok = len(result.get("report_markdown") or "") >= 1500 and not section_fail
+    master_ok = bool((result.get("master_quality") or {}).get("ok")) and not section_fail
     ok = master_ok and tech_ok and llm_ok_n > 0
     print(f"[section_publisher] complete ok={ok} master_ok={master_ok} tech_ok={tech_ok}")
     raise SystemExit(0 if ok else 1)

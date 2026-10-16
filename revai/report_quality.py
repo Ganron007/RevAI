@@ -71,11 +71,12 @@ def normalize_heading_text(s: str) -> str:
 
 
 def heading_present(md: str, section: str) -> bool:
-    """True if section title appears (ASCII-normalized, case-insensitive)."""
-    hay = normalize_heading_text(md).lower()
-    full = normalize_heading_text(section).lower()
-    key = full.split(".", 1)[-1].strip() if full[:1].isdigit() else full
-    return key in hay or full in hay
+    """True if an exact Markdown heading exists outside a fenced code block."""
+    wanted = _section_heading_key(section)
+    return any(
+        _section_heading_key(title) == wanted
+        for _, title in _markdown_heading_lines(md or "")
+    )
 
 
 def missing_sections(md: str, required: list[str]) -> list[str]:
@@ -98,18 +99,14 @@ def _section_bodies(md: str, required: list[str]) -> dict[str, str]:
         if key:
             wanted.setdefault(key, section)
 
-    # A section boundary must be a Markdown heading on its own line. This
-    # deliberately avoids the old loose substring fallback, which could match
-    # references inside paragraphs, tables, or evidence quotes.
+    # A section boundary must be an exact Markdown heading outside fenced
+    # code. This avoids references inside prose, tables, evidence quotes, or
+    # code examples making a missing section appear present.
     positions: list[tuple[int, str]] = []
-    offset = 0
-    for line in norm_md.splitlines(keepends=True):
-        match = re.match(r"^\s{0,3}#{1,6}\s+(.+?)\s*#*\s*$", line.rstrip("\r\n"))
-        if match:
-            section = wanted.get(_section_heading_key(match.group(1)))
-            if section is not None:
-                positions.append((offset, section))
-        offset += len(line)
+    for offset, title in _markdown_heading_lines(norm_md):
+        section = wanted.get(_section_heading_key(title))
+        if section is not None:
+            positions.append((offset, section))
 
     # If a required heading appears more than once, the first occurrence owns
     # its body. Duplicates remain visible to other report-quality checks.
@@ -125,6 +122,29 @@ def _section_bodies(md: str, required: list[str]) -> dict[str, str]:
         end = unique_positions[i + 1][0] if i + 1 < len(unique_positions) else len(norm_md)
         bodies[name] = norm_md[start:end]
     return bodies
+
+
+def _markdown_heading_lines(md: str):
+    """Yield (offset, title) pairs for Markdown headings outside fenced code."""
+    offset = 0
+    fence_char: str | None = None
+    fence_len = 0
+    for line in (md or "").splitlines(keepends=True):
+        bare = line.rstrip("\r\n")
+        fence = re.match(r"^ {0,3}(`{3,}|~{3,})(.*)$", bare)
+        if fence:
+            marker = fence.group(1)
+            if fence_char is None:
+                fence_char, fence_len = marker[0], len(marker)
+            elif marker[0] == fence_char and len(marker) >= fence_len and not fence.group(2).strip():
+                fence_char, fence_len = None, 0
+            offset += len(line)
+            continue
+        if fence_char is None:
+            match = re.match(r"^ {0,3}#{1,6}\s+(.+?)\s*#*\s*$", bare)
+            if match:
+                yield offset, match.group(1)
+        offset += len(line)
 
 
 def _section_heading_key(title: str) -> str:
@@ -190,7 +210,9 @@ REPORT_STYLE_CONTRACT = """REPORT STYLE CONTRACT (mandatory — expert-report co
 4. INFERENCE FLAGGED AS INFERENCE: hedged conclusions use 'likely', 'possibly',
    'appears', 'we assess' — never assert unproven inference as fact.
 5. EVIDENCE TRACEABILITY: every claim carries (source: <engine>) — a reader
-   must be able to walk any statement back to a tool result.
+   must be able to walk any statement back to a tool result. Attach the source
+   to each claim sentence or evidence-table row; a citation elsewhere in the
+   paragraph or a reference to another report section does not ground it.
 6. CONFIDENCE & UNKNOWNS: state explicitly what we don't know and why (tool
    absent, packed, no runtime trigger). Unknowns live in their own
    section/paragraph with reasoning.
@@ -295,6 +317,10 @@ def evaluate_report_markdown(
         style["citation_count"] = (style_md or "").lower().count("(source:") + (
             style_md or ""
         ).lower().count("{source:")
+        uncited_claims = _uncited_report_claims(style_md or "")
+        style["uncited_claim_count"] = len(uncited_claims)
+        style["uncited_claim_examples"] = uncited_claims[:8]
+        style["claim_citations_ok"] = not uncited_claims
         content = [l for l in (style_md or "").splitlines() if l.strip()]
         in_fence = False
         prose = 0
@@ -394,6 +420,10 @@ def evaluate_report_markdown(
             issues.append(
                 f"{label}:low_citations:{style['citation_count']}<{min_cites}"
             )
+        if not style["claim_citations_ok"]:
+            issues.append(
+                f"{label}:uncited_claims:{style['uncited_claim_count']}"
+            )
     ok = not issues
     return {
         "ok": ok,
@@ -461,8 +491,10 @@ _DYN_FRIDA_NEGATION_RE = re.compile(
     r".{0,45}\b(?:was|were|is|are)\s+not\b"
     r"|\bneither\b.{0,70}\bfrida\b.{0,55}\b(?:was|were|is|are)\s+"
     r"(?:not\s+)?(?:performed|invoked|run|executed|recorded|captured)\b"
-    r"|\b(?:frida|both tools?)\b.{0,80}\b(?:zero|0|no)\s+"
-    r"(?:runtime\s+)?events?\b",
+    r"|\b(?:frida|both tools?)\b.{0,45}\b(?:recorded|captured|observed|"
+    r"produced|returned|generated|yielded|had)\s+(?:zero|0|no)\s+"
+    r"(?:runtime\s+)?events?\b"
+    r"|\bfrida\s*[:\-]\s*(?:zero|0|no)\s+(?:runtime\s+)?events?\b",
     re.IGNORECASE,
 )
 
@@ -499,6 +531,9 @@ _DYN_EXECUTED_RE = re.compile(
     r"|(?:frida .{0,40}(?:instrumentation|trace|hook) .{0,30}"
     r"(?:was|were|invoked|ran|executed|recorded))"
     r"|(?:emulation (?:oracle )?(?:completed|succeeded|executed|ran|produced a trace))"
+    r"|(?:(?:winre|flare[- ]?vm)[^\n.]{0,50}(?:detonation ran|sample launch confirmed|"
+    r"confirmed sample launch|sample launched|launch confirmed))"
+    r"|(?:sample (?:was )?launched[^\n.]{0,35}(?:winre|flare[- ]?vm))"
     r"|(?:both invoked during)",
     re.IGNORECASE,
 )
@@ -852,6 +887,8 @@ def _cross_report_consistency(
     tech3_md: str,
     file_entropy: float | None,
     dyn_status: dict | None = None,
+    *,
+    master_v3_md: str = "",
 ) -> dict[str, Any]:
     """Deterministic cross-report + fact-vs-file consistency checks.
 
@@ -870,7 +907,9 @@ def _cross_report_consistency(
     violations: list[str] = []
     checks: dict[str, Any] = {"file_entropy": file_entropy}
 
-    all_md = "\n".join([master_md or "", tech2_md or "", tech3_md or ""])
+    all_md = "\n".join([
+        master_md or "", master_v3_md or "", tech2_md or "", tech3_md or "",
+    ])
     raw_any_dyn = (None if dyn_status is None
                    else dyn_status.get("any_dynamic_performed"))
     any_dyn = None if raw_any_dyn is None else bool(raw_any_dyn)
@@ -904,15 +943,21 @@ def _cross_report_consistency(
             violations.append("cross_report:dynamic_execution_status_unverified")
 
     mv = _panel_final_verdict(master_md)
+    mv3 = _panel_final_verdict(master_v3_md)
     tv = _panel_final_verdict(tech2_md) or _panel_final_verdict(tech3_md)
     checks["master_verdict"] = mv
+    checks["master_v3_verdict"] = mv3
     checks["tech_verdict"] = tv
     if mv and tv and mv != tv:
         violations.append(
             f"cross_report:master_tech_verdict_mismatch(master={mv}, technical={tv})")
+    if mv3 and tv and mv3 != tv:
+        violations.append(
+            f"cross_report:master_v3_tech_verdict_mismatch(master={mv3}, technical={tv})")
     if file_entropy is not None:
         for md, label in (
             (master_md, "master"),
+            (master_v3_md, "master_v3"),
             (tech2_md, "technical_v2"),
             (tech3_md, "technical_v3"),
         ):
@@ -994,6 +1039,16 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str, *,
         min_total_chars=2000,
         label="master_v2",
     )
+    r_master_v3 = evaluate_report_markdown(
+        master_v3,
+        required_sections=REPORT_MASTER_SECTIONS or [],
+        source="llm_judge" if master_v3 else None,
+        min_total_chars=1500,
+        label="master_v3",
+    )
+    if not REPORT_MASTER_SECTIONS:
+        r_master_v3["ok"] = bool(master_v3)
+        r_master_v3["issues"] = [] if master_v3 else ["master_v3:import_or_empty"]
     # If REPORT_MASTER_SECTIONS empty (import fail), skip heading checks
     if not REPORT_MASTER_SECTIONS:
         r_master["ok"] = bool(master_md) and not source_is_fallback(master_j.get("source"))
@@ -1035,6 +1090,7 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str, *,
                 _report["ok"] = not _report["issues"]
 
     checks["master_v2"] = r_master
+    checks["master_v3"] = r_master_v3
     checks["technical_v2"] = r_tech2
     checks["technical_v3"] = r_tech3
     checks["master_v3_present"] = len(master_v3) >= 1500
@@ -1050,7 +1106,8 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str, *,
     except Exception:
         _dyn_status = None
     consistency = _cross_report_consistency(
-        master_md, tech2_md, tech3_md, _entropy, _dyn_status)
+        master_md, tech2_md, tech3_md, _entropy, _dyn_status,
+        master_v3_md=master_v3)
     checks["cross_report_consistency"] = consistency
     for _viol in consistency.get("violations") or []:
         issues.append(_viol)
@@ -1098,7 +1155,7 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str, *,
             checks["deep_sql_deep_unavailable"] = ag.get("sql_deep_unavailable") or "sql_failed"
             checks["deep_sql_deep_fail_reason"] = (ag.get("sql_deep_fail_reason") or "")[:160]
 
-    for key in ("master_v2", "technical_v2", "technical_v3"):
+    for key in ("master_v2", "master_v3", "technical_v2", "technical_v3"):
         if not checks[key].get("ok"):
             issues.extend(checks[key].get("issues") or [f"{key}:failed"])
     if not checks["master_v3_present"]:
@@ -1498,6 +1555,100 @@ def _looks_like_domain(value: str) -> bool:
     tld = plain.rsplit(".", 1)[-1].lower()
     return tld in _KNOWN_TLDS
 
+
+_REPORT_SOURCE_MARKER_RE = re.compile(r"[({\[]\s*source\s*:", re.IGNORECASE)
+_REPORT_METADATA_PREFIX_RE = re.compile(
+    r"^(?:>\s*)?(?:\*\*(?:sha-?256|generated_at|pipeline|source|run_id)"
+    r"\*\*\s*:|_(?:generated|pipeline)\b|<!--\s*section:|"
+    r"\*\*revai provenance\b|_\(local build\b)",
+    re.IGNORECASE,
+)
+
+
+def _uncited_report_claims(markdown: str) -> list[str]:
+    """Return narrative assertions that lack a nearby source citation.
+
+    Tables may carry a dedicated Source, Citation, or Evidence column instead
+    of an inline marker. Fenced evidence dumps are excluded because they are
+    source material, while narrative that interprets them must remain cited.
+    This is a structural coverage check; it does not claim that a citation
+    semantically entails the sentence.
+    """
+    if not markdown:
+        return []
+
+    lines: list[str] = []
+    in_fence = False
+    for line in markdown.splitlines():
+        if line.lstrip().startswith("```"):
+            in_fence = not in_fence
+            continue
+        if not in_fence:
+            lines.append(line)
+
+    uncited: list[str] = []
+    table_source_columns: list[int] = []
+    in_table = False
+    for raw_line in lines:
+        line = raw_line.strip()
+        if not line:
+            in_table = False
+            table_source_columns = []
+            continue
+        if line.startswith("|"):
+            cells = [cell.strip() for cell in line.strip("|").split("|")]
+            if not in_table:
+                headers = [re.sub(r"[*`_]", "", cell).strip().lower()
+                           for cell in cells]
+                table_source_columns = [
+                    i for i, header in enumerate(headers)
+                    if any(term in header for term in (
+                        "source", "citation", "evidence",
+                    ))
+                ]
+                in_table = True
+                continue
+            if all(re.fullmatch(r"\s*:?-{2,}:?\s*", cell) for cell in cells):
+                continue
+            source_value = any(
+                i < len(cells) and cells[i].strip(" `*_—-")
+                for i in table_source_columns
+            )
+            if not source_value and not _REPORT_SOURCE_MARKER_RE.search(line):
+                excerpt = re.sub(r"\s+", " ", line)
+                uncited.append(excerpt[:240])
+            continue
+
+        in_table = False
+        table_source_columns = []
+        if line.startswith("#") or line.startswith("<!--"):
+            continue
+        if _REPORT_METADATA_PREFIX_RE.match(line):
+            continue
+
+        # Keep a citation following terminal punctuation attached to its claim
+        # ("The sample ... . (source: tool)") instead of counting it as an
+        # uncited sentence followed by a citation-only fragment.
+        sentences = re.split(
+            r"(?<=[.!?])\s+(?![({\[]\s*source\s*:)|\n+", raw_line.strip(),
+            flags=re.IGNORECASE,
+        )
+        for sentence in sentences:
+            claim = re.sub(r"\s+", " ", sentence).strip()
+            claim = re.sub(r"^(?:[-*+]\s+|>\s*)+", "", claim)
+            if len(claim) < 25 or _REPORT_SOURCE_MARKER_RE.search(claim):
+                continue
+            if _REPORT_METADATA_PREFIX_RE.match(claim):
+                continue
+            if claim.lower().startswith((
+                "this report ", "this section ", "in this section ",
+                "all citations ", "citation format ", "the following sections ",
+                "the following tables reproduce ", "every row is cited ",
+            )):
+                continue
+            uncited.append(claim[:240])
+    return uncited
+
 #: Evidence files worth searching, most specific first. Anything absent is
 #: skipped, so a scripted run without a dynamic pack still verifies statically.
 _EVIDENCE_FILES = (
@@ -1506,6 +1657,12 @@ _EVIDENCE_FILES = (
     "deep_dive/02-signals.json",
     "deep_dive/agentic_deep_dive.json",
     "quick_scan/00-tools-raw.json",
+    "dynamic-analysis-status.json",
+    # The YARA-generation stage records the sample's imphash and emitted rule
+    # metadata here. Reports cite that artifact for exact hashes and detection
+    # claims, so excluding it made the scrubber replace a valid imphash with an
+    # "unobserved" marker (seen on the 2026-10-16 integrated report run).
+    "rule.yara.json",
     "iocs.json",
     "verdict.json",
     "evidence-pack.md",

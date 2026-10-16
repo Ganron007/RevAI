@@ -7058,6 +7058,24 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
     return out
 
 
+def persist_dynamic_analysis_status(sha: str,
+                                    logs_dir: Path | None = None) -> dict:
+    """Write the artifact-derived run status as a dedicated citable record."""
+    status = dynamic_analysis_status(sha, logs_dir=logs_dir)
+    artifact = {
+        "schema_version": 1,
+        "sha256": sha,
+        "summary": "run-scoped status",
+        "sentence": str(status.get("sentence") or ""),
+        "status": status,
+    }
+    path = case_dir(sha)
+    path.mkdir(parents=True, exist_ok=True)
+    (path / "dynamic-analysis-status.json").write_text(
+        json.dumps(artifact, indent=2, default=str), encoding="utf-8")
+    return artifact
+
+
 #: Provenance tiers for an extracted capability (#56 b).
 PROV_OBSERVED = "observed"    # determination backed by cited tool evidence
 PROV_INFERRED = "inferred"    # investigated, but no determination or no evidence
