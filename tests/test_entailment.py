@@ -186,6 +186,26 @@ def test_the_pack_never_renders_the_verdict_source_as_a_citable_pair():
         "a plain source bullet next to summary is the pairing a writer copies")
 
 
+def test_the_pack_excludes_verdict_cross_engine_guidance_from_evidence():
+    """Cross-engine notes are LLM-authored guidance, not observed evidence.
+
+    Including them in the evidence pack led the report writer to publish the
+    instruction as a fact, which then tripped the dynamic consistency gate.
+    Keep the source JSON intact, but do not expose this field as evidence.
+    """
+    import v2_lib
+    guidance = (
+        "If Speakeasy/Frida show zero events, write 'not observed' — "
+        "never invent runtime behavior."
+    )
+    pack = v2_lib.build_technical_evidence_block(
+        {"sha256": "a" * 64},
+        {"verdict": "suspicious", "cross_engine_notes": guidance},
+        None, None, {}, [])
+    assert "cross_engine_notes" not in pack
+    assert guidance not in pack
+
+
 # ------------------------------------------------------------------- the gate
 def test_the_gate_fires_on_a_circular_citation(tmp_path):
     case = _case(tmp_path, {

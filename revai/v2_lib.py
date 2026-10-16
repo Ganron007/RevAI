@@ -7773,7 +7773,7 @@ def build_technical_evidence_block(
         )
         for k in (
             "verdict", "score", "family_guess", "confidence", "agreement",
-            "numeric_score", "cross_engine_notes", "summary", "source", "model",
+            "numeric_score", "summary", "source", "model",
         ):
             v = verdict.get(k)
             if v not in (None, ""):
