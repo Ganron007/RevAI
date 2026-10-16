@@ -498,6 +498,21 @@ def test_report_style_does_not_require_citations_for_provenance_metadata() -> No
     assert _uncited_report_claims(md) == []
 
 
+def test_report_style_accepts_parenthesized_and_comma_separated_citation_locators() -> None:
+    from report_quality import _uncited_report_claims
+
+    md = (
+        "The import table contains LoadLibraryA "
+        "(source: malcat, query_or_table: Imports (5), "
+        "row_or_rule: kernel32.LoadLibraryA).\n"
+        "Six packer rules matched "
+        "(source: malcat, query_or_table: YARA (info, 10 total), "
+        "row_or_rule: UPX, upx_290_lzma_02).\n"
+    )
+
+    assert _uncited_report_claims(md) == []
+
+
 # ---------------------------------------------------------------------------
 # 11. G2 — deep-dive transparent tool retry (fake registry, both directions).
 # ---------------------------------------------------------------------------

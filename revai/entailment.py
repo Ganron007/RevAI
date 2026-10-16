@@ -28,34 +28,10 @@ import re
 from pathlib import Path
 from typing import Any
 
-#: A citation as the reports emit it: (source: <engine>, query_or_table: <x>,
-#: row_or_rule: <y>) or the {source: ...} variant. Groups are optional because
-#: models emit partial citations.
-#: The row group tolerates commas INSIDE quotes and parens: a citation reads
-#: `row_or_rule: 'packed with UPX' -> T1027.002 (Software Packing), ...` and
-#: stopping at the first comma truncated it to `load_library (T1129`, which then
-#: resolved nowhere. That is the checker truncating the evidence, not the report
-#: fabricating it -- and 12 of packed_rook's 16 unresolved rows were exactly
-#: that. A quoted string wins outright; otherwise a run that may contain one
-#: balanced parenthetical.
-#:
-#: The house format ENDS with `, why: <text>`, and the closer used to be
-#: demanded immediately after row_or_rule -- so a citation only parsed when an
-#: in-row `)` happened to sit at the right spot. Measured on wiper_wipe32p's
-#: technical report: 244 raw citations, 32 extracted, and 18 of the 21
-#: prose-citing rows were silently dropped there (an unquoted row
-#: `size=20480, why: ...`, a quoted row whose parens contain a comma, ...),
-#: so the gate certified a report whose largest defect class it could not see.
-#: The optional why-tail lets the closer land inside the why-text instead.
-_CITE_RE = re.compile(
-    r"[({\[]\s*source:\s*(?P<source>[^,}\])]+)"
-    r"(?:,\s*query_or_table:\s*(?P<query>[^,}\])]+))?"
-    r"(?:,\s*row_or_rule:\s*(?P<row>\"[^\"]*\"|'[^']*'|[^,}\]]*?"
-    r"(?:\([^)]*\)[^,}\]]*)*))?"
-    r"(?:,\s*why:[^)}\]]*)?"
-    r"\s*[)}\]]",
-    re.IGNORECASE,
-)
+from citation_syntax import parse_citation_annotations
+
+# Citation field values are parsed by citation_syntax, which tracks balanced
+# delimiters instead of treating punctuation inside query/row locators as syntax.
 
 #: An assertion worth checking: a sentence that claims something about the
 #: sample and carries at least one citation.
@@ -117,8 +93,9 @@ def extract_claims(md: str, limit: int | None = None) -> list[dict]:
         sent = sent.strip()
         if len(sent) < 25:
             continue
-        m = _CITE_RE.search(sent)
-        if not m:
+        citations = parse_citation_annotations(sent)
+        citation = next((item for item in citations if item.get("source")), None)
+        if not citation:
             continue
         low = sent.lower()
         if any(w in low[:60] for w in _ANALYSIS_WORDS):
@@ -136,9 +113,9 @@ def extract_claims(md: str, limit: int | None = None) -> list[dict]:
             continue
         out.append({
             "text": sent[:400],
-            "source": (m.group("source") or "").strip(),
-            "query": (m.group("query") or "").strip() or None,
-            "row": (m.group("row") or "").strip() or None,
+            "source": str(citation.get("source") or "").strip(),
+            "query": str(citation.get("query_or_table") or "").strip() or None,
+            "row": str(citation.get("row_or_rule") or "").strip() or None,
             "index": idx,
         })
         idx += 1

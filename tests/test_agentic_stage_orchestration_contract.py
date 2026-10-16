@@ -79,6 +79,35 @@ def test_agentic_publish_stages_use_the_shared_timeout_and_disable_timeout_retri
     ]
 
 
+def test_agentic_report_stages_are_single_shot_even_if_planner_repeats_them(
+    monkeypatch,
+):
+    calls = []
+
+    def record(self, name, cmd, timeout, *, retry_timeouts=True):
+        calls.append(name)
+        return {"ok": True, "rc": 0}
+
+    monkeypatch.setattr(so.StageRunner, "_prepare_publish", lambda self, stage: None)
+    monkeypatch.setattr(so.StageRunner, "_run", record)
+    events = []
+    runner = so.StageRunner(SHA, None, events)
+
+    first_publish = runner.run_publish()
+    first_section_publish = runner.run_section_publish()
+    repeated_publish = runner.run_publish()
+    repeated_section_publish = runner.run_section_publish()
+
+    assert first_publish["ok"] and first_section_publish["ok"]
+    assert repeated_publish["ok"] is False and repeated_publish["rc"] == 1
+    assert repeated_section_publish["ok"] is False and repeated_section_publish["rc"] == 1
+    assert calls == ["run_publish", "run_section_publish"]
+    assert [event["tool"] for event in events] == [
+        "run_publish", "run_section_publish",
+    ]
+    assert all("duplicate" in event["failure_reason"] for event in events)
+
+
 def test_publish_stages_reconcile_deep_verdict_before_reading_evidence(
     monkeypatch, tmp_path,
 ):

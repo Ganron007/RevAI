@@ -16,6 +16,8 @@ import unicodedata
 from pathlib import Path
 from typing import Any
 
+from citation_syntax import has_citation_locator, strip_citation_annotations
+
 # Stub / pointer prose that means the LLM narrative was discarded
 _STUB_PATTERNS = (
     r"see\s+\*\*malcat",
@@ -841,18 +843,24 @@ def _dynamic_absence_claim(md: str, dyn_status: dict) -> str | None:
         # probe) or an unexecuted nested payload (the embedded PE) while the
         # outer sample was run through WinRE. Remove only those scoped clauses;
         # a separate blanket denial in the same sentence must still fail.
-        dynamic_claim_text = _DYN_META_NEGATION_RE.sub("", sentence)
+        # Evidence locator values can contain words such as "dynamic analysis"
+        # and "captured". They are not report prose and must not participate in
+        # the semantic execution check (e.g. "cannot assert ... no runtime
+        # behaviour (source: dynamic-analysis-status, ... runtime events
+        # captured)").
+        prose_sentence = strip_citation_annotations(sentence)
+        dynamic_claim_text = _DYN_META_NEGATION_RE.sub("", prose_sentence)
         dynamic_claim_text = _DYN_META_AFFIRMATION_RE.sub("", dynamic_claim_text)
         dynamic_claim_text = _DYN_INNER_PAYLOAD_GAP_RE.sub("", dynamic_claim_text)
         dynamic_claim_text = _DYN_NEGATED_NEGATION_RE.sub("", dynamic_claim_text)
         if _DYN_NEGATION_RE.search(dynamic_claim_text):
             return sentence.strip()[:180]
         if (frida_ran and not static_probe_scoped_frida_absence
-                and _DYN_FRIDA_NEGATION_RE.search(sentence)):
+                and _DYN_FRIDA_NEGATION_RE.search(prose_sentence)):
             return sentence.strip()[:180]
-        if winre_ran and _DYN_WINRE_NEGATION_RE.search(sentence):
+        if winre_ran and _DYN_WINRE_NEGATION_RE.search(prose_sentence):
             return sentence.strip()[:180]
-        if pcap_present and _DYN_PCAP_NEGATION_RE.search(sentence):
+        if pcap_present and _DYN_PCAP_NEGATION_RE.search(prose_sentence):
             return sentence.strip()[:180]
     return None
 
@@ -1584,12 +1592,6 @@ def _looks_like_domain(value: str) -> bool:
     return tld in _KNOWN_TLDS
 
 
-_REPORT_CITATION_LOCATOR_RE = re.compile(
-    r"[({\[]\s*source\s*:[^,}\])]+,\s*"
-    r"(?:query_or_table\s*:[^,}\])]+,\s*)?"
-    r"row_or_rule\s*:\s*(?:\"[^\"]+\"|'[^']+'|[^,}\])]+)",
-    re.IGNORECASE,
-)
 _REPORT_METADATA_PREFIX_RE = re.compile(
     r"^(?:>\s*)?(?:\*\*(?:sha-?256|generated_at|pipeline|source|run_id)"
     r"\*\*\s*:|_(?:generated|pipeline)\b|<!--\s*section:|"
@@ -1649,7 +1651,7 @@ def uncited_report_claims(markdown: str) -> list[str]:
                 i < len(cells) and cells[i].strip(" `*_—-")
                 for i in table_source_columns
             )
-            if not source_value and not _REPORT_CITATION_LOCATOR_RE.search(line):
+            if not source_value and not has_citation_locator(line):
                 excerpt = re.sub(r"\s+", " ", line)
                 uncited.append(excerpt[:240])
             continue
@@ -1676,7 +1678,7 @@ def uncited_report_claims(markdown: str) -> list[str]:
             # locate the observation. Require a concrete row/rule locator in
             # narrative citations; table rows may still use a dedicated source
             # column because each row itself is the observed item.
-            if len(claim) < 25 or _REPORT_CITATION_LOCATOR_RE.search(claim):
+            if len(claim) < 25 or has_citation_locator(claim):
                 continue
             if _REPORT_METADATA_PREFIX_RE.match(claim):
                 continue

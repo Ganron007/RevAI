@@ -743,6 +743,28 @@ def test_gate_allows_absence_of_one_api_event_after_positive_runtime_count():
                    for violation in result["violations"]), result
 
 
+def test_gate_ignores_dynamic_words_inside_a_citation_locator():
+    st = {
+        "any_dynamic_performed": True,
+        "winre": {"detonation_ran": True},
+        "frida_runtime": {"observed_runtime_events": True, "events": 133},
+        "packet_capture": {"present": True, "files": 1},
+    }
+    report = (
+        "Because the WinRE Frida runtime captured 133 events and one packet-"
+        "capture file is present, we cannot assert that the sample produced no "
+        "runtime behaviour (source: dynamic-analysis-status, "
+        "query_or_table: run-scoped status block, row_or_rule: "
+        "\"WinRE Frida runtime: runtime events captured (133)\"; "
+        "\"packet capture: 1 capture file(s) present\")."
+    )
+
+    result = RQ._cross_report_consistency("", "", report, None, st)
+
+    assert not any("dynamic_performed_but_report_says_none" in violation
+                   for violation in result["violations"]), result
+
+
 # ------------------------------------------------------------- section injection
 def test_the_dynamic_section_prompt_carries_the_status(monkeypatch):
     """The section prompt must receive the authoritative status line, so the

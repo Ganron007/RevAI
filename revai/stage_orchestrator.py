@@ -235,8 +235,36 @@ class StageRunner:
         self.sha = sha
         self.sample = sample
         self.events = events
+        self._report_stage_calls: dict[str, int] = {}
         self.run_log = case_dir(sha) / "orchestrator.log"
         self.run_log.parent.mkdir(parents=True, exist_ok=True)
+
+    def _claim_report_stage(self, name: str) -> dict[str, Any] | None:
+        """Make each expensive report publisher single-shot per pipeline run.
+
+        LLM tool-call instructions are advisory. A duplicate call must not
+        silently regenerate an entire report set, overwrite the first attempt,
+        and turn a false-positive audit into another hour of model traffic.
+        Individual publisher calls keep their own bounded section-level repair.
+        """
+        attempt = self._report_stage_calls.get(name, 0) + 1
+        self._report_stage_calls[name] = attempt
+        if attempt == 1:
+            return None
+        event = {
+            "type": "tool_result", "tool": name,
+            "cmd": ["single_shot_report_stage_guard"],
+            "rc": 1, "ok": False, "elapsed_s": 0.0,
+            "ts": _utc(), "attempt": attempt, "timed_out": False,
+            "artifacts_written": False,
+            "failure_reason": (
+                f"duplicate {name} invocation blocked; report stages run once "
+                "per pipeline execution and must not overwrite their first artifacts"
+            ),
+        }
+        self.events.append(event)
+        print(f"[orchestrator] {event['failure_reason']}", flush=True)
+        return {key: value for key, value in event.items() if key != "type"}
 
     def _run(
         self,
@@ -521,6 +549,9 @@ class StageRunner:
         return {"ok": True, "rc": 0, "soft": True, "tool": "run_winre_dynamic", **out}
 
     def run_publish(self) -> dict:
+        blocked = self._claim_report_stage("run_publish")
+        if blocked is not None:
+            return blocked
         preflight = self._prepare_publish("run_publish")
         if preflight is not None:
             return preflight
@@ -546,6 +577,9 @@ class StageRunner:
         )
 
     def run_section_publish(self) -> dict:
+        blocked = self._claim_report_stage("run_section_publish")
+        if blocked is not None:
+            return blocked
         preflight = self._prepare_publish("run_section_publish")
         if preflight is not None:
             return preflight
@@ -879,8 +913,9 @@ def _build_lc_tools(runner: StageRunner, need_intake: bool) -> list:
         runner.check_quality,
         "Stage 8 REQUIRED: hard quality gate on TECHNICAL/MASTER sources, stubs, "
         "deep checklist_ok/sql_deep_ok, and tool rc. GREEN only if quality_green=true. "
-        "If issues mention fallback/stubs/llm_incomplete — re-run run_publish then "
-        "run_section_publish then check_quality again (max 1 retry).",
+        "Report stages are single-shot in this pipeline execution; do not call either "
+        "publisher again. Publisher-level section repairs are already bounded and "
+        "recorded. If output or audit is red, preserve the failure and stop.",
     )
     _add(
         "run_depth",
@@ -1005,7 +1040,7 @@ def run_langgraph_orchestrator(sample: Path | None, sha: str | None) -> dict:
 Sample path: {sample}
 SHA256: {sha}
 Need intake: {need_intake}
-Models: planner/agents={planner} (flash) · publish/section judgment={judgment} (pro)
+Models: planner/agents={planner}; publish/section judgment={judgment}
 
 Policy (non-negotiable — industry agentic + deterministic gates):
 1. Call stage tools in this order (do not skip early stages):
@@ -1018,16 +1053,16 @@ Policy (non-negotiable — industry agentic + deterministic gates):
    appears between quick scan and deep dive so the deep-dive prompt receives its
    evidence. Do not call optional stages absent from the plan. RAG is off. Evidence = tool outputs + scorecard only.
 6. rc==0 is NOT success. After run_audit you MUST call check_quality.
-7. If check_quality.ok is false (fallback / stub sections / llm_incomplete / checklist fail):
-   you may retry run_publish → run_section_publish → check_quality ONCE, then stop,
-   unless either publish tool reports timed_out=true; those report stages are not
-   resumable and MUST NOT be invoked again after a timeout.
+7. Report publishers are single-shot per pipeline execution. Never call
+   run_publish or run_section_publish twice, whether the first call succeeded,
+   failed, or timed out. Their own bounded section repairs are recorded in their
+   artifacts. If check_quality.ok is false, preserve the failure and stop.
 8. FINAL JSON only when done:
    {{"status":"ok|hitl_stop|failed","sha256":"...","stages_run":["..."],
      "all_green":true|false,"quality_green":true|false,"issues":[],"summary":"..."}}
    Set quality_green from check_quality. Never invent quality_green=true.
-9. BUDGET DISCIPLINE: you have a limited tool-call budget. Converge — never re-run a
-   stage that already succeeded (rc=0); after a successful retry, proceed to check_quality.
+9. BUDGET DISCIPLINE: never repeat a stage. After the first report attempt, run
+   audit and check_quality once, then report the result.
    If run_depth appears in the ordered plan, call it once after check_quality, then emit
    FINAL JSON. Wasting calls on redundant stage re-runs is a failure mode.
 
@@ -1038,7 +1073,8 @@ Use tools. Do not claim success without check_quality.ok=true.
     # intake+7 stages + observes ≈ need generous recursion
     # recursion budget from run profile (REVAI_RUN_PROFILE / REVAI_ORCH_RECURSION_LIMIT)
     recursion_limit = int(run_profile().get("recursion_limit") or 40)
-    t0 = time.time()
+    started_at = _utc()
+    t0 = time.monotonic()
     print(
         f"[orchestrator] LangGraph ReAct invoke planner={planner} tools={len(lc_tools)} "
         f"recursion_limit={recursion_limit}",
@@ -1143,13 +1179,28 @@ Use tools. Do not claim success without check_quality.ok=true.
             "error": _reconciliation.get("reason"), "ts": _utc(),
         })
     elif _reconciliation.get("changed"):
-        print(
-            "[orchestrator] late verdict reconciliation detected; "
-            "regenerating reports before final audit",
-            flush=True,
+        already_published = any(
+            e.get("type") == "tool_result"
+            and e.get("tool") in ("run_publish", "run_section_publish")
+            for e in events
         )
-        runner.run_publish()
-        runner.run_section_publish()
+        if already_published:
+            events.append({
+                "type": "error", "tool": "verdict_reconciliation",
+                "error": (
+                    "deep verdict changed after report generation; preserving the "
+                    "stale-output failure instead of rerunning publishers on this SHA"
+                ),
+                "ts": _utc(),
+            })
+        else:
+            print(
+                "[orchestrator] late verdict reconciliation detected before "
+                "publication; generating reports from reconciled evidence",
+                flush=True,
+            )
+            runner.run_publish()
+            runner.run_section_publish()
 
     # Part B — mandatory publish/section enforcement (planner may skip publish;
     # the audit then fails on missing reports with no retry path). Same pattern
@@ -1166,38 +1217,16 @@ Use tools. Do not claim success without check_quality.ok=true.
         runner.run_publish()
         runner.run_section_publish()
 
-    # Part C — bounded deterministic recovery on audit failures the auto-correct
-    # cannot fix (engine_citation_ok=False with corrected=0, R18 class). Re-publish
-    # once with a fresh LLM call, re-section, re-audit. Recorded; bounded to one.
-    _recovery_run = False
+    # Part C — do not replay full report stages after the audit. The publishers
+    # already own bounded section-level repair; a complete rerun can overwrite
+    # the first artifacts and multiply model latency without fixing the cause.
     if aj.exists():
         try:
             _audit_now = json.loads(aj.read_text())
             _pub = (_audit_now.get("stages") or {}).get("publish") or {}
             _eng = _pub.get("engine_citation") or {}
-            publish_timeout_seen = any(
-                e.get("type") == "tool_result"
-                and e.get("tool") in ("run_publish", "run_section_publish")
-                and e.get("timed_out")
-                for e in events
-            )
             if (
                 not _pub.get("ok")
-                and not _eng.get("ok", True)
-                and int(_eng.get("corrections", {}).get("corrected") or 0) == 0
-                and not publish_timeout_seen
-            ):
-                print(
-                    "[orchestrator] engine_citation unrecoverable by auto-correct — "
-                    "deterministic re-publish (bounded recovery)",
-                    flush=True,
-                )
-                runner.run_publish()
-                runner.run_section_publish()
-                _recovery_run = True
-            elif (
-                publish_timeout_seen
-                and not _pub.get("ok")
                 and not _eng.get("ok", True)
                 and int(_eng.get("corrections", {}).get("corrected") or 0) == 0
             ):
@@ -1206,35 +1235,25 @@ Use tools. Do not claim success without check_quality.ok=true.
                     "tool": "publish_recovery",
                     "data": {
                         "skipped": True,
-                        "reason": "publish stage timed out and is not resumable",
+                        "reason": (
+                            "report stages are single-shot; engine citation issue "
+                            "must be fixed at its source and validated on a new SHA"
+                        ),
                     },
                     "ts": _utc(),
                 })
         except Exception:
             pass
-    if _recovery_run:
-        runner._run(
-            "run_audit",
-            [sys.executable, str(SCRIPTS / "audit_pipeline.py"), sha, "--mode", "single"],
-            3600,
-        )
-        q = runner.check_quality()
-        if aj.exists():
-            try:
-                audit = json.loads(aj.read_text())
-            except Exception:
-                pass
 
-    # Deterministic final re-audit — the planner may retry publish/section
-    # after its first audit; the in-loop audit then reflects STALE artifacts
-    # (the retry succeeded but was never re-audited). Re-run the audit when
-    # the last publish/section/yara event is newer than the last audit event,
-    # so pipeline-audit.json always reflects the FINAL artifacts. Uses event
-    # sequence order (ts has 1s resolution and can tie).
+    # Deterministic final re-audit — if an artifact-writing stage ran after
+    # the planner's first audit, refresh the audit so it covers the final files.
+    # Single-shot guard events have artifacts_written=False and do not trigger it.
     ev_tools = [e for e in events if e.get("type") == "tool_result"]
     write_stages = ("run_publish", "run_section_publish", "run_yara_gen")
     last_write_i = max(
-        (i for i, e in enumerate(ev_tools) if e.get("tool") in write_stages),
+        (i for i, e in enumerate(ev_tools)
+         if e.get("tool") in write_stages
+         and e.get("artifacts_written") is not False),
         default=-1,
     )
     last_audit_i = max(
@@ -1293,12 +1312,18 @@ Use tools. Do not claim success without check_quality.ok=true.
         "mode": "langgraph_react",
         "planner_model": planner,
         "judgment_model": judgment,
-        "with_dynamic": False,
+        "dynamic_requested": winre_on,
+        "with_dynamic": any(
+            e.get("type") == "tool_result"
+            and e.get("tool") == "run_winre_dynamic"
+            and e.get("pack_present") is True
+            for e in events
+        ),
         "provenance": revai_provenance(),
         "run_config": run_profile(),
-        "started_at": _utc(),
+        "started_at": started_at,
         "finished_at": _utc(),
-        "elapsed_s": round(time.time() - t0, 1),
+        "elapsed_s": round(time.monotonic() - t0, 1),
         "stages_run": stages_run,
         "events": events,
         "final_status": final_status,

@@ -144,6 +144,25 @@ def test_a_citation_row_with_an_in_row_paren_and_a_why_tail_parses():
     assert "MSVC 2022" in claims[0]["row"]
 
 
+def test_query_locator_with_parentheses_and_commas_is_preserved():
+    md = (
+        "The imports are LoadLibraryA "
+        "(source: malcat, query_or_table: Imports (5), "
+        "row_or_rule: kernel32.LoadLibraryA).\n"
+        "Six packer rules matched "
+        "(source: malcat, query_or_table: YARA (info, 10 total), "
+        "row_or_rule: UPX, upx_290_lzma_02)."
+    )
+
+    claims = E.extract_claims(md)
+
+    assert len(claims) == 2
+    assert claims[0]["query"] == "Imports (5)"
+    assert claims[0]["row"] == "kernel32.LoadLibraryA"
+    assert claims[1]["query"] == "YARA (info, 10 total)"
+    assert claims[1]["row"] == "UPX, upx_290_lzma_02"
+
+
 def test_a_prose_citation_hidden_behind_a_why_tail_reaches_the_gate(tmp_path):
     """Extraction fixed means the gate now SEES the class: the same row,
     offered the analysis's own summary as evidence, must fire circular."""
