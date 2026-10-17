@@ -23,6 +23,13 @@ sudo mkdir -p /opt/scripts
 sudo mkdir -p /opt/revai/{config,bin,hitl,signatures}
 sudo mkdir -p /opt/samples/{incoming,shortlist,corpus,logs,sessions}
 
+# Keep the VM's default pytest invocation scoped to the maintained suite. Older
+# deployments may leave copied test_*.py files at /opt/scripts/, outside the
+# tests/ conftest environment isolation; pytest otherwise discovers both sets.
+if [[ -f "$REPO_ROOT/pytest.ini" ]]; then
+    sudo cp -a "$REPO_ROOT/pytest.ini" /opt/scripts/pytest.ini
+fi
+
 # ---------------------------------------------------------------------------
 # Deploy the pipeline (everything in revai/ except the hitl/ and ui/ subdirs)
 # ---------------------------------------------------------------------------

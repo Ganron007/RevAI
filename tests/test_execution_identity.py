@@ -18,6 +18,12 @@ SHA = "c" * 64
 
 def test_begin_execution_persists_and_resolves_identity(tmp_path, monkeypatch):
     monkeypatch.setattr(v2_lib, "LOGS_DIR", tmp_path / "logs")
+    # Register the pre-test value with monkeypatch before begin_execution writes
+    # REVAI_RUN_ID directly. If the variable was initially absent, delenv alone
+    # records no undo action, and the generated ID leaks into later tests when
+    # this file is run outside tests/conftest.py (for example, as a stale
+    # top-level copy left by an older deployment).
+    monkeypatch.setenv("REVAI_RUN_ID", "invalid-test-run-id")
     monkeypatch.delenv("REVAI_RUN_ID", raising=False)
     monkeypatch.setenv("REVAI_RUN_MODE", "agentic")
 
