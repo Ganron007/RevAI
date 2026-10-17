@@ -234,7 +234,7 @@ def test_winre_runs_before_deep_dive_even_if_planner_omits_tool(monkeypatch, tmp
     assert calls == ["run_winre_dynamic", "run_deep_dive_agentic"]
 
 
-def test_winre_driver_exception_is_soft_and_recorded(monkeypatch, tmp_path):
+def test_winre_driver_exception_is_a_failed_requested_tool(monkeypatch, tmp_path):
     from types import SimpleNamespace
 
     monkeypatch.setenv("REVAI_WINRE_RUN", "1")
@@ -246,6 +246,7 @@ def test_winre_driver_exception_is_soft_and_recorded(monkeypatch, tmp_path):
     )
     monkeypatch.setitem(sys.modules, "winre_runner", fake_driver)
     out = runner.run_winre_dynamic()
-    assert out["ok"] is True and out["soft"] is True
+    assert out["ok"] is False
     assert out["state"] == "error" and "driver failed" in out["error"]
     assert runner.events[-1]["tool"] == "run_winre_dynamic"
+    assert runner.events[-1]["ok"] is False

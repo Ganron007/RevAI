@@ -1620,10 +1620,12 @@ def main():
         md = panel + strip_accuracy_hold_banner(md)
     report["markdown"] = md
 
-    report["provenance"] = revai_provenance()
+    report["provenance"] = revai_provenance(args.sha256)
+    if report["provenance"].get("run_id"):
+        report["run_id"] = report["provenance"]["run_id"]
     if args.template == "full":
         report["dynamic_analysis_status"] = dynamic_status
-    md = provenance_block() + md
+    md = provenance_block(args.sha256) + md
     # Force the panel to the locked label. The lock fixed the structured verdict
     # but not the prose the audit reads (win32k_dll: lock_ok=True with the panel
     # still saying suspicious). Repaired here, after the lock, counted, not
@@ -2005,8 +2007,10 @@ def main():
             )
             tech_md = panel + strip_accuracy_hold_banner(tech_md)
         # Provenance banner BEFORE quality eval — byline_ok gate reads it
-        technical_report["provenance"] = revai_provenance()
-        tech_md = provenance_block() + tech_md
+        technical_report["provenance"] = revai_provenance(args.sha256)
+        if technical_report["provenance"].get("run_id"):
+            technical_report["run_id"] = technical_report["provenance"]["run_id"]
+        tech_md = provenance_block(args.sha256) + tech_md
         # Deterministic alignment sections (plan #12), appended before quality
         # eval so the gate sees the final text. `_report_scan_text` is the report
         # as the LLM wrote it, so the gap scan cannot quote our own caveats.

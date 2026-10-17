@@ -17,6 +17,7 @@ import re
 import shutil
 import subprocess
 import threading
+import uuid
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 import sys
@@ -39,6 +40,8 @@ SESSIONS_DIR = Path("/opt/samples/sessions")
 LOGS_DIR = Path("/opt/samples/logs")
 CADRE_ENV = Path("/opt/secrets/cadre.env")
 PIPELINE_CONFIG_PATH = Path("/opt/samples/pipeline-config.json")
+RUN_CONTEXT_FILENAME = "execution-context.json"
+RUN_ID_RE = re.compile(r"^[0-9a-f]{32}$")
 
 
 def case_dir(sha: str, mode: str | None = None) -> Path:
@@ -65,6 +68,102 @@ def case_dir(sha: str, mode: str | None = None) -> Path:
         return d
     _warn_flat_case_dir_once(sha)
     return base
+
+
+def new_run_id() -> str:
+    """Return the opaque 128-bit identity shared by every artifact in one run."""
+    return uuid.uuid4().hex
+
+
+def _valid_run_id(value: Any) -> str | None:
+    text = str(value or "").strip().lower()
+    return text if RUN_ID_RE.fullmatch(text) else None
+
+
+def begin_execution(sha: str, *, mode: str, engine: str,
+                    started_at: str | None = None,
+                    run_id: str | None = None) -> dict:
+    """Create this invocation's context before any stage writes artifacts.
+
+    The environment carries the ID into child scripts; the durable context file
+    lets separately invoked audit/report tools recover it. A caller may pass an
+    ID only when it is intentionally joining another control-plane execution
+    (the RevAI -> WinRE bridge). Ordinary RevAI invocations always get a new ID.
+    """
+    resolved = _valid_run_id(run_id) if run_id else new_run_id()
+    if not resolved:
+        raise ValueError("run_id must be 32 lowercase hexadecimal characters")
+    root = case_dir(sha, mode)
+    root.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "schema": "revai-execution-context/v1",
+        "run_id": resolved,
+        "sha256": sha,
+        "mode": mode,
+        "engine": engine,
+        "started_at": started_at or datetime.now(timezone.utc).isoformat(),
+    }
+    path = root / RUN_CONTEXT_FILENAME
+    temporary = path.with_name(f"{path.name}.{resolved}.tmp")
+    temporary.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    os.replace(temporary, path)
+    os.environ["REVAI_RUN_ID"] = resolved
+    return payload
+
+
+def read_execution_context(sha: str | None = None, *, mode: str | None = None,
+                           case_root: Path | None = None) -> dict | None:
+    """Read the persisted context, rejecting a context for another sample."""
+    candidates: list[Path] = []
+    if case_root is not None:
+        candidates.append(Path(case_root) / RUN_CONTEXT_FILENAME)
+    elif sha:
+        requested_mode = mode or os.environ.get("REVAI_RUN_MODE", "").strip()
+        if requested_mode:
+            candidates.append(LOGS_DIR / sha / requested_mode / RUN_CONTEXT_FILENAME)
+        else:
+            # Auditors may be invoked without REVAI_RUN_MODE. Prefer the most
+            # recently written mode context, then support legacy flat runs.
+            mode_paths = [LOGS_DIR / sha / m / RUN_CONTEXT_FILENAME
+                          for m in ("agentic", "scripted", "ui")]
+            candidates.extend(sorted(
+                mode_paths,
+                key=lambda p: p.stat().st_mtime if p.is_file() else 0,
+                reverse=True,
+            ))
+            candidates.append(LOGS_DIR / sha / RUN_CONTEXT_FILENAME)
+    for path in dict.fromkeys(candidates):
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if (isinstance(data, dict)
+                and (not sha or data.get("sha256") == sha)
+                and _valid_run_id(data.get("run_id"))):
+            return data
+    return None
+
+
+def current_run_id(sha: str | None = None, *, mode: str | None = None,
+                   case_root: Path | None = None) -> str | None:
+    """Resolve the active run ID from the child environment or durable context."""
+    run_id = _valid_run_id(os.environ.get("REVAI_RUN_ID"))
+    if run_id:
+        return run_id
+    context = read_execution_context(sha, mode=mode, case_root=case_root)
+    return _valid_run_id((context or {}).get("run_id"))
+
+
+def stamp_run_id(payload: dict, *, run_id: str | None = None,
+                 sha: str | None = None, mode: str | None = None,
+                 case_root: Path | None = None) -> dict:
+    """Return a copy of an artifact payload tied to the current execution."""
+    out = dict(payload)
+    resolved = _valid_run_id(run_id) if run_id else current_run_id(
+        sha, mode=mode, case_root=case_root)
+    if resolved:
+        out["run_id"] = resolved
+    return out
 
 
 _FLAT_CASE_DIR_WARNED: set[str] = set()
@@ -140,7 +239,7 @@ def ensure_pipeline_runtime_env() -> dict:
     return {"applied": {}}
 
 
-def revai_provenance() -> dict:
+def revai_provenance(sha: str | None = None) -> dict:
     """Report provenance stamp — which pipeline commit + config produced an artifact.
 
     Commit comes from /opt/revai/config/REVAI_COMMIT (written at sync time) or the
@@ -161,7 +260,7 @@ def revai_provenance() -> dict:
     def _flag(name: str) -> bool:
         return os.environ.get(name, "1").strip().lower() not in ("0", "false", "no")
 
-    return {
+    result = {
         "project": "RevAI",
         "commit": commit,
         "engine": os.environ.get("REVAI_AGENTIC_ENGINE", "langgraph"),
@@ -173,17 +272,22 @@ def revai_provenance() -> dict:
         },
         "utc": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),
     }
+    run_id = current_run_id(sha)
+    if run_id:
+        result["run_id"] = run_id
+    return result
 
 
-def provenance_block() -> str:
+def provenance_block(sha: str | None = None) -> str:
     """Markdown provenance banner for the top of generated reports."""
-    p = revai_provenance()
+    p = revai_provenance(sha)
     fl = p["flags"]
+    run = f" · run_id `{p['run_id']}`" if p.get("run_id") else ""
     return (
         f"> **RevAI provenance** — commit `{p['commit']}` · engine `{p['engine']}` "
         f"· agent-loop flags: budget={fl['budget_warnings']} "
         f"redundant={fl['redundant_nudge']} hallucination={fl['hallucination_check']} "
-        f"taxonomy={fl['failure_taxonomy']} · generated {p['utc']}\n\n"
+        f"taxonomy={fl['failure_taxonomy']}{run} · generated {p['utc']}\n\n"
     )
 
 
@@ -2133,6 +2237,9 @@ def update_session(sha256: str, fields: dict) -> dict:
     """Merge fields into the session JSON and rewrite the registry file."""
     session = load_session(sha256)
     session.update(fields)
+    run_id = current_run_id(sha256)
+    if run_id:
+        session["run_id"] = run_id
     path = SESSIONS_DIR / f"{sha256}.json"
     path.write_text(json.dumps(session, indent=2, default=str))
     return session
@@ -6883,7 +6990,10 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
     capture separate; consumers must not collapse them into a single boolean
     until the source artifacts support that conclusion.
     """
+    mode = os.environ.get("REVAI_RUN_MODE", "").strip() or None
+    expected_run_id = current_run_id(sha, mode=mode)
     out: dict[str, Any] = {
+        "run_id": expected_run_id,
         "emulation": {}, "frida_static_probe": {
             "execution_proven": False,
             "state": "static candidate analysis only; does not execute the sample",
@@ -6903,6 +7013,8 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
     status_paths.append(base / "winre-run.json")
     run_status: dict[str, Any] = {}
     run_status_stamp = ""
+    latest_status: dict[str, Any] = {}
+    latest_status_stamp = ""
     for status_path in dict.fromkeys(status_paths):
         if not status_path.is_file():
             continue
@@ -6915,8 +7027,27 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
             continue
         stamp = str(candidate.get("finished_at") or candidate.get("started_at")
                      or candidate.get("ts") or "")
-        if not run_status or stamp >= run_status_stamp:
-            run_status, run_status_stamp = candidate, stamp
+        if not latest_status or stamp >= latest_status_stamp:
+            latest_status, latest_status_stamp = candidate, stamp
+        if (not expected_run_id
+                or candidate.get("run_id") == expected_run_id):
+            if not run_status or stamp >= run_status_stamp:
+                run_status, run_status_stamp = candidate, stamp
+    if not run_status and not expected_run_id:
+        run_status = latest_status
+    if expected_run_id and not run_status and latest_status:
+        out["winre_status_correlation"] = {
+            "ok": False,
+            "expected_run_id": expected_run_id,
+            "status_run_id": latest_status.get("run_id"),
+            "reason": "latest WinRE status belongs to another execution",
+        }
+    elif expected_run_id:
+        out["winre_status_correlation"] = {
+            "ok": bool(run_status),
+            "expected_run_id": expected_run_id,
+            "status_run_id": run_status.get("run_id") if run_status else None,
+        }
 
     oracle_cands: list[Path] = []
     if (base / "deep_dive" / "03-oracle.json").is_file():
@@ -6956,7 +7087,22 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
         pack = load_dynamic_pack(sha, logs_dir=logs_dir, winre_root=winre_root) or {}
     except Exception:
         pack = {}
-    if pack.get("present"):
+    pack_meta = pack.get("meta") or {}
+    pack_job_meta = pack.get("job_meta") or {}
+    pack_run_id = (pack_job_meta.get("run_id") or pack_meta.get("run_id"))
+    pack_correlated = bool(
+        pack.get("present")
+        and (not expected_run_id or pack_run_id == expected_run_id)
+    )
+    if expected_run_id and pack.get("present") and not pack_correlated:
+        out["stale_winre_pack"] = {
+            "present": True,
+            "expected_run_id": expected_run_id,
+            "pack_run_id": pack_run_id,
+            "source": pack.get("source"),
+            "reason": "pack identity does not match this RevAI execution",
+        }
+    if pack_correlated:
         meta = pack.get("meta") or {}
         job = pack.get("job_meta") or {}
         raw_ran = job.get("detonation_ran", meta.get("detonation_ran"))
@@ -6971,6 +7117,8 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
             detonation_ran = None
         out["winre"] = {
             "pack_present": True,
+            "pack_correlated": True,
+            "run_id": pack_run_id,
             "detonation_ran": detonation_ran,
             "source": pack.get("source"),
             "sample_pid": sample_pid,
@@ -7020,9 +7168,9 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
         }
     else:
         run_state = str(run_status.get("state") or "").strip().lower()
-        # The bridge status has no run-id correlation with this analysis pack.
-        # It can describe a previous request, so never use it as proof that the
-        # current sample did or did not launch.
+        # A status or pack from a different execution may describe a previous
+        # request. It is retained as a diagnostic above but cannot establish
+        # whether this run launched or produced runtime evidence.
         detonation_ran = None
         frida_events = None
         frida_observed = False
@@ -7036,9 +7184,11 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
             winre_state = "no runtime pack or run status; launch unverified"
         out["winre"] = {
             "pack_present": False,
+            "pack_correlated": False,
             "detonation_ran": detonation_ran,
             "state": winre_state,
             "run_state": run_state or None,
+            "run_id": run_status.get("run_id") if run_status else None,
         }
         out["frida_runtime"] = {
             "trace_artifact_present": False, "events": None,
@@ -7057,7 +7207,7 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
     )
     out["any_dynamic_performed"] = (
         True if performed else
-        None if pack.get("present") and detonation_ran is None else False
+        None if pack_correlated and detonation_ran is None else False
     )
     out["sentence"] = (
         "Run-scoped status -- RevAI Speakeasy: "
@@ -7081,6 +7231,7 @@ def persist_dynamic_analysis_status(sha: str,
     artifact = {
         "schema_version": 1,
         "sha256": sha,
+        "run_id": status.get("run_id"),
         "summary": "run-scoped status",
         "sentence": str(status.get("sentence") or ""),
         "status": status,

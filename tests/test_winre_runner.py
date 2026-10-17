@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "revai"))
 
 import winre_runner as wr  # noqa: E402
+import v2_lib  # noqa: E402
 
 
 def _write_cfg(tmp_path: Path, cfg: dict) -> Path:
@@ -122,6 +123,72 @@ def test_build_command_flags():
     assert "--agentic-dbg" in cmd2
     assert "--adaptive" not in cmd2
     assert "static" in cmd2
+
+
+def test_build_command_carries_parent_run_identity():
+    cfg = {
+        "python": "/opt/winre/venv/bin/python", "mode": "agentic", "window": 150,
+        "adaptive": False, "pesieve": False, "agentic_dbg": False,
+    }
+    run_id = "a" * 32
+    cmd = wr.build_command("/tmp/sample.exe", cfg, run_id=run_id)
+    assert cmd[-2:] == ["--run-id", run_id]
+
+
+def test_summarize_pack_rejects_pack_from_another_run(monkeypatch, tmp_path):
+    monkeypatch.setattr(v2_lib, "dynamic_pack_counts", lambda _pack: {
+        "dns": 1, "http": 0, "sni": 0, "dropped": 0, "dumps": 0,
+        "unpack_artifact": 0,
+    })
+    monkeypatch.setattr(v2_lib, "load_dynamic_pack", lambda *_a, **_kw: {
+        "present": True,
+        "meta": {"run_id": "b" * 32},
+        "job_meta": {},
+    })
+    out = wr.summarize_pack("c" * 64, tmp_path, expected_run_id="a" * 32)
+    assert out["pack_present"] is False
+    assert out["correlation"]["ok"] is False
+    assert out["correlation"]["pack_run_id"] == "b" * 32
+
+
+def test_requested_run_without_a_correlated_pack_is_not_success(
+    tmp_path, monkeypatch
+):
+    sample = tmp_path / "sample.exe"
+    sample.write_bytes(b"MZ")
+    case = tmp_path / "case"
+    monkeypatch.setattr(wr, "_case_dir", lambda _sha: case)
+    monkeypatch.setattr(wr, "availability", lambda _cfg: (True, "ready"))
+    monkeypatch.setattr(wr, "remote_clock_skew", lambda _cfg: {"warn": False})
+    monkeypatch.setattr(wr, "resolve_winre_llm", lambda _cfg: ({}, {"configured": True}))
+    monkeypatch.setattr(wr, "_child_env", lambda _cfg: {})
+    monkeypatch.setattr(wr, "summarize_pack", lambda *_a, **_kw: {
+        "pack_present": False,
+        "pack": {},
+        "correlation": {
+            "ok": False, "expected_run_id": "a" * 32,
+            "pack_run_id": "b" * 32,
+        },
+    })
+    monkeypatch.setattr(wr.subprocess, "run", lambda *a, **kw: type(
+        "Result", (), {"returncode": 0})())
+    cfg = {
+        "python": "python", "mode": "agentic", "window": 150,
+        "adaptive": False, "pesieve": False, "agentic_dbg": False,
+        "root": tmp_path, "timeout": 30, "flare_host": "flare",
+        "flare_user": "analyst", "flare_ssh_key": "key",
+        "flare_ssh_port": 22, "snapshot_gate": "enforce",
+        "logs_root": tmp_path / "winre-logs",
+    }
+
+    out = wr.run_dynamic(
+        "a" * 64, sample_path=str(sample), s=cfg, run_id="a" * 32,
+    )
+
+    assert out["ok"] is False
+    assert out["state"] == "ok_no_pack"
+    assert out["pack_correlation"]["pack_run_id"] == "b" * 32
+    assert wr.read_run_status("a" * 64)["run_id"] == "a" * 32
 
 
 def test_run_dynamic_soft_skip_writes_status(tmp_path, monkeypatch):

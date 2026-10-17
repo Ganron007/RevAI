@@ -356,7 +356,8 @@ def probe(timeout: int = 15, s: dict | None = None) -> dict:
     return out
 
 
-def build_command(sample_path: str | Path, cfg: dict) -> list[str]:
+def build_command(sample_path: str | Path, cfg: dict, *,
+                  run_id: str | None = None) -> list[str]:
     """The WinRE CLI invocation (remote driver) for this configuration."""
     cmd = [
         str(cfg["python"]), "-m", "winre.pipeline", str(sample_path),
@@ -375,6 +376,8 @@ def build_command(sample_path: str | Path, cfg: dict) -> list[str]:
         cmd.append("--pesieve")
     if cfg["agentic_dbg"]:
         cmd.append("--agentic-dbg")
+    if run_id:
+        cmd.extend(["--run-id", run_id])
     return cmd
 
 
@@ -479,7 +482,8 @@ def sample_path_for(sha: str) -> str | None:
         return None
 
 
-def summarize_pack(sha: str, logs_root: Path | str) -> dict:
+def summarize_pack(sha: str, logs_root: Path | str, *,
+                   expected_run_id: str | None = None) -> dict:
     """What the pack for this case contributes (counts mirror the report block).
 
     Uses v2_lib's shared counter so winre-run.json, the Console chip and the
@@ -491,9 +495,27 @@ def summarize_pack(sha: str, logs_root: Path | str) -> dict:
         pack = load_dynamic_pack(sha, winre_root=Path(logs_root))
         if not pack:
             return {"pack_present": False, "pack": {}}
+        meta = pack.get("meta") or {}
+        job_meta = pack.get("job_meta") or {}
+        pack_run_id = job_meta.get("run_id") or meta.get("run_id")
+        correlated = not expected_run_id or pack_run_id == expected_run_id
+        if not correlated:
+            return {
+                "pack_present": False,
+                "pack": {},
+                "correlation": {
+                    "ok": False,
+                    "expected_run_id": expected_run_id,
+                    "pack_run_id": pack_run_id,
+                    "reason": "WinRE pack does not belong to this RevAI execution",
+                },
+            }
         counts = dynamic_pack_counts(pack)
         return {
             "pack_present": True,
+            "run_id": pack_run_id,
+            "correlation": {"ok": True, "expected_run_id": expected_run_id,
+                            "pack_run_id": pack_run_id} if expected_run_id else None,
             "pack": {
                 "window": pack.get("window"),
                 "dns": counts["dns"],
@@ -515,8 +537,18 @@ def run_dynamic(
     s: dict | None = None,
     timeout: int | None = None,
     force: bool = False,
+    run_id: str | None = None,
 ) -> dict:
-    """Run the WinRE remote detonation. Soft-fails with a recorded reason."""
+    """Run the WinRE remote detonation under the parent execution identity."""
+    if run_id is None:
+        run_id = os.environ.get("REVAI_RUN_ID", "").strip() or None
+    if run_id is None:
+        try:
+            from v2_lib import new_run_id
+            run_id = new_run_id()
+        except Exception:
+            import uuid
+            run_id = uuid.uuid4().hex
     cfg = s or settings()
     ok, reason = availability(cfg)
     if not ok and not force:
@@ -525,6 +557,7 @@ def run_dynamic(
             "reason": reason,
             "host": cfg["flare_host"],
             "mode": cfg["mode"],
+            "run_id": run_id,
             "ts": datetime.now(timezone.utc).isoformat(),
         }
         _write_status(sha, payload)
@@ -536,13 +569,14 @@ def run_dynamic(
         payload = {
             "state": "failed",
             "error": f"sample_missing: {sp}",
+            "run_id": run_id,
             "ts": datetime.now(timezone.utc).isoformat(),
         }
         _write_status(sha, payload)
         print(f"[winre_runner] failed: {payload['error']}", flush=True)
         return {"ok": False, "error": payload["error"], **payload}
 
-    cmd = build_command(sp, cfg)
+    cmd = build_command(sp, cfg, run_id=run_id)
     case = _case_dir(sha)
     log_path = case / "winre-run.log"
     limit = int(timeout or cfg["timeout"])
@@ -558,6 +592,7 @@ def run_dynamic(
         "window": cfg["window"],
         "adaptive": cfg["adaptive"],
         "agentic_dbg": cfg["agentic_dbg"],
+        "run_id": run_id,
         "started_at": started.isoformat(),
         "log": str(log_path),
         "sample": sp,
@@ -593,7 +628,7 @@ def run_dynamic(
         error = f"winre_error: {type(e).__name__}: {e}"
 
     duration = round(time.time() - t0, 1)
-    summary = summarize_pack(sha, cfg["logs_root"])
+    summary = summarize_pack(sha, cfg["logs_root"], expected_run_id=run_id)
     pack_present = bool(summary["pack_present"])
     pack_info: dict[str, Any] = summary["pack"] or {}
 
@@ -606,8 +641,10 @@ def run_dynamic(
         "window": cfg["window"],
         "adaptive": cfg["adaptive"],
         "agentic_dbg": cfg["agentic_dbg"],
+        "run_id": run_id,
         "log": str(log_path),
         "pack_present": pack_present,
+        "pack_correlation": summary.get("correlation"),
         "pack": pack_info,
         "clock": clock,
         "llm": llm_meta,
@@ -620,7 +657,7 @@ def run_dynamic(
         f"pack={pack_present} {error}",
         flush=True,
     )
-    return {"ok": rc == 0, **payload}
+    return {"ok": rc == 0 and pack_present, **payload}
 
 
 def main() -> int:
@@ -633,6 +670,8 @@ def main() -> int:
     ap.add_argument("--window", type=int, default=None, help="--max-seconds")
     ap.add_argument("--timeout", type=int, default=None, help="subprocess timeout seconds")
     ap.add_argument("--force", action="store_true", help="run even when the availability check fails")
+    ap.add_argument("--run-id", default=None,
+                    help="parent RevAI execution ID shared with WinRE")
     args = ap.parse_args()
 
     cfg = settings()
@@ -642,6 +681,7 @@ def main() -> int:
         cfg["window"] = args.window
     out = run_dynamic(
         args.sha, sample_path=args.sample, s=cfg, timeout=args.timeout, force=args.force,
+        run_id=args.run_id,
     )
     print(json.dumps(out, indent=2, default=str))
     return 0 if out.get("ok") or out.get("skipped") else 1

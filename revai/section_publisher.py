@@ -1040,7 +1040,7 @@ def run_section_based_publish(sha: str, tools_results: dict,
         parts.append("")
         parts.append("---")
         parts.append("")
-    report_markdown = provenance_block() + "\n".join(parts)
+    report_markdown = provenance_block(sha) + "\n".join(parts)
 
     # Save evidence pack + backward-compat root files
     out_dir = case_dir(sha) / "correlate"
@@ -1078,7 +1078,8 @@ def run_section_based_publish(sha: str, tools_results: dict,
     root_dir = case_dir(sha)
     (root_dir / "REPORT-MASTER-v3.md").write_text(report_markdown)
     (root_dir / "section-results-v3.json").write_text(
-        json.dumps({"sections": section_results, "timings": section_timings,
+        json.dumps({"run_id": (revai_provenance(sha).get("run_id")),
+                    "sections": section_results, "timings": section_timings,
                     "pass1_count": len(pass1_initial_results), "pass2_count": len(pass2_results),
                     "invocation_counts": invocation_counts,
                     "master_v3_indicator_scrub": _master_ioc_scrub,
@@ -1349,8 +1350,10 @@ def _finalize_technical(sha: str, technical_report: dict,
     # Always append full evidence pack (V5.16); provenance banner BEFORE the
     # quality eval so the byline_ok style gate reads it.
     tech_md = append_technical_evidence_appendix(tech_md, technical_evidence)
-    technical_report["provenance"] = revai_provenance()
-    tech_md = provenance_block() + tech_md
+    technical_report["provenance"] = revai_provenance(sha)
+    if technical_report["provenance"].get("run_id"):
+        technical_report["run_id"] = technical_report["provenance"]["run_id"]
+    tech_md = provenance_block(sha) + tech_md
     # Deterministic alignment sections (plan #12) - IOC tiers, dynamic analysis,
     # explicit gaps - appended before quality eval. The gap scan uses the report
     # as the LLM wrote it, so it cannot quote our own caveats.

@@ -33,7 +33,9 @@ sys.path.insert(0, "/opt/scripts")
 from v2_lib import (  # noqa: E402
     LOGS_DIR,
     SESSIONS_DIR,
+    begin_execution,
     case_dir,
+    current_run_id,
     ensure_pipeline_runtime_env,
     get_llm_chat_options,
     get_llm_temperature,
@@ -490,9 +492,9 @@ class StageRunner:
         """Optional: detonate the sample on the WinRE FlareVM, pull the pack.
 
         Runs only when REVAI_WINRE_RUN=1 AND WinRE is installed + configured
-        (Console Settings -> Dynamic analysis (WinRE)); skips (rc=0) otherwise.
-        Flare-side failures are recorded in winre-run.json and never gate the
-        pipeline — the static run and its presence-gated reports are unchanged.
+        (Console Settings -> Dynamic analysis (WinRE)). When explicitly enabled,
+        a missing driver, failed detonation or uncorrelated evidence is a tool
+        failure; it must not produce a green dynamic run using stale evidence.
         """
         run_enabled = os.environ.get("REVAI_WINRE_RUN", "").strip().lower() in (
             "1", "true", "yes",
@@ -513,28 +515,33 @@ class StageRunner:
             from winre_runner import availability, run_dynamic
         except Exception as e:
             print(f"[orchestrator] run_winre_dynamic unavailable: {e}", flush=True)
-            out = {"ok": True, "rc": 0, "skipped": True,
+            out = {"ok": False, "rc": 1, "skipped": False,
                    "tool": "run_winre_dynamic", "reason": f"winre_runner import failed: {e}"}
             self.events.append({"type": "tool_result", **out, "ts": _utc()})
             return out
         try:
             ok, reason = availability()
         except Exception as e:
-            out = {"ok": True, "rc": 0, "skipped": True,
+            out = {"ok": False, "rc": 1, "skipped": False,
                    "tool": "run_winre_dynamic",
                    "reason": f"availability check failed: {type(e).__name__}: {e}"}
             self.events.append({"type": "tool_result", **out, "ts": _utc()})
             return out
         if not ok:
-            print(f"[orchestrator] run_winre_dynamic skipped: {reason}", flush=True)
-            out = {"ok": True, "rc": 0, "skipped": True,
+            print(f"[orchestrator] run_winre_dynamic unavailable: {reason}", flush=True)
+            out = {"ok": False, "rc": 1, "skipped": False,
                    "tool": "run_winre_dynamic", "reason": reason}
             self.events.append({"type": "tool_result", **out, "ts": _utc()})
             return out
         try:
-            out = run_dynamic(self.sha, sample_path=str(self.sample) if self.sample else None)
+            out = run_dynamic(
+                self.sha,
+                sample_path=str(self.sample) if self.sample else None,
+                run_id=current_run_id(self.sha),
+            )
         except Exception as e:
             out = {
+                "ok": False,
                 "rc": 1,
                 "state": "error",
                 "error": f"{type(e).__name__}: {e}",
@@ -542,11 +549,14 @@ class StageRunner:
             }
         self.events.append({
             "type": "tool_result", "tool": "run_winre_dynamic",
-            "rc": out.get("rc"), "ok": True, "state": out.get("state"),
-            "pack_present": out.get("pack_present"), "ts": _utc(),
+            "rc": out.get("rc"), "ok": bool(out.get("ok")),
+            "state": out.get("state"),
+            "pack_present": out.get("pack_present"),
+            "run_id": out.get("run_id"),
+            "pack_correlation": out.get("pack_correlation"), "ts": _utc(),
         })
-        # Soft by design: a failed detonation is recorded, not gated.
-        return {"ok": True, "rc": 0, "soft": True, "tool": "run_winre_dynamic", **out}
+        return {**out, "ok": bool(out.get("ok")),
+                "rc": out.get("rc", 1), "tool": "run_winre_dynamic"}
 
     def run_publish(self) -> dict:
         blocked = self._claim_report_stage("run_publish")
@@ -986,6 +996,13 @@ def run_langgraph_orchestrator(sample: Path | None, sha: str | None) -> dict:
         # intake, so the audit reported intake=False -> all_green false).
         need_intake = not (case_dir(sha) / "intake-validation.json").exists()
 
+    execution = begin_execution(
+        sha,
+        mode=os.environ.get("REVAI_RUN_MODE", "agentic").strip() or "agentic",
+        engine=os.environ.get("REVAI_AGENTIC_ENGINE", "langgraph").strip() or "langgraph",
+        started_at=_utc(),
+    )
+
     events: list[dict[str, Any]] = []
     runner = StageRunner(sha, sample, events)
     lc_tools = _build_lc_tools(runner, need_intake=need_intake)
@@ -1308,6 +1325,7 @@ Use tools. Do not claim success without check_quality.ok=true.
     trace = {
         "schema": "v6.3.orchestrator.langgraph_react",
         "sha256": sha,
+        "run_id": execution["run_id"],
         "sample_path": str(sample),
         "mode": "langgraph_react",
         "planner_model": planner,

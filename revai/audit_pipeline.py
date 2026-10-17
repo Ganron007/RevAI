@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import shutil
 import sys
@@ -31,7 +32,7 @@ LOGS = Path("/opt/samples/logs")
 SESSIONS = Path("/opt/samples/sessions")
 SHOWCASE_ROOT = LOGS / "_showcase_audits"
 
-from v2_lib import case_dir, require_run_mode  # noqa: E402
+from v2_lib import case_dir, current_run_id, require_run_mode  # noqa: E402
 
 # Candidate deep tools — filtered by tools_raw["_format"] + TOOL_MANIFEST applies_to
 PE_DEEP_TOOLS = [
@@ -977,6 +978,57 @@ def audit_publish(log: Path, deep_mtime: float) -> dict:
     }
 
 
+def audit_execution_identity(log: Path, expected_run_id: str | None, *,
+                             winre_requested: bool) -> dict:
+    """Require report and optional WinRE artifacts to belong to this run."""
+    if not expected_run_id:
+        return {"ok": True, "skipped": True,
+                "reason": "no execution context (legacy standalone audit)"}
+    artifacts = {
+        "report-v2.json": log / "report-v2.json",
+        "report-technical-v2.json": log / "report-technical-v2.json",
+        "section-results-v3.json": log / "section-results-v3.json",
+        "report-technical-v3.json": log / "report-technical-v3.json",
+    }
+    observed: dict[str, str | None] = {}
+    checks: dict[str, bool] = {}
+    errors: dict[str, str] = {}
+    for label, path in artifacts.items():
+        payload = _load(path)
+        if not isinstance(payload, dict):
+            observed[label] = None
+            checks[label] = False
+            errors[label] = "missing or invalid JSON"
+            continue
+        observed[label] = payload.get("run_id")
+        checks[label] = payload.get("run_id") == expected_run_id
+    if winre_requested:
+        status = _load(log / "winre-run.json")
+        if not isinstance(status, dict):
+            observed["winre-run.json"] = None
+            checks["winre-run.json"] = False
+            errors["winre-run.json"] = "requested WinRE run has no status artifact"
+        else:
+            observed["winre-run.json"] = status.get("run_id")
+            checks["winre-run.json"] = (
+                status.get("run_id") == expected_run_id
+                and status.get("state") == "ok"
+                and status.get("pack_present") is True
+                and (status.get("pack_correlation") or {}).get("ok") is True
+            )
+            if not checks["winre-run.json"]:
+                errors["winre-run.json"] = (
+                    "WinRE status is failed, missing a fresh pack, or belongs to another run"
+                )
+    return {
+        "ok": all(checks.values()),
+        "expected_run_id": expected_run_id,
+        "artifacts": observed,
+        "checks": checks,
+        "errors": errors,
+    }
+
+
 def _technical_v3_quality_checks(
     technical_json: dict, technical_path: Path, deep_mtime: float
 ) -> dict[str, bool]:
@@ -1253,7 +1305,8 @@ def render_markdown(report: dict) -> str:
             f"· flags: budget={_prov['flags']['budget_warnings']} "
             f"redundant={_prov['flags']['redundant_nudge']} "
             f"hallucination={_prov['flags']['hallucination_check']} "
-            f"taxonomy={_prov['flags']['failure_taxonomy']} · {_prov['utc']}"
+            f"taxonomy={_prov['flags']['failure_taxonomy']} · "
+            f"run_id `{report.get('run_id') or _prov.get('run_id') or 'n/a'}` · {_prov['utc']}"
         )
     except Exception:
         _prov_line = "- **Provenance:** n/a"
@@ -1485,6 +1538,10 @@ def main():
     require_run_mode("audit_pipeline")
     sha = args.sha256
     log = case_dir(sha)
+    run_id = current_run_id(
+        sha, mode=os.environ.get("REVAI_RUN_MODE", "").strip() or None,
+        case_root=log,
+    )
     sess = _load(SESSIONS / f"{sha}.json") or {}
     mode = args.mode
     if mode == "auto":
@@ -1511,6 +1568,7 @@ def main():
 
     report = {
         "sha": sha,
+        "run_id": run_id,
         "mode": mode,
         "mode_effective": mode_effective,
         "strict_standard": strict,
@@ -1528,7 +1586,7 @@ def main():
     try:
         sys.path.insert(0, "/opt/scripts")
         from v2_lib import revai_provenance  # type: ignore
-        report["provenance"] = revai_provenance()
+        report["provenance"] = revai_provenance(sha)
     except Exception:
         report["provenance"] = {"commit": "unknown"}
     report["stages"]["intake"] = audit_intake(log)
@@ -1562,6 +1620,19 @@ def main():
         "findings": hollow.get("findings", []),
         # Reported, never gated: partial naming failure is a depth signal.
         "advisory": hollow.get("advisory", {}),
+    }
+
+    identity = audit_execution_identity(
+        log, run_id,
+        winre_requested=os.environ.get("REVAI_WINRE_RUN", "")
+        .strip().lower() in ("1", "true", "yes"),
+    )
+    report["execution_identity"] = identity
+    report["stages"]["execution_identity"] = {
+        "ok": bool(identity.get("ok")),
+        "checks": identity.get("checks", {}),
+        "errors": identity.get("errors", {}),
+        "skipped": bool(identity.get("skipped")),
     }
 
     stage_ok = {k: v.get("ok") for k, v in report["stages"].items()}

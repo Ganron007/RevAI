@@ -27,6 +27,7 @@ from v2_lib import (  # noqa: E402
     LOGS_DIR,
     SESSIONS_DIR,
     case_dir,
+    begin_execution,
     ensure_pipeline_runtime_env,
     load_session,
     revai_provenance,
@@ -124,6 +125,13 @@ def run_single(sample: Path | None, sha: str | None, mode: str = "standard") -> 
         sample = Path(sample_path)
         intake_cmd = None
 
+    execution = begin_execution(
+        sha,
+        mode=os.environ.get("REVAI_RUN_MODE", "scripted").strip() or "scripted",
+        engine="scripted",
+        started_at=_utc(),
+    )
+
     run_log = case_dir(sha) / "pipeline_single.log"
     # Run boundary (2026-10-03, hollow-success stale-artifact finding): the
     # stage log is append-only and case dirs are reused, so hollow_success
@@ -138,6 +146,7 @@ def run_single(sample: Path | None, sha: str | None, mode: str = "standard") -> 
     trace = {
         "schema": "v6.3.single",
         "sha256": sha,
+        "run_id": execution["run_id"],
         "started_at": _utc(),
         "pipeline_mode": "single",
         "with_dynamic": False,

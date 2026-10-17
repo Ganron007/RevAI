@@ -189,11 +189,15 @@ settings:
 | **Before publish (per run)** | Settings → Run configuration → **Detonate with WinRE before publish** = On | the orchestrator/scripted pipeline runs the detonation as an optional stage before publishing, so the report includes the fresh pack |
 | **CLI** | `REVAI_WINRE_RUN=1 python3 stage_orchestrator.py --sha <sha>` (or `pipeline_single.py <sample>`) | same settings resolution; `winre_runner.py <sha>` runs the detonation alone |
 
-Failure semantics are honest and soft: unavailable FlareVM, missing key, snapshot
-gate refusal, timeout, or a non-zero WinRE exit are **recorded**
-(`logs/<sha>/<mode>/winre-run.json` + `winre-run.log`) and never block the static
-pipeline. Without a pack, runtime observations are omitted; the master report's
-artifact-derived status states that WinRE execution is unavailable or unverified.
+An unrequested WinRE run is skipped. When `REVAI_WINRE_RUN=1` explicitly
+requests detonation, an unavailable FlareVM, missing key, snapshot-gate refusal,
+timeout, non-zero exit, missing pack or run-ID mismatch is recorded in
+`logs/<sha>/<mode>/winre-run.json` and `winre-run.log`, and marks the run red.
+This prevents a static-only report from being presented as a successful dynamic
+run. The same execution ID is written into the RevAI trace, report JSON and
+audit, passed to the WinRE remote driver, and checked against WinRE's status and
+pack. Dynamic observations remain omitted from report content unless the pack
+is present and correlated.
 
 Standalone WinRE (no RevAI trigger), for reference:
 
