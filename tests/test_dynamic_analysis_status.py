@@ -170,6 +170,43 @@ def test_pack_without_launch_attestation_is_not_reported_as_a_run(
     assert st["any_dynamic_performed"] is None
 
 
+def test_snapshot_gate_skip_record_proves_dynamic_was_not_launched(
+        tmp_path, monkeypatch):
+    sha = "9" * 64
+    run_id = "a" * 32
+    dyn = tmp_path / "winre" / sha / "agentic" / "dynamic"
+    dyn.mkdir(parents=True)
+    (dyn / "META.json").write_text(json.dumps({
+        "sha256": sha, "run_id": run_id, "aborted": True,
+    }))
+    (dyn / "STAGE.json").write_text(json.dumps({
+        "stage": "dynamic", "ok": False, "gate_pass": False,
+        "state": "blocked by snapshot gate",
+    }))
+    (dyn / "SKIP.json").write_text(json.dumps({
+        "schema": "winre-dynamic-skip/v1", "stage": "dynamic",
+        "ran": False, "skipped": True, "ok": False,
+        "reason": "snapshot_gate_blocked",
+        "has_detonation_evidence": False,
+        "summary": "blocked before launch",
+    }))
+    monkeypatch.setenv("REVAI_RUN_ID", run_id)
+    monkeypatch.setenv("REVAI_RUN_MODE", "agentic")
+    monkeypatch.setenv("REVAI_WINRE_LOGS", str(tmp_path / "winre"))
+
+    status = v2_lib.dynamic_analysis_status(sha, logs_dir=tmp_path / "logs")
+
+    assert status["winre"]["detonation_ran"] is False
+    assert status["winre"]["launch_state"] == "not_performed"
+    assert status["winre"]["skip_reason"] == "snapshot_gate_blocked"
+    assert status["any_dynamic_performed"] is False
+    assert "sample launch not performed" in status["sentence"]
+    consistency = RQ._cross_report_consistency(
+        status["sentence"], "", "", None, status
+    )
+    assert consistency["ok"] is True, consistency["violations"]
+
+
 def test_unmatched_run_status_is_not_used_as_current_launch_proof(
         tmp_path, monkeypatch):
     sha = "1" * 64
@@ -367,7 +404,8 @@ def test_v3_dynamic_status_is_injected_into_every_authored_technical_section(mon
             continue
         result = SP._generate_technical_section(name, [], "context", "a" * 64)
         assert result["llm_ok"], result
-        assert result["markdown"] == "## Section\n\nEvidence-grounded section."
+        assert result["markdown"].startswith(f"## {name}")
+        assert "Evidence-grounded section." in result["markdown"]
         assert sentinel in captured[-1]
 
 
@@ -789,7 +827,7 @@ def test_the_dynamic_section_prompt_carries_the_status(monkeypatch):
     assert "DYNAMIC-ANALYSIS STATUS" in captured["prompt"], (
         "the authoritative status was not injected into the section prompt")
     assert "emulation NOT performed" in captured["prompt"]
-    assert result["markdown"] == "m"
+    assert result["markdown"] == "## 5. Behavioral Analysis\n\nm"
 
 
 def test_the_dynamic_status_is_injected_into_every_master_section(monkeypatch):

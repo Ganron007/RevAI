@@ -299,7 +299,30 @@ def test_model_section_repairs_source_only_claims_with_measured_improvement(monk
     assert len(calls) == 2
     assert result["citation_repair"]["accepted"] is True
     assert result["citation_repair"]["uncited_after"] == 0
-    assert result["markdown"] == repaired
+    assert result["markdown"] == repaired.strip()
+
+
+def test_technical_section_publisher_restores_known_heading(monkeypatch):
+    title = "3. File Layout & Structural Analysis"
+    body = (
+        "The section records the inspected file layout and its structural fields. "
+        "(source: pefile, query_or_table: sections, row_or_rule: .text) "
+    ) * 8
+
+    def fake(_prompt, *a, **kw):
+        return _Resp(json.dumps({"title": title, "markdown": body,
+                                 "source": "llm_judge"}))
+
+    monkeypatch.setattr(sp, "llm_judge", fake)
+    monkeypatch.setattr(sp, "llm_call_metadata", lambda _r: {})
+    monkeypatch.setattr(sp, "get_llm_model", lambda: "test-model")
+
+    result = sp._generate_technical_section(
+        title, sp._split_evidence_blocks(REAL_EVIDENCE), "", "a" * 64
+    )
+
+    assert result["markdown"].startswith(f"## {title}")
+    assert result.get("citation_repair") is None
 
 
 def test_sectionwise_is_the_default_and_the_rollback_flag_works(monkeypatch):

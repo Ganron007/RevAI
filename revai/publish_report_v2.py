@@ -66,6 +66,7 @@ from report_quality import (  # noqa: E402
     OUTPUT_FORMAT_CONTRACT,
     REPORT_STYLE_CONTRACT,
     VERDICT_CALIBRATION_CONTRACT,
+    ensure_section_heading,
     evaluate_report_markdown,
     missing_sections,
     PUBLIC_MODEL_LABEL,
@@ -608,6 +609,35 @@ def _technical_section_span(markdown: str, title: str) -> tuple[int, int] | None
     return _report_section_span(markdown, title)
 
 
+def _upsert_report_section(markdown: str, title: str, candidate: str,
+                           required_sections: list[str]) -> tuple[str, bool]:
+    """Insert or replace one canonical section without regenerating its peers."""
+    current = markdown or ""
+    normalized = ensure_section_heading(candidate, title)
+    candidate_span = _report_section_span(normalized, title)
+    if candidate_span is None:
+        return current, False
+    replacement = normalized[candidate_span[0]:candidate_span[1]].strip()
+
+    existing = _report_section_span(current, title)
+    if existing is not None:
+        start, end = existing
+        return (current[:start].rstrip() + "\n\n" + replacement + "\n\n"
+                + current[end:].lstrip("\r\n")), True
+
+    try:
+        title_index = required_sections.index(title)
+    except ValueError:
+        title_index = len(required_sections)
+    for following_title in required_sections[title_index + 1:]:
+        following = _report_section_span(current, following_title)
+        if following is not None:
+            start = following[0]
+            return (current[:start].rstrip() + "\n\n" + replacement + "\n\n"
+                    + current[start:].lstrip("\r\n")), True
+    return current.rstrip() + "\n\n" + replacement + "\n", True
+
+
 def retry_report_stub_sections(
     markdown: str,
     sections: list[str],
@@ -632,7 +662,9 @@ def retry_report_stub_sections(
         start, end = span
         original = current[start:end].strip()
         try:
-            candidate_md = str(retry_section(section, original) or "")
+            candidate_md = ensure_section_heading(
+                str(retry_section(section, original) or ""), section
+            )
         except Exception as exc:  # the first report remains intact on retry failure
             attempts.append({"section": section, "accepted": False,
                              "reason": f"retry raised {type(exc).__name__}: {exc}"})
@@ -676,76 +708,89 @@ def retry_report_uncited_sections(
     markdown: str,
     sections: list[str],
     retry_section,
+    *,
+    max_attempts: int = 1,
 ) -> tuple[str, list[dict[str, Any]]]:
-    """Regenerate only sections with uncited claims; accept measured improvement.
+    """Repair only sections with uncited claims; accept measured improvements.
 
     The callback receives a section title, its original text, and the claims
     currently lacking a citation. A candidate replaces the original only when
-    it preserves the section heading, passes the stub gate, and reduces the
-    structural uncited-claim count. Citations are still subject to the report
-    quality and semantic support checks after this function returns.
+    it has the canonical section heading, passes the stub gate, and reduces the
+    structural uncited-claim count. One attempt is the default so reports do
+    not enter a slow retry loop; a caller may explicitly request another
+    bounded attempt. Citations remain subject to final structural and semantic
+    support checks.
     """
     current = markdown or ""
     attempts: list[dict[str, Any]] = []
     for section in sections:
-        span = _report_section_span(current, section)
-        if span is None:
-            continue
-        start, end = span
-        original = current[start:end].strip()
-        original_claims = uncited_report_claims(original)
-        if not original_claims:
-            continue
-        try:
-            candidate_md = str(retry_section(section, original, original_claims) or "")
-        except Exception as exc:  # Keep the first draft intact on retry failure.
+        for retry_index in range(1, max(1, int(max_attempts)) + 1):
+            span = _report_section_span(current, section)
+            if span is None:
+                break
+            start, end = span
+            original = current[start:end].strip()
+            original_claims = uncited_report_claims(original)
+            if not original_claims:
+                break
+            try:
+                candidate_md = ensure_section_heading(
+                    str(retry_section(section, original, original_claims) or ""),
+                    section,
+                )
+            except Exception as exc:  # Keep the best draft on retry failure.
+                attempts.append({
+                    "section": section,
+                    "attempt": retry_index,
+                    "accepted": False,
+                    "uncited_before": len(original_claims),
+                    "uncited_after": len(original_claims),
+                    "reason": f"retry raised {type(exc).__name__}: {exc}",
+                })
+                break
+            candidate_span = _report_section_span(candidate_md, section)
+            if candidate_span is None:
+                attempts.append({
+                    "section": section,
+                    "attempt": retry_index,
+                    "accepted": False,
+                    "uncited_before": len(original_claims),
+                    "uncited_after": None,
+                    "reason": "retry did not return the required section heading",
+                })
+                break
+            candidate = candidate_md[candidate_span[0]:candidate_span[1]].strip()
+            candidate_claims = uncited_report_claims(candidate)
+            if stub_sections(candidate, [section]):
+                attempts.append({
+                    "section": section,
+                    "attempt": retry_index,
+                    "accepted": False,
+                    "uncited_before": len(original_claims),
+                    "uncited_after": len(candidate_claims),
+                    "reason": "retry section still fails stub quality gate",
+                })
+                break
+            if len(candidate_claims) >= len(original_claims):
+                attempts.append({
+                    "section": section,
+                    "attempt": retry_index,
+                    "accepted": False,
+                    "uncited_before": len(original_claims),
+                    "uncited_after": len(candidate_claims),
+                    "reason": "retry did not reduce uncited claim count",
+                })
+                break
+            current = (current[:start].rstrip() + "\n\n" + candidate + "\n\n"
+                       + current[end:].lstrip("\r\n"))
             attempts.append({
                 "section": section,
-                "accepted": False,
-                "uncited_before": len(original_claims),
-                "uncited_after": len(original_claims),
-                "reason": f"retry raised {type(exc).__name__}: {exc}",
-            })
-            continue
-        candidate_span = _report_section_span(candidate_md, section)
-        if candidate_span is None:
-            attempts.append({
-                "section": section,
-                "accepted": False,
-                "uncited_before": len(original_claims),
-                "uncited_after": None,
-                "reason": "retry did not return the required section heading",
-            })
-            continue
-        candidate = candidate_md[candidate_span[0]:candidate_span[1]].strip()
-        candidate_claims = uncited_report_claims(candidate)
-        if stub_sections(candidate, [section]):
-            attempts.append({
-                "section": section,
-                "accepted": False,
+                "attempt": retry_index,
+                "accepted": True,
                 "uncited_before": len(original_claims),
                 "uncited_after": len(candidate_claims),
-                "reason": "retry section still fails stub quality gate",
+                "reason": "retry reduced uncited claim count",
             })
-            continue
-        if len(candidate_claims) >= len(original_claims):
-            attempts.append({
-                "section": section,
-                "accepted": False,
-                "uncited_before": len(original_claims),
-                "uncited_after": len(candidate_claims),
-                "reason": "retry did not reduce uncited claim count",
-            })
-            continue
-        current = (current[:start].rstrip() + "\n\n" + candidate + "\n\n"
-                   + current[end:].lstrip("\r\n"))
-        attempts.append({
-            "section": section,
-            "accepted": True,
-            "uncited_before": len(original_claims),
-            "uncited_after": len(candidate_claims),
-            "reason": "retry reduced uncited claim count",
-        })
     return current, attempts
 
 
@@ -1866,47 +1911,80 @@ def main():
                 )
                 technical_report["source"] = "deterministic_fallback_after_incomplete_llm"
             elif tech_missing:
-                # Completeness retry (2026-08-13, raas-class): the single-call
-                # technical v2 stopped early with sections unwritten. ONE
-                # bounded retry with a completeness nudge; accept only a
-                # strictly-better draft (mirrors the master nudge + v3
-                # technical assembly nudge).
-                try:
-                    _tnudge = (
-                        "Your previous technical report is INCOMPLETE — these "
-                        "required sections are missing: "
-                        + ", ".join(tech_missing[:8])
-                        + ". Produce the COMPLETE report with ALL required "
-                        "sections, preserving every section you already wrote "
-                        "verbatim. Return the same JSON shape with the full "
-                        "markdown."
+                # Repair only the missing sections. Re-asking for the entire
+                # 13-section report discarded hours of good output when a
+                # completeness nudge itself became too large or timed out.
+                completeness_attempts: list[dict[str, Any]] = []
+                for retry_index, section in enumerate(list(tech_missing), start=1):
+                    instruction = (
+                        f"The technical report is missing '{section}'. Write "
+                        "ONLY that section, with the exact required heading. "
+                        "Use only the authoritative structured evidence below. "
+                        "If the evidence does not establish a behavior, say so "
+                        "with a concrete source locator; do not invent findings "
+                        "or copy claims from other report sections.\n\n"
+                        "Previous report context (do not rewrite it):\n"
+                        + tech_md[:4000]
                     )
-                    _tresp2 = llm_judge(prompt_tech + "\n\n" + _tnudge)
-                    (ev_dir / "05b-llm-technical-retry-raw.json").write_text(
-                        json.dumps(_tresp2, indent=2, default=str)
+                    targeted_prompt = build_prompt_technical(
+                        session, verdict, deep, yara_meta, audit,
+                        tech_evidence_for_prompt, recovery_evidence,
+                        report.get("final_verdict"), sections=[section],
+                        retry_instruction=instruction,
                     )
-                    _tr2 = _extract_report_json(
-                        _tresp2["choices"][0]["message"]["content"]
-                    )
-                    _tmd2 = str(_tr2.get("markdown") or "") if isinstance(_tr2, dict) else ""
-                    _tmiss2 = verify_technical_sections(_tmd2) if _tmd2 else tech_missing
-                    if _tmd2 and len(_tmiss2) < len(tech_missing):
-                        tech_md = _tmd2
-                        technical_report["markdown"] = tech_md
-                        technical_report["technical_completeness_retried"] = True
-                        print(
-                            f"[publish_report_v2] technical completeness retry "
-                            f"improved: missing {len(tech_missing)} -> {len(_tmiss2)}",
-                            flush=True,
+                    attempt: dict[str, Any] = {
+                        "section": section,
+                        "attempt": retry_index,
+                        "accepted": False,
+                        "prompt_chars": len(targeted_prompt),
+                    }
+                    try:
+                        response = llm_judge(targeted_prompt)
+                        raw_path = ev_dir / (
+                            f"05b-technical-missing-section-{retry_index:02d}-raw.json"
                         )
-                    tech_missing = verify_technical_sections(tech_md)
-                    tech_stubs = stub_sections(tech_md, TECHNICAL_REPORT_SECTIONS)
-                except Exception as _tre_err:
-                    print(
-                        f"[publish_report_v2] technical completeness retry error: "
-                        f"{_tre_err}",
-                        flush=True,
-                    )
+                        raw_path.write_text(
+                            json.dumps(response, indent=2, default=str),
+                            encoding="utf-8",
+                        )
+                        parsed = _extract_report_json(
+                            response["choices"][0]["message"].get("content") or ""
+                        )
+                        candidate = ensure_section_heading(
+                            str((parsed or {}).get("markdown") or ""), section
+                        )
+                        candidate_span = _technical_section_span(candidate, section)
+                        if candidate_span is None:
+                            attempt["reason"] = "response did not contain a usable section"
+                        else:
+                            candidate_section = candidate[
+                                candidate_span[0]:candidate_span[1]
+                            ].strip()
+                            if stub_sections(candidate_section, [section]):
+                                attempt["reason"] = "targeted section failed the stub gate"
+                            else:
+                                tech_md, inserted = _upsert_report_section(
+                                    tech_md, section, candidate_section,
+                                    TECHNICAL_REPORT_SECTIONS,
+                                )
+                                attempt["accepted"] = inserted
+                                attempt["reason"] = (
+                                    "targeted section inserted"
+                                    if inserted else "targeted section could not be assembled"
+                                )
+                                if inserted:
+                                    attempt["response_chars"] = len(candidate_section)
+                    except Exception as retry_exc:
+                        attempt["reason"] = (
+                            f"{type(retry_exc).__name__}: {str(retry_exc)[:160]}"
+                        )
+                    completeness_attempts.append(attempt)
+                technical_report["technical_completeness_repair_attempts"] = (
+                    completeness_attempts
+                )
+                technical_report["markdown"] = tech_md
+                tech_missing = verify_technical_sections(tech_md)
+                tech_stubs = stub_sections(tech_md, TECHNICAL_REPORT_SECTIONS)
             if tech_missing or tech_stubs:
                 if not source_is_fallback(technical_report.get("source")):
                     technical_report["source"] = "llm_incomplete" if (tech_missing or tech_stubs) else technical_report.get("source")

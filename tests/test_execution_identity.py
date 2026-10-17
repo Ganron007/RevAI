@@ -61,3 +61,25 @@ def test_audit_requires_reports_and_winre_pack_from_current_run(tmp_path):
         tmp_path, run_id, winre_requested=True)
     assert result["ok"] is False
     assert result["checks"]["winre-run.json"] is False
+
+
+def test_audit_separates_matching_winre_identity_from_failed_execution(tmp_path):
+    run_id = "c" * 32
+    for name in (
+        "report-v2.json", "report-technical-v2.json",
+        "section-results-v3.json", "report-technical-v3.json",
+    ):
+        (tmp_path / name).write_text(json.dumps({"run_id": run_id}))
+    (tmp_path / "winre-run.json").write_text(json.dumps({
+        "run_id": run_id, "state": "failed", "pack_present": True,
+        "pack_correlation": {"ok": True},
+    }))
+
+    result = audit_pipeline.audit_execution_identity(
+        tmp_path, run_id, winre_requested=True
+    )
+
+    assert result["ok"] is True
+    assert result["checks"]["winre-run.json"] is True
+    assert result["execution_status_ok"] is False
+    assert result["execution_checks"]["winre-run.json"] is False

@@ -16,7 +16,11 @@ import unicodedata
 from pathlib import Path
 from typing import Any
 
-from citation_syntax import has_citation_locator, strip_citation_annotations
+from citation_syntax import (
+    has_citation_locator,
+    parse_citation_annotations,
+    strip_citation_annotations,
+)
 
 # Stub / pointer prose that means the LLM narrative was discarded
 _STUB_PATTERNS = (
@@ -83,6 +87,20 @@ def heading_present(md: str, section: str) -> bool:
 
 def missing_sections(md: str, required: list[str]) -> list[str]:
     return [s for s in required if not heading_present(md, s)]
+
+
+def ensure_section_heading(markdown: str, title: str) -> str:
+    """Make the known section title deterministic while preserving its body.
+
+    Section publishers already know which report section a response belongs
+    to. If the model omits or changes that heading, prefix the canonical title
+    instead of discarding otherwise useful evidence-grounded content.
+    """
+    text = str(markdown or "").strip()
+    if not missing_sections(text, [title]):
+        return text
+    prefix = f"## {title}"
+    return f"{prefix}\n\n{text}" if text else f"{prefix}\n"
 
 
 def _section_bodies(md: str, required: list[str]) -> dict[str, str]:
@@ -156,6 +174,28 @@ def _section_heading_key(title: str) -> str:
     value = re.sub(r"^\d+\s*\.\s*", "", value)
     value = re.sub(r"\s+", " ", value)
     return value.casefold()
+
+
+def _report_narrative_body(markdown: str) -> str:
+    """Return the report prose before its structured evidence/appendix area.
+
+    Numbered headings such as ``## 12. Appendix A: Tool Evidence Trail`` are
+    common in generated reports. The former prefix-only check missed those and
+    counted evidence-trail material as analyst narrative.
+    """
+    text = markdown or ""
+    for offset, title in _markdown_heading_lines(text):
+        normalized = normalize_heading_text(title).strip()
+        normalized = re.sub(r"^\d+(?:\.\d+)*[.)]?\s*", "", normalized)
+        normalized = re.sub(r"[*_`~]", "", normalized).strip().lower()
+        if normalized.startswith((
+            "structured evidence",
+            "evidence pack",
+            "appendix",
+            "appendices",
+        )):
+            return text[:offset]
+    return text
 
 
 def stub_sections(md: str, required: list[str], *, min_body_chars: int = 180) -> list[str]:
@@ -304,13 +344,7 @@ def evaluate_report_markdown(
     # Evidence Pack appendix is raw tool output and must not trip the gates.
     style: dict[str, Any] = {}
     if md and not source_is_fallback(source):
-        style_md = md
-        for line in (style_md or "").splitlines():
-            t = line.strip().lower()
-            if t.startswith("## structured evidence") or t.startswith("## evidence pack") \
-                    or t.startswith("## appendix") or t.startswith("### structured evidence"):
-                style_md = style_md[: style_md.find(line)]
-                break
+        style_md = _report_narrative_body(md)
         style["byline_ok"] = "revai provenance" in (style_md or "").lower()
         # Citation marker: the system prompt instructs "{source: engine}" but
         # some models emit "(source: engine)". Count BOTH (the provider
@@ -1600,6 +1634,80 @@ _REPORT_METADATA_PREFIX_RE = re.compile(
 )
 
 
+def _split_report_sentences(text: str) -> list[str]:
+    """Split prose without treating punctuation inside citations as prose.
+
+    Evidence locators often quote tool output containing periods or ellipses.
+    Splitting those locators first made a valid citation appear detached from
+    its claim. A citation after terminal punctuation belongs to the preceding
+    claim, while the next sentence must still be checked independently.
+    """
+    value = (text or "").strip()
+    if not value:
+        return []
+    spans = {
+        int(annotation["start"]): int(annotation["end"])
+        for annotation in parse_citation_annotations(value)
+        if annotation.get("start") is not None and annotation.get("end") is not None
+    }
+    parts: list[str] = []
+    start = 0
+    index = 0
+    while index < len(value):
+        annotation_end = spans.get(index)
+        if annotation_end is not None:
+            index = annotation_end
+            continue
+
+        char = value[index]
+        if char not in ".!?":
+            index += 1
+            continue
+
+        punctuation_end = index + 1
+        if char == ".":
+            if index > 0 and value[index - 1] == ".":
+                index += 1
+                continue
+            while punctuation_end < len(value) and value[punctuation_end] == ".":
+                punctuation_end += 1
+
+        next_start = punctuation_end
+        while next_start < len(value) and value[next_start].isspace():
+            next_start += 1
+        if next_start == punctuation_end and next_start not in spans:
+            index = punctuation_end
+            continue
+
+        if next_start in spans:
+            # Attach one or more citations that follow the sentence-ending
+            # punctuation, then resume at the next prose character.
+            cursor = spans[next_start]
+            while True:
+                while cursor < len(value) and value[cursor].isspace():
+                    cursor += 1
+                if cursor not in spans:
+                    break
+                cursor = spans[cursor]
+            parts.append(value[start:cursor].strip())
+            start = cursor
+            index = cursor
+            continue
+
+        if next_start >= len(value):
+            parts.append(value[start:punctuation_end].strip())
+            start = len(value)
+            break
+
+        parts.append(value[start:punctuation_end].strip())
+        start = next_start
+        index = next_start
+
+    if start < len(value):
+        parts.append(value[start:].strip())
+    return [part for part in parts if part]
+
+
 def uncited_report_claims(markdown: str) -> list[str]:
     """Return narrative assertions that lack a nearby source citation.
 
@@ -1663,14 +1771,7 @@ def uncited_report_claims(markdown: str) -> list[str]:
         if _REPORT_METADATA_PREFIX_RE.match(line):
             continue
 
-        # Keep a citation following terminal punctuation attached to its claim
-        # ("The sample ... . (source: tool)") instead of counting it as an
-        # uncited sentence followed by a citation-only fragment.
-        sentences = re.split(
-            r"(?<=[.!?])\s+(?![({\[]\s*source\s*:)|\n+", raw_line.strip(),
-            flags=re.IGNORECASE,
-        )
-        for sentence in sentences:
+        for sentence in _split_report_sentences(raw_line):
             claim = re.sub(r"\s+", " ", sentence).strip()
             claim = re.sub(r"^(?:[-*+]\s+|>\s*)+", "", claim)
             # A source label alone is not a traceable citation. The entailment

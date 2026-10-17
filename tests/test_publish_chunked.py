@@ -49,6 +49,24 @@ def test_groups_tile_every_section_exactly_once():
     assert not missing, f"sections never written: {missing}"
 
 
+def test_targeted_technical_section_is_inserted_in_canonical_order():
+    first, missing, following = SECTIONS[0], SECTIONS[1], SECTIONS[2]
+    existing = (
+        f"## {first}\n\n{_substantive_body(first)}\n\n"
+        f"## {following}\n\n{_substantive_body(following)}"
+    )
+    candidate = _substantive_body(missing)
+
+    repaired, inserted = pub._upsert_report_section(
+        existing, missing, candidate, SECTIONS
+    )
+
+    assert inserted is True
+    assert pub.missing_sections(repaired, SECTIONS[:3]) == []
+    assert repaired.index(f"## {first}") < repaired.index(f"## {missing}")
+    assert repaired.index(f"## {missing}") < repaired.index(f"## {following}")
+
+
 def test_body_groups_are_contiguous_and_in_order():
     body = list(pub.TECHNICAL_BODY_GROUPS)
     assert body[0][0] == 2, "body should start at the first analytical section"
@@ -312,6 +330,44 @@ def test_uncited_section_retry_rejects_marker_only_change():
     assert attempts[0]["reason"] == "retry did not reduce uncited claim count"
 
 
+def test_uncited_section_retry_normalizes_missing_heading_and_runs_bounded_second_pass():
+    target = "11. MITRE ATT&CK Mapping"
+    first = (
+        "The sample creates a scheduled task to persist after reboot. "
+        "(source: task_scheduler, query_or_table: tasks, "
+        "row_or_rule: task name) "
+        "The sample contacts a remote host using an embedded URL string."
+    )
+    second = (
+        "The sample creates a scheduled task to persist after reboot. "
+        "(source: task_scheduler, query_or_table: tasks, "
+        "row_or_rule: task name). "
+        "The sample contacts a remote host using an embedded URL string. "
+        "(source: strings, query_or_table: URL strings, "
+        "row_or_rule: embedded URL value). "
+    ) * 4
+    original = f"# {target}\n\n" + (
+        "The sample creates a scheduled task to persist after reboot. "
+        "The sample contacts a remote host using an embedded URL string. "
+    ) * 8
+    calls = []
+
+    def retry(_section: str, current: str, uncited: list[str]) -> str:
+        calls.append((current, uncited))
+        # Deliberately omit the heading: the publisher owns the section identity.
+        return first if len(calls) == 1 else second
+
+    repaired, attempts = pub.retry_report_uncited_sections(
+        original, [target], retry, max_attempts=2
+    )
+
+    assert len(calls) == 2
+    assert attempts[0]["accepted"] is True
+    assert attempts[1]["accepted"] is True
+    assert pub.missing_sections(repaired, [target]) == []
+    assert not pub.uncited_report_claims(repaired)
+
+
 def test_citation_retry_preserves_following_required_section_with_mixed_heading_levels():
     target = "6. Network Analysis & C2"
     following = "7. Capability Assessment"
@@ -382,6 +438,33 @@ def test_section_publisher_counts_llm_generations_and_local_sections_truthfully(
         "local_sections": 3,
         "citation_repair_calls": 2,
     }
+
+
+def test_cross_reference_draft_skips_repair_that_will_be_replaced(monkeypatch):
+    section = "5. Behavioral Analysis"
+    body = "The sample performs a behavior that requires source evidence. " * 8
+    calls = []
+
+    def fake_llm(prompt):
+        calls.append(prompt)
+        return {"choices": [{"message": {"content": json.dumps({
+            "title": section,
+            "markdown": f"## {section}\n\n{body}",
+        })}}]}
+
+    monkeypatch.setattr(pub3, "llm_judge", fake_llm)
+    monkeypatch.setattr(pub3, "llm_call_metadata", lambda _response: {})
+    monkeypatch.setattr(pub3, "get_llm_model", lambda: "test-model")
+
+    result = pub3._run_one_section(
+        section, "a" * 64, {}, {}, pass_num=1, repair_citations=False
+    )
+
+    assert len(calls) == 1
+    assert result["citation_repair_skipped"] == (
+        "cross-reference pass replaces this exploratory draft"
+    )
+    assert result["uncited_claim_count"] > 0
 
 
 def test_a_failed_group_is_recorded_and_omits_its_sections(monkeypatch):

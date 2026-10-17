@@ -980,9 +980,10 @@ def audit_publish(log: Path, deep_mtime: float) -> dict:
 
 def audit_execution_identity(log: Path, expected_run_id: str | None, *,
                              winre_requested: bool) -> dict:
-    """Require report and optional WinRE artifacts to belong to this run."""
+    """Check run correlation separately from whether an optional stage succeeded."""
     if not expected_run_id:
         return {"ok": True, "skipped": True,
+                "execution_status_ok": True,
                 "reason": "no execution context (legacy standalone audit)"}
     artifacts = {
         "report-v2.json": log / "report-v2.json",
@@ -993,6 +994,8 @@ def audit_execution_identity(log: Path, expected_run_id: str | None, *,
     observed: dict[str, str | None] = {}
     checks: dict[str, bool] = {}
     errors: dict[str, str] = {}
+    execution_checks: dict[str, bool] = {}
+    execution_errors: dict[str, str] = {}
     for label, path in artifacts.items():
         payload = _load(path)
         if not isinstance(payload, dict):
@@ -1008,24 +1011,34 @@ def audit_execution_identity(log: Path, expected_run_id: str | None, *,
             observed["winre-run.json"] = None
             checks["winre-run.json"] = False
             errors["winre-run.json"] = "requested WinRE run has no status artifact"
+            execution_checks["winre-run.json"] = False
+            execution_errors["winre-run.json"] = (
+                "requested WinRE run has no status artifact"
+            )
         else:
             observed["winre-run.json"] = status.get("run_id")
-            checks["winre-run.json"] = (
-                status.get("run_id") == expected_run_id
-                and status.get("state") == "ok"
+            checks["winre-run.json"] = status.get("run_id") == expected_run_id
+            if not checks["winre-run.json"]:
+                errors["winre-run.json"] = "WinRE status belongs to another run"
+            execution_checks["winre-run.json"] = (
+                status.get("state") == "ok"
                 and status.get("pack_present") is True
                 and (status.get("pack_correlation") or {}).get("ok") is True
+                and checks["winre-run.json"]
             )
-            if not checks["winre-run.json"]:
-                errors["winre-run.json"] = (
-                    "WinRE status is failed, missing a fresh pack, or belongs to another run"
+            if not execution_checks["winre-run.json"]:
+                execution_errors["winre-run.json"] = (
+                    "WinRE stage failed, has no correlated fresh pack, or belongs to another run"
                 )
     return {
         "ok": all(checks.values()),
+        "execution_status_ok": all(execution_checks.values()),
         "expected_run_id": expected_run_id,
         "artifacts": observed,
         "checks": checks,
         "errors": errors,
+        "execution_checks": execution_checks,
+        "execution_errors": execution_errors,
     }
 
 
@@ -1634,6 +1647,14 @@ def main():
         "errors": identity.get("errors", {}),
         "skipped": bool(identity.get("skipped")),
     }
+    if os.environ.get("REVAI_WINRE_RUN", "").strip().lower() in (
+        "1", "true", "yes",
+    ):
+        report["stages"]["winre_dynamic"] = {
+            "ok": bool(identity.get("execution_status_ok")),
+            "checks": identity.get("execution_checks", {}),
+            "errors": identity.get("execution_errors", {}),
+        }
 
     stage_ok = {k: v.get("ok") for k, v in report["stages"].items()}
     report["all_green"] = all(stage_ok.values())

@@ -513,6 +513,56 @@ def test_report_style_accepts_parenthesized_and_comma_separated_citation_locator
     assert _uncited_report_claims(md) == []
 
 
+def test_report_citation_locator_ellipsis_does_not_break_sentence_binding() -> None:
+    from report_quality import _uncited_report_claims
+
+    md = (
+        "The sample is not UPX-packed (source: upx_unpack, "
+        "query_or_table: upx_probe_stdout, row_or_rule: "
+        "'UPX 5.1.0 ... Tested 0 file; is_packed: false')."
+    )
+
+    assert _uncited_report_claims(md) == []
+
+
+def test_report_citation_after_punctuation_does_not_cover_next_sentence() -> None:
+    from report_quality import _uncited_report_claims
+
+    md = (
+        "The sample creates a service. (source: procmon, "
+        "query_or_table: events, row_or_rule: event 12). "
+        "The sample also opens a remote socket."
+    )
+
+    claims = _uncited_report_claims(md)
+    assert len(claims) == 1, claims
+    assert "opens a remote socket" in claims[0]
+
+
+def test_report_style_ignores_numbered_evidence_appendix() -> None:
+    required = ["1. Executive Summary"]
+    cited = (
+        "The observed sample metadata is recorded in the intake artifact. "
+        "(source: intake, query_or_table: metadata, row_or_rule: sha256) "
+    ) * 8
+    appendix = (
+        "This raw tool output is not analyst prose and has no narrative citation. "
+        * 8
+    )
+    md = (
+        "> **RevAI provenance** — commit abc · engine langgraph\n\n"
+        f"## {required[0]}\n\n{cited}\n"
+        f"## 12. Appendix A: Tool Evidence Trail\n\n{appendix}"
+    )
+
+    result = evaluate_report_markdown(
+        md, required_sections=required, source="llm_judge",
+        min_total_chars=10, label="master_appendix_test",
+    )
+
+    assert result["style"]["uncited_claim_count"] == 0, result["style"]
+
+
 # ---------------------------------------------------------------------------
 # 11. G2 — deep-dive transparent tool retry (fake registry, both directions).
 # ---------------------------------------------------------------------------

@@ -6279,6 +6279,12 @@ def load_dynamic_pack(sha: str, logs_dir: Path | None = None, *,
         "present": True,
         "meta": meta,
         "job_meta": job_meta,
+        # A dynamic pack may exist because WinRE recorded a gate refusal, not
+        # because it launched the sample. Keep the producer's explicit skip
+        # and stage records available to callers instead of inferring from the
+        # directory or META.json alone.
+        "dynamic_stage": _j("STAGE.json"),
+        "dynamic_skip": _j("SKIP.json"),
         "window": window,
         "verdict_policy": meta.get("verdict_policy") or {},
         "frida_summary": _j("frida_summary.json"),
@@ -7105,9 +7111,18 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
     if pack_correlated:
         meta = pack.get("meta") or {}
         job = pack.get("job_meta") or {}
+        skip = pack.get("dynamic_skip") or {}
         raw_ran = job.get("detonation_ran", meta.get("detonation_ran"))
         sample_pid = job.get("sample_pid") or meta.get("sample_pid")
-        if isinstance(raw_ran, bool):
+        skip_confirms_no_launch = bool(
+            skip.get("schema") == "winre-dynamic-skip/v1"
+            and skip.get("stage") == "dynamic"
+            and skip.get("ran") is False
+            and skip.get("has_detonation_evidence") is False
+        )
+        if skip_confirms_no_launch:
+            detonation_ran: bool | None = False
+        elif isinstance(raw_ran, bool):
             detonation_ran: bool | None = raw_ran
         elif sample_pid:
             detonation_ran = True
@@ -7122,6 +7137,14 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
             "detonation_ran": detonation_ran,
             "source": pack.get("source"),
             "sample_pid": sample_pid,
+            "launch_state": (
+                "not_performed" if skip_confirms_no_launch
+                else "confirmed" if detonation_ran is True
+                else "unverified"
+            ),
+            "skip_reason": skip.get("reason") if skip_confirms_no_launch else None,
+            "skip_error": skip.get("error") if skip_confirms_no_launch else None,
+            "stage_state": (pack.get("dynamic_stage") or {}).get("state"),
         }
 
         fr = pack.get("frida_summary") or {}
@@ -7209,13 +7232,21 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
         True if performed else
         None if pack_correlated and detonation_ran is None else False
     )
+    if detonation_ran is True:
+        winre_launch_sentence = "sample launch confirmed"
+    elif detonation_ran is False:
+        winre_launch_sentence = "sample launch not performed"
+        if out["winre"].get("skip_reason"):
+            winre_launch_sentence += f" ({out['winre']['skip_reason']})"
+    else:
+        winre_launch_sentence = (
+            out["winre"].get("state") or "sample launch unverified"
+        )
     out["sentence"] = (
         "Run-scoped status -- RevAI Speakeasy: "
         f"{out['emulation'].get('state') or 'status unknown'}; "
         "RevAI Frida probe: static-only, not sample execution; "
-        "WinRE detonation: "
-        + ("sample launch confirmed" if detonation_ran is True else
-           (out["winre"].get("state") or "sample launch unverified"))
+        "WinRE detonation: " + winre_launch_sentence
         + "; WinRE Frida runtime: "
         + (out["frida_runtime"].get("state") or "status unknown")
         + "; packet capture: "
