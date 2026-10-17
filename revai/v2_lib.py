@@ -2543,6 +2543,15 @@ def _is_agnes_api(api_url: str | None = None) -> bool:
         return False
 
 
+def _is_meta_api(api_url: str | None = None) -> bool:
+    """Match Meta Model API's documented OpenAI-compatible host."""
+    try:
+        candidate = api_url or os.environ.get("REVAI_LLM_API_URL", "")
+        return urlsplit(candidate).hostname == "api.meta.ai"
+    except ValueError:
+        return False
+
+
 def _build_reasoning_body(reasoning: str | None,
                           api_url: str | None = None) -> dict:
     """Build the reasoning/thinking control parameters for the LLM body.
@@ -2560,6 +2569,14 @@ def _build_reasoning_body(reasoning: str | None,
             # level. The effort values are accepted only as legacy aliases.
             return {"chat_template_kwargs": {"enable_thinking": True}}
         return {}
+    if _is_meta_api(api_url):
+        # Meta Chat Completions documents reasoning_effort (including xhigh),
+        # not the separate `thinking` object used by some other APIs. `none`
+        # is unsupported there, so a disabled fallback leaves the model's
+        # provider default in force instead of sending a request that gets 400.
+        if r in ("minimal", "low", "medium", "high", "xhigh"):
+            return {"reasoning_effort": r}
+        return {}
     if r in ("enabled", "on", "true"):
         return {}
     if r in ("disabled", "none", "off", "false"):
@@ -2574,11 +2591,17 @@ def _build_reasoning_body(reasoning: str | None,
 def get_llm_chat_options(max_tokens: int, api_url: str | None = None,
                          reasoning: str | None = None) -> dict:
     """LangChain options preserving the provider's documented wire fields."""
-    if not _is_agnes_api(api_url):
-        return {"max_tokens": max_tokens}
     configured = (reasoning if reasoning is not None else
                   (os.environ.get("REVAI_LLM_PLANNER_REASONING")
                    or get_llm_reasoning()))
+    if _is_meta_api(api_url):
+        options = {"max_tokens": max_tokens}
+        meta_fields = _build_reasoning_body(configured, api_url)
+        if meta_fields:
+            options["extra_body"] = meta_fields
+        return options
+    if not _is_agnes_api(api_url):
+        return {"max_tokens": max_tokens}
     # ChatOpenAI rewrites its max_tokens option to max_completion_tokens.
     # Send the documented provider field through extra_body, which the SDK
     # merges after that rewrite, and leave the constructor option unset.
