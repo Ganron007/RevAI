@@ -183,13 +183,32 @@ if audit.is_file():
         cs = ((qp.get("quality_pack") or {}).get("checks") or {})
         ci = cs.get("claimed_ioc_verification") or {}
         if ci:
-            print(f"   iocs: claims={ci.get('claims')} verified={ci.get('verified')} "
-                  f"unverified={ci.get('unverified')} excluded={ci.get('excluded')}")
-            if ci.get("unverified"):
-                for it in (ci.get("unverified_items") or [])[:5]:
-                    print(f"      UNVERIFIED {it.get('type')}: {str(it.get('value'))[:70]}")
-                bad.append(f"unverified_iocs={ci['unverified']}")
-        for name in ("master_v2", "technical_v2", "technical_v3"):
+            if any(name in ci for name in
+                   ("master_v2", "master_v3", "technical_v2", "technical_v3")):
+                total_unverified = 0
+                for name in ("master_v2", "master_v3", "technical_v2", "technical_v3"):
+                    report_ci = ci.get(name) or {}
+                    unverified = int(report_ci.get("unverified") or 0)
+                    total_unverified += unverified
+                    print(f"   iocs {name}: claims={report_ci.get('claims')} "
+                          f"verified={report_ci.get('verified')} "
+                          f"unverified={unverified} excluded={report_ci.get('excluded')}")
+                    for item in (report_ci.get("unverified_items") or [])[:5]:
+                        print(f"      UNVERIFIED {item.get('type')}: "
+                              f"{str(item.get('value'))[:70]}")
+                if total_unverified:
+                    bad.append(f"unverified_iocs={total_unverified}")
+            else:
+                # Compatibility for audit artifacts written before per-report
+                # verification was introduced.
+                print(f"   iocs: claims={ci.get('claims')} verified={ci.get('verified')} "
+                      f"unverified={ci.get('unverified')} excluded={ci.get('excluded')}")
+                if ci.get("unverified"):
+                    for it in (ci.get("unverified_items") or [])[:5]:
+                        print(f"      UNVERIFIED {it.get('type')}: "
+                              f"{str(it.get('value'))[:70]}")
+                    bad.append(f"unverified_iocs={ci['unverified']}")
+        for name in ("master_v2", "master_v3", "technical_v2", "technical_v3"):
             c = cs.get(name) or {}
             if c:
                 miss = c.get("missing_sections") or []

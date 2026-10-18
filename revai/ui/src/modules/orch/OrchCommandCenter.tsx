@@ -322,7 +322,9 @@ export default function OrchCommandCenter() {
             live?.winre
               ? `root=${live.winre.logs_root} present=${live.winre.pack_present} ` +
                 `source=${live.winre.source ?? '—'} http=${live.winre.http ?? 0} ` +
-                `sni=${live.winre.sni ?? 0} dropped=${live.winre.dropped ?? 0} ` +
+                `sni=${live.winre.sni ?? 0} ` +
+                `files_written=${live.winre.files_created_written ?? 0} ` +
+                `decoded_paths=${live.winre.frida_decoded_paths ?? 0} ` +
                 `artifact=${live.winre.unpack_artifact ?? '—'} section=${live.winre.section_renders} ` +
                 `run=${live.winre.run?.state ?? '—'}${live.winre.run?.error ? ` (${live.winre.run.error})` : ''} ` +
                 `${live.winre.run?.clock?.skew_s != null ? `clock_skew=${live.winre.run.clock.skew_s}s${live.winre.run.clock.warn ? '!' : ''} ` : ''}` +

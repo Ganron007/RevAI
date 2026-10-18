@@ -969,13 +969,6 @@ def get_stage_env(rc: dict | None = None) -> dict[str, str]:
             int(rc.get("depth_full_max_steps") or 16))
     except (TypeError, ValueError):
         env["REVAI_DEPTH_FULL_MAX_STEPS"] = "16"
-    # The IoC fact-check's mode: blocking (the default) or advisory. The CLI
-    # escape hatch is REVAI_IOC_FACTCHECK=advisory; an operator who wants a run
-    # to continue past unverified claims should be able to say so in the UI
-    # rather than exporting a variable.
-    _ioc = str(rc.get("ioc_factcheck") or "").strip().lower()
-    if _ioc in ("advisory", "blocking"):
-        env["REVAI_IOC_FACTCHECK"] = _ioc
     if rc.get("winre_logs"):
         env["REVAI_WINRE_LOGS"] = str(rc["winre_logs"])
     # Optional WinRE detonation stage (opt-in per run): when set, the orchestrator
@@ -1404,7 +1397,7 @@ _RUN_CONFIG_KEYS = (
     # Both were CLI-only: read by the pipeline but absent from every persisted
     # key list, so an operator could only set them by exporting a variable by
     # hand. CLI/UI parity is a must, so they join run_config with the rest.
-    "ti_enrich", "depth_ceiling_seconds", "ioc_factcheck",
+    "ti_enrich", "depth_ceiling_seconds",
     # #26: the depth PROFILE. "d0" is the vocabulary loop over the pipeline's
     # own evidence; "full" is the domain-node substrate with the raised
     # ceiling and the forced emulation/unpack/solver. A string, not a boolean,

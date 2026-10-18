@@ -270,22 +270,15 @@ def test_section_8_is_included_in_the_assembled_report(monkeypatch):
     assert "## 8. Indicators of Compromise" in md
 
 
-def test_model_section_repairs_source_only_claims_with_measured_improvement(monkeypatch):
+def test_model_section_preserves_first_draft_for_claim_support_gate(monkeypatch):
     title = "4. Static Code Analysis"
     claim = "The sample imports an API associated with process creation."
     initial = "\n".join([f"## {title}", "", (claim + " ") * 5])
-    repaired = "\n".join([
-        f"## {title}",
-        "",
-        (claim + " (source: pe_imports, query_or_table: imports, "
-         "row_or_rule: CreateProcessA). ") * 5,
-    ])
     calls = []
 
     def fake(prompt, *a, **kw):
         calls.append(prompt)
-        markdown = initial if len(calls) == 1 else repaired
-        return _Resp(json.dumps({"title": title, "markdown": markdown,
+        return _Resp(json.dumps({"title": title, "markdown": initial,
                                  "source": "llm_judge"}))
 
     monkeypatch.setattr(sp, "llm_judge", fake)
@@ -296,10 +289,11 @@ def test_model_section_repairs_source_only_claims_with_measured_improvement(monk
     result = sp._generate_technical_section(
         title, blocks, "", "a" * 64)
 
-    assert len(calls) == 2
-    assert result["citation_repair"]["accepted"] is True
-    assert result["citation_repair"]["uncited_after"] == 0
-    assert result["markdown"] == repaired.strip()
+    assert len(calls) == 1
+    assert "first draft is preserved" in result["first_draft_policy"]
+    assert result["markdown"] == initial.strip()
+    assert result["uncited_claim_count"] > 0
+    assert "report-evidence-methodology v" in calls[0]
 
 
 def test_technical_section_publisher_restores_known_heading(monkeypatch):
@@ -322,7 +316,7 @@ def test_technical_section_publisher_restores_known_heading(monkeypatch):
     )
 
     assert result["markdown"].startswith(f"## {title}")
-    assert result.get("citation_repair") is None
+    assert "first draft is preserved" in result["first_draft_policy"]
 
 
 def test_sectionwise_is_the_default_and_the_rollback_flag_works(monkeypatch):

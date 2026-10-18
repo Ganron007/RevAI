@@ -19,8 +19,12 @@ import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "revai"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _layout import loopback_is_usable  # noqa: E402
 
 import ghidra_sql_client as gsql  # noqa: E402
 from recovery import context_builder as cbmod  # noqa: E402
@@ -98,6 +102,8 @@ def test_one_wedged_query_returns_an_error_row_and_retries(monkeypatch):
 
 def test_ghidra_query_names_the_timeout_in_its_error(monkeypatch, tmp_path):
     """A socket timeout must be readable in the error, not a bare OSError."""
+    if not loopback_is_usable():
+        pytest.skip("host policy blocks loopback TCP connections")
     srv, base_url = _stalling_server()
     gpr = tmp_path / "p.gpr"
     gpr.write_text("x", encoding="utf-8")

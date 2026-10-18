@@ -459,6 +459,8 @@ def test_missing_finish_retry_respects_the_remaining_stage_budget(monkeypatch):
     def fake_stream(url, headers, body, timeout_s):
         stream_timeouts.append(timeout_s)
         clock["t"] += timeout_s
+        if len(stream_timeouts) > 1:
+            return None, {"streamed": False, "error": "retry plain POST"}
         return (
             {"choices": [{"message": {"content": '{"ok": true}'},
                           "finish_reason": None}]},
@@ -486,11 +488,12 @@ def test_missing_finish_retry_respects_the_remaining_stage_budget(monkeypatch):
     result = v2_lib.llm_judge("prompt", max_retries=2, budget_s=200)
 
     assert result["choices"][0]["finish_reason"] == "stop"
-    assert stream_timeouts == [120], stream_timeouts
+    assert stream_timeouts[0] == 120, stream_timeouts
+    assert 30 <= stream_timeouts[1] <= 80, stream_timeouts
     assert len(fallback_requests) == 1
     fallback_timeout, fallback_body = fallback_requests[0]
-    assert fallback_timeout == 80, fallback_timeout
-    assert fallback_body["chat_template_kwargs"]["enable_thinking"] is False
+    assert fallback_timeout == stream_timeouts[1], fallback_timeout
+    assert fallback_body["chat_template_kwargs"]["enable_thinking"] is True
 
 
 def test_stream_reader_stops_at_finish_reason_without_done(monkeypatch):

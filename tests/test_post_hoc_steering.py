@@ -22,6 +22,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(ROOT / "revai"))
 
+import v2_lib  # noqa: E402
 import steering  # noqa: E402
 from steering import effective_steering_note  # noqa: E402
 from steering_history import (  # noqa: E402
@@ -99,6 +100,8 @@ def test_no_case_dir_and_no_file_is_just_empty(tmp_path, monkeypatch):
 def test_l3_note_is_framed_as_context_when_it_reaches_the_prompt(tmp_path, monkeypatch):
     """The block is the safety property, whichever level supplied it."""
     import quick_scan_v2
+    monkeypatch.setattr(v2_lib, "LOGS_DIR", tmp_path / "logs")
+    monkeypatch.setenv("REVAI_RUN_MODE", "agentic")
     append_steering_note(tmp_path, "assume it is a loader")
     session = {"sha256": "a" * 64, "sample_path": "/tmp/s",
                "ida_session_id": None}

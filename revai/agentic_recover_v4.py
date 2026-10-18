@@ -39,6 +39,9 @@ from v2_lib import (  # noqa: E402
     llm_judge,
     llm_call_metadata,
     load_session,
+    load_attested_case_json,
+    require_execution_context,
+    stamp_case_artifact,
 )
 
 from recovery import (  # noqa: E402
@@ -291,9 +294,12 @@ def enumerate_functions(client, session_id: str, max_funcs: int) -> list[dict]:
     oracle_exec: set[str] = set()
     try:
         sha = str(session_id).rsplit("-", 1)[-1] if "-" in str(session_id) else ""
-        oracle_path = Path("/opt/samples/logs") / sha / "deep_dive" / "03-oracle.json"
+        context = require_execution_context(sha, stage="agentic_recover_v4")
+        active_case = case_dir(sha, context["mode"])
+        oracle_path = active_case / "deep_dive" / "03-oracle.json"
         if oracle_path.is_file():
-            ora = json.loads(oracle_path.read_text())
+            ora = load_attested_case_json(
+                active_case, "deep_dive/03-oracle.json", sha, context)
             for f in (ora.get("executed_functions") or []):
                 a = _addr_key(f.get("func_addr"))
                 if a:
@@ -550,6 +556,7 @@ def main():
             "model": model,
             "generated_at": datetime.now(timezone.utc).isoformat(),
         }
+        recovery = stamp_case_artifact(recovery, sha, "function_recovery.json")
         recovery_path = case_dir(sha) / "function_recovery.json"
         recovery_path.write_text(json.dumps(recovery, indent=2, default=str))
         (ev_dir / "06-function_recovery.json").write_text(json.dumps(recovery, indent=2, default=str))
@@ -588,6 +595,7 @@ def main():
                 "model": model,
                 "generated_at": datetime.now(timezone.utc).isoformat(),
             }
+            recovery = stamp_case_artifact(recovery, sha, "function_recovery.json")
             recovery_path = case_dir(sha) / "function_recovery.json"
             recovery_path.write_text(json.dumps(recovery, indent=2, default=str))
             (ev_dir / "06-function_recovery.json").write_text(
@@ -828,6 +836,7 @@ def main():
             "synthesis": synthesis,
             "writeback": writeback_summary,
         }
+        recovery = stamp_case_artifact(recovery, sha, "function_recovery.json")
         recovery_path = case_dir(sha) / "function_recovery.json"
         recovery_path.write_text(json.dumps(recovery, indent=2, default=str))
         (ev_dir / "06-function_recovery.json").write_text(json.dumps(recovery, indent=2, default=str))

@@ -482,8 +482,10 @@ def test_report_style_requires_a_citation_on_each_claim_sentence() -> None:
         min_total_chars=10, label="master_v3_test",
     )
 
-    assert result["style"]["uncited_claim_count"] == 1, result["style"]
-    assert any("uncited_claims:1" in issue for issue in result["issues"])
+    # Narrative and table rows both need traceable locators; a tool name plus
+    # row number in an Evidence column is not a structured citation.
+    assert result["style"]["uncited_claim_count"] == 2, result["style"]
+    assert any("uncited_claims:2" in issue for issue in result["issues"])
 
 
 def test_report_style_does_not_require_citations_for_provenance_metadata() -> None:
@@ -626,13 +628,16 @@ def test_final_answer_completeness_retry() -> None:
         })}}]}
 
     orig = dd.llm_judge
+    orig_api_url = dd.get_llm_api_url
     dd.llm_judge = fake_judge
+    dd.get_llm_api_url = lambda: "https://provider.example/v1"
     try:
         out = dd._complete_final_answer_retry(
             {"verdict": "unknown"}, {"a": 1}, "m", "test"
         )
     finally:
         dd.llm_judge = orig
+        dd.get_llm_api_url = orig_api_url
     check("retry uses thinking disabled", calls.get("reasoning") == "disabled",
           str(calls.get("reasoning")))
     check("retry returns a complete answer",
@@ -640,12 +645,14 @@ def test_final_answer_completeness_retry() -> None:
 
     calls.clear()
     dd.llm_judge = fake_judge
+    dd.get_llm_api_url = lambda: "https://provider.example/v1"
     try:
         same = dd._complete_final_answer_retry(
             {"verdict": "malicious", "summary": "complete"}, {}, "m", "test"
         )
     finally:
         dd.llm_judge = orig
+        dd.get_llm_api_url = orig_api_url
     check("complete answer skips the retry",
           "reasoning" not in calls and same.get("verdict") == "malicious", str(calls))
 

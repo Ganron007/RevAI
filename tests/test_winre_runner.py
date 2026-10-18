@@ -138,6 +138,7 @@ def test_build_command_carries_parent_run_identity():
 def test_summarize_pack_rejects_pack_from_another_run(monkeypatch, tmp_path):
     monkeypatch.setattr(v2_lib, "dynamic_pack_counts", lambda _pack: {
         "dns": 1, "http": 0, "sni": 0, "dropped": 0, "dumps": 0,
+        "files_created_written": 0, "frida_decoded_paths": 0,
         "unpack_artifact": 0,
     })
     monkeypatch.setattr(v2_lib, "load_dynamic_pack", lambda *_a, **_kw: {
@@ -450,7 +451,9 @@ def test_summarize_pack_counts(tmp_path):
     assert s["pack_present"] is True
     p = s["pack"]
     assert p["dns"] == 2 and p["http"] == 1 and p["sni"] == 0
-    assert p["dropped"] == 1 and p["dumps"] == 1
+    assert p["dropped"] == 0 and p["dumps"] == 1
+    assert p["frida_decoded_paths"] == 1
+    assert p["files_created_written"] == 0
     assert p["window"]["effective_s"] == 10.5
     # absent pack -> not present, no exception
     assert wr.summarize_pack("c" * 64, tmp_path)["pack_present"] is False

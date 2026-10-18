@@ -285,117 +285,6 @@ def test_failed_master_stub_retry_retains_stub_and_quality_failure():
     assert pub.stub_sections(repaired, [target]) == [target]
 
 
-def test_uncited_section_retry_is_accepted_only_when_claim_count_drops():
-    target = "11. MITRE ATT&CK Mapping"
-    claim_a = "The sample creates a scheduled task to persist after reboot."
-    claim_b = "It then contacts a remote host using an embedded URL string."
-    original = f"# {target}\n\n{claim_a} {claim_b} " * 4
-    assert len(pub.uncited_report_claims(original)) >= 2
-
-    def retry(section: str, _original: str, uncited: list[str]) -> str:
-        assert section == target
-        assert uncited
-        cited = ("The sample creates a scheduled task to persist after reboot. "
-                 "(source: task_scheduler, query_or_table: task registration, "
-                 "row_or_rule: observed task name)\n\n")
-        retained = ("It then contacts a remote host using an embedded URL string. "
-                    "(source: strings, query_or_table: URL strings, "
-                    "row_or_rule: embedded URL value) " * 4)
-        return f"# {target}\n\n{cited}{retained}"
-
-    repaired, attempts = pub.retry_report_uncited_sections(
-        original, [target], retry
-    )
-
-    assert attempts[0]["accepted"] is True
-    assert attempts[0]["uncited_after"] < attempts[0]["uncited_before"]
-    assert not pub.uncited_report_claims(repaired)
-
-
-def test_uncited_section_retry_rejects_marker_only_change():
-    target = "11. MITRE ATT&CK Mapping"
-    claim = "The sample creates a scheduled task to persist after reboot."
-    original = f"# {target}\n\n{claim} {claim} {claim}"
-
-    def retry(_section: str, _original: str, _uncited: list[str]) -> str:
-        return (f"# {target}\n\n<!-- (source: yara) -->\n"
-                f"{claim} {claim} {claim}")
-
-    repaired, attempts = pub.retry_report_uncited_sections(
-        original, [target], retry
-    )
-
-    assert repaired == original
-    assert attempts[0]["accepted"] is False
-    assert attempts[0]["reason"] == "retry did not reduce uncited claim count"
-
-
-def test_uncited_section_retry_normalizes_missing_heading_and_runs_bounded_second_pass():
-    target = "11. MITRE ATT&CK Mapping"
-    first = (
-        "The sample creates a scheduled task to persist after reboot. "
-        "(source: task_scheduler, query_or_table: tasks, "
-        "row_or_rule: task name) "
-        "The sample contacts a remote host using an embedded URL string."
-    )
-    second = (
-        "The sample creates a scheduled task to persist after reboot. "
-        "(source: task_scheduler, query_or_table: tasks, "
-        "row_or_rule: task name). "
-        "The sample contacts a remote host using an embedded URL string. "
-        "(source: strings, query_or_table: URL strings, "
-        "row_or_rule: embedded URL value). "
-    ) * 4
-    original = f"# {target}\n\n" + (
-        "The sample creates a scheduled task to persist after reboot. "
-        "The sample contacts a remote host using an embedded URL string. "
-    ) * 8
-    calls = []
-
-    def retry(_section: str, current: str, uncited: list[str]) -> str:
-        calls.append((current, uncited))
-        # Deliberately omit the heading: the publisher owns the section identity.
-        return first if len(calls) == 1 else second
-
-    repaired, attempts = pub.retry_report_uncited_sections(
-        original, [target], retry, max_attempts=2
-    )
-
-    assert len(calls) == 2
-    assert attempts[0]["accepted"] is True
-    assert attempts[1]["accepted"] is True
-    assert pub.missing_sections(repaired, [target]) == []
-    assert not pub.uncited_report_claims(repaired)
-
-
-def test_citation_retry_preserves_following_required_section_with_mixed_heading_levels():
-    target = "6. Network Analysis & C2"
-    following = "7. Capability Assessment"
-    claim = "The sample contacts a remote host using an embedded URL string."
-    original = (
-        f"# {target}\n\n{claim} {claim}\n\n"
-        f"## {following}\n\n"
-        + ("Capabilities were derived from observed artifacts. " * 8)
-    )
-
-    def retry(section: str, _original: str, _uncited: list[str]) -> str:
-        assert section == target
-        cited = (
-            "The sample contacts a remote host using an embedded URL string. "
-            "(source: strings, query_or_table: URL strings, "
-            "row_or_rule: embedded URL value) "
-        ) * 12
-        return f"# {target}\n\n{cited}"
-
-    repaired, attempts = pub.retry_report_uncited_sections(
-        original, [target], retry
-    )
-
-    assert attempts[0]["accepted"] is True
-    assert f"## {following}" in repaired
-    assert "Capabilities were derived" in repaired
-
-
 def test_section_metadata_is_recomputed_from_final_markdown():
     required = ["1. Executive Summary", "2. Sample Metadata"]
     markdown = (
@@ -421,11 +310,11 @@ def test_section_metadata_is_recomputed_from_final_markdown():
 
 def test_section_publisher_counts_llm_generations_and_local_sections_truthfully():
     pass1 = [
-        {"name": name, "citation_repair": {"accepted": False} if index == 0 else None}
+        {"name": name}
         for index, name in enumerate(pub3.REPORT_SECTION_SPECS)
     ]
     pass2 = [
-        {"name": name, "citation_repair": {"accepted": False} if index == 0 else None}
+        {"name": name}
         for index, (name, spec) in enumerate(pub3.REPORT_SECTION_SPECS.items())
         if spec[3]
     ]
@@ -436,11 +325,10 @@ def test_section_publisher_counts_llm_generations_and_local_sections_truthfully(
         "pass1_llm_generation_calls": 14,
         "pass2_llm_generation_calls": 14,
         "local_sections": 3,
-        "citation_repair_calls": 2,
     }
 
 
-def test_cross_reference_draft_skips_repair_that_will_be_replaced(monkeypatch):
+def test_first_draft_is_preserved_for_the_support_gate(monkeypatch):
     section = "5. Behavioral Analysis"
     body = "The sample performs a behavior that requires source evidence. " * 8
     calls = []
@@ -457,14 +345,29 @@ def test_cross_reference_draft_skips_repair_that_will_be_replaced(monkeypatch):
     monkeypatch.setattr(pub3, "get_llm_model", lambda: "test-model")
 
     result = pub3._run_one_section(
-        section, "a" * 64, {}, {}, pass_num=1, repair_citations=False
+        section, "a" * 64, {}, {}, pass_num=1
     )
 
     assert len(calls) == 1
-    assert result["citation_repair_skipped"] == (
-        "cross-reference pass replaces this exploratory draft"
+    assert result["first_draft_policy"] == (
+        "first draft is preserved; the claim-support gate reports defects "
+        "instead of asking the writer to repair its own unsupported claims"
     )
     assert result["uncited_claim_count"] > 0
+    assert "Trusted reverse-engineering methodology" in calls[0]
+    assert "report-evidence-methodology v" in calls[0]
+
+
+def test_technical_writers_receive_the_run_evidence_manifest():
+    manifest = (
+        "## Sample/run identity and evidence provenance\n"
+        '{"sample_sha256":"' + "a" * 64 + '","run_id":"' + "b" * 32 + '"}'
+    )
+    prompt = pub3._technical_section_prompt(
+        "5. Behavioral & Dynamic Analysis", "behavior", "tool evidence",
+        "a" * 64, provenance_block_text=manifest)
+    assert manifest in prompt
+    assert "report-evidence-methodology v" in prompt
 
 
 def test_a_failed_group_is_recorded_and_omits_its_sections(monkeypatch):

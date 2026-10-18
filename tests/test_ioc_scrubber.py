@@ -377,30 +377,13 @@ def test_a_real_corpus_still_scrubs(tmp_path):
     assert "evil.example.org" not in out, "an ungrounded indicator survived"
 
 
-def test_master_v3_scrub_record_is_persisted():
-    """HIGH-1: the record existed and was read nowhere.
+def test_report_publishers_leave_indicator_claims_for_the_quality_gate():
+    from _layout import source
 
-    `_master_ioc_scrub` was assigned in section_publisher and never read, so for
-    REPORT-MASTER-v3 the removal was invisible. The sibling publish paths all
-    record theirs; master_v3 was left out. And REPORT-MASTER-v3 is not the
-    report `claimed_ioc_verification` reads (report_quality picks
-    tech3 -> tech2 -> master), so the audit would never have seen the loss
-    either -- leaving the e879318 bug undetectable for that report.
-    """
-    from _layout import add_module_dir, source
-
-    add_module_dir("revai/section_publisher.py")
-    import section_publisher
-
-    src = source("revai/section_publisher.py")
-    assert src.count("_master_ioc_scrub") >= 2, (
-        "master_v3's scrub record is assigned but never read; that is the only "
-        "tripwire the wrong-evidence-root bug has for this report")
-    assert "master_v3_indicator_scrub" in src, (
-        "the record must be written into section-results-v3.json")
-    assert callable(section_publisher.scrub_report_indicators)
-
-
+    for rel in ("revai/section_publisher.py", "revai/publish_report_v2.py"):
+        src = source(rel)
+        assert "scrub_report_indicators(" not in src
+        assert "indicator_scrub" not in src
 def test_empty_markdown_is_handled():
     """The meta keys are present even on the no-op paths.
 

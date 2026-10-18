@@ -34,7 +34,9 @@ def test_status_with_pack(tmp_path, monkeypatch):
     assert status["dns"] == 2            # synthetic pack carries 2 DNS names
     assert status["sni"] == 1
     assert status["http"] == 1
-    assert status["dropped"] >= 1        # %APPDATA% payload path
+    assert status["dropped"] == 0        # decoded path is not proof of a drop
+    assert status["frida_decoded_paths"] == 1
+    assert status["files_created_written"] == 0
     assert status["unpack_artifact"] == "x64_demo_unpacked.exe"
     assert status["corroboration_enabled"] is True
     assert status["section_renders"] is True

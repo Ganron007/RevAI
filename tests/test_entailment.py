@@ -1,20 +1,4 @@
-"""#6: claim-level entailment -- does each claim follow from the evidence it cites?
-
-The gate fires on a CIRCULAR citation: a claim offering the analysis's own prose
-as the evidence for itself. Measured across five real reports at 1-20 per report
-(feodo_banking: 20 of 592 claims), it is the one class that is structural rather
-than textual, and therefore the one class that can be gated without an alias map.
-
-The classes deliberately NOT gated are recorded here too, because a gate that
-fires on its own blind spots is worse than no gate:
-
-  * unresolved-source -- provenance-label spellings the alias map does not
-    cover (12-56 per report on healthy runs).
-  * unresolved-row -- the citation parser truncates at commas
-    (`load_library (T1129` from `load_library (T1129, ...)`), and a model's
-    characterisation of a table is not a literal row. 16 of 16 on packed_rook
-    were one of those two.
-"""
+"""Claim review requires source-bound evidence and semantic support."""
 import json
 import sys
 from pathlib import Path
@@ -29,8 +13,19 @@ sys.path.insert(0, str(resolve("revai/entailment.py").parent))
 import entailment as E  # noqa: E402
 
 
+def _review_supported(batch, **_kwargs):
+    return {"reviews": [
+        {"id": item["id"], "verdict": "supported",
+         "evidence_quote": item["citations"][0]["row"],
+         "reason": "the exact cited observation supports the claim"}
+        for item in batch
+    ]}
+
+
 def _case(tmp_path, reports: dict, artifacts: dict | None = None):
-    case = tmp_path / "logs" / ("a" * 64) / "scripted"
+    sha = "a" * 64
+    run_id = "1" * 32
+    case = tmp_path / "logs" / sha / "scripted"
     (case / "deep_dive").mkdir(parents=True)
     for name, md in reports.items():
         (case / name).write_text(md, encoding="utf-8")
@@ -38,8 +33,57 @@ def _case(tmp_path, reports: dict, artifacts: dict | None = None):
         p = case / rel
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(txt, encoding="utf-8")
-    return case
 
+    # Real audit inputs are bound to one execution. Build the same contract in
+    # fixtures so tests exercise report/evidence integrity, not legacy fallback.
+    for rel, fallback in (
+        ("verdict.json", {"verdict": "unknown"}),
+        ("quick_scan/00-tools-raw.json", {"fixture": True}),
+    ):
+        p = case / rel
+        if not p.is_file():
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_text(json.dumps(fallback), encoding="utf-8")
+
+    for p in case.rglob("*.json"):
+        if p.name in {"execution-context.json", "report-input-manifest.json",
+                      "report-output-manifest.json"}:
+            continue
+        try:
+            payload = json.loads(p.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+        if isinstance(payload, dict):
+            rel = p.relative_to(case).as_posix()
+            payload["_cadre_provenance"] = {
+                "schema": "revai-artifact-provenance/v1",
+                "sha256": sha, "run_id": run_id, "mode": "scripted",
+                "artifact": rel,
+            }
+            p.write_text(json.dumps(payload), encoding="utf-8")
+
+    context = {
+        "schema": "revai-execution-context/v1", "sha256": sha,
+        "run_id": run_id, "mode": "scripted", "engine": "test",
+        "started_at": "2026-10-18T00:00:00+00:00",
+    }
+    (case / "execution-context.json").write_text(
+        json.dumps(context), encoding="utf-8")
+    import v2_lib
+    manifest = v2_lib.report_input_manifest(
+        sha, context, case, list(v2_lib.REPORT_INPUT_ARTIFACTS))
+    publish = case / "publish"
+    publish.mkdir(exist_ok=True)
+    (publish / "report-input-manifest.json").write_text(
+        json.dumps(manifest), encoding="utf-8")
+    manifest_digest = v2_lib.report_input_manifest_digest(manifest)
+    execution_comment = v2_lib.report_execution_comment(
+        sha, context, manifest_digest) + "\n\n"
+    for report in case.glob("REPORT-*.md"):
+        report.write_text(execution_comment + report.read_text(encoding="utf-8"),
+                          encoding="utf-8")
+    v2_lib.record_report_outputs(case, sha, context, manifest_digest)
+    return case
 
 # ------------------------------------------------------------- literal vs summary
 @pytest.mark.parametrize("row,expect", [
@@ -88,6 +132,18 @@ def test_claims_are_extracted_with_their_citation():
     assert len(claims) == 1
     assert claims[0]["source"] == "ghidra_query"
     assert claims[0]["row"] == "RegSetValueExA"
+
+
+def test_claim_extraction_keeps_every_citation_on_a_sentence():
+    md = ("The sample imports CreateRemoteThread and WinHttpOpen "
+          "(source: ghidra_query, query_or_table: imports, "
+          "row_or_rule: CreateRemoteThread) "
+          "(source: ghidra_query, query_or_table: imports, "
+          "row_or_rule: WinHttpOpen).")
+    claims = E.extract_claims(md)
+    assert len(claims) == 1
+    assert [c["row"] for c in claims[0]["citations"]] == [
+        "CreateRemoteThread", "WinHttpOpen"]
 
 
 def test_claim_extraction_does_not_truncate_a_report_by_default():
@@ -253,58 +309,113 @@ def test_the_gate_fires_on_a_circular_citation(tmp_path):
 def test_the_gate_passes_a_report_with_real_citations(tmp_path):
     case = _case(tmp_path, {
         "REPORT-MASTER-v2.md":
-            "The sample calls CreateRemoteThread "
+            "The sample imports CreateRemoteThread "
             "(source: ghidra_query, query_or_table: imports, "
             "row_or_rule: CreateRemoteThread)."},
-        {"deep_dive/agentic_deep_dive.json": '{"imports": "CreateRemoteThread"}'})
-    res = E.check_report_entailment("a" * 64, case_root=case)
+        {"deep_dive/00-sql-evidence.json":
+         '{"ghidra": {"imports": "CreateRemoteThread"}}'})
+    res = E.check_report_entailment(
+        "a" * 64, case_root=case, semantic_reviewer=_review_supported)
     assert res["ok"] is True, res["violations"]
+    assert res["by_status"]["semantically-supported"] == 1
     assert res["by_status"].get("circular", 0) == 0
 
 
-def test_a_summary_citation_is_reported_not_gated(tmp_path):
-    """A model's characterisation of a table is not a literal row.
+def test_uncited_factual_claims_and_table_rows_block_green(tmp_path):
+    case = _case(tmp_path, {
+        "REPORT-MASTER-v2.md": (
+            "The sample creates a scheduled task for persistence.\n\n"
+            "| Behavior | Evidence |\n|---|---|\n"
+            "| Contacts c2.example.test | network observation |"
+        ),
+    })
+    result = E.check_report_entailment(
+        "a" * 64, case_root=case, semantic_reviewer=_review_supported)
+    assert result["ok"] is False
+    assert result["by_status"].get("missing-citation") == 2, result
 
-    `KERNEL32 (21), USER32 (10)` names a real import table but is not itself a
-    row. Gating on it would fail a sound report for citation style -- and 16 of
-    packed_rook's unresolved rows were exactly this shape.
-    """
+
+def test_report_output_hash_mismatch_blocks_review(tmp_path):
+    case = _case(tmp_path, {
+        "REPORT-MASTER-v2.md":
+            "The sample imports CreateRemoteThread "
+            "(source: ghidra_query, query_or_table: imports, "
+            "row_or_rule: CreateRemoteThread)."},
+        {"deep_dive/00-sql-evidence.json":
+         '{"ghidra": {"imports": "CreateRemoteThread"}}'})
+    report = case / "REPORT-MASTER-v2.md"
+    report.write_text(report.read_text(encoding="utf-8") + "\nEdited after manifest.\n",
+                      encoding="utf-8")
+    result = E.check_report_entailment(
+        "a" * 64, case_root=case, semantic_reviewer=_review_supported)
+    assert result["ok"] is False
+    assert result["status"] == "provenance-invalid"
+    assert "report output changed" in result["reason"]
+
+
+def test_evidence_hash_mismatch_blocks_review(tmp_path):
+    case = _case(tmp_path, {
+        "REPORT-MASTER-v2.md":
+            "The sample imports CreateRemoteThread "
+            "(source: ghidra_query, query_or_table: imports, "
+            "row_or_rule: CreateRemoteThread)."},
+        {"deep_dive/00-sql-evidence.json":
+         '{"ghidra": {"imports": "CreateRemoteThread"}}'})
+    evidence = case / "deep_dive" / "00-sql-evidence.json"
+    evidence.write_text(evidence.read_text(encoding="utf-8") + " ", encoding="utf-8")
+    result = E.check_report_entailment(
+        "a" * 64, case_root=case, semantic_reviewer=_review_supported)
+    assert result["ok"] is False
+    assert result["status"] == "provenance-invalid"
+    assert "changed after manifest" in result["reason"]
+
+
+def test_a_summary_citation_is_not_treated_as_supported(tmp_path):
+    """A summary label without a resolving observation cannot pass the gate."""
     case = _case(tmp_path, {
         "REPORT-MASTER-v2.md":
             "Imports are KERNEL32 (21), USER32 (10) "
             "(source: ghidra_query, query_or_table: imports, "
             "row_or_rule: KERNEL32 (21), USER32 (10))."},
-        {"deep_dive/agentic_deep_dive.json":
-             '{"imports": ["KERNEL32"]}'})
+        {"deep_dive/00-sql-evidence.json":
+             '{"ghidra": {"imports": ["KERNEL32"]}}'})
     res = E.check_report_entailment("a" * 64, case_root=case)
-    assert res["by_status"].get("summary-citation", 0) == 1, (
-        "a characterisation must be counted as such")
-    assert res["ok"] is True, "and must not gate"
+    assert res["by_status"].get("unresolved-row", 0) == 1
+    assert res["ok"] is False
 
 
-def test_an_unresolved_literal_row_is_counted(tmp_path):
-    """A literal that resolves nowhere IS counted -- reported, not gated.
-
-    The literal/summary distinction exists so the count means something: a
-    literal that resolves nowhere is either a fabrication or the checker's own
-    blind spot, and both need to be visible.
-    """
+def test_an_unresolved_literal_row_blocks_green(tmp_path):
+    """A literal absent from its cited source artifact cannot pass."""
     case = _case(tmp_path, {
         "REPORT-MASTER-v2.md":
             "The sample calls CreateRemoteThread (source: ghidra_query, "
             "query_or_table: imports, row_or_rule: CreateRemoteThread)."},
-        {"deep_dive/agentic_deep_dive.json": '{"imports": ["ExitProcess"]}'})
+        {"deep_dive/00-sql-evidence.json":
+         '{"ghidra": {"imports": ["ExitProcess"]}}'})
     res = E.check_report_entailment("a" * 64, case_root=case)
     assert res["by_status"].get("unresolved-row", 0) == 1
-    assert res["ok"] is True, (
-        "reported, not gated -- until the alias map and row parsing are proven "
-        "against a corpus, this class is a count and not a gate")
+    assert res["ok"] is False
+
+
+def test_a_row_from_another_engine_cannot_resolve_the_citation(tmp_path):
+    case = _case(tmp_path, {
+        "REPORT-MASTER-v2.md":
+            "The sample includes an observed capability marker "
+            "(source: capa, query_or_table: rules, row_or_rule: SharedMarker)."},
+        {"deep_dive/01-tools-raw.json": json.dumps({
+            "capa": {"rules": ["DifferentRule"]},
+            "malcat": {"strings": ["SharedMarker"]},
+        })})
+    result = E.check_report_entailment("a" * 64, case_root=case)
+    assert result["ok"] is False
+    assert result["by_status"].get("unresolved-row") == 1, result
 
 
 def test_no_reports_is_not_applicable(tmp_path):
     case = _case(tmp_path, {}, {})
     res = E.check_report_entailment("a" * 64, case_root=case)
     assert res["applicable"] is False
+    assert res["ok"] is False
 
 
 def test_the_cli_emits_parseable_json(tmp_path, capsys):
@@ -312,7 +423,10 @@ def test_the_cli_emits_parseable_json(tmp_path, capsys):
                             "The sample persists "
                             "(source: ghidra_query, query_or_table: imports, "
                             "row_or_rule: RegSetValueExA)."},
-                 {"deep_dive/01-tools-raw.json": '{"imports": "RegSetValueExA"}'})
+                 {"deep_dive/00-sql-evidence.json":
+                  '{"ghidra": {"imports": "RegSetValueExA"}}'})
+    original_reviewer = E._semantic_review_batch
+    E._semantic_review_batch = _review_supported
     argv = sys.argv
     sys.argv = ["entailment.py", "a" * 64, "--case", str(case)]
     try:
@@ -320,6 +434,7 @@ def test_the_cli_emits_parseable_json(tmp_path, capsys):
         out = capsys.readouterr().out
     finally:
         sys.argv = argv
+        E._semantic_review_batch = original_reviewer
     assert rc == 0
     json.loads(out), "the CLI must emit parseable JSON, not a truncated document"
 
@@ -338,3 +453,139 @@ def test_the_cli_fails_on_a_circular_citation(tmp_path, capsys):
         sys.argv = argv
     assert rc == 1
     assert json.loads(out)["by_status"]["circular"] == 1
+
+
+def test_semantic_review_must_quote_the_exact_primary_evidence(tmp_path):
+    case = _case(tmp_path, {
+        "REPORT-MASTER-v2.md":
+            "The sample imports CreateRemoteThread "
+            "(source: ghidra_query, query_or_table: imports, "
+            "row_or_rule: CreateRemoteThread)."},
+        {"deep_dive/00-sql-evidence.json":
+         '{"ghidra": {"imports": "CreateRemoteThread"}}'})
+    def wrong_quote(batch):
+        return {"reviews": [{"id": item["id"], "verdict": "supported",
+                             "evidence_quote": "not present"} for item in batch]}
+    result = E.check_report_entailment(
+        "a" * 64, case_root=case, semantic_reviewer=wrong_quote)
+    assert result["ok"] is False
+    assert result["by_status"]["invalid-review"] == 1
+
+
+def test_semantic_review_api_failure_is_not_a_pass(tmp_path):
+    case = _case(tmp_path, {
+        "REPORT-MASTER-v2.md":
+            "The sample imports CreateRemoteThread "
+            "(source: ghidra_query, query_or_table: imports, "
+            "row_or_rule: CreateRemoteThread)."},
+        {"deep_dive/00-sql-evidence.json":
+         '{"ghidra": {"imports": "CreateRemoteThread"}}'})
+    def unavailable(_batch):
+        raise TimeoutError("review endpoint unavailable")
+    result = E.check_report_entailment(
+        "a" * 64, case_root=case, semantic_reviewer=unavailable)
+    assert result["ok"] is False
+    assert result["status"] == "verification-error"
+    assert result["by_status"]["verification-error"] == 1
+
+
+def test_completed_semantic_review_is_cached_by_report_and_evidence_hash(tmp_path, monkeypatch):
+    case = _case(tmp_path, {
+        "REPORT-MASTER-v2.md":
+            "The sample imports CreateRemoteThread "
+            "(source: ghidra_query, query_or_table: imports, "
+            "row_or_rule: CreateRemoteThread)."},
+        {"deep_dive/00-sql-evidence.json":
+         '{"ghidra": {"imports": "CreateRemoteThread"}}'})
+    calls = []
+    def reviewer(batch, **_kwargs):
+        calls.append(len(batch))
+        return _review_supported(batch)
+    monkeypatch.setattr(E, "_semantic_review_batch", reviewer)
+    first = E.check_report_entailment("a" * 64, case_root=case)
+    second = E.check_report_entailment("a" * 64, case_root=case)
+    assert first["ok"] is True and second["ok"] is True
+    assert calls == [1]
+
+
+def test_claim_review_cache_invalidates_when_methodology_changes(tmp_path, monkeypatch):
+    import skills
+    case = _case(tmp_path, {
+        "REPORT-MASTER-v2.md":
+            "The sample imports CreateRemoteThread "
+            "(source: ghidra_query, query_or_table: imports, "
+            "row_or_rule: CreateRemoteThread)."},
+        {"deep_dive/00-sql-evidence.json":
+         '{"ghidra": {"imports": "CreateRemoteThread"}}'})
+    calls = []
+    method = {"text": "review method v1"}
+
+    def reviewer(batch, **kwargs):
+        calls.append(kwargs.get("methodology_block"))
+        return _review_supported(batch)
+
+    monkeypatch.setattr(skills, "report_methodology_block", lambda _scope: method["text"])
+    monkeypatch.setattr(E, "_semantic_review_batch", reviewer)
+    first = E.check_report_entailment("a" * 64, case_root=case)
+    method["text"] = "review method v2"
+    second = E.check_report_entailment("a" * 64, case_root=case)
+    third = E.check_report_entailment("a" * 64, case_root=case)
+
+    assert first["ok"] and second["ok"] and third["ok"]
+    assert calls == ["review method v1", "review method v2"]
+    assert first["analysis_identity"]["review_methodology_sha256"] != \
+        second["analysis_identity"]["review_methodology_sha256"]
+
+
+def test_dynamic_citations_resolve_to_saved_winre_source_rows(tmp_path):
+    case = _case(tmp_path, {"REPORT-MASTER-v2.md": ""}, {
+        "deep_dive/02-dynamic-pack.json": json.dumps({
+            "meta": {"ok": True, "error": None, "producer": "winre"},
+            "job_meta": {"detonation_ran": True, "sample_pid": 123,
+                         "window": {"effective_s": 13.9}},
+            "network_intel": {"captures": [{"dns_queries": ["c2.example.test"]}]},
+            "procmon_sample_events": [{
+                "row": 3, "pid": 456, "operation": "CreateFile",
+                "path": r"C:\\ProgramData\\Upkeep\\payload.bin",
+            }],
+        }),
+    })
+    path = case / "deep_dive" / "02-dynamic-pack.json"
+    meta = E._locate_cited_row(path, "ok, error", "META.json")
+    assert meta and "true" in meta["excerpt"] and "null" in meta["excerpt"]
+    window = E._locate_cited_row(
+        path, "window.effective_s", "META.job.json")
+    assert window and "13.9" in window["excerpt"]
+    dns = E._locate_cited_row(
+        path, "captures[0].dns_queries", "network_intel.json")
+    assert dns and "c2.example.test" in dns["excerpt"]
+    procmon = E._locate_cited_row(
+        path, "data row 3; PID 456; operation CreateFile", "procmon.csv")
+    assert procmon and "payload.bin" in procmon["excerpt"]
+
+
+def test_report_input_manifest_rejects_windows_and_posix_traversal(tmp_path):
+    import v2_lib
+    sha = "a" * 64
+    case = _case(tmp_path, {"REPORT-MASTER-v2.md": ""}, {})
+    context = v2_lib.read_execution_context(sha, mode="scripted", case_root=case)
+    manifest_path = case / "publish" / "report-input-manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["artifacts"][0]["path"] = "../outside.json"
+    with pytest.raises(RuntimeError, match="invalid or unapproved"):
+        v2_lib.validate_report_input_manifest(manifest, sha, context, case)
+    manifest["artifacts"][0]["path"] = r"C:\outside.json"
+    with pytest.raises(RuntimeError, match="invalid or unapproved"):
+        v2_lib.validate_report_input_manifest(manifest, sha, context, case)
+
+
+def test_artifact_provenance_must_bind_exact_artifact_path():
+    import v2_lib
+    payload = {"_cadre_provenance": {
+        "schema": "revai-artifact-provenance/v1", "sha256": "a" * 64,
+        "run_id": "1" * 32, "mode": "scripted", "artifact": "other.json",
+    }}
+    with pytest.raises(RuntimeError, match="artifact"):
+        v2_lib.validate_case_artifact_identity(
+            payload, "a" * 64, {"run_id": "1" * 32, "mode": "scripted"},
+            "verdict.json")

@@ -80,8 +80,9 @@ For the project overview, see the top-level [`README.md`](../README.md).
 ## RE agent skills
 
 Reverse-engineering procedure is a cited, versioned artifact the agent LOADS on
-demand, never prose it recalls. Five skills ship (re-methodology,
-unpack-and-verify, obfuscation-recognition, ghidra-sql-recipes,
-verdict-calibration); the deep-dive prompt carries a one-line index and the
-load_skill tool fetches the body. See [OPERATE.md](OPERATE.md).
+demand, never prose it recalls. Six skills ship, including
+`report-evidence-methodology` for report writing and claim review. Each has a
+version, source provenance in `sources.jsonl`, and explicit scope limits.
+Internal knowledge-base paths are provenance, not public links; repository-derived
+material is labeled as such. See [OPERATE.md](OPERATE.md).
 

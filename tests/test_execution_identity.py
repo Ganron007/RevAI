@@ -38,6 +38,33 @@ def test_begin_execution_persists_and_resolves_identity(tmp_path, monkeypatch):
     assert v2_lib.revai_provenance(SHA)["run_id"] == context["run_id"]
 
 
+def test_begin_execution_archives_prior_report_outputs(tmp_path, monkeypatch):
+    monkeypatch.setattr(v2_lib, "LOGS_DIR", tmp_path / "logs")
+    root = tmp_path / "logs" / SHA / "agentic"
+    root.mkdir(parents=True)
+    old_context = {
+        "schema": "revai-execution-context/v1", "sha256": SHA,
+        "run_id": "a" * 32, "mode": "agentic", "engine": "test",
+        "started_at": "2026-10-17T00:00:00+00:00",
+    }
+    (root / "execution-context.json").write_text(json.dumps(old_context))
+    (root / "REPORT-MASTER-v3.md").write_text("old report")
+    (root / "section-results-v3.json").write_text("{}")
+    (root / "verdict.json").write_text("{\"old\": true}")
+    (root / "publish").mkdir()
+    (root / "publish" / "report-output-manifest.json").write_text("{}")
+
+    current = v2_lib.begin_execution(SHA, mode="agentic", engine="test")
+    history = root / "publish" / "history" / f"{'a' * 32}-{current['run_id']}"
+
+    assert not (root / "REPORT-MASTER-v3.md").exists()
+    assert (history / "REPORT-MASTER-v3.md").read_text() == "old report"
+    assert (history / "section-results-v3.json").is_file()
+    assert (history / "verdict.json").is_file()
+    assert (history / "publish" / "report-output-manifest.json").is_file()
+    assert json.loads((root / "execution-context.json").read_text())["run_id"] == current["run_id"]
+
+
 def test_begin_execution_rejects_malformed_shared_identity(tmp_path, monkeypatch):
     monkeypatch.setattr(v2_lib, "LOGS_DIR", tmp_path / "logs")
     with pytest.raises(ValueError, match="32 lowercase hexadecimal"):

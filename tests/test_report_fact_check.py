@@ -216,12 +216,12 @@ def test_prose_identifiers_are_not_claims():
     assert result["claims"] == 0
 
 
-def test_ioc_factcheck_issue_modes(monkeypatch):
+def test_ioc_factcheck_is_always_enforced(monkeypatch):
     monkeypatch.delenv("REVAI_IOC_FACTCHECK", raising=False)
     assert rq._ioc_factcheck_issue({"unverified": 2}) == "report:unverified_iocs:2"
     assert rq._ioc_factcheck_issue({"unverified": 0}) is None
     monkeypatch.setenv("REVAI_IOC_FACTCHECK", "advisory")
-    assert rq._ioc_factcheck_issue({"unverified": 2}) is None
+    assert rq._ioc_factcheck_issue({"unverified": 2}) == "report:unverified_iocs:2"
 
 # --- behavior prerequisites (#14d) ----------------------------------------
 #

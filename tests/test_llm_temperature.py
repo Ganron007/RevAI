@@ -67,8 +67,10 @@ def test_the_request_body_actually_uses_it(monkeypatch):
     function.
     """
     src = source("revai/v2_lib.py")
-    assert '"temperature": _llm_temperature()' in src, (
-        "the request body hardcodes temperature again; the helper is inert")
+    assert "request_temperature = _llm_temperature()" in src, (
+        "the request path stopped resolving the configured temperature")
+    assert '"temperature": request_temperature' in src, (
+        "the request body does not use the resolved temperature")
     assert '"temperature": 0.0' not in src, (
         "a hardcoded temperature remains alongside the helper")
 

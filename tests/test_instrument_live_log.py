@@ -14,10 +14,12 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from _layout import resolve  # noqa: E402
+from _layout import bash_is_usable, resolve  # noqa: E402
 
 TOOL = resolve("scripts/instrument-live-log.sh")
 
@@ -59,6 +61,8 @@ def test_it_deploys_with_the_operator_scripts():
 
 def test_bash_syntax_is_valid():
     """A syntax error here means the tool is dead in production."""
+    if not bash_is_usable():
+        pytest.skip("bash/WSL is present but cannot execute on this host")
     out = subprocess.run(
         ["bash", "-n", TOOL.name],
         capture_output=True, text=True, cwd=str(TOOL.parent))
@@ -77,6 +81,8 @@ def test_no_line_endings_can_break_bash():
 
 
 def test_usage_error_exits_three():
+    if not bash_is_usable():
+        pytest.skip("bash/WSL is present but cannot execute on this host")
     proc = _run("/nonexistent-sample-path-xyz")
     assert proc.returncode == 3, (proc.returncode, proc.stderr, proc.stdout)
 

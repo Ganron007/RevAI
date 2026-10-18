@@ -493,7 +493,7 @@ export default function SettingsPage() {
             </div>
             <Field
               label="Dynamic corroboration"
-              hint="include WinRE detonation evidence — runtime network, dropped files, unpack artifact — as a corroboration block and a deterministic report section. Requires packs under the WinRE logs root; absent packs are reported as not present"
+              hint="include WinRE detonation evidence — runtime network, sample-process file create/write rows, Frida-decoded paths, and unpack artifact — as a corroboration block and a deterministic report section. Decoded paths alone do not prove file creation. Requires packs under the WinRE logs root; absent packs are reported as not present"
             >
               <Select
                 value={rc.winre_dynamic ? '1' : '0'}

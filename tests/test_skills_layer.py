@@ -19,7 +19,8 @@ sys.path.insert(0, str(ROOT / "revai"))
 import skills  # noqa: E402
 
 EXPECTED = ("re-methodology", "unpack-and-verify", "obfuscation-recognition",
-            "ghidra-sql-recipes", "verdict-calibration")
+            "ghidra-sql-recipes", "verdict-calibration",
+            "report-evidence-methodology")
 
 
 def test_the_five_approved_skills_all_exist():
@@ -100,6 +101,16 @@ def test_citation_is_emittable_and_honest_about_being_unresolvable():
 def test_citation_for_an_unknown_skill_is_empty_not_broken():
     """A report must omit a citation rather than emit a broken one."""
     assert skills.skill_citation("nope") == ""
+
+
+def test_report_methodology_block_includes_versioned_evidence_rules():
+    block = skills.report_methodology_block(
+        "technical reverse engineering behavioral analysis ATT&CK")
+    assert "report-evidence-methodology v" in block
+    assert "re-methodology v" in block
+    assert "verdict-calibration v" in block
+    assert "not sample evidence" in block.lower()
+    assert "sha256=" in block
 
 
 def test_name_is_sanitised_so_a_path_cannot_escaped():

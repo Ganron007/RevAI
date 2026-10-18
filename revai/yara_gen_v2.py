@@ -28,6 +28,7 @@ from v2_lib import (  # noqa: E402
     load_session,
     revai_provenance,
     revai_tools_iocs,
+    stamp_case_artifact,
     yara_rule_validate,
 )
 
@@ -457,6 +458,7 @@ def main():
     # Gap #14a: deterministic per-IOC confidence tiers (additive; the per-type
     # lists above are unchanged so existing consumers keep working).
     iocs["confidence"] = annotate_ioc_confidence(iocs)
+    iocs = stamp_case_artifact(iocs, args.sha256, "iocs.json")
     ioc_path.write_text(json.dumps(iocs, indent=2))
 
     valid, vmsg = yara_rule_validate(yar_path)
@@ -480,6 +482,7 @@ def main():
         "provenance": revai_provenance(),
         "publish_target": "revai_publish",
     }
+    meta = stamp_case_artifact(meta, args.sha256, "rule.yara.json")
     meta_path.write_text(json.dumps(meta, indent=2))
     audit_write(args.sha256, {"source": "yara_gen_v2", "meta": meta})
 

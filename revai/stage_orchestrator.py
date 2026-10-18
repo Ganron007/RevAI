@@ -990,11 +990,9 @@ def run_langgraph_orchestrator(sample: Path | None, sha: str | None) -> dict:
         if not sp:
             raise SystemExit("session missing sample_path — pass sample path for intake")
         sample = Path(sp)
-        # A resume in a fresh mode dir must re-run intake so this mode's artifacts
-        # are self-contained: the audit resolves intake evidence inside the mode
-        # dir (rehearsal 2026-09-22: the agentic resume inherited the scripted
-        # intake, so the audit reported intake=False -> all_green false).
-        need_intake = not (case_dir(sha) / "intake-validation.json").exists()
+        # Each invocation gets a new run ID and archives prior evidence. Re-run
+        # intake so its output is bound to this execution, not a previous run.
+        need_intake = True
 
     execution = begin_execution(
         sha,

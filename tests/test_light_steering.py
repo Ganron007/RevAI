@@ -25,6 +25,7 @@ add_module_dir("revai/quick_scan_v2.py")
 
 import quick_scan_v2  # noqa: E402
 import steering  # noqa: E402
+import v2_lib  # noqa: E402
 
 
 # ------------------------------------------------------------------ L1 shape
@@ -120,7 +121,9 @@ def test_no_artifact_without_a_note(tmp_path):
 
 # ------------------------------------------------------------------ wiring
 
-def test_build_prompt_accepts_and_prepends_steering():
+def test_build_prompt_accepts_and_prepends_steering(tmp_path, monkeypatch):
+    monkeypatch.setattr(v2_lib, "LOGS_DIR", tmp_path / "logs")
+    monkeypatch.setenv("REVAI_RUN_MODE", "agentic")
     session = {"sha256": "a" * 64, "sample_path": "/tmp/s", "ida_session_id": None}
     plain = quick_scan_v2.build_prompt(
         session, "", "", {}, {}, {}, {}, None)
@@ -133,8 +136,10 @@ def test_build_prompt_accepts_and_prepends_steering():
     assert noted.index("Analyst steering") < noted.index("# Triage evidence")
 
 
-def test_no_note_leaves_the_prompt_untouched():
+def test_no_note_leaves_the_prompt_untouched(tmp_path, monkeypatch):
     """The regression guard for L1: opt-in must not perturb the default run."""
+    monkeypatch.setattr(v2_lib, "LOGS_DIR", tmp_path / "logs")
+    monkeypatch.setenv("REVAI_RUN_MODE", "agentic")
     session = {"sha256": "a" * 64, "sample_path": "/tmp/s", "ida_session_id": None}
     a = quick_scan_v2.build_prompt(session, "", "", {}, {}, {}, {}, None,
                                    steering="")

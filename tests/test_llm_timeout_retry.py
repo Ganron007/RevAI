@@ -22,8 +22,12 @@ import urllib.request
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "revai"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _layout import loopback_is_usable  # noqa: E402
 
 import v2_lib  # noqa: E402
 
@@ -84,6 +88,8 @@ def _point_client_at(srv, monkeypatch, timeout_s="1"):
 
 def test_one_timeout_is_retried_at_the_same_effort(monkeypatch):
     """First call hangs, second answers: the caller must get its answer."""
+    if not loopback_is_usable():
+        pytest.skip("host policy blocks loopback TCP connections")
     _FlakyHandler.fail_first = 1
     srv = _serve()
     _point_client_at(srv, monkeypatch)
@@ -98,6 +104,8 @@ def test_one_timeout_is_retried_at_the_same_effort(monkeypatch):
 
 def test_a_genuinely_stuck_call_still_terminates(monkeypatch):
     """Every request hangs: must raise, not retry forever."""
+    if not loopback_is_usable():
+        pytest.skip("host policy blocks loopback TCP connections")
     _FlakyHandler.fail_first = 99
     srv = _serve()
     _point_client_at(srv, monkeypatch)
@@ -114,6 +122,8 @@ def test_a_genuinely_stuck_call_still_terminates(monkeypatch):
 
 def test_a_healthy_call_is_not_retried(monkeypatch):
     """No added latency or duplicate work on the happy path."""
+    if not loopback_is_usable():
+        pytest.skip("host policy blocks loopback TCP connections")
     _FlakyHandler.fail_first = 0
     srv = _serve()
     _point_client_at(srv, monkeypatch)

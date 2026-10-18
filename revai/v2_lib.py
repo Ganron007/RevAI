@@ -9,6 +9,7 @@ Session registry, audit logging, ghidra/ida SQL clients, subprocess tools
 from __future__ import annotations
 
 import base64
+import csv
 import hashlib
 import json
 import os
@@ -42,6 +43,25 @@ CADRE_ENV = Path("/opt/secrets/cadre.env")
 PIPELINE_CONFIG_PATH = Path("/opt/samples/pipeline-config.json")
 RUN_CONTEXT_FILENAME = "execution-context.json"
 RUN_ID_RE = re.compile(r"^[0-9a-f]{32}$")
+REPORT_INPUT_ARTIFACTS = (
+    "verdict.json",
+    "quick_scan/00-tools-raw.json",
+    "quick_scan/pe-imports.json",
+    "quick_scan/ti-enrich.json",
+    "deep_dive/00-sql-evidence.json",
+    "deep_dive/01-tools-raw.json",
+    "deep_dive/02-signals.json",
+    "deep_dive/03-oracle.json",
+    "deep_dive/05-deep-dive.json",
+    "deep_dive/agentic_deep_dive.json",
+    "deep_dive/02-dynamic-pack.json",
+    "dynamic-analysis-status.json",
+    "rule.yara.json",
+    "iocs.json",
+    "function_recovery.json",
+    "intake-validation.json",
+    "malcat-triage.json",
+)
 
 
 def case_dir(sha: str, mode: str | None = None) -> Path:
@@ -80,6 +100,48 @@ def _valid_run_id(value: Any) -> str | None:
     return text if RUN_ID_RE.fullmatch(text) else None
 
 
+def archive_previous_run_artifacts(case_root: Path, sha: str,
+                                   mode: str, next_run_id: str) -> list[str]:
+    """Move prior-run report inputs and deliverables out of the active case tree.
+
+    A case directory is reused across attempts. Any prior evidence artifact left
+    at its canonical path could be mistaken for output of this run. Archive the
+    known report inputs and outputs before replacing execution-context.json.
+    """
+    root = Path(case_root)
+    old_context = read_execution_context(sha, mode=mode, case_root=root)
+    old_run_id = str((old_context or {}).get("run_id") or "unbound")
+    relative_paths = [
+        path.relative_to(root) for path in root.glob("REPORT-*.md")
+    ]
+    relative_paths.extend(Path(name) for name in REPORT_INPUT_ARTIFACTS)
+    relative_paths.extend(Path(name) for name in (
+        "report-v2.json", "report-technical-v2.json",
+        "section-results-v3.json", "report-technical-v3.json",
+        "pipeline-audit.json", "AUDIT-REPORT.md",
+        "publish/report-input-manifest.json",
+        "publish/report-output-manifest.json",
+        "publish/claim-entailment.json",
+        "publish/02-REPORT-MASTER-v2.md",
+        "publish/06-REPORT-TECHNICAL-v2.md",
+        "correlate/02-REPORT-MASTER-v3.md",
+        "correlate/03-REPORT-TECHNICAL-v3.md",
+    ))
+    existing = [rel for rel in dict.fromkeys(relative_paths)
+                if (root / rel).is_file()]
+    if not existing:
+        return []
+    archive_root = root / "publish" / "history" / f"{old_run_id}-{next_run_id}"
+    archived: list[str] = []
+    for rel in existing:
+        source = root / rel
+        destination = archive_root / rel
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        os.replace(source, destination)
+        archived.append(rel.as_posix())
+    return archived
+
+
 def begin_execution(sha: str, *, mode: str, engine: str,
                     started_at: str | None = None,
                     run_id: str | None = None) -> dict:
@@ -95,6 +157,7 @@ def begin_execution(sha: str, *, mode: str, engine: str,
         raise ValueError("run_id must be 32 lowercase hexadecimal characters")
     root = case_dir(sha, mode)
     root.mkdir(parents=True, exist_ok=True)
+    archive_previous_run_artifacts(root, sha, mode, resolved)
     payload = {
         "schema": "revai-execution-context/v1",
         "run_id": resolved,
@@ -112,26 +175,28 @@ def begin_execution(sha: str, *, mode: str, engine: str,
 
 
 def read_execution_context(sha: str | None = None, *, mode: str | None = None,
-                           case_root: Path | None = None) -> dict | None:
+                           case_root: Path | None = None,
+                           logs_root: Path | None = None) -> dict | None:
     """Read the persisted context, rejecting a context for another sample."""
     candidates: list[Path] = []
+    root = Path(logs_root) if logs_root is not None else LOGS_DIR
     if case_root is not None:
         candidates.append(Path(case_root) / RUN_CONTEXT_FILENAME)
     elif sha:
         requested_mode = mode or os.environ.get("REVAI_RUN_MODE", "").strip()
         if requested_mode:
-            candidates.append(LOGS_DIR / sha / requested_mode / RUN_CONTEXT_FILENAME)
+            candidates.append(root / sha / requested_mode / RUN_CONTEXT_FILENAME)
         else:
             # Auditors may be invoked without REVAI_RUN_MODE. Prefer the most
             # recently written mode context, then support legacy flat runs.
-            mode_paths = [LOGS_DIR / sha / m / RUN_CONTEXT_FILENAME
+            mode_paths = [root / sha / m / RUN_CONTEXT_FILENAME
                           for m in ("agentic", "scripted", "ui")]
             candidates.extend(sorted(
                 mode_paths,
                 key=lambda p: p.stat().st_mtime if p.is_file() else 0,
                 reverse=True,
             ))
-            candidates.append(LOGS_DIR / sha / RUN_CONTEXT_FILENAME)
+            candidates.append(root / sha / RUN_CONTEXT_FILENAME)
     for path in dict.fromkeys(candidates):
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
@@ -164,6 +229,328 @@ def stamp_run_id(payload: dict, *, run_id: str | None = None,
     if resolved:
         out["run_id"] = resolved
     return out
+
+
+def require_execution_context(sha: str, *, stage: str) -> dict:
+    """Return this mode's execution identity or stop before producing a report.
+
+    A sample hash identifies bytes, not one analysis attempt. Reports need both
+    the SHA-256 and the run ID so a rerun cannot silently consume another run's
+    artifacts from the same mode directory.
+    """
+    mode = require_run_mode(stage)
+    root = case_dir(sha, mode)
+    context = read_execution_context(sha, mode=mode, case_root=root)
+    if not context:
+        raise RuntimeError(
+            f"{stage}: missing execution-context.json for sha256={sha} mode={mode}; "
+            "refusing to publish from unbound case artifacts"
+        )
+    if context.get("mode") != mode or context.get("sha256") != sha:
+        raise RuntimeError(
+            f"{stage}: execution context does not match requested sample/mode"
+        )
+    env_run_id = _valid_run_id(os.environ.get("REVAI_RUN_ID"))
+    if env_run_id and env_run_id != context.get("run_id"):
+        raise RuntimeError(
+            f"{stage}: environment run_id does not match execution context"
+        )
+    return context
+
+
+def stamp_case_artifact(payload: dict, sha: str, artifact: str) -> dict:
+    """Bind a JSON artifact to the active sample and execution attempt."""
+    if not isinstance(payload, dict):
+        raise TypeError(f"{artifact}: only object artifacts can carry provenance")
+    context = require_execution_context(sha, stage=f"write {artifact}")
+    out = dict(payload)
+    out["_cadre_provenance"] = {
+        "schema": "revai-artifact-provenance/v1",
+        "sha256": sha,
+        "run_id": context["run_id"],
+        "mode": context["mode"],
+        "artifact": artifact,
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+    }
+    return out
+
+
+def validate_case_artifact_identity(payload: dict, sha: str, context: dict,
+                                    artifact: str) -> dict:
+    """Fail closed unless a JSON artifact identifies this exact sample/run/path."""
+    provenance = payload.get("_cadre_provenance") if isinstance(payload, dict) else None
+    if not isinstance(provenance, dict):
+        raise RuntimeError(f"{artifact}: missing sample/run provenance")
+    expected = {
+        "schema": "revai-artifact-provenance/v1",
+        "sha256": sha,
+        "run_id": context.get("run_id"),
+        "mode": context.get("mode"),
+        "artifact": str(artifact).replace("\\", "/"),
+    }
+    mismatches = [key for key, value in expected.items()
+                  if provenance.get(key) != value]
+    if mismatches:
+        raise RuntimeError(
+            f"{artifact}: provenance mismatch for {', '.join(mismatches)}"
+        )
+    return provenance
+
+
+def load_attested_case_json(case_root: Path, rel: str, sha: str,
+                            context: dict, *, required: bool = False) -> dict | None:
+    """Load one JSON report input and verify it belongs to this exact run.
+
+    A same-SHA artifact can still be left over from an earlier analysis attempt.
+    Report stages must not silently use it. Missing optional artifacts remain
+    explicit absences; present but unattested artifacts are errors.
+    """
+    path = Path(case_root) / rel
+    if not path.is_file():
+        if required:
+            raise RuntimeError(f"required report input is missing: {rel}")
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8-sig"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise RuntimeError(f"cannot read report input {rel}: {exc}") from exc
+    if not isinstance(payload, dict):
+        raise RuntimeError(f"report input {rel} is not a JSON object")
+    validate_case_artifact_identity(payload, sha, context, rel)
+    return payload
+
+
+def report_input_manifest(sha: str, context: dict, case_root: Path,
+                          artifact_paths: list[str]) -> dict:
+    """Hash the exact report inputs and expose their run binding to every call."""
+    entries: list[dict] = []
+    for rel in dict.fromkeys(artifact_paths):
+        portable = str(rel).replace("\\", "/")
+        if portable not in REPORT_INPUT_ARTIFACTS:
+            raise RuntimeError(f"unapproved report input artifact: {rel}")
+        path = Path(case_root) / portable
+        if not path.is_file():
+            entries.append({"path": rel, "status": "not-produced"})
+            continue
+        digest = hashlib.sha256()
+        size = 0
+        with path.open("rb") as stream:
+            for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                size += len(chunk)
+                digest.update(chunk)
+        identity: dict[str, Any] = {"status": "unattested"}
+        if path.suffix.lower() == ".json":
+            try:
+                data = json.loads(path.read_text(encoding="utf-8", errors="replace"))
+                provenance = data.get("_cadre_provenance") if isinstance(data, dict) else None
+                if isinstance(provenance, dict):
+                    validate_case_artifact_identity(data, sha, context, rel)
+                    identity = {"status": "attested", "run_id": provenance["run_id"]}
+            except (OSError, json.JSONDecodeError, RuntimeError):
+                identity = {"status": "unattested"}
+        entries.append({"path": rel, "sha256": digest.hexdigest(),
+                        "size_bytes": size, **identity})
+    return {
+        "schema": "revai-report-input-manifest/v1",
+        "sample_sha256": sha,
+        "run_id": context["run_id"],
+        "mode": context["mode"],
+        "engine": context.get("engine"),
+        "started_at": context.get("started_at"),
+        "artifacts": entries,
+    }
+
+
+def assert_report_input_manifest(manifest: dict, required: list[str]) -> None:
+    """Require the inputs a report will use to be present and run-attested."""
+    entries = {str(item.get("path")): item
+               for item in manifest.get("artifacts", [])
+               if isinstance(item, dict)}
+    problems = []
+    for rel in required:
+        entry = entries.get(rel)
+        if not entry or entry.get("status") != "attested":
+            problems.append(f"{rel}={entry.get('status') if entry else 'not-listed'}")
+    if problems:
+        raise RuntimeError(
+            "report evidence is not bound to the active sample/run: "
+            + ", ".join(problems)
+        )
+
+
+def report_input_manifest_digest(manifest: dict) -> str:
+    """Stable digest recorded by report metadata and semantic-review cache."""
+    return hashlib.sha256(json.dumps(
+        manifest, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")).hexdigest()
+
+
+def validate_report_input_manifest(manifest: dict, sha: str, context: dict,
+                                   case_root: Path) -> None:
+    """Verify exact manifest identity, paths, file hashes, and JSON provenance."""
+    if (not isinstance(manifest, dict)
+            or manifest.get("schema") != "revai-report-input-manifest/v1"
+            or manifest.get("sample_sha256") != sha
+            or manifest.get("run_id") != context.get("run_id")
+            or manifest.get("mode") != context.get("mode")):
+        raise RuntimeError("report input manifest belongs to a different sample or run")
+    entries = manifest.get("artifacts")
+    if not isinstance(entries, list):
+        raise RuntimeError("report input manifest has no artifact list")
+    seen: set[str] = set()
+    root = Path(case_root).resolve()
+    for entry in entries:
+        if not isinstance(entry, dict):
+            raise RuntimeError("report input manifest has a malformed artifact entry")
+        rel = str(entry.get("path") or "")
+        portable = rel.replace("\\", "/")
+        parts = portable.split("/")
+        if (not rel or portable.startswith("/")
+                or re.match(r"^[A-Za-z]:", portable)
+                or any(part in {"", ".", ".."} for part in parts)
+                or rel not in REPORT_INPUT_ARTIFACTS):
+            raise RuntimeError(f"report input path is invalid or unapproved: {rel!r}")
+        if rel in seen:
+            raise RuntimeError(f"report input manifest repeats artifact: {rel}")
+        seen.add(rel)
+        path = (root / portable).resolve()
+        if path != root and root not in path.parents:
+            raise RuntimeError(f"report input path escapes the case directory: {rel}")
+        status = entry.get("status")
+        if status == "not-produced":
+            if path.exists():
+                raise RuntimeError(f"report input appeared after manifest creation: {rel}")
+            continue
+        if status != "attested":
+            raise RuntimeError(f"report input is not attested to this execution: {rel}")
+        if not path.is_file():
+            raise RuntimeError(f"report input disappeared after manifest creation: {rel}")
+        digest = hashlib.sha256()
+        size = 0
+        with path.open("rb") as stream:
+            for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                size += len(chunk)
+                digest.update(chunk)
+        if (digest.hexdigest() != entry.get("sha256")
+                or size != entry.get("size_bytes")):
+            raise RuntimeError(f"report input changed after manifest creation: {rel}")
+        if path.suffix.lower() == ".json":
+            load_attested_case_json(root, rel, sha, context, required=True)
+    if seen != set(REPORT_INPUT_ARTIFACTS):
+        missing = sorted(set(REPORT_INPUT_ARTIFACTS) - seen)
+        raise RuntimeError("report input manifest omits configured artifacts: "
+                           + ", ".join(missing))
+
+
+def report_execution_comment(sha: str, context: dict,
+                             manifest_digest: str) -> str:
+    """Embed the exact run and report-input identity into published Markdown."""
+    return (
+        f"<!-- execution: sha256={sha}; run_id={context.get('run_id', '')}; "
+        f"mode={context.get('mode', '')}; evidence_manifest_sha256={manifest_digest} -->"
+    )
+
+
+def record_report_outputs(case_root: Path, sha: str, context: dict,
+                          manifest_digest: str,
+                          report_names: list[str] | None = None) -> dict:
+    """Bind current-run Markdown reports to the exact report-input manifest."""
+    root = Path(case_root).resolve()
+    path = root / "publish" / "report-output-manifest.json"
+    selected = ([root / name for name in report_names] if report_names is not None
+                else sorted(root.glob("REPORT-*.md")))
+    expected_comment = report_execution_comment(
+        sha, context, manifest_digest).encode("utf-8")
+    reports: dict[str, dict[str, Any]] = {}
+    for report in selected:
+        report = Path(report)
+        try:
+            rel = report.resolve().relative_to(root).as_posix()
+        except ValueError as exc:
+            raise RuntimeError(f"report is outside its case directory: {report}") from exc
+        if not report.is_file():
+            raise RuntimeError(f"expected report output is missing: {rel}")
+        with report.open("rb") as stream:
+            prefix = stream.read(8192)
+        if expected_comment not in prefix:
+            raise RuntimeError(
+                f"report output is not marked for this sample/run/evidence set: {rel}")
+        digest = hashlib.sha256()
+        size = 0
+        with report.open("rb") as stream:
+            for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                size += len(chunk)
+                digest.update(chunk)
+        reports[rel] = {"sha256": digest.hexdigest(), "size_bytes": size}
+    payload = {
+        "schema": "revai-report-output-manifest/v1",
+        "sample_sha256": sha,
+        "run_id": context["run_id"],
+        "mode": context["mode"],
+        "report_input_manifest_sha256": manifest_digest,
+        "reports": reports,
+    }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    os.replace(temporary, path)
+    return payload
+
+
+def validate_report_output_manifest(case_root: Path, sha: str, context: dict,
+                                    manifest_digest: str,
+                                    report_paths: list[Path]) -> dict:
+    """Reject reports that were not produced for the current evidence manifest."""
+    path = Path(case_root) / "publish" / "report-output-manifest.json"
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise RuntimeError(f"report output manifest is unavailable: {exc}") from exc
+    if (payload.get("schema") != "revai-report-output-manifest/v1"
+            or payload.get("sample_sha256") != sha
+            or payload.get("run_id") != context.get("run_id")
+            or payload.get("mode") != context.get("mode")
+            or payload.get("report_input_manifest_sha256") != manifest_digest):
+        raise RuntimeError("report output manifest belongs to a different run or evidence set")
+    recorded = payload.get("reports") or {}
+    expected_rel = {
+        Path(report).relative_to(case_root).as_posix() for report in report_paths
+    }
+    if set(recorded) != expected_rel:
+        raise RuntimeError("report output manifest does not describe the exact current report set")
+    for report in report_paths:
+        try:
+            rel = Path(report).relative_to(case_root).as_posix()
+        except ValueError as exc:
+            raise RuntimeError(f"report is outside its case directory: {report}") from exc
+        entry = recorded.get(rel)
+        if not isinstance(entry, dict):
+            raise RuntimeError(f"report output is not bound to this run: {rel}")
+        digest = hashlib.sha256()
+        with Path(report).open("rb") as stream:
+            for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+                digest.update(chunk)
+        if digest.hexdigest() != entry.get("sha256"):
+            raise RuntimeError(f"report output changed after manifest recording: {rel}")
+        expected_comment = report_execution_comment(
+            sha, context, manifest_digest).encode("utf-8")
+        with Path(report).open("rb") as stream:
+            prefix = stream.read(8192)
+        if expected_comment not in prefix:
+            raise RuntimeError(f"report output has stale run/evidence identity: {rel}")
+    return payload
+
+
+def format_report_input_manifest(manifest: dict) -> str:
+    """Render a compact, explicit source map for the report-writing prompt."""
+    return (
+        "## Sample/run identity and evidence provenance\n"
+        "This call is bound to the exact sample and execution below. Cite only "
+        "listed evidence artifacts with status=attested; a path, filename, hash, "
+        "or prior report is not itself evidence of behavior. If a relevant source "
+        "is not attested or was not produced, state that limitation.\n"
+        + json.dumps(manifest, ensure_ascii=False, separators=(",", ":"))
+    )
 
 
 _FLAT_CASE_DIR_WARNED: set[str] = set()
@@ -511,78 +898,6 @@ def strip_accuracy_hold_banner(markdown: str) -> str:
             skipping = False
         lines.append(line)
     return "\n".join(lines)
-
-
-def surface_verdict_sources_panel(
-    *,
-    final_verdict: str,
-    triage_verdict: str | None = None,
-    quick_verdict: str | None = None,
-    deep_verdict: str | None = None,
-    publish_llm_verdict: str | None = None,
-    locked: bool = False,
-) -> str:
-    """Always-on multi-source verdict table for REPORT-v2 (honest product surface)."""
-    triage = (triage_verdict or final_verdict or "unknown").strip() or "unknown"
-    quick = (quick_verdict or "unknown").strip() or "unknown"
-    deep = (deep_verdict or "unknown").strip() or "unknown"
-    pub = (publish_llm_verdict or "unknown").strip() or "unknown"
-    final = (final_verdict or "unknown").strip() or "unknown"
-    lock_note = "yes — publish LLM contradicted triage" if locked else "no"
-    return (
-        "# Verdict sources (multi-source)\n\n"
-        "| Source | Verdict |\n"
-        "|--------|--------|\n"
-        f"| **Final** | **{final}** |\n"
-        f"| Triage upstream (quick ∪ deep) | {triage} |\n"
-        f"| Quick scan | {quick} |\n"
-        f"| Deep dive | {deep} |\n"
-        f"| Publish LLM (claimed) | {pub} |\n\n"
-        f"- **Locked over publish LLM:** {lock_note}\n\n"
-    )
-
-
-def align_publish_markdown_to_upstream(
-    markdown: str,
-    *,
-    upstream: str,
-    family: str | None = None,
-    yara_rules: list | None = None,
-    publish_claimed: str | None = None,
-    quick_verdict: str | None = None,
-    deep_verdict: str | None = None,
-) -> str:
-    """Honest multi-source verdict panel when publish LLM contradicts triage.
-
-    Does **not** rewrite the LLM prose to look unanimous. Final/machine verdict
-    stays locked to upstream; the publish narrative is preserved under an
-    explicit "Publish LLM narrative" section for audit.
-    """
-    body = strip_accuracy_hold_banner(markdown or "")
-    fam = (family or "").strip() or "unknown"
-    rules = ", ".join(str(r) for r in (yara_rules or [])[:8]) or "upstream triage"
-    claimed = (publish_claimed or "unknown").strip() or "unknown"
-    quick = (quick_verdict or "unknown").strip() or "unknown"
-    deep = (deep_verdict or "unknown").strip() or "unknown"
-    lock_block = (
-        "# Classification (multi-source — V5.12)\n\n"
-        "| Source | Verdict |\n"
-        "|--------|--------|\n"
-        f"| **Final (locked)** | **{upstream}** |\n"
-        f"| Triage upstream (quick ∪ deep) | {upstream} |\n"
-        f"| Quick scan | {quick} |\n"
-        f"| Deep dive | {deep} |\n"
-        f"| Publish LLM (claimed) | {claimed} |\n\n"
-        f"- **Lock reason:** publish LLM claimed `{claimed}` but upstream triage "
-        f"is `{upstream}` (YARA / tool-backed: {rules}). "
-        "Final verdict follows triage; dual-use branding does not clear the sample.\n"
-        f"- **Family (triage):** {fam}\n"
-        "- **Honesty:** the publish narrative below is **preserved unedited** so "
-        "analysts can see what the report LLM argued. It is **not** a clearance.\n\n"
-        "---\n\n"
-        "### Publish LLM narrative (unedited)\n\n"
-    )
-    return lock_block + body
 
 
 def infer_publish_verdict_from_markdown(markdown: str) -> str | None:
@@ -2571,9 +2886,15 @@ def _build_reasoning_body(reasoning: str | None,
         return {}
     if _is_meta_api(api_url):
         # Meta Chat Completions documents reasoning_effort (including xhigh),
-        # not the separate `thinking` object used by some other APIs. `none`
-        # is unsupported there, so a disabled fallback leaves the model's
-        # provider default in force instead of sending a request that gets 400.
+        # not the separate `thinking` object used by some other APIs. It does
+        # not document a disabled/none value, so map a requested disabled mode
+        # to the lowest documented effort instead of silently using defaults.
+        if r in ("enabled", "on", "true"):
+            return {"reasoning_effort": "high"}
+        if r in ("disabled", "none", "off", "false"):
+            return {"reasoning_effort": "minimal"}
+        if r == "max":
+            r = "xhigh"
         if r in ("minimal", "low", "medium", "high", "xhigh"):
             return {"reasoning_effort": r}
         return {}
@@ -2607,7 +2928,7 @@ def get_llm_chat_options(max_tokens: int, api_url: str | None = None,
     # merges after that rewrite, and leave the constructor option unset.
     return {"extra_body": {
         "max_tokens": min(65536, max(1, max_tokens)),
-        **_build_reasoning_body(configured or "disabled", api_url),
+        **_build_reasoning_body(configured or "enabled", api_url),
     }}
 
 
@@ -3158,7 +3479,7 @@ def _post_llm_streaming(api_url: str, headers: dict, body: dict,
 
 
 def _log_llm_timing(attempt: int, max_retries: int, model: str,
-                    metrics: dict) -> None:
+                    metrics: dict, reasoning: str | None = None) -> None:
     """One line per call saying WHERE the time went.
 
     This is the diagnostic that settles our-code-vs-provider:
@@ -3171,6 +3492,7 @@ def _log_llm_timing(attempt: int, max_retries: int, model: str,
         return
     print(
         f"[llm_judge] attempt {attempt}/{max_retries} model={model} "
+        f"reasoning={reasoning or 'provider-default'} "
         f"ttft={metrics.get('ttft_s')}s total={metrics.get('elapsed_s')}s "
         f"chars={metrics.get('chars')} tok/s={metrics.get('approx_tok_rate')} "
         f"finish={metrics.get('finish_reason')}",
@@ -3180,18 +3502,22 @@ def _log_llm_timing(attempt: int, max_retries: int, model: str,
 
 def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
               reasoning: str | None = None, timeout_s: int | None = None,
-              budget_s: int | None = None) -> dict:
+              budget_s: int | None = None,
+              max_tokens_override: int | None = None,
+              temperature_override: float | None = None) -> dict:
     """Call the configured LLM chat API with retries. Returns the FULL response dict.
 
     Configuration is read from environment at runtime (no hardcoded defaults):
       - REVAI_LLM_MODEL    (required)
       - REVAI_LLM_API_URL  (required)
       - REVAI_LLM_API_KEY  (required; falls back to REVAI_LLM_API_KEY in cadre.env)
-      - REVAI_LLM_REASONING (optional; Agnes: 'enabled'/'disabled',
-        other providers may support effort values such as 'high' or 'max')
+      - REVAI_LLM_REASONING (optional; effort values are mapped to each
+        provider's documented request fields)
 
     Pass `reasoning` to override the configured provider setting for this one
-    call (used for bounded completeness retries with thinking disabled).
+    call when a provider-specific retry needs another documented mode. Agnes
+    retries preserve its configured Thinking toggle because it has no effort
+    ladder.
     """
     import time
     import urllib.request
@@ -3207,7 +3533,7 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
     if reasoning is None:
         if _is_agnes_api(api_url):
             reasoning = (os.environ.get("REVAI_LLM_PLANNER_REASONING")
-                         or get_llm_reasoning() or "disabled")
+                         or get_llm_reasoning() or "enabled")
         elif "flash" in effective_model.lower():
             reasoning = os.environ.get("REVAI_LLM_PLANNER_REASONING") or "disabled"
         else:
@@ -3216,6 +3542,33 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
             # 2026-09-21); "max" was the old default but is not universally
             # supported and this endpoint silently accepts unsupported values.
             reasoning = get_llm_reasoning() or "high"
+
+    if _is_meta_api(api_url):
+        normalized = (reasoning or "").strip().lower()
+        if normalized in ("enabled", "on", "true"):
+            reasoning = "high"
+        elif normalized in ("disabled", "none", "off", "false"):
+            # Keep retry/fallback bookkeeping aligned with the request body:
+            # Meta has no disabled mode, so the actual request is minimal.
+            reasoning = "minimal"
+
+    request_max_tokens = _llm_max_tokens_for_url(api_url)
+    if max_tokens_override is not None:
+        try:
+            requested_max_tokens = max(1, int(max_tokens_override))
+            if _is_agnes_api(api_url):
+                requested_max_tokens = min(requested_max_tokens, 65536)
+            request_max_tokens = requested_max_tokens
+        except (TypeError, ValueError):
+            pass
+    request_temperature = _llm_temperature()
+    if temperature_override is not None:
+        try:
+            value = float(temperature_override)
+            if value == value and value not in (float("inf"), float("-inf")):
+                request_temperature = max(0.0, min(2.0, value))
+        except (TypeError, ValueError):
+            pass
 
     body = {
         "model": effective_model,
@@ -3229,11 +3582,11 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
             },
             {"role": "user", "content": prompt},
         ],
-        "temperature": _llm_temperature(),
+        "temperature": request_temperature,
         # Per-call output guard rail, clamped to the published provider ceiling.
         # Large report requests are split per section rather than relying on
         # an oversized output allowance.
-        "max_tokens": _llm_max_tokens_for_url(api_url),
+        "max_tokens": request_max_tokens,
         "response_format": {"type": "json_object"},
     }
     if _is_agnes_api(api_url):
@@ -3249,13 +3602,42 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
             return effort
         e = effort.strip().lower()
         if _is_agnes_api(api_url):
-            # Agnes exposes Thinking as a boolean, so walking high -> medium ->
-            # low would resend the exact same request. Jump once to its
-            # documented disabled mode instead.
-            return "disabled" if e != "disabled" else effort
+            # Agnes exposes a boolean Thinking switch, not a reasoning ladder.
+            # Keep its configured mode across retries; turning Thinking off is
+            # not a valid automatic recovery strategy for this integration.
+            return effort
+        if _is_meta_api(api_url):
+            # Meta documents `minimal`, `low`, `medium`, `high`, and `xhigh`.
+            # `xhigh` and `high` have the same reasoning strength, so step down
+            # from either directly to medium. `disabled` is not a documented
+            # value for this API; omitting the field restores its default.
+            if e in ("xhigh", "high", "max"):
+                return "medium"
+            if e == "medium":
+                return "low"
+            if e == "low":
+                return "minimal"
+            return effort
         if e in order and order.index(e) < len(order) - 1:
             return order[order.index(e) + 1]
         return effort
+
+    def _final_fallback_effort(effort: str | None) -> str | None:
+        """Return a provider-supported last-resort setting, never a no-op."""
+        if _is_agnes_api(api_url):
+            # Agnes documents Thinking as a boolean toggle only. A final
+            # thinking-off call would silently change the configured behavior.
+            return None
+        if not _is_meta_api(api_url):
+            return "disabled"
+        e = (effort or "").strip().lower()
+        if e in ("xhigh", "high", "max"):
+            return "medium"
+        if e == "medium":
+            return "low"
+        if e == "low":
+            return "minimal"
+        return None
 
     def _finish_reason(data: dict) -> str:
         return str((data.get("choices") or [{}])[0].get("finish_reason") or "")
@@ -3346,7 +3728,7 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
             print(
                 f"[llm_judge] {why}; {max(0, remaining)}s would remain after "
                 f"{sleep_s:.1f}s backoff, below the {_MIN_VIABLE_RETRY_S}s "
-                "needed to finish an attempt - skipping to the fallback",
+                "needed to finish an attempt - skipping any further retry",
                 flush=True,
             )
             return False
@@ -3392,7 +3774,8 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                         body, attempt_timeout_s)
                     if data is not None:
                         _log_llm_timing(attempt, max_retries,
-                                        effective_model, smetrics)
+                                        effective_model, smetrics,
+                                        current_reasoning)
                 if data is None:
                     # Either streaming is off, or the endpoint ignored it.
                     # Either way a plain POST is the correct fallback -- but say
@@ -3407,7 +3790,7 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                         raw_body = resp.read()
                     data = json.loads(raw_body.decode())
                     _log_llm_timing(attempt, max_retries, effective_model,
-                                    {"streamed": False})
+                                    {"streamed": False}, current_reasoning)
             finally:
                 sem.release()
             llm_usage_journal(model=effective_model, response=data,
@@ -3417,6 +3800,15 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                 # reasoning effort one notch and retry. Never silently return
                 # truncated content.
                 nxt = _next_lower_effort(current_reasoning)
+                if nxt == current_reasoning:
+                    last_aborted = data
+                    print(
+                        f"[llm_judge] no lower supported reasoning setting "
+                        f"exists for {effective_model}; preserving "
+                        f"reasoning={current_reasoning!r}",
+                        flush=True,
+                    )
+                    break
                 print(
                     f"[llm_judge] attempt {attempt}/{max_retries} "
                     f"finish_reason=abort (reasoning={current_reasoning}); "
@@ -3454,7 +3846,8 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                         )
                         window = min(base_timeout_s * 2, max(0, remaining))
                         if (budget_deadline is not None
-                                and window < base_timeout_s):
+                                and window < base_timeout_s
+                                and not _is_agnes_api(api_url)):
                             print(
                                 f"[llm_judge] attempt {attempt}/{max_retries} "
                                 "stream ended without finish_reason; only "
@@ -3481,6 +3874,15 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                         time.sleep(sleep_s)
                         continue
                     nxt = _next_lower_effort(current_reasoning)
+                    if nxt == current_reasoning:
+                        print(
+                            f"[llm_judge] no lower supported reasoning effort "
+                            f"remains after {current_reasoning!r}; not repeating "
+                            "the same request",
+                            flush=True,
+                        )
+                        last_empty = data
+                        break
                     print(
                         f"[llm_judge] attempt {attempt}/{max_retries} returned "
                         f"no usable content (reasoning={current_reasoning}); "
@@ -3579,7 +3981,9 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                     remaining = (_budget_remaining() - int(sleep_s)
                                  if budget_deadline is not None else base_timeout_s * 2)
                     window = min(base_timeout_s * 2, max(0, remaining))
-                    if budget_deadline is not None and window < base_timeout_s:
+                    if (budget_deadline is not None
+                            and window < base_timeout_s
+                            and not _is_agnes_api(api_url)):
                         print(
                             f"[llm_judge] attempt {attempt}/{max_retries} timed "
                             f"out after {used_window}s (reasoning="
@@ -3623,22 +4027,31 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
             else:
                 break
 
-    # Final fallback: provider aborts even at reasoning=low, or long report
-    # prompts time out. One last attempt with thinking fully disabled
-    # (completes long report prompts: no thinking tokens means a shorter
-    # response window). Truncated content is never returned if avoidable.
+    # Final fallback after a timeout, empty response, or provider abort. For
+    # providers with a documented disabled-thinking switch, disable thinking.
+    # Meta's API has no such switch, so use a lower documented effort instead
+    # of omitting the field and silently restoring the provider default.
     err_is_timeout = last_error is not None and (
         isinstance(last_error, TimeoutError)
         or "timed out" in str(last_error).lower()
         or "timeout" in str(last_error).lower()
     )
-    if (
-        last_aborted is not None or last_empty is not None or err_is_timeout
-    ) and (current_reasoning or "").lower() != "disabled":
+    if last_aborted is not None or last_empty is not None or err_is_timeout:
         _why = (
             "timeout" if err_is_timeout
             else ("empty response" if last_empty is not None else "abort")
         )
+        fallback_reasoning = _final_fallback_effort(current_reasoning)
+        if fallback_reasoning is None or (
+                fallback_reasoning == "disabled"
+                and (current_reasoning or "").strip().lower() == "disabled"):
+            print(
+                f"[llm_judge] retries exhausted ({_why}); no lower supported "
+                f"reasoning setting remains after {current_reasoning!r}",
+                flush=True,
+            )
+            raise last_error or RuntimeError(
+                "llm_judge has no lower reasoning fallback")
         # The fallback is a real request too: it gets what is left of the
         # caller's budget, and if nothing meaningful is left it does not run --
         # a third window inside a budget that could not fit a second is the
@@ -3648,18 +4061,23 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
         if budget_deadline is not None:
             if remaining < 30:
                 print(
-                    f"[llm_judge] no budget left for the no-thinking fallback "
+                    f"[llm_judge] no budget left for the reasoning fallback "
                     f"({remaining}s remaining)",
                     flush=True,
                 )
                 raise last_error or RuntimeError("llm_judge budget exhausted")
             fallback_window_s = min(timeout_s, remaining)
+        fallback_label = (
+            f"reasoning_effort={fallback_reasoning}"
+            if _is_meta_api(api_url)
+            else "thinking disabled"
+        )
         print(
             f"[llm_judge] retries exhausted ({_why}); final attempt with "
-            f"thinking disabled (window {fallback_window_s}s)",
+            f"{fallback_label} (window {fallback_window_s}s)",
             flush=True,
         )
-        body.update(_build_reasoning_body("disabled", api_url))
+        body.update(_build_reasoning_body(fallback_reasoning, api_url))
         try:
             req = urllib.request.Request(
                 api_url,
@@ -3673,11 +4091,15 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
             with urllib.request.urlopen(req, timeout=fallback_window_s) as resp:
                 data = json.loads(resp.read().decode())
                 llm_usage_journal(model=effective_model, response=data,
-                                  note="attempt=final-no-thinking")
+                                  note=f"attempt=final-reasoning-{fallback_reasoning}")
                 return data
         except Exception as e:
             last_error = e
-            print(f"[llm_judge] final no-thinking attempt failed ({type(e).__name__}: {e})", flush=True)
+            print(
+                f"[llm_judge] final {fallback_label} attempt failed "
+                f"({type(e).__name__}: {e})",
+                flush=True,
+            )
 
     raise last_error or RuntimeError("llm_judge failed")
 
@@ -6272,6 +6694,11 @@ def load_dynamic_pack(sha: str, logs_dir: Path | None = None, *,
 
     meta = _j("META.json") or {}
     job_meta = _j("META.job.json") or {}
+    sample_pid = job_meta.get("sample_pid") or meta.get("sample_pid")
+    detonation_ran = job_meta.get("detonation_ran", meta.get("detonation_ran"))
+    if detonation_ran is False or str(detonation_ran).strip().lower() in ("false", "0", "no"):
+        sample_pid = None
+    procmon_evidence = _load_sample_procmon_events(dyn, sample_pid)
     external_capture = _j("external_capture.json")
     if external_capture is None:
         capture_path = dyn / "off_box" / "capture.json"
@@ -6311,6 +6738,14 @@ def load_dynamic_pack(sha: str, logs_dir: Path | None = None, *,
         "verdict_policy": meta.get("verdict_policy") or {},
         "frida_summary": _j("frida_summary.json"),
         "procmon_summary": _j("procmon_summary.json"),
+        "procmon_sample_pid": sample_pid,
+        "procmon_sample_events": procmon_evidence.get("events", []),
+        "procmon_instrumentation_exclusions": procmon_evidence.get(
+            "instrumentation_exclusions", []
+        ),
+        "procmon_created_written_files": procmon_evidence.get(
+            "created_written_files", []
+        ),
         "external_capture": external_capture,
         "network": _j("network.json"),
         "network_intel": _j("network_intel.json"),
@@ -6328,7 +6763,7 @@ def load_dynamic_pack(sha: str, logs_dir: Path | None = None, *,
     }
 
 
-def _frida_dropped_paths(pack: dict) -> list[str]:
+def _frida_decoded_paths(pack: dict) -> list[str]:
     fs = pack.get("frida_summary") or {}
     out: list[str] = []
     for p in (fs.get("decoded_paths") or []):
@@ -6337,6 +6772,277 @@ def _frida_dropped_paths(pack: dict) -> list[str]:
             if s not in out:
                 out.append(s)
     return out[:15]
+
+
+_SAMPLE_PROC_MON_OPS = {
+    "Process Create", "RegCreateKey", "RegSetValue", "RegDeleteKey",
+    "RegDeleteValue", "CreateService", "StartService", "WriteFile",
+    "SetEndOfFileInformationFile", "SetDispositionInformationFile",
+    "SetDispositionInformationEx", "SetRenameInformationFile",
+    "SetRenameInformationEx", "CreateFile", "TCP Connect", "UDP Send",
+    "UDP Receive", "NetworkConnect",
+}
+_SAMPLE_PROC_MON_OP_PRIORITY = {
+    "Process Create": 0,
+    "RegCreateKey": 1,
+    "RegSetValue": 1,
+    "RegDeleteKey": 1,
+    "RegDeleteValue": 1,
+    "CreateService": 1,
+    "StartService": 1,
+    "WriteFile": 2,
+    "SetEndOfFileInformationFile": 2,
+    "SetDispositionInformationFile": 2,
+    "SetDispositionInformationEx": 2,
+    "SetRenameInformationFile": 2,
+    "SetRenameInformationEx": 2,
+    "TCP Connect": 3,
+    "NetworkConnect": 3,
+    "UDP Send": 3,
+    "UDP Receive": 3,
+    "CreateFile": 4,
+}
+
+
+def _load_sample_procmon_events(dyn: Path, sample_pid: Any, *,
+                                limit: int = 20) -> dict[str, Any]:
+    """Select traceable Procmon rows belonging to the sample process tree.
+
+    The full capture is machine-wide and includes substantial Windows noise.
+    Reports receive a bounded set of original rows for the launched sample
+    process and descendants linked by Procmon Process Create records. Known
+    Frida agent writes and Windows BAM bookkeeping are separated from malware
+    behavior findings instead of being presented as sample actions.
+    """
+    try:
+        pid = int(sample_pid)
+    except (TypeError, ValueError):
+        return {"events": [], "instrumentation_exclusions": [],
+                "created_written_files": []}
+    if pid <= 0:
+        return {"events": [], "instrumentation_exclusions": [],
+                "created_written_files": []}
+    path = dyn / "procmon.csv"
+    if not path.is_file():
+        return {"events": [], "instrumentation_exclusions": [],
+                "created_written_files": []}
+
+    selected: list[dict[str, Any]] = []
+    excluded: dict[str, Any] = {}
+    per_operation: Counter[str] = Counter()
+    seen: set[tuple[str, str, str, str]] = set()
+    created_file_rows: dict[str, dict[str, Any]] = {}
+    written_file_rows: dict[str, dict[str, Any]] = {}
+    active_pids = {pid}
+    parent_by_pid: dict[int, int | None] = {pid: None}
+    parent_spawn_row_by_pid: dict[int, int] = {}
+    try:
+        with path.open("r", encoding="utf-8-sig", errors="replace",
+                       newline="") as handle:
+            reader = csv.DictReader(handle)
+            for row_number, row in enumerate(reader, start=2):
+                try:
+                    actor_pid = int(str(row.get("PID") or "").strip())
+                except ValueError:
+                    continue
+                operation = str(row.get("Operation") or "").strip()
+                if operation == "Process Create" and actor_pid in active_pids:
+                    detail_for_child = str(row.get("Detail") or "")
+                    child_match = re.search(r"\bPID:\s*(\d+)\b", detail_for_child,
+                                            re.IGNORECASE)
+                    if child_match:
+                        child_pid = int(child_match.group(1))
+                        if child_pid > 0 and child_pid not in parent_by_pid:
+                            parent_by_pid[child_pid] = actor_pid
+                            parent_spawn_row_by_pid[child_pid] = row_number
+                            active_pids.add(child_pid)
+                if actor_pid not in active_pids:
+                    continue
+                result = str(row.get("Result") or "").strip()
+                event_path = str(row.get("Path") or "").strip()
+                detail = str(row.get("Detail") or "").strip()
+                lowered_path = event_path.lower()
+
+                # Procmon attributes Frida's injected agent writes to the
+                # instrumented PID. Keep a traceable representative row, but
+                # never report it as a malware drop or file write.
+                is_frida_agent = (
+                    "frida-agent.dll" in lowered_path
+                    and "\\frida-" in lowered_path
+                    and "\\temp\\" in lowered_path
+                )
+                if is_frida_agent:
+                    if not excluded:
+                        excluded = {
+                            "row": row_number,
+                            "pid": actor_pid,
+                            "operation": operation,
+                            "path": re.sub(r"\s+", " ", event_path)[:300],
+                            "result": result[:80],
+                            "count": 0,
+                        }
+                    excluded["count"] += 1
+                    continue
+
+                # Background Activity Moderator records process-use history
+                # under Services\BAM. It is OS bookkeeping, not service
+                # installation or persistence by the sample.
+                if (operation == "RegSetValue"
+                        and "\\services\\bam\\state\\usersettings\\" in lowered_path):
+                    continue
+
+                if operation == "CreateFile" and result.upper() == "SUCCESS" and re.search(
+                        r"\bOpenResult:\s*Created\b", detail, re.IGNORECASE):
+                    created_file_rows.setdefault(lowered_path, {
+                        "row": row_number, "pid": actor_pid, "path": event_path,
+                        "operation": operation, "result": result, "detail": detail,
+                    })
+                elif operation == "WriteFile" and result.upper() == "SUCCESS":
+                    written_file_rows.setdefault(lowered_path, {
+                        "row": row_number, "pid": actor_pid, "path": event_path,
+                        "operation": operation, "result": result, "detail": detail,
+                    })
+
+                if operation == "Process Exit":
+                    active_pids.discard(actor_pid)
+                    continue
+                if operation not in _SAMPLE_PROC_MON_OPS:
+                    continue
+
+                if operation == "CreateFile":
+                    # Ordinary Windows and input-sample opens overwhelm the
+                    # useful behaviors. Retain only writes/opens in locations
+                    # commonly used for persistence or payload placement; the
+                    # exact Procmon operation/result remain visible.
+                    if not any(token in lowered_path for token in (
+                            "\\appdata\\", "\\temp\\", "\\programdata\\",
+                            "\\startup\\", "\\windows\\tasks\\",
+                            "\\system32\\tasks\\")):
+                        continue
+                key = (operation, event_path, result, detail)
+                if key in seen:
+                    continue
+                seen.add(key)
+                child_match = re.search(r"\bPID:\s*(\d+)\b", detail,
+                                        re.IGNORECASE) if operation == "Process Create" else None
+                selected.append({
+                    "row": row_number,
+                    "time": re.sub(r"\s+", " ", str(
+                        row.get("Time of Day") or row.get("Time") or "")).strip(),
+                    "process": re.sub(r"\s+", " ", str(
+                        row.get("Process Name") or "")).strip(),
+                    "pid": actor_pid,
+                    "parent_pid": parent_by_pid.get(actor_pid),
+                    "parent_spawn_row": parent_spawn_row_by_pid.get(actor_pid),
+                    "child_pid": int(child_match.group(1)) if child_match else None,
+                    "actor": "sample process" if actor_pid == pid else "sample descendant",
+                    "operation": operation,
+                    "path": re.sub(r"\s+", " ", event_path)[:300],
+                    "result": result[:80],
+                    "detail": re.sub(r"\s+", " ", detail)[:240],
+                })
+    except (OSError, csv.Error):
+        return {"events": [], "instrumentation_exclusions": [],
+                "created_written_files": []}
+
+    selected.sort(key=lambda event: (
+        _SAMPLE_PROC_MON_OP_PRIORITY.get(event["operation"], 99),
+        int(event["row"]),
+    ))
+    bounded: list[dict[str, Any]] = []
+    for event in selected:
+        operation = str(event["operation"])
+        if per_operation[operation] >= 4:
+            continue
+        bounded.append(event)
+        per_operation[operation] += 1
+        if len(bounded) >= max(1, int(limit)):
+            break
+    created_written_files = []
+    for normalized_path in sorted(set(created_file_rows) & set(written_file_rows)):
+        created_written_files.append({
+            "path": created_file_rows[normalized_path]["path"],
+            "create": created_file_rows[normalized_path],
+            "write": written_file_rows[normalized_path],
+        })
+    return {
+        "events": sorted(bounded, key=lambda event: int(event["row"])),
+        "instrumentation_exclusions": [excluded] if excluded else [],
+        "created_written_files": created_written_files[:20],
+    }
+
+
+def _format_sample_procmon_events(pack: dict) -> list[str]:
+    """Render bounded sample-PID Procmon evidence with exact CSV row locators."""
+    events = pack.get("procmon_sample_events") or []
+    if not isinstance(events, list):
+        events = []
+    exclusions = pack.get("procmon_instrumentation_exclusions") or []
+    created_written_files = pack.get("procmon_created_written_files") or []
+    if not events and not exclusions and not created_written_files:
+        return []
+    lines = [
+        "",
+        "### Procmon events attributed to the sample process tree",
+        "",
+    ]
+    for event in events:
+        if not isinstance(event, dict):
+            continue
+        locator = (
+            "[source: procmon, query_or_table: procmon.csv, "
+            f"row_or_rule: data row {event.get('row')}; PID {event.get('pid')}; "
+            f"operation {event.get('operation')}]"
+        )
+        details = []
+        for key, label in (("result", "result"), ("detail", "detail")):
+            value = str(event.get(key) or "").strip()
+            if value:
+                details.append(f"{label}={value}")
+        tail = f" ({'; '.join(details)})" if details else ""
+        process = str(event.get("process") or "unknown process")
+        event_path = str(event.get("path") or "")
+        timestamp = str(event.get("time") or "time unavailable")
+        child = f"; child PID={event['child_pid']}" if event.get("child_pid") else ""
+        parent = (f"; spawned by PID={event['parent_pid']}"
+                  if event.get("parent_pid") else "")
+        lines.append(
+            f"- `{timestamp}` {event.get('actor') or 'sample process'} PID "
+            f"{event.get('pid')}{child}{parent} `{process}` "
+            f"`{event.get('operation')}` `{event_path}`{tail} {locator}"
+        )
+        if event.get("parent_spawn_row") and event.get("parent_pid"):
+            lines.append(
+                "  Parent link: [source: procmon, query_or_table: procmon.csv, "
+                f"row_or_rule: data row {event.get('parent_spawn_row')}; "
+                f"PID {event.get('parent_pid')}; operation Process Create]"
+            )
+    if exclusions:
+        excluded = exclusions[0]
+        lines.append(
+            "- Procmon rows matching the Frida agent's instrumentation temporary path "
+            f"were excluded from malware behavior findings ({excluded.get('count')} "
+            "row(s)); the recorded row is available for review. "
+            "[source: procmon, query_or_table: procmon.csv, row_or_rule: "
+            f"data row {excluded.get('row')}; PID {excluded.get('pid')}; "
+            f"operation {excluded.get('operation')}]"
+        )
+    for file_record in created_written_files:
+        if not isinstance(file_record, dict):
+            continue
+        created = file_record.get("create") or {}
+        written = file_record.get("write") or {}
+        lines.append(
+            f"- Created and written during the sample process tree: "
+            f"`{file_record.get('path')}` "
+            "[source: procmon, query_or_table: procmon.csv, row_or_rule: "
+            f"data row {created.get('row')}; PID {created.get('pid')}; "
+            "operation CreateFile] "
+            "[source: procmon, query_or_table: procmon.csv, row_or_rule: "
+            f"data row {written.get('row')}; PID {written.get('pid')}; "
+            "operation WriteFile]"
+        )
+    return lines
 
 
 def _net_iocs(pack: dict) -> dict:
@@ -6351,6 +7057,28 @@ def _net_iocs(pack: dict) -> dict:
     return {"dns": dns, "http": http, "sni": sni}
 
 
+def _dynamic_citation(query_or_table: str, row_or_rule: str, *,
+                      source: str = "winre") -> str:
+    """Format a stable citation to a machine-readable dynamic artifact field."""
+    return (
+        f"[source: {source}, query_or_table: {query_or_table}, "
+        f"row_or_rule: {row_or_rule}]"
+    )
+
+
+def _network_locator(pack: dict, key: str) -> tuple[str, str]:
+    """Return the artifact/field that actually supplied a network observation."""
+    ni = pack.get("network_intel") or {}
+    captures = ni.get("captures") if isinstance(ni, dict) else None
+    first = captures[0] if isinstance(captures, list) and captures else {}
+    if isinstance(first, dict) and first.get(key):
+        return "network_intel.json", f"captures[0].{key}"
+    nw = pack.get("network") or {}
+    if key == "dns_queries" and isinstance(nw, dict) and nw.get("domains_guess"):
+        return "network.json", "domains_guess"
+    return "network_intel.json", f"captures[0].{key}"
+
+
 def dynamic_pack_counts(pack: dict | None) -> dict:
     """Stable counts for status surfaces (Console chip, runner winre-run.json).
 
@@ -6359,8 +7087,10 @@ def dynamic_pack_counts(pack: dict | None) -> dict:
     `.dmp` files only are reported as dumps (a pe-sieve report/stdout in
     memory/ is not a captured dump).
     """
-    base = {"present": False, "dns": 0, "http": 0, "sni": 0, "dropped": 0,
-            "dumps": 0, "unpack_artifact": None}
+    base = {"present": False, "dns": 0, "http": 0, "sni": 0,
+            "dropped": 0, "files_created_written": 0,
+            "frida_decoded_paths": 0, "dumps": 0,
+            "unpack_artifact": None}
     if not pack or not pack.get("present"):
         return base
     iocs = _net_iocs(pack)
@@ -6370,7 +7100,14 @@ def dynamic_pack_counts(pack: dict | None) -> dict:
         "dns": len(iocs.get("dns") or []),
         "http": len(iocs.get("http") or []),
         "sni": len(iocs.get("sni") or []),
-        "dropped": len(_frida_dropped_paths(pack)),
+        # Frida-decoded paths are candidate runtime strings, not proof that a
+        # file was created. Keep them distinct from Procmon-confirmed writes.
+        # `dropped` remains zero until WinRE supplies a verified drop record.
+        "dropped": 0,
+        "files_created_written": len(
+            pack.get("procmon_created_written_files") or []
+        ),
+        "frida_decoded_paths": len(_frida_decoded_paths(pack)),
         "dumps": len(pack.get("memory_dumps") or []),
         "unpack_artifact": (art.get("name") if isinstance(art, dict) else str(art)) or None,
     }
@@ -6464,6 +7201,8 @@ def winre_dynamic_status(sha: str, mode: str | None = None) -> dict:
         "http": 0,
         "sni": 0,
         "dropped": 0,
+        "files_created_written": 0,
+        "frida_decoded_paths": 0,
         "dumps": 0,
         "unpack_artifact": None,
         "corroboration_enabled": not disabled,
@@ -6483,6 +7222,8 @@ def winre_dynamic_status(sha: str, mode: str | None = None) -> dict:
                 "http": counts["http"],
                 "sni": counts["sni"],
                 "dropped": counts["dropped"],
+                "files_created_written": counts["files_created_written"],
+                "frida_decoded_paths": counts["frida_decoded_paths"],
                 "dumps": counts["dumps"],
                 "unpack_artifact": counts["unpack_artifact"],
             })
@@ -6508,12 +7249,34 @@ def format_flare_dynamic_evidence(pack: dict | None) -> str:
     src = pack.get("source") or "winre"
 
     lines: list[str] = ["## Dynamic Corroboration (WinRE detonation)", ""]
-    lines.append(f"- **source**: `{src}`")
-    lines.append(f"- **ok**: {meta.get('ok', job.get('ok', '?'))}")
+    lines.append(f"- **source**: `{src}` "
+                 + _dynamic_citation("META.json", "producer/source"))
+    stage_ok = meta.get("ok", job.get("ok"))
+    stage_state = "completed" if stage_ok is True else (
+        "failed or partial" if stage_ok is False else "unknown"
+    )
+    lines.append(f"- **WinRE stage status**: {stage_state} "
+                 + _dynamic_citation("META.json", "ok, error"))
+    detonation_ran = job.get("detonation_ran", meta.get("detonation_ran"))
+    sample_pid = job.get("sample_pid") or meta.get("sample_pid")
+    if isinstance(detonation_ran, bool):
+        launch_state = "sample launch confirmed" if detonation_ran else "sample did not launch"
+    elif sample_pid:
+        launch_state = "sample launch confirmed (legacy PID record)"
+    else:
+        launch_state = "sample launch unverified"
+    if sample_pid:
+        launch_state += f"; PID={sample_pid}"
+    lines.append(
+        f"- **sample execution**: {launch_state} "
+        + _dynamic_citation("META.job.json / META.json", "detonation_ran, sample_pid")
+    )
     if meta.get("schema_version"):
-        lines.append(f"- **schema**: {meta.get('schema_version')}")
+        lines.append(f"- **schema**: {meta.get('schema_version')} "
+                     + _dynamic_citation("META.json", "schema_version"))
     if meta.get("error"):
-        lines.append(f"- **error**: {meta.get('error')}")
+        lines.append(f"- **error**: {meta.get('error')} "
+                     + _dynamic_citation("META.json", "error"))
 
     req = window.get("requested_s")
     eff = window.get("effective_s")
@@ -6525,14 +7288,19 @@ def format_flare_dynamic_evidence(pack: dict | None) -> str:
             wline += f" idle_stop={window.get('idle_stop_s')}s"
         if window.get("stop_reason"):
             wline += f" stop_reason={window.get('stop_reason')}"
-        lines.append(wline)
+        lines.append(wline + " " + _dynamic_citation(
+            "META.job.json / META.json", "window.requested_s, window.effective_s, "
+            "window.adaptive, window.stop_reason"
+        ))
         lines.append(
             "- **coverage caveat**: dynamic evidence covers only activity observed "
-            "inside the window; delayed or long-timer behavior may be missed."
+            "inside the window; delayed or long-timer behavior may be missed. "
+            + _dynamic_citation("META.job.json / META.json", "window fields")
         )
     lines.append(
-        "- **policy**: dynamic corroborates, never clears static YARA "
-        f"(`static_yara_wins`={policy.get('static_yara_wins', True)})"
+        "- **policy**: dynamic evidence is supplementary; static YARA keeps "
+        f"priority (`static_yara_wins`={policy.get('static_yara_wins', True)}) "
+        + _dynamic_citation("META.json", "verdict_policy.static_yara_wins")
     )
 
     iocs = _net_iocs(pack)
@@ -6541,52 +7309,77 @@ def format_flare_dynamic_evidence(pack: dict | None) -> str:
         lines += ["", "### Network observed at runtime", ""]
         if dns:
             biz = [d for d in dns if str(d).endswith(".biz")]
+            query, locator = _network_locator(pack, "dns_queries")
             lines.append(
                 f"- **DNS queries** ({len(dns)}; DGA-shaped `.biz`: {len(biz)}): "
-                + ", ".join(f"`{d}`" for d in dns[:20])
+                + ", ".join(f"`{d}`" for d in dns[:20]) + " "
+                + _dynamic_citation(query, locator)
             )
         if sni:
+            query, locator = _network_locator(pack, "tls_sni")
             lines.append(f"- **TLS SNI** ({len(sni)}): "
-                         + ", ".join(f"`{s}`" for s in sni[:12]))
+                         + ", ".join(f"`{s}`" for s in sni[:12]) + " "
+                         + _dynamic_citation(query, locator))
         if http:
             hosts: list[str] = []
             for h in http:
                 host = str(h).split("\t")[0]
                 if host and host not in hosts:
                     hosts.append(host)
+            query, locator = _network_locator(pack, "http_requests")
             lines.append(f"- **HTTP requests**: {len(http)} to {len(hosts)} host(s): "
-                         + ", ".join(f"`{h}`" for h in hosts[:12]))
+                         + ", ".join(f"`{h}`" for h in hosts[:12]) + " "
+                         + _dynamic_citation(query, locator))
 
     capture = pack.get("external_capture") or {}
     if isinstance(capture, dict) and capture:
         details = [f"status={capture.get('status') or 'recorded'}", "mode=passive"]
-        for key in ("interface", "guest_ip", "capture_filter", "packets_captured",
-                    "elapsed_s", "pcap_size", "pcap_sha256"):
+        for key in ("packets_captured", "elapsed_s", "pcap_size", "pcap_sha256"):
             value = capture.get(key)
             if isinstance(value, (int, float, str)) and value != "":
                 details.append(f"{key}={value}")
-        capture_path = capture.get("path") or capture.get("pcap_name")
-        if capture_path:
-            details.append(f"evidence={capture_path}")
-        lines.append("- **passive off-box packet capture**: " + ", ".join(details))
+        lines.append(
+            "- **passive off-box packet capture**: " + ", ".join(details) + " "
+            + _dynamic_citation("external_capture.json", "status, packets_captured, "
+                                "elapsed_s, pcap_sha256")
+        )
 
-    drops = _frida_dropped_paths(pack)
+    drops = _frida_decoded_paths(pack)
     if drops:
-        lines += ["", "### Runtime file activity (Frida-decoded paths)", ""]
+        lines += ["", "### Frida-decoded runtime paths", ""]
+        lines.append(
+            "These are decoded path strings; they do not prove that the sample "
+            "created or wrote those files."
+        )
         for d in drops:
-            lines.append(f"- `{d}`")
+            lines.append(f"- `{d}` " + _dynamic_citation(
+                "frida_summary.json", f"decoded_paths entry: {d}", source="frida"
+            ))
+
+    frida = pack.get("frida_summary") or {}
+    if isinstance(frida, dict) and frida.get("events") is not None:
+        lines.append(
+            f"- **Frida runtime events**: {frida.get('events')} "
+            + _dynamic_citation("frida_summary.json", "events", source="frida")
+        )
+
+    lines.extend(_format_sample_procmon_events(pack))
 
     art = pack.get("unpack_artifact") or {}
     if art:
         lines += ["", "### Debugger unpack artifact (agentic-dbg)", ""]
         size = f" ({art.get('bytes')} bytes)" if art.get("bytes") else ""
-        lines.append(f"- **artifact**: `{art.get('name')}`{size}")
+        lines.append(f"- **artifact**: `{art.get('name')}`{size} "
+                     + _dynamic_citation("agentic-dbg artifact metadata", str(art.get("name") or "artifact")))
         if art.get("dump_kind"):
-            lines.append(f"- **dump kind**: {art.get('dump_kind')}")
+            lines.append(f"- **dump kind**: {art.get('dump_kind')} "
+                         + _dynamic_citation("agentic-dbg artifact metadata", "dump_kind"))
         if art.get("dump_source"):
-            lines.append(f"- **dump source**: {art.get('dump_source')}")
+            lines.append(f"- **dump source**: {art.get('dump_source')} "
+                         + _dynamic_citation("agentic-dbg artifact metadata", "dump_source"))
         if art.get("rebuild_hint"):
-            lines.append(f"- **rebuild hint**: {art.get('rebuild_hint')}")
+            lines.append(f"- **rebuild hint**: {art.get('rebuild_hint')} "
+                         + _dynamic_citation("agentic-dbg artifact metadata", "rebuild_hint"))
         if art.get("path"):
             try:
                 analysis = analyze_unpack_artifact(art["path"])
@@ -6595,19 +7388,26 @@ def format_flare_dynamic_evidence(pack: dict | None) -> str:
             if analysis.get("parses"):
                 lines.append(
                     f"- **static re-analysis**: parses=true machine={analysis.get('machine')} "
-                    f"imports={analysis.get('imports')} sections={analysis.get('sections')}"
+                    f"imports={analysis.get('imports')} sections={analysis.get('sections')} "
+                    + _dynamic_citation("unpacked artifact analysis", "PE machine, imports, sections")
                 )
                 capa = analysis.get("capa") or {}
                 if capa.get("ok"):
-                    lines.append(f"- **capa on unpacked image**: {capa.get('rules')} rule(s)")
+                    lines.append(f"- **capa on unpacked image**: {capa.get('rules')} rule(s) "
+                                 + _dynamic_citation("unpacked artifact capa output", "matched rule count"))
                     for c in (capa.get("capabilities") or [])[:12]:
-                        lines.append(f"  - {c}")
+                        lines.append(f"  - {c} " + _dynamic_citation(
+                            "unpacked artifact capa output", f"matched rule: {c}"
+                        ))
                 elif capa:
                     lines.append(f"- **capa on unpacked image**: unavailable "
                                  f"({capa.get('error')})")
             else:
-                lines.append(f"- **static re-analysis**: not PE-parsable "
-                             f"({analysis.get('error')}) — artifact is raw memory")
+                lines.append(
+                    f"- **static re-analysis**: not PE-parsable "
+                    f"({analysis.get('error')}) — artifact is raw memory "
+                    + _dynamic_citation("unpacked artifact analysis", "PE parse result")
+                )
 
     extras: list[str] = []
     dumps = pack.get("memory_dumps") or []
@@ -6618,10 +7418,11 @@ def format_flare_dynamic_evidence(pack: dict | None) -> str:
     if pack.get("pcaps"):
         extras.append(f"{len(pack['pcaps'])} pcap(s)")
     if extras:
-        lines.append("- **artifacts**: " + ", ".join(extras))
+        lines.append("- **artifacts**: " + ", ".join(extras) + " "
+                     + _dynamic_citation("WinRE artifact pack", "captured memory and pcap file inventory"))
 
-    lines += ["", "_Corroboration only — static evidence and verdict gates remain "
-              "authoritative._", ""]
+    lines += ["", "_Dynamic evidence is supplementary to static evidence._ "
+              + _dynamic_citation("META.json", "verdict_policy.static_yara_wins"), ""]
     return "\n".join(lines)
 
 
@@ -6891,8 +7692,14 @@ def format_dynamic_analysis_section(pack: dict | None) -> str:
 
     lines = ["## Dynamic Analysis (WinRE detonation)", ""]
     ok = meta.get("ok", job.get("ok"))
-    lines.append(f"- **status**: {'ran' if ok else (meta.get('error') or 'recorded')}")
-    lines.append(f"- **source**: `{pack.get('source') or 'winre'}`")
+    lines.append(
+        f"- **status**: {'ran' if ok else (meta.get('error') or 'recorded')} "
+        + _dynamic_citation("META.json", "ok, error")
+    )
+    lines.append(
+        f"- **source**: `{pack.get('source') or 'winre'}` "
+        + _dynamic_citation("META.json", "producer/source")
+    )
     detonation_ran = job.get("detonation_ran", meta.get("detonation_ran"))
     sample_pid = job.get("sample_pid") or meta.get("sample_pid")
     if isinstance(detonation_ran, bool):
@@ -6903,9 +7710,15 @@ def format_dynamic_analysis_section(pack: dict | None) -> str:
         launch_state = "pack present; sample launch unverified"
     if sample_pid:
         launch_state += f"; PID={sample_pid}"
-    lines.append(f"- **sample execution**: {launch_state}")
+    lines.append(
+        f"- **sample execution**: {launch_state} "
+        + _dynamic_citation("META.job.json / META.json", "detonation_ran, sample_pid")
+    )
     if meta.get("schema_version"):
-        lines.append(f"- **schema**: {meta.get('schema_version')}")
+        lines.append(
+            f"- **schema**: {meta.get('schema_version')} "
+            + _dynamic_citation("META.json", "schema_version")
+        )
 
     req, eff = window.get("requested_s"), window.get("effective_s")
     if req is not None or eff is not None:
@@ -6918,11 +7731,21 @@ def format_dynamic_analysis_section(pack: dict | None) -> str:
             wline += f" idle_stop={window.get('idle_stop_s')}s"
         if window.get("stop_reason"):
             wline += f" stop_reason={window.get('stop_reason')}"
-        lines.append(wline)
-        lines.append("- **coverage**: observed activity is bounded by that window; "
-                     "delayed or long-timer behaviour may be absent.")
-    lines.append("- **verdict policy**: dynamic corroborates only; static evidence wins "
-                 f"(`static_yara_wins`={policy.get('static_yara_wins', True)})")
+        lines.append(wline + " " + _dynamic_citation(
+            "META.job.json / META.json", "window.requested_s, window.effective_s, "
+            "window.adaptive, window.stop_reason"
+        ))
+        lines.append(
+            "- **coverage**: observed activity is bounded by that window; delayed "
+            "or long-timer behaviour may be absent. "
+            + _dynamic_citation("META.job.json / META.json", "window fields")
+        )
+    lines.append(
+        "- **verdict policy**: dynamic evidence is supplementary; the configured "
+        "policy gives static YARA priority "
+        f"(`static_yara_wins`={policy.get('static_yara_wins', True)}) "
+        + _dynamic_citation("META.json", "verdict_policy.static_yara_wins")
+    )
 
     iocs = _net_iocs(pack)
     dns, http, sni = iocs["dns"], iocs["http"], iocs["sni"]
@@ -6930,33 +7753,47 @@ def format_dynamic_analysis_section(pack: dict | None) -> str:
         lines += ["", "### Runtime network", ""]
         if dns:
             biz = [d for d in dns if str(d).endswith(".biz")]
+            query, locator = _network_locator(pack, "dns_queries")
             lines.append(f"- **DNS queries** ({len(dns)}; DGA-shaped `.biz`: {len(biz)}): "
-                         + ", ".join(f"`{d}`" for d in dns[:20]))
+                         + ", ".join(f"`{d}`" for d in dns[:20]) + " "
+                         + _dynamic_citation(query, locator))
         if sni:
+            query, locator = _network_locator(pack, "tls_sni")
             lines.append(f"- **TLS SNI** ({len(sni)}): "
-                         + ", ".join(f"`{s}`" for s in sni[:12]))
+                         + ", ".join(f"`{s}`" for s in sni[:12]) + " "
+                         + _dynamic_citation(query, locator))
         if http:
             hosts: list[str] = []
             for h in http:
                 host = str(h).split("\t")[0]
                 if host and host not in hosts:
                     hosts.append(host)
+            query, locator = _network_locator(pack, "http_requests")
             lines.append(f"- **HTTP requests**: {len(http)} to {len(hosts)} host(s): "
-                         + ", ".join(f"`{h}`" for h in hosts[:12]))
+                         + ", ".join(f"`{h}`" for h in hosts[:12]) + " "
+                         + _dynamic_citation(query, locator))
 
-    drops = _frida_dropped_paths(pack)
-    if drops:
-        lines += ["", "### Dropped or written files (runtime)", ""]
-        lines += [f"- `{d}`" for d in drops]
+    decoded_paths = _frida_decoded_paths(pack)
+    if decoded_paths:
+        lines += ["", "### Frida-decoded runtime paths", ""]
+        lines += [
+            f"- decoded path (not proof of file creation): `{d}` " + _dynamic_citation(
+                "frida_summary.json", f"decoded_paths entry: {d}", source="frida"
+            ) for d in decoded_paths
+        ]
 
     fs = pack.get("frida_summary") or {}
     if isinstance(fs, dict):
         if fs.get("events") is not None:
-            lines.append(f"- **Frida runtime events**: {fs.get('events')}")
+            lines.append(
+                f"- **Frida runtime events**: {fs.get('events')} "
+                + _dynamic_citation("frida_summary.json", "events", source="frida")
+            )
         scalars = [(k, v) for k, v in fs.items() if isinstance(v, (int, float, str))]
         if scalars:
             lines.append("- **Frida instrumentation**: "
-                         + ", ".join(f"{k}={v}" for k, v in scalars[:6]))
+                         + ", ".join(f"{k}={v}" for k, v in scalars[:6]) + " "
+                         + _dynamic_citation("frida_summary.json", ", ".join(k for k, _ in scalars[:6])))
         for key, value in fs.items():
             if isinstance(value, list) and value and "api" in key.lower():
                 pairs = []
@@ -6965,51 +7802,58 @@ def format_dynamic_analysis_section(pack: dict | None) -> str:
                         pairs.append(f"`{item[0]}`={item[1]}")
                     else:
                         pairs.append(f"`{str(item)[:60]}`")
-                lines.append(f"- **Frida {key}** ({len(value)}): " + ", ".join(pairs))
+                lines.append(
+                    f"- **Frida {key}** ({len(value)}): " + ", ".join(pairs) + " "
+                    + _dynamic_citation("frida_summary.json", key)
+                )
 
     capture = pack.get("external_capture") or {}
     if isinstance(capture, dict) and capture:
         capture_status = capture.get("status") or "recorded"
         details = [f"status={capture_status}", "mode=passive"]
-        for key in ("interface", "guest_ip", "capture_filter", "packets_captured",
-                    "elapsed_s", "pcap_size", "pcap_sha256"):
+        for key in ("packets_captured", "elapsed_s", "pcap_size", "pcap_sha256"):
             value = capture.get(key)
             if isinstance(value, (int, float, str)) and value != "":
                 details.append(f"{key}={value}")
-        capture_path = capture.get("path") or capture.get("pcap_name")
-        if capture_path:
-            details.append(f"evidence={capture_path}")
-        lines.append("- **passive off-box packet capture**: " + ", ".join(details))
+        lines.append(
+            "- **passive off-box packet capture**: " + ", ".join(details) + " "
+            + _dynamic_citation("external_capture.json", "status, packets_captured, "
+                                "elapsed_s, pcap_sha256")
+        )
 
-    proc = pack.get("procmon_summary") or {}
-    if isinstance(proc, dict) and proc:
-        lines += ["", "### Process behaviour (Procmon summary)", ""]
-        for key, value in list(proc.items()):
-            if isinstance(value, (int, float, str)):
-                lines.append(f"- **{key}**: {value}")
-            elif isinstance(value, list) and value and any(
-                    t in key.lower() for t in ("persist", "registry", "mutex", "service")):
-                lines.append(f"- **{key}** ({len(value)}): "
-                             + ", ".join(f"`{str(v)[:80]}`" for v in value[:8]))
+    lines.extend(_format_sample_procmon_events(pack))
 
     art = pack.get("unpack_artifact") or {}
     if art:
         lines += ["", "### Unpacked image (agentic-dbg)", ""]
         size = f" ({art.get('bytes')} bytes)" if art.get("bytes") else ""
-        lines.append(f"- **artifact**: `{art.get('name')}`{size}")
+        lines.append(
+            f"- **artifact**: `{art.get('name')}`{size} "
+            + _dynamic_citation("agentic-dbg artifact metadata", str(art.get("name") or "artifact"))
+        )
         for field in ("dump_kind", "dump_source", "rebuild_hint"):
             if art.get(field):
-                lines.append(f"- **{field.replace('_', ' ')}**: {art.get(field)}")
+                lines.append(
+                    f"- **{field.replace('_', ' ')}**: {art.get(field)} "
+                    + _dynamic_citation("agentic-dbg artifact metadata", field)
+                )
         analysis = analyze_unpack_artifact(art["path"]) if art.get("path") else {}
         if analysis.get("parses"):
             lines.append(f"- **static re-analysis**: parses=true machine={analysis.get('machine')} "
-                         f"imports={analysis.get('imports')}")
+                         f"imports={analysis.get('imports')} "
+                         + _dynamic_citation("unpacked artifact analysis", "PE machine, import count"))
             capa = analysis.get("capa") or {}
             if capa.get("ok"):
-                lines.append(f"- **capa on the unpacked image**: {capa.get('rules')} rule(s)")
+                lines.append(
+                    f"- **capa on the unpacked image**: {capa.get('rules')} rule(s) "
+                    + _dynamic_citation("unpacked artifact capa output", "matched rule count")
+                )
         elif analysis:
-            lines.append(f"- **static re-analysis**: not PE-parsable "
-                         f"({analysis.get('error') or 'raw memory region'})")
+            lines.append(
+                f"- **static re-analysis**: not PE-parsable "
+                f"({analysis.get('error') or 'raw memory region'}) "
+                + _dynamic_citation("unpacked artifact analysis", "PE parse result")
+            )
 
     extras = []
     if pack.get("memory_files"):
@@ -7017,11 +7861,10 @@ def format_dynamic_analysis_section(pack: dict | None) -> str:
     if pack.get("pcaps"):
         extras.append(f"{len(pack['pcaps'])} pcap(s)")
     if extras:
-        lines.append("- **artifacts**: " + ", ".join(extras))
+        lines.append("- **artifacts**: " + ", ".join(extras) + " "
+                     + _dynamic_citation("WinRE artifact pack", "captured memory and pcap file inventory"))
 
-    lines += ["", "_Observed behaviour corroborates the static assessment and never "
-              "overrides it._", ""]
-    return "\n".join(lines)
+    return "\n".join(lines).rstrip()
 
 
 def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
@@ -7036,9 +7879,16 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
     until the source artifacts support that conclusion.
     """
     mode = os.environ.get("REVAI_RUN_MODE", "").strip() or None
-    expected_run_id = current_run_id(sha, mode=mode)
+    root = Path(logs_dir) if logs_dir else LOGS_DIR
+    context = read_execution_context(sha, mode=mode, logs_root=root)
+    active_mode = mode or (context or {}).get("mode")
+    expected_run_id = _valid_run_id(
+        os.environ.get("REVAI_RUN_ID") or (context or {}).get("run_id")
+    )
     out: dict[str, Any] = {
         "run_id": expected_run_id,
+        "sha256": sha,
+        "mode": active_mode,
         "emulation": {}, "frida_static_probe": {
             "execution_proven": False,
             "state": "static candidate analysis only; does not execute the sample",
@@ -7047,15 +7897,10 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
     }
 
     # Emulation oracle: the deep-dive stage's 03-oracle.json.
-    root = Path(logs_dir) if logs_dir else LOGS_DIR
-    base = root / sha
-    mode = os.environ.get("REVAI_RUN_MODE", "").strip()
-    status_paths: list[Path] = []
-    if mode:
-        status_paths.append(base / mode / "winre-run.json")
-    status_paths.extend(base / m / "winre-run.json"
-                        for m in ("agentic", "scripted", "ui"))
-    status_paths.append(base / "winre-run.json")
+    base = root / sha / active_mode if active_mode else root / sha
+    # Report inputs are run-scoped. Sibling modes and a legacy flat directory
+    # may contain older artifacts for the same sample and must not be read.
+    status_paths = [base / "winre-run.json"]
     run_status: dict[str, Any] = {}
     run_status_stamp = ""
     latest_status: dict[str, Any] = {}
@@ -7072,15 +7917,20 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
             continue
         stamp = str(candidate.get("finished_at") or candidate.get("started_at")
                      or candidate.get("ts") or "")
-        if not latest_status or stamp >= latest_status_stamp:
-            latest_status, latest_status_stamp = candidate, stamp
-        if (not expected_run_id
-                or candidate.get("run_id") == expected_run_id):
+        identity_ok = (
+            candidate.get("sha256", sha) == sha
+            and candidate.get("mode", active_mode) == active_mode
+            and (not expected_run_id or candidate.get("run_id") == expected_run_id)
+        )
+        if identity_ok:
             if not run_status or stamp >= run_status_stamp:
                 run_status, run_status_stamp = candidate, stamp
-    if not run_status and not expected_run_id:
-        run_status = latest_status
-    if expected_run_id and not run_status and latest_status:
+    if expected_run_id and not run_status and status_paths[0].is_file():
+        try:
+            latest_status = json.loads(status_paths[0].read_text(
+                encoding="utf-8", errors="replace"))
+        except Exception:
+            latest_status = {}
         out["winre_status_correlation"] = {
             "ok": False,
             "expected_run_id": expected_run_id,
@@ -7094,26 +7944,32 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
             "status_run_id": run_status.get("run_id") if run_status else None,
         }
 
-    oracle_cands: list[Path] = []
-    if (base / "deep_dive" / "03-oracle.json").is_file():
-        oracle_cands.append(base)
-    for mode in ("scripted", "agentic", "ui"):
-        p = base / mode
-        if (p / "deep_dive" / "03-oracle.json").is_file():
-            oracle_cands.append(p)
+    oracle_cands: list[Path] = [base]
     for cand in oracle_cands:
+        oracle_path = cand / "deep_dive" / "03-oracle.json"
+        if not oracle_path.is_file():
+            continue
         try:
-            o = json.loads((cand / "deep_dive" / "03-oracle.json")
-                           .read_text(encoding="utf-8", errors="replace"))
+            o = json.loads(oracle_path.read_text(
+                encoding="utf-8", errors="replace"))
+            if isinstance(o, dict) and expected_run_id:
+                validate_case_artifact_identity(
+                    o, sha, {"sha256": sha, "run_id": expected_run_id,
+                             "mode": active_mode}, "deep_dive/03-oracle.json")
         except Exception:
-            o = {}
+            o = {"_identity_error": "oracle identity missing or mismatched"}
         if o:
             em = {"present": True, "ok": bool(o.get("ok")),
                   "engine": o.get("engine")}
+            if o.get("_identity_error"):
+                em["ok"] = False
+                em["error"] = o["_identity_error"]
             for key in ("error", "run_note"):
                 if o.get(key):
                     em[key] = str(o.get(key))[:400]
-            if em["ok"]:
+            if o.get("_identity_error"):
+                em["state"] = "emulation status unavailable (run identity mismatch)"
+            elif em["ok"]:
                 em["state"] = "emulation produced a trace"
             else:
                 em["state"] = "emulation NOT performed " + (
@@ -7309,11 +8165,14 @@ def persist_dynamic_analysis_status(sha: str,
         "schema_version": 1,
         "sha256": sha,
         "run_id": status.get("run_id"),
+        "mode": status.get("mode"),
         "summary": "run-scoped status",
         "sentence": str(status.get("sentence") or ""),
         "status": status,
     }
-    path = case_dir(sha)
+    artifact = stamp_case_artifact(
+        artifact, sha, "dynamic-analysis-status.json")
+    path = case_dir(sha, status.get("mode"))
     path.mkdir(parents=True, exist_ok=True)
     (path / "dynamic-analysis-status.json").write_text(
         json.dumps(artifact, indent=2, default=str), encoding="utf-8")
@@ -8376,13 +9235,6 @@ def build_technical_evidence_block(
         lines.append("```")
         lines.append((frida_trace.get("frida_stdout") or "")[:4000])
         lines.append("```")
-        lines.append("")
-
-    if audit:
-        lines.append("## Audit Trail (recent)")
-        for entry in audit[-30:]:
-            slim = {k: entry[k] for k in ("source", "sql", "phase", "ts") if k in entry}
-            lines.append(f"- `{json.dumps(slim, default=str)[:300]}`")
         lines.append("")
 
     return "\n".join(lines)

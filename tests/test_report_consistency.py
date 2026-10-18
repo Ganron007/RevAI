@@ -133,6 +133,18 @@ def test_verdict_panel_match_ok() -> None:
     check("panel match -> no mismatch violation", not mm, repr(r["violations"]))
 
 
+def test_verdict_text_mismatch_is_checked_without_system_panels() -> None:
+    master = "# Executive Summary\n\nVerdict: malicious.\n"
+    technical = "# Technical Assessment\n\nVerdict: suspicious.\n"
+    r = _cross_report_consistency(master, technical, "", None)
+    check("draft verdict mismatch -> violation", not r["ok"], repr(r["violations"]))
+    check(
+        "draft verdict mismatch is named",
+        any("master_tech_verdict_mismatch" in item for item in r["violations"]),
+        repr(r["violations"]),
+    )
+
+
 def test_panel_verdict_extraction() -> None:
     check("master panel parse", _panel_final_verdict(MASTER_PANEL_MAL) == "malicious")
     check("tech panel parse", _panel_final_verdict(TECH_PANEL_SUS) == "suspicious")

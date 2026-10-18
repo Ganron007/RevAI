@@ -119,6 +119,8 @@ export const OrchLiveSchema = z
         http: optNum,
         sni: optNum,
         dropped: optNum,
+        files_created_written: optNum,
+        frida_decoded_paths: optNum,
         unpack_artifact: optStr,
         corroboration_enabled: optBool,
         section_enabled: optBool,

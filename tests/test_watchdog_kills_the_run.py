@@ -33,7 +33,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _layout import resolve  # noqa: E402
+from _layout import bash_is_usable, resolve  # noqa: E402
 
 # scripts/run-watched.sh in the repo; /opt/scripts/run-watched.sh once deployed.
 WATCHER = resolve("scripts/run-watched.sh")
@@ -116,6 +116,9 @@ def test_a_failed_reboot_does_not_exit_zero():
 
 def test_missing_option_values_exit_with_the_usage_code():
     """B3: exit 3 is the documented usage/environment error."""
+    import pytest
+    if not bash_is_usable():
+        pytest.skip("bash/WSL is present but cannot execute on this host")
     for opt in ("--sha", "--mode", "--timeout-minutes"):
         proc = _run_watcher("/tmp/no-such-sample.bin", opt)
         assert proc.returncode == 3, (
@@ -131,6 +134,9 @@ def test_non_integer_timeout_is_rejected_before_launch():
     mangled by the bash that invokes the watcher, and the deployed runtime dir
     is root-owned).
     """
+    import pytest
+    if not bash_is_usable():
+        pytest.skip("bash/WSL is present but cannot execute on this host")
     proc = _run_watcher("/tmp/no-such-sample.bin", "--timeout-minutes", "1.5")
     assert proc.returncode == 3, proc.returncode
     assert "whole number" in proc.stderr, proc.stderr
@@ -142,6 +148,9 @@ def test_a_valid_timeout_is_not_rejected_by_the_validator():
     30 with a non-existent sample still exits 3 -- that is the sample check,
     which is the correct reason; what must not happen is a *validator* error.
     """
+    import pytest
+    if not bash_is_usable():
+        pytest.skip("bash/WSL is present but cannot execute on this host")
     proc = _run_watcher("/tmp/no-such-sample.bin", "--timeout-minutes", "30")
     assert proc.returncode == 3
     assert "whole number" not in proc.stderr, proc.stderr

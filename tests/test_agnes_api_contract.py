@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import sys
+import time
 from pathlib import Path
 import urllib.request
 
@@ -96,6 +97,57 @@ def test_agnes_llm_judge_sends_only_documented_reasoning_and_output_cap(
     assert "thinking" not in body
 
 
+def test_agnes_timeout_retry_never_disables_thinking(monkeypatch):
+    bodies = []
+
+    def timeout(request, timeout=None):
+        bodies.append(json.loads(request.data.decode("utf-8")))
+        raise TimeoutError("timed out")
+
+    monkeypatch.setattr(urllib.request, "urlopen", timeout)
+    monkeypatch.setattr(v2_lib, "llm_budget_acquire", lambda *_args, **_kw: 0)
+    monkeypatch.setattr(time, "sleep", lambda *_args, **_kwargs: None)
+    monkeypatch.setenv("REVAI_LLM_API_URL", "https://apihub.agnes-ai.com/v1")
+    monkeypatch.setenv("REVAI_LLM_API_KEY", "test-key")
+    monkeypatch.setenv("REVAI_LLM_MODEL", "agnes-3.0-flash")
+    monkeypatch.setenv("REVAI_LLM_REASONING", "enabled")
+    monkeypatch.setenv("REVAI_LLM_TIMEOUT", "1")
+    monkeypatch.setenv("REVAI_LLM_STREAM", "0")
+    monkeypatch.setenv("REVAI_LLM_BUDGET", "0")
+
+    with pytest.raises(TimeoutError):
+        v2_lib.llm_judge("prompt", max_retries=3)
+
+    assert len(bodies) == 2
+    assert all(body["chat_template_kwargs"] == {"enable_thinking": True}
+               for body in bodies)
+
+
+def test_agnes_agentic_completeness_retry_preserves_configured_thinking(
+        monkeypatch):
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "revai"))
+    import deep_dive_agentic as agentic
+
+    calls = []
+
+    def fake_judge(_prompt, *, model=None, reasoning=None):
+        calls.append(reasoning)
+        return {"choices": [{"message": {"content": json.dumps({
+            "verdict": "suspicious", "confidence": 50,
+            "summary": "evidence-backed summary", "key_evidence": ["tool row"],
+        })}}]}
+
+    monkeypatch.setattr(agentic, "get_llm_api_url",
+                        lambda: "https://apihub.agnes-ai.com/v1")
+    monkeypatch.setattr(agentic, "llm_judge", fake_judge)
+    result = agentic._complete_final_answer_retry(
+        {"verdict": "unknown"}, {"evidence": "tool row"},
+        "agnes-3.0-flash", "contract-test")
+
+    assert result["verdict"] == "suspicious"
+    assert calls == [None]
+
+
 def test_agnes_output_cap_does_not_change_other_providers(monkeypatch):
     monkeypatch.setenv("REVAI_LLM_MAX_TOKENS", "100000")
 
@@ -103,6 +155,33 @@ def test_agnes_output_cap_does_not_change_other_providers(monkeypatch):
         "https://apihub.agnes-ai.com/v1") == 65536
     assert v2_lib._llm_max_tokens_for_url(
         "https://provider.example/v1") == 100000
+
+
+def test_agnes_claim_review_overrides_keep_thinking_and_bound_output(monkeypatch):
+    bodies = []
+
+    def fake_urlopen(request, timeout=None):
+        bodies.append(json.loads(request.data.decode("utf-8")))
+        return _Response()
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(v2_lib, "llm_budget_acquire", lambda *_args, **_kw: 0)
+    monkeypatch.setenv("REVAI_LLM_API_URL", "https://apihub.agnes-ai.com/v1")
+    monkeypatch.setenv("REVAI_LLM_API_KEY", "test-key")
+    monkeypatch.setenv("REVAI_LLM_MODEL", "agnes-3.0-flash")
+    monkeypatch.setenv("REVAI_LLM_REASONING", "enabled")
+    monkeypatch.setenv("REVAI_LLM_STREAM", "0")
+
+    v2_lib.llm_judge(
+        "Return only {\"reviews\": []}", max_retries=1,
+        max_tokens_override=4096, temperature_override=0.0,
+    )
+
+    body = bodies[0]
+    assert body["max_tokens"] == 4096
+    assert body["temperature"] == 0.0
+    assert body["chat_template_kwargs"] == {"enable_thinking": True}
+    assert "reasoning_effort" not in body
 
 
 def test_langchain_serializes_documented_fields_without_renaming_token_cap():

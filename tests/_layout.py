@@ -17,6 +17,8 @@ Used at module import time, so it must not import anything from `revai`.
 """
 from __future__ import annotations
 
+import subprocess
+import socket
 import sys
 from pathlib import Path
 
@@ -75,3 +77,36 @@ def code_files() -> list[Path]:
     if repo_dir.is_dir():
         return sorted(p for p in repo_dir.glob("*.py") if p.is_file())
     return sorted(p for p in root.glob("*.py") if p.is_file())
+
+
+def bash_is_usable() -> bool:
+    """Whether this host can execute its discovered ``bash`` binary.
+
+    Windows can resolve ``bash`` to the WSL launcher even when no usable WSL
+    distribution is installed or permitted. Shell tests should skip in that
+    environment rather than report a syntax defect from the launcher.
+    """
+    try:
+        result = subprocess.run(
+            ["bash", "--version"], capture_output=True, text=True, timeout=5,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    return result.returncode == 0
+
+
+def loopback_is_usable() -> bool:
+    """Whether a process can connect to a local TCP listener on this host."""
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        server.bind(("127.0.0.1", 0))
+        server.listen(1)
+        client.settimeout(1)
+        client.connect(server.getsockname())
+        return True
+    except OSError:
+        return False
+    finally:
+        client.close()
+        server.close()

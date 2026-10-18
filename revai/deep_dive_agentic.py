@@ -36,9 +36,11 @@ from v2_lib import (  # noqa: E402
     frida_static_probe,
     ghidra_decompile,
     get_planner_model,
+    get_llm_api_url,
     get_verdict_model,
     ida_query_remote,
     is_transient_failure,
+    _is_agnes_api,
     llm_judge,
     load_session,
     malcat_analyze,
@@ -49,6 +51,7 @@ from v2_lib import (  # noqa: E402
     run_profile,
     scdbg_emulate,
     shellcode_extract,
+    stamp_case_artifact,
     speakeasy_emulate,
     tool_applies_to_format,
     tool_result_ok,
@@ -192,9 +195,10 @@ def _complete_final_answer_retry(
     The provider can degenerate on the verdict call at higher reasoning effort
     (hollow JSON at high/medium) so the surviving answer may lack verdict or
     summary — the stage then hard-fails as `final_answer_incomplete`
-    (rehearsal 2026-09-22). Re-ask ONCE with thinking disabled and a strict
-    flat-JSON contract; keep the original answer when the retry does not
-    improve it.
+    (rehearsal 2026-09-22). Re-ask ONCE with a strict flat-JSON contract. For
+    providers with an effort ladder, use its bounded lower setting; Agnes only
+    documents a Thinking on/off switch, so preserve the configured mode.
+    Keep the original answer when the retry does not improve it.
     """
     if _final_answer_complete(final_answer if isinstance(final_answer, dict) else {}):
         return final_answer
@@ -206,7 +210,11 @@ def _complete_final_answer_retry(
         f"findings:\n{_truncate(json.dumps(findings or {}, default=str), 6000)}\n"
     )
     try:
-        resp = llm_judge(prompt, model=verdict_model, reasoning="disabled")
+        retry_reasoning = (
+            None if _is_agnes_api(get_llm_api_url()) else "disabled"
+        )
+        resp = llm_judge(prompt, model=verdict_model,
+                         reasoning=retry_reasoning)
         content = resp["choices"][0]["message"]["content"]
         start, end = content.find("{"), content.rfind("}")
         raw = json.loads(content[start : end + 1]) if start >= 0 and end > start else {}
@@ -951,10 +959,14 @@ def _seed_signal_extractors(history: list, findings: dict, session: dict, sha: s
                     )
                     findings["dynamic_resolve_sites"]["runtime_resolved"] = len(names)
 
+            payload = stamp_case_artifact(
+                payload, sha, "deep_dive/02-signals.json")
             (ev_dir / "02-signals.json").write_text(
                 json.dumps(payload, indent=2, default=str)
             )
             if oracle is not None:
+                oracle = stamp_case_artifact(
+                    oracle, sha, "deep_dive/03-oracle.json")
                 (ev_dir / "03-oracle.json").write_text(
                     json.dumps(oracle, indent=2, default=str)
                 )
@@ -1213,6 +1225,8 @@ def _run_standard_checklist(registry: "ToolRegistry", session: dict, sha: str) -
 
     ev_dir = case_dir(sha) / "deep_dive"
     ev_dir.mkdir(parents=True, exist_ok=True)
+    tools_raw = stamp_case_artifact(
+        tools_raw, sha, "deep_dive/01-tools-raw.json")
     (ev_dir / "01-tools-raw.json").write_text(json.dumps(tools_raw, indent=2, default=str))
     (ev_dir / "01-tools-gate.json").write_text(json.dumps(gate, indent=2, default=str))
     if isinstance(tools_raw.get("upx_second_pass"), dict):
@@ -1239,9 +1253,9 @@ def _run_standard_checklist(registry: "ToolRegistry", session: dict, sha: str) -
         "revai_tools_audit": tools_raw.get("revai_tools_audit"),
     }
     # The WinRE detonation pack, when present. Adding it here (not to `findings`)
-    # is what lets the IoC scrubber ground a dynamic-observed value against a
-    # source the reader can also see, and keeps the agent-facing path separate
-    # from the grounding path.
+    # lets report verification ground a dynamic-observed value against a source
+    # the reader can also see, and keeps the agent-facing path separate from the
+    # grounding path.
     _dc = tools_raw.get("dynamic_corroboration")
     if isinstance(_dc, dict) and _dc.get("pack_present"):
         _ev_block = next(
@@ -1973,6 +1987,8 @@ def _finalize_agentic_result(
 
     ev_dir = case_dir(sha) / "deep_dive"
     ev_dir.mkdir(parents=True, exist_ok=True)
+    final_answer = stamp_case_artifact(
+        final_answer, sha, "deep_dive/agentic_deep_dive.json")
     (ev_dir / "agentic_deep_dive.json").write_text(json.dumps(final_answer, indent=2, default=str))
     compat = {
         "source": "deep_dive_agentic",
@@ -1989,6 +2005,7 @@ def _finalize_agentic_result(
         "tool_gate": tool_gate,
         "depth_coverage": final_answer.get("depth_coverage"),
     }
+    compat = stamp_case_artifact(compat, sha, "deep_dive/05-deep-dive.json")
     (ev_dir / "05-deep-dive.json").write_text(json.dumps(compat, indent=2, default=str))
     print(f"[deep_dive_agentic] engine={engine} -> {ev_dir / 'agentic_deep_dive.json'}", flush=True)
     print(f"[deep_dive_agentic] -> {ev_dir / '05-deep-dive.json'}", flush=True)

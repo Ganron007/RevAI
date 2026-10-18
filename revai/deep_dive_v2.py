@@ -52,6 +52,7 @@ from v2_lib import (  # noqa: E402
     run_all_tools,
     run_deep_tools_with_cache,
     run_post_upx_second_pass,
+    stamp_case_artifact,
     speakeasy_emulate,
     tool_applies_to_format,
     update_session,
@@ -576,6 +577,8 @@ def _run_large_agentic_deep_dive(sha: str, max_steps: int = 10) -> dict:
         "sql_deep_ok": result.get("sql_deep_ok"),
         "incomplete_tooling": bool(result.get("incomplete_tooling")),
     }
+    compat = stamp_case_artifact(
+        compat, sha, "deep_dive/05-deep-dive.json")
     (ev_dir / "05-deep-dive.json").write_text(json.dumps(compat, indent=2, default=str))
     audit_write(sha, {"source": "deep_dive_v2", "phase": "large_delegate", "agentic_path": str(agentic_path)})
     print(f"[deep_dive_v2] LARGE mode complete -> {ev_dir / '05-deep-dive.json'}", flush=True)
@@ -634,6 +637,8 @@ def main():
     hitl_checkpoint("deep_dive_v2", "pre_sql", {"sha256": sha, "phase": "gather_sql"})
 
     sql_evidence = gather_sql(session_id, ida_id)
+    sql_evidence = stamp_case_artifact(
+        sql_evidence, sha, "deep_dive/00-sql-evidence.json")
     (ev_dir / "00-sql-evidence.json").write_text(
         json.dumps(sql_evidence, indent=2, default=str))
 
@@ -698,6 +703,8 @@ def main():
             f"tools={list((second.get('tool_ok') or {}).keys())}",
             flush=True,
         )
+    tools_results = stamp_case_artifact(
+        tools_results, sha, "deep_dive/01-tools-raw.json")
     (ev_dir / "01-tools-raw.json").write_text(
         json.dumps(tools_results, indent=2, default=str))
     tool_gate = evaluate_tool_checklist(tools_results)
@@ -800,11 +807,13 @@ def main():
             flush=True,
         )
 
+    analysis = stamp_case_artifact(analysis, sha, "deep_dive/05-deep-dive.json")
     (ev_dir / "05-deep-dive.json").write_text(json.dumps(analysis, indent=2, default=str))
 
     # Backward-compat: also write deep-dive.json at logs root
     root_path = case_dir(sha) / "deep-dive.json"
-    root_path.write_text(json.dumps(analysis, indent=2, default=str))
+    root_path.write_text(json.dumps(stamp_case_artifact(
+        analysis, sha, "deep-dive.json"), indent=2, default=str))
 
     # --- Auto-apply Ghidra + IDA annotations (write-back) ---
     # If confidence is high and the LLM proposed function renames,
@@ -914,8 +923,10 @@ def main():
             }
 
     # Re-write after adding the annotation fields
+    analysis = stamp_case_artifact(analysis, sha, "deep_dive/05-deep-dive.json")
     (ev_dir / "05-deep-dive.json").write_text(json.dumps(analysis, indent=2, default=str))
-    root_path.write_text(json.dumps(analysis, indent=2, default=str))
+    root_path.write_text(json.dumps(stamp_case_artifact(
+        analysis, sha, "deep-dive.json"), indent=2, default=str))
 
     print(f"[deep_dive_v2] -> {ev_dir}/")
     print(f"[deep_dive_v2] -> {root_path}")

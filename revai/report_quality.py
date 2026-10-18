@@ -315,6 +315,8 @@ def evaluate_report_markdown(
     source: str | None = None,
     min_total_chars: int = 4000,
     label: str = "report",
+    evidence_root: Path | None = None,
+    verdict_lock: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Hard gate for one report markdown (+ optional source from JSON meta)."""
     missing = missing_sections(md, required_sections)
@@ -333,6 +335,11 @@ def evaluate_report_markdown(
         issues.append(f"{label}:stub_sections:{stubs}")
     if len(md or "") < min_total_chars:
         issues.append(f"{label}:too_short:{len(md or '')}<{min_total_chars}")
+    if verdict_lock is not None and not verdict_lock.get("ok", False):
+        issues.append(
+            f"{label}:verdict_lock_conflict:"
+            f"{verdict_lock.get('reason') or 'publish claim contradicts upstream'}"
+        )
     # Deterministic salvage markers in body
     low = normalize_heading_text(md or "").lower()
     if "evidence-first deterministic path" in low or "deterministic fallback" in low:
@@ -460,6 +467,22 @@ def evaluate_report_markdown(
             issues.append(
                 f"{label}:uncited_claims:{style['uncited_claim_count']}"
             )
+    ioc_verification: dict[str, Any] | None = None
+    if evidence_root is not None:
+        try:
+            evidence_text, evidence_files = collect_evidence_text(Path(evidence_root))
+            ioc_verification = verify_claimed_iocs(md or "", evidence_text)
+            ioc_verification["evidence_files"] = evidence_files
+            if not evidence_files:
+                issues.append(f"{label}:evidence_corpus_missing")
+            ioc_issue = _ioc_factcheck_issue(ioc_verification)
+            if ioc_issue:
+                issues.append(f"{label}:{ioc_issue}")
+        except Exception as exc:
+            ioc_verification = {
+                "error": f"{type(exc).__name__}: {exc}",
+            }
+            issues.append(f"{label}:ioc_factcheck_error:{type(exc).__name__}")
     ok = not issues
     return {
         "ok": ok,
@@ -469,6 +492,7 @@ def evaluate_report_markdown(
         "missing_sections": missing,
         "stub_sections": stubs,
         "style": style,
+        "claimed_ioc_verification": ioc_verification,
         "issues": issues,
     }
 
@@ -965,7 +989,8 @@ def _cross_report_consistency(
     Gate-failing violations:
     - a report claims dynamic analysis EXECUTED when the run performed none,
       or the reverse;
-    - master and technical verdict panels state different final verdicts;
+    - published reports state different verdicts, including when no system
+      verdict panel is present;
     - entropy citations contradict the file's measured whole-file entropy.
 
     The earlier version flagged this by word-matching a negation in one report
@@ -1012,18 +1037,36 @@ def _cross_report_consistency(
         if (dyn_status.get("winre") or {}).get("pack_present"):
             violations.append("cross_report:dynamic_execution_status_unverified")
 
-    mv = _panel_final_verdict(master_md)
-    mv3 = _panel_final_verdict(master_v3_md)
-    tv = _panel_final_verdict(tech2_md) or _panel_final_verdict(tech3_md)
+    from v2_lib import infer_publish_verdict_from_markdown
+
+    def _report_verdict(markdown: str) -> str:
+        return (infer_publish_verdict_from_markdown(markdown)
+                or _panel_final_verdict(markdown))
+
+    mv = _report_verdict(master_md)
+    mv3 = _report_verdict(master_v3_md)
+    tv2 = _report_verdict(tech2_md)
+    tv3 = _report_verdict(tech3_md)
     checks["master_verdict"] = mv
     checks["master_v3_verdict"] = mv3
-    checks["tech_verdict"] = tv
-    if mv and tv and mv != tv:
-        violations.append(
-            f"cross_report:master_tech_verdict_mismatch(master={mv}, technical={tv})")
-    if mv3 and tv and mv3 != tv:
-        violations.append(
-            f"cross_report:master_v3_tech_verdict_mismatch(master={mv3}, technical={tv})")
+    checks["technical_v2_verdict"] = tv2
+    checks["technical_v3_verdict"] = tv3
+    for master_label, master_verdict, tech_label, tech_verdict in (
+        ("master_v2", mv, "technical_v2", tv2),
+        ("master_v2", mv, "technical_v3", tv3),
+        ("master_v3", mv3, "technical_v2", tv2),
+        ("master_v3", mv3, "technical_v3", tv3),
+    ):
+        if master_verdict and tech_verdict and master_verdict != tech_verdict:
+            if master_label == "master_v2" and tech_label == "technical_v2":
+                issue_name = "master_tech_verdict_mismatch"
+            elif master_label == "master_v3" and tech_label == "technical_v3":
+                issue_name = "master_v3_tech_verdict_mismatch"
+            else:
+                issue_name = f"{master_label}_{tech_label}_verdict_mismatch"
+            violations.append(
+                f"cross_report:{issue_name}("
+                f"master={master_verdict}, technical={tech_verdict})")
     if file_entropy is not None:
         for md, label in (
             (master_md, "master"),
@@ -1076,6 +1119,7 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str, *,
     master_j = _load(root / "report-v2.json")
     tech2_j = _load(root / "report-technical-v2.json")
     tech3_j = _load(root / "report-technical-v3.json")
+    master_v3_j = _load(root / "section-results-v3.json")
     master_md = (root / "REPORT-MASTER-v2.md").read_text(encoding="utf-8", errors="replace") if (root / "REPORT-MASTER-v2.md").is_file() else ""
     tech2_md = (root / "REPORT-TECHNICAL-v2.md").read_text(encoding="utf-8", errors="replace") if (root / "REPORT-TECHNICAL-v2.md").is_file() else ""
     tech3_md = (root / "REPORT-TECHNICAL-v3.md").read_text(encoding="utf-8", errors="replace") if (root / "REPORT-TECHNICAL-v3.md").is_file() else ""
@@ -1108,6 +1152,8 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str, *,
         source=master_j.get("source"),
         min_total_chars=2000,
         label="master_v2",
+        evidence_root=root,
+        verdict_lock=master_j.get("verdict_lock"),
     )
     r_master_v3 = evaluate_report_markdown(
         master_v3,
@@ -1115,21 +1161,17 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str, *,
         source="llm_judge" if master_v3 else None,
         min_total_chars=1500,
         label="master_v3",
+        evidence_root=root,
+        verdict_lock=master_v3_j.get("master_v3_verdict_lock"),
     )
-    if not REPORT_MASTER_SECTIONS:
-        r_master_v3["ok"] = bool(master_v3)
-        r_master_v3["issues"] = [] if master_v3 else ["master_v3:import_or_empty"]
-    # If REPORT_MASTER_SECTIONS empty (import fail), skip heading checks
-    if not REPORT_MASTER_SECTIONS:
-        r_master["ok"] = bool(master_md) and not source_is_fallback(master_j.get("source"))
-        r_master["issues"] = [] if r_master["ok"] else ["master_v2:import_or_empty"]
-
     r_tech2 = evaluate_report_markdown(
         tech2_md,
         required_sections=TECHNICAL_REPORT_SECTIONS,
         source=tech2_j.get("source"),
         min_total_chars=8000,
         label="technical_v2",
+        evidence_root=root,
+        verdict_lock=tech2_j.get("verdict_lock"),
     )
     r_tech3 = evaluate_report_markdown(
         tech3_md,
@@ -1137,6 +1179,8 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str, *,
         source=tech3_j.get("source") or ("llm_judge" if tech3_md and not source_is_fallback(tech3_j.get("source")) else tech3_j.get("source")),
         min_total_chars=8000,
         label="technical_v3",
+        evidence_root=root,
+        verdict_lock=tech3_j.get("verdict_lock"),
     )
     # section_publisher often omits source — treat missing source + good body as ok if not fallback
     if not tech3_j.get("source") and r_tech3.get("missing_sections") == [] and not r_tech3.get("stub_sections"):
@@ -1182,20 +1226,19 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str, *,
     for _viol in consistency.get("violations") or []:
         issues.append(_viol)
 
-    # #6: claim-level entailment. A claim that cites the analysis's own prose
-    # as its evidence is unverifiable by construction -- measured at 1-20 per
-    # report across five real runs. The unresolved-row and unresolved-source
-    # classes are REPORTED as counts and deliberately not gated: both are
-    # dominated by checker artifacts (the citation parser truncates at commas,
-    # and provenance-label spellings the alias map does not cover).
+    # #6: trace each citation to its source-specific machine artifact and
+    # review the full claim against the exact source row. Missing evidence or
+    # reviewer failure is not a pass: a gate exception must never become green.
     try:
         from entailment import check_report_entailment
         _ent = check_report_entailment(sha, case_root=root)
     except Exception as _ent_exc:
-        _ent = {"ok": True, "applicable": False,
+        _ent = {"ok": False, "applicable": True, "status": "error",
                 "reason": f"entailment check unavailable: {_ent_exc}"}
     checks["claim_entailment"] = _ent
     if not _ent.get("ok"):
+        _ent_status = str(_ent.get("status") or "failed")
+        issues.append(f"claim_entailment:{_ent_status}")
         for _v in (_ent.get("violations") or [])[:20]:
             issues.append(f"entailment:{_v.get('status')}:"
                           f"{str(_v.get('claim'))[:120]}")
@@ -1238,21 +1281,17 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str, *,
     pa = _load(root / "pipeline-audit.json")
     checks["pipeline_audit_all_green"] = bool(pa.get("all_green")) if pa else False
 
-    # Plan #10, advisory phase: re-verify report-claimed indicators against the
-    # raw evidence by code (never by LLM self-review). Recorded in checks and the
-    # advisory block; deliberately NOT folded into `issues` until calibrated
-    # against the published corpus shows an acceptable false-positive rate.
-    try:
-        _evidence_text, _evidence_files = collect_evidence_text(root)
-        _report_for_claims = tech3_md or tech2_md or master_md
-        _claims = verify_claimed_iocs(_report_for_claims, _evidence_text)
-        _claims["evidence_files"] = _evidence_files
-        checks["claimed_ioc_verification"] = _claims
-        _ioc_issue = _ioc_factcheck_issue(_claims)
-        if _ioc_issue:
-            issues.append(_ioc_issue)
-    except Exception as exc:  # advisory must never break the gate
-        checks["claimed_ioc_verification"] = {"advisory": True, "error": str(exc)}
+    # Check every published draft independently. A clean technical report must
+    # not mask unsupported claims in either master report or the other version.
+    checks["claimed_ioc_verification"] = {
+        name: check.get("claimed_ioc_verification") or {}
+        for name, check in (
+            ("master_v2", r_master),
+            ("master_v3", r_master_v3),
+            ("technical_v2", r_tech2),
+            ("technical_v3", r_tech3),
+        )
+    }
 
     # Plan #14d, calibrated 2026-09-27 on the 56-case published corpus: behaviour
     # statements are cross-checked against the deterministic pe_imports high-signal
@@ -1279,7 +1318,6 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str, *,
         "issues": issues,
         "checks": checks,
         "advisory": {
-            "claimed_ioc_verification": checks.get("claimed_ioc_verification", {}),
             "behavior_prerequisites": checks.get("behavior_prerequisites", {}),
         },
         "models": {
@@ -1293,7 +1331,7 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str, *,
     }
 
 
-# --- claimed-IOC fact verification (plan #10; advisory until calibrated) ---
+# --- claimed-IOC fact verification (plan #10; enforced per report) ---
 
 _CLAIM_URL_RE = re.compile(r"(?i)\b(?:hxxps?|https?|ftp)(?:\[:\]|:)?//[^\s\"'<>()\[\]{}\\]+")
 # The trailing lookahead rejects a follow-on `.`/`[.]` + digit, so `1.2.3.4`
@@ -1689,6 +1727,12 @@ def _split_report_sentences(text: str) -> list[str]:
                 if cursor not in spans:
                     break
                 cursor = spans[cursor]
+            # Citation annotations stop before punctuation that follows the
+            # closing parenthesis, e.g. ``claim. (source: ..., row: ...).``
+            # Consume that punctuation with the cited sentence so it cannot
+            # become a standalone, apparently uncited claim.
+            while cursor < len(value) and value[cursor] in ".!?":
+                cursor += 1
             parts.append(value[start:cursor].strip())
             start = cursor
             index = cursor
@@ -1705,15 +1749,15 @@ def _split_report_sentences(text: str) -> list[str]:
 
     if start < len(value):
         parts.append(value[start:].strip())
-    return [part for part in parts if part]
+    return [part for part in parts if part and any(char.isalnum() for char in part)]
 
 
 def uncited_report_claims(markdown: str) -> list[str]:
     """Return narrative assertions that lack a nearby source citation.
 
-    Tables may carry a dedicated Source, Citation, or Evidence column instead
-    of an inline marker. Inline narrative and table citations require a concrete
-    row/rule locator, because a source name alone cannot locate the evidence.
+    Every factual table row and narrative assertion requires a concrete source
+    citation with a row/rule locator; a populated Source or Evidence cell alone
+    does not bind the claim to an observation.
     Fenced evidence dumps are excluded because they are source material, while
     narrative that interprets them must remain cited.
     This is a structural coverage check; it does not claim that a citation
@@ -1732,41 +1776,34 @@ def uncited_report_claims(markdown: str) -> list[str]:
             lines.append(line)
 
     uncited: list[str] = []
-    table_source_columns: list[int] = []
     in_table = False
     for raw_line in lines:
         line = raw_line.strip()
         if not line:
             in_table = False
-            table_source_columns = []
             continue
         if line.startswith("|"):
             cells = [cell.strip() for cell in line.strip("|").split("|")]
             if not in_table:
-                headers = [re.sub(r"[*`_]", "", cell).strip().lower()
-                           for cell in cells]
-                table_source_columns = [
-                    i for i, header in enumerate(headers)
-                    if any(term in header for term in (
-                        "source", "citation", "evidence",
-                    ))
-                ]
                 in_table = True
                 continue
             if all(re.fullmatch(r"\s*:?-{2,}:?\s*", cell) for cell in cells):
                 continue
-            source_value = any(
-                i < len(cells) and cells[i].strip(" `*_—-")
-                for i in table_source_columns
-            )
-            if not source_value and not has_citation_locator(line):
+            # A populated Evidence/Source cell is not provenance by itself.
+            # Require a parseable citation with a concrete row locator so the
+            # entailment gate can resolve this exact row to a run artifact.
+            if not has_citation_locator(line):
                 excerpt = re.sub(r"\s+", " ", line)
                 uncited.append(excerpt[:240])
             continue
 
         in_table = False
-        table_source_columns = []
         if line.startswith("#") or line.startswith("<!--"):
+            continue
+        # Bold-only labels are markdown headings even when the author chose
+        # not to use ``#`` syntax. Treating these as unsupported factual claims
+        # avoids treating a bold label as an unsupported factual assertion.
+        if re.fullmatch(r"(?:[-*+]\s+)?\*\*[^*\n]+\*\*\s*:?[：:]?", line):
             continue
         if _REPORT_METADATA_PREFIX_RE.match(line):
             continue
@@ -1777,9 +1814,8 @@ def uncited_report_claims(markdown: str) -> list[str]:
             # A source label alone is not a traceable citation. The entailment
             # checker classifies it as source-only because a reviewer cannot
             # locate the observation. Require a concrete row/rule locator in
-            # narrative citations; table rows may still use a dedicated source
-            # column because each row itself is the observed item.
-            if len(claim) < 25 or has_citation_locator(claim):
+            # narrative and table citations.
+            if has_citation_locator(claim):
                 continue
             if _REPORT_METADATA_PREFIX_RE.match(claim):
                 continue
@@ -1787,6 +1823,11 @@ def uncited_report_claims(markdown: str) -> list[str]:
                 "this report ", "this section ", "in this section ",
                 "all citations ", "citation format ", "the following sections ",
                 "the following tables reproduce ", "every row is cited ",
+                "the table below ", "the following table ",
+                "the summary below ", "the figure below ",
+                "the following figure ", "the list below ",
+                "the timeline below ", "the chart below ",
+                "the evidence trail below ",
             )):
                 continue
             uncited.append(claim[:240])
@@ -1882,9 +1923,9 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
 
     Deterministic and code-based: no LLM re-reading of the report. A claim is
     *verified* when its plain (re-fanged) value appears in the concatenated raw
-    evidence, *unverified* otherwise. Unverified is not automatically wrong - an
-    analyst may cite knowledge outside the evidence pack - which is why this is
-    recorded as advisory rather than folded into the gate until calibrated.
+    evidence, *unverified* otherwise. The report must keep evidence for its
+    sample-specific claims in the run's evidence pack; unsupported values fail
+    the per-report quality gate.
 
     Hash claims equal to the pipeline's own provenance commit are excluded:
     the provenance banner is build metadata, not a sample indicator
@@ -2293,7 +2334,10 @@ def scrub_unverified_indicators(
     *,
     provenance_commit: str | None = None,
 ) -> tuple[str, list[dict], dict]:
-    """Neutralise indicator values in prose that no tool observed.
+    """Legacy diagnostic transform; report publishers must not call this.
+
+    Production publishing preserves unsupported claims and lets the quality
+    gate fail; this utility remains only for historical/offline comparisons.
 
     Plan item #42. Two prompt-level attempts to stop the model naming canonical
     registry paths failed, so this does not try to out-prompt it: the report is
@@ -2384,13 +2428,11 @@ def scrub_unverified_indicators(
 def scrub_report_indicators(
     case: Path, markdown: str, label: str,
 ) -> tuple[str, dict]:
-    """Scrub one report against its own case's evidence, and record the result.
+    """Legacy diagnostic wrapper; do not use this to publish a report.
 
-    Every published report goes through this, not just the one the audit reads
-    (`claimed_ioc_verification` checks `tech3 or tech2 or master`, so a fix
-    applied to a single report would leave the other three asserting values no
-    tool produced -- and on the 2026-10-02 win32k_dll run the unverified claims
-    were spread across master-v2, master-v3 and technical-v3).
+    Kept for offline comparisons of historic reports. Production publishers
+    preserve generated claims and use evaluate_report_markdown to record
+    unsupported values as quality failures.
 
     `case` is the mode-keyed case directory. The evidence files consulted are
     the same ones the audit uses later, and all of them are pre-report tool
@@ -2438,14 +2480,11 @@ def scrub_report_indicators(
 
 
 def _ioc_factcheck_issue(claims: dict) -> str | None:
-    """Gate message for unverified claims, or None when clean/advisory.
+    """Gate message for unverified claims, or None when clean.
 
-    Promoted 2026-09-16 (plan #10). ``REVAI_IOC_FACTCHECK=advisory`` records the
-    result without failing, for a run whose report legitimately cites sources
-    outside the evidence pack.
+    An unverified report claim is never promoted to green by a configuration
+    switch: external context must be represented in the evidence pack and cited.
     """
-    if os.environ.get("REVAI_IOC_FACTCHECK", "enforce").strip().lower() == "advisory":
-        return None
     count = int(claims.get("unverified") or 0)
     return f"report:unverified_iocs:{count}" if count else None
 
@@ -2516,17 +2555,97 @@ def _dynamic_pack_evidence_text(root: Path) -> tuple[str, list[str]]:
         return "", []
     ni = pack.get("network_intel") or {}
     caps = ((ni.get("captures") or [{}])[0] if isinstance(ni, dict) else {}) or {}
-    values: list[str] = []
+    src = pack.get("source") or "pack"
+    values: list[str] = [f"winre dynamic pack source={src}"]
+    for label in ("META.json", "META.job.json"):
+        payload = pack.get("meta" if label == "META.json" else "job_meta") or {}
+        if isinstance(payload, dict) and payload:
+            values.append(f"{label}: {json.dumps(payload, sort_keys=True, default=str)}")
+    values.append("META.json fields: producer/source, ok, error, schema_version, "
+                  "verdict_policy.static_yara_wins")
+    values.append("META.job.json fields: detonation_ran, sample_pid, window.requested_s, "
+                  "window.effective_s, window.adaptive, window.stop_reason")
+
+    # Preserve the exact source rows for sample-PID Procmon citations before
+    # other dynamic evidence, so a large IOC list cannot push them past the
+    # audit corpus limit.
+    for event in pack.get("procmon_sample_events") or []:
+        if not isinstance(event, dict):
+            continue
+        values.append(
+            f"Procmon data row {event.get('row')}; PID {event.get('pid')}; "
+            f"operation {event.get('operation')}; process {event.get('process')}; "
+            f"time {event.get('time')}; path {event.get('path')}; "
+            f"result {event.get('result')}; detail {event.get('detail')}"
+        )
+    for file_record in pack.get("procmon_created_written_files") or []:
+        if not isinstance(file_record, dict):
+            continue
+        for operation in ("create", "write"):
+            event = file_record.get(operation) or {}
+            if not isinstance(event, dict):
+                continue
+            values.append(
+                f"Procmon data row {event.get('row')}; PID {event.get('pid')}; "
+                f"operation {event.get('operation') or operation}; "
+                f"path {event.get('path')}; "
+                f"result {event.get('result')}; detail {event.get('detail')}"
+            )
+    for event in pack.get("procmon_instrumentation_exclusions") or []:
+        if not isinstance(event, dict):
+            continue
+        values.append(
+            f"Procmon data row {event.get('row')}; PID {event.get('pid')}; "
+            f"operation {event.get('operation')}; path {event.get('path')}; "
+            f"result {event.get('result')}; Frida instrumentation exclusion "
+            f"count={event.get('count')}"
+        )
     for key in ("dns_queries", "tls_sni", "http_requests"):
-        values.extend(str(x) for x in (caps.get(key) or []))
-    for p in (pack.get("frida_summary") or {}).get("decoded_paths") or []:
-        values.append(str(p))
+        cap = 20 if key == "dns_queries" else 12
+        entries = (caps.get(key) or [])[:cap]
+        if entries:
+            values.append(f"captures[0].{key}: " + ", ".join(str(x) for x in entries))
+    network = pack.get("network") or {}
+    if isinstance(network, dict) and network.get("domains_guess"):
+        values.append("network.json domains_guess: " + ", ".join(
+            str(x) for x in network["domains_guess"][:20]
+        ))
+    frida = pack.get("frida_summary") or {}
+    for p in (frida.get("decoded_paths") or []) if isinstance(frida, dict) else []:
+        values.append(f"frida_summary.json decoded_paths entry: {p}")
+    if isinstance(frida, dict) and frida.get("events") is not None:
+        values.append(f"frida_summary.json events={frida.get('events')}")
+    if isinstance(frida, dict):
+        scalar_fields = [key for key, value in frida.items()
+                         if isinstance(value, (int, float, str) )][:6]
+        if scalar_fields:
+            values.append("frida_summary.json fields: " + ", ".join(scalar_fields))
+        for key, value in frida.items():
+            if isinstance(value, list) and value and "api" in key.lower():
+                values.append(f"frida_summary.json {key}: " + json.dumps(value[:8], default=str))
+    capture = pack.get("external_capture") or {}
+    if isinstance(capture, dict) and capture:
+        values.append("external_capture.json fields: status, packets_captured, elapsed_s, pcap_sha256")
+        values.append("external_capture.json " + "; ".join(
+            f"{key}={capture.get(key)}" for key in (
+                "status", "packets_captured", "elapsed_s", "pcap_sha256"
+            ) if capture.get(key) is not None
+        ))
     art = pack.get("unpack_artifact") or {}
     if isinstance(art, dict) and art.get("name"):
-        values.append(str(art["name"]))
-    src = pack.get("source") or "pack"
-    return "\n".join(values), [f"winre:{src}:network_intel.json",
-                               f"winre:{src}:frida_summary.json"]
+        values.append(f"unpacked artifact analysis: {art['name']}")
+        values.append("agentic-dbg artifact metadata: " + "; ".join(
+            f"{key}={art.get(key)}" for key in (
+                "dump_kind", "dump_source", "rebuild_hint", "bytes"
+            ) if art.get(key) is not None
+        ))
+    return "\n".join(values), [
+        f"winre:{src}:META.json",
+        f"winre:{src}:META.job.json",
+        f"winre:{src}:network_intel.json",
+        f"winre:{src}:frida_summary.json",
+        f"winre:{src}:procmon.csv",
+    ]
 
 
 # --- behavior prerequisites vs import surface (plan #14d; advisory) --------

@@ -156,51 +156,33 @@ A non-streaming request carries no bytes until the response is complete, so
 `REVAI_LLM_STREAM=0` to restore plain POSTs, at the cost of losing the
 distinction.
 
-### Report evidence and completeness gates
+### Report evidence and claim-support gates
 
-The publication gate checks every report version that can be delivered: the v2
-master, v3 master, and v2/v3 technical reports. Required section names must be
-real Markdown headings outside fenced examples; a title mentioned in prose or
-an evidence dump does not satisfy the section. Each factual narrative sentence
-and each evidence-table row needs an inline `(source: ...)` marker or a
-dedicated Source, Citation, or Evidence column. Missing sections and uncited
-claims keep the report red so the publisher can regenerate the affected
-content from the original evidence.
+The publication gate checks every deliverable report: v2/v3 master and technical
+reports. Required section names must be real Markdown headings outside fenced
+examples. Every factual narrative assertion and every factual table row needs
+a concrete source citation with an artifact/table and exact row or rule locator;
+a populated Evidence or Source cell alone does not count. The active SHA, run ID,
+mode, and hashes of all report inputs are recorded before writing. Every report
+call receives that run manifest plus the section-relevant tool observations and
+the versioned RE/report methodology. The technical writer receives the assembled
+evidence pack.
 
-This is a structural traceability check: it verifies that a claim points to a
-source, not that the cited source proves the claim. The audit's separate
-indicator and consistency checks cover specific claim classes, while an analyst
-must still inspect source artifacts for semantic support and interpretation.
+The claim gate validates the input and final-report hashes, resolves each
+citation against its source-specific primary artifact, and checks whether the
+whole claim follows from the located evidence. Supported or contradicted reviews
+must quote text present in the evidence excerpt. Missing citations, unresolved
+rows, unsupported claims, or reviewer/checker failures keep the report red. The
+first generated draft is assessed as written; the publisher does not call the
+same writer to repair its citations. The semantic review uses the configured
+model, so it is evidence-constrained corroboration rather than independent-model
+certification.
 
-### Indicator scrubber and published-name redaction
+### Indicator claim verification and published-name redaction
 
-Reports are made accurate after they are written, by code rather than by
-prompting harder. Two passes run over every published report:
+The publisher preserves the generated report text (apart from provider/model-name redaction, which is document hygiene) and evaluates each report against the raw evidence from that same run. Literal indicators are checked in all four reports. Unsupported claims remain visible in the report and fail its quality gate; a clean report cannot mask a failure in another report. Verdict downgrades against the upstream lock are also kept visible and fail quality.
 
-* **Indicator scrubber (plan #42).** Each indicator value that no tool
-  observed is replaced with a marker naming the kind of thing that was
-  removed, and the removal is recorded in the report's JSON (`indicator_scrub`)
-  so the audit can see it. Replacing rather than deleting matters: when Malcat
-  reports a registry-persistence rule the capability claim is real, so only the
-  concrete path the model filled in from training data is neutralised — the
-  evidenced finding survives.
-* **Model-name redaction.** Published markdown never names the provider or
-  model. `verdict.json` and `pipeline-audit.json` keep the real one, because an
-  auditor needs to know which model judged the sample. The split is machine
-  evidence vs published document.
-
-The scrubber **refuses to run against an empty evidence corpus**. An empty
-corpus makes every claim look unobserved, which would delete the sample's own
-sha256 while reporting `remaining_unverified: 0`; absent and empty now behave
-identically, and a skipped scrub is recorded as an error rather than a clean
-result.
-
-To record the result without failing the audit — a run whose report
-legitimately cites sources outside the evidence pack:
-
-```
-REVAI_IOC_FACTCHECK=advisory
-```
+Evidence from outside the run must be added to the evidence pack and cited before publication. There is no advisory switch that turns unsupported claims green. The report JSON and final audit retain per-report verification results and the evidence files used.
 
 ### Indicator-first string sampling
 
@@ -227,8 +209,8 @@ treat any indicator that appears nowhere in it as unverified.
 
 `scripts/instrument-live-log.sh` reads a run's outcome from its artifacts in a
 single pass — stage rc and duration, `finish_reason` across every LLM call,
-anomalies, the audit gate, IoC verification, the indicator scrub's removal
-records, report sizes and the verdict.
+anomalies, the audit gate, per-report indicator verification records, report
+sizes and the verdict.
 
 ```
 ./instrument-live-log.sh                      # newest run
@@ -265,16 +247,16 @@ can cite it.
 | `obfuscation-recognition` | The tells and standard attacks for CFF, MBA, string encryption and flattening |
 | `ghidra-sql-recipes` | The query patterns against our SQL bridges |
 | `verdict-calibration` | The calibration contract verbatim |
+| `report-evidence-methodology` | Evidence-backed report structure, sample/run attribution, claim support, and citation requirements |
 
 Load one with the `load_skill` tool; the deep-dive prompt carries a one-line
 index of what exists. Each skill declares what it **does not** cover, so "the
 skill was silent" is distinguishable from "no source existed".
 
-**Attribution.** Skills ship a `sources.jsonl` recording the internal knowledge
-base chunks each was extracted from (chunk id, source path, line range), so the
-extraction is auditable. Those paths are **not resolvable in this public
-repository** and are never presented as links. `ghidra-sql-recipes` is
-repo-derived and honestly says so rather than carrying external citations.
+**Attribution.** Each skill ships `sources.jsonl` with its source provenance.
+Internal knowledge-base paths are auditable metadata, not public links. Skills
+built from this repository identify their repository source rather than claiming
+external references.
 
 ### Depth mode (opt-in, post-pipeline)
 
@@ -339,7 +321,7 @@ nothing looks like it heard something.
 ## Pipeline stages 
 1. **intake** - session + Ghidra (optional IDA)
 2. **quick_scan** - triage tools (capa, yara, floss, malcat, pe_imports, packer, **revai-tools sec/sinks**) -> `evidence-pack.md` -> LLM verdict
-3. **winre_dynamic** - *(optional, `REVAI_WINRE_RUN=1`)* Flare detonation. Runs **between triage and the deep dive** so the deep dive ingests it as evidence: the pack's observed domains, dropped paths and unpack artifact are rendered into the deep-dive prompt under their own heading, outside the findings budget, and added to `deep_dive/evidence-pack.md`. They are **corroborating only** - a static finding is never overridden by a dynamic observation (`static_yara_wins`). With no pack the prompt is byte-identical to a static-only run. Auto-skips when WinRE is not installed.
+3. **winre_dynamic** - *(optional, `REVAI_WINRE_RUN=1`)* Flare detonation. Runs **between triage and the deep dive** so the deep dive ingests it as evidence: the pack's observed domains, sample-process-tree file create/write rows, Frida-decoded runtime paths, and unpack artifact are rendered into the deep-dive prompt under their own heading, outside the findings budget, and added to `deep_dive/evidence-pack.md`. Decoded paths do not prove file creation. Dynamic findings are **corroborating only** - a static finding is never overridden by a dynamic observation (`static_yara_wins`). With no pack the prompt is byte-identical to a static-only run. Auto-skips when WinRE is not installed.
 4. **deep_dive** - agentic LangGraph ReAct deep dive (`deep_dive_agentic`; `deep_dive_v2` for standard mode) - checklist + agent callable include **revai-tools sec/sinks/audit**
 4.5. **function_recovery** - *(optional, `REVAI_ENABLE_AGENTIC_RECOVERY=1`)* agentic function-name recovery (see below)
 4.6. **artifact_gen** - *(optional, `REVAI_ENABLE_ARTIFACT_GEN=1`)* verifiable analysis scripts: the LLM authors a sample-specific extraction script, the pipeline runs it sandboxed and re-derives every claimed value from the sample bytes
@@ -523,7 +505,6 @@ Tunables (all optional, defaults shown):
 | `REVAI_LLM_ENV` | `/opt/revai/config/llm.env` | path of the LLM env file the Console reads the API key from (override for tests/alternate installs) |
 | `REVAI_API_INDEX` | unset | override the offline API lookup index path (default: `assets/api_index/api_index.db` in the repo, `/opt/revai/api_index/api_index.db` on the VM). The bundled index covers the 369 malapi.io-catalogued APIs; a full-corpus index (~46k APIs, built from Microsoft's sdk-api + driver-ddi documentation) can be deployed over it — see [`api-index.md`](api-index.md). Absent index degrades `api_lookup` to `available:false` — the pipeline is unaffected |
 | `REVAI_FORCE_API_INDEX` | 0 | deploy-time only: `scripts/deploy.sh` keeps an existing VM index (so a full-corpus build survives a deploy); set to 1 to overwrite it with the bundled default |
-| `REVAI_IOC_FACTCHECK` | enforce | unverified report IOC claims fail the quality gate; `advisory` records them without failing (escape hatch for a report citing sources outside the evidence pack) |
 | `REVAI_DISABLE_IOC_CONFIDENCE` | off | skip the deterministic "Indicator confidence" section in the technical reports |
 | `REVAI_DISABLE_DYNAMIC_SECTION` | off | skip the deterministic "Dynamic Analysis (WinRE detonation)" section |
 | `REVAI_DISABLE_GAP_SECTION` | off | skip the deterministic "What We Don't Know" section |
@@ -570,8 +551,6 @@ the sample executed.
 | `REVAI_TI_ENRICH` | unset | CLI opt-in for TI enrichment (Console: `ti_enrich`) |
 | `depth_ceiling_seconds` (Console) | `7200` | depth mode's wall-clock ceiling. Maps to `REVAI_DEPTH_CEILING_SECONDS` |
 | `REVAI_DEPTH_CEILING_SECONDS` | `7200` | depth mode's ceiling. The ceiling does not truncate — hitting it forces a *consolidate and declare* phase, so a cutoff yields a partial-but-honest map with the remaining unknowns explicitly costed. A non-numeric value falls back to the default rather than failing a run |
-| `ioc_factcheck` (Console) | `blocking` | `blocking` or `advisory`; maps to `REVAI_IOC_FACTCHECK` |
-| `REVAI_IOC_FACTCHECK` | `blocking` | `advisory` records an unverified literal claim without failing the quality gate (`report:unverified_iocs:<n>`); the default blocks. The CLI escape hatch |
 | `REVAI_LLM_ENV` | `/opt/revai/config/llm.env` | RevAI's own LLM config path; WinRE uses its separate env file/exports. The key is never echoed or stored in the Console |
 | `REVAI_WINRE_ROOT` / `REVAI_WINRE_PY` / `REVAI_WINRE_TIMEOUT` | `/opt/winre` / `<root>/venv/bin/python` / `3600` | install + venv locations, subprocess timeout seconds |
 | `REVAI_WITH_WINRE` / `REVAI_WINRE_REPO` / `REVAI_WINRE_REF` | off / `https://github.com/Ganron007/WinRE.git` / `master` | install-time only: the optional WinRE step in `setup-remnux.sh` |
@@ -611,10 +590,10 @@ Two endpoints expose what the deep-dive agent is doing while it runs:
 
 ## Claimed-IOC fact verification (enforced) and behavior prerequisites (advisory)
 
-`report_quality.py` re-checks every literal indicator a report claims against the
-raw tool evidence by code (both fanged and defanged forms). An unverified claim
-fails the quality gate (`report:unverified_iocs:<n>`); `REVAI_IOC_FACTCHECK=advisory`
-records it without failing. Known non-claims are excluded rather than counted:
+`report_quality.py` re-checks every literal indicator in each published report
+against the raw tool evidence by code (both fanged and defanged forms). An
+unverified claim fails that report's quality gate
+(`report:unverified_iocs:<n>`). Known non-claims are excluded rather than counted:
 generic hive keys without a subkey, vendor/telemetry hosts, prose/code identifiers.
 
 Calibration over the 56 published case studies (post-fix): 175 literal claims,

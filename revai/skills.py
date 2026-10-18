@@ -33,6 +33,7 @@ header states this so no reader mistakes a citation for a reference.
 from __future__ import annotations
 
 import json
+import hashlib
 import os
 from pathlib import Path
 
@@ -49,6 +50,9 @@ SKILL_SCHEMA_VERSION = 1
 #: one sentence that tells the agent WHEN to load it. Deliberately short -- this
 #: is the only part that always costs tokens.
 SKILL_INDEX: tuple[dict[str, str], ...] = (
+    {"name": "report-evidence-methodology",
+     "use": "the evidence hierarchy, sample attribution, behavioral inference, "
+            "coverage limits and ATT&CK mapping rules for published reports"},
     {"name": "re-methodology",
      "use": "the canonical static-analysis sequence and its stop conditions; "
             "load before a long manual walkthrough"},
@@ -205,8 +209,11 @@ def load_skill(name: str) -> dict:
         "body": body,
         "sources": sources,
         "attribution": (
-            "Sources are internal KB citations held as provenance metadata. "
-            "The paths are not resolvable in this public repository."),
+            "Sources are repository files recorded as provenance metadata."
+            if sources and all(item.get("source_type") == "repository"
+                               for item in sources)
+            else "Sources are internal KB citations held as provenance metadata. "
+                 "The paths are not resolvable in this public repository."),
     }
 
 
@@ -223,6 +230,43 @@ def skill_citation(name: str) -> str:
     n = len(s["sources"])
     return (f"{s['name']} skill v{s['version']} "
             f"({n} cited source{'s' if n != 1 else ''}; provenance internal)")
+
+
+def report_methodology_block(scope: str | list[str] | None = None) -> str:
+    """Load the repository's versioned RE/report procedures into each writer call.
+
+    Methodology is explicitly separated from sample evidence. Report sections
+    that discuss code, capabilities, unpacking or obfuscation receive the
+    corresponding investigation procedures rather than relying on model recall.
+    """
+    if isinstance(scope, list):
+        scope_text = " ".join(str(item) for item in scope).casefold()
+    else:
+        scope_text = str(scope or "").casefold()
+    names = ["report-evidence-methodology", "verdict-calibration"]
+    if any(term in scope_text for term in (
+            "technical", "static", "code", "behavior", "behaviour", "capability",
+            "attack", "mitre", "reverse", "deep", "analysis", "family")):
+        names.append("re-methodology")
+    if any(term in scope_text for term in (
+            "pack", "unpack", "obfuscat", "deobfuscat", "loader", "shellcode")):
+        names.extend(("unpack-and-verify", "obfuscation-recognition"))
+
+    blocks = [
+        "## Trusted reverse-engineering methodology (not sample evidence)",
+        "The following versioned repository procedures govern analysis and "
+        "reporting. They are instructions about method, never observations "
+        "about this sample and must never be cited as findings.",
+    ]
+    for name in dict.fromkeys(names):
+        skill = load_skill(name)
+        path = SKILLS_DIR / name / "SKILL.md"
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        blocks.extend((
+            f"### {name} v{skill['version']} (sha256={digest})",
+            str(skill["body"]).strip(),
+        ))
+    return "\n\n".join(blocks)
 
 
 def _cli() -> int:

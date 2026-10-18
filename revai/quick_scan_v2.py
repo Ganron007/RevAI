@@ -33,6 +33,7 @@ from v2_lib import (  # noqa: E402
     ensure_pipeline_runtime_env,
     evaluate_tool_checklist,
     floss_extract,
+    get_llm_api_url,
     get_llm_model,
     get_verdict_model,
     ida_query_remote,
@@ -50,6 +51,7 @@ from v2_lib import (  # noqa: E402
     tool_result_ok,
     yara_scan,
     _detect_format_for_tools,
+    _is_agnes_api,
     calibrate_verdict,
     is_transient_failure,
     normalize_llm_json,
@@ -57,6 +59,7 @@ from v2_lib import (  # noqa: E402
     revai_tools_sec,
     revai_tools_sinks,
     run_profile,
+    stamp_case_artifact,
 )
 from report_quality import VERDICT_CALIBRATION_CONTRACT  # noqa: E402
 from packer_intake import run_packer_scan  # noqa: E402
@@ -408,6 +411,7 @@ def main():
             "model": "deterministic",
             "prompt_tokens_approx": 0,
         }
+        verdict = stamp_case_artifact(verdict, args.sha256, "verdict.json")
         log_dir = case_dir(args.sha256)
         log_dir.mkdir(parents=True, exist_ok=True)
         (log_dir / "verdict.json").write_text(json.dumps(verdict, indent=2))
@@ -636,6 +640,8 @@ def main():
         },
         "_stage": "quick_scan",
     }
+    tools_raw = stamp_case_artifact(
+        tools_raw, args.sha256, "quick_scan/00-tools-raw.json")
     (qs_dir / "00-tools-raw.json").write_text(json.dumps(tools_raw, indent=2, default=str))
     print(
         f"[quick_scan_v2] tools cache -> {qs_dir / '00-tools-raw.json'} "
@@ -654,7 +660,9 @@ def main():
     _pe_map = tools_raw.get("pe_imports") or {}
     if isinstance(_pe_map, dict) and _pe_map.get("signals") and not _pe_map.get("error"):
         (qs_dir / "pe-imports.json").write_text(
-            json.dumps(_pe_map, indent=2, default=str))
+            json.dumps(stamp_case_artifact(
+                _pe_map, args.sha256, "quick_scan/pe-imports.json"),
+                indent=2, default=str))
         print(f"[quick_scan_v2] pe-imports map -> {qs_dir / 'pe-imports.json'} "
               f"signals={_pe_map.get('signal_count')}", flush=True)
 
@@ -728,7 +736,9 @@ def main():
     ti_enrich = ti_hash_enrich(args.sha256)
     qs_ti = case_dir(args.sha256) / "quick_scan"
     qs_ti.mkdir(parents=True, exist_ok=True)
-    (qs_ti / "ti-enrich.json").write_text(json.dumps(ti_enrich, indent=2, default=str))
+    (qs_ti / "ti-enrich.json").write_text(json.dumps(
+        stamp_case_artifact(ti_enrich, args.sha256, "quick_scan/ti-enrich.json"),
+        indent=2, default=str))
     if ti_enrich.get("enabled"):
         print(
             f"[quick_scan_v2] TI enrich enabled ok={ti_enrich.get('ok')} "
@@ -771,10 +781,12 @@ def main():
     # Provider degeneration guard (2026-09-22 rehearsal): a corrupted response
     # (e.g. {"+": ...}) parsed to a dict without a verdict label and was used as
     # the primary verdict. Validate the contract (verdict label + family_guess)
-    # and run ONE bounded completeness retry with thinking disabled.
+    # and run ONE bounded completeness retry. Agnes has no effort ladder, so
+    # that retry preserves configured Thinking; other providers retain their
+    # documented lower-setting fallback.
     for _attempt, _reasoning in ((1, None), (2, "disabled")):
         try:
-            if _reasoning is None:
+            if _reasoning is None or _is_agnes_api(get_llm_api_url()):
                 resp = llm_judge(prompt, model=model)
             else:
                 resp = llm_judge(prompt, model=model, reasoning=_reasoning)
@@ -797,7 +809,10 @@ def main():
             print(
                 f"[quick_scan_v2] LLM verdict incomplete on attempt {_attempt} "
                 "(missing verdict/family_guess); "
-                + ("retrying with thinking disabled" if _attempt == 1 else "giving up"),
+                + (("retrying with configured Agnes Thinking mode"
+                    if _is_agnes_api(get_llm_api_url()) else
+                    "retrying at the lowest supported reasoning setting")
+                   if _attempt == 1 else "giving up"),
                 flush=True,
             )
         except Exception as e:
@@ -946,6 +961,7 @@ def main():
             flush=True,
         )
     verdict_path = log_dir / "verdict.json"
+    verdict = stamp_case_artifact(verdict, args.sha256, "verdict.json")
     verdict_path.write_text(json.dumps(verdict, indent=2))
     print(f"[quick_scan_v2] verdict -> {verdict_path}")
     print(json.dumps(verdict, indent=2))

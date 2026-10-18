@@ -28,46 +28,65 @@ import publish_report_v2 as PR  # noqa: E402
 
 
 # ------------------------------------------------------------- the status helper
+def _start_run(tmp_path, monkeypatch, sha, mode="scripted"):
+    logs = tmp_path / "logs"
+    monkeypatch.setattr(v2_lib, "LOGS_DIR", logs)
+    monkeypatch.setenv("REVAI_RUN_MODE", mode)
+    monkeypatch.delenv("REVAI_RUN_ID", raising=False)
+    context = v2_lib.begin_execution(sha, mode=mode, engine="test")
+    return logs, context
+
+
 def test_status_reports_a_failed_oracle_as_not_performed(tmp_path, monkeypatch):
     """The .NET case: oracle present but ok=False."""
-    case = tmp_path / "logs" / "ab" / "scripted"
+    logs, context = _start_run(tmp_path, monkeypatch, "ab")
+    case = logs / "ab" / "scripted"
     (case / "deep_dive").mkdir(parents=True)
+    oracle = v2_lib.stamp_case_artifact(
+        {"ok": False, "engine": "emulation_oracle",
+         "error": "SpeakeasyError: Emulator not initialized"},
+        "ab", "deep_dive/03-oracle.json")
     (case / "deep_dive" / "03-oracle.json").write_text(
-        json.dumps({"ok": False, "engine": "emulation_oracle",
-                    "error": "SpeakeasyError: Emulator not initialized"}),
+        json.dumps(oracle),
         encoding="utf-8")
     monkeypatch.setenv("REVAI_WINRE_LOGS", str(tmp_path / "nowhere"))
-    st = v2_lib.dynamic_analysis_status("ab", logs_dir=tmp_path / "logs")
+    st = v2_lib.dynamic_analysis_status("ab", logs_dir=logs)
     assert st["any_dynamic_performed"] is False
     assert "NOT performed" in st["emulation"]["state"]
     assert "not performed" in st["sentence"].lower()
+    assert st["run_id"] == context["run_id"]
 
 
 def test_status_reports_a_successful_oracle(tmp_path, monkeypatch):
-    case = tmp_path / "logs" / "cd" / "scripted"
+    logs, _context = _start_run(tmp_path, monkeypatch, "cd")
+    case = logs / "cd" / "scripted"
     (case / "deep_dive").mkdir(parents=True)
+    oracle = v2_lib.stamp_case_artifact(
+        {"ok": True, "engine": "emulation_oracle"},
+        "cd", "deep_dive/03-oracle.json")
     (case / "deep_dive" / "03-oracle.json").write_text(
-        json.dumps({"ok": True, "engine": "emulation_oracle"}),
+        json.dumps(oracle),
         encoding="utf-8")
     monkeypatch.setenv("REVAI_WINRE_LOGS", str(tmp_path / "nowhere"))
-    st = v2_lib.dynamic_analysis_status("cd", logs_dir=tmp_path / "logs")
+    st = v2_lib.dynamic_analysis_status("cd", logs_dir=logs)
     assert st["any_dynamic_performed"] is True
     assert "produced a trace" in st["emulation"]["state"]
 
 
 def test_dynamic_status_is_persisted_as_citable_evidence(tmp_path, monkeypatch):
+    logs, _context = _start_run(tmp_path, monkeypatch, "a" * 64)
     status = {
         "sentence": "Run-scoped status -- WinRE detonation: sample launch confirmed.",
         "any_dynamic_performed": True,
     }
     monkeypatch.setattr(v2_lib, "dynamic_analysis_status", lambda *_a, **_k: status)
-    monkeypatch.setattr(v2_lib, "case_dir", lambda _sha: tmp_path)
 
     record = v2_lib.persist_dynamic_analysis_status("a" * 64)
-    persisted = json.loads((tmp_path / "dynamic-analysis-status.json").read_text())
+    case_root = logs / ("a" * 64) / "scripted"
+    persisted = json.loads((case_root / "dynamic-analysis-status.json").read_text())
     import entailment
 
-    evidence, used = RQ.collect_evidence_text(tmp_path)
+    evidence, used = RQ.collect_evidence_text(case_root)
     claim = {
         "source": "dynamic_analysis_status",
         "query": "run-scoped status",
@@ -78,14 +97,51 @@ def test_dynamic_status_is_persisted_as_citable_evidence(tmp_path, monkeypatch):
     assert record == persisted
     assert persisted["status"] == status
     assert "dynamic-analysis-status.json" in used
-    assert entailment.verify_claim(claim, evidence, tmp_path)["checks"]["row_resolves"]
+    assert entailment.verify_claim(claim, evidence, case_root)["checks"]["row_resolves"]
 
 
 def test_status_with_no_oracle_says_so(tmp_path, monkeypatch):
+    logs, _context = _start_run(tmp_path, monkeypatch, "zz")
     monkeypatch.setenv("REVAI_WINRE_LOGS", str(tmp_path / "nowhere"))
-    st = v2_lib.dynamic_analysis_status("zz", logs_dir=tmp_path / "logs")
+    st = v2_lib.dynamic_analysis_status("zz", logs_dir=logs)
     assert st["emulation"]["present"] is False
     assert st["any_dynamic_performed"] is False
+
+
+def test_status_reads_execution_context_from_the_supplied_logs_root(
+        tmp_path, monkeypatch):
+    sha = "d" * 64
+    run_id = "e" * 32
+    logs = tmp_path / "custom-logs"
+    case = logs / sha / "agentic"
+    oracle_path = case / "deep_dive" / "03-oracle.json"
+    oracle_path.parent.mkdir(parents=True)
+    context = {
+        "schema": "revai-execution-context/v1", "run_id": run_id,
+        "sha256": sha, "mode": "agentic", "engine": "test",
+        "started_at": "2026-10-18T00:00:00+00:00",
+    }
+    (case / "execution-context.json").write_text(json.dumps(context))
+    oracle = {
+        "ok": True, "engine": "emulation_oracle",
+        "_cadre_provenance": {
+            "schema": "revai-artifact-provenance/v1", "sha256": sha,
+            "run_id": run_id, "mode": "agentic",
+            "artifact": "deep_dive/03-oracle.json",
+            "generated_at": "2026-10-18T00:00:01+00:00",
+        },
+    }
+    oracle_path.write_text(json.dumps(oracle))
+    monkeypatch.setattr(v2_lib, "LOGS_DIR", tmp_path / "different-default")
+    monkeypatch.setenv("REVAI_RUN_MODE", "agentic")
+    monkeypatch.delenv("REVAI_RUN_ID", raising=False)
+    monkeypatch.setenv("REVAI_WINRE_LOGS", str(tmp_path / "nowhere"))
+
+    status = v2_lib.dynamic_analysis_status(sha, logs_dir=logs)
+
+    assert status["run_id"] == run_id
+    assert status["emulation"]["present"] is True
+    assert status["emulation"]["state"] == "emulation produced a trace"
 
 
 def test_status_separates_winre_launch_runtime_trace_and_passive_capture(

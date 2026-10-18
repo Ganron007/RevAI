@@ -407,7 +407,7 @@ def check_hygiene(root: Path | None = None) -> None:
 #: Documented but intentionally deploy-time/ops-only (not read by Python).
 _ENV_ALLOWLIST = {
     "REVAI_FORCE_API_INDEX", "REVAI_HOME", "REVAI_LLM_TIMEOUT",
-    "REVAI_PROGRESS_STREAM_SECONDS", "REVAI_IOC_FACTCHECK",
+    "REVAI_PROGRESS_STREAM_SECONDS",
     "REVAI_DISABLE_IOC_CONFIDENCE", "REVAI_DISABLE_DYNAMIC_SECTION",
     "REVAI_DISABLE_GAP_SECTION", "REVAI_WINRE_LOGS",
     # Written by the sync/deploy step (provenance), not a user knob.

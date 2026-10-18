@@ -23,7 +23,7 @@ import pytest
 
 TESTS = Path(__file__).resolve().parent
 sys.path.insert(0, str(TESTS))
-from _layout import resolve  # noqa: E402
+from _layout import bash_is_usable, resolve  # noqa: E402
 
 WATCHER = resolve("scripts/run-watched.sh")
 
@@ -148,6 +148,8 @@ def test_the_shell_scripts_are_syntactically_valid():
     scripts = _repo_scripts()
     if not scripts:
         pytest.skip("no repo-owned scripts directory in this layout")
+    if not bash_is_usable():
+        pytest.skip("bash/WSL is present but cannot execute on this host")
     bad, unrunnable = [], []
     for sh in scripts:
         p = subprocess.run(["bash", "-n", str(sh)], capture_output=True, text=True)

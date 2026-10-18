@@ -37,6 +37,7 @@ from v2_lib import (  # noqa: E402
     malcat_analyze,
     llm_judge,
     resolve_pipeline_mode,
+    stamp_case_artifact,
     update_session,
 )
 
@@ -315,6 +316,7 @@ def run_malcat_triage(sample: Path, sha: str) -> dict:
         result = malcat_analyze(str(sample), profile="triage")
         profile_path = case_dir(sha) / "malcat-triage.json"
         profile_path.parent.mkdir(parents=True, exist_ok=True)
+        result = stamp_case_artifact(result, sha, "malcat-triage.json")
         profile_path.write_text(json.dumps(result, indent=2, default=str))
         print(f"[intake_v2] malcat triage profile -> {profile_path}", flush=True)
         return result
@@ -630,6 +632,8 @@ def decide_sources(sha: str, session: dict, validation: dict, use_llm: bool = Tr
         "warnings": validation["warnings"],
         "source_decisions": decisions,
     }
+    full_report = stamp_case_artifact(
+        full_report, sha, "intake-validation.json")
     val_path = case_dir(sha) / "intake-validation.json"
     val_path.parent.mkdir(parents=True, exist_ok=True)
     val_path.write_text(json.dumps(full_report, indent=2, default=str))
@@ -734,6 +738,7 @@ def main():
                     "document format: ghidra/ida skipped (doc_triage used)",
                 ],
             }
+            _iv = stamp_case_artifact(_iv, sha, "intake-validation.json")
             (case_dir(sha) / "intake-validation.json").write_text(
                 json.dumps(_iv, indent=2, default=str)
             )

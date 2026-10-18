@@ -1,14 +1,11 @@
 """Keep WinRE remote capture passive, host-filtered, and non-routing."""
-from pathlib import Path
-
-
-ROOT = Path(__file__).resolve().parents[1]
+from _layout import source
 
 
 def test_capture_setup_installs_guest_only_promiscuous_tcpdump_contract():
-    setup = (ROOT / "install" / "setup-winre-capture.sh").read_text(encoding="utf-8")
-    installer = (ROOT / "install" / "setup-remnux.sh").read_text(encoding="utf-8")
-    verifier = (ROOT / "install" / "verify-remnux.sh").read_text(encoding="utf-8")
+    setup = source("install/setup-winre-capture.sh")
+    installer = source("install/setup-remnux.sh")
+    verifier = source("install/verify-remnux.sh")
 
     assert '"mode": "passive"' in setup
     assert '"promiscuous": True' in setup

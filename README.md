@@ -165,7 +165,7 @@ Distinctive capabilities — the things that set RevAI apart. For the full featu
 | **Malcat native capa engine** | Uses Malcat's own capability engine, which holds up better than Mandiant capa on packed samples — [`docs/malcat-capa-engine.md`](docs/malcat-capa-engine.md) |
 | **In-process yara-x engine** | YARA scanning runs inside the pipeline, with no external `yr` binary — [`docs/OPERATE.md`](docs/OPERATE.md) |
 | **Honest `truly_green` gate** | Green requires the audit, the report quality checks, and zero failed tools to all pass together |
-| **Indicator scrubber** | Code deletes any indicator the tools never observed from the report before it is published, and records what it removed |
+| **Evidence-grounded first drafts** | Every published report is checked against its run's raw evidence; unsupported indicators and verdict conflicts remain visible and fail quality instead of being rewritten away |
 | **Published-artifact hygiene** | Published reports never name the model; the audit trail still does |
 | **Run watchdog** | `scripts/run-watched.sh` streams a run, attributes each anomaly to the stage that emitted it, stops it early on a fatal error, and refuses to quarantine a live case dir |
 | **Depth gate (capability coverage)** | The deep dive must address every capability domain — as evidence or as stated 'not observed' — [`docs/architecture.md`](docs/architecture.md#10-quality-verification-gate-truly_green) |

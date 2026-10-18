@@ -123,7 +123,11 @@ def run_single(sample: Path | None, sha: str | None, mode: str = "standard") -> 
         if not sample_path:
             raise SystemExit("session missing sample_path")
         sample = Path(sample_path)
-        intake_cmd = None
+        project = sample.parent.parent.name if sample.parent.parent else "single"
+        intake_cmd = [
+            sys.executable, str(SCRIPTS / "intake_v2.py"), str(sample),
+            "--project-name", project[:64], "--mode", mode,
+        ]
 
     execution = begin_execution(
         sha,
