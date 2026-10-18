@@ -124,22 +124,29 @@ def test_dynamic_pack_counts(tmp_path):
         "dumps": 0, "unpack_artifact": None}
 
 
-def test_gateway_pcapng_in_off_box_layout_is_loaded(tmp_path):
-    """The gateway collector's off-box pcapng must reach RevAI reporting."""
+def test_passive_tcpdump_pcap_in_off_box_layout_is_loaded_and_attributed(tmp_path):
+    """The off-box sensor capture and its provenance reach RevAI reporting."""
     dyn = _make_pack(tmp_path)
     off_box = dyn / "off_box"
     (off_box / "network_raw").mkdir(parents=True)
-    (off_box / "network_raw" / "gateway.pcapng").write_bytes(b"pcapng")
+    (off_box / "network_raw" / "vmnet2.pcap").write_bytes(b"pcap")
     (off_box / "capture.json").write_text(json.dumps({
-        "requested": True, "status": "collected", "elapsed_s": 129.7,
+        "requested": True, "status": "collected", "mode": "passive",
+        "interface": "ens32", "guest_ip": "192.168.77.42",
+        "capture_filter": "host 192.168.77.42", "packets_captured": 37,
+        "pcap_sha256": "a" * 64,
+        "path": "off_box/network_raw/vmnet2.pcap", "elapsed_s": 129.7,
     }))
 
     pack = load_dynamic_pack(SHA, winre_root=tmp_path)
-    assert pack and pack["pcaps"] == ["off_box/network_raw/gateway.pcapng"]
+    assert pack and pack["pcaps"] == ["off_box/network_raw/vmnet2.pcap"]
     assert pack["external_capture"]["status"] == "collected"
     assert dynamic_pack_counts(pack)["present"] is True
     md = format_flare_dynamic_evidence(pack)
     assert "1 pcap(s)" in md
+    assert "passive off-box packet capture" in md
+    assert "packets_captured=37" in md
+    assert "evidence=off_box/network_raw/vmnet2.pcap" in md
 
 
 def test_no_dump_run_is_reported_honestly(tmp_path):

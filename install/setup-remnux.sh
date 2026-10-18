@@ -464,20 +464,20 @@ else
 fi
 
 # =========================================================================
-# Optional WinRE network gateway / off-box capture service
+# Optional WinRE passive VMnet2 packet capture
 # =========================================================================
-# When WinRE is installed, REMnux is the guest's private-network gateway and
-# capture point. Forwarding stays disabled; unknown flows are observed and
-# dropped, while configured INetSim ports are redirected to local simulators.
+# When WinRE is installed, REMnux passively observes guest packets on VMnet2.
+# Flare keeps its own route, DNS, FakeNet, and peer access; REMnux does not act
+# as its gateway or modify the guest-facing firewall.
 if [[ -f "$WINRE_DIR/winre/pipeline.py" ]]; then
-  if [[ -x "$REPO_ROOT/install/setup-winre-gateway.sh" ]]; then
-    if "$REPO_ROOT/install/setup-winre-gateway.sh"; then
-      ok "WinRE gateway/capture policy configured"
+  if [[ -x "$REPO_ROOT/install/setup-winre-capture.sh" ]]; then
+    if "$REPO_ROOT/install/setup-winre-capture.sh"; then
+      ok "WinRE passive tcpdump capture configured; Flare network settings are unchanged"
     else
-      warn "WinRE gateway/capture setup failed; remote dynamic capture is not ready"
+      warn "WinRE passive tcpdump capture setup failed; remote dynamic capture is not ready"
     fi
   else
-    warn "setup-winre-gateway.sh missing; WinRE gateway/capture not configured"
+    warn "setup-winre-capture.sh missing; WinRE passive capture not configured"
   fi
 fi
 

@@ -88,7 +88,7 @@ def test_status_with_no_oracle_says_so(tmp_path, monkeypatch):
     assert st["any_dynamic_performed"] is False
 
 
-def test_status_separates_winre_launch_runtime_trace_and_gateway_capture(
+def test_status_separates_winre_launch_runtime_trace_and_passive_capture(
         tmp_path, monkeypatch):
     sha = "e" * 64
     winre = tmp_path / "winre"
@@ -101,7 +101,14 @@ def test_status_separates_winre_launch_runtime_trace_and_gateway_capture(
     (dyn / "frida_summary.json").write_text(json.dumps({"events": 577}))
     (dyn / "frida_trace.jsonl").write_text('{"event":"call"}\n')
     (dyn / "off_box" / "network_raw").mkdir(parents=True)
-    (dyn / "off_box" / "network_raw" / "gateway.pcapng").write_bytes(b"pcapng")
+    (dyn / "off_box" / "network_raw" / "vmnet2.pcap").write_bytes(b"pcap")
+    (dyn / "off_box" / "capture.json").write_text(json.dumps({
+        "requested": True, "status": "collected", "mode": "passive",
+        "interface": "ens32", "guest_ip": "192.168.77.42",
+        "capture_filter": "host 192.168.77.42", "packets_captured": 37,
+        "pcap_sha256": "a" * 64,
+        "path": "off_box/network_raw/vmnet2.pcap",
+    }))
     monkeypatch.setenv("REVAI_WINRE_LOGS", str(winre))
 
     st = v2_lib.dynamic_analysis_status(sha, logs_dir=tmp_path / "logs")
@@ -111,6 +118,7 @@ def test_status_separates_winre_launch_runtime_trace_and_gateway_capture(
     assert st["frida_runtime"]["observed_runtime_events"] is True
     assert st["frida_runtime"]["events"] == 577
     assert st["packet_capture"]["present"] is True
+    assert st["packet_capture"]["external_capture"]["packets_captured"] == 37
     assert "static-only" in st["sentence"]
     assert "sample launch confirmed" in st["sentence"]
 

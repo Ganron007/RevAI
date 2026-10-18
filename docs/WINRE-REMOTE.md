@@ -25,7 +25,7 @@ RevAI host (this machine)                    Windows analysis VM (FlareVM-based)
   - LangGraph agent + all LLM calls      ───►  Ghidra/IDA/Malcat SQL+MCP
   - WinRE package + Python deps          SSH   x64dbg/WinDbg MCP
   - SSH/SCP to the Windows VM            SCP   detonation job (Procmon,
-  - gateway capture + INetSim                  Frida, pe-sieve)
+  - passive tcpdump capture                    Frida, pe-sieve)
   - the only machine holding LLM keys          standalone mode uses FakeNet
 ```
 
@@ -50,17 +50,15 @@ creates `/opt/winre/venv`, installs the driver extras, and scaffolds
 archive at `internal/winre.zip` instead. Without the flag, the step just warns —
 RevAI stays static-only.
 
-When WinRE is present, setup also runs `install/setup-winre-gateway.sh`.
-That script binds no-upstream dnsmasq and INetSim to the private analysis interface, installs a
-persistent nftables policy that drops forwarding and redirects supported
-simulation ports, and writes `/etc/revai/winre-gateway.json` for the driver.
-The default lab addresses are Flare `.42` and REMnux `.43` on `192.168.77.0/24`;
-set `WINRE_GUEST_IP`, `WINRE_GATEWAY_IP`, and `WINRE_ANALYSIS_INTERFACE` when
-deploying elsewhere; `WINRE_MANAGEMENT_IP` (default `192.168.77.1`) identifies
-the host allowed to SSH to REMnux over VMnet2. The gateway accepts established
-replies from Flare so RevAI can SSH into the guest; new guest connections to
-REMnux are limited to simulator ports. IPv4/IPv6 forwarding stays disabled, so
-`.43`'s separate NAT interface cannot provide guest Internet access.
+When WinRE is present, setup also runs `install/setup-winre-capture.sh`. It
+configures `/etc/revai/winre-capture.json` for a run-scoped `tcpdump` capture
+on REMnux's VMnet2 interface, with the exact filter `host 192.168.77.42` and
+promiscuous mode enabled. The default guest and sensor addresses are `.42` and
+`.43`; set `WINRE_GUEST_IP`, `WINRE_CAPTURE_HOST_IP`, and
+`WINRE_ANALYSIS_INTERFACE` when deploying elsewhere. REMnux forwarding remains
+disabled, but the capture setup does not install peer-block rules, redirect
+guest traffic, or act as a DNS/HTTP simulator. It also removes the legacy
+WinRE-specific nftables peer filters that could block guest access to `.43`.
 
 ### 2. Windows VM (FlareVM)
 
@@ -69,19 +67,16 @@ Provision the Windows VM with WinRE's own scripts (from the WinRE repository):
 `.env` on the Windows side free of LLM keys and make SSH reachable from the
 RevAI host (`docs/SSH-CONTRACT.md` in WinRE).
 
-The setup script persists the private gateway and DNS, blocks inbound traffic
-by default, permits routed outbound packets to the gateway, blocks other
-on-link VMnet2 peers, including the workstation host, and limits SSH/x64dbg
-inbound access to the gateway. Workstation-side sync and reapply must reach
-Flare through `.43` as an SSH jump host; RevAI connects directly because it
-runs on `.43`.
-REMnux has IPv4/IPv6 forwarding disabled and drops all guest forwarding, so the
-guest cannot use its NAT-facing interface for Internet access. Remote-driver
-runs on the configured REMnux host use off-box capture, dnsmasq for DNS, and
-INetSim for supported service simulation;
-standalone Flare runs continue using guest-side FakeNet. Before sample
-detonation, verify the selected route and run the documented benign DNS/HTTP
-packet-visibility and no-egress checks in WinRE's
+WinRE setup preserves Flare's current route and DNS, removes the old forced
+`.43` gateway/resolver and peer-block rules, and permits direct SSH/x64dbg from
+VMnet2's `LocalSubnet`. The operator workstation and RevAI connect directly to
+`.42`; no SSH proxy or jump host is required. Standalone and remote-driver
+dynamic runs both keep guest-side FakeNet. A RevAI remote detonation also starts
+and stops the run-scoped `.42`-filtered capture on `.43`; the capture is required
+and the remote sample launch fails closed if setup or tcpdump startup is broken.
+The packet sensor does not provide Internet access or emulate services. Before
+sample detonation, verify the guest's existing route/DNS, direct SSH and the
+documented benign packet-visibility check in WinRE's
 [`DYNAMIC-ORCHESTRATOR.md`](https://github.com/Ganron007/WinRE/blob/master/docs/DYNAMIC-ORCHESTRATOR.md).
 
 Manual alternative for the RevAI host (if you prefer):

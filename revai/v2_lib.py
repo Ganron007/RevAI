@@ -6260,9 +6260,8 @@ def load_dynamic_pack(sha: str, logs_dir: Path | None = None, *,
         except Exception:
             analyst_md = ""
 
-    # WinRE guest captures use dynamic/network_raw; the REMnux gateway capture
-    # is explicitly off-box and lives at dynamic/off_box/network_raw. Include
-    # pcapng, which is the gateway collector's native output format.
+    # WinRE guest captures use dynamic/network_raw; the passive REMnux sensor
+    # writes its run-scoped capture at dynamic/off_box/network_raw.
     pcap_dirs = (dyn / "network_raw", dyn / "off_box" / "network_raw")
     pcaps = sorted({
         str(p.relative_to(dyn)).replace("\\", "/")
@@ -6557,6 +6556,19 @@ def format_flare_dynamic_evidence(pack: dict | None) -> str:
                     hosts.append(host)
             lines.append(f"- **HTTP requests**: {len(http)} to {len(hosts)} host(s): "
                          + ", ".join(f"`{h}`" for h in hosts[:12]))
+
+    capture = pack.get("external_capture") or {}
+    if isinstance(capture, dict) and capture:
+        details = [f"status={capture.get('status') or 'recorded'}", "mode=passive"]
+        for key in ("interface", "guest_ip", "capture_filter", "packets_captured",
+                    "elapsed_s", "pcap_size", "pcap_sha256"):
+            value = capture.get(key)
+            if isinstance(value, (int, float, str)) and value != "":
+                details.append(f"{key}={value}")
+        capture_path = capture.get("path") or capture.get("pcap_name")
+        if capture_path:
+            details.append(f"evidence={capture_path}")
+        lines.append("- **passive off-box packet capture**: " + ", ".join(details))
 
     drops = _frida_dropped_paths(pack)
     if drops:
@@ -6958,12 +6970,16 @@ def format_dynamic_analysis_section(pack: dict | None) -> str:
     capture = pack.get("external_capture") or {}
     if isinstance(capture, dict) and capture:
         capture_status = capture.get("status") or "recorded"
-        details = [f"status={capture_status}"]
-        for key in ("elapsed_s", "pcap_size"):
+        details = [f"status={capture_status}", "mode=passive"]
+        for key in ("interface", "guest_ip", "capture_filter", "packets_captured",
+                    "elapsed_s", "pcap_size", "pcap_sha256"):
             value = capture.get(key)
-            if isinstance(value, (int, float)):
+            if isinstance(value, (int, float, str)) and value != "":
                 details.append(f"{key}={value}")
-        lines.append("- **gateway packet capture**: " + ", ".join(details))
+        capture_path = capture.get("path") or capture.get("pcap_name")
+        if capture_path:
+            details.append(f"evidence={capture_path}")
+        lines.append("- **passive off-box packet capture**: " + ", ".join(details))
 
     proc = pack.get("procmon_summary") or {}
     if isinstance(proc, dict) and proc:
@@ -7206,11 +7222,18 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
         }
 
         pcaps = pack.get("pcaps") or []
+        capture = pack.get("external_capture") or {}
         out["packet_capture"] = {
             "present": bool(pcaps),
             "files": len(pcaps),
             "state": f"{len(pcaps)} capture file(s) present" if pcaps
                      else "no packet capture artifact present",
+            "external_capture": {
+                key: capture.get(key) for key in (
+                    "status", "interface", "guest_ip", "capture_filter",
+                    "packets_captured", "pcap_sha256", "path")
+                if isinstance(capture, dict) and capture.get(key) is not None
+            },
         }
     else:
         run_state = str(run_status.get("state") or "").strip().lower()

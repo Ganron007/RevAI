@@ -11,10 +11,6 @@ WARN=0
 ok()   { echo "  [OK]   $1"; }
 warn() { echo "  [WARN] $1"; ((WARN++)) || true; }
 fail() { echo "  [FAIL] $1"; ((ERR++)) || true; }
-nft_read() {
-  if [[ $EUID -eq 0 ]]; then nft "$@"; else sudo -n nft "$@"; fi
-}
-
 echo "=== RevAI / REMnux verification ==="
 
 echo ""
@@ -104,126 +100,64 @@ else
 fi
 
 echo ""
-echo "--- WinRE gateway / off-box capture ---"
+echo "--- WinRE passive off-box capture ---"
 if [[ -f /opt/winre/winre/pipeline.py ]]; then
-  if [[ -f /etc/revai/winre-gateway.json ]]; then
+  if [[ -f /etc/revai/winre-capture.json ]]; then
     if python3 - <<'PY'
 import json
+import ipaddress
+import subprocess
 from pathlib import Path
-cfg = json.loads(Path('/etc/revai/winre-gateway.json').read_text())
-assert cfg.get('enabled') is True and cfg.get('forwarding') is False
-assert cfg.get('interface') and cfg.get('guest_ip') and cfg.get('gateway_ip') and cfg.get('management_ip')
-print('gateway config OK:', cfg['interface'], cfg['guest_ip'], '->', cfg['gateway_ip'])
+cfg = json.loads(Path('/etc/revai/winre-capture.json').read_text())
+assert cfg.get('enabled') is True and cfg.get('mode') == 'passive'
+assert cfg.get('promiscuous') is True and cfg.get('forwarding') is False
+assert cfg.get('interface')
+host = str(ipaddress.IPv4Address(cfg['host_ip']))
+guest = str(ipaddress.IPv4Address(cfg['guest_ip']))
+assert host != guest
+assert cfg.get('capture_filter') == f'host {guest}'
+addr = subprocess.run(['ip', '-o', '-4', 'addr', 'show', 'dev', cfg['interface']],
+                      capture_output=True, text=True, check=False)
+assert addr.returncode == 0 and host in addr.stdout
+print('passive capture config OK:', cfg['interface'], cfg['capture_filter'])
 PY
-    then ok "WinRE gateway capture config"
-    else fail "WinRE gateway config invalid — rerun install/setup-winre-gateway.sh"
+    then ok "WinRE capture is passive, promiscuous, and filtered to .42"
+    else fail "WinRE capture config invalid — rerun install/setup-winre-capture.sh"
     fi
   else
-    fail "WinRE installed but gateway config missing — rerun install/setup-remnux.sh"
+    fail "WinRE installed but capture config missing — rerun install/setup-remnux.sh"
   fi
-  if [[ "$(sysctl -n net.ipv4.ip_forward 2>/dev/null || echo unknown)" == "0" ]]; then
-    ok "IPv4 forwarding disabled"
+  if command -v tcpdump >/dev/null 2>&1; then
+    TCPDUMP_CAPS="$(getcap "$(command -v tcpdump)" 2>/dev/null || true)"
+    if grep -q 'cap_net_admin,cap_net_raw' <<<"$TCPDUMP_CAPS"; then
+      ok "tcpdump can open packet sockets and request promiscuous capture"
+    else
+      fail "tcpdump capture capabilities missing — rerun install/setup-winre-capture.sh"
+    fi
   else
-    fail "IPv4 forwarding must remain disabled for guest isolation"
+    fail "tcpdump missing"
   fi
-  for key in net.ipv6.conf.all.forwarding net.ipv6.conf.default.forwarding; do
+  for key in net.ipv4.ip_forward net.ipv6.conf.all.forwarding net.ipv6.conf.default.forwarding; do
     if [[ "$(sysctl -n "$key" 2>/dev/null || echo unknown)" == "0" ]]; then
       ok "$key disabled"
     else
-      fail "$key must remain 0 for guest isolation"
+      fail "$key must remain 0; REMnux is a sensor, not a router"
     fi
   done
-  if systemctl is-active --quiet winre-guest-guard.service; then
-    ok "WinRE guest firewall/NAT policy active"
-    if nft_read list table inet winre_guest_guard >/dev/null 2>&1; then
-      ok "gateway nftables rules readable by the verifier/runtime user"
-    else
-      fail "gateway nftables rules are not readable without an interactive prompt — rerun install/setup-winre-gateway.sh"
-    fi
-    if nft_read -j list table inet winre_guest_guard 2>/dev/null | python3 -c '
-import json, sys
-data = json.load(sys.stdin)
-chains = [item["chain"] for item in data["nftables"] if "chain" in item]
-assert any(c.get("name") == "forward" and c.get("hook") == "forward" and c.get("policy") == "drop" for c in chains)
-' >/dev/null 2>&1; then
-      ok "nftables forward chain drops guest routing"
-    else
-      fail "nftables forward chain does not enforce drop policy"
-    fi
-    GW_IFACE="$(python3 -c "import json; print(json.load(open('/etc/revai/winre-gateway.json'))['interface'])" 2>/dev/null || true)"
-    if [[ -n "$GW_IFACE" ]] && grep -Fq "iifname \"$GW_IFACE\" drop" \
-      < <(nft_read list chain inet winre_guest_guard input 2>/dev/null); then
-      ok "gateway input drops other guest ingress, including IPv6"
-    else
-      fail "gateway input chain must drop all other guest ingress"
-    fi
-    GW_MGMT="$(python3 -c "import json; print(json.load(open('/etc/revai/winre-gateway.json'))['management_ip'])" 2>/dev/null || true)"
-    if [[ -n "$GW_IFACE" && -n "$GW_MGMT" ]] && grep -Fq "iifname \"$GW_IFACE\" ip saddr $GW_MGMT tcp dport 22 accept" \
-      < <(nft_read list chain inet winre_guest_guard input 2>/dev/null); then
-      ok "REMnux SSH retained for management host $GW_MGMT"
-    else
-      fail "REMnux management SSH exception missing from guest-facing firewall"
-    fi
-    if grep -Fq 'ct state established,related accept' \
-      < <(nft_read list chain inet winre_guest_guard input 2>/dev/null); then
-      ok "gateway accepts replies on established flows"
-    else
-      fail "gateway drops established guest-flow replies"
-    fi
-    GW_IP_FOR_NAT="$(python3 -c "import json; print(json.load(open('/etc/revai/winre-gateway.json'))['gateway_ip'])" 2>/dev/null || true)"
-    NAT_RULES="$(nft_read list chain ip winre_guest_nat prerouting 2>/dev/null || true)"
-    if [[ -n "$GW_IP_FOR_NAT" ]] && \
-      grep -Fq "udp dport 53 dnat to $GW_IP_FOR_NAT:53" <<<"$NAT_RULES" && \
-      grep -Fq "tcp dport 53 dnat to $GW_IP_FOR_NAT:53" <<<"$NAT_RULES" && \
-      grep -Fq 'tcp dport { 21, 25, 80' <<<"$NAT_RULES" && \
-      grep -Fq "dnat to $GW_IP_FOR_NAT" <<<"$NAT_RULES"; then
-      ok "DNS and HTTP simulator redirects target $GW_IP_FOR_NAT"
-    else
-      fail "gateway DNS/HTTP simulator redirects are missing — rerun install/setup-winre-gateway.sh"
-    fi
+  if nft_read list table inet winre_guest_guard >/dev/null 2>&1 || \
+     nft_read list table ip winre_guest_nat >/dev/null 2>&1; then
+    fail "legacy WinRE gateway firewall tables still block guest traffic — rerun install/setup-winre-capture.sh"
   else
-    fail "WinRE guest firewall/NAT policy inactive"
+    ok "legacy WinRE gateway peer filters are absent"
   fi
-  if systemctl is-enabled --quiet winre-guest-guard.service; then
-    ok "WinRE guest firewall/NAT policy enabled at boot"
-  else
-    fail "WinRE guest firewall/NAT policy not enabled at boot"
-  fi
-  if systemctl is-active --quiet inetsim.service; then
-    ok "INetSim active"
-  else
-    fail "INetSim inactive — rerun install/setup-winre-gateway.sh"
-  fi
-  if systemctl is-enabled --quiet inetsim.service; then
-    ok "INetSim enabled at boot"
-  else
-    fail "INetSim not enabled at boot"
-  fi
-  if systemctl is-active --quiet winre-dnsmasq.service && systemctl is-enabled --quiet winre-dnsmasq.service; then
-    ok "WinRE dnsmasq active and enabled at boot"
-  else
-    fail "WinRE dnsmasq inactive or not enabled — rerun install/setup-winre-gateway.sh"
-  fi
-  if command -v dumpcap >/dev/null 2>&1; then
-    ok "dumpcap available"
-    DUMPCAP_CAPS="$(getcap "$(command -v dumpcap)" 2>/dev/null || true)"
-    if grep -q 'cap_net_admin,cap_net_raw' <<<"$DUMPCAP_CAPS"; then
-      ok "dumpcap capture capabilities configured"
+    if systemctl is-active --quiet inetsim.service || \
+       systemctl is-enabled --quiet inetsim.service; then
+      fail "legacy WinRE INetSim responder is still active/enabled — rerun install/setup-winre-capture.sh"
     else
-      fail "dumpcap capture capabilities missing — rerun install/setup-winre-gateway.sh"
+      ok "legacy WinRE INetSim responder is disabled; REMnux stays passive"
     fi
-  else
-    fail "dumpcap missing"
-  fi
-  GW_IP="$(python3 -c "import json; print(json.load(open('/etc/revai/winre-gateway.json'))['gateway_ip'])" 2>/dev/null || true)"
-  LISTENERS="$(ss -H -lntup 2>/dev/null || true)"
-  if [[ -n "$GW_IP" ]] && grep -Fq "$GW_IP:53" <<<"$LISTENERS" && grep -Fq "$GW_IP:80" <<<"$LISTENERS"; then
-    ok "WinRE DNS and INetSim HTTP bound to $GW_IP"
-  else
-    fail "WinRE DNS or INetSim HTTP listener missing on $GW_IP"
-  fi
 else
-  warn "WinRE gateway not required without the optional WinRE runtime"
+  warn "WinRE not installed (optional) — static-only reports"
 fi
 
 echo ""
