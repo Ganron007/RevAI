@@ -183,7 +183,7 @@ All observed techniques are consistent with documented TTPs for the Vidar info-s
 
 ## 9. Comparison with Known Families
 
-The analyzed sample (SHA256: `0c00aedf97071653467dc7734823429a163445eec89926f961eed9b47769e9e5`) is attributed to the **Vidar info-stealer** family, a widely distributed commodity malware strain designed to harvest sensitive user data for exfiltration {cross-section: Attribution, attribution_section, Vidar family confirmation, RAG and tool consensus confirms Vidar info-stealer attribution}. Initial static analysis via Malcat produced a false positive identification of the binary as the legitimate NSudo system tool (v6.2, M2-Team) due to matching version metadata and PDB path strings, but this alignment is inconsistent with all other observed sample characteristics {malcat, cross_engine_notes, initial NSudo ID, Malcat static profile matched NSudo metadata but conflicts with entropy and structural anomalies}.
+No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin. Initial static analysis via Malcat produced a false positive identification of the binary as the legitimate NSudo system tool (v6.2, M2-Team) due to matching version metadata and PDB path strings, but this alignment is inconsistent with all other observed sample characteristics {malcat, cross_engine_notes, initial NSudo ID, Malcat static profile matched NSudo metadata but conflicts with entropy and structural anomalies}.
 
 Key discrepancies between the sample and legitimate NSudo binaries that rule out the false positive include:
 - Extreme entropy of 105, indicating packed malicious content not present in legitimate NSudo releases {malcat, entropy_analysis, entropy value 105, High entropy confirms packed payload inconsistent with legitimate NSudo binaries}
@@ -297,7 +297,7 @@ The following prioritized recommendations are tailored to the Vidar infostealer 
 
 ## 15. Appendices
 
-Raw tool output (signal-preserving, not summarized). Each tool's evidence card is preserved verbatim — for learning and transparency the LLM never rewrites tool output.
+This historical report does not reproduce raw tool output. Consult the case evidence pack for retained artifacts; the report-input manifest and evidence index, where present, identify what the writer received.
 
 ### A11. MalCat structured report
 
@@ -830,10 +830,10 @@ void sub_1400ce000(void)
 - **generated_at**: 2026-08-05T07:13:43.900892+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: performed (SHA-256 lookup; data returned by VirusTotal, Hybrid Analysis)
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---

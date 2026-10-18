@@ -195,12 +195,10 @@ The sample matches 30 YARA rules for ASPack-packed malicious payloads, including
 <!-- section: 10. Attribution | pass=2 | evidence=123c | cross_refs=True | llm_ok=True | runtime=33.01s -->
 
 ## 10. Attribution
-No definitive threat actor or named campaign association was identified for the analyzed sample (SHA256: `62a5c9c2f17d2ae56ea45e9c222c5cd437125c7f687f4fc73ee31126bdc795cb`) via RAG search across 35,302 threat intelligence records. No runtime behavioral telemetry was recovered from available analysis pipelines to identify operational patterns tied to specific threat groups (source: cross-section: 5. Behavioral Analysis). The sample is classified as ASPack-packed generic malware, most likely a trojan or dropper payload, per cross-engine analysis consensus (source: cross-section: Executive Summary, cross-section: 9. Comparison with Known Families).
+No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin. No runtime behavioral telemetry was recovered from available analysis pipelines to identify operational patterns tied to specific threat groups (source: cross-section: 5. Behavioral Analysis). The sample is classified as ASPack-packed generic malware, most likely a trojan or dropper payload, per cross-engine analysis consensus (source: cross-section: Executive Summary, cross-section: 9. Comparison with Known Families).
 
 | Attribution Attribute | Value | Source |
 |-----------------------|-------|--------|
-| Confirmed Threat Actor | No definitive actor identified | RAG search across 35,302 threat intelligence records (source: cross-section: 16. Author + Sign-off) |
-| Confirmed Campaign | No named campaign association identified | RAG search across 35,302 threat intelligence records (source: cross-section: 16. Author + Sign-off) |
 | Malware Family | ASPack-packed generic malware (likely trojan or dropper) | cross-section: Executive Summary, cross-section: 9. Comparison with Known Families |
 | Common Actor Profile | Low-to-mid tier threat actors, initial access brokers, commodity malware distributors | YARA rule match for ASPack packer signature (source: cross-section: 12. Detection Rules) |
 
@@ -305,7 +303,7 @@ The following prioritized actions are tailored to the ASPack-packed generic malw
 
 ## 15. Appendices
 
-Raw tool output (signal-preserving, not summarized). Each tool's evidence card is preserved verbatim — for learning and transparency the LLM never rewrites tool output.
+This historical report does not reproduce raw tool output. Consult the case evidence pack for retained artifacts; the report-input manifest and evidence index, where present, identify what the writer received.
 
 
 ---
@@ -318,10 +316,10 @@ Raw tool output (signal-preserving, not summarized). Each tool's evidence card i
 - **generated_at**: 2026-08-06T02:52:54.972093+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: performed (SHA-256 lookup; data returned by VirusTotal, Hybrid Analysis)
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---

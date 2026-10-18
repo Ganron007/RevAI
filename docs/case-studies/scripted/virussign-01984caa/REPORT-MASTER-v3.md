@@ -196,7 +196,7 @@ The analyzed sample (SHA256: `6878836f0ab5bdf0b1567ed45818d733c3426480251992985f
 
 The sample uses a well-documented disguise tactic for this family, masquerading as legitimate Adobe software to social engineer users into executing the malicious binary (source: cross-section:Executive Summary, cross-section:9. Comparison with Known Families). Static analysis confirms the sample is a 32-bit VB6-compiled packed binary, with unicorn-themed branding and structural artifacts consistent with the wider family (source: cross-section:4. Static Analysis, yara).
 
-No high-confidence, named threat actor or specific campaign attribution was identified for this sample via available analysis artifacts or RAG correlation. The Unicorn-themed VB6 malware family is commonly associated with low-to-medium sophistication, opportunistic threat operators who distribute the malware via fake software download bundles, phishing lures, and bundled with pirated content, rather than in targeted operations against specific high-value entities.
+No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin. The Unicorn-themed VB6 malware family is commonly associated with low-to-medium sophistication, opportunistic threat operators who distribute the malware via fake software download bundles, phishing lures, and bundled with pirated content, rather than in targeted operations against specific high-value entities.
 
 Attribution details are summarized below:
 
@@ -205,7 +205,6 @@ Attribution details are summarized below:
 | Confirmed Malware Family | Unicorn-themed Packed Visual Basic 6 Malware (info-stealer/dropper) | cross-section:2. Classification, cross-section:9. Comparison with Known Families |
 | Disguise Tactic | Masquerades as legitimate Adobe software | cross-section:Executive Summary, cross-section:9. Comparison with Known Families |
 | Technical Attribution Evidence | 32-bit VB6 PE, packed, unicorn-themed artifacts, matches family YARA rules | cross-section:4. Static Analysis, yara |
-| Threat Actor / Campaign Attribution | No named actor/campaign identified; family linked to opportunistic low-to-medium sophistication operators | RAG correlation, cross-section:9. Comparison with Known Families |
 
 ---
 
@@ -305,7 +304,7 @@ No persistent artifacts (registry keys, malicious services, named mutexes) were 
 
 ## 15. Appendices
 
-Raw tool output (signal-preserving, not summarized). Each tool's evidence card is preserved verbatim — for learning and transparency the LLM never rewrites tool output.
+This historical report does not reproduce raw tool output. Consult the case evidence pack for retained artifacts; the report-input manifest and evidence index, where present, identify what the writer received.
 
 ### A11. MalCat structured report
 
@@ -731,10 +730,10 @@ void jmp_msvbvm60.ThunRTMain(void)
 - **generated_at**: 2026-08-03T06:16:31.399443+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: performed (SHA-256 lookup; data returned by Hybrid Analysis)
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---

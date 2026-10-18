@@ -200,7 +200,7 @@ No exact family variant match was identified due to the absence of runtime behav
 <!-- section: 10. Attribution | pass=2 | evidence=187c | cross_refs=True | llm_ok=True | runtime=21.76s -->
 
 ## 10. Attribution
-The analyzed sample (SHA256: `c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5`) is classified as a packed Windows trojan with high confidence of belonging to the info-stealer or remote access trojan (RAT) category, per static analysis outputs (source: cross-section:9. Comparison with Known Families). No specific, high-confidence threat actor or campaign attribution could be confirmed via available RAG retrieval and cross-referenced threat intelligence, as the sample uses common, widely available obfuscation and evasion techniques (UPX compression, XOR obfuscation, anti-VM/sandbox checks) that are shared across multiple unrelated malware families and actor clusters (source: cross-section:4. Static Analysis, cross-section:7. Capability Assessment).
+The analyzed sample (SHA256: `c7e2c9b730007847a0942a90087f4b0d7a5c553f8e59bc10edcd11fbd222cfd5`) is classified as a packed Windows trojan with high confidence of belonging to the info-stealer or remote access trojan (RAT) category, per static analysis outputs (source: cross-section:9. Comparison with Known Families). No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin. Static Analysis, cross-section:7. Capability Assessment).
 The sample's functional profile (credential harvesting, system reconnaissance, remote access capabilities) aligns with common cybercrime use cases, including initial access brokering, financial data theft, and follow-on ransomware deployment (source: cross-section:7. Capability Assessment, cross-section:8. MITRE ATT&CK Mapping). The widespread use of UPX packing and generic anti-VM checks suggests the sample is either a commodity malware variant sold on underground markets, or a custom-built tool using publicly available evasion libraries to avoid attribution (source: cross-section:4. Static Analysis).
 Attribution constraints and assessments are summarized in the table below:
 | Attribution Dimension | Assessment | Supporting Evidence |
@@ -319,7 +319,7 @@ No static network or host-based IOCs were identified for this sample (source: cr
 
 ## 15. Appendices
 
-Raw tool output (signal-preserving, not summarized). Each tool's evidence card is preserved verbatim — for learning and transparency the LLM never rewrites tool output.
+This historical report does not reproduce raw tool output. Consult the case evidence pack for retained artifacts; the report-input manifest and evidence index, where present, identify what the writer received.
 
 
 ---
@@ -332,10 +332,10 @@ Raw tool output (signal-preserving, not summarized). Each tool's evidence card i
 - **generated_at**: 2026-08-06T03:28:49.191363+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: performed (SHA-256 lookup; data returned by Hybrid Analysis)
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---

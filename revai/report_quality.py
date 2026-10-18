@@ -347,8 +347,9 @@ def evaluate_report_markdown(
 
     # --- Report-style gates (LLM sources only; deterministic fallbacks are
     # exempt — they are salvage, not authored prose). Style is evaluated on
-    # the NARRATIVE body only: everything after the Structured Evidence /
-    # Evidence Pack appendix is raw tool output and must not trip the gates.
+    # the NARRATIVE body only: material after the appendix/evidence marker is
+    # evaluated as evidence material, not prose. It may be selected or summarized
+    # and must not be described as a complete verbatim copy of tool output.
     style: dict[str, Any] = {}
     if md and not source_is_fallback(source):
         style_md = _report_narrative_body(md)
@@ -676,10 +677,11 @@ _APPENDIX_MARKERS = (
 
 
 def _narrative_portion(md: str) -> str:
-    """Cut a report at the first appendix/evidence-dump marker.
+    """Cut a report at the first appendix/evidence marker.
 
-    Style and fact checks run on the narrative only; appendices are verbatim
-    tool evidence and are not judged as report prose.
+    Style checks run on narrative prose only. Appendix content may be selected
+    or summarized evidence; this boundary does not imply completeness or verbatim
+    preservation of source artifacts.
     """
     text = md or ""
     cut = len(text)

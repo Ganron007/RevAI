@@ -303,7 +303,7 @@ The analyzed Themida-packed malicious sample (SHA256: `3476906b2c724a601697ee517
 
 ## 15. Appendices
 
-Raw tool output (signal-preserving, not summarized). Each tool's evidence card is preserved verbatim — for learning and transparency the LLM never rewrites tool output.
+This historical report does not reproduce raw tool output. Consult the case evidence pack for retained artifacts; the report-input manifest and evidence index, where present, identify what the writer received.
 
 
 ---
@@ -316,10 +316,10 @@ Raw tool output (signal-preserving, not summarized). Each tool's evidence card i
 - **generated_at**: 2026-08-06T03:07:48.620255+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: performed (SHA-256 lookup; data returned by VirusTotal, Hybrid Analysis)
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---

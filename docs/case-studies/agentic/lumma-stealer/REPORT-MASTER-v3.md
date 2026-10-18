@@ -16,7 +16,7 @@ _Pipeline: section-based Map-Reduce, 2 pass-1 LLM calls + 15 pass-2 calls with c
 | Cross-Engine Agreement | LLM and v1 scanner aligned |
 | v1 Scanner Score | 290 (19 YARA matches, 51 capa rules) |
 
-The analyzed sample (SHA256: `706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50`) is a 32-bit native Portable Executable (PE) with no embedded .NET metadata or valid code signing signatures, ruling out .NET payload classification and legitimate publisher authentication (source: cross-section:4. Static Analysis). It exhibits 15 distinct malicious capabilities grouped into 5 functional categories, mapped to 8 MITRE ATT&CK techniques across 4 tactics, with no significant deviations from standard LummaC2 feature sets observed (source: cross-section:7. Capability Assessment, cross-section:8. MITRE ATT&CK Mapping, cross-section:9. Comparison with Known Families). RAG-driven threat intelligence retrieval links the LummaC2 family to Russian-speaking threat actors (source: cross-section:10. Attribution).
+The analyzed sample (SHA256: `706a49b55ba73d1294bdad8570017230a5c66a0e5d171d6ad20830226c096c50`) is a 32-bit native Portable Executable (PE) with no embedded .NET metadata or valid code signing signatures, ruling out .NET payload classification and legitimate publisher authentication (source: cross-section:4. Static Analysis). It exhibits 15 distinct malicious capabilities grouped into 5 functional categories, mapped to 8 MITRE ATT&CK techniques across 4 tactics, with no significant deviations from standard LummaC2 feature sets observed (source: cross-section:7. Capability Assessment, cross-section:8. MITRE ATT&CK Mapping, cross-section:9. Comparison with Known Families). No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin. Attribution).
 
 No additional filesystem, registry, network, or synchronization indicators of compromise (IOCs) were recovered from static or dynamic analysis, with only the sample SHA256 hash identified as a valid IOC (source: cross-section:11. Indicators of Compromise, cross-section:5. Behavioral Analysis, cross-section:6. Network Analysis). 19 active YARA rule matches are available for detection, with aligned Sigma and Snort rule logic documented for deployment (source: cross-section:12. Detection Rules). No containment-relevant artifacts (persistence mechanisms, active C2 indicators, mutexes) were identified, so standard incident response practices including file removal, process termination, and credential rotation are sufficient to mitigate associated risk (source: cross-section:13. Containment, Eradication, Recovery).
 
@@ -182,7 +182,7 @@ Variant analysis indicates the sample is a standard 32-bit native PE LummaC2 var
 | 171 high-signal PE imports consistent with LummaC2 malicious functionality | Matches known import patterns for the family | pe_imports, cross-section:4_static_analysis |
 | 8 mapped MITRE ATT&CK techniques (including T1056.001, T1555.003, T1082, T1041) | Aligns with documented LummaC2 TTPs | cross-section:8_mitre_attack_mapping |
 
-RAG-driven threat intelligence retrieval links the LummaC2 family to Russian-speaking cybercriminal operations, consistent with the sample's attribution context (source: cross-section:10_attribution). While decompilation and control flow analysis were unavailable due to tooling errors (Ghidra `NotOwnerException`, missing IDA binary, Malcat crash), reliable static signals from pe_imports, capa, YARA, and FLOSS were sufficient for high-confidence family identification. Ghidra's empty imports table is a known limitation for stripped/mixed-mode PEs and does not reflect the full set of malicious imports retrieved via pe_imports (source: cross_engine_notes).
+No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin. While decompilation and control flow analysis were unavailable due to tooling errors (Ghidra `NotOwnerException`, missing IDA binary, Malcat crash), reliable static signals from pe_imports, capa, YARA, and FLOSS were sufficient for high-confidence family identification. Ghidra's empty imports table is a known limitation for stripped/mixed-mode PEs and does not reflect the full set of malicious imports retrieved via pe_imports (source: cross_engine_notes).
 
 ---
 
@@ -298,7 +298,7 @@ The following prioritized actions are tailored to the confirmed Lumma Stealer (L
 
 ## 15. Appendices
 
-Raw tool output (signal-preserving, not summarized). Each tool's evidence card is preserved verbatim — for learning and transparency the LLM never rewrites tool output.
+This historical report does not reproduce raw tool output. Consult the case evidence pack for retained artifacts; the report-input manifest and evidence index, where present, identify what the writer received.
 
 
 ---
@@ -311,10 +311,10 @@ Raw tool output (signal-preserving, not summarized). Each tool's evidence card i
 - **generated_at**: 2026-08-06T03:42:46.207744+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: performed (SHA-256 lookup; data returned by VirusTotal, Hybrid Analysis)
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---

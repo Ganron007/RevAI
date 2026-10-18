@@ -52,9 +52,8 @@ def test_every_skill_has_a_manifest_with_coverage_accounting():
 def test_every_skill_ships_sources_and_states_their_status():
     """Provenance always — and the citation status is declared, not implied.
 
-    A repo-derived skill honestly records that it has no external citations;
-    a KB-derived one records the ranges. Either way the reader must not mistake
-    a citation for a resolvable link in a public repo.
+    Source manifests preserve attribution for maintainers. They are not runtime
+    evidence and are not a lookup corpus.
     """
     for name in EXPECTED:
         s = skills.load_skill(name)
@@ -64,23 +63,12 @@ def test_every_skill_ships_sources_and_states_their_status():
             assert "rel_path" in src or "files" in src, src
 
 
-def test_every_skill_body_states_its_attribution_note():
-    """The "not resolvable in this repo" caveat must be in the skill, not only
-    in the loader — a reader who opens SKILL.md directly is the one most likely
-    to treat a citation as a link.
-
-    Whitespace-normalised before matching: the note is prose and wraps, so an
-    exact single-line match would fail on a wrapped paragraph and pass on a
-    single-line one — which is a test bug, not a skill defect.
-    """
+def test_every_skill_body_states_runtime_source_boundary():
+    """The bundled procedure is runtime input; source manifests are metadata."""
     for name in EXPECTED:
         body = " ".join(skills.load_skill(name)["body"].split())
-        states_unresolvable = ("not resolvable in this public repository"
-                              in body)
-        states_repo_derived = ("no external citations" in body
-                               or "this skill is derived from" in body.lower())
-        assert states_unresolvable or states_repo_derived, (
-            f"{name}: the body does not declare whether its citations resolve here")
+        assert "runtime loads this bundled procedure" in body.lower(), (
+            f"{name}: the body does not distinguish runtime input from source metadata")
 
 
 def test_unknown_skill_raises_rather_than_falling_back():
@@ -92,10 +80,10 @@ def test_unknown_skill_raises_rather_than_falling_back():
     raise AssertionError("an unknown skill must raise, not return empty")
 
 
-def test_citation_is_emittable_and_honest_about_being_unresolvable():
+def test_citation_is_emittable_and_identifies_source_metadata():
     for name in EXPECTED:
         cite = skills.skill_citation(name)
-        assert name in cite and "provenance" in cite, cite
+        assert name in cite and "provenance metadata" in cite, cite
 
 
 def test_citation_for_an_unknown_skill_is_empty_not_broken():

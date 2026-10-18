@@ -206,14 +206,6 @@ else
 fi
 
 echo ""
-echo "--- Optional RAG imports (not required) ---"
-if python3 -c "import faiss, sentence_transformers" 2>/dev/null; then
-  ok "optional RAG packages present"
-else
-  warn "RAG packages not installed (OK — product default is RAG off)"
-fi
-
-echo ""
 echo "--- Directory layout ---"
 for d in /opt/samples /opt/scripts /opt/revai /opt/revai/config; do
   if [[ -d "$d" ]]; then ok "$d exists"; else fail "$d missing"; fi

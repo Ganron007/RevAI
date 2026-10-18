@@ -232,22 +232,19 @@ The malware demonstrates key capabilities in encryption, flexible execution, and
 
 ## 8. Attribution
 
-Attribution for this sample is based on its identification as part of the Upatre/Zbot malware family, combined with historical threat intelligence. Since direct indicators like code signatures or network artifacts tied to specific actors are not present in the analyzed evidence, we rely on known associations and RAG-derived intel, hedging all inferences. Confidence levels reflect the indirect nature of this evidence.
+Attribution for this sample is based on its identification as part of the Upatre/Zbot malware family, combined with historical threat intelligence. No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin. Confidence levels reflect the indirect nature of this evidence.
 
 ### Summary of Attribution Assessments
 
-The table below summarizes our hedged attributions for threat actor, campaign, and suspected origin, with confidence estimates and cited evidence. Assessments are derived from the malware family's lineage and external intelligence reports retrieved via RAG.
+The table below summarizes our hedged attributions for threat actor, campaign, and suspected origin, with confidence estimates and cited evidence. No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin.
 
 | Attribute          | Assessment                                                                 | Confidence | Evidence (source: why)                                                                 |
 |--------------------|---------------------------------------------------------------------------|------------|----------------------------------------------------------------------------------------|
-| Threat Actor       | Likely a cybercriminal group with Eastern European origins, possibly linked to historical botnets like Necurs or Cutwail. | Low to Medium (40-60%) | RAG search for actor intel: Upatre/Zbot is commonly associated with financially motivated groups in reports; (source: cross-section:background, row: family lineage, why: family known for multi-stage attacks by cybercrime actors). |
-| Campaign           | Possibly part of a credential-theft campaign targeting banking information, often involving downloader stages for payloads like Zbot. | Medium (55%) | RAG search for campaign intel: historical campaigns like "Operation High Roller" used similar families; (source: cross-section:analysis, row: upatre/zbot, why: family frequently used in financial malware campaigns). |
-| Suspected Origin   | Suspected to originate from Russia or neighboring countries based on linguistic and code patterns in related malware. | Low to Medium (50-60%) | RAG search for origin intel: threat reports attribute similar malware to Russian-speaking actors; (source: capa, rule: behavioral patterns, why: encryption and anti-analysis techniques align with known Eastern European malware). |
 
 ### Explanation of Evidence
 
-- **Threat Actor**: The RAG search indicates that Upatre/Zbot has been historically linked to cybercriminal groups operating from Eastern Europe, such as those behind the Necurs botnet. This is inferred from the family's common use in financial fraud, but without sample-specific indicators like C2 infrastructure or language artifacts, confidence remains moderate. We cite cross-section:background for the family's lineage, which often involves coordinated attacks.
-- **Campaign**: Upatre typically acts as a downloader for Zbot, which is known for stealing banking credentials. RAG intel suggests this sample may be part of broader campaigns like those delivering Zeus variants. Confidence is medium due to consistent behavioral patterns, but campaign details are generic without dynamic analysis evidence from tools like Speakeasy or Frida, which were run but recorded no network events in this case (source: cross-section:5, row: dynamic analysis, why: tools executed but no C2 observed).
+No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin. This is inferred from the family's common use in financial fraud, but without sample-specific indicators like C2 infrastructure or language artifacts, confidence remains moderate. We cite cross-section:background for the family's lineage, which often involves coordinated attacks.
+- **Campaign**: Upatre typically acts as a downloader for Zbot, which is known for stealing banking credentials. No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin. Confidence is medium due to consistent behavioral patterns, but campaign details are generic without dynamic analysis evidence from tools like Speakeasy or Frida, which were run but recorded no network events in this case (source: cross-section:5, row: dynamic analysis, why: tools executed but no C2 observed).
 - **Suspected Origin**: Attribution to Eastern Europe is based on threat intelligence reports associating Upatre/Zbot with Russian-speaking actors, though this sample lacks direct proof. We assess this with low to medium confidence, citing capa rules that show RC4 encryption usage common in such malware (source: capa, rule: encrypt data using RC4 PRGA, why: technique prevalent in Eastern European malware).
 
 In summary, attribution is speculative and relies on the malware family's reputation. For definitive attribution, further analysis with network captures or code similarities would be needed.
@@ -419,10 +416,10 @@ _(local build — no LLM call)_
 - **generated_at**: 2026-08-14T02:14:34.235133+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: not recorded in retained run evidence
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern. Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---

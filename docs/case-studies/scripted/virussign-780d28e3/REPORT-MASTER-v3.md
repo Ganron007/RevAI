@@ -198,13 +198,11 @@ This sample aligns with the standard commodity VB6 dropper profile used for init
 <!-- section: 10. Attribution | pass=2 | evidence=83c | cross_refs=True | llm_ok=True | runtime=21.66s -->
 
 ## 10. Attribution
-This section provides RAG-driven attribution analysis for the sample with SHA256 `8059ade0d39e4c82cbb94e8d1e1bc92436dd613009a69275f86fe256852a9075`, aligned with cross-section analysis evidence. No unique threat actor, named campaign, or region-specific origin indicators were identified in the filtered evidence set, so attribution is limited to documented characteristics of the confirmed malware family.
+No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin. No unique threat actor, named campaign, or region-specific origin indicators were identified in the filtered evidence set, so attribution is limited to documented characteristics of the confirmed malware family.
 
 | Attribute | Value | Evidence Source |
 |-----------|-------|-----------------|
 | Confirmed Malware Family | Visual Basic 6.0 Dropper | (cross-section:2. Classification, cross-section:9. Comparison with Known Families) |
-| Typical Threat Actor Profile | Low-to-mid tier cybercriminal groups and opportunistic attackers; no nation-state attribution supported | (RAG family threat intelligence, cross-section:6. Network Analysis) |
-| Common Campaign Patterns | Phishing campaigns with malicious email attachments (disguised as invoices, documents) that execute the dropper to deliver secondary payloads (infostealers, ransomware loaders) | (cross-section:14. Recommendations, RAG VB6 Dropper TTP data) |
 | Suspected Regional Origin | No region-specific indicators (no hardcoded C2, language artifacts, region-specific lures) identified in static or behavioral analysis | (cross-section:6. Network Analysis, cross-section:5. Behavioral Analysis) |
 | Attribution Confidence | Moderate (family-level only; no specific actor or named campaign attribution possible) | (cross-section:2. Classification) |
 
@@ -307,7 +305,7 @@ Based on the confirmed malicious classification of sample `8059ade0d39e4c82cbb94
 
 ## 15. Appendices
 
-Raw tool output (signal-preserving, not summarized). Each tool's evidence card is preserved verbatim — for learning and transparency the LLM never rewrites tool output.
+This historical report does not reproduce raw tool output. Consult the case evidence pack for retained artifacts; the report-input manifest and evidence index, where present, identify what the writer received.
 
 
 ---
@@ -320,10 +318,10 @@ Raw tool output (signal-preserving, not summarized). Each tool's evidence card i
 - **generated_at**: 2026-08-06T00:33:00.209419+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: performed (SHA-256 lookup; data returned by Hybrid Analysis)
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---

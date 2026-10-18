@@ -219,13 +219,13 @@ This assessment is hedged due to limited evidence. Anti-analysis is observed wit
 
 # 8. Attribution
 
-Attribution of the malware sample with SHA256 c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509 to a specific threat actor, campaign, or origin is assessed with low confidence due to the absence of unique, high-fidelity indicators. The sample is identified as an Unknown VisualBasic Loader (source: yara), and a RAG search for actor and campaign intelligence returned no specific matches, indicating a lack of documented association with known threats. This section hedges all inferences, emphasizing that attribution remains speculative.
+Attribution of the malware sample with SHA256 c5e1c2b5307ebcb325ab8a4e6a266f263fac56348c0588c6b1abdc8bbe944509 to a specific threat actor, campaign, or origin is assessed with low confidence due to the absence of unique, high-fidelity indicators. No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin. This section hedges all inferences, emphasizing that attribution remains speculative.
 
 The primary evidence for attribution stems from the malware's classification and characteristics. However, the family is unknown, and no vendor reports or variant history were found in background analysis (source: cross-section:3. Background & Family Lineage), which limits the ability to link this sample to established threat groups. VisualBasic loaders are generic and commonly used by various actors for initial payload delivery, often in phishing campaigns, but without specific code overlaps or infrastructure ties, attribution is challenging.
 
 Static analysis reveals the sample is a Visual Basic 6 application with obfuscation or malformed artifacts (source: cross-section:4. Static Analysis), a technique employed by both cybercriminals and state-sponsored actors to evade detection. The lack of network indicators (source: cross-section:6. Network Analysis & C2) and no MITRE ATT&CK mapping (source: cross-section:11. MITRE ATT&CK Mapping) further reduce the attribution surface, as these elements often provide behavioral fingerprints for actor profiling. Behavioral anomalies, such as bound imports and invalid checksums (source: cross-section:5. Behavioral Analysis), suggest custom implementations but are too generic to point to a specific actor.
 
-Given the evidence, we assess that this sample likely originates from a low-sophistication threat actor, possibly cybercriminals, using VisualBasic loaders for initial access. However, no campaign or state affiliation can be reliably inferred. Confidence in attribution is rated at 20% (low), based on the generic nature of indicators and absence of corroborating intelligence from RAG searches or tool analyses like capa (source: cross-section:7. Capability Assessment), which provided limited insights into compilation but not actor linkage.
+Given the evidence, we assess that this sample likely originates from a low-sophistication threat actor, possibly cybercriminals, using VisualBasic loaders for initial access. However, no campaign or state affiliation can be reliably inferred. No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin. Capability Assessment), which provided limited insights into compilation but not actor linkage.
 
 The table below summarizes the attribution evidence, interpreting each piece and its confidence impact:
 
@@ -236,7 +236,6 @@ The table below summarizes the attribution evidence, interpreting each piece and
 | Obfuscated VB6 code | cross-section:4. Static Analysis | Obfuscation is a widespread evasion technique, not actor-specific. | Low |
 | No network indicators | cross-section:6. Network Analysis & C2 | Suggests a possible standalone payload or C2 communication not captured in analysis, limiting actor profiling. | Low |
 | Behavioral anomalies (e.g., bound imports) | cross-section:5. Behavioral Analysis | Could hint at custom malware development, but data insufficient to attribute to a group. | Very Low |
-| RAG search for actor/campaign intel | (simulated via RAG) | No specific matches found, implying no known association with documented threats. | Low |
 
 In conclusion, attribution is not feasible with high confidence. The sample likely represents a generic VisualBasic Loader without clear ties to advanced persistent threats (APTs) or well-documented campaigns, emphasizing the need for additional intelligence or behavioral data to refine this assessment.
 
@@ -434,10 +433,10 @@ _(local build — no LLM call)_
 - **generated_at**: 2026-08-09T16:00:53.499903+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: enabled; no provider returned usable data
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---

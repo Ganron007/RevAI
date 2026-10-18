@@ -974,7 +974,6 @@ def run_langgraph_orchestrator(sample: Path | None, sha: str | None) -> dict:
     # mode-keyed directory instead of polluting agentic/.
     os.environ.setdefault("REVAI_RUN_MODE", "agentic")
     os.environ.setdefault("REVAI_AGENTIC_ENGINE", "langgraph")
-    os.environ.setdefault("REVAI_RAG", "0")
 
     need_intake = False
     if sample is not None:
@@ -1066,7 +1065,8 @@ Policy (non-negotiable — industry agentic + deterministic gates):
    run_publish may skip — then stop and report.
 5. Follow the ordered plan for optional stages. When enabled, run_winre_dynamic
    appears between quick scan and deep dive so the deep-dive prompt receives its
-   evidence. Do not call optional stages absent from the plan. RAG is off. Evidence = tool outputs + scorecard only.
+   evidence. Do not call optional stages absent from the plan. Evidence comes
+   from tool outputs and deterministic score checks.
 6. rc==0 is NOT success. After run_audit you MUST call check_quality.
 7. Report publishers are single-shot per pipeline execution. Never call
    run_publish or run_section_publish twice, whether the first call succeeded,

@@ -277,7 +277,7 @@ Attribution for this Shaitan/Troldesh ransomware sample is inferred with caution
 
 ### Threat Actor
 
-We assess that the malware is likely operated by financially motivated cybercriminals, possibly from Russian-speaking groups. This inference rests on the Shaitan/Troldesh family classification from YARA rules (source: yara, query_or_table: findings, row_or_rule: family detection, why: YARA matches to Shaitan/Troldesh patterns provide family-specific evidence) and RAG search results for actor + campaign intel, which indicate associations with known cybercriminal ecosystems. However, no direct actor artifacts (e.g., group signatures or tooling) were identified in static analysis (source: capa, query_or_table: v1_summary, row_or_rule: capa rules, why: capability-based rules show behavioral evidence but not actor attribution). Confidence is moderate (60%) due to reliance on external intelligence and family lineage.
+We assess that the malware is likely operated by financially motivated cybercriminals, possibly from Russian-speaking groups. No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin. However, no direct actor artifacts (e.g., group signatures or tooling) were identified in static analysis (source: capa, query_or_table: v1_summary, row_or_rule: capa rules, why: capability-based rules show behavioral evidence but not actor attribution). Confidence is moderate (60%) due to reliance on external intelligence and family lineage.
 
 ### Campaign
 
@@ -285,7 +285,7 @@ The sample may be part of broader ransomware campaigns focused on data encryptio
 
 ### Suspected Origin
 
-Suspected origin is likely Eastern Europe, with a focus on Russia, based on the Shaitan/Troldesh family's historical ties to Russian-speaking threat actors in public reports. This is supported by RAG search results for actor + campaign intel, which suggest regional associations. However, no origin-specific indicators (e.g., language artifacts or IP geolocation) were found in this sample's static analysis (source: malcat, query_or_table: file_properties, row_or_rule: architecture, why: 32-bit Intel x86 is common but not origin-specific). Confidence is low (40%), hedged as 'possible' due to reliance on external context rather than sample-unique data.
+Suspected origin is likely Eastern Europe, with a focus on Russia, based on the Shaitan/Troldesh family's historical ties to Russian-speaking threat actors in public reports. No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin. However, no origin-specific indicators (e.g., language artifacts or IP geolocation) were found in this sample's static analysis (source: malcat, query_or_table: file_properties, row_or_rule: architecture, why: 32-bit Intel x86 is common but not origin-specific). Confidence is low (40%), hedged as 'possible' due to reliance on external context rather than sample-unique data.
 
 ### Note on Dynamic Analysis
 
@@ -500,10 +500,10 @@ _(local build — no LLM call)_
 - **generated_at**: 2026-08-14T03:11:53.125881+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: not recorded in retained run evidence
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern. Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---

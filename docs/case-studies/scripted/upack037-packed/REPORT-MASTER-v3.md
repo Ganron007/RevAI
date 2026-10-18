@@ -215,7 +215,7 @@ Attribution links malware samples to specific threat actors, campaigns, or origi
 
 ## Evidence and Intel
 
-The sample is identified as associated with the **Upack** family, a known packer used to obfuscate malware payloads (source: cross-section:Background & Family Lineage). Upack is not a malware payload itself but a tool that can be employed by various threat actors to evade detection. From RAG searches for actor and campaign intelligence, no specific threat actor or campaign data were retrieved in the filtered evidence for this section. This indicates a gap in direct attribution indicators.
+The sample is identified as associated with the **Upack** family, a known packer used to obfuscate malware payloads (source: cross-section:Background & Family Lineage). Upack is not a malware payload itself but a tool that can be employed by various threat actors to evade detection. No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin. This indicates a gap in direct attribution indicators.
 
 Additional context from other sections supports this limitation:
 - **Network Analysis & C2**: No Command and Control (C2) infrastructure, such as URLs or IPs, was identified (source: cross-section:Network Analysis & C2), which reduces the likelihood of linking to known campaigns that rely on specific C2 patterns.
@@ -420,10 +420,10 @@ _(local build — no LLM call)_
 - **generated_at**: 2026-08-09T23:51:43.796422+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: performed (SHA-256 lookup; data returned by VirusTotal, Hybrid Analysis)
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---

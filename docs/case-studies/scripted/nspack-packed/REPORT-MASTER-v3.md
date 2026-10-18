@@ -218,7 +218,7 @@ The sample's association with nSpack is consistently detected across tools, sugg
 | Static analysis obfuscation | cross-section:3. Background & Family Lineage | Analysis notes packing and discrepancies, reinforcing nSpack use. Confidence: High. |
 
 **Threat Actor and Campaign Assessment**
-Using RAG to search for actor or campaign intelligence yielded no specific results. nSpack is a generic packer used by various actors, including state-sponsored and cybercriminals, for payload obfuscation (source: cross-section:3. Background & Family Lineage). Without unique indicators—such as custom code, hardcoded C2, or TTPs aligning with known campaigns—we cannot confidently attribute to a specific actor or campaign. We assess that the sample is likely part of opportunistic malware distribution using nSpack, but this is speculative.
+No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin. nSpack is a generic packer used by various actors, including state-sponsored and cybercriminals, for payload obfuscation (source: cross-section:3. Background & Family Lineage). Without unique indicators—such as custom code, hardcoded C2, or TTPs aligning with known campaigns—we cannot confidently attribute to a specific actor or campaign. We assess that the sample is likely part of opportunistic malware distribution using nSpack, but this is speculative.
 
 **Suspected Origin**
 Geographic origin cannot be reliably inferred from nSpack alone. While nSpack has been observed in malware targeting multiple regions, no artifacts in this sample (e.g., language settings, domain registrars) support origin attribution (source: cross-section:6. Network Analysis & C2).
@@ -427,10 +427,10 @@ _(local build — no LLM call)_
 - **generated_at**: 2026-08-09T14:53:58.229252+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: performed (SHA-256 lookup; data returned by VirusTotal, Hybrid Analysis)
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---

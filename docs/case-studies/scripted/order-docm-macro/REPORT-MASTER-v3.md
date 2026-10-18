@@ -236,7 +236,6 @@ We assess that this malware is **likely part of a generic macro malware campaign
 | Attribution Aspect | Assessment | Confidence | Key Evidence |
 |-------------------|------------|------------|--------------|
 | Threat Actor | No specific actor identified | Low (20%) | Generic family classification (capa), lack of unique IOCs (cross-section:Network Analysis & C2) |
-| Campaign | Likely generic macro malware campaign | Low (20%) | Family type (capa), no campaign-specific indicators from RAG search or tools |
 | Suspected Origin | Unknown | Low (20%) | No geographic or operational clues in analysis (cross-section: sections 6, 11) |
 
 In conclusion, while the sample is malicious, its generic nature and insufficient evidence prevent reliable attribution. Higher-confidence assessments would require additional samples, contextual intelligence, or tooling outputs that reveal actor-specific patterns.
@@ -426,10 +425,10 @@ _(local build — no LLM call)_
 - **generated_at**: 2026-08-09T20:11:31.363543+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: performed (SHA-256 lookup; data returned by VirusTotal, Hybrid Analysis)
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---

@@ -6,12 +6,11 @@ RevAI is an LLM-assisted malware reverse-engineering pipeline for REMnux. This d
 
 ## 1. Architectural Design & Philosophy
 
-### Evidence-Grounded LLM, Not RAG
+### Evidence-Grounded Reporting
 
-RevAI is built on an **evidence-grounded LLM architecture**, explicitly avoiding Retrieval-Augmented Generation (RAG):
+RevAI does not retrieve from an embedding-indexed threat-intelligence corpus. It supports optional VirusTotal and Hybrid Analysis hash lookups, disabled by default, as an upstream enrichment stage; when enabled, the run-bound `quick_scan/ti-enrich.json` result can be supplied to report writers. This hash-only lookup does not download samples or independently establish family lineage, actor, campaign, or origin. The separate offline SQLite API index contains Windows API reference documentation, not sample-intelligence records. Reports must cite the exact run artifact for any provider result and keep provider labels distinct from reverse-engineering findings.
 
-* **The Problem with RAG in RE**: Empirical research (*Retrieval Contamination in LLM-Assisted Malware Triage*, Zenodo DOI [10.5281/zenodo.21613150](https://doi.org/10.5281/zenodo.21613150)) demonstrated that vector retrieval across external knowledge bases introduces retrieval contamination and false correlations in malware analysis workflows.
-* **The Evidence-Grounded Solution**: Reverse-engineering tools (Ghidra, IDA Pro, capa, Malcat, YARA, FLOSS, etc.) execute directly on the malware sample and output structured technical findings. These outputs are packaged into a signal-prioritized, stage-tagged **Evidence Pack**. An OpenAI-compatible LLM Judge reads this Evidence Pack directly to synthesize verdicts and author analysis reports.
+* **RevAI report inputs**: Reverse-engineering tools (Ghidra, IDA Pro, capa, Malcat, YARA, FLOSS, and others) run against the sample and produce structured findings. RevAI routes relevant, run-bound evidence to report sections and records source artifacts in a report-input manifest. The configured LLM interprets those inputs; quality gates check report claims against the source artifacts.
 
 ### Deterministic Skeleton, Cognitive LLM Union
 

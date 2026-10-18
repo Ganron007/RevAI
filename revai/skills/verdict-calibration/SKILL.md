@@ -5,12 +5,10 @@ does_not_cover: [score thresholds, family naming, confidence intervals]
 
 # Verdict calibration
 
-**Provenance and attribution note.** The calibration contract is owned by *this
-repository* (`revai/report_quality.py`) and is reproduced here verbatim so it is
-cited rather than re-summarised. The internal knowledge base contributed only
-supporting material on classifying intent from behaviour; `sources.jsonl` records
-both, and marks which is which. The KB paths are **not resolvable in this public
-repository** — the citations are provenance metadata, not links.
+**Source note.** The calibration contract is owned by this repository
+(`revai/report_quality.py`). `sources.jsonl` preserves attribution metadata for
+maintainers. The runtime loads this bundled procedure file only; the source
+references are not loaded or searched and are not sample evidence.
 
 ## When to load
 

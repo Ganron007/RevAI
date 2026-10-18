@@ -205,7 +205,7 @@ This section assesses the likely threat actor, campaign, and suspected origin fo
 
 ## Evidence for Attribution
 
-The primary evidence is that the sample is classified as PowerShell-based malware (source: cross-section:filtered_evidence). This family is widely used by various threat actors for its flexibility and stealth. However, cross-section analyses from earlier sections—such as the Classification (source: cross-section:classification), Static Analysis (source: radare2 disassembly), and Network Analysis (source: cross-section:6. Network Analysis & C2)—did not reveal unique artifacts like hardcoded domains, mutexes, or code overlaps that could tie it to a known campaign. For instance, the Network Analysis found no C2 indicators to query against threat intelligence feeds, and Behavioral Analysis showed no anomalous runtime patterns (source: cross-section:5. Behavioral Analysis). A RAG search for actor and campaign intel based on the PowerShell malware family yielded no direct matches in the provided data, suggesting this sample may be a generic or custom variant.
+The primary evidence is that the sample is classified as PowerShell-based malware (source: cross-section:filtered_evidence). This family is widely used by various threat actors for its flexibility and stealth. However, cross-section analyses from earlier sections—such as the Classification (source: cross-section:classification), Static Analysis (source: radare2 disassembly), and Network Analysis (source: cross-section:6. Network Analysis & C2)—did not reveal unique artifacts like hardcoded domains, mutexes, or code overlaps that could tie it to a known campaign. For instance, the Network Analysis found no C2 indicators to query against threat intelligence feeds, and Behavioral Analysis showed no anomalous runtime patterns (source: cross-section:5. Behavioral Analysis). No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin.
 
 ## Common Threat Actors Using PowerShell Malware
 
@@ -425,10 +425,10 @@ _(local build — no LLM call)_
 - **generated_at**: 2026-08-09T19:27:23.907030+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: performed (SHA-256 lookup; data returned by VirusTotal, Hybrid Analysis)
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---

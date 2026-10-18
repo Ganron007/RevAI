@@ -4,7 +4,7 @@ Workflow:
   1. STAGE  — pick a file + family, click Stage
   2. RUN    — per-stage buttons (intake → quick_scan → deep_dive → function_recovery* → yara_gen → publish → correlate → audit)
             *function_recovery = optional, off by default (Settings → run config)
-  3. REVIEW — Evidence tree, rendered reports, RAG context, raw tool output, live log
+  3. REVIEW — Evidence tree, rendered reports, raw tool output, live log
 
 State persisted to /opt/samples/logs/<sha>/pipeline-status.json.
 """
@@ -81,7 +81,7 @@ DEFAULT_CONFIG = {
     "winre_llm_source": "winre_env",
 }
 
-# Settings keys exposed to SPA (no RAG URLs / toggles on the wire).
+# Settings keys exposed to SPA.
 LLM_SETTINGS_KEYS = ("llm_model", "llm_api_url", "llm_api_key", "llm_reasoning", "product_mode")
 
 # Optional WinRE integration settings (non-secret; SSH key is a path only).
@@ -151,7 +151,7 @@ STAGE_DETAILS = {
     },
     "quick_scan": {
         "num": 2, "title": "Quick Scan",
-        "desc": "Run all triage tools → RAG → one LLM call → verdict",
+        "desc": "Run triage tools → evidence-grounded LLM verdict",
         "long_desc": "Executes capa, YARA, FLOSS, r2, upx, xorsearch, and more in parallel. Assembles signal-prioritized evidence cards and asks the LLM for a triage verdict.",
         "artifacts": ["00-tools-raw.json", "01-sql-evidence.json", "02-prompt.txt", "03-llm-raw.json", "04-verdict.json"],
         "dir": "quick_scan",
@@ -231,14 +231,14 @@ STAGE_DETAILS = {
     "publish": {
         "num": 5, "title": "Publish",
         "desc": "Generate REPORT-MASTER v2 from all evidence",
-        "long_desc": "Collects verdict, deep-dive, YARA, audit trail and raw tool packs, adds optional RAG context, and asks the LLM to write the 16-section REPORT-MASTER markdown.",
+        "long_desc": "Collects the verdict, deep-dive, YARA, audit trail and run-bound tool artifacts, then asks the configured LLM to write the 16-section REPORT-MASTER markdown. The publisher does not call external providers; it can include the upstream optional VirusTotal/Hybrid Analysis hash-lookup artifact when enabled. No malware-family intelligence corpus is searched.",
         "artifacts": ["00-prompt.txt", "01-llm-raw.json", "02-REPORT-MASTER-v2.md"],
         "dir": "publish",
     },
     "correlate": {
         "num": 6, "title": "Correlate",
         "desc": "Section-based Map-Reduce report with cross-references",
-        "long_desc": "Pass 1 generates 17 report sections independently with focused evidence + targeted RAG. Pass 2 re-generates sections with cross-section context so each section can cite findings from the others. Produces REPORT-MASTER-v3.md.",
+        "long_desc": "Pass 1 generates report sections from topic-routed run evidence. Pass 2 adds cross-section context. Exact prompts and raw model responses are retained per call. The publisher does not perform lookup itself; an upstream optional VirusTotal/Hybrid Analysis hash-only result may be included when enabled. No threat-intelligence corpus is searched. Produces REPORT-MASTER-v3.md.",
         "artifacts": ["00-tools-raw.json", "01-section-results.json", "02-REPORT-MASTER-v3.md"],
         "dir": "correlate",
     },

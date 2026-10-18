@@ -240,7 +240,7 @@ Attribution for the sample with SHA256 `f3e743c919c1deaf5108d361c4ff610187606f45
 ### Family-Based Inferences and Known Associations
 The sample is classified as **trojan.dwnldr/Skeeyah** based on YARA rule matches (source: yara). Skeeyah is a known downloader trojan family often used in cybercrime campaigns for payload delivery, such as distributing ransomware or banking trojans through phishing or malicious sites. However, this family is generic and not unique to a single threat actor; multiple groups have utilized Skeeyah variants historically.
 
-To supplement this, a Retrieval-Augmented Generation (RAG) search for actor and campaign intelligence associated with Skeeyah was conducted. The search indicated that without additional context from the sample—like specific strings, network artifacts, or unique behaviors—it is challenging to attribute this instance to a known actor or campaign. No evidence from tools like Ghidra, Capa, or MalCat provided actor-specific artifacts, such as distinct persistence mechanisms or anti-analysis techniques that could hint at threat actor TTPs (source: cross-section:7. Capability Assessment).
+No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin. The run-bound sample evidence indicates that without additional context—such as specific strings, network artifacts, or unique behaviors—it is challenging to attribute this instance to a known actor or campaign. No evidence from tools like Ghidra, Capa, or MalCat provided actor-specific artifacts, such as distinct persistence mechanisms or anti-analysis techniques that could hint at threat actor TTPs (source: cross-section:7. Capability Assessment).
 
 ### Confidence Assessment
 We assess attribution confidence as **low (30%)**, resting on the following evidence:
@@ -421,10 +421,10 @@ _(local build — no LLM call)_
 - **generated_at**: 2026-08-14T03:36:46.077324+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: not recorded in retained run evidence
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern. Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---

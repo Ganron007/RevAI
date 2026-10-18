@@ -181,14 +181,14 @@ The sample's observed capabilities align with common traits of both infostealers
 | Core Capabilities | Process injection, privilege escalation, system/registry/file discovery, command line parsing | Matches core functionality of most infostealers and RATs; no unique code artifacts or markers tie the sample to a specific named family |
 | Network Artifacts | No hardcoded C2 endpoints, network indicators | No ties to known campaign infrastructure for documented Delphi malware families |
 
-No confirmed matches to known named families were found via RAG searches of public threat intelligence repositories (source: cross-section:10. Attribution). The sample is assessed as a custom or privately shared Delphi-based malware, likely designed for credential theft and remote system control, with no public prior documentation.
+No external threat-intelligence source was queried for this run. Actor, campaign, and origin are not attributed. The sample is assessed as a custom or privately shared Delphi-based malware, likely designed for credential theft and remote system control, with no public prior documentation.
 
 ---
 
 <!-- section: 10. Attribution | pass=2 | evidence=246c | cross_refs=True | llm_ok=True | runtime=18.87s -->
 
 ## 10. Attribution
-No definitive threat actor or campaign attribution could be assigned to the analyzed sample (SHA256: `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f91a07a315484819`) based on available static analysis data, dynamic analysis results, and RAG-driven threat intelligence retrieval. Attribution is constrained by the absence of unique identifying markers linked to known threat groups or documented campaigns, as summarized in the table below:
+No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin. Attribution is constrained by the absence of unique identifying markers linked to known threat groups or documented campaigns, as summarized in the table below:
 
 | Attribution Constraint | Finding | Source |
 |------------------------|---------|--------|
@@ -284,7 +284,6 @@ The analyzed sample (SHA256: `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f9
 |------------|----------------|------------------|--------|
 | Malware Artifact Identification | SOC analysts | Train analysts to identify packed Delphi binary artifacts, including abnormal PE section structures, embedded Delphi runtime strings, and common packing signatures | cross-section:4. Static Analysis, cross-section:9. Comparison with Known Families, YARA match set for packed Delphi binaries |
 | Incident Response Playbook Training | IR teams | Train IR teams on containment workflows for unknown packed malware, including isolating affected endpoints, preserving memory artifacts for analysis, and scanning for process injection artifacts | cross-section:13. Containment, Eradication, Recovery, sample behavioral profile |
-| Endpoint User Awareness | General users | Train users to avoid executing unknown executable attachments, particularly those masquerading as legitimate software, as packed Delphi malware is often distributed via phishing and malicious download campaigns | cross-section:10. Attribution, RAG-driven threat intelligence search for Delphi-based malware distribution tactics |
 
 ---
 
@@ -292,7 +291,7 @@ The analyzed sample (SHA256: `e29d2bd946212328bcdf783eb434e1b384445f4c466c5231f9
 
 ## 15. Appendices
 
-Raw tool output (signal-preserving, not summarized). Each tool's evidence card is preserved verbatim — for learning and transparency the LLM never rewrites tool output.
+This historical report does not reproduce raw tool output. Consult the case evidence pack for retained artifacts; the report-input manifest and evidence index, where present, identify what the writer received.
 
 
 ---
@@ -305,10 +304,10 @@ Raw tool output (signal-preserving, not summarized). Each tool's evidence card i
 - **generated_at**: 2026-08-06T04:07:42.155270+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: performed (SHA-256 lookup; data returned by VirusTotal, Hybrid Analysis)
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---

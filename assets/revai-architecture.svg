@@ -189,7 +189,7 @@
   <g transform="translate(480, 436)">
     <line x1="0" y1="0" x2="0" y2="32" stroke="#34d399" stroke-width="3.5" marker-end="url(#arrDownEmerald)"/>
     <rect x="-140" y="6" width="280" height="20" rx="4" fill="#072d21" stroke="#22c55e" stroke-width="1"/>
-    <text x="0" y="20" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="800" fill="#34d399">Factual Evidence Pack (No RAG)</text>
+    <text x="0" y="20" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="800" fill="#34d399">Factual Evidence Pack (Run-Bound)</text>
   </g>
 
   <!-- ========================================================================= -->

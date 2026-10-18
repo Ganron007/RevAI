@@ -192,7 +192,7 @@ As a result, no definitive threat actor or campaign attribution can be assigned 
 
 ## 10. Attribution
 
-RAG-driven search for associated threat actors, active campaigns, and suspected geographic origin yielded no confirmed attributions for the analyzed sample (SHA256: `91b176fb0d650dcc59ff87f5aab50c7a8371fb859f096f93f7cee9920c90dacc`). The sample is classified as an unidentified UPX-packed malicious binary, with its underlying payload fully obfuscated by the packing layer, preventing direct family or actor linkage via static analysis (source: cross-section:9_comparison_with_known_families).
+No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin. The sample is classified as an unidentified UPX-packed malicious binary, with its underlying payload fully obfuscated by the packing layer, preventing direct family or actor linkage via static analysis (source: cross-section:9_comparison_with_known_families).
 
 Confirmed static attributes relevant to future attribution are summarized below:
 
@@ -299,7 +299,7 @@ The analyzed sample (SHA256: `91b176fb0d650dcc59ff87f5aab50c7a8371fb859f096f93f7
 
 ## 15. Appendices
 
-Raw tool output (signal-preserving, not summarized). Each tool's evidence card is preserved verbatim — for learning and transparency the LLM never rewrites tool output.
+This historical report does not reproduce raw tool output. Consult the case evidence pack for retained artifacts; the report-input manifest and evidence index, where present, identify what the writer received.
 
 
 ---
@@ -312,10 +312,10 @@ Raw tool output (signal-preserving, not summarized). Each tool's evidence card i
 - **generated_at**: 2026-08-06T02:26:49.459493+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: performed (SHA-256 lookup; data returned by Hybrid Analysis)
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---

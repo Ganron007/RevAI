@@ -271,7 +271,7 @@ def test_entropy_word_suffix_digits_skipped() -> None:
 
 
 def test_entropy_appendix_dump_skipped() -> None:
-    # Raw evidence lines in appendices are verbatim tool output, not narrative.
+    # Selected evidence cards in appendices are not report narrative.
     md = "## Executive Summary\nHigh entropy.\n\n## Appendix A: Tool Evidence Trail\nentropy: 135\n"
     r = _cross_report_consistency(md, "", "", 6.46)
     ev = [v for v in r["violations"] if "entropy" in v]

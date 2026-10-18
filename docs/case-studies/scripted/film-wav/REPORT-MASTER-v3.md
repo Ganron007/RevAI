@@ -210,7 +210,7 @@ The sample is identified as part of the **trojan.fkmb** family, which provides a
 
 ### Threat Actor and Campaign Analysis
 
-Using RAG (Retrieval-Augmented Generation) to search for actor and campaign intelligence, we found no specific threat actor or campaign directly linked to this SHA256 hash in the provided evidence. Dynamic analysis tools (Speakeasy and Frida) were executed but recorded no API calls or system actions, limiting behavioral attribution. (source: cross-section:5. Behavioral Analysis, row: no hits, why: absence of predefined behavioral indicators; tools ran but logged zero events).
+No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin. Dynamic analysis tools (Speakeasy and Frida) were executed but recorded no API calls or system actions, limiting behavioral attribution. (source: cross-section:5. Behavioral Analysis, row: no hits, why: absence of predefined behavioral indicators; tools ran but logged zero events).
 
 - **Hedged Inference:** We assess that the malware likely originates from a threat actor familiar with the trojan.fkmb family, possibly targeting Windows systems due to the PE file structure. (source: cross-section:1. Sample Identification, why: file metadata indicates Windows compatibility). However, without network indicators or C2 data (source: cross-section:6. Network Analysis & C2, where no C2 infrastructure was identified), attribution remains speculative.
 
@@ -431,10 +431,10 @@ _(local build — no LLM call)_
 - **generated_at**: 2026-08-14T01:28:47.124596+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: not recorded in retained run evidence
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern. Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---

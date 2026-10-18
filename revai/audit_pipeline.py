@@ -6,7 +6,7 @@ CLI optional flags are for operators; this auditor never treats stages as option
 
 Writes:
   /opt/samples/logs/<sha>/pipeline-audit.json   — machine-readable
-  /opt/samples/logs/<sha>/AUDIT-REPORT.md       — full evidence (tools/RAG/LLM/v2/v3)
+  /opt/samples/logs/<sha>/AUDIT-REPORT.md       — tool, LLM, and report evidence (v2/v3)
   /opt/samples/logs/_showcase_audits/<sha>/     — public showcase pack (copies)
 
 Usage:
@@ -1218,7 +1218,7 @@ def pack_showcase(sha: str, report: dict) -> Path:
         "showcase_dir": str(dest),
         "primary_report": str(dest / "AUDIT-REPORT.md"),
         "public_use": (
-            "RevAI / RevAI public audit showcase — full tool, RAG, LLM, "
+            "RevAI public audit showcase — tool, LLM, "
             "REPORT-MASTER-v2/v3 evidence pack"
         ),
     }
@@ -1236,7 +1236,7 @@ def pack_showcase(sha: str, report: dict) -> Path:
             "## Included",
             "",
             "- Tool evidence (`deep_dive/01-tools-raw.json`, gates, triage)",
-            "- RAG-bearing prompts (`prompt.txt`, `deep_dive/03-prompt.txt`)",
+            "- Exact prompts and raw LLM responses",
             "- LLM verdicts (`verdict.json`, `deep_dive/05-deep-dive.json`)",
             "- Reports: REPORT-MASTER-v2.md + REPORT-MASTER-v3.md (+ technical)",
             "- YARA rule if generated",
@@ -1272,7 +1272,7 @@ def rebuild_showcase_master() -> Path:
         "samples": rows,
         "policy": (
             "FULL standard stages: intake → quick_scan → deep_dive → yara → "
-            "publish_v2 → publish_v3 → audit. No skips. Tool/RAG/LLM/report evidence required."
+            "publish_v2 → publish_v3 → audit. No skips. Tool, LLM, and report evidence required."
         ),
     }
     (SHOWCASE_ROOT / "MASTER-SHOWCASE.json").write_text(json.dumps(master, indent=2))
@@ -1297,7 +1297,7 @@ def rebuild_showcase_master() -> Path:
         "## What each pack contains",
         "",
         "- Full stage scoreboard + tool JSON excerpts",
-        "- RAG context presence + excerpts from prompts",
+        "- Prompt inputs and excerpts from run-bound evidence",
         "- LLM triage/deep/publish verdicts (models, key_evidence, citations)",
         "- REPORT-MASTER-v2 + REPORT-MASTER-v3 (+ technical reports)",
         "- Artifact inventory with paths/bytes/sha256",
@@ -1326,7 +1326,7 @@ def render_markdown(report: dict) -> str:
     lines = [
         f"# Pipeline AUDIT-REPORT — `{report['sha']}`",
         "",
-        "> Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.",
+        "> Public-showcase evidence pack: tools, LLM, REPORT-MASTER-v2/v3.",
         "",
         f"- **Mode:** {report.get('mode')}",
         f"- **Audited at:** {report.get('audited_at')}",

@@ -225,7 +225,6 @@ export const LlmSettingsSchema = z
     llm_api_key: optStr,
     llm_api_key_set: z.boolean().optional(),
     llm_reasoning: optStr,
-    use_rag: optBool,
     product_mode: optStr,
     run_config: z
       .object({

@@ -213,7 +213,7 @@ Confidence in these capabilities is **moderate to high** for the observed items,
 This section assesses the likely threat actor, campaign, and suspected origin of the malware sample, based on available evidence and intelligence. Attribution is challenging due to limited indicators, but we hedge inferences with confidence levels.
 
 **Threat Actor and Campaign Intel:**
-A RAG search was conducted for actor and campaign information associated with the Adload family. However, no specific threat actor or campaign was identified with high confidence from the available data. Adload is commonly associated with adware and potentially unwanted programs, which are often distributed by various cybercrime groups or through affiliate networks, but attribution to a single actor is likely not feasible without additional indicators such as unique domains, code signatures, or deployment patterns.
+No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin. However, no specific threat actor or campaign was identified with high confidence from the available data. Adload is commonly associated with adware and potentially unwanted programs, which are often distributed by various cybercrime groups or through affiliate networks, but attribution to a single actor is likely not feasible without additional indicators such as unique domains, code signatures, or deployment patterns.
 
 **Evidence from Previous Analysis:**
 The sample has been consistently identified as belonging to the Adload malware family across multiple analysis sections, providing a foundation for attribution. For instance:
@@ -411,10 +411,10 @@ _(local build — no LLM call)_
 - **generated_at**: 2026-08-13T13:52:24.059182+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: not recorded in retained run evidence
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern. Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---

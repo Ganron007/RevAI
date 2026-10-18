@@ -205,6 +205,16 @@ def read_execution_context(sha: str | None = None, *, mode: str | None = None,
         if (isinstance(data, dict)
                 and (not sha or data.get("sha256") == sha)
                 and _valid_run_id(data.get("run_id"))):
+            if isinstance(data, dict):
+                request_bytes = json.dumps(
+                    body, ensure_ascii=False, separators=(",", ":"), default=str
+                ).encode("utf-8")
+                data["_cadre_request_audit"] = {
+                    "request_body": body,
+                    "request_body_sha256": hashlib.sha256(request_bytes).hexdigest(),
+                    "attempt_number": attempt,
+                    "timeout_seconds": attempt_timeout_s,
+                }
             return data
     return None
 
@@ -863,7 +873,11 @@ def compact_json_for_prompt(
     nl = cut.rfind("\n")
     if nl > max_chars // 2:
         cut = cut[:nl]
-    return cut + f"\n… [truncated {len(text) - len(cut)} chars; use tool cards for full signal]"
+    return cut + (
+        f"\n… [truncated {len(text) - len(cut)} chars; the remainder is not "
+        "present in this prompt. Do not treat omitted content as absent; "
+        "consult the run-bound source artifact before making a negative claim.]"
+    )
 
 
 def normalize_verdict_label(label: str | None) -> str:
@@ -6195,7 +6209,7 @@ def _signal_matches(text: str, signals) -> bool:
 #: assert the sample calls it.
 _LOOKUP_FINDING_PREFIXES = (
     "lg_api_lookup", "api_lookup", "lg_api_def", "api_def",
-    "lg_lookup", "rag_lookup", "lg_skill",
+    "lg_lookup", "lg_skill",
 )
 
 
@@ -6740,11 +6754,26 @@ def load_dynamic_pack(sha: str, logs_dir: Path | None = None, *,
         "procmon_summary": _j("procmon_summary.json"),
         "procmon_sample_pid": sample_pid,
         "procmon_sample_events": procmon_evidence.get("events", []),
+        "procmon_sample_event_rows_selected": procmon_evidence.get(
+            "event_rows_selected", 0
+        ),
+        "procmon_sample_event_rows_included": procmon_evidence.get(
+            "event_rows_included", 0
+        ),
+        "procmon_sample_event_rows_omitted": procmon_evidence.get(
+            "event_rows_omitted", 0
+        ),
         "procmon_instrumentation_exclusions": procmon_evidence.get(
             "instrumentation_exclusions", []
         ),
         "procmon_created_written_files": procmon_evidence.get(
             "created_written_files", []
+        ),
+        "procmon_created_written_files_total": procmon_evidence.get(
+            "created_written_files_total", 0
+        ),
+        "procmon_created_written_files_omitted": procmon_evidence.get(
+            "created_written_files_omitted", 0
         ),
         "external_capture": external_capture,
         "network": _j("network.json"),
@@ -6771,7 +6800,7 @@ def _frida_decoded_paths(pack: dict) -> list[str]:
         if any(t in s.lower() for t in ("appdata", "\\temp\\", "/tmp/", "programdata")):
             if s not in out:
                 out.append(s)
-    return out[:15]
+    return out
 
 
 _SAMPLE_PROC_MON_OPS = {
@@ -6805,12 +6834,13 @@ _SAMPLE_PROC_MON_OP_PRIORITY = {
 
 
 def _load_sample_procmon_events(dyn: Path, sample_pid: Any, *,
-                                limit: int = 20) -> dict[str, Any]:
+                                limit: int = 100) -> dict[str, Any]:
     """Select traceable Procmon rows belonging to the sample process tree.
 
     The full capture is machine-wide and includes substantial Windows noise.
-    Reports receive a bounded set of original rows for the launched sample
-    process and descendants linked by Procmon Process Create records. Known
+    Reports receive up to ``limit`` original rows for the launched sample
+    process and descendants linked by Procmon Process Create records. Counts
+    make any prompt-level omission explicit. Known
     Frida agent writes and Windows BAM bookkeeping are separated from malware
     behavior findings instead of being presented as sample actions.
     """
@@ -6829,7 +6859,6 @@ def _load_sample_procmon_events(dyn: Path, sample_pid: Any, *,
 
     selected: list[dict[str, Any]] = []
     excluded: dict[str, Any] = {}
-    per_operation: Counter[str] = Counter()
     seen: set[tuple[str, str, str, str]] = set()
     created_file_rows: dict[str, dict[str, Any]] = {}
     written_file_rows: dict[str, dict[str, Any]] = {}
@@ -6951,11 +6980,7 @@ def _load_sample_procmon_events(dyn: Path, sample_pid: Any, *,
     ))
     bounded: list[dict[str, Any]] = []
     for event in selected:
-        operation = str(event["operation"])
-        if per_operation[operation] >= 4:
-            continue
         bounded.append(event)
-        per_operation[operation] += 1
         if len(bounded) >= max(1, int(limit)):
             break
     created_written_files = []
@@ -6967,8 +6992,13 @@ def _load_sample_procmon_events(dyn: Path, sample_pid: Any, *,
         })
     return {
         "events": sorted(bounded, key=lambda event: int(event["row"])),
+        "event_rows_selected": len(selected),
+        "event_rows_included": len(bounded),
+        "event_rows_omitted": max(0, len(selected) - len(bounded)),
         "instrumentation_exclusions": [excluded] if excluded else [],
-        "created_written_files": created_written_files[:20],
+        "created_written_files": created_written_files[:100],
+        "created_written_files_total": len(created_written_files),
+        "created_written_files_omitted": max(0, len(created_written_files) - 100),
     }
 
 
@@ -6986,6 +7016,13 @@ def _format_sample_procmon_events(pack: dict) -> list[str]:
         "### Procmon events attributed to the sample process tree",
         "",
     ]
+    event_rows_omitted = int(pack.get("procmon_sample_event_rows_omitted") or 0)
+    if event_rows_omitted:
+        lines.append(
+            f"- {event_rows_omitted} additional deduplicated sample-process "
+            "Procmon behavior row(s) are present in the cited CSV but are not "
+            "included in this prompt; their absence here is not evidence of absence."
+        )
     for event in events:
         if not isinstance(event, dict):
             continue
@@ -7041,6 +7078,12 @@ def _format_sample_procmon_events(pack: dict) -> list[str]:
             "[source: procmon, query_or_table: procmon.csv, row_or_rule: "
             f"data row {written.get('row')}; PID {written.get('pid')}; "
             "operation WriteFile]"
+        )
+    files_omitted = int(pack.get("procmon_created_written_files_omitted") or 0)
+    if files_omitted:
+        lines.append(
+            f"- {files_omitted} additional created-and-written path(s) are "
+            "present in the cited Procmon source but omitted from this prompt."
         )
     return lines
 
@@ -7755,12 +7798,12 @@ def format_dynamic_analysis_section(pack: dict | None) -> str:
             biz = [d for d in dns if str(d).endswith(".biz")]
             query, locator = _network_locator(pack, "dns_queries")
             lines.append(f"- **DNS queries** ({len(dns)}; DGA-shaped `.biz`: {len(biz)}): "
-                         + ", ".join(f"`{d}`" for d in dns[:20]) + " "
+                         + ", ".join(f"`{d}`" for d in dns) + " "
                          + _dynamic_citation(query, locator))
         if sni:
             query, locator = _network_locator(pack, "tls_sni")
             lines.append(f"- **TLS SNI** ({len(sni)}): "
-                         + ", ".join(f"`{s}`" for s in sni[:12]) + " "
+                         + ", ".join(f"`{s}`" for s in sni) + " "
                          + _dynamic_citation(query, locator))
         if http:
             hosts: list[str] = []
@@ -7770,7 +7813,7 @@ def format_dynamic_analysis_section(pack: dict | None) -> str:
                     hosts.append(host)
             query, locator = _network_locator(pack, "http_requests")
             lines.append(f"- **HTTP requests**: {len(http)} to {len(hosts)} host(s): "
-                         + ", ".join(f"`{h}`" for h in hosts[:12]) + " "
+                         + ", ".join(f"`{h}`" for h in hosts) + " "
                          + _dynamic_citation(query, locator))
 
     decoded_paths = _frida_decoded_paths(pack)
@@ -7797,7 +7840,7 @@ def format_dynamic_analysis_section(pack: dict | None) -> str:
         for key, value in fs.items():
             if isinstance(value, list) and value and "api" in key.lower():
                 pairs = []
-                for item in value[:8]:
+                for item in value:
                     if isinstance(item, (list, tuple)) and len(item) >= 2:
                         pairs.append(f"`{item[0]}`={item[1]}")
                     else:
@@ -9237,6 +9280,16 @@ def build_technical_evidence_block(
         lines.append("```")
         lines.append("")
 
+    if isinstance(tools_results, dict) and isinstance(tools_results.get("iocs"), dict):
+        lines.append("## Run-bound IOC evidence")
+        lines.append(
+            "Structured indicators from the active run's iocs.json and the "
+            "separately labelled runtime sources. Static candidates do not by "
+            "themselves establish execution or C2."
+        )
+        lines.append(_sec_iocs_evidence(tools_results))
+        lines.append("")
+
     return "\n".join(lines)
 
 
@@ -9245,7 +9298,7 @@ def build_technical_evidence_block(
 # ============================================================================
 # Each section has:
 #   - description: what this section covers (for the LLM)
-#   - query_terms: terms used to retrieve relevant RAG hits
+#   - section topics are expressed in the description and data comes from the run
 #   - gather_evidence(tools_results): filters tool data into the section's evidence
 #   - prompt_template: focused prompt for this section (small, ~1-3K chars)
 #   - output_format: expected JSON shape
@@ -9254,8 +9307,6 @@ def build_technical_evidence_block(
 #   - Anthropic context engineering: chunked generation > one mega-prompt
 #   - LangChain Map-Reduce documents chain
 #   - Microsoft "Divide-and-Conquer Summarization" (Liu 2023)
-#   - HuggingFace production RAG: per-query focused retrieval + LLM
-#   - Wisdm framework (Microsoft Research 2024): section-aware RAG
 #   - LangGraph Map-Reduce agent: explicit per-section state
 
 
@@ -9290,43 +9341,78 @@ def _sec_classification_evidence(tools_results: dict) -> str:
     if deep:
         lines.append(f"  deep_confidence: {deep.get('confidence', '?')}")
         lines.append(f"  deep_source: {deep.get('source', '?')}")
+    ti = tools_results.get("ti_enrich")
+    if ti is not None:
+        lines.extend(("  Optional external hash enrichment (not a corpus search):",
+                      format_ti_hash_enrichment_evidence(ti)))
     return "\n".join(lines) if lines else "(no verdict available)"
 
 
 def _sec_triage_evidence(tools_results: dict) -> str:
-    """Quick-triage evidence (capa rules + YARA + floss sample) — feeds Static Analysis."""
+    """Quick-triage evidence (capa, YARA and IOC-shaped FLOSS strings)."""
     lines = []
     capa = tools_results.get("capa") or {}
     if capa:
         rules = capa.get("top_rules") or []
         if rules:
             lines.append(f"  capa ({capa.get('rule_count', len(rules))} rules):")
-            for r in rules[:8]:
+            for r in rules:
                 if isinstance(r, dict):
-                    lines.append(f"    - {r.get('name', '?')}")
+                    detail = str(r.get("description") or "").strip()
+                    lines.append(
+                        f"    - {r.get('name', '?')}"
+                        + (f": {detail}" if detail else "")
+                        + " [source: quick_scan/00-tools-raw.json, "
+                        + f"query_or_table: capa.top_rules, row_or_rule: {r.get('name', '?')}]"
+                    )
     yara = tools_results.get("yara") or {}
     if yara:
         matches = yara.get("matches") or []
         if matches:
             lines.append(f"  YARA ({len(matches)} matches):")
-            for m in matches[:5]:
+            for m in matches:
                 if isinstance(m, dict):
-                    lines.append(f"    - {m.get('rule', '?')}")
+                    lines.append(
+                        f"    - {m.get('rule', '?')}: "
+                        f"{m.get('namespace') or m.get('category') or 'match'} "
+                        "[source: quick_scan/00-tools-raw.json, "
+                        f"query_or_table: yara.matches, row_or_rule: {m.get('rule', '?')}]"
+                    )
     floss = tools_results.get("floss") or {}
     if floss:
-        sc = floss.get("string_count", 0)
-        lines.append(f"  FLOSS: {sc} strings extracted")
+        available = int(floss.get("string_count") or 0)
+        strings = floss.get("strings") or []
+        sampled = int(floss.get("strings_sampled") or len(strings))
+        lines.append(
+            f"  FLOSS: {sampled} string(s) sampled from {available} extracted; "
+            f"{floss.get('ioc_shaped_unique', 0)} unique IOC-shaped string(s), "
+            f"{floss.get('ioc_shaped_dropped', 0)} unique IOC-shaped string(s) "
+            "omitted by the extraction sample. "
+            "[source: floss, query_or_table: summary, row_or_rule: "
+            "string_count, strings_sampled, ioc_shaped_unique, ioc_shaped_dropped]"
+        )
+        ioc_strings = [str(value) for value in strings if _is_ioc_shaped(str(value))]
+        if ioc_strings:
+            lines.append("  FLOSS IOC-shaped strings (static candidates, not runtime observations):")
+            lines.extend(
+                f"    - `{value}` [source: floss, query_or_table: strings, "
+                f"row_or_rule: {value}]"
+                for value in ioc_strings
+            )
     return "\n".join(lines) if lines else "(no triage data)"
 
 
 def _sec_static_evidence(tools_results: dict) -> str:
     """Section 4: Static Analysis — malcat cards + dotnet + r2 decompilations."""
     lines = []
+    triage = _sec_triage_evidence(tools_results)
+    if triage and triage != "(no triage data)":
+        lines.extend(["  Quick-triage findings:", triage])
     # MalCat top decompilations (real malware code)
     mc = tools_results.get("malcat") or {}
     decs = mc.get("decompilations") or {}
     if decs:
-        lines.append("  Function decompilations (MalCat):")
+        lines.append(f"  Function decompilations (MalCat; {len(decs)} available):")
         for addr, info in list(decs.items())[:2]:
             if isinstance(info, dict):
                 nm = info.get("name", "?")
@@ -9335,11 +9421,18 @@ def _sec_static_evidence(tools_results: dict) -> str:
                 lines.append("```c")
                 lines.append(body)
                 lines.append("```")
+        if len(decs) > 2:
+            lines.append(
+                f"    {len(decs) - 2} additional decompilation(s) remain in the "
+                "run-bound MalCat artifact and were not copied into this prompt."
+            )
     # MalCat structures
     structs = mc.get("structures") or []
     if structs:
         names = [s.get("name", s.get("struct_name", "?")) if isinstance(s, dict) else str(s) for s in structs[:20]]
         lines.append(f"  Recovered structures ({len(structs)}): {', '.join(names)}")
+        if len(structs) > 20:
+            lines.append(f"  {len(structs) - 20} additional structure names are in the run-bound MalCat artifact.")
     # .NET
     dotnet = tools_results.get("dotnet") or {}
     if isinstance(dotnet, dict) and dotnet.get("is_dotnet"):
@@ -9351,6 +9444,8 @@ def _sec_static_evidence(tools_results: dict) -> str:
             lines.append(f"    - native_refs: {dotnet['suspicious_native_refs']}")
         if dotnet.get("pinvoke_imports"):
             lines.append(f"    P/Invoke: {dotnet['pinvoke_imports'][:15]}")
+            if len(dotnet["pinvoke_imports"]) > 15:
+                lines.append(f"    {len(dotnet['pinvoke_imports']) - 15} additional P/Invoke imports are in the .NET artifact.")
         if dotnet.get("has_suppress_ildasm"):
             lines.append("    - SuppressIldasmAttribute")
     # r2 disassembly (3 functions)
@@ -9359,31 +9454,52 @@ def _sec_static_evidence(tools_results: dict) -> str:
         lines.append("  radare2 disassembly:")
         for addr, body in list(r2["disassembly"].items())[:2]:
             lines.append(f"    {addr}: {str(body)[:300]}")
+        if len(r2["disassembly"]) > 2:
+            lines.append(f"    {len(r2['disassembly']) - 2} additional function(s) remain in the run-bound radare2 artifact.")
     return "\n".join(lines) if lines else "(no static analysis data)"
 
 
 def _sec_behavioral_evidence(tools_results: dict) -> str:
-    """Section 5: Behavioral — speakeasy + frida probe + malcat anomalies."""
+    """Section 5: behavioral evidence from emulation, static probes and WinRE."""
     lines = []
-    deep = tools_results.get("deep") or {}
-    behavioral = deep.get("behavioral") or {}
-    se = behavioral.get("speakeasy") or {}
+    deep_behavioral = ((tools_results.get("deep") or {}).get("behavioral") or {})
+    se = tools_results.get("speakeasy") or deep_behavioral.get("speakeasy") or {}
     if se:
-        lines.append(f"  Speakeasy: {se.get('total_api_calls', '?')} API calls")
-        for api in (se.get('api_calls') or [])[:5]:
-            if isinstance(api, dict):
-                lines.append(f"    - {api.get('dll', '?')}.{api.get('name', '?')}: {api.get('count', 0)} calls")
-    fp = behavioral.get("frida_probe") or {}
+        if se.get("speakeasy_ok"):
+            calls = se.get("api_calls") or []
+            events = se.get("key_events") or []
+            lines.append(
+                f"  Speakeasy emulation completed: {len(calls)} API call record(s), "
+                f"{len(events)} key event(s) in the returned result."
+            )
+            for event in events[:10]:
+                lines.append(f"    - key event: {json.dumps(event, default=str)[:400]}")
+            for api in calls[:15]:
+                if isinstance(api, dict):
+                    lines.append(
+                        f"    - API: {api.get('dll', '?')}.{api.get('name', '?')}: "
+                        f"{api.get('count', 0)} call(s)"
+                    )
+        else:
+            lines.append(
+                "  Speakeasy emulation did not complete: "
+                f"{se.get('error') or se.get('reason') or 'no successful result'}"
+            )
+    fp = tools_results.get("frida_probe") or {}
+    if not fp:
+        fp = ((tools_results.get("deep") or {}).get("behavioral") or {}).get("frida_probe") or {}
     if fp:
         cands = (fp.get("pe_probe") or {}).get("hook_candidates") or []
         lines.append(
-            f"  Frida static probe: available={fp.get('frida_available')} "
-            f"version={fp.get('frida_version', '?')}; {len(cands)} hook "
-            f"candidate(s) from the import table — static analysis only; no "
-            f"execution or injection by this RevAI component. "
-            f"Runtime traces from separate paths such as WinRE are reported "
-            f"independently."
+            f"  RevAI Frida probe: available={fp.get('frida_available')} "
+            f"version={fp.get('frida_version', '?')}; {len(cands)} hook candidate(s) "
+            "from static imports. This probe did not execute or inject into the sample."
         )
+        for candidate in cands[:12]:
+            if isinstance(candidate, dict):
+                lines.append(f"    - candidate: {candidate.get('api') or candidate.get('name') or candidate}")
+            else:
+                lines.append(f"    - candidate: {candidate}")
     mc = tools_results.get("malcat") or {}
     anoms = mc.get("anomalies") or []
     if anoms:
@@ -9393,11 +9509,19 @@ def _sec_behavioral_evidence(tools_results: dict) -> str:
                 name = a.get("name", "?")
                 num = a.get("num_hits", 0)
                 lines.append(f"    - {name}×{num}" if num > 1 else f"    - {name}")
+    dynamic_pack = tools_results.get("dynamic_pack") or {}
+    if dynamic_pack.get("present"):
+        dynamic_block = format_dynamic_analysis_section(dynamic_pack)
+        if dynamic_block:
+            lines.extend([
+                "  WinRE sample-attributed runtime observations (source pack below):",
+                dynamic_block,
+            ])
     return "\n".join(lines) if lines else "(no behavioral data)"
 
 
 def _sec_network_evidence(tools_results: dict) -> str:
-    """Section 6: Network — URLs, IPs, mutexes, sockets from static tooling."""
+    """Section 6: static indicators and sample-attributed WinRE network events."""
     lines = []
     mc = tools_results.get("malcat") or {}
     consts = mc.get("constants") or []
@@ -9413,23 +9537,67 @@ def _sec_network_evidence(tools_results: dict) -> str:
             ip_c.append(cid)
         elif "mutex" in cat:
             mutex_c.append(cid)
-    if url_c:
-        lines.append(f"  - URLs in code: {', '.join(url_c[:10])}")
-    if ip_c:
-        lines.append(f"  - IPs in code: {', '.join(ip_c[:10])}")
-    if mutex_c:
-        lines.append(f"  Mutexes: {', '.join(mutex_c[:10])}")
+    for label, values in (("URLs in code", url_c), ("IPs in code", ip_c),
+                          ("Mutexes", mutex_c)):
+        if values:
+            lines.append(f"  {label} ({len(values)}):")
+            lines.extend(
+                f"    - `{json.dumps(value, ensure_ascii=False)}` "
+                "[source: malcat, "
+                f"query_or_table: malcat.constants, row_or_rule: {value}]"
+                for value in values
+            )
     # Also check floss/malcat strings for URLs
     strings = (mc.get("views") or {}).get("strings") or []
-    seen_urls = set()
-    for s in strings[:200]:
+    seen_urls: list[str] = []
+    seen_url_set: set[str] = set()
+    for s in strings:
         if not isinstance(s, dict):
             continue
         summary = str(s.get("summary") or "")
-        if "http" in summary.lower():
-            seen_urls.add(summary.strip())
+        normalized = summary.strip()
+        if "http" in normalized.lower() and normalized not in seen_url_set:
+            seen_url_set.add(normalized)
+            seen_urls.append(normalized)
     if seen_urls:
-        lines.append(f"  String URLs: {', '.join(list(seen_urls)[:10])}")
+        lines.append(f"  Static strings containing URL text ({len(seen_urls)}):")
+        lines.extend(
+            f"    - `{json.dumps(value, ensure_ascii=False)}` "
+            "[source: malcat, "
+            f"query_or_table: malcat.views.strings, row_or_rule: {value}]"
+            for value in seen_urls
+        )
+    dynamic_pack = tools_results.get("dynamic_pack") or {}
+    if dynamic_pack.get("present"):
+        dynamic_iocs = _net_iocs(dynamic_pack)
+        for key, label in (("dns", "WinRE runtime DNS queries"),
+                           ("http", "WinRE runtime HTTP observations"),
+                           ("sni", "WinRE runtime TLS SNI")):
+            values = dynamic_iocs.get(key) or []
+            if not values:
+                continue
+            query, locator = _network_locator(
+                dynamic_pack,
+                {"dns": "dns_queries", "http": "http_requests", "sni": "tls_sni"}[key],
+            )
+            unique_values = list(dict.fromkeys(str(value) for value in values))
+            lines.append(
+                f"  {label}: {len(values)} observation(s), "
+                f"{len(unique_values)} unique value(s): "
+                + ", ".join(f"`{value}`" for value in unique_values)
+                + " " + _dynamic_citation(query, locator)
+            )
+        capture = dynamic_pack.get("external_capture") or {}
+        if capture:
+            lines.append(
+                "  Passive VM-wide packet capture is not sample-attributed by packet "
+                "count alone; use process-correlated WinRE observations for sample "
+                "network claims. "
+                + _dynamic_citation(
+                    "external_capture.json",
+                    "status, packets_captured, elapsed_s, pcap_sha256",
+                )
+            )
     return "\n".join(lines) if lines else "(no network indicators)"
 
 
@@ -9452,9 +9620,21 @@ def _sec_capability_evidence(tools_results: dict) -> str:
     rules = capa.get("top_rules") or []
     if rules:
         lines.append(f"  capa capabilities ({len(rules)}):")
-        for r in rules[:15]:
+        for r in rules:
             if isinstance(r, dict):
-                lines.append(f"    - {r.get('name', '?')}")
+                name = r.get("name", "?")
+                lines.append(
+                    f"    - {name} [source: quick_scan/00-tools-raw.json, "
+                    f"query_or_table: capa.top_rules, row_or_rule: {name}]"
+                )
+    dynamic_pack = tools_results.get("dynamic_pack") or {}
+    if dynamic_pack.get("present"):
+        dynamic_block = format_dynamic_analysis_section(dynamic_pack)
+        if dynamic_block:
+            lines.extend([
+                "  WinRE runtime capabilities and sample-attributed activity:",
+                dynamic_block,
+            ])
     return "\n".join(lines) if lines else "(no capability data)"
 
 
@@ -9473,43 +9653,210 @@ def _sec_attack_evidence(tools_results: dict) -> str:
             for a in attack:
                 by_attack.setdefault(str(a), []).append(name)
     if by_attack:
-        for atk, names in sorted(by_attack.items(), key=lambda x: -len(x[1]))[:15]:
-            lines.append(f"  {atk} ({len(names)}): {', '.join(names[:5])}")
+        for atk, names in sorted(by_attack.items(), key=lambda x: -len(x[1])):
+            lines.append(
+                f"  {atk} ({len(names)} capa rule(s)): {', '.join(names)} "
+                "[source: quick_scan/00-tools-raw.json, "
+                f"query_or_table: capa.top_rules.attack, row_or_rule: {atk}]"
+            )
+    dynamic_pack = tools_results.get("dynamic_pack") or {}
+    if dynamic_pack.get("present"):
+        dynamic_block = format_dynamic_analysis_section(dynamic_pack)
+        if dynamic_block:
+            lines.extend([
+                "  Run-bound runtime observations available for cautious ATT&CK "
+                "mapping (map only directly supported behavior):",
+                dynamic_block,
+            ])
     return "\n".join(lines) if lines else "(no ATT&CK mapping)"
 
 
 def _sec_family_evidence(tools_results: dict) -> str:
-    """Section 9: Family comparison — RAG-driven."""
+    """Provide run-bound family evidence and scope optional hash lookup results."""
     verdict = tools_results.get("verdict") or {}
-    return f"  family_guess: {verdict.get('family_guess', '?')}\n  verdict: {verdict.get('verdict', '?')}\n  cross_engine_notes: {verdict.get('cross_engine_notes', '?')}"
+    lines = [
+        f"  candidate family label from prior verdict synthesis: "
+        f"{verdict.get('family_guess') or 'unknown'}\n"
+        "  This label is narrative context, not a citable source. Report stages "
+        "do not query a malware-family or campaign-intelligence corpus. The deep-"
+        "dive agent's separate offline Windows API reference lookup explains API "
+        "semantics; it is not sample behavior or attribution evidence. Optional "
+        "VirusTotal/Hybrid Analysis hash lookup "
+        "results, when present below, are provider context rather than proof of "
+        "family lineage. "
+        "Only describe a family lineage when run-local tool rows independently "
+        "support it; otherwise state that lineage is unconfirmed."
+    ]
+    ti = tools_results.get("ti_enrich")
+    if ti is not None:
+        lines.append(format_ti_hash_enrichment_evidence(ti))
+    return "\n".join(lines)
+
+
+def format_ti_hash_enrichment_evidence(
+        ti_result: dict | None, *, source_path: str = "quick_scan/ti-enrich.json") -> str:
+    """Render the optional hash-only TI artifact with exact source locators."""
+    if not isinstance(ti_result, dict):
+        return "Hash-enrichment status is not recorded in the supplied run evidence."
+
+    sample_sha = str(ti_result.get("sha256") or "unknown")
+    enabled = ti_result.get("enabled") is True
+    lines = [
+        f"sample_sha256: {sample_sha}",
+        f"hash_lookup_enabled: {str(enabled).lower()} "
+        f"[source: {source_path}, query_or_table: enabled, row_or_rule: {enabled}]",
+        "Scope: optional VirusTotal/Hybrid Analysis lookup by SHA-256 only; no "
+        "sample download or corpus retrieval.",
+    ]
+    if not enabled:
+        return "\n".join(lines)
+
+    providers = ti_result.get("providers")
+    if not isinstance(providers, dict) or not providers:
+        lines.append("provider_results: absent from the run-bound lookup artifact")
+        return "\n".join(lines)
+
+    provider_fields = {
+        "virustotal": (
+            "malicious", "suspicious", "harmless", "undetected", "reputation",
+            "popular_threat_classification", "names", "tags", "link",
+        ),
+        "hybrid_analysis": (
+            "result_count", "verdict", "threat_score", "type_short",
+            "submit_name", "vx_family", "tags", "link",
+        ),
+    }
+    display_names = {"virustotal": "VirusTotal", "hybrid_analysis": "Hybrid Analysis"}
+    for provider, label in display_names.items():
+        record = providers.get(provider)
+        if not isinstance(record, dict):
+            continue
+        locator = (f"[source: {source_path}, query_or_table: providers.{provider}, "
+                   f"row_or_rule: providers.{provider}]")
+        if record.get("ok") is True:
+            selected = {key: record.get(key) for key in provider_fields[provider]
+                        if record.get(key) is not None}
+            lines.append(f"{label}: lookup returned data {locator}")
+            lines.append(json.dumps(selected, ensure_ascii=False, separators=(",", ":"),
+                                    default=str))
+            continue
+        error = str(record.get("error") or "")
+        if error.endswith("API_KEY not set"):
+            state = "not queried (provider key not configured)"
+        elif error == "no_prior_reports":
+            state = "queried; no prior report returned"
+        elif error:
+            state = "queried; provider request failed"
+        else:
+            state = "provider result unavailable"
+        lines.append(f"{label}: {state} {locator}")
+    return "\n".join(lines)
 
 
 def _sec_attribution_evidence(tools_results: dict) -> str:
-    """Section 10: Attribution — threat actor / campaign."""
+    """Section 10: bound actor/campaign attribution to evidence in this run."""
     verdict = tools_results.get("verdict") or {}
-    return f"  family: {verdict.get('family_guess', '?')}\n  (use RAG to search for actor + campaign intel)"
+    lines = [
+        f"  candidate family label: {verdict.get('family_guess') or 'unknown'}\n"
+        "  Hash-enrichment results, if present, are sample-hash lookups and do not "
+        "provide actor/campaign linkage. Do not infer an actor, campaign, origin, "
+        "or vendor-confirmed family from a string, mutex, or candidate family label "
+        "alone. State attribution as unknown unless the run contains direct, "
+        "independently sourced linkage."
+    ]
+    ti = tools_results.get("ti_enrich")
+    if ti is not None:
+        lines.append("  Optional provider context (not actor/campaign evidence):")
+        lines.append(format_ti_hash_enrichment_evidence(ti))
+    return "\n".join(lines)
 
 
 def _sec_iocs_evidence(tools_results: dict) -> str:
     """Section 11: IOCs — all indicators in one place."""
     lines = []
+    iocs = tools_results.get("iocs") or {}
+    categories = (
+        ("hashes", "hash"), ("domains", "domain"), ("urls", "url"),
+        ("ips", "ip"), ("files", "file"), ("registry_keys", "registry"),
+        ("mutexes", "mutex"), ("emails", "email"),
+        ("wallets_btc", "wallet_btc"), ("wallets_eth", "wallet_eth"),
+    )
+    seen: set[str] = set()
+    source_labels = iocs.get("source") or []
+    if source_labels:
+        lines.append("  Static IOC extractor sources: " + ", ".join(
+            f"`{source}`" for source in source_labels
+        ))
+    for key, label in categories:
+        values = iocs.get(key) or []
+        if isinstance(values, dict):
+            records = [(f"{name}={value}", str(value))
+                       for name, value in values.items()
+                       if value not in (None, "")]
+        elif isinstance(values, list):
+            records = []
+            for value in values:
+                if isinstance(value, dict):
+                    records.extend(
+                        (f"{name}={item}", str(item))
+                        for name, item in value.items()
+                        if item not in (None, "")
+                    )
+                elif value not in (None, ""):
+                    records.append((str(value), str(value)))
+        elif values not in (None, ""):
+            records = [(str(values), str(values))]
+        else:
+            records = []
+        if records:
+            lines.append(f"  {label} IOCs from iocs.json ({len(records)}):")
+            for value, evidence_row in records:
+                rendered = json.dumps(value, ensure_ascii=False, default=str)
+                seen.add(str(value).strip().lower())
+                lines.append(
+                    f"    - `{rendered}` [source: iocs.json, "
+                    f"query_or_table: {key}, row_or_rule: {evidence_row}]"
+                )
+
+    dynamic_pack = tools_results.get("dynamic_pack") or {}
+    if dynamic_pack.get("present"):
+        dynamic_iocs = _net_iocs(dynamic_pack)
+        for key, label, source_key in (
+            ("dns", "runtime DNS", "dns_queries"),
+            ("http", "runtime HTTP", "http_requests"),
+            ("sni", "runtime TLS SNI", "tls_sni"),
+        ):
+            values = dynamic_iocs.get(key) or []
+            if not values:
+                continue
+            query, locator = _network_locator(dynamic_pack, source_key)
+            lines.append(
+                f"  {label} indicators ({len(values)}) "
+                + _dynamic_citation(f"{query} {locator}", locator) + ":"
+            )
+            for value in values:
+                rendered = json.dumps(value, ensure_ascii=False, default=str)
+                lines.append(
+                    f"    - `{rendered}` "
+                    + _dynamic_citation(f"{query} {locator}", str(value))
+                )
+
+    # Preserve MalCat-only constants that the deterministic IOC extractor did
+    # not classify, with the actual source path rather than dropping them.
     mc = tools_results.get("malcat") or {}
     consts = mc.get("constants") or []
-    seen = set()
     for c in consts:
         if not isinstance(c, dict):
             continue
         cat = str(c.get("category", "")).lower()
         cid = str(c.get("id", ""))
-        if cid and cid not in seen:
-            seen.add(cid)
-            lines.append(f"  [{cat}] {cid}")
-    # file hashes
-    fs = mc.get("file_summary") or {}
-    for h in ("md5", "sha1", "sha256"):
-        if h in fs:
-            lines.append(f"  hash.{h}: {fs[h]}")
-    return "\n".join(lines[:40]) if lines else "(no IOCs)"
+        if cid and cid.strip().lower() not in seen:
+            seen.add(cid.strip().lower())
+            lines.append(
+                f"  [{cat}] `{cid}` [source: malcat, "
+                f"query_or_table: malcat.constants, row_or_rule: {cid}]"
+            )
+    return "\n".join(lines) if lines else "(no IOCs were extracted into iocs.json or the available MalCat constants)"
 
 
 def _sec_detection_evidence(tools_results: dict) -> str:
@@ -9519,10 +9866,13 @@ def _sec_detection_evidence(tools_results: dict) -> str:
     lines = []
     if matches:
         lines.append(f"  Active YARA matches ({len(matches)}):")
-        for m in matches[:10]:
+        for m in matches:
             if isinstance(m, dict):
                 rule = m.get("rule", "?")
-                lines.append(f"    - {rule}")
+                lines.append(
+                    f"    - {rule} [source: quick_scan/00-tools-raw.json, "
+                    f"query_or_table: yara.matches, row_or_rule: {rule}]"
+                )
     return "\n".join(lines) if lines else "(no detection rules)"
 
 
@@ -9542,7 +9892,7 @@ def _sec_containment_evidence(tools_results: dict) -> str:
         if cat in ("filename", "path", "service", "registry", "mutex"):
             seen.add(cid)
             lines.append(f"  [{cat}] {cid}")
-    return "\n".join(lines[:30]) if lines else "(no containment signals)"
+    return "\n".join(lines) if lines else "(no containment signals)"
 
 
 def _sec_recommendations_evidence(tools_results: dict) -> str:
@@ -9551,28 +9901,29 @@ def _sec_recommendations_evidence(tools_results: dict) -> str:
     return f"  family: {verdict.get('family_guess', '?')}\n  (recommend prioritized actions for this family)"
 
 
-# Section specs: name → (description, query_terms, gather_fn, requires_llm)
+# Section specs: name → (description, gather_evidence, requires_llm)
 REPORT_SECTION_SPECS = {
     "Executive Summary": (
-        "Top-line verdict: malicious/clean, family, confidence, and a 2-sentence summary.",
-        ["verdict", "family", "ransomware", "trojan", "backdoor", "rat", "stealer"],
+        "Top-line verdict, confidence, and concise summary; call family a candidate unless independently supported by run evidence.",
         _sec_classification_evidence, True,
     ),
     "1. Sample Identification": (
         "Sample identifiers: sha256, file size, format, type, architecture, hashes.",
-        ["file", "sha256", "md5", "size", "type"],
         _sec_identity_evidence, True,
     ),
     "2. Classification": (
         "Verdict + family + confidence + agreement + cross-engine notes.",
-        ["family", "verdict", "classification"],
         _sec_classification_evidence, True,
     ),
     "3. Background & Family Lineage": (
-        "Prior research anchor: family history, earlier vendor reports, variant "
-        "lineage, naming. Quick-triage artifacts (capa rules, YARA matches, "
-        "FLOSS highlights) fold into Static Analysis.",
-        ["family", "history", "prior", "variant", "lineage", "known family"],
+        "State whether run-local evidence supports family lineage. No external "
+        "malware-intelligence corpus search is performed by the report stage. "
+        "The offline Windows API reference lookup is a separate deep-dive tool. "
+        "The optional run-bound VirusTotal/Hybrid "
+        "Analysis hash lookup is separate context; use its exact supplied rows if "
+        "present, and do not treat provider labels as proof of lineage. Do not "
+        "invent prior research, variant lineage, or naming. Quick-triage artifacts "
+        "(capa, YARA, FLOSS) belong in Static Analysis.",
         _sec_family_evidence, True,
     ),
     "4. Static Analysis": (
@@ -9580,72 +9931,66 @@ REPORT_SECTION_SPECS = {
         "signatures; quick-triage artifacts (capa rules, YARA matches, FLOSS "
         "highlights) live here. Explain each artifact: what it is, why it "
         "matters, what behavior it implies.",
-        ["static analysis", "pe structure", "imports", "sections", "dotnet", "triage", "yara", "capa"],
         _sec_static_evidence, True,
     ),
     "5. Behavioral Analysis": (
-        "Runtime behavior from Speakeasy + Frida probe + MalCat anomalies. "
-        "Separate observed behavior from latent capability.",
-        ["behavioral analysis", "speakeasy", "frida", "anomalies"],
+        "Separate run-time observations (including sample-attributed WinRE "
+        "telemetry) from static probes, emulation, anomalies, and latent capability. "
+        "A static Frida hook-candidate probe is not runtime behavior.",
         _sec_behavioral_evidence, True,
     ),
     "6. Network Analysis & C2": (
-        "C2 / infrastructure indicators: URLs, IPs, mutexes, sockets, domains, "
-        "registration patterns from static tooling.",
-        ["network indicators", "c2", "url", "ip", "mutex", "socket", "domain", "infrastructure"],
+        "Separate static URL/domain/IP strings from observed sample-attributed "
+        "runtime traffic. A passive VM-wide packet count alone does not establish "
+        "sample C2. Do not describe mutexes as network indicators.",
         _sec_network_evidence, True,
     ),
     "7. Capability Assessment": (
         "What the malware can do: encryption, network, persistence, anti-analysis. "
         "Annotate observed-vs-latent where possible.",
-        ["capability", "encryption", "persistence", "anti-analysis", "evasion"],
         _sec_capability_evidence, True,
     ),
     "8. Attribution": (
-        "Threat actor, campaign, suspected origin — hedged: state confidence "
-        "and what evidence it rests on.",
-        ["attribution", "threat actor", "campaign", "apt"],
+        "State actor, campaign, and origin as unknown unless direct, independent "
+        "run-local evidence establishes a linkage. A candidate family or language "
+        "is not attribution.",
         _sec_attribution_evidence, True,
     ),
     "9. Indicators of Compromise": (
         "All IOCs: hashes, IPs, URLs, mutexes, registry keys, file paths.",
-        ["ioc", "indicator", "hash", "ip", "url", "mutex", "registry", "filename"],
         _sec_iocs_evidence, True,
     ),
     "10. Detection Rules": (
         "Query-first detection: Sigma/Snort/KQL where possible + YARA rules "
         "that match. Detection content lives at the end with IoCs.",
-        ["detection", "yara", "sigma", "snort", "rule", "kql"],
         _sec_detection_evidence, True,
     ),
     "11. MITRE ATT&CK Mapping": (
         "Specific MITRE ATT&CK techniques observed (T-codes with rule names), "
         "tabulated at the end near detection content.",
-        ["mitre", "attack", "technique", "t1059", "t1486", "t1055"],
         _sec_attack_evidence, True,
     ),
     "12. Containment, Eradication, Recovery": (
         "IR steps based on observed file paths, mutexes, registry keys, services.",
-        ["containment", "eradication", "recovery", "incident response", "playbook"],
         _sec_containment_evidence, True,
     ),
     "13. Recommendations": (
-        "Strategic guidance: patch priorities, monitoring, training.",
-        ["recommendation", "best practice", "prevention", "hygiene"],
+        "Recommendations derived from observed capabilities and evidence gaps; "
+        "do not tailor advice to an unconfirmed family or actor.",
         _sec_recommendations_evidence, True,
     ),
     "14. Appendix A: Evidence Trail": (
-        "Raw tool output for transparency: how each claim maps to evidence "
+        "Selected evidence for transparency: how each claim maps to evidence "
         "(engine + artifact). No LLM call needed.",
-        [], lambda x: "", False,
+        lambda x: "", False,
     ),
     "15. Appendix B: Module Inventory": (
         "Structured module/function inventory: addresses, names, roles.",
-        [], lambda x: "", False,
+        lambda x: "", False,
     ),
     "16. Author + Sign-off": (
         "Metadata: timestamps, analyst, model, sources. No LLM call needed.",
-        [], lambda x: "", False,
+        lambda x: "", False,
     ),
 }
 SANDBOX_WRAPPER = Path("/opt/scripts/run_agent_sandbox.sh")
@@ -12103,8 +12448,8 @@ class EvidenceAssembler:
     """Orchestrate tool outputs into a token-budgeted evidence pack.
 
     Each tool has a `to_card(result)` that produces a compact representation.
-    This class calls them in priority order until the budget is exhausted.
-    Tools not yet seen are summarized as "not run / unavailable".
+    This class calls them in priority order until the budget is exhausted and
+    records every missing or over-budget tool card in the rendered pack.
     """
 
     TOOL_CARDS = {
@@ -12124,7 +12469,7 @@ class EvidenceAssembler:
         "revai_tools_audit": _revai_tools_to_card("revai_tools_audit"),
     }
 
-    # Priority order: high-signal first, RAG last (it gets remaining budget)
+    # Priority order: high-signal static evidence first.
     PRIORITY = (
         "malcat", "capa", "pe_imports", "yara", "floss", "dotnet",
         "r2", "upx", "xor", "olevba", "peepdf", "revai_tools_sec",
@@ -12135,18 +12480,36 @@ class EvidenceAssembler:
         self.budget = budget_chars
         self.used = 0
         self.cards = []
+        self.not_supplied: dict[str, str] = {}
+        self.omitted: list[dict[str, Any]] = []
+
+    def note_missing(self, tool: str, reason: str) -> None:
+        """Record why a known tool has no card in this stage prompt."""
+        if tool in self.TOOL_CARDS:
+            self.not_supplied[tool] = str(reason)
 
     def add(self, tool: str, result, force: bool = False) -> bool:
         """Add a tool's card if it fits in the budget. Returns True if added."""
         if tool not in self.TOOL_CARDS:
             return False
         if result is None:
+            self.note_missing(tool, "the stage supplied a null result")
             return False
         card = self.TOOL_CARDS[tool](result)
+        if not card:
+            self.note_missing(tool, "the evidence-card renderer returned no content")
+            return False
         if not force and self.used + len(card) > self.budget:
+            self.omitted.append({
+                "tool": tool,
+                "card_chars": len(card),
+                "card_sha256": hashlib.sha256(card.encode("utf-8")).hexdigest(),
+                "reason": "evidence-pack character budget would be exceeded",
+            })
             return False
         self.cards.append((tool, card))
         self.used += len(card)
+        self.not_supplied.pop(tool, None)
         return True
 
     def render(self, header: str = "## Tool evidence (signal-prioritized)") -> str:
@@ -12157,6 +12520,20 @@ class EvidenceAssembler:
             out.append("")
             out.append(card)
         out.append("")
+        if self.not_supplied or self.omitted:
+            out.append("## Evidence not included in this prompt")
+            out.append("The items below were not available to the model as evidence. "
+                       "Their absence from this prompt is not evidence that the "
+                       "sample lacks the behavior or artifact.")
+            for tool, reason in sorted(self.not_supplied.items()):
+                out.append(f"- `{tool}`: {reason}.")
+            for row in self.omitted:
+                out.append(
+                    f"- `{row['tool']}`: complete evidence card omitted to stay "
+                    f"within budget ({row['card_chars']} characters; "
+                    f"SHA-256 `{row['card_sha256']}`)."
+                )
+            out.append("")
         out.append(f"<!-- evidence_assembler: used {self.used}/{self.budget} chars across {len(self.cards)} tools -->")
         return "\n".join(out)
 
@@ -12180,6 +12557,8 @@ def package_stage_evidence(
     for tool in EvidenceAssembler.PRIORITY:
         if tool in tools:
             asm.add(tool, tools.get(tool))
+        else:
+            asm.note_missing(tool, "the stage did not supply a result")
     # Include any extra known cards not in PRIORITY order
     for tool, result in tools.items():
         if tool in EvidenceAssembler.TOOL_CARDS and tool not in {t for t, _ in asm.cards}:
@@ -12187,7 +12566,7 @@ def package_stage_evidence(
     header = (
         f"## Tool evidence (stage={stage}, signal-prioritized)\n"
         f"<!-- stage: {stage} | sha={sha[:16] if sha else '-'} | "
-        f"packaging=v6.1 -->"
+        f"packaging=v6.2 -->"
     )
     pack = asm.render(header=header)
     if persist and sha:

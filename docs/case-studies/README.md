@@ -1,19 +1,22 @@
 # RevAI — Pipeline Runs & Case Studies
 
-Real analysis reports produced by the RevAI pipeline against live malware
-samples. Each case study includes the full report set, verdict, audit, YARA
-rules, and stage trace — plus the raw tool-extracted evidence behind every
-claim.
+Analysis artifacts produced by RevAI against malware samples. The reports,
+audit, rules, traces, and evidence files available vary by run and by pipeline
+revision; use each run's manifest and evidence artifacts to establish what was
+actually analyzed and supplied to its report writer.
 
 ## Evidence contract
 
-Every case study ships the **raw tool-extracted evidence** in its `evidence/`
-folder (see [`scripted/darkside-ransomware/evidence/RAW-EVIDENCE.md`](scripted/darkside-ransomware/evidence/RAW-EVIDENCE.md) for an index example):
+Where an `evidence/` folder is present, its `RAW-EVIDENCE.md` index lists the
+artifacts actually copied for that run (see
+[`scripted/darkside-ransomware/evidence/RAW-EVIDENCE.md`](scripted/darkside-ransomware/evidence/RAW-EVIDENCE.md)
+for an example). Contents vary by case study and may include:
 
-- full uncapped tool outputs as structured JSON (`00-quick-scan-tools.json`,
+- tool outputs as structured JSON (`00-quick-scan-tools.json`,
   `deep-dive-01-tools-raw.json`, `deep-dive-02-signals.json`,
-  `deep-dive-03-oracle.json`, `deep-dive-agentic-history.json`, ...)
-- the complete audit trail (`audit.jsonl`, `pipeline-audit.json`)
+  `deep-dive-03-oracle.json`, `deep-dive-agentic-history.json`, ...; inspect the
+  run index to determine which outputs and coverage were retained
+- audit artifacts (`audit.jsonl`, `pipeline-audit.json`), when present
 - engine artifacts (`malcat-triage.json`, `intake-validation.json`,
   `source-decisions.json`, `doc-triage.json`, `function-recovery.json`)
 - human-readable extracts: `strings.txt`, `yara.txt`, `capa.txt`,
@@ -22,10 +25,29 @@ folder (see [`scripted/darkside-ransomware/evidence/RAW-EVIDENCE.md`](scripted/d
 - `RAW-EVIDENCE.md` — an index of exactly what was copied (and what was
   absent) for that run
 
-This lets reviewers verify every claim in a report against the actual
-extracted data, per the evidence-before-claims contract. Reports are
-published only after the sample passes the full quality gate (`all_green`
-+ `quality_green`).
+The report-input manifest identifies the files and hashes used by the report
+writer. A report appendix may contain selected or summarized evidence cards; it
+is not a complete or verbatim copy of the underlying tool output. Review claims
+against the corresponding run-bound artifacts and the recorded audit result.
+
+## Historical report limitation
+
+Some older generated reports contain stale external-intelligence metadata or
+family, actor, campaign, and geographic claims that are not supported by the
+retained run artifacts. RevAI supports optional VirusTotal/Hybrid Analysis
+lookups by sample hash; the per-run `ti-enrich.json` artifact determines whether
+that lookup was enabled and what each provider returned. These hash-only results
+are not a corpus search and do not independently prove family lineage or actor
+attribution. Treat any historical external-source claim as unverified unless
+the corresponding provider result is present in that case's evidence pack.
+
+Several archived Markdown reports and audit summaries have been editorially
+corrected to remove inaccurate corpus-retrieval and raw-output-completeness
+claims, and to report hash-lookup status from retained run evidence. Where
+present, `section-results-v3.json` remains the original recorded section output.
+The retained pipeline audit describes the original run; it does not certify
+editorially corrected Markdown. These archived edits are documentation cleanup,
+not a rerun or re-acceptance of those samples.
 
 ## Organization — grouped by pipeline mode
 

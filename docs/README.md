@@ -1,6 +1,6 @@
 # RevAI Documentation
 
-- [`architecture.md`](architecture.md) — System architecture, stage spine, Evidence Pack grounding (no RAG), HITL approval gate, depth gate (capability coverage), optional function-recovery stage.
+- [`architecture.md`](architecture.md) — System architecture, stage spine, run-bound Evidence Pack, HITL approval gate, depth gate (capability coverage), optional function-recovery stage.
 - [`FEATURES.md`](FEATURES.md) — full feature inventory: every feature with its env gate, stage, and produced artifact.
 - [`PREREQUISITES.md`](PREREQUISITES.md) — Ghidra, ghidrasql, CADRE PE Loader, Malcat (optional), LLM.
 - [`INSTALL.md`](INSTALL.md) — install dependencies on REMnux.
@@ -82,7 +82,7 @@ For the project overview, see the top-level [`README.md`](../README.md).
 Reverse-engineering procedure is a cited, versioned artifact the agent LOADS on
 demand, never prose it recalls. Six skills ship, including
 `report-evidence-methodology` for report writing and claim review. Each has a
-version, source provenance in `sources.jsonl`, and explicit scope limits.
-Internal knowledge-base paths are provenance, not public links; repository-derived
-material is labeled as such. See [OPERATE.md](OPERATE.md).
+version, maintainer-facing source provenance in `sources.jsonl`, and explicit
+scope limits. Runtime analysis loads the bundled procedure files; it does not
+query those source references. See [OPERATE.md](OPERATE.md).
 

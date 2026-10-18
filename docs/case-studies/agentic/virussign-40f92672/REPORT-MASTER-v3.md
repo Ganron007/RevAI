@@ -185,7 +185,7 @@ YARA scanning triggered 16 total rule matches, including the high-signal `delphi
 <!-- section: 10. Attribution | pass=2 | evidence=120c | cross_refs=True | llm_ok=True | runtime=24.31s -->
 
 # 10. Attribution
-RAG-driven correlation of the analyzed sample (SHA256: `353ab6827b750979ba12450e38e73669daa850445d28861f62d273492a32f68c`) against the 35,302-record analysis corpus yields the following attribution context, with no direct threat actor or campaign identifiers observed in static or dynamic analysis artifacts.
+No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin.
 
 | Attribution Attribute | Value | Evidence Citation |
 |------------------------|-------|-------------------|
@@ -194,7 +194,7 @@ RAG-driven correlation of the analyzed sample (SHA256: `353ab6827b750979ba12450e
 | Suspected Origin | Low-volume, likely opportunistic or small-scale targeted distribution, consistent with Delphi infostealer usage by multiple low-to-mid tier threat actors | yara, full sample scan, 16 matches; capa, 15 distinct capabilities |
 | Attribution Confidence | Low (no direct actor identifiers, no unique campaign TTPs) | cross-section:analysis_verdict, deep_dive_agentic confidence scoring, 50 |
 
-RAG retrieval (bge-m3, 35,302 records, top-3 per section) for the sample's family and capability profile returned no matches to named threat actor campaigns or exclusive tooling, indicating the sample is either a generic off-the-shelf Delphi infostealer or a lightly customized variant with no unique attribution markers. The sample exhibits core capabilities consistent with publicly documented Delphi infostealer families, including credential harvesting (capa, rule: credential-access) and post-exploitation functionality (capa, rule: delphi-post-exploit), with no observed lateral movement primitives (cross-section:13. Containment, Eradication, Recovery, no lateral movement indicators) or hardcoded C2 infrastructure (cross-section:6. Network Analysis, no C2 endpoints identified). The lack of runtime behavioral artifacts and limited IOC set further supports a low-distribution, likely unsophisticated threat actor profile, rather than a state-sponsored or organized cybercrime campaign.
+No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin. The sample exhibits core capabilities consistent with publicly documented Delphi infostealer families, including credential harvesting (capa, rule: credential-access) and post-exploitation functionality (capa, rule: delphi-post-exploit), with no observed lateral movement primitives (cross-section:13. Containment, Eradication, Recovery, no lateral movement indicators) or hardcoded C2 infrastructure (cross-section:6. Network Analysis, no C2 endpoints identified). The lack of runtime behavioral artifacts and limited IOC set further supports a low-distribution, likely unsophisticated threat actor profile, rather than a state-sponsored or organized cybercrime campaign.
 
 ---
 
@@ -274,7 +274,7 @@ The following prioritized recommendations apply to the analyzed Delphi-compiled 
 
 ## 15. Appendices
 
-Raw tool output (signal-preserving, not summarized). Each tool's evidence card is preserved verbatim — for learning and transparency the LLM never rewrites tool output.
+This historical report does not reproduce raw tool output. Consult the case evidence pack for retained artifacts; the report-input manifest and evidence index, where present, identify what the writer received.
 
 
 ---
@@ -287,10 +287,10 @@ Raw tool output (signal-preserving, not summarized). Each tool's evidence card i
 - **generated_at**: 2026-08-06T01:57:31.835550+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: performed (SHA-256 lookup; data returned by VirusTotal, Hybrid Analysis)
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---

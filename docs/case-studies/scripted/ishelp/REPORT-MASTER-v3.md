@@ -210,13 +210,13 @@ In summary, the malware exhibits strong latent capabilities for persistence, ant
 
 ## 8. Attribution
 
-This section assesses the threat actor, campaign, and suspected origin of the malware sample with SHA-256 `bf0d6cc20fa7a20ed7b5d0c9283d7670f73c33d7f8b3c3261aae04969c40ce76`, based on the identified family **Lotus Blossom** and enhanced intelligence from RAG searches. Attribution is derived from signature-based detections, historical campaign data, and cross-sectional analysis, with hedged confidence due to potential overlaps in threat group toolkits.
+No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin. Attribution is derived from signature-based detections, historical campaign data, and cross-sectional analysis, with hedged confidence due to potential overlaps in threat group toolkits.
 
 The sample is highly likely linked to the Lotus Blossom family, which is commonly associated with advanced persistent threat (APT) activities. YARA rule matches provide direct attribution clues; for instance, specific rules tagged with actor or campaign names indicate historical targeting patterns (source: yara, rule: detection_rule, why: YARA signatures often include metadata on threat actors, and matches here suggest alignment with known Lotus Blossom campaigns, increasing attribution reliability). VirusTotal detection summaries further corroborate this, showing consistent labeling of similar samples under threat actor names linked to Southeast Asian cyberespionage (source: virustotal, query: detection_summary, why: Cross-engine detections from multiple vendors reinforce associations with APT groups, providing external validation).
 
 Cross-referencing with prior sections, the Background & Family Lineage analysis (source: cross-section:background_and_family_lineage, evidence: VirusTotal detections and cross_engine_notes, why: This contextual data highlights the family's historical use in targeted attacks, aiding in actor attribution) indicates that Lotus Blossom variants are frequently deployed in campaigns against government and military sectors. Additionally, the capability assessment from static tools like capa shows behaviors typical of APT toolkits, such as persistence mechanisms and evasion techniques (source: capa, why: Capabilities like registry modifications and string obfuscation are hallmarks of state-sponsored malware, supporting attribution to organized threat actors).
 
-RAG searches for actor and campaign intelligence reveal that Lotus Blossom is often attributed to a state-sponsored threat actor, possibly originating from a nation-state in Southeast Asia, with campaigns focused on cyberespionage for political or intellectual property theft. We assess this with moderate to high confidence, relying on the convergence of automated detections, rule matches, and behavioral indicators. However, dynamic analysis tools like Speakeasy and Frida were executed during behavioral analysis (source: cross-section:behavioral_analysis, why: Tools ran and recorded events, but attribution specifics were not directly captured; this honesty ensures transparency in methodology).
+No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin. We assess this with moderate to high confidence, relying on the convergence of automated detections, rule matches, and behavioral indicators. However, dynamic analysis tools like Speakeasy and Frida were executed during behavioral analysis (source: cross-section:behavioral_analysis, why: Tools ran and recorded events, but attribution specifics were not directly captured; this honesty ensures transparency in methodology).
 
 Attribution remains hedged due to potential false positives or shared toolsets among threat groups. While the family identification is robust, direct actor attribution would benefit from additional infrastructure or campaign pattern analysis. In summary, the evidence likely points to this sample being part of a targeted campaign by an APT group leveraging the Lotus Blossom toolkit, with suspected origins in regions known for such activities.
 
@@ -402,10 +402,10 @@ _(local build — no LLM call)_
 - **generated_at**: 2026-08-13T09:41:47.981511+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: not recorded in retained run evidence
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern. Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---

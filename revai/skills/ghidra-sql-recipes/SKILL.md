@@ -5,11 +5,9 @@ does_not_cover: [sqlite dialect reference, Ghidra scripting in Java or Python, h
 
 # Ghidra / IDA SQL recipes
 
-**Provenance.** This skill is derived from *this repository's own* SQL usage —
-`ghidra_sql_client.py` and the deep-dive tool implementations — not from the
-internal knowledge base. It therefore carries **no external citations**: the
-sources are our code, and the honest statement is that the procedure is
-maintained here rather than imported from elsewhere.
+**Source note.** This procedure is derived from this repository's SQL usage in
+`ghidra_sql_client.py` and the deep-dive tools. Its source manifest records the
+repository files; the runtime loads this bundled procedure file directly.
 
 ## When to load
 

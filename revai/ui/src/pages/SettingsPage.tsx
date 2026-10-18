@@ -80,7 +80,6 @@ export default function SettingsPage() {
         llm_model: cfg.llm_model || '',
         llm_api_url: cfg.llm_api_url || '',
         llm_reasoning: cfg.llm_reasoning || '',
-        use_rag: false,
         // Optional dynamic companion (WinRE) — non-secret; key is a path only.
         winre_enabled: Boolean(cfg.winre_enabled),
         flare_host: cfg.flare_host || '',
@@ -173,7 +172,7 @@ export default function SettingsPage() {
               />
             </Field>
             <Muted>
-              Product mode: {cfg.product_mode || 'LLM-only · static RE · LangGraph orch'} · use_rag=false
+              Product mode: {cfg.product_mode || 'LLM-only · static RE · LangGraph orch'}
             </Muted>
           </div>
         </Panel>

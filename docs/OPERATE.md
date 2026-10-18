@@ -253,10 +253,9 @@ Load one with the `load_skill` tool; the deep-dive prompt carries a one-line
 index of what exists. Each skill declares what it **does not** cover, so "the
 skill was silent" is distinguishable from "no source existed".
 
-**Attribution.** Each skill ships `sources.jsonl` with its source provenance.
-Internal knowledge-base paths are auditable metadata, not public links. Skills
-built from this repository identify their repository source rather than claiming
-external references.
+**Source metadata.** Each skill ships `sources.jsonl` for maintainer-facing
+attribution. The runtime loads the bundled `SKILL.md` procedure and does not
+query the referenced source files during analysis.
 
 ### Depth mode (opt-in, post-pipeline)
 

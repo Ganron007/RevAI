@@ -248,7 +248,6 @@ Key factors considered for attribution are summarized in the table below:
 | Programming Language | Possible Delphi base, indicated by YARA rules like Borland_Delphi_30_additional (source: yara, rule: Borland_Delphi_30_additional) | Delphi malware is associated with multiple threat actors, including those from Eastern Europe, but this alone is insufficient for attribution. | Low |
 | Network Indicators | No URLs, IPs, or domains identified in network analysis (source: cross-section:Network_Analysis_&_C2) | Lack of C2 indicators prevents mapping to known infrastructure or campaigns, reducing attribution leverage. | High (of absence) |
 | Behavioral Capabilities | Anti-analysis techniques and persistence mechanisms observed, such as auto-start entries (source: cross-section:Capability_Assessment) | Such capabilities are common in backdoors but not unique to specific actors; they could indicate a broad cybercrime toolkit. | Medium |
-| Campaign Intelligence | No specific campaign matches found via RAG search for actor and campaign intel. | Without external threat intelligence, attribution remains speculative and cannot be tied to known campaigns. | Low |
 
 ## Confidence and Inferences
 
@@ -425,10 +424,10 @@ _(local build — no LLM call)_
 - **generated_at**: 2026-08-09T22:02:25.051478+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: performed (SHA-256 lookup; data returned by VirusTotal, Hybrid Analysis)
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---

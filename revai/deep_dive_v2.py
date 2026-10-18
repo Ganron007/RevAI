@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-deep_dive_v2.py — SQL-first deep dive + all tools + RAG + evidence pack (v3).
+deep_dive_v2.py — SQL-first deep dive + all tools + evidence pack (v3).
 
 Prereq: intake_v2 completed for sha256.
 

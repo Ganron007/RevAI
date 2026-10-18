@@ -9,26 +9,26 @@ the model paraphrases it, the paraphrase drifts, and nothing can tell you.
 Here methodology is a structured artifact with a version and cited sources, so a
 gate can check it and a report can cite it.
 
-Design principles (adopted from the internal KB navigation layer, which solved the
-same problem at 15k documents / 645k chunks):
+The runtime loads these bundled procedure files directly. `sources.jsonl` records
+maintainer-facing source provenance; the runtime does not search or load those
+referenced source files.
+
+Design principles:
 
 1. **Methodology is not evidence.** A skill is loaded from a file, never recalled.
    The agent cannot get the procedure without reading the file.
 2. **Progressive disclosure.** A one-line index goes in every prompt; the full
    skill body is fetched on demand. This replaces the anti-pattern of shipping the
    whole ghidrasql schema dump in every prompt.
-3. **Provenance always.** Each skill ships `sources.jsonl` — the chunks it was
-   extracted from, with chunk_id + rel_path + line range. See the attribution note
-   below.
+3. **Provenance always.** Each skill ships `sources.jsonl` with source references
+   for maintainers. It is metadata, not a runtime corpus or lookup mechanism.
 4. **Coverage accounting.** Each skill declares what it does NOT cover, so "the
    skill was silent" is distinguishable from "no source existed".
 
-ATTRIBUTION NOTE. The source knowledge base is internal and this repo is public.
-Per the repo rule, material used here is copied in and never referenced. A
-citation is therefore PROVENANCE METADATA: an operator with KB access can re-verify
-every range, and the extraction is auditable, but the cited path does not exist in
-this repository and must never be presented as a resolvable link. Every skill
-header states this so no reader mistakes a citation for a reference.
+SOURCE NOTE. The procedure text shipped in each `SKILL.md` is what the runtime
+loads. `sources.jsonl` preserves attribution for maintainers; its referenced
+source files are not loaded or searched during analysis and are not sample
+evidence.
 """
 from __future__ import annotations
 
@@ -209,11 +209,11 @@ def load_skill(name: str) -> dict:
         "body": body,
         "sources": sources,
         "attribution": (
-            "Sources are repository files recorded as provenance metadata."
+            "Source references are provenance metadata; runtime loads this bundled skill text."
             if sources and all(item.get("source_type") == "repository"
                                for item in sources)
-            else "Sources are internal KB citations held as provenance metadata. "
-                 "The paths are not resolvable in this public repository."),
+            else "Source references are provenance metadata only. Runtime loads the bundled "
+                 "skill text and does not load or search the referenced source files."),
     }
 
 
@@ -229,7 +229,7 @@ def skill_citation(name: str) -> str:
         return ""
     n = len(s["sources"])
     return (f"{s['name']} skill v{s['version']} "
-            f"({n} cited source{'s' if n != 1 else ''}; provenance internal)")
+            f"({n} cited source{'s' if n != 1 else ''}; provenance metadata)")
 
 
 def report_methodology_block(scope: str | list[str] | None = None) -> str:

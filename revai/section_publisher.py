@@ -1,17 +1,16 @@
-"""section_publisher.py — Map-Reduce report generation.
+"""Section-scoped report generation from run-bound evidence.
 
-Section-based Map-Reduce pattern:
-  - MAP:    each section gets a focused LLM call with filtered evidence + targeted RAG
-  - REDUCE: local Python concatenates section outputs into the final REPORT-MASTER
-
-Why this is the right architecture for long reports:
-  1. Each LLM call is small (1-3K chars input) — no JSON parse errors
-  2. Each section is independently debuggable, re-runnable, parallelizable
-  3. RAG is targeted per section (better recall than a single mega-search)
-  4. HITL can interrupt between sections (analyst reviews before continuing)
-  5. Tool output is preserved verbatim in appendices (for learning)
-  6. The actual signal (tool output + RAG citations) is never lost in a summary
+The publisher routes run-bound evidence by report topic, asks the configured
+model to interpret it, and assembles the returned sections locally. It does not
+perform lookup itself; an upstream optional VirusTotal/Hybrid Analysis hash-only
+result may be supplied as run-bound evidence. Report stages do not query a
+malware-family or campaign-intelligence corpus. The deep-dive agent has a
+separate offline Windows API reference lookup; it is not report-stage threat
+intelligence or sample-behavior evidence.
+The input manifest identifies source artifacts and hashes; appendices contain
+selected evidence cards rather than complete raw tool output.
 """
+import hashlib
 import json
 import os
 import re
@@ -50,6 +49,7 @@ from v2_lib import (
     _sec_attack_evidence,
     _sec_family_evidence,
     _sec_attribution_evidence,
+    format_ti_hash_enrichment_evidence,
     _sec_iocs_evidence,
     _sec_detection_evidence,
     _sec_containment_evidence,
@@ -208,11 +208,56 @@ def _dynamic_status_sentence(sha: str) -> str:
         return ""
 
 
+def _persist_llm_call(sha: str, mode: str | None, stage: str, section: str,
+                      prompt: str, *, response: dict | None = None,
+                      error: str | None = None) -> dict:
+    """Persist exact LLM input and raw output so every generated section is auditable."""
+    if mode is None:
+        try:
+            mode = (require_execution_context(sha, stage="report_llm_call") or {}).get("mode")
+        except Exception:
+            mode = None
+    root = case_dir(sha, mode) if mode else case_dir(sha)
+    call_dir = root / "correlate" / "llm-calls"
+    call_dir.mkdir(parents=True, exist_ok=True)
+    slug = re.sub(r"[^a-z0-9]+", "-", section.lower()).strip("-") or "section"
+    stem = f"{stage}-{slug}"
+    prompt_path = call_dir / f"{stem}.prompt.txt"
+    response_path = call_dir / f"{stem}.response.json"
+    metadata_path = call_dir / f"{stem}.metadata.json"
+
+    def write_atomic(path: Path, value: str) -> None:
+        temporary = path.with_name(path.name + ".tmp")
+        temporary.write_text(value, encoding="utf-8")
+        temporary.replace(path)
+
+    prompt_bytes = prompt.encode("utf-8")
+    write_atomic(prompt_path, prompt)
+    raw_response = json.dumps(response, ensure_ascii=False, indent=2, default=str) \
+        if response is not None else json.dumps({"error": error or "no response"}, indent=2)
+    write_atomic(response_path, raw_response)
+    metadata = {
+        "sha256": sha,
+        "analysis_mode": mode,
+        "stage": stage,
+        "section": section,
+        "prompt_path": str(prompt_path.relative_to(root)).replace("\\", "/"),
+        "prompt_sha256": hashlib.sha256(prompt_bytes).hexdigest(),
+        "prompt_chars": len(prompt),
+        "response_path": str(response_path.relative_to(root)).replace("\\", "/"),
+        "response_sha256": hashlib.sha256(raw_response.encode("utf-8")).hexdigest(),
+        "response_chars": len(raw_response),
+        "error": error,
+    }
+    write_atomic(metadata_path, json.dumps(metadata, ensure_ascii=False, indent=2) + "\n")
+    return metadata
+
+
 def _run_one_section(section_name: str, sha: str, tools_results: dict,
                     prior_summaries: dict,
                     pass1_results: list = None,
                     pass_num: int = 1) -> dict:
-    """Run one section: gather evidence + retrieve RAG + call LLM + return verdict.
+    """Run one section: gather run-bound evidence, call LLM and record the exchange.
 
     Pass 1 (pass_num=1): no cross-section context (parallel-friendly).
     Pass 2 (pass_num=2): includes the pass-1 results from all other sections
@@ -223,7 +268,7 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
     """
     if section_name not in REPORT_SECTION_SPECS:
         return {"name": section_name, "error": f"unknown section: {section_name}"}
-    description, query_terms, gather_fn, requires_llm = REPORT_SECTION_SPECS[section_name]
+    description, gather_fn, requires_llm = REPORT_SECTION_SPECS[section_name]
     result: dict[str, Any] = {
         "name": section_name,
         "evidence_chars": 0,
@@ -280,9 +325,22 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
         result["markdown"] = md
         result["llm_ok"] = True
         return result
+    response = None
+    call_record = None
+    mode = (tools_results.get("_execution_context") or {}).get("mode")
     try:
         resp = llm_judge(prompt)
+        response = resp
+        choice = (resp.get("choices") or [{}])[0]
+        if choice.get("finish_reason") not in (None, "stop"):
+            raise ValueError(
+                f"incomplete section response (finish_reason={choice.get('finish_reason')})"
+            )
         content = resp["choices"][0]["message"]["content"]
+        if not isinstance(content, str) or not content.strip():
+            raise ValueError("section response has no textual content")
+        call_record = _persist_llm_call(
+            sha, mode, f"master-p{pass_num}", section_name, prompt, response=resp)
         v = normalize_llm_json(content)
         result["markdown"] = ensure_section_heading(
             normalize_llm_content(v) or content, section_name
@@ -298,21 +356,30 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
         # Audit: capture response-side model + reasoning tokens
         result["llm_audit"] = llm_call_metadata(resp)
         result["llm_audit"]["request_model"] = get_llm_model()
+        result["llm_call"] = call_record
         result["llm_ok"] = True
     except Exception as e:
+        if call_record is None:
+            call_record = _persist_llm_call(
+                sha, mode, f"master-p{pass_num}", section_name, prompt,
+                response=response, error=f"{type(e).__name__}: {e}")
+        result["llm_call"] = call_record
         result["error"] = f"llm: {e}"
         result["markdown"] = f"## {section_name}\n\n_(LLM call failed: {e})_\n"
     return result
 
 
 def _build_appendices(tools_results: dict) -> str:
-    """Section 15: dump raw tool output for transparency + learning."""
+    """Section 15: show selected evidence cards and identify their source manifest."""
+    manifest_sha = str(tools_results.get("_report_input_manifest_sha256") or "not available")
     lines = ["## 15. Appendices\n",
-             "Raw tool output (signal-preserving, not summarized). "
-             "Each tool's evidence card is preserved verbatim — for learning and "
-             "transparency the LLM never rewrites tool output.\n"]
+             "Selected signal-prioritized evidence cards are shown below. They are "
+             "not complete raw tool output. The report-input manifest identifies "
+             "the source artifacts and their hashes; consult those artifacts for "
+             "the underlying data where retained. See `publish/report-input-manifest.json` "
+             f"(SHA-256 `{manifest_sha}`) for the exact report inputs.\n"]
     cards = [
-        ("A1. MalCat evidence card (all 12 views, anomaly locations, decompilations, constants)",
+        ("A1. Selected MalCat evidence card (anomaly locations, decompilations, constants)",
          tools_results.get("malcat_card")),
         ("A2. .NET evidence card (language, runtime, P/Invoke, IL excerpt)",
          tools_results.get("dotnet_card")),
@@ -320,9 +387,9 @@ def _build_appendices(tools_results: dict) -> str:
          tools_results.get("r2_card")),
         ("A4. YARA matches (rule names + categories)",
          tools_results.get("yara_card")),
-        ("A5. capa rules (39 total, ATT&CK groupings)",
+        ("A5. Selected capa rules and ATT&CK groupings",
          tools_results.get("capa_card")),
-        ("A6. FLOSS strings (categorized IOCs: urls, ips, registry, mutex, apis, ...)",
+        ("A6. Selected FLOSS strings and IOC categories",
          tools_results.get("floss_card")),
         ("A7. UPX unpack result",
          tools_results.get("upx_card")),
@@ -342,17 +409,25 @@ def _build_appendices(tools_results: dict) -> str:
     # MalCat structured report (replaces unreadable raw JSON dump)
     mc = tools_results.get("malcat") or {}
     if mc and isinstance(mc, dict) and not mc.get("error"):
-        lines.append("### A11. MalCat structured report\n")
+        lines.append("### A11. Selected structured MalCat evidence\n")
         lines.append(format_malcat_evidence(mc))
         lines.append("")
     # Speakeasy + frida behavioral (compact JSON)
     deep = tools_results.get("deep") or {}
     behavioral = deep.get("behavioral") or {}
     if behavioral:
-        lines.append("### A12. Behavioral (Speakeasy + Frida probe)\n")
+        lines.append("### A12. Selected behavioral summary (Speakeasy + Frida probe)\n")
         lines.append("```json")
-        lines.append(json.dumps(behavioral, indent=2, default=str)[:6000])
+        behavioral_text = json.dumps(behavioral, indent=2, default=str)
+        lines.append(behavioral_text[:6000])
+        if len(behavioral_text) > 6000:
+            lines.append("[Excerpt truncated at 6,000 characters; see the run-bound source artifacts.] ")
         lines.append("```\n")
+    ti_result = tools_results.get("ti_enrich")
+    if isinstance(ti_result, dict):
+        lines.append("### A13. Optional external hash-enrichment record\n")
+        lines.append(format_ti_hash_enrichment_evidence(ti_result))
+        lines.append("")
     return "\n".join(lines)
 
 
@@ -360,18 +435,47 @@ def _build_signoff(tools_results: dict, sha: str) -> str:
     """Section 16: metadata + audit."""
     now = datetime.now(timezone.utc).isoformat()
     verdict = tools_results.get("verdict") or {}
+    ti_result = tools_results.get("ti_enrich")
+    if not isinstance(ti_result, dict):
+        ti_status = "status not recorded in supplied run inputs"
+    elif ti_result.get("enabled") is not True:
+        ti_status = "not performed (disabled in this run)"
+    else:
+        provider_rows = ti_result.get("providers")
+        provider_rows = provider_rows if isinstance(provider_rows, dict) else {}
+        states = []
+        for provider, label in (("virustotal", "VirusTotal"),
+                                ("hybrid_analysis", "Hybrid Analysis")):
+            row = provider_rows.get(provider)
+            if not isinstance(row, dict):
+                continue
+            error = str(row.get("error") or "")
+            if row.get("ok") is True:
+                state = "result returned"
+            elif error.endswith("API_KEY not set"):
+                state = "not queried (key not configured)"
+            elif error == "no_prior_reports":
+                state = "queried; no prior report"
+            elif error:
+                state = "queried; request failed"
+            else:
+                state = "result unavailable"
+            states.append(f"{label}: {state}")
+        ti_status = ("hash lookup enabled; " + "; ".join(states)
+                     if states else "enabled, but provider outcomes are not recorded")
     lines = [
         "## 16. Author + Sign-off\n",
         f"- **sha256**: `{sha}`",
         f"- **generated_at**: {now}",
         f"- **verdict_source**: {verdict.get('source', '?')}",
         f"- **model**: configured-llm",
-        f"- **RAG**: bge-m3 (35,302 records, top-3 per section)",
-        f"- **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)",
-        "- **analyst**: (your name)",
+        f"- **optional external hash lookup**: {ti_status}",
+        "- **evidence sources**: run-bound tool artifacts listed in the report-input manifest",
+        "- **analyst**: not recorded",
         "",
-        "_This report was generated via section-based Map-Reduce pattern. "
-        "Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._",
+        "_The report was generated from section-routed evidence and configured-LLM "
+        "interpretation. Input size and completion status are recorded per call; "
+        "the claim-support gate determines whether cited sources establish each claim._",
     ]
     return "\n".join(lines)
 
@@ -576,14 +680,13 @@ def _build_ioc_section(sha: str, tools_results: dict | None = None) -> str:
             continue
         total += len(shown)
         lines.append(f"**{label}**")
-        for v in shown[:40]:
+        for v in shown:
             lines.append(f"- `{v}`")
-        if len(shown) > 40:
-            lines.append(f"- ... and {len(shown) - 40} more (see `iocs.json`)")
         lines.append("")
 
     out += ["Every indicator below was produced by the analysis engines named in "
-            "the attribution line and is reproduced verbatim from `iocs.json`. "
+            "the attribution line and rendered from `iocs.json`; non-printable "
+            "padding is removed for readability and stored defanging is kept. "
             "Nothing in this section is inferred, reconstructed, or supplied "
             "from general knowledge of what malware of this kind usually "
             "does.", ""]
@@ -749,7 +852,7 @@ def _technical_section_prompt(name: str, description: str, evidence: str,
 def _generate_technical_section(
     name: str, blocks: list[tuple[str, str]], header: str, sha: str,
     prior_summaries: dict[str, str] | None = None,
-    provenance_block_text: str = "") -> dict[str, Any]:
+    provenance_block_text: str = "", mode: str | None = None) -> dict[str, Any]:
     """Generate ONE technical section. Never raises: a failure is recorded."""
     description = TECHNICAL_SECTION_DESCRIPTIONS.get(name, name)
     result: dict[str, Any] = {"name": name, "llm_ok": False, "error": None,
@@ -788,9 +891,22 @@ def _generate_technical_section(
     result["evidence_chars"] = len(evidence)
     result["prompt_chars"] = len(prompt)
 
+    response = None
+    call_record = None
     try:
         resp = llm_judge(prompt)
+        response = resp
+        choice = (resp.get("choices") or [{}])[0]
+        if choice.get("finish_reason") not in (None, "stop"):
+            raise ValueError(
+                f"incomplete technical section response "
+                f"(finish_reason={choice.get('finish_reason')})"
+            )
         content = resp["choices"][0]["message"]["content"]
+        if not isinstance(content, str) or not content.strip():
+            raise ValueError("technical section response has no textual content")
+        call_record = _persist_llm_call(
+            sha, mode, "technical-p1", name, prompt, response=resp)
         v = normalize_llm_json(content)
         result["markdown"] = ensure_section_heading(
             normalize_llm_content(v) or content, name
@@ -805,8 +921,14 @@ def _generate_technical_section(
         if meta:
             meta["request_model"] = get_llm_model()
             result["llm_audit"] = meta
+        result["llm_call"] = call_record
         result["llm_ok"] = True
     except Exception as exc:                      # noqa: BLE001
+        if call_record is None:
+            call_record = _persist_llm_call(
+                sha, mode, "technical-p1", name, prompt, response=response,
+                error=f"{type(exc).__name__}: {exc}")
+        result["llm_call"] = call_record
         result["error"] = f"llm: {exc}"
         result["markdown"] = f"## {name}\n\n_(section generation failed: {exc})_\n"
     return result
@@ -822,7 +944,8 @@ def _technical_sectionwise_enabled() -> bool:
 def generate_technical_sectionwise(
     sha: str, technical_evidence: str, *, parallel: bool = True,
     max_workers: int = 6,
-    provenance_block_text: str = "") -> tuple[list[dict[str, Any]], str]:
+    provenance_block_text: str = "", mode: str | None = None
+    ) -> tuple[list[dict[str, Any]], str]:
     """Generate all 13 technical sections independently, then assemble.
 
     Returns (results, markdown). A section that fails is recorded with
@@ -843,7 +966,8 @@ def generate_technical_sectionwise(
         with ThreadPoolExecutor(max_workers=max_workers) as pool:
             futures = {
                 pool.submit(_generate_technical_section, name, blocks, header,
-                            sha, provenance_block_text=provenance_block_text): name
+                            sha, provenance_block_text=provenance_block_text,
+                            mode=mode): name
                 for name in TECHNICAL_REPORT_SECTIONS
             }
             for fut in futures:
@@ -853,7 +977,8 @@ def generate_technical_sectionwise(
             results.append(
                 _generate_technical_section(
                     name, blocks, header, sha,
-                    provenance_block_text=provenance_block_text))
+                        provenance_block_text=provenance_block_text,
+                        mode=mode))
 
     order = {n: i for i, n in enumerate(TECHNICAL_REPORT_SECTIONS)}
     results.sort(key=lambda r: order.get(r.get("name", ""), 999))
@@ -870,8 +995,8 @@ def generate_technical_sectionwise(
 def _section_invocation_counts(pass1_results: list, pass2_results: list) -> dict[str, int]:
     """Count LLM section generations separately from local section builders."""
     def _requires_llm(result: dict) -> bool:
-        spec = REPORT_SECTION_SPECS.get(result.get("name"), (None, None, None, False))
-        return bool(spec[3])
+        spec = REPORT_SECTION_SPECS.get(result.get("name"), (None, None, False))
+        return bool(spec[2])
 
     return {
         "pass1_llm_generation_calls": sum(1 for result in pass1_results if _requires_llm(result)),
@@ -951,7 +1076,7 @@ def run_section_based_publish(sha: str, tools_results: dict,
         # Only re-run sections that required LLM (skip 15/16 = appendices/signoff)
         llm_sections = [
             name for name in REPORT_MASTER_SECTIONS
-            if REPORT_SECTION_SPECS.get(name, (None, None, None, False))[3]
+            if REPORT_SECTION_SPECS.get(name, (None, None, False))[2]
         ]
         if parallel:
             with ThreadPoolExecutor(max_workers=max_workers) as pool:
@@ -1152,7 +1277,8 @@ def run_technical_publish(sha: str, tools_results: dict) -> dict:
             tech_results, tech_md_built = generate_technical_sectionwise(
                 sha, technical_evidence,
                 provenance_block_text=str(
-                    tools_results.get("_report_provenance_block") or ""))
+                    tools_results.get("_report_provenance_block") or ""),
+                mode=(tools_results.get("_execution_context") or {}).get("mode"))
             failed = [r["name"] for r in tech_results if not r.get("llm_ok")]
             print(
                 f"  [technical] {len(tech_results) - len(failed)}/"
@@ -1186,9 +1312,9 @@ def run_technical_publish(sha: str, tools_results: dict) -> dict:
                                    tools_results)
 
     sections = "\n".join(f"- {s}" for s in TECHNICAL_REPORT_SECTIONS)
-    # NOTE: no scorecard — RevAI does not use the legacy run_scorecard /
-    # RAG verification harness. Tool I/O truth is enforced by
-    # audit_pipeline.py (tools_all_ok, engine_citation_ok, ...).
+    # No legacy run_scorecard is used. The completed report set is checked by
+    # the source-bound claim-support gate during quality aggregation; tool I/O
+    # truth is checked by audit_pipeline.py.
     prompt = f"""# Technical Malware Analysis Report v3
 
 You MUST produce markdown with ALL of these level-2 headings (exact titles, ASCII only):
@@ -1236,9 +1362,21 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
     # 2026-08-08): the single-giant-call technical assembly occasionally
     # truncates (only section 1 written, rest missing/stub). Retry ONCE with a
     # short completion nudge before falling back.
+    mono_call_num = 1
     try:
+        mono_prompt = prompt
         resp = llm_judge(prompt)
+        _persist_llm_call(
+            sha, (tools_results.get("_execution_context") or {}).get("mode"),
+            "technical-monolithic-1", "full-report", mono_prompt, response=resp)
+        if (resp.get("choices") or [{}])[0].get("finish_reason") not in (None, "stop"):
+            raise ValueError(
+                "incomplete technical report response "
+                f"(finish_reason={(resp.get('choices') or [{}])[0].get('finish_reason')})"
+            )
         content = resp["choices"][0]["message"]["content"]
+        if not isinstance(content, str) or not content.strip():
+            raise ValueError("technical report response has no textual content")
         technical_report = normalize_llm_json(content)
         meta = llm_call_metadata(resp)
         meta["request_model"] = get_llm_model()
@@ -1267,8 +1405,9 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
                 f"(missing {len(_miss1)} sections); retrying once with nudge",
                 flush=True,
             )
+            retry_response = None
             try:
-                resp2 = llm_judge(
+                retry_prompt = (
                     prompt
                     + "\n\nYour previous output was incomplete: it is missing "
                     "these sections: "
@@ -1276,6 +1415,17 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
                     + ". Complete the FULL report with every required heading; "
                     "do not truncate. Return the complete markdown."
                 )
+                resp2 = llm_judge(retry_prompt)
+                retry_response = resp2
+                _persist_llm_call(
+                    sha, (tools_results.get("_execution_context") or {}).get("mode"),
+                    "technical-monolithic-2", "full-report", retry_prompt,
+                    response=resp2)
+                if (resp2.get("choices") or [{}])[0].get("finish_reason") not in (None, "stop"):
+                    raise ValueError(
+                        "incomplete technical retry response "
+                        f"(finish_reason={(resp2.get('choices') or [{}])[0].get('finish_reason')})"
+                    )
                 content2 = resp2["choices"][0]["message"]["content"]
                 technical_report2 = normalize_llm_json(content2)
                 _md2 = str(technical_report2.get("markdown") or "")
@@ -1287,6 +1437,11 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
                         or get_llm_model()
                     )
             except Exception as retry_exc:
+                if retry_response is None and "retry_prompt" in locals():
+                    _persist_llm_call(
+                        sha, (tools_results.get("_execution_context") or {}).get("mode"),
+                        "technical-monolithic-2", "full-report", retry_prompt,
+                        error=f"{type(retry_exc).__name__}: {retry_exc}")
                 # Keep the first response. It is partial but real, and the
                 # missing sections are already reported downstream by
                 # missing_sections(), so nothing is hidden by keeping it.
@@ -1300,6 +1455,11 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
                 technical_report["technical_assembly_retry_failed"] = str(
                     retry_exc)[:200]
     except Exception as e:
+        if "mono_prompt" in locals() and "resp" not in locals():
+            _persist_llm_call(
+                sha, (tools_results.get("_execution_context") or {}).get("mode"),
+                f"technical-monolithic-{mono_call_num}", "full-report", mono_prompt,
+                error=f"{type(e).__name__}: {e}")
         technical_report = {
             "title": f"Technical Report {sha[:12]}",
             "markdown": (
@@ -1469,6 +1629,8 @@ if __name__ == "__main__":
             "yara_generation": "rule.yara.json",
             "dynamic_pack": "deep_dive/02-dynamic-pack.json",
             "dynamic_status": "dynamic-analysis-status.json",
+            "iocs": "iocs.json",
+            "ti_enrich": "quick_scan/ti-enrich.json",
         },
     }
     session_path = Path(f"/opt/samples/sessions/{sha}.json")
@@ -1489,6 +1651,8 @@ if __name__ == "__main__":
     tools_results["verdict"] = verdict
     tools_results["deep"] = deep
     tools_results["yara_meta"] = _input("rule.yara.json", required=True)
+    tools_results["iocs"] = _input("iocs.json", required=True)
+    tools_results["ti_enrich"] = _input("quick_scan/ti-enrich.json")
     tools_results["_dynamic_status"] = _input(
         "dynamic-analysis-status.json", required=True)
     tools_results["dynamic_pack"] = _input(

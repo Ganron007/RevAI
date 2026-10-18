@@ -5,8 +5,10 @@ does_not_cover: [sample-specific conclusions, dynamic collector operation, exact
 
 # Evidence-first malware reporting methodology
 
-This skill is derived from the repository report-quality and claim-entailment gates; it has no external citations. It governs how observations become
-claims; it is not evidence about the sample and must never be cited as a finding.
+This skill is derived from the repository report-quality and claim-entailment
+gates. It governs how observations become claims; it is not evidence about the
+sample and must never be cited as a finding. The runtime loads this bundled
+procedure file; source metadata is not queried during analysis.
 
 ## Bind every claim to the run
 

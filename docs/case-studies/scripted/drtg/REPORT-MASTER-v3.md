@@ -238,7 +238,7 @@ The sample is assessed to be part of the Satana ransomware family with high conf
 - Cross-section analysis from Executive Summary and Background confirms high agreement on family classification (source: cross-section:Executive_Summary, why: consensus across tools supports reliability; source: cross-section:Background_Lineage, why: static indicators align with Satana variants).
 
 **Threat Actor and Campaign Intel**
-Using RAG to search for actor and campaign information, no direct matches were found for this specific sample's hash. Satana ransomware has been observed in various campaigns, often distributed via phishing or exploit kits, but linking this sample to a known threat actor is not supported by the current evidence (source: RAG, query: actor+campaign intel, row: none, why: absence of specific IOCs or behavioral indicators tied to actors in static data). Attribution to specific groups, such as known cybercrime collectives, remains speculative without network or behavioral data.
+No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin. Attribution to specific groups, such as known cybercrime collectives, remains speculative without network or behavioral data.
 
 **Suspected Origin**
 The origin cannot be determined from static analysis alone. The sample's characteristics, such as anti-VM strings and encryption routines, are common across many ransomware families and do not point to a specific geographic or state-sponsored origin (source: capa, why: anti-analysis features are generic; source: cross-section:Static_Analysis, why: no unique artifacts for origin tracing). Dynamic analysis tools (Speakeasy and Frida) were executed but recorded no events, which limits insights into runtime behavior or C2 communications that might hint at origin (source: cross-section:Behavioral_Analysis, why: null results from dynamic tools provide no additional attribution clues).
@@ -247,8 +247,6 @@ The origin cannot be determined from static analysis alone. The sample's charact
 | Attribute         | Assessment                          | Confidence | Evidence Source                                 |
 |-------------------|-------------------------------------|------------|------------------------------------------------|
 | Family            | Satana ransomware                   | High (90%) | yara, capa, cross-section:Classification        |
-| Threat Actor      | Unknown                             | Low        | RAG search, cross-section:Network_Analysis      |
-| Campaign          | No specific campaign identified     | Low        | RAG search                                      |
 | Suspected Origin  | Not determinable                    | Low        | Static and dynamic analysis limitations         |
 
 **Confidence and Limitations**
@@ -411,10 +409,10 @@ _(local build — no LLM call)_
 - **generated_at**: 2026-08-13T10:33:39.986061+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: not recorded in retained run evidence
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern. Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---

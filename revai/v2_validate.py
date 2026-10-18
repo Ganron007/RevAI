@@ -99,7 +99,7 @@ def _stage_env() -> dict[str, str]:
     return env
 
 
-RAG_ENV = _stage_env()
+STAGE_ENV = _stage_env()
 
 # Keep full validation runs reasonable when agentic recovery is enabled.
 os.environ.setdefault("AGENTIC_RECOVERY_MAX_FUNCS", "50")
@@ -298,7 +298,7 @@ def run_triage(key: str, info: dict, sandbox: bool = False) -> dict:
         [sys.executable, str(SCRIPTS / "quick_scan_v2.py"), sha],
         TIMEOUT_TRIAGE,
         sandbox=sandbox,
-        env=RAG_ENV,
+        env=STAGE_ENV,
     )
     steps.append({"step": "quick_scan", "ok": ok, "msg": msg, "elapsed_s": elapsed})
     if not ok:
@@ -325,12 +325,6 @@ def run_triage(key: str, info: dict, sandbox: bool = False) -> dict:
         status = "PASS"
     else:
         status = "FAIL"
-    # --- Lazy-LLM-parrot detection (T4.8) ---
-    # If the verdict has a parrot_flag, downgrade PASS to NEEDS_HUMAN_REVIEW.
-    # The LLM may have parroted the top-ranked RAG doc without doing real analysis.
-    parrot = verdict.get("parrot_flag")
-    if parrot and parrot != "grounded" and status == "PASS":
-        status = "NEEDS_HUMAN_REVIEW"
     return {
         "sample": key,
         "sha256": sha,
@@ -342,8 +336,6 @@ def run_triage(key: str, info: dict, sandbox: bool = False) -> dict:
         "v1_verdict": v1,
         "score": verdict.get("score"),
         "family_guess": verdict.get("family_guess"),
-        "parrot_flag": parrot,
-        "llm_rag_citations": verdict.get("llm_rag_citations"),
         "source": verdict.get("source"),
         "steps": steps,
         "elapsed_s": round(sum(s["elapsed_s"] for s in steps), 1),
@@ -424,7 +416,7 @@ def run_five_agent(key: str, info: dict, sandbox: bool = False, depth: bool = Fa
 
     chain: list[tuple[str, list[str], int, dict[str, str] | None]] = [
         ("intake", [sys.executable, str(SCRIPTS / "intake_v2.py"), path, "--project-name", family], TIMEOUT_INTAKE, None),
-        ("quick_scan", [sys.executable, str(SCRIPTS / "quick_scan_v2.py"), sha], TIMEOUT_TRIAGE, RAG_ENV),
+        ("quick_scan", [sys.executable, str(SCRIPTS / "quick_scan_v2.py"), sha], TIMEOUT_TRIAGE, STAGE_ENV),
     ]
 
     for step_name, argv, timeout, step_env in chain:
@@ -458,9 +450,9 @@ def run_five_agent(key: str, info: dict, sandbox: bool = False, depth: bool = Fa
         steps.append({"step": "publish_report", "ok": True, "msg": "skipped (clean sample)", "elapsed_s": 0})
     else:
         post_chain = [
-            ("deep_dive", [sys.executable, str(SCRIPTS / "deep_dive_v2.py"), sha], TIMEOUT_AGENT, "deep-dive.json", RAG_ENV),
+            ("deep_dive", [sys.executable, str(SCRIPTS / "deep_dive_v2.py"), sha], TIMEOUT_AGENT, "deep-dive.json", STAGE_ENV),
             ("yara_gen", [sys.executable, str(SCRIPTS / "yara_gen_v2.py"), sha, "--family", family], TIMEOUT_AGENT, "rule.yar", None),
-            ("publish_report", [sys.executable, str(SCRIPTS / "publish_report_v2.py"), sha], TIMEOUT_AGENT, "REPORT-v2.md", RAG_ENV),
+            ("publish_report", [sys.executable, str(SCRIPTS / "publish_report_v2.py"), sha], TIMEOUT_AGENT, "REPORT-v2.md", STAGE_ENV),
         ]
         for step_name, argv, timeout, artifact, step_env in post_chain:
             ok, msg, elapsed = run_cmd(step_name, argv, timeout, sandbox=sandbox, env=step_env)
@@ -485,7 +477,7 @@ def run_five_agent(key: str, info: dict, sandbox: bool = False, depth: bool = Fa
             "correlate",
             [sys.executable, str(SCRIPTS / "section_publisher.py"), sha],
             TIMEOUT_CORRELATE,
-            env=RAG_ENV,
+            env=STAGE_ENV,
         )
         steps.append({"step": "correlate", "ok": ok, "msg": msg, "elapsed_s": elapsed})
         if ok:
@@ -532,7 +524,7 @@ def main() -> None:
     ap.add_argument(
         "--smoke-only",
         action="store_true",
-        help="Preflight only (no malware sample; checks scripts/deps/ghidrasql/Malcat/RAG-off)",
+        help="Preflight only (no malware sample; checks scripts/dependencies and required analysis services)",
     )
     ap.add_argument("--full", action="store_true", help="T2 triage: intake + quick_scan (needs corpus sample)")
     ap.add_argument("--pipeline", action="store_true", help="Full stage chain (needs corpus sample)")

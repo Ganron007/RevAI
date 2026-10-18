@@ -1,6 +1,6 @@
 # Pipeline AUDIT-REPORT — `4660766415cdc4a6ff3bffb20f35c6f3a7ccfd494816b1a135de8c11e7151860`
 
-> Public-showcase grade evidence pack: tools, RAG, LLM, REPORT-MASTER-v2/v3.
+> Public-showcase evidence pack: tools, LLM, and report artifacts.
 
 - **Mode:** single
 - **Audited at:** 2026-08-10T00:56:25.562991+00:00

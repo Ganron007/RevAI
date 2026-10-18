@@ -238,7 +238,6 @@ The table below summarizes key evidence for attribution, with interpretations an
 | Family Association | capa, yara, cross-section:classification                | Consistent identification as luder/texel across tools.                         | High       |
 | Actor Linkage     | cross-section:background_family_lineage                 | Family associated with unconfirmed actors in reports; no direct sample links.  | Low        |
 | Campaign Indicators | capa, MITRE ATT&CK mapping                            | Behaviors suggest targeted activity, but no campaign-specific artifacts.       | Moderate   |
-| Origin Clues      | cross-section:recommendations, RAG (implicit)           | Hedged CVE references and family reputation; no concrete code evidence.        | Low        |
 
 Overall, attribution remains speculative. Dynamic analysis tools were not executed for this assessment (source: cross-section:behavioral analysis), limiting runtime insights. Further correlation with threat intelligence is recommended for higher confidence.
 
@@ -421,10 +420,10 @@ _(local build — no LLM call)_
 - **generated_at**: 2026-08-13T15:39:25.665145+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: not recorded in retained run evidence
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern. Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---

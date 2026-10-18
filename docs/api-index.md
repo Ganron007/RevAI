@@ -6,6 +6,12 @@ index instead of model recall. It is deliberately narrow: knowledge lookup only 
 it never contributes a verdict and never performs capability matching (the
 pipeline's own `capa` stage owns that).
 
+This SQLite index contains Windows API reference material only. It is not a
+malware-sample or family-intelligence corpus, and report publishers do not query
+it; the deep-dive agent calls it for API-symbol or full-text reference lookups.
+It explains API semantics but is not evidence that the analyzed sample called
+an API; that behavior must be established from sample-specific tool output.
+
 This page is the operator guide for **building the index yourself**. It is an
 optional prerequisite: the pipeline runs without it, and `api_lookup` degrades to
 `available:false` when no index is present.

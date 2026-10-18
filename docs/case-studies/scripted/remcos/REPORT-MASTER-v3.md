@@ -204,15 +204,13 @@ Remcos is a commercially available remote access trojan that has been widely ado
 
 This sample exhibits core Remcos campaign traits, including hardcoded C2 infrastructure, registry-based persistence, process injection for evasion, and built-in lateral movement capabilities via RDP/SMB (cross-section:6. Network Analysis, query: extracted_strings, row: URL_indicators, why: hardcoded network endpoint present in binary static strings; cross-section:14. Recommendations, function: lateral_movement_routine, why: disassembly confirms hardcoded RDP/SMB propagation logic). The sample's 26 active YARA matches and 49 CAPA behavioral rule hits align with documented Remcos RAT capabilities observed in active campaigns since 2023 (yara, active_YARA_match_list, total_matches: 26, why: 26 triggered YARA rules indicate high overlap with known Remcos RAT signatures; capa, behavior_rules, total_triggered: 49, why: 49 CAPA rule hits align with documented Remcos RAT capabilities including remote access, persistence, and data exfiltration).
 
-Remcos was originally developed by the French cybersecurity firm Breaking Security for legitimate remote administration use cases, but has since been repurposed for widespread malicious use. RAG-driven threat intelligence cross-referencing indicates this sample and associated campaign infrastructure are consistent with operations run by independent cybercriminal groups, with targeting primarily focused on Windows endpoints in North America and Europe.
+Remcos was originally developed by the French cybersecurity firm Breaking Security for legitimate remote administration use cases, but has since been repurposed for widespread malicious use. No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin.
 
 ### Attribution Summary
 | Attribute | Value | Source Citation |
 |-----------|-------|-----------------|
 | Confirmed Malware Family | Remcos RAT | (cross-section:9. Comparison with Known Families, family_guess: Remcos, verdict: Malicious - Remcos RAT, why: cross-engine malicious verdict alignment confirms Remcos RAT classification) |
-| Primary Threat Actor Type | Independent cybercriminal groups | (RAG threat intelligence, Remcos adoption trends, why: post-licensing-crack Remcos is primarily used by unaffiliated cybercriminals for financial gain) |
 | Common Initial Access Vector | Phishing (78% of observed campaigns) | (cross-section:14. Recommendations, row: vector=phishing, why: 78% of confirmed Remcos deployments originate from phishing campaigns per cross-referenced threat intelligence) |
-| Suspected Operator Geographic Origin | Primarily Eastern Europe | (RAG threat intelligence, Remcos campaign geolocation data, why: majority of observed Remcos C2 infrastructure and campaign targeting aligns with Eastern European cybercriminal operations) |
 | Primary Campaign Use Cases | Credential theft, financial exfiltration, lateral movement | (cross-section:7. Capability Assessment, behavior: data_exfiltration/credential_theft/lateral_movement, why: observed sample capabilities align with documented Remcos campaign end goals) |
 
 ---
@@ -339,7 +337,7 @@ The following prioritized recommendations are tailored to the observed capabilit
 
 ## 15. Appendices
 
-Raw tool output (signal-preserving, not summarized). Each tool's evidence card is preserved verbatim — for learning and transparency the LLM never rewrites tool output.
+This historical report does not reproduce raw tool output. Consult the case evidence pack for retained artifacts; the report-input manifest and evidence index, where present, identify what the writer received.
 
 ### A11. MalCat structured report
 
@@ -994,10 +992,10 @@ void __fastcall sub_415e3e(int32_t *param_1)
 - **generated_at**: 2026-08-03T21:40:00.916358+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: performed (SHA-256 lookup; data returned by VirusTotal, Hybrid Analysis)
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---

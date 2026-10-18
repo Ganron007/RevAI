@@ -5,10 +5,9 @@ does_not_cover: [specific VMProtect or Themida internals, kernel-mode unpacking,
 
 # Unpack, then verify
 
-**Provenance and attribution note.** Extracted from the internal knowledge base;
-`sources.jsonl` records the exact chunks with source path and line range so an
-operator with KB access can re-verify. Those paths are **not resolvable in this
-public repository**; the citations are provenance metadata, not links.
+**Source note.** `sources.jsonl` preserves attribution metadata for maintainers.
+The runtime loads this bundled procedure file only; it does not load or search
+the referenced source files.
 
 ## When to load
 

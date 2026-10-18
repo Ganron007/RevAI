@@ -5,11 +5,9 @@ does_not_cover: [debugging workflow, dynamic analysis, kernel-mode analysis, spe
 
 # Reverse-engineering methodology
 
-**Provenance and attribution note.** This procedure was extracted from the internal
-knowledge base. `sources.jsonl` records the exact chunks it came from, with chunk
-id, source path and line range, so an operator with KB access can re-verify every
-line. Those paths are **not resolvable in this public repository**; the citations
-are provenance metadata, not links.
+**Source note.** `sources.jsonl` preserves attribution metadata for maintainers.
+The runtime loads this bundled procedure file only; it does not load or search
+the referenced source files.
 
 ## When to load
 

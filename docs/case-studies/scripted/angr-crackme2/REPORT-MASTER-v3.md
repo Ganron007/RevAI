@@ -259,7 +259,7 @@ In this section, we assess potential threat actor, campaign, and suspected origi
 | Campaign        | Software piracy keygen distribution        | Medium     | capa, process termination capability         |
 | Suspected Origin| Unknown, likely global                     | Low        | cross-section:Sample Identification, architecture |
 
-The CTF keygen family identification (source: yara, detection rules match; source: cross-section:Classification, family guess) provides a baseline for attribution but lacks specificity to individual actors or campaigns. No additional actor or campaign intelligence was derived from RAG search, indicating this sample may be a common variant without unique attribution markers.
+The CTF keygen family identification (source: yara, detection rules match; source: cross-section:Classification, family guess) provides a baseline for attribution but lacks specificity to individual actors or campaigns. No broad threat-intelligence corpus search is represented for this run. The optional sample-hash lookup status, if any, is recorded in the run evidence; provider labels alone do not establish actor, campaign, or origin.
 
 ---
 
@@ -461,10 +461,10 @@ _(local build — no LLM call)_
 - **generated_at**: 2026-08-09T19:40:42.500322+00:00
 - **verdict_source**: llm_judge
 - **model**: configured-llm
-- **RAG**: bge-m3 (35,302 records, top-3 per section)
+- **optional_external_hash_lookup**: enabled; no provider returned usable data
 - **tool_count**: 10 (MalCat full MCP toolset, capa, YARA, FLOSS, dotnet, r2, upx, xor, olevba, peepdf)
 - **analyst**: (your name)
 
-_This report was generated via section-based Map-Reduce pattern (Anthropic / LangChain / MS Research). Each section got a focused 1-3K char LLM call with targeted RAG. No mega-prompt, no JSON parse errors._
+_This report was generated via section-based Map-Reduce from run-bound tool evidence. Review the run manifest to identify the inputs supplied to each section._
 
 ---
