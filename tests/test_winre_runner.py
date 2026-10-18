@@ -113,6 +113,7 @@ def test_build_command_flags():
     assert cmd[1:3] == ["-m", "winre.pipeline"]
     assert "--driver" in cmd and "remote" in cmd
     assert "--dynamic" in cmd
+    assert "--require-external-capture" in cmd
     assert "--max-seconds" in cmd and "150" in cmd
     assert "--adaptive" in cmd and "--pesieve" in cmd
     assert "--agentic-dbg" not in cmd

@@ -364,6 +364,10 @@ def build_command(sample_path: str | Path, cfg: dict, *,
         "--driver", "remote",
         "--mode", cfg["mode"],
         "--dynamic",
+        # RevAI integration promises a paired passive packet capture. WinRE's
+        # standalone dynamic path keeps capture optional; this explicit flag
+        # makes a missing/unhealthy REMnux sensor fail before guest execution.
+        "--require-external-capture",
         "--max-seconds", str(cfg["window"]),
     ]
     if cfg["adaptive"] is True:
