@@ -66,7 +66,26 @@ sysctl -w net.ipv6.conf.default.forwarding=0 >/dev/null
 # Remove WinRE's old gateway simulators and policy objects. The guest now runs
 # FakeNet itself, so REMnux is only a passive sensor during remote detonation.
 systemctl disable --now winre-guest-guard.service winre-dnsmasq.service \
-  inetsim.service >/dev/null 2>&1 || true
+  >/dev/null 2>&1 || true
+if [[ -x /etc/init.d/inetsim ]]; then
+  # INetSim is packaged as a SysV init script on REMnux/Ubuntu. systemctl's
+  # combined `disable --now` can disable its generated unit while leaving the
+  # daemon alive, so stop the init script explicitly and remove its boot-start
+  # links through the native SysV manager.
+  service inetsim stop >/dev/null
+  update-rc.d inetsim disable
+elif systemctl list-unit-files --type=service --no-legend 2>/dev/null \
+    | awk '{print $1}' | grep -Fxq 'inetsim.service'; then
+  systemctl disable --now inetsim.service
+fi
+if systemctl is-active --quiet inetsim.service; then
+  echo "INetSim is still active after attempting to disable the legacy responder" >&2
+  exit 1
+fi
+if systemctl is-enabled --quiet inetsim.service; then
+  echo "INetSim is still enabled after attempting to disable the legacy responder" >&2
+  exit 1
+fi
 nft delete table inet winre_guest_guard 2>/dev/null || true
 nft delete table ip winre_guest_nat 2>/dev/null || true
 rm -f /etc/systemd/system/winre-guest-guard.service \

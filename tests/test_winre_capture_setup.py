@@ -19,6 +19,9 @@ def test_capture_setup_installs_guest_only_promiscuous_tcpdump_contract():
     assert "nft delete table inet winre_guest_guard" in setup
     assert "nft delete table ip winre_guest_nat" in setup
     assert "inetsim.service" in setup
+    assert "service inetsim stop" in setup
+    assert "update-rc.d inetsim disable" in setup
+    assert "INetSim is still active" in setup
     assert "WINRE_CAPTURE_READY" in setup
 
     # The normal setup installs tcpdump and invokes the passive sensor setup.
