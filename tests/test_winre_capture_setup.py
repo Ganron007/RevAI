@@ -1,8 +1,26 @@
 """Keep WinRE remote capture passive, host-filtered, and non-routing."""
-from _layout import source
+import pytest
+
+from _layout import resolve, source
 
 
 def test_capture_setup_installs_guest_only_promiscuous_tcpdump_contract():
+    # Installation and host-verification scripts are source-tree inputs used by
+    # one-time REMnux setup. The flat /opt/scripts runtime intentionally does
+    # not ship the install/ tree, so this source-contract test is not applicable
+    # there. Keep it active in the repository suite rather than making deploy
+    # copy setup scripts into a runtime layout where their REPO_ROOT assumptions
+    # would be false.
+    source_paths = [
+        resolve("install/setup-winre-capture.sh"),
+        resolve("install/setup-remnux.sh"),
+        resolve("install/verify-remnux.sh"),
+    ]
+    if any(not path.is_file() for path in source_paths):
+        pytest.skip(
+            "install/ source tree is not part of the flat runtime deployment"
+        )
+
     setup = source("install/setup-winre-capture.sh")
     installer = source("install/setup-remnux.sh")
     verifier = source("install/verify-remnux.sh")
