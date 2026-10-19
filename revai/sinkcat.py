@@ -132,8 +132,32 @@ def _build_call_graph(path: str, backend: DisasmBackend,
     graph: dict[int, set[int]] = {}
     for f in funcs:
         graph.setdefault(f.address, set())
+    if not funcs:
+        return graph
+
+    targets = [f.address for f in funcs]
+    batch_xrefs: dict[int, list[int]] | None = None
+    try:
+        # R2Backend can collect xrefs for all functions after one analysis.
+        # Calling backend.xrefs() in this loop used to launch `aaa` once per
+        # function; a 40-function binary therefore started 40 full analyses.
+        analysis = backend.analyze(path, targets)
+        raw_xrefs = analysis.get("xrefs") if isinstance(analysis, dict) else None
+        if isinstance(raw_xrefs, dict) and all(
+                target in raw_xrefs or str(target) in raw_xrefs
+                for target in targets):
+            batch_xrefs = raw_xrefs
+    except NotImplementedError:
+        # Backends that only implement the interface's single-target xrefs()
+        # retain the portable fallback below.
+        pass
+
     for f in funcs:
-        for caller_addr in backend.xrefs(path, f.address):
+        if batch_xrefs is not None:
+            refs = batch_xrefs.get(f.address, batch_xrefs.get(str(f.address), []))
+        else:
+            refs = backend.xrefs(path, f.address)
+        for caller_addr in refs:
             caller = _addr_in_func(caller_addr, funcs)
             if caller is not None:
                 graph.setdefault(caller, set()).add(f.address)

@@ -205,16 +205,6 @@ def read_execution_context(sha: str | None = None, *, mode: str | None = None,
         if (isinstance(data, dict)
                 and (not sha or data.get("sha256") == sha)
                 and _valid_run_id(data.get("run_id"))):
-            if isinstance(data, dict):
-                request_bytes = json.dumps(
-                    body, ensure_ascii=False, separators=(",", ":"), default=str
-                ).encode("utf-8")
-                data["_cadre_request_audit"] = {
-                    "request_body": body,
-                    "request_body_sha256": hashlib.sha256(request_bytes).hexdigest(),
-                    "attempt_number": attempt,
-                    "timeout_seconds": attempt_timeout_s,
-                }
             return data
     return None
 
@@ -3610,6 +3600,30 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
         body.pop("response_format", None)
     body.update(_build_reasoning_body(reasoning, api_url))
 
+    def _attach_request_audit(response: Any, *, attempt_number: int | str,
+                              timeout_seconds: int) -> Any:
+        """Bind the exact request that produced a response for downstream audits.
+
+        `body` is reused and updated across reasoning retries, so snapshot it
+        after the final request has been sent and before the response is handed
+        to callers. Persisting a detached copy prevents a later retry from
+        rewriting the provenance of an earlier response.
+        """
+        if not isinstance(response, dict):
+            return response
+        request_body = json.loads(json.dumps(
+            body, ensure_ascii=False, separators=(",", ":"), default=str))
+        request_bytes = json.dumps(
+            request_body, ensure_ascii=False, separators=(",", ":"), default=str
+        ).encode("utf-8")
+        response["_cadre_request_audit"] = {
+            "request_body": request_body,
+            "request_body_sha256": hashlib.sha256(request_bytes).hexdigest(),
+            "attempt_number": attempt_number,
+            "timeout_seconds": timeout_seconds,
+        }
+        return response
+
     def _next_lower_effort(effort: str | None) -> str | None:
         order = ["max", "high", "medium", "low", "disabled"]
         if not effort:
@@ -3807,6 +3821,9 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                                     {"streamed": False}, current_reasoning)
             finally:
                 sem.release()
+            data = _attach_request_audit(
+                data, attempt_number=attempt,
+                timeout_seconds=attempt_timeout_s)
             llm_usage_journal(model=effective_model, response=data,
                               note=f"attempt={attempt}")
             if _finish_reason(data) == "abort" and attempt < max_retries:
@@ -4104,6 +4121,9 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
             )
             with urllib.request.urlopen(req, timeout=fallback_window_s) as resp:
                 data = json.loads(resp.read().decode())
+                data = _attach_request_audit(
+                    data, attempt_number=f"final-reasoning-{fallback_reasoning}",
+                    timeout_seconds=fallback_window_s)
                 llm_usage_journal(model=effective_model, response=data,
                                   note=f"attempt=final-reasoning-{fallback_reasoning}")
                 return data

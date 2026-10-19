@@ -18,6 +18,7 @@ M1 = "REVAI_MARK_FUNCS"
 M2 = "REVAI_MARK_IMPORTS"
 M3 = "REVAI_MARK_XREFS"
 M4 = "REVAI_MARK_DISASM"
+MAX_R2_SCRIPT_CHARS = 64 * 1024
 
 _FUNC_RE = re.compile(r"^0x([0-9a-f]+)\s+(\d+)\s+(\d+)\s+(\S+)$")
 _IMPORT_RE = re.compile(r"^\s*\d+\s+0x([0-9a-f]+)\s+\S+\s+\S+\s+(\S+)\s+(\S+)$")
@@ -55,7 +56,43 @@ class R2Backend(DisasmBackend):
         return parts
 
     def analyze(self, path: str, xref_targets: list[int]) -> dict[str, Any]:
-        """One session: functions, imports, xrefs for each target."""
+        """One analysis per bounded batch: functions, imports, and xrefs.
+
+        radare2 accepts `-c` as one argv value. Bound the generated script so a
+        large binary cannot exceed the platform's per-argument limit; each
+        chunk shares one `aaa` pass instead of launching one analysis per
+        function.
+        """
+        targets = list(dict.fromkeys(int(target) for target in xref_targets))
+        chunks: list[list[int]] = []
+        current: list[int] = []
+        current_chars = 0
+        for target in targets:
+            command = f"?e {M3}:{target:x}; axt @ 0x{target:x}; "
+            if current and current_chars + len(command) > MAX_R2_SCRIPT_CHARS:
+                chunks.append(current)
+                current = []
+                current_chars = 0
+            current.append(target)
+            current_chars += len(command)
+        if current:
+            chunks.append(current)
+        if not chunks:
+            return self._analyze_once(path, [])
+
+        combined: dict[str, Any] | None = None
+        combined_xrefs: dict[int, list[int]] = {}
+        for chunk in chunks:
+            result = self._analyze_once(path, chunk)
+            if combined is None:
+                combined = result
+            combined_xrefs.update(result.get("xrefs") or {})
+        assert combined is not None
+        combined["xrefs"] = combined_xrefs
+        return combined
+
+    def _analyze_once(self, path: str, xref_targets: list[int]) -> dict[str, Any]:
+        """Run one bounded radare2 session and parse all requested targets."""
         xref_cmds = "; ".join(f"?e {M3}:{t:x}; axt @ 0x{t:x}" for t in xref_targets)
         script = (f"aaa; ?e {M2}; ii; ?e {M1}; afl; {xref_cmds}")
         out = self._run(path, script)
