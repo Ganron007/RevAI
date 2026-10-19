@@ -246,6 +246,11 @@ detonation)"** block:
 
 - detonation window actually used, with a coverage caveat (activity outside the
   window may be missed);
+- Frida hook coverage, including requested/installed/unavailable hooks,
+  unobserved installed hooks, process/module coverage, and call-limit status;
+- any adaptive stop-gate trigger and whether the configured post-trigger settle
+  interval was actually observed. A gate record is runner telemetry, not by
+  itself evidence of a malware effect;
 - runtime network indicators (DNS/SNI/HTTP) and dropped file paths;
 - the agentic-dbg unpack artifact, with a static pass (pefile + `capa`) when the
   dump is PE-valid;
@@ -255,6 +260,12 @@ detonation)"** block:
 The block is **presence-gated**: samples analyzed without WinRE produce exactly
 the same reports as before (no empty sections). Disable it explicitly with
 `REVAI_DISABLE_DYNAMIC_CORROBORATION=1`.
+
+An API hook that was installed but did not fire is not proof that the behavior
+is absent. Unavailable hooks, incomplete process/module coverage, and a short
+or prematurely stopped window limit negative conclusions. The reports retain
+these limits alongside the observation counts so reviewers can distinguish
+"not observed in this telemetry" from "does not occur".
 
 ## Console reference (RevAI side)
 

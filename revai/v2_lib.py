@@ -7198,6 +7198,314 @@ def _dynamic_citation(query_or_table: str, row_or_rule: str, *,
     )
 
 
+def _dynamic_api_names(values: Any) -> list[str]:
+    """Normalize Frida hook records to API names without exposing addresses."""
+    if not isinstance(values, list):
+        return []
+    names: list[str] = []
+    for item in values:
+        if isinstance(item, dict):
+            name = item.get("api")
+        elif isinstance(item, (list, tuple)) and item:
+            name = item[0]
+        else:
+            name = item
+        if isinstance(name, str) and name and name not in names:
+            names.append(name)
+    return names
+
+
+def _dynamic_observability(pack: dict | None) -> dict[str, Any]:
+    """Return bounded, run-scoped Frida and stop-gate coverage facts.
+
+    These are instrumentation/runner measurements, not sample behavior. Keep
+    them explicit so report writers cannot turn an unobserved API or a harness
+    stop condition into a negative behavioral finding.
+    """
+    pack = pack if isinstance(pack, dict) else {}
+    frida = pack.get("frida_summary") or {}
+    frida = frida if isinstance(frida, dict) else {}
+    coverage = frida.get("hook_coverage") or {}
+    coverage = coverage if isinstance(coverage, dict) else {}
+    tree = coverage.get("coverage_tree") or frida.get("coverage_tree") or {}
+    tree = tree if isinstance(tree, dict) else {}
+
+    requested = _dynamic_api_names(coverage.get("requested"))
+    installed = _dynamic_api_names(coverage.get("installed"))
+    unavailable = _dynamic_api_names(coverage.get("unavailable"))
+    failures = _dynamic_api_names(coverage.get("failures"))
+    not_fired = _dynamic_api_names(coverage.get("not_fired"))
+    reported_hook_fields = [
+        key for key in (
+            "requested", "installed", "unavailable", "failures", "not_fired",
+            "calls_observed", "max_calls", "call_limit_reached",
+            "process_count", "process_coverage_complete", "scope")
+        if key in coverage
+    ]
+    process_complete = coverage.get(
+        "process_coverage_complete", tree.get("process_coverage_complete"))
+    module_complete = tree.get("module_observers_complete")
+    calls = coverage.get("calls_observed")
+    max_calls = coverage.get("max_calls", tree.get("max_calls_total"))
+    call_limit_reached = coverage.get("call_limit_reached")
+    limitations = tree.get("limitations")
+    if not isinstance(limitations, list):
+        limitations = []
+    limitations = [str(item)[:240] for item in limitations if item is not None][:20]
+
+    if not coverage:
+        coverage_state = "not_reported"
+    elif (process_complete is False or module_complete is False
+          or unavailable or failures
+          or (requested and len(installed) < len(requested))):
+        coverage_state = "partial"
+    elif (process_complete is True and module_complete is True
+          and requested and len(installed) >= len(requested)):
+        coverage_state = "complete"
+    else:
+        coverage_state = "unverified"
+
+    hook_coverage = {
+        "state": coverage_state,
+        "reported_fields": reported_hook_fields,
+        "requested": requested,
+        "requested_count": len(requested) if "requested" in coverage else None,
+        "installed": installed,
+        "installed_count": len(installed) if "installed" in coverage else None,
+        "unavailable": unavailable,
+        "unavailable_count": len(unavailable) if "unavailable" in coverage else None,
+        "failures": failures,
+        "failure_count": len(failures) if "failures" in coverage else None,
+        "not_fired": not_fired,
+        "not_fired_count": len(not_fired) if "not_fired" in coverage else None,
+        "calls_observed": calls,
+        "max_calls": max_calls,
+        "call_limit_reached": call_limit_reached,
+        "process_count": coverage.get("process_count"),
+        "process_coverage_complete": process_complete,
+        "module_observers_complete": module_complete,
+        "children_seen": tree.get("children_seen"),
+        "children_instrumented_count": len(tree.get("children_instrumented") or [])
+        if isinstance(tree.get("children_instrumented"), list) else None,
+        "limitations": limitations,
+        "scope": coverage.get("scope"),
+    }
+
+    job = pack.get("job_meta") or {}
+    job = job if isinstance(job, dict) else {}
+    meta = pack.get("meta") or {}
+    meta = meta if isinstance(meta, dict) else {}
+    window = pack.get("window") or job.get("window") or meta.get("window") or {}
+    window = window if isinstance(window, dict) else {}
+    gate = window.get("gate")
+    gate = gate if isinstance(gate, dict) else None
+    effective = window.get("effective_s")
+    gate_at = gate.get("at_s") if gate else None
+    settle = gate.get("settle_s") if gate else None
+    if settle is None and gate:
+        settle = window.get("gate_settle_s")
+    settlement: dict[str, Any] = {"checked": False, "honored": None}
+    def _is_number(value: Any) -> bool:
+        return isinstance(value, (int, float)) and not isinstance(value, bool)
+
+    if gate and gate.get("fired") is True and all(
+            _is_number(value) for value in (effective, gate_at, settle)):
+        observed_after_gate = max(0.0, float(effective) - float(gate_at))
+        settlement = {
+            "checked": True,
+            "required_s": float(settle),
+            "observed_after_gate_s": round(observed_after_gate, 3),
+            "honored": observed_after_gate + 0.01 >= float(settle),
+        }
+
+    gate_record = None
+    gate_settle_field = None
+    if gate is not None:
+        gate_settle_field = (
+            "window.gate.settle_s" if gate.get("settle_s") is not None
+            else "window.gate_settle_s" if window.get("gate_settle_s") is not None
+            else None
+        )
+        gate_record = {
+            key: gate.get(key) for key in (
+                "fired", "spec", "settle_s", "kind", "at_s", "api",
+                "path", "arg0", "invocation_id")
+            if gate.get(key) is not None
+        }
+    return {
+        "hook_coverage": hook_coverage,
+        "window": {
+            key: window.get(key) for key in (
+                "requested_s", "effective_s", "idle_stop_s",
+                "gate_settle_s", "adaptive", "stop_reason")
+            if window.get(key) is not None
+        },
+        "gate": gate_record,
+        "gate_settlement": settlement,
+        "gate_settle_field": gate_settle_field,
+    }
+
+
+def _format_dynamic_observability(pack: dict | None) -> list[str]:
+    """Render exact sensor coverage and harness gate status for report inputs."""
+    if not pack or not pack.get("present"):
+        return []
+    obs = _dynamic_observability(pack)
+    coverage = obs["hook_coverage"]
+    fs = pack.get("frida_summary") or {}
+    lines = ["", "### Instrumentation coverage and harness gates", ""]
+    if coverage["state"] == "not_reported":
+        lines.append(
+            "- **Frida hook coverage**: producer did not report hook-level coverage. "
+            + _dynamic_citation(
+                "dynamic-analysis-status.json",
+                "status.frida_runtime.hook_coverage.state",
+                source="dynamic_analysis_status")
+        )
+    elif isinstance(fs, dict) and isinstance(fs.get("hook_coverage"), dict):
+        raw_coverage = fs["hook_coverage"]
+        requested = coverage["requested_count"]
+        installed = coverage["installed_count"]
+        parts = [
+            f"requested={requested if requested is not None else 'unreported'}",
+            f"installed={installed if installed is not None else 'unreported'}",
+        ]
+        if "unavailable" not in raw_coverage:
+            parts.append("unavailable=unreported")
+        elif coverage["unavailable"]:
+            parts.append("unavailable=" + ", ".join(coverage["unavailable"]))
+        else:
+            parts.append("unavailable=0")
+        if "failures" not in raw_coverage:
+            parts.append("failed=unreported")
+        elif coverage["failures"]:
+            parts.append("failed=" + ", ".join(coverage["failures"]))
+        else:
+            parts.append("failed=0")
+        if coverage["not_fired_count"] is not None:
+            parts.append(f"installed hooks not observed={coverage['not_fired_count']}")
+        else:
+            parts.append("installed hooks not observed=unreported")
+        if coverage["calls_observed"] is not None:
+            ceiling = (f"/{coverage['max_calls']}" if coverage["max_calls"] is not None else "")
+            parts.append(f"calls={coverage['calls_observed']}{ceiling}")
+        if coverage["call_limit_reached"] is not None:
+            parts.append(f"call_limit_reached={coverage['call_limit_reached']}")
+        hook_source_fields = [
+            f"hook_coverage.{key}" for key in (
+                "requested", "installed", "unavailable", "failures",
+                "not_fired", "calls_observed", "max_calls", "call_limit_reached")
+            if key in raw_coverage
+        ]
+        hook_row = ", ".join(hook_source_fields) or "hook_coverage"
+        lines.append(
+            "- **Frida hook coverage**: " + "; ".join(parts) + "; "
+            f"coverage_state={coverage['state']}. "
+            + _dynamic_citation(
+                "frida_summary.json",
+                hook_row,
+                source="frida")
+            + " " + _dynamic_citation(
+                "dynamic-analysis-status.json",
+                "status.frida_runtime.hook_coverage.state, "
+                "status.frida_runtime.hook_coverage.requested_count, "
+                "status.frida_runtime.hook_coverage.installed_count, "
+                "status.frida_runtime.hook_coverage.unavailable_count",
+                source="dynamic_analysis_status")
+        )
+        process_parts = [
+            "process_coverage_complete=" + (
+                str(coverage["process_coverage_complete"])
+                if coverage["process_coverage_complete"] is not None else "unreported"),
+            "module_observers_complete=" + (
+                str(coverage["module_observers_complete"])
+                if coverage["module_observers_complete"] is not None else "unreported"),
+        ]
+        if coverage["process_count"] is not None:
+            process_parts.append(f"process_count={coverage['process_count']}")
+        if coverage["children_seen"] is not None:
+            process_parts.append(f"children_seen={coverage['children_seen']}")
+        if coverage["limitations"]:
+            process_parts.append("limitations=" + "; ".join(coverage["limitations"]))
+        tree = raw_coverage.get("coverage_tree")
+        tree_prefix = "hook_coverage.coverage_tree"
+        if not isinstance(tree, dict):
+            tree = fs.get("coverage_tree")
+            tree_prefix = "coverage_tree"
+        tree = tree if isinstance(tree, dict) else {}
+        process_source_fields = []
+        if "process_coverage_complete" in raw_coverage:
+            process_source_fields.append("hook_coverage.process_coverage_complete")
+        if "process_count" in raw_coverage:
+            process_source_fields.append("hook_coverage.process_count")
+        process_source_fields.extend(
+            f"{tree_prefix}.{key}"
+            for key in ("module_observers_complete", "process_coverage_complete",
+                        "children_seen", "limitations")
+            if key in tree
+        )
+        process_row = ", ".join(process_source_fields) or "hook_coverage"
+        lines.append(
+            "- **Frida process/module coverage**: " + "; ".join(process_parts) + ". "
+            + _dynamic_citation(
+                "frida_summary.json",
+                process_row,
+                source="frida")
+        )
+    lines.append(
+        "- **Interpretation bound**: an installed hook that did not fire does "
+        "not establish that the behavior is absent; unavailable hooks and "
+        "incomplete process/module coverage limit negative conclusions."
+    )
+
+    gate = obs.get("gate")
+    if gate is not None:
+        gate_state = "fired" if gate.get("fired") is True else (
+            "did not fire" if gate.get("fired") is False else "recorded")
+        details = [gate_state]
+        for key in ("kind", "api", "at_s", "settle_s"):
+            if gate.get(key) is not None:
+                details.append(f"{key}={gate[key]}")
+        if gate.get("path"):
+            details.append(f"path={gate['path']}")
+        gate_fields = [
+            f"window.gate.{key}" for key in (
+                "fired", "kind", "api", "at_s", "settle_s", "path", "invocation_id")
+            if key in gate
+        ]
+        gate_row = ", ".join(gate_fields) or "window.gate"
+        lines.append(
+            "- **WinRE adaptive stop gate**: " + "; ".join(details) + ". "
+            "This is a runner stop-condition record, not by itself proof of a "
+            "malware effect. "
+            + _dynamic_citation(
+                "META.job.json / META.json",
+                gate_row)
+        )
+        settlement = obs.get("gate_settlement") or {}
+        if settlement.get("checked"):
+            lines.append(
+                "- **Gate settle verification**: required="
+                f"{settlement['required_s']}s after gate; observed="
+                f"{settlement['observed_after_gate_s']}s; "
+                f"honored={settlement['honored']}. "
+                + _dynamic_citation(
+                    "dynamic-analysis-status.json",
+                    "status.winre.gate_settlement.required_s, "
+                    "status.winre.gate_settlement.observed_after_gate_s, "
+                    "status.winre.gate_settlement.honored",
+                    source="dynamic_analysis_status")
+                + " "
+                + _dynamic_citation(
+                    "META.job.json / META.json",
+                    ", ".join(
+                        field for field in (
+                            "window.gate.at_s", obs.get("gate_settle_field"),
+                            "window.effective_s") if field))
+            )
+    return lines
+
+
 def _network_locator(pack: dict, key: str,
                      capture_index: int | None = None) -> tuple[str, str]:
     """Return the artifact/field that actually supplied a network observation."""
@@ -7439,6 +7747,7 @@ def format_flare_dynamic_evidence(pack: dict | None) -> str:
         f"priority (`static_yara_wins`={policy.get('static_yara_wins', True)}) "
         + _dynamic_citation("META.json", "verdict_policy.static_yara_wins")
     )
+    lines.extend(_format_dynamic_observability(pack))
 
     iocs = _net_iocs(pack)
     dns, http, sni = iocs["dns"], iocs["http"], iocs["sni"]
@@ -7864,6 +8173,7 @@ def format_dynamic_analysis_section(pack: dict | None) -> str:
         f"(`static_yara_wins`={policy.get('static_yara_wins', True)}) "
         + _dynamic_citation("META.json", "verdict_policy.static_yara_wins")
     )
+    lines.extend(_format_dynamic_observability(pack))
 
     iocs = _net_iocs(pack)
     dns, http, sni = iocs["dns"], iocs["http"], iocs["sni"]
@@ -8126,6 +8436,7 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
             # Older packs may not carry a launch marker. Keep the state
             # explicitly unverified rather than treating a directory as a run.
             detonation_ran = None
+        observability = _dynamic_observability(pack)
         out["winre"] = {
             "pack_present": True,
             "pack_correlated": True,
@@ -8141,6 +8452,9 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
             "skip_reason": skip.get("reason") if skip_confirms_no_launch else None,
             "skip_error": skip.get("error") if skip_confirms_no_launch else None,
             "stage_state": (pack.get("dynamic_stage") or {}).get("state"),
+            "window": observability["window"],
+            "gate": observability["gate"],
+            "gate_settlement": observability["gate_settlement"],
         }
 
         fr = pack.get("frida_summary") or {}
@@ -8167,10 +8481,12 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
                 break
         trace_present = bool(pack.get("has_frida_trace"))
         frida_observed = bool(frida_events and frida_events > 0)
+        hook_coverage = observability["hook_coverage"]
         out["frida_runtime"] = {
             "trace_artifact_present": trace_present,
             "events": frida_events,
             "observed_runtime_events": frida_observed,
+            "hook_coverage": hook_coverage,
             "state": (
                 f"runtime events captured ({frida_events})" if frida_observed
                 else "trace artifact present; no runtime events recorded" if trace_present
@@ -8255,6 +8571,32 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
         + "; packet capture: "
         + (out["packet_capture"].get("state") or "status unknown") + "."
     )
+    hook_coverage = (out.get("frida_runtime") or {}).get("hook_coverage") or {}
+    if hook_coverage and hook_coverage.get("state") != "not_reported":
+        installed_count = hook_coverage.get("installed_count")
+        requested_count = hook_coverage.get("requested_count")
+        unavailable_count = hook_coverage.get("unavailable_count")
+        coverage_note = (
+            f"Frida hook coverage {hook_coverage.get('state')}: "
+            f"{installed_count if installed_count is not None else 'unreported'}/"
+            f"{requested_count if requested_count is not None else 'unreported'} "
+            "requested hooks installed; "
+            f"{unavailable_count if unavailable_count is not None else 'unreported'} unavailable; "
+            f"process coverage complete="
+            f"{hook_coverage.get('process_coverage_complete')}"
+        )
+        out["sentence"] = out["sentence"].rstrip()[:-1] + "; " + coverage_note + "."
+    gate = (out.get("winre") or {}).get("gate")
+    settlement = (out.get("winre") or {}).get("gate_settlement") or {}
+    if isinstance(gate, dict) and gate.get("fired") is True:
+        gate_note = (
+            "WinRE adaptive stop gate fired"
+            + (f" ({gate.get('kind')} via {gate.get('api')})"
+               if gate.get("kind") or gate.get("api") else "")
+        )
+        if settlement.get("checked"):
+            gate_note += f"; configured settle interval honored={settlement.get('honored')}"
+        out["sentence"] = out["sentence"].rstrip()[:-1] + "; " + gate_note + "."
     return out
 
 
