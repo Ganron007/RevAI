@@ -518,12 +518,17 @@ When a sample has been detonated with the optional [WinRE](https://github.com/Ga
 companion, the master and technical reports receive an artifact-derived
 component-specific execution status in their prompts and a deterministic WinRE
 section with the sample-launch record, observation window and coverage caveat,
-Frida runtime events, runtime
+Frida runtime events, including manifest-verified sample-process API
+invocations and exact report-input locators, runtime
 network indicators, captured packet files, file activity, and any agentic-dbg
 unpack artifact (with a pefile + capa static pass when PE-valid). The master
 and technical prompts receive this evidence before writing; contradictory
 claims remain unchanged and fail the audit when they conflict with run
-artifacts. The section is **presence-gated** — no
+artifacts. RevAI validates the WinRE manifest's sample/run identity and raw
+trace hash, size, and record count before using Frida rows; an invalid trace is
+identified as ineligible evidence. The validated trace is embedded in the
+attested dynamic-pack artifact whose hash appears in the report-input manifest.
+The section is **presence-gated** — no
 pack for the sample leaves WinRE evidence out of the report. The Console shows
 the state for the open case: the orchestrator panel's **winre
 dynamic** chip (`pack · N DNS` / `no pack` / `not configured` / `off`) and

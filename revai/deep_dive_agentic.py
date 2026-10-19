@@ -47,6 +47,7 @@ from v2_lib import (  # noqa: E402
     olevba_analyze,
     peepdf_analyze,
     package_stage_evidence,
+    require_execution_context,
     r2_decompile,
     run_profile,
     scdbg_emulate,
@@ -72,11 +73,11 @@ import skills  # noqa: E402
 MAX_STEPS = int(os.environ.get("REVAI_DEEP_MAX_STEPS") or "16")
 MAX_TOOL_RESULT_CHARS = 2000
 
-#: Cap on pre-dive observations rendered outside the findings budget (currently
-#: the WinRE detonation pack). Bounded here so a huge pack cannot flood the
-#: prompt; the marker `_truncate` adds is always visible, so a cut is never
-#: silent. A pack smaller than this renders in full.
-DYNAMIC_EVIDENCE_CHARS = 12000
+#: Bound the pre-dive WinRE evidence block while keeping room for the full
+#: sample-attributed trace in ordinary runs. Any larger block is explicitly
+#: marked as truncated by `_truncate`; its complete run-attested source remains
+#: in the dynamic-pack artifact consumed by report quality review.
+DYNAMIC_EVIDENCE_CHARS = 180000
 MAX_FINDINGS_CHARS = 4000
 
 # Agent tool name → TOOL_MANIFEST key (same checklist as standard deep_dive_v2).
@@ -1115,7 +1116,10 @@ def _run_standard_checklist(registry: "ToolRegistry", session: dict, sha: str) -
     else:
         if dynamic_corroboration_enabled():
             try:
-                pack = load_dynamic_pack(sha)
+                context = require_execution_context(
+                    sha, stage="deep_dive_agentic")
+                pack = load_dynamic_pack(
+                    sha, expected_run_id=context.get("run_id"))
                 block = format_flare_dynamic_evidence(pack) if pack else ""
                 if block:
                     # The authoritative copy lives in history/tools_raw; findings
@@ -1151,8 +1155,12 @@ def _run_standard_checklist(registry: "ToolRegistry", session: dict, sha: str) -
                 else:
                     # No pack / no observations: nothing is recorded, so the
                     # prompt stays byte-identical to a static-only run.
+                    identity = pack if isinstance(pack, dict) else {}
                     tools_raw["dynamic_corroboration"] = {
                         "pack_present": False,
+                        **({key: identity.get(key) for key in (
+                            "identity_status", "expected_run_id",
+                            "producer_run_id", "reason") if identity.get(key)}),
                     }
             except Exception as exc:  # never break the dive over a missing pack
                 findings["dynamic_corroboration"] = {"error": str(exc)[:200]}

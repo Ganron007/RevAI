@@ -564,7 +564,9 @@ _DYN_FRIDA_NEGATION_RE = re.compile(
     r"runtime events?)\b.{0,55}\b(?:present|performed|invoked|run|executed|"
     r"recorded|captured)\b"
     r"|\bfrida\b.{0,55}\b(?:trace|session|instrumentation|runtime events?)\b"
-    r".{0,45}\b(?:was|were|is|are)\s+not\b"
+    r".{0,45}\b(?:was|were|is|are)\s+not\s+"
+    r"(?:present|performed|invoked|run|executed|recorded|captured|"
+    r"observed|available)\b"
     r"|\bneither\b.{0,70}\bfrida\b.{0,55}\b(?:was|were|is|are)\s+"
     r"(?:not\s+)?(?:performed|invoked|run|executed|recorded|captured)\b"
     r"|\b(?:frida|both tools?)\b.{0,45}\b(?:recorded|captured|observed|"
@@ -2705,7 +2707,16 @@ def _dynamic_pack_evidence_text(root: Path) -> tuple[str, list[str]]:
         return "", []
     from v2_lib import load_dynamic_pack
 
-    pack = load_dynamic_pack(sha, winre_root=winre_root)
+    expected_run_id = None
+    try:
+        context = json.loads((root / "execution-context.json").read_text(
+            encoding="utf-8"))
+        if isinstance(context, dict):
+            expected_run_id = str(context.get("run_id") or "") or None
+    except (OSError, json.JSONDecodeError):
+        pass
+    pack = load_dynamic_pack(
+        sha, winre_root=winre_root, expected_run_id=expected_run_id)
     if not pack or not pack.get("present"):
         return "", []
     ni = pack.get("network_intel") or {}
@@ -2778,6 +2789,44 @@ def _dynamic_pack_evidence_text(root: Path) -> tuple[str, list[str]]:
         for key, value in frida.items():
             if isinstance(value, list) and value and "api" in key.lower():
                 values.append(f"frida_summary.json {key}: " + json.dumps(value[:8], default=str))
+    trace = pack.get("frida_trace") or {}
+    if isinstance(trace, dict):
+        values.append(
+            "frida_trace provenance: " + json.dumps({key: trace.get(key) for key in (
+                "status", "sample_sha256", "run_id", "artifact_sha256",
+                "manifest_sha256", "record_count", "attributed_record_count",
+                "attributed_call_count", "endpoint_count",
+                "process_coverage_complete", "attributed_pids",
+                "attribution_status", "reason",
+            )}, sort_keys=True, default=str)
+        )
+        if trace.get("status") == "valid":
+            for invocation in trace.get("invocations") or []:
+                if not isinstance(invocation, dict):
+                    continue
+                index = invocation.get("index")
+                values.append(
+                    f"frida_trace.invocations[{index}]: "
+                    + json.dumps(invocation, ensure_ascii=False,
+                                 sort_keys=True, default=str)
+                )
+            for collection in ("endpoints", "process_events"):
+                for index, item in enumerate(trace.get(collection) or []):
+                    if isinstance(item, dict):
+                        values.append(
+                            f"frida_trace.{collection}[{index}]: "
+                            + json.dumps(item, ensure_ascii=False,
+                                         sort_keys=True, default=str)
+                        )
+            for index, item in enumerate(trace.get("raw_rows") or []):
+                if (not isinstance(item, dict)
+                        or item.get("sample_attributed") is not True):
+                    continue
+                values.append(
+                    f"frida_trace.raw_rows[{index}]: "
+                    + json.dumps(item, ensure_ascii=False,
+                                 sort_keys=True, default=str)
+                )
     capture = pack.get("external_capture") or {}
     if isinstance(capture, dict) and capture:
         values.append("external_capture.json fields: status, packets_captured, elapsed_s, pcap_sha256")
@@ -2799,6 +2848,7 @@ def _dynamic_pack_evidence_text(root: Path) -> tuple[str, list[str]]:
         f"winre:{src}:META.job.json",
         f"winre:{src}:network_intel.json",
         f"winre:{src}:frida_summary.json",
+        f"winre:{src}:frida_trace.jsonl",
         f"winre:{src}:procmon.csv",
     ]
 

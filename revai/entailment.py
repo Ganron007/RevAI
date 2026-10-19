@@ -441,9 +441,11 @@ def verify_claim(claim: dict, evidence_text: str,
 #: discounted.
 _EVIDENCE_ARTIFACTS = (
     "deep_dive/evidence-pack.md",
+    "deep_dive/00-sql-evidence.json",
     "deep_dive/01-tools-raw.json",
     "deep_dive/02-dynamic-pack.json",
     "deep_dive/02-signals.json",
+    "deep_dive/03-oracle.json",
     "deep_dive/03-oracle.json",
     "deep_dive/05-deep-dive.json",
     "deep_dive/agentic_deep_dive.json",
@@ -522,6 +524,10 @@ def _walk_json_strings(value: Any, path: str = "$", depth: int = 0):
 def _source_artifact_candidates(source: str, query: str | None,
                                 root: Path) -> list[Path]:
     """Resolve a citation to source-specific machine evidence, never report prose."""
+    exact_path = (query or "").strip().strip("` ").replace("\\", "/")
+    if exact_path in _PRIMARY_EVIDENCE_ARTIFACTS:
+        path = root / exact_path
+        return [path] if path.is_file() else []
     src = _norm(source)
     q = _norm(query or "")
     lookup = src
@@ -575,6 +581,71 @@ def _find_field_values(value: Any, field: str, path: str = "$", depth: int = 0):
             yield from _find_field_values(child, field, f"{path}[{index}]", depth + 1)
 
 
+def _parse_json_path(expression: str) -> list[str | int] | None:
+    """Parse the deterministic subset of JSONPath used in report citations."""
+    text = (expression or "").strip().strip("` ")
+    if not text.startswith("$"):
+        return None
+    tokens: list[str | int] = []
+    index = 1
+    while index < len(text):
+        if text[index] == ".":
+            index += 1
+            end = index
+            while end < len(text) and text[end] not in ".[":
+                end += 1
+            key = text[index:end]
+            if not key or any(char.isspace() for char in key):
+                return None
+            tokens.append(key)
+            index = end
+            continue
+        if text[index] == "[":
+            end = text.find("]", index + 1)
+            if end < 0:
+                return None
+            atom = text[index + 1:end].strip()
+            if atom.isdigit():
+                tokens.append(int(atom))
+            elif len(atom) >= 2 and atom[0] == atom[-1] == '"':
+                try:
+                    key = json.loads(atom)
+                except json.JSONDecodeError:
+                    return None
+                if not isinstance(key, str):
+                    return None
+                tokens.append(key)
+            else:
+                return None
+            index = end + 1
+            continue
+        return None
+    return tokens
+
+
+def _resolve_json_path(value: Any, expression: str,
+                       source_branch: str | None = None) -> tuple[str, Any] | None:
+    """Resolve one exact JSON path, including an optional filtered engine root."""
+    tokens = _parse_json_path(expression)
+    if tokens is None:
+        return None
+    current = value
+    if source_branch and tokens and tokens[0] == source_branch:
+        tokens = tokens[1:]
+        if isinstance(current, dict) and source_branch in current:
+            current = current[source_branch]
+    for token in tokens:
+        if isinstance(token, int):
+            if not isinstance(current, list) or token >= len(current):
+                return None
+            current = current[token]
+        else:
+            if not isinstance(current, dict) or token not in current:
+                return None
+            current = current[token]
+    return expression.strip(), current
+
+
 def _locate_cited_row(path: Path, row: str, query: str | None = None,
                       source: str | None = None) -> dict[str, str] | None:
     """Resolve literal rows and structured field/row locators in one artifact."""
@@ -589,6 +660,10 @@ def _locate_cited_row(path: Path, row: str, query: str | None = None,
         decoded = json.loads(raw)
     except (json.JSONDecodeError, TypeError):
         decoded = None
+    artifact_provenance = (
+        decoded.get("_cadre_provenance")
+        if isinstance(decoded, dict) else None
+    )
     if isinstance(decoded, (dict, list)):
         def _without_provenance(value: Any) -> Any:
             if isinstance(value, dict):
@@ -600,6 +675,7 @@ def _locate_cited_row(path: Path, row: str, query: str | None = None,
             return value
         decoded = _without_provenance(decoded)
     source_filtered = False
+    source_branch = None
     if decoded is not None:
         # The raw checklist JSON contains several engines in one file. Restrict
         # a citation to its engine branch; a string belonging to Malcat must not
@@ -639,6 +715,7 @@ def _locate_cited_row(path: Path, row: str, query: str | None = None,
             if matched_key:
                 if matched_key not in decoded:
                     return None
+                source_branch = matched_key
                 decoded = {matched_key: decoded[matched_key]}
             else:
                 return None
@@ -648,6 +725,7 @@ def _locate_cited_row(path: Path, row: str, query: str | None = None,
                 "ghidra" if "ghidra" in lookup else None)
             if not engine or engine not in decoded:
                 return None
+            source_branch = engine
             decoded = {engine: decoded[engine]}
 
         # Procmon citations use stable CSV data-row, PID and operation locators.
@@ -665,6 +743,75 @@ def _locate_cited_row(path: Path, row: str, query: str | None = None,
                     continue
                 return {"artifact": path.name, "json_path": json_path,
                         "excerpt": json.dumps(obj, ensure_ascii=False, sort_keys=True)[:800]}
+
+        # Frida citations use stable indexes into the compact, sample-attributed
+        # invocation/endpoints arrays. Resolve only when the nested WinRE trace
+        # and the RevAI report artifact identify the same sample and run.
+        if (path.name == "02-dynamic-pack.json"
+                and re.match(r"\s*(?:\$\.)?frida_trace(?:\.|\[)", row)):
+            trace = decoded.get("frida_trace") if isinstance(decoded, dict) else None
+            provenance = artifact_provenance if isinstance(artifact_provenance, dict) else {}
+            if not (
+                    isinstance(trace, dict)
+                    and trace.get("status") == "valid"
+                    and trace.get("sample_sha256") == provenance.get("sha256")
+                    and trace.get("run_id") == provenance.get("run_id")
+                    and provenance.get("artifact") == "deep_dive/02-dynamic-pack.json"):
+                return None
+        frida_match = re.fullmatch(
+            r"\s*(?:\$\.)?frida_trace\.(invocations|endpoints|process_events|raw_rows)"
+            r"\[(\d+)\]\s*",
+            row,
+        )
+        if path.name == "02-dynamic-pack.json" and frida_match:
+            trace = decoded.get("frida_trace") if isinstance(decoded, dict) else None
+            collection = frida_match.group(1)
+            index = int(frida_match.group(2))
+            provenance = artifact_provenance if isinstance(artifact_provenance, dict) else {}
+            if (isinstance(trace, dict)
+                    and trace.get("status") == "valid"
+                    and trace.get("sample_sha256") == provenance.get("sha256")
+                    and trace.get("run_id") == provenance.get("run_id")
+                    and provenance.get("artifact") == "deep_dive/02-dynamic-pack.json"):
+                values = trace.get(collection)
+                if isinstance(values, list) and index < len(values):
+                    item = values[index]
+                    if (isinstance(item, dict)
+                            and (collection != "invocations"
+                                 or item.get("index") == index)
+                            and (collection != "raw_rows"
+                                 or (item.get("record_index") == index
+                                     and item.get("sample_attributed") is True))):
+                        return {
+                            "artifact": path.name,
+                            "json_path": f"$.frida_trace.{collection}[{index}]",
+                            "excerpt": json.dumps(
+                                item, ensure_ascii=False, sort_keys=True,
+                                default=str)[:4000],
+                        }
+            # Do not let the generic JSONPath resolver bypass the trace's
+            # sample/run identity checks when a Frida locator was requested.
+            return None
+
+        # Reports cite JSON evidence with an exact artifact path in
+        # query_or_table and a JSONPath in row_or_rule. Resolve the path against
+        # the exact, manifest-bound source file; do not treat it as a fuzzy
+        # field-name search or accept a similarly named value elsewhere.
+        if (row or "").strip().startswith("$"):
+            resolved = _resolve_json_path(decoded, row, source_branch)
+            if resolved is None:
+                return None
+            json_path, value = resolved
+            try:
+                excerpt = json.dumps(
+                    value, ensure_ascii=False, sort_keys=True, default=str)
+            except (TypeError, ValueError):
+                excerpt = str(value)
+            return {
+                "artifact": path.name,
+                "json_path": json_path,
+                "excerpt": excerpt[:4000],
+            }
 
         # JSON field locators (e.g. META.job.json / window.effective_s) name
         # a recorded measurement rather than repeating its value in the report.
@@ -876,16 +1023,25 @@ def _semantic_review_batch(batch: list[dict], *,
         "CLAIMS_AND_SOURCE_ROWS:\n"
         + json.dumps(review_input, ensure_ascii=False, separators=(",", ":"))
     )
-    response = llm_judge(
-        # The reviewer fails closed on malformed structured output below, but
-        # transient HTTP 5xx/transport failures should use the client's bounded
-        # retry budget instead of aborting an otherwise healthy claim audit.
-        prompt, max_retries=3, timeout_s=600, max_tokens_override=8192,
-        temperature_override=0.0,
-        tools=[_CLAIM_REVIEW_TOOL],
-        tool_choice={"type": "function", "function": {
-            "name": "submit_claim_reviews"}},
-    )
+    try:
+        response = llm_judge(
+            # The reviewer fails closed on malformed structured output below,
+            # but transient HTTP 5xx/transport failures and Agnes aborts should
+            # use the client's bounded retry budget without disabling Thinking.
+            prompt, max_retries=3, timeout_s=600, max_tokens_override=8192,
+            temperature_override=0.0,
+            tools=[_CLAIM_REVIEW_TOOL],
+            tool_choice={"type": "function", "function": {
+                "name": "submit_claim_reviews"}},
+        )
+    except Exception as exc:
+        call_metadata = getattr(exc, "llm_metadata", None)
+        if isinstance(call_metadata, dict):
+            raise SemanticReviewError(
+                f"semantic model call failed: {type(exc).__name__}: {exc}",
+                {"llm_failure": str(exc)[:500], **call_metadata},
+            ) from exc
+        raise
     choice = (response.get("choices") or [{}])[0]
     message = choice.get("message") or {}
     content = message.get("content")

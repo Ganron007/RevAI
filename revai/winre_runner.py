@@ -496,7 +496,9 @@ def summarize_pack(sha: str, logs_root: Path | str, *,
     try:
         from v2_lib import dynamic_pack_counts, load_dynamic_pack
 
-        pack = load_dynamic_pack(sha, winre_root=Path(logs_root))
+        pack = load_dynamic_pack(
+            sha, winre_root=Path(logs_root),
+            expected_run_id=expected_run_id)
         if not pack:
             return {"pack_present": False, "pack": {}}
         meta = pack.get("meta") or {}
