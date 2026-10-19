@@ -275,16 +275,16 @@ class StageRunner:
         timeout: int,
         *,
         retry_timeouts: bool = True,
+        retry_stage_failures: bool = True,
     ) -> dict[str, Any]:
         """Execute one spine stage with bounded transient retries.
 
         Retry policy (run_profile): rc!=0 whose failure text classifies as
         transient (tool timeout, MCP/server connection loss, OOM) is retried
-        up to `stage_retries` times. Non-transient failures are NEVER retried
-        (would burn budget, not fix the cause). Attempts are recorded on the
-        tool_result event so the trace + provenance show retry visibility.
-        Report stages can disable whole-stage timeout retries because their
-        partial output has no reliable resume state.
+        up to `stage_retries` times unless the caller disables whole-stage
+        retries. Attempts are recorded on the tool_result event. Publishers and
+        the semantic audit can disable retries because their partial output has
+        no reliable whole-stage resume contract.
         """
         profile = run_profile()
         retries = int(profile.get("stage_retries") or 0)
@@ -342,7 +342,13 @@ class StageRunner:
                     flush=True,
                 )
                 break
-            if rc == 0 or attempts > retries:
+            if rc == 0 or attempts > retries or not retry_stage_failures:
+                if rc != 0 and not retry_stage_failures and attempts <= retries:
+                    print(
+                        f"[orchestrator] {name} whole-stage retry disabled; "
+                        "preserving the failed audit result",
+                        flush=True,
+                    )
                 break
             if transient_only and not is_transient_failure(reason):
                 print(
@@ -634,7 +640,12 @@ class StageRunner:
                 sys.executable, str(SCRIPTS / "audit_pipeline.py"),
                 self.sha, "--mode", "single",
             ],
-            600,
+            _stage_timeout("REVAI_STAGE_TIMEOUT_AUDIT", 7200),
+            # The audit calls the semantic reviewer over many claim batches.
+            # Restarting the entire audit on timeout replays completed calls;
+            # bounded per-request retries handle transient provider failures.
+            retry_timeouts=False,
+            retry_stage_failures=False,
         )
 
     def run_behavioural_model(self) -> dict:
@@ -1170,7 +1181,9 @@ Use tools. Do not claim success without check_quality.ok=true.
             ra = runner._run(
                 "run_audit",
                 [sys.executable, str(SCRIPTS / "audit_pipeline.py"), sha, "--mode", "single"],
-                3600,
+                _stage_timeout("REVAI_STAGE_TIMEOUT_AUDIT", 7200),
+                retry_timeouts=False,
+                retry_stage_failures=False,
             )
             q = runner.check_quality()
             # Reload the audit — it was re-written by the deterministic re-audit.
@@ -1283,7 +1296,9 @@ Use tools. Do not claim success without check_quality.ok=true.
         runner._run(
             "run_audit",
             [sys.executable, str(SCRIPTS / "audit_pipeline.py"), sha, "--mode", "single"],
-            3600,
+            _stage_timeout("REVAI_STAGE_TIMEOUT_AUDIT", 7200),
+            retry_timeouts=False,
+            retry_stage_failures=False,
         )
         q = runner.check_quality()
         # Reload the audit — it now reflects the final artifacts.

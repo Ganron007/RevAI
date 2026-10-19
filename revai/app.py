@@ -1146,7 +1146,12 @@ def run_stage(sha: str, stage: str, sample_path: str, rc_snapshot: dict | None =
         while True:
             attempts += 1
             rc, captured = _spawn_once(attempts)
-            if rc == 0 or attempts > _retries:
+            if rc == 0 or attempts > _retries or stage == "audit":
+                if rc != 0 and stage == "audit" and _retries:
+                    _log_line(
+                        "Audit remains red; automatic whole-stage retry is "
+                        "disabled because it would replay completed semantic-review calls"
+                    )
                 break
             tail = " ".join(captured[-200:])
             try:

@@ -370,7 +370,7 @@ def build_stages(sha: str, intake_cmd: list[str] | None) -> list[tuple[str, list
         ("publish_v3", [sys.executable, str(SCRIPTS / "section_publisher.py"), sha],
          _stage_timeout("REVAI_STAGE_TIMEOUT_PUBLISH", 7200)),
         ("audit", [sys.executable, str(SCRIPTS / "audit_pipeline.py"), sha, "--mode", "single"],
-         _stage_timeout("REVAI_STAGE_TIMEOUT_AUDIT", 600)),
+         _stage_timeout("REVAI_STAGE_TIMEOUT_AUDIT", 7200)),
     ])
     # D0 depth mode, strictly LAST. It is NOT a pipeline stage: it runs after the
     # reports and the audit exist, because everything it reads as starting

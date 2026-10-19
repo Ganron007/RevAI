@@ -8,6 +8,7 @@ rc==0 alone is NEVER sufficient.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import os
@@ -470,7 +471,10 @@ def evaluate_report_markdown(
     if evidence_root is not None:
         try:
             evidence_text, evidence_files = collect_evidence_text(Path(evidence_root))
-            ioc_verification = verify_claimed_iocs(md or "", evidence_text)
+            ioc_verification = verify_claimed_iocs(
+                md or "", evidence_text,
+                metadata_hashes=_report_metadata_hashes(Path(evidence_root)),
+            )
             ioc_verification["evidence_files"] = evidence_files
             if not evidence_files:
                 issues.append(f"{label}:evidence_corpus_missing")
@@ -1371,6 +1375,12 @@ _PROVENANCE_BANNER_RE = re.compile(r"commit\s*`([0-9a-fA-F]{7,40})(?:-[a-z]+)?`"
 #: while the fence-aware splitter kept them verbatim -- the two passes silently
 #: disagreeing about what is code.
 _FENCED_CODE_RE = re.compile(r"```.*?```|```.*\Z", re.DOTALL)
+_REPORT_EXECUTION_COMMENT_RE = re.compile(
+    r"<!--\s*execution:\s*sha256=[0-9a-f]{64};\s*"
+    r"run_id=[0-9a-f]{32};\s*mode=[^;\r\n]+;\s*"
+    r"evidence_manifest_sha256=[0-9a-f]{64}\s*-->",
+    re.IGNORECASE,
+)
 
 #: Canonical persistence templates: cited as verification targets ("RegSetValue
 #: under HKCU\...\Run (or equivalent) — not observed") far more often than as
@@ -1631,8 +1641,9 @@ def _is_guidance_reference(scan: str, raw: str,
 
 
 def _claims_text(markdown: str) -> str:
-    """Report text with fenced code blocks removed (claims live outside them)."""
-    return _FENCED_CODE_RE.sub("\n", markdown or "")
+    """Narrative text without code blocks or the generated run identity tag."""
+    text = _FENCED_CODE_RE.sub("\n", markdown or "")
+    return _REPORT_EXECUTION_COMMENT_RE.sub("\n", text)
 
 
 #: RFC 5737 documentation ranges + loopback/unspecified: these are placeholders
@@ -1917,8 +1928,124 @@ def _sample_sha256() -> str:
     return ""
 
 
+def _report_metadata_hashes(evidence_root: Path) -> dict[str, str]:
+    """Return exact run-bound report digests and their provenance categories.
+
+    Reports expose input-artifact digests, the manifest digest, and the run ID.
+    Those identify the analysis record, not malware indicators. Trust this
+    narrow classification only when the manifest belongs to the same sample
+    and execution context.
+    """
+    root = Path(evidence_root)
+    manifest_path = root / "publish" / "report-input-manifest.json"
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    if (not isinstance(manifest, dict)
+            or manifest.get("schema") != "revai-report-input-manifest/v1"):
+        return {}
+
+    expected_sha = _sample_sha256()
+    if not expected_sha:
+        expected_sha = next(
+            (part.lower() for part in reversed(root.parts)
+             if re.fullmatch(r"[0-9a-fA-F]{64}", part)), "")
+    manifest_sha = str(manifest.get("sample_sha256") or "").lower()
+    if (not expected_sha or manifest_sha != expected_sha
+            or not re.fullmatch(r"[0-9a-f]{64}", manifest_sha)):
+        return {}
+
+    try:
+        context = json.loads((root / "execution-context.json").read_text(
+            encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    if not isinstance(context, dict):
+        return {}
+    expected_run_id = str(context.get("run_id") or "").lower()
+    manifest_run_id = str(manifest.get("run_id") or "").lower()
+    expected_mode = str(context.get("mode") or "")
+    if (not re.fullmatch(r"[0-9a-f]{32}", expected_run_id)
+            or manifest_run_id != expected_run_id
+            or not expected_mode
+            or str(manifest.get("mode") or "") != expected_mode):
+        return {}
+
+    artifacts = manifest.get("artifacts")
+    if not isinstance(artifacts, list):
+        return {}
+    hashes: dict[str, str] = {}
+    for item in artifacts:
+        if not isinstance(item, dict):
+            continue
+        digest = str(item.get("sha256") or "").lower()
+        if (item.get("status") in {"attested", "unattested"}
+                and re.fullmatch(r"[0-9a-f]{64}", digest)):
+            hashes.setdefault(digest, "input_artifact_digest")
+    # The report appendix exposes this manifest digest alongside the artifact
+    # hashes. It is run provenance, not a hash attributed to the sample.
+    manifest_digest = hashlib.sha256(json.dumps(
+        manifest, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    ).encode("utf-8")).hexdigest()
+    hashes[manifest_digest] = "report_input_manifest_digest"
+    hashes[manifest_run_id] = "run_id"
+    return hashes
+
+
+def _hash_mention_is_report_metadata(
+    scan: str, spans: list[tuple[int, int]], metadata_kind: str,
+) -> bool:
+    """Require every occurrence to be explicitly presented as run metadata.
+
+    A digest can appear in a provenance appendix and also be misrepresented as
+    a sample IOC elsewhere. The value alone must never exempt every occurrence.
+    """
+    if not spans:
+        return False
+    for start, end in spans:
+        line_start = scan.rfind("\n", 0, start) + 1
+        line_end = scan.find("\n", end)
+        if line_end < 0:
+            line_end = len(scan)
+        line = scan[line_start:line_end]
+        folded = line.casefold()
+        local = scan[max(line_start, start - 48):min(line_end, end + 48)].casefold()
+        if metadata_kind == "run_id":
+            explicitly_labelled = bool(re.search(r"\brun(?:[ _-]?id)?\b", folded))
+        elif metadata_kind == "report_input_manifest_digest":
+            explicitly_labelled = (
+                "manifest" in folded
+                and bool(re.search(
+                    r"(?<![a-z0-9])sha[_-]?256(?![a-z0-9]|_)|\b(?:digest|hash)\b",
+                    folded,
+                ))
+            )
+        elif metadata_kind == "input_artifact_digest":
+            explicitly_labelled = bool(re.search(
+                r"\b(?:attested|report[- ]input|input|evidence|source)\s+artifact\b"
+                r"|\bartifact\s+(?:sha-?256|digest|hash)\b"
+                r"|\b(?:sha-?256|digest|hash)\b.{0,80}\b(?:artifact|file)\b",
+                folded,
+            ))
+        else:
+            return False
+        if not explicitly_labelled:
+            return False
+        # If this occurrence is framed as an indicator or malware hash, keep it
+        # in the claim set even when the same bytes also identify an input file.
+        if re.search(
+            r"\b(?:ioc|indicator|malware|payload|drop(?:ped|per)?(?:\s+file)?|"
+            r"blocklist|c2|hash-based)\b",
+            local,
+        ):
+            return False
+    return True
+
+
 def verify_claimed_iocs(markdown: str, evidence_text: str, *,
-                        provenance_commit: str | None = None) -> dict:
+                        provenance_commit: str | None = None,
+                        metadata_hashes: dict[str, str] | set[str] | None = None) -> dict:
     """Check every indicator a report claims against the raw tool evidence.
 
     Deterministic and code-based: no LLM re-reading of the report. A claim is
@@ -1944,6 +2071,20 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
                       for m in _PROVENANCE_BANNER_RE.finditer(markdown or "")}
     evidence = (evidence_text or "").lower()
     sample_sha = _sample_sha256()
+    if isinstance(metadata_hashes, dict):
+        report_artifact_hashes = {
+            str(value).lower(): str(kind)
+            for value, kind in metadata_hashes.items()
+            if re.fullmatch(r"[0-9a-fA-F]{32,64}", str(value))
+        }
+    else:
+        # Backward-compatible for callers that supplied a set before metadata
+        # categories were introduced; such values are treated conservatively.
+        report_artifact_hashes = {
+            str(value).lower(): "input_artifact_digest"
+            for value in (metadata_hashes or set())
+            if re.fullmatch(r"[0-9a-fA-F]{32,64}", str(value))
+        }
     claims: dict[tuple[str, str], str] = {}
     claim_spans: dict[tuple[str, str], list[tuple[int, int]]] = {}
     for kind, regex in (
@@ -1989,6 +2130,15 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
     guidance: list[dict[str, str]] = []
     for (kind, plain), raw in sorted(claims.items()):
         if kind == "hash":
+            metadata_kind = report_artifact_hashes.get(plain)
+            if metadata_kind and _hash_mention_is_report_metadata(
+                    scan, claim_spans.get((kind, plain), []), metadata_kind):
+                excluded.append({
+                    "type": kind, "value": raw,
+                    "reason": "run-bound report provenance value in a metadata "
+                              "context, not a sample indicator",
+                })
+                continue
             # The analysed sample's own sha256: identity, not an indicator.
             # WannaCry's audit went red on exactly this -- the hash appears in
             # the report's Sample Metadata (which the pipeline writes) but not
@@ -2100,6 +2250,10 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
         else:
             unverified.append({"type": kind, "value": raw})
 
+    excluded_reason_counts: dict[str, int] = {}
+    for item in excluded:
+        reason = str(item.get("reason") or "unspecified")
+        excluded_reason_counts[reason] = excluded_reason_counts.get(reason, 0) + 1
     resolved = [v for v in verified if v.get("abbreviated_from")]
     return {
         "advisory": True,
@@ -2110,6 +2264,7 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
         "verified": len(verified),
         "unverified": len(unverified),
         "excluded": len(excluded),
+        "excluded_reason_counts": excluded_reason_counts,
         "guidance_references": len(guidance),
         "unverified_items": unverified[:40],
         "excluded_items": excluded[:10],

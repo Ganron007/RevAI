@@ -877,7 +877,10 @@ def _semantic_review_batch(batch: list[dict], *,
         + json.dumps(review_input, ensure_ascii=False, separators=(",", ":"))
     )
     response = llm_judge(
-        prompt, max_retries=1, timeout_s=600, max_tokens_override=8192,
+        # The reviewer fails closed on malformed structured output below, but
+        # transient HTTP 5xx/transport failures should use the client's bounded
+        # retry budget instead of aborting an otherwise healthy claim audit.
+        prompt, max_retries=3, timeout_s=600, max_tokens_override=8192,
         temperature_override=0.0,
         tools=[_CLAIM_REVIEW_TOOL],
         tool_choice={"type": "function", "function": {

@@ -385,6 +385,13 @@ def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, ya
         "bare source metadata in a separate cell. Keep sentences focused so one "
         "citation can be checked against the complete claim. If a cited row does "
         "not establish the claim, state the limitation instead of making the claim. "
+        "Prefer one factual sentence per bullet; never use one citation to cover "
+        "multiple sentences, and split independent facts into separately cited "
+        "claims. Before returning, check every factual sentence and table claim "
+        "cell for its own exact source locator; remove a claim that cannot be tied "
+        "to one. Numeric verdict score and deep-dive confidence are separate "
+        "fields: label each with its exact field name and cite the artifact field; "
+        "never substitute one for the other or combine them into a new score. "
         "Headings MUST use ASCII apostrophe only (Don't, not Don’t)."
     )
     return "\n".join(lines)
