@@ -996,6 +996,14 @@ def audit_execution_identity(log: Path, expected_run_id: str | None, *,
     errors: dict[str, str] = {}
     execution_checks: dict[str, bool] = {}
     execution_errors: dict[str, str] = {}
+    winre_observation: dict[str, Any] = {
+        "status_artifact_present": False,
+        "identity_ok": False,
+        "detonation_ran": None,
+        "sample_pid": None,
+        "pack_present": None,
+        "pack_correlated": None,
+    }
     for label, path in artifacts.items():
         payload = _load(path)
         if not isinstance(payload, dict):
@@ -1020,6 +1028,33 @@ def audit_execution_identity(log: Path, expected_run_id: str | None, *,
             checks["winre-run.json"] = status.get("run_id") == expected_run_id
             if not checks["winre-run.json"]:
                 errors["winre-run.json"] = "WinRE status belongs to another run"
+            winre_observation.update({
+                "status_artifact_present": True,
+                "identity_ok": checks["winre-run.json"],
+                "pipeline_state": status.get("state"),
+                "exit_code": status.get("rc"),
+                "pack_present": status.get("pack_present") is True,
+                "pack_correlated": (status.get("pack_correlation") or {}).get("ok") is True,
+                "pack_correlation": status.get("pack_correlation"),
+            })
+            dynamic_status = _load(log / "dynamic-analysis-status.json")
+            if isinstance(dynamic_status, dict):
+                detail = dynamic_status.get("status") or {}
+                winre_detail = detail.get("winre") or {}
+                correlation = detail.get("winre_status_correlation") or {}
+                identity_ok = (
+                    dynamic_status.get("run_id") == expected_run_id
+                    and correlation.get("expected_run_id") == expected_run_id
+                    and correlation.get("ok") is True
+                )
+                winre_observation.update({
+                    "dynamic_status_identity_ok": identity_ok,
+                    "detonation_ran": (winre_detail.get("detonation_ran")
+                                        if identity_ok else None),
+                    "sample_pid": (winre_detail.get("sample_pid")
+                                   if identity_ok else None),
+                    "dynamic_status_source": winre_detail.get("source"),
+                })
             execution_checks["winre-run.json"] = (
                 status.get("state") == "ok"
                 and status.get("pack_present") is True
@@ -1027,9 +1062,19 @@ def audit_execution_identity(log: Path, expected_run_id: str | None, *,
                 and checks["winre-run.json"]
             )
             if not execution_checks["winre-run.json"]:
-                execution_errors["winre-run.json"] = (
-                    "WinRE stage failed, has no correlated fresh pack, or belongs to another run"
-                )
+                failures = []
+                if status.get("state") != "ok":
+                    failures.append(
+                        f"WinRE pipeline state={status.get('state')!r}, "
+                        f"exit_code={status.get('rc')!r}"
+                    )
+                if status.get("pack_present") is not True:
+                    failures.append("no WinRE pack was produced")
+                if (status.get("pack_correlation") or {}).get("ok") is not True:
+                    failures.append("WinRE pack is not correlated to this run")
+                if not checks["winre-run.json"]:
+                    failures.append("WinRE status belongs to another run")
+                execution_errors["winre-run.json"] = "; ".join(failures)
     return {
         "ok": all(checks.values()),
         "execution_status_ok": all(execution_checks.values()),
@@ -1039,6 +1084,7 @@ def audit_execution_identity(log: Path, expected_run_id: str | None, *,
         "errors": errors,
         "execution_checks": execution_checks,
         "execution_errors": execution_errors,
+        "winre_observation": winre_observation,
     }
 
 
@@ -1654,6 +1700,10 @@ def main():
             "ok": bool(identity.get("execution_status_ok")),
             "checks": identity.get("execution_checks", {}),
             "errors": identity.get("execution_errors", {}),
+            # Keep successful sample execution visible when a later WinRE
+            # report-quality step makes the overall driver command fail. The
+            # stage remains red until its full command succeeds.
+            "observation": identity.get("winre_observation", {}),
         }
 
     stage_ok = {k: v.get("ok") for k, v in report["stages"].items()}

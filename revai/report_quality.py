@@ -354,13 +354,11 @@ def evaluate_report_markdown(
     if md and not source_is_fallback(source):
         style_md = _report_narrative_body(md)
         style["byline_ok"] = "revai provenance" in (style_md or "").lower()
-        # Citation marker: the system prompt instructs "{source: engine}" but
-        # some models emit "(source: engine)". Count BOTH (the provider
-        # finding 2026-08-08 — curly-brace citations were uncounted and a
-        # fully-cited report failed low_citations).
-        style["citation_count"] = (style_md or "").lower().count("(source:") + (
-            style_md or ""
-        ).lower().count("{source:")
+        # Count the same balanced citation annotations the source resolver
+        # consumes. Literal substring counts drifted from accepted syntax
+        # (square-bracket annotations and metadata-only table cells), making
+        # the displayed coverage number disagree with the claim gate.
+        style["citation_count"] = len(parse_citation_annotations(style_md or ""))
         uncited_claims = _uncited_report_claims(style_md or "")
         style["uncited_claim_count"] = len(uncited_claims)
         style["uncited_claim_examples"] = uncited_claims[:8]

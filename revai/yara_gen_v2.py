@@ -196,6 +196,15 @@ def distinctive_strings(strings: list[str], limit: int = 12) -> list[str]:
     return out[:limit]
 
 
+def _yara_string_literal(value: object) -> str:
+    """Escape a value for quoted YARA strings and metadata literals."""
+    # LLM-derived metadata can contain Windows paths. Escape it with the same
+    # YARA rules as sample strings so a path such as
+    # ``SYSTEM\CurrentControlSet`` cannot invalidate the entire rule.
+    text = "".join(char if char.isprintable() else " " for char in str(value))
+    return text.replace("\\", "\\\\").replace('"', '\\"')
+
+
 def build_yara_rule(family: str, sha256: str, strings: list[str],
                     imphash: str | None = None,
                     sample_path: Path | None = None) -> str:
@@ -227,19 +236,19 @@ def build_yara_rule(family: str, sha256: str, strings: list[str],
     lines += [
         f"rule {name} {{",
         "    meta:",
-        f'        description = "{desc}"',
-        f'        sha256 = "{sha256}"',
-        f'        family = "{slugify(family)}"',
+        f'        description = "{_yara_string_literal(desc)}"',
+        f'        sha256 = "{_yara_string_literal(sha256)}"',
+        f'        family = "{_yara_string_literal(slugify(family))}"',
         "        revai = true",
-        f'        revai_commit = "{_prov["commit"]}"',
-        f'        revai_engine = "{_prov["engine"]}"',
+        f'        revai_commit = "{_yara_string_literal(_prov["commit"])}"',
+        f'        revai_engine = "{_yara_string_literal(_prov["engine"])}"',
         '        severity = "high"',
         '        confidence = "low"' if degraded else '        confidence = "medium"',
     ]
     if chosen:
         lines.append("    strings:")
         for i, s in enumerate(chosen[:12]):
-            esc = s.replace("\\", "\\\\").replace('"', '\\"')
+            esc = _yara_string_literal(s)
             lines.append(f'        $s{i} = "{esc}" ascii wide')
     # Condition: file-type gate + distinctive strings only ($s* — no header
     # bytes), with imphash as an independent exact fingerprint branch.

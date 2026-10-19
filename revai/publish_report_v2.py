@@ -334,25 +334,39 @@ def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, ya
     if asm.cards:
         lines.append(asm.render())
         lines.append("")
-    # V5.12 accuracy: publish must not clear upstream malicious/suspicious triage
+    # Keep every generated section aligned with the strongest upstream label.
+    # The report may explain a disagreement, but it cannot silently replace the
+    # pipeline-selected label with a different one.
     v = verdict if isinstance(verdict, dict) else {}
     upstream = (v.get("verdict") or "").strip().lower()
+    deep_result = deep if isinstance(deep, dict) else {}
+    verdict_control = cross_stage_verdict_lock(
+        None, quick_verdict=upstream, deep_verdict=deep_result.get("verdict"))
+    locked_verdict = verdict_control.get("upstream") or "unknown"
     yara_hits = v.get("yara_family_hits") or (v.get("accuracy_hold") or {}).get("yara_rules") or []
-    if upstream in ("malicious", "suspicious") or yara_hits:
+    if locked_verdict != "unknown" or yara_hits:
         lines.append("## ACCURACY CONSTRAINT (mandatory)")
+        if locked_verdict != "unknown":
+            lines.append(
+                f"- LOCKED report verdict: **{locked_verdict}**. Use this exact "
+                "label in every verdict field, classification statement, and "
+                "executive summary. This is the current-run pipeline-selected "
+                "label, not raw behavioral evidence. Do not downgrade or upgrade "
+                "it. If source evidence appears to disagree, describe the "
+                "disagreement as an explicit limitation while preserving the "
+                "locked report verdict."
+            )
         lines.append(
-            f"- Upstream triage verdict is **{v.get('verdict') or upstream or 'malicious'}** "
-            f"(family={v.get('family_guess')})."
+            f"- Quick-triage verdict={v.get('verdict') or 'unknown'}; "
+            f"deep-dive verdict={deep_result.get('verdict') or 'unknown'}; "
+            f"family candidate={v.get('family_guess') or 'unknown'}."
         )
         if yara_hits:
             lines.append(f"- High-signal YARA fired: {yara_hits}.")
         lines.append(
-            "- Dual-use RATs (NetSupport, AnyDesk, TeamViewer, etc.) abused in malware campaigns "
-            "MUST be classified **malicious** (or at least suspicious), NOT 'legitimate' / 'clean' / 'benign'."
-        )
-        lines.append(
-            "- You may note vendor signing and dual-use nature, but Classification.Verdict must "
-            "match upstream triage. Do not clear the sample."
+            "- You may discuss signing or dual-use context, but do not infer a "
+            "different report verdict from those facts. Never label the sample "
+            "legitimate, clean, or benign unless the locked report verdict is benign."
         )
         lines.append("")
     lines.append(OUTPUT_FORMAT_CONTRACT)
@@ -365,7 +379,12 @@ def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, ya
         "Mark unknowns explicitly. Cite every factual sentence as "
         "(source: <engine>, query_or_table: <artifact or table>, "
         "row_or_rule: <exact observed row, address, or rule>). A source name "
-        "without a concrete row_or_rule is not a usable citation. "
+        "without a concrete row_or_rule is not a usable citation. Use that exact "
+        "parenthesized form at the end of EACH factual sentence. For tables, put "
+        "the full parenthesized citation in the factual claim cell; do not put "
+        "bare source metadata in a separate cell. Keep sentences focused so one "
+        "citation can be checked against the complete claim. If a cited row does "
+        "not establish the claim, state the limitation instead of making the claim. "
         "Headings MUST use ASCII apostrophe only (Don't, not Don’t)."
     )
     return "\n".join(lines)
@@ -1534,10 +1553,9 @@ def main():
     quick_v = (verdict or {}).get("verdict") if isinstance(verdict, dict) else None
     deep_v = (deep or {}).get("verdict") if isinstance(deep, dict) else None
     pub_claimed = report.get("verdict") or infer_publish_verdict_from_markdown(md)
-    # Calibrate the publish claim BEFORE the lock: the lock only flags
-    # downgrades, so an upgrade back to malicious could re-instate a verdict the
-    # ceiling already capped (2026-09-22 rehearsal: deep=suspicious,
-    # publish=malicious, final=malicious).
+    # Calibrate the narrative claim for transparency, then require exact
+    # agreement with the pipeline-selected verdict. Any remaining change in
+    # either direction stays visible and makes the report gate red.
     _pcal = calibrate_publish_claim(
         pub_claimed,
         quick_verdict=verdict if isinstance(verdict, dict) else None,

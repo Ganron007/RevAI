@@ -82,6 +82,7 @@ attach_dynamic_analysis_section,
     require_execution_context,
     validate_report_input_manifest,
     _categorize_string,
+    dynamic_analysis_status,
 )
 from skills import report_methodology_block  # noqa: E402
 from behavioural_model import (  # noqa: E402
@@ -138,9 +139,14 @@ def _section_prompt(section_name: str, description: str, evidence: str,
         "and every evidence-table row, not merely once per paragraph. Use the "
         "original tool/artifact citation shown in the evidence; never cite "
         "cross-section prose as evidence. Cross-section context is draft text "
-        "for consistency only, not a source of facts. If a source row is not "
-        "available, state the limitation or unknown instead of repeating an "
-        "uncited claim.\n"
+        "for consistency only, not a source of facts. Use the exact "
+        "parenthesized citation form above at the end of each factual sentence. "
+        "For a table row, place the complete citation in the claim cell; do not "
+        "place bare source metadata in another cell. Keep each factual sentence "
+        "focused so its cited rows establish the complete claim. If a source row "
+        "is not available, state the limitation or unknown instead of repeating "
+        "an uncited claim. If cross-section text conflicts with the pipeline-"
+        "selected verdict control, the control label takes precedence.\n"
         "EXPLAIN, DON'T DUMP: every evidence row / code block you include must "
         "be introduced and interpreted (what + why + confidence); never paste "
         "evidence bare. Hedge inferences ('likely', 'possibly', 'we assess'). "
@@ -296,6 +302,26 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
                     f"run's artifacts; applies to the whole run): {st_block} "
                     f"(source: dynamic_analysis_status, query_or_table: "
                     f"run-scoped status, row_or_rule: run-scoped status)\n\n{evidence}")
+    quick_result = tools_results.get("verdict")
+    deep_result = tools_results.get("deep")
+    quick_verdict = (quick_result.get("verdict")
+                     if isinstance(quick_result, dict) else None)
+    deep_verdict = (deep_result.get("verdict")
+                    if isinstance(deep_result, dict) else None)
+    verdict_control = cross_stage_verdict_lock(
+        None, quick_verdict=quick_verdict, deep_verdict=deep_verdict)
+    locked_verdict = verdict_control.get("upstream") or "unknown"
+    if locked_verdict != "unknown":
+        evidence = (
+            "PIPELINE-SELECTED REPORT VERDICT CONTROL (not raw sample evidence): "
+            f"{locked_verdict}. Use this exact label in every verdict field, "
+            "classification statement, and executive-summary conclusion. Do not "
+            "upgrade or downgrade it. If evidence appears to disagree, identify "
+            "the disagreement as a limitation while preserving this report label. "
+            "Do not cite this control line as evidence for behavior, capability, "
+            "family, or ATT&CK claims.\n\n"
+            + evidence
+        )
     # 3. Build prior-summaries for continuity
     prior_lines = []
     for n, m in list(prior_summaries.items())[-3:]:
@@ -779,7 +805,8 @@ def _technical_section_evidence(name: str, blocks: list[tuple[str, str]],
 
 def _technical_section_prompt(name: str, description: str, evidence: str,
                               sha: str, prior_sections_summary: str = "",
-                              provenance_block_text: str = "") -> str:
+                              provenance_block_text: str = "",
+                              locked_verdict: str | None = None) -> str:
     """One focused prompt per technical section.
 
     Carries the same rules as the old monolithic prompt so quality does not
@@ -803,6 +830,16 @@ def _technical_section_prompt(name: str, description: str, evidence: str,
     if prior_sections_summary:
         parts += ["## Prior sections (for continuity)",
                   prior_sections_summary, ""]
+    if locked_verdict and locked_verdict != "unknown":
+        parts += [
+            "## Pipeline-selected report verdict control (not raw sample evidence)",
+            f"The report verdict is locked to **{locked_verdict}**. Use this exact "
+            "label in verdict fields and conclusions; do not upgrade or downgrade it. "
+            "If evidence appears to disagree, report the disagreement as a limitation "
+            "while preserving this report label. Do not cite this control as evidence "
+            "for behavior, capability, family, or ATT&CK claims.",
+            "",
+        ]
     parts.append(
         "## Rules\n"
         f"- Write ONLY the '{name}' section, as markdown, beginning with a "
@@ -815,6 +852,10 @@ def _technical_section_prompt(name: str, description: str, evidence: str,
         "(source: <engine>, query_or_table: <artifact or table>, row_or_rule: "
         "<exact observed row, address, or rule>). A source label alone is not a "
         "usable citation.\n"
+        "- Use that exact parenthesized syntax at the end of EACH factual sentence. "
+        "For table rows, include the full citation in the claim cell; do not put "
+        "bare source metadata in a separate cell. Keep each sentence focused so "
+        "its cited rows establish the complete claim.\n"
         "- Cross-section context is draft text for consistency only; cite the "
         "original tool artifact and row, never cross-section prose.\n"
         "- Quote registry paths and IoCs in FULL. Never abbreviate a path with "
@@ -852,7 +893,8 @@ def _technical_section_prompt(name: str, description: str, evidence: str,
 def _generate_technical_section(
     name: str, blocks: list[tuple[str, str]], header: str, sha: str,
     prior_summaries: dict[str, str] | None = None,
-    provenance_block_text: str = "", mode: str | None = None) -> dict[str, Any]:
+    provenance_block_text: str = "", mode: str | None = None,
+    locked_verdict: str | None = None) -> dict[str, Any]:
     """Generate ONE technical section. Never raises: a failure is recorded."""
     description = TECHNICAL_SECTION_DESCRIPTIONS.get(name, name)
     result: dict[str, Any] = {"name": name, "llm_ok": False, "error": None,
@@ -887,7 +929,8 @@ def _generate_technical_section(
     prompt = _technical_section_prompt(
         name, description, evidence, sha,
         "\n".join(prior_lines) if prior_lines else "",
-        provenance_block_text=provenance_block_text)
+        provenance_block_text=provenance_block_text,
+        locked_verdict=locked_verdict)
     result["evidence_chars"] = len(evidence)
     result["prompt_chars"] = len(prompt)
 
@@ -944,7 +987,8 @@ def _technical_sectionwise_enabled() -> bool:
 def generate_technical_sectionwise(
     sha: str, technical_evidence: str, *, parallel: bool = True,
     max_workers: int = 6,
-    provenance_block_text: str = "", mode: str | None = None
+    provenance_block_text: str = "", mode: str | None = None,
+    locked_verdict: str | None = None
     ) -> tuple[list[dict[str, Any]], str]:
     """Generate all 13 technical sections independently, then assemble.
 
@@ -967,7 +1011,7 @@ def generate_technical_sectionwise(
             futures = {
                 pool.submit(_generate_technical_section, name, blocks, header,
                             sha, provenance_block_text=provenance_block_text,
-                            mode=mode): name
+                            mode=mode, locked_verdict=locked_verdict): name
                 for name in TECHNICAL_REPORT_SECTIONS
             }
             for fut in futures:
@@ -978,7 +1022,7 @@ def generate_technical_sectionwise(
                 _generate_technical_section(
                     name, blocks, header, sha,
                         provenance_block_text=provenance_block_text,
-                        mode=mode))
+                        mode=mode, locked_verdict=locked_verdict))
 
     order = {n: i for i, n in enumerate(TECHNICAL_REPORT_SECTIONS)}
     results.sort(key=lambda r: order.get(r.get("name", ""), 999))
@@ -1034,6 +1078,13 @@ def run_section_based_publish(sha: str, tools_results: dict,
          "pass1_results": [...], "pass2_results": [...]}
     """
     os.environ.setdefault("_SECTION_SHA", sha)
+    # Persist the same artifact-derived run status used by report prompts. The
+    # prior code referenced `status_artifact` only while serializing the
+    # section-results manifest; it was never initialized, so every section
+    # report run crashed after writing the master report and before technical
+    # publication, provenance binding, or downstream audit.
+    status_artifact = dynamic_analysis_status(sha)
+
     def _run(name, pass1_results, pass_num):
         import time as _t
         t0 = _t.time()
@@ -1274,11 +1325,21 @@ def run_technical_publish(sha: str, tools_results: dict) -> dict:
         # it returned finish_reason=length after section 1 and every
         # completeness figure then described a stub.
         try:
+            quick_result = tools_results.get("verdict")
+            deep_result = tools_results.get("deep")
+            verdict_control = cross_stage_verdict_lock(
+                None,
+                quick_verdict=(quick_result.get("verdict")
+                               if isinstance(quick_result, dict) else None),
+                deep_verdict=(deep_result.get("verdict")
+                              if isinstance(deep_result, dict) else None),
+            )
             tech_results, tech_md_built = generate_technical_sectionwise(
                 sha, technical_evidence,
                 provenance_block_text=str(
                     tools_results.get("_report_provenance_block") or ""),
-                mode=(tools_results.get("_execution_context") or {}).get("mode"))
+                mode=(tools_results.get("_execution_context") or {}).get("mode"),
+                locked_verdict=verdict_control.get("upstream"))
             failed = [r["name"] for r in tech_results if not r.get("llm_ok")]
             print(
                 f"  [technical] {len(tech_results) - len(failed)}/"

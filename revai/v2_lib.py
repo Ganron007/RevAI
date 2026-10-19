@@ -965,17 +965,15 @@ def cross_stage_verdict_lock(
     quick_verdict: str | None = None,
     deep_verdict: str | None = None,
 ) -> dict:
-    """Fail when publish contradicts an earlier malicious/suspicious finding.
+    """Fail unless the published label exactly matches the selected pipeline label.
 
-    A publish verdict that DOWNGRADES the upstream triage (malicious →
-    suspicious/benign, suspicious → benign) is a contradiction: the report
-    would under-report what the evidence chain established. This covers the
-    #8a finding — a publish claiming "suspicious, legitimate NSudo" while the
-    deep dive said "malicious" slipped through the old benign-only check.
+    Both downgrades and upgrades are contradictions. A report must not clear a
+    pipeline-selected malicious result, nor promote a suspicious/unknown result
+    to malicious based on its own narrative. The report can describe uncertainty
+    and disagreement, while the machine verdict remains the upstream label.
 
     Returns {ok, conflict, upstream, publish, reason}.
     """
-    _SEV = {"malicious": 3, "suspicious": 2, "benign": 1, "unknown": 0}
     pub = normalize_verdict_label(publish_verdict)
     upstream_labels = [
         normalize_verdict_label(quick_verdict),
@@ -992,9 +990,9 @@ def cross_stage_verdict_lock(
             upstream = "benign"
     conflict = False
     reason = ""
-    if _SEV.get(pub, 0) < _SEV.get(upstream, 0):
+    if upstream != "unknown" and pub != upstream:
         conflict = True
-        reason = f"publish={pub} downgrades upstream={upstream}"
+        reason = f"publish={pub} does not match pipeline-selected verdict={upstream}"
     return {
         "ok": not conflict,
         "conflict": conflict,
@@ -2994,6 +2992,17 @@ def _llm_response_has_usable_content(data: dict) -> bool:
         if finish not in ("stop", "function_call", "tool_calls"):
             return False
         msg = choice.get("message") or {}
+        tool_calls = msg.get("tool_calls")
+        if isinstance(tool_calls, list) and tool_calls:
+            return all(
+                isinstance(call, dict)
+                and isinstance(call.get("function"), dict)
+                and isinstance(call["function"].get("name"), str)
+                and bool(call["function"]["name"].strip())
+                and isinstance(call["function"].get("arguments"), str)
+                and bool(call["function"]["arguments"].strip())
+                for call in tool_calls
+            )
         content = msg.get("content") or ""
         if isinstance(content, (list, dict)):
             content = json.dumps(content)
@@ -3508,7 +3517,9 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
               reasoning: str | None = None, timeout_s: int | None = None,
               budget_s: int | None = None,
               max_tokens_override: int | None = None,
-              temperature_override: float | None = None) -> dict:
+              temperature_override: float | None = None,
+              tools: list[dict] | None = None,
+              tool_choice: str | dict | None = None) -> dict:
     """Call the configured LLM chat API with retries. Returns the FULL response dict.
 
     Configuration is read from environment at runtime (no hardcoded defaults):
@@ -3580,8 +3591,14 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
             {
                 "role": "system",
                 "content": (
-                    "You are a malware analyst. Return valid JSON only. "
-                    "Cite evidence as {source, query_or_table, row_or_rule, why}."
+                    "You are a malware analyst. "
+                    + ("Use the supplied function schema and call the requested "
+                       "function exactly once. Put the complete response in its "
+                       "arguments; do not return JSON or explanations in message "
+                       "text."
+                       if tools is not None else
+                       "Return valid JSON only. Cite evidence as "
+                       "{source, query_or_table, row_or_rule, why}.")
                 ),
             },
             {"role": "user", "content": prompt},
@@ -3593,6 +3610,16 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
         "max_tokens": request_max_tokens,
         "response_format": {"type": "json_object"},
     }
+    if tools is not None:
+        body["tools"] = tools
+    if tool_choice is not None:
+        if tools is None:
+            raise ValueError("tool_choice requires tools")
+        body["tool_choice"] = tool_choice
+    if tools is not None or tool_choice is not None:
+        # Tool schemas constrain the response shape. Avoid asking the endpoint
+        # to apply a second, provider-specific JSON response mode on top.
+        body.pop("response_format", None)
     if _is_agnes_api(api_url):
         # `response_format` is not listed in Agnes's documented request fields;
         # the system prompt still requires JSON and the parser tolerates the
@@ -3794,7 +3821,7 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
             sem.acquire()
             try:
                 data, smetrics = (None, {})
-                if _llm_streaming_enabled():
+                if _llm_streaming_enabled() and tools is None:
                     data, smetrics = _post_llm_streaming(
                         api_url,
                         {"Content-Type": "application/json",
@@ -6354,12 +6381,10 @@ def calibrate_publish_claim(
     deep_verdict: dict | None = None,
     evidence_text: str = "",
 ) -> dict:
-    """Calibrate the publish LLM's claimed verdict with the symmetric contract.
+    """Calibrate the publish LLM's claimed verdict using the tool evidence.
 
-    `cross_stage_verdict_lock` only flags DOWNGRADES of the upstream verdict, so
-    the publish claim could UPGRADE a calibrated protection-only verdict back to
-    malicious and become final (rehearsal 2026-09-22: ghyte.exe final=malicious
-    while quick and deep were both suspicious). Returns
+    The exact-match verdict lock remains the final gate; this evidence-based
+    calibration provides a transparent intermediate claim and reason. Returns
     {verdict, changed, reason, raw, signals}.
     """
     raw = str(pub_claimed or "").strip()
@@ -7110,14 +7135,58 @@ def _format_sample_procmon_events(pack: dict) -> list[str]:
 
 def _net_iocs(pack: dict) -> dict:
     ni = pack.get("network_intel") or {}
-    caps = (ni.get("captures") or [{}])[0] if isinstance(ni, dict) else {}
-    dns = caps.get("dns_queries") or []
-    http = caps.get("http_requests") or []
-    sni = caps.get("tls_sni") or []
+    captures = ni.get("captures") or [] if isinstance(ni, dict) else []
+    dns: list = []
+    http: list = []
+    sni: list = []
+    for capture in captures:
+        if not isinstance(capture, dict):
+            continue
+        dns.extend(capture.get("dns_queries") or [])
+        http.extend(capture.get("http_requests") or [])
+        sni.extend(capture.get("tls_sni") or [])
     nw = pack.get("network") or {}
     if not dns and isinstance(nw, dict):
         dns = nw.get("domains_guess") or []
-    return {"dns": dns, "http": http, "sni": sni}
+    return {"dns": dns, "http": http, "sni": sni,
+            "scope": "vm-wide packet capture",
+            "attribution": "unresolved"}
+
+
+def _network_observation_lines(pack: dict, *, max_per_capture: int = 20) -> list[str]:
+    """Render exact capture observations without implying sample ownership."""
+    ni = pack.get("network_intel") or {}
+    captures = ni.get("captures") or [] if isinstance(ni, dict) else []
+    lines: list[str] = []
+    labels = (("dns_queries", "DNS"), ("http_requests", "HTTP"),
+              ("tls_sni", "TLS SNI"))
+    for capture_index, capture in enumerate(captures):
+        if not isinstance(capture, dict):
+            continue
+        for key, label in labels:
+            values = capture.get(key) or []
+            for observation_index, value in enumerate(values[:max_per_capture]):
+                lines.append(
+                    f"- **VM-wide {label} observation (capture {capture_index + 1}; "
+                    f"sample attribution unresolved):** `{value}` "
+                    + _dynamic_citation(
+                        "network_intel.json",
+                        f"captures[{capture_index}].{key}[{observation_index}]"))
+            omitted = len(values) - min(len(values), max_per_capture)
+            if omitted:
+                lines.append(
+                    f"- Capture {capture_index + 1}: {omitted} additional {label} "
+                    "observation(s) omitted from this summary; they remain in the "
+                    "cited raw artifact and are not attributed to the sample.")
+    if not captures:
+        nw = pack.get("network") or {}
+        for index, value in enumerate(nw.get("domains_guess") or []
+                                       if isinstance(nw, dict) else []):
+            lines.append(
+                f"- **Unscoped network-summary lead (sample attribution unresolved):** "
+                f"`{value}` "
+                + _dynamic_citation("network.json", f"domains_guess[{index}]"))
+    return lines
 
 
 def _dynamic_citation(query_or_table: str, row_or_rule: str, *,
@@ -7129,13 +7198,18 @@ def _dynamic_citation(query_or_table: str, row_or_rule: str, *,
     )
 
 
-def _network_locator(pack: dict, key: str) -> tuple[str, str]:
+def _network_locator(pack: dict, key: str,
+                     capture_index: int | None = None) -> tuple[str, str]:
     """Return the artifact/field that actually supplied a network observation."""
     ni = pack.get("network_intel") or {}
     captures = ni.get("captures") if isinstance(ni, dict) else None
-    first = captures[0] if isinstance(captures, list) and captures else {}
-    if isinstance(first, dict) and first.get(key):
-        return "network_intel.json", f"captures[0].{key}"
+    if isinstance(captures, list):
+        candidates = ([capture_index] if capture_index is not None
+                      else range(len(captures)))
+        for index in candidates:
+            if (0 <= index < len(captures) and isinstance(captures[index], dict)
+                    and captures[index].get(key)):
+                return "network_intel.json", f"captures[{index}].{key}"
     nw = pack.get("network") or {}
     if key == "dns_queries" and isinstance(nw, dict) and nw.get("domains_guess"):
         return "network.json", "domains_guess"
@@ -7369,30 +7443,11 @@ def format_flare_dynamic_evidence(pack: dict | None) -> str:
     iocs = _net_iocs(pack)
     dns, http, sni = iocs["dns"], iocs["http"], iocs["sni"]
     if dns or http or sni:
-        lines += ["", "### Network observed at runtime", ""]
-        if dns:
-            biz = [d for d in dns if str(d).endswith(".biz")]
-            query, locator = _network_locator(pack, "dns_queries")
-            lines.append(
-                f"- **DNS queries** ({len(dns)}; DGA-shaped `.biz`: {len(biz)}): "
-                + ", ".join(f"`{d}`" for d in dns[:20]) + " "
-                + _dynamic_citation(query, locator)
-            )
-        if sni:
-            query, locator = _network_locator(pack, "tls_sni")
-            lines.append(f"- **TLS SNI** ({len(sni)}): "
-                         + ", ".join(f"`{s}`" for s in sni[:12]) + " "
-                         + _dynamic_citation(query, locator))
-        if http:
-            hosts: list[str] = []
-            for h in http:
-                host = str(h).split("\t")[0]
-                if host and host not in hosts:
-                    hosts.append(host)
-            query, locator = _network_locator(pack, "http_requests")
-            lines.append(f"- **HTTP requests**: {len(http)} to {len(hosts)} host(s): "
-                         + ", ".join(f"`{h}`" for h in hosts[:12]) + " "
-                         + _dynamic_citation(query, locator))
+        lines += ["", "### VM-wide packet-capture observations", "",
+                  "Capture records cover the guest environment. They have no "
+                  "sample-process attribution and are leads only, not sample "
+                  "network indicators or C2 evidence."]
+        lines.extend(_network_observation_lines(pack))
 
     capture = pack.get("external_capture") or {}
     if isinstance(capture, dict) and capture:
@@ -7813,28 +7868,11 @@ def format_dynamic_analysis_section(pack: dict | None) -> str:
     iocs = _net_iocs(pack)
     dns, http, sni = iocs["dns"], iocs["http"], iocs["sni"]
     if dns or http or sni:
-        lines += ["", "### Runtime network", ""]
-        if dns:
-            biz = [d for d in dns if str(d).endswith(".biz")]
-            query, locator = _network_locator(pack, "dns_queries")
-            lines.append(f"- **DNS queries** ({len(dns)}; DGA-shaped `.biz`: {len(biz)}): "
-                         + ", ".join(f"`{d}`" for d in dns) + " "
-                         + _dynamic_citation(query, locator))
-        if sni:
-            query, locator = _network_locator(pack, "tls_sni")
-            lines.append(f"- **TLS SNI** ({len(sni)}): "
-                         + ", ".join(f"`{s}`" for s in sni) + " "
-                         + _dynamic_citation(query, locator))
-        if http:
-            hosts: list[str] = []
-            for h in http:
-                host = str(h).split("\t")[0]
-                if host and host not in hosts:
-                    hosts.append(host)
-            query, locator = _network_locator(pack, "http_requests")
-            lines.append(f"- **HTTP requests**: {len(http)} to {len(hosts)} host(s): "
-                         + ", ".join(f"`{h}`" for h in hosts) + " "
-                         + _dynamic_citation(query, locator))
+        lines += ["", "### VM-wide packet-capture observations", "",
+                  "Capture records cover the guest environment. They have no "
+                  "sample-process attribution and are leads only, not sample "
+                  "network indicators or C2 evidence."]
+        lines.extend(_network_observation_lines(pack))
 
     decoded_paths = _frida_decoded_paths(pack)
     if decoded_paths:
@@ -9541,7 +9579,7 @@ def _sec_behavioral_evidence(tools_results: dict) -> str:
 
 
 def _sec_network_evidence(tools_results: dict) -> str:
-    """Section 6: static indicators and sample-attributed WinRE network events."""
+    """Section 6: embedded indicators and scoped WinRE network observations."""
     lines = []
     mc = tools_results.get("malcat") or {}
     consts = mc.get("constants") or []
@@ -9589,24 +9627,12 @@ def _sec_network_evidence(tools_results: dict) -> str:
         )
     dynamic_pack = tools_results.get("dynamic_pack") or {}
     if dynamic_pack.get("present"):
-        dynamic_iocs = _net_iocs(dynamic_pack)
-        for key, label in (("dns", "WinRE runtime DNS queries"),
-                           ("http", "WinRE runtime HTTP observations"),
-                           ("sni", "WinRE runtime TLS SNI")):
-            values = dynamic_iocs.get(key) or []
-            if not values:
-                continue
-            query, locator = _network_locator(
-                dynamic_pack,
-                {"dns": "dns_queries", "http": "http_requests", "sni": "tls_sni"}[key],
-            )
-            unique_values = list(dict.fromkeys(str(value) for value in values))
+        network_lines = _network_observation_lines(dynamic_pack, max_per_capture=40)
+        if network_lines:
             lines.append(
-                f"  {label}: {len(values)} observation(s), "
-                f"{len(unique_values)} unique value(s): "
-                + ", ".join(f"`{value}`" for value in unique_values)
-                + " " + _dynamic_citation(query, locator)
-            )
+                "  VM-wide packet-capture observations (sample attribution "
+                "unresolved; leads only, not sample indicators or C2):")
+            lines.extend("  " + line for line in network_lines)
         capture = dynamic_pack.get("external_capture") or {}
         if capture:
             lines.append(
@@ -9840,26 +9866,12 @@ def _sec_iocs_evidence(tools_results: dict) -> str:
 
     dynamic_pack = tools_results.get("dynamic_pack") or {}
     if dynamic_pack.get("present"):
-        dynamic_iocs = _net_iocs(dynamic_pack)
-        for key, label, source_key in (
-            ("dns", "runtime DNS", "dns_queries"),
-            ("http", "runtime HTTP", "http_requests"),
-            ("sni", "runtime TLS SNI", "tls_sni"),
-        ):
-            values = dynamic_iocs.get(key) or []
-            if not values:
-                continue
-            query, locator = _network_locator(dynamic_pack, source_key)
+        network_lines = _network_observation_lines(dynamic_pack, max_per_capture=40)
+        if network_lines:
             lines.append(
-                f"  {label} indicators ({len(values)}) "
-                + _dynamic_citation(f"{query} {locator}", locator) + ":"
-            )
-            for value in values:
-                rendered = json.dumps(value, ensure_ascii=False, default=str)
-                lines.append(
-                    f"    - `{rendered}` "
-                    + _dynamic_citation(f"{query} {locator}", str(value))
-                )
+                "  VM-wide network-capture leads (unattributed; excluded from "
+                "sample IOC set):")
+            lines.extend("  " + line for line in network_lines)
 
     # Preserve MalCat-only constants that the deterministic IOC extractor did
     # not classify, with the actual source path rather than dropping them.

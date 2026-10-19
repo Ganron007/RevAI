@@ -117,6 +117,36 @@ def parse_citation_annotations(text: str) -> list[dict[str, Any]]:
         if fields.get("source"):
             out.append({"start": start, "end": end, **fields})
             occupied_until = end
+    # Some report responses place the same explicit citation fields in a
+    # dedicated Markdown table cell but omit the surrounding parentheses,
+    # e.g. `| source: procmon, query_or_table: procmon.csv, row_or_rule: 42 |`.
+    # Treat that cell as citation syntax so it still goes through source
+    # resolution and semantic claim review. Do not accept bare source labels in
+    # prose or partial table metadata as evidence.
+    offset = 0
+    for line in text.splitlines(keepends=True):
+        stripped = line.strip()
+        if stripped.startswith("|") and stripped.endswith("|"):
+            cursor = 0
+            for cell in line.split("|"):
+                cell_start = line.find(cell, cursor)
+                cursor = cell_start + len(cell)
+                leading = len(cell) - len(cell.lstrip())
+                value = cell.strip()
+                start = offset + cell_start + leading
+                if not value.lower().startswith("source:"):
+                    continue
+                fields = _split_fields(value)
+                if not (fields.get("source") and fields.get("query_or_table")
+                        and fields.get("row_or_rule")):
+                    continue
+                end = start + len(value)
+                if any(start < item["end"] and end > item["start"] for item in out):
+                    continue
+                out.append({"start": start, "end": end, **fields})
+                occupied_until = max(occupied_until, end)
+        offset += len(line)
+    out.sort(key=lambda item: (item["start"], item["end"]))
     return out
 
 

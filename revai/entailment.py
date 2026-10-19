@@ -800,6 +800,39 @@ class SemanticReviewError(ValueError):
         self.review_metadata = metadata or {}
 
 
+_CLAIM_REVIEW_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "submit_claim_reviews",
+        "description": "Return one evidence-bound decision for every supplied report claim.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "reviews": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {"type": "string"},
+                            "verdict": {"type": "string", "enum": [
+                                "supported", "contradicted", "insufficient"]},
+                            "evidence_ids": {
+                                "type": "array", "items": {"type": "string"},
+                                "uniqueItems": True,
+                            },
+                        },
+                        "required": ["id", "verdict", "evidence_ids"],
+                        "additionalProperties": False,
+                    },
+                },
+            },
+            "required": ["reviews"],
+            "additionalProperties": False,
+        },
+    },
+}
+
+
 def _semantic_review_batch(batch: list[dict], *,
                            review_context: dict | None = None,
                            methodology_block: str = "") -> dict:
@@ -825,10 +858,10 @@ def _semantic_review_batch(batch: list[dict], *,
         "intent, persistence, injection, or network activity. Runtime behavior "
         "requires a runtime event tied to the sample process. ATT&CK mapping needs "
         "the described behavior, not only a rule name. Assess every factual clause. "
-        "Return one JSON object whose `reviews` is an array of three-item arrays, "
-        "for example {\"reviews\":[[\"claim-id\",\"supported\",[\"E001\"]]]}. "
-        "Each item is [claim_id, verdict, evidence_ids], where evidence_ids is "
-        "an array of one or more supplied IDs. Use only supplied IDs. "
+        "Return one structured function call. Its `reviews` array contains one "
+        "object per claim with `id`, `verdict`, and `evidence_ids`. Use only the "
+        "supplied claim and evidence IDs. `evidence_ids` is an array of supplied "
+        "IDs and may be empty only for an insufficient decision. "
         "Verdict is supported, contradicted, or insufficient. Never copy evidence "
         "text or add explanations. For supported, select all evidence IDs needed "
         "to establish the whole claim; for insufficient, select the most relevant "
@@ -846,28 +879,56 @@ def _semantic_review_batch(batch: list[dict], *,
     response = llm_judge(
         prompt, max_retries=1, timeout_s=600, max_tokens_override=8192,
         temperature_override=0.0,
+        tools=[_CLAIM_REVIEW_TOOL],
+        tool_choice={"type": "function", "function": {
+            "name": "submit_claim_reviews"}},
     )
-    content = ((response.get("choices") or [{}])[0].get("message") or {}).get("content")
     choice = (response.get("choices") or [{}])[0]
+    message = choice.get("message") or {}
+    content = message.get("content")
+    if not isinstance(content, str):
+        content = ""
+    tool_calls = message.get("tool_calls")
+    if not isinstance(tool_calls, list):
+        tool_calls = []
     finish_reason = choice.get("finish_reason")
+    response_identity = {"content": content, "tool_calls": tool_calls}
+    response_digest = hashlib.sha256(json.dumps(
+        response_identity, ensure_ascii=False, sort_keys=True,
+        separators=(",", ":"), default=str).encode("utf-8")).hexdigest()
     metadata = {
         "finish_reason": finish_reason,
         "usage": response.get("usage") if isinstance(response.get("usage"), dict) else None,
         "model": response.get("model"),
         "response_id": response.get("id"),
         "response_chars": len(str(content or "")),
-        "response_preview": str(content or "")[:240],
-        "response_sha256": hashlib.sha256(str(content or "").encode("utf-8")).hexdigest(),
-        "response_content": content if isinstance(content, str) else None,
+        "response_preview": (content or json.dumps(
+            tool_calls, ensure_ascii=False, default=str))[:240],
+        "response_sha256": response_digest,
+        "response_content": content,
+        "response_tool_calls": tool_calls,
         "request_audit": response.get("_cadre_request_audit"),
     }
-    if finish_reason not in (None, "stop"):
+    if finish_reason not in ("tool_calls", "stop"):
         raise SemanticReviewError(
             f"semantic reviewer returned incomplete output (finish_reason={finish_reason})",
             metadata)
-    parsed = _parse_json_response(str(content or ""))
-    if not isinstance(parsed.get("reviews"), list):
-        raise SemanticReviewError("semantic reviewer returned no valid JSON reviews array",
+    if len(tool_calls) != 1 or not isinstance(tool_calls[0], dict):
+        raise SemanticReviewError("semantic reviewer must return exactly one structured tool call",
+                                  metadata)
+    function = tool_calls[0].get("function")
+    if (not isinstance(function, dict)
+            or function.get("name") != "submit_claim_reviews"
+            or not isinstance(function.get("arguments"), str)):
+        raise SemanticReviewError("semantic reviewer returned an unexpected tool call",
+                                  metadata)
+    try:
+        parsed = json.loads(function["arguments"])
+    except json.JSONDecodeError as exc:
+        raise SemanticReviewError("semantic reviewer tool arguments are invalid JSON",
+                                  metadata) from exc
+    if not isinstance(parsed, dict) or not isinstance(parsed.get("reviews"), list):
+        raise SemanticReviewError("semantic reviewer returned no valid reviews array",
                                   metadata)
     parsed["_review_metadata"] = metadata
     return parsed
@@ -982,7 +1043,7 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
             except OSError:
                 fingerprint_data.append((rel, "unreadable"))
     fingerprint = hashlib.sha256(json.dumps(
-        {"schema": 6, "verifier": verifier_identity, "identity": analysis_identity,
+        {"schema": 7, "verifier": verifier_identity, "identity": analysis_identity,
          "input_manifest": manifest_digest, "inputs": fingerprint_data},
         sort_keys=True, separators=(",", ":"),
     ).encode()).hexdigest()
@@ -990,7 +1051,7 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
     if use_cache and semantic_reviewer is None and cache_path.is_file():
         try:
             cached = json.loads(cache_path.read_text(encoding="utf-8"))
-            if (cached.get("schema_version") == 6
+            if (cached.get("schema_version") == 7
                     and cached.get("input_fingerprint") == fingerprint
                     and cached.get("status") in {
                         "complete", "failed", "no-cited-claims"
@@ -1095,15 +1156,30 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
             review_by_id: dict[str, dict] = {}
             for raw_row in raw_reviews:
                 if semantic_reviewer is None:
-                    if (not isinstance(raw_row, list) or len(raw_row) != 3
-                            or not isinstance(raw_row[0], str)
-                            or not isinstance(raw_row[1], str)
-                            or not isinstance(raw_row[2], list)
-                            or not all(isinstance(value, str) for value in raw_row[2])):
+                    if (not isinstance(raw_row, dict)
+                            or set(raw_row) != {"id", "verdict", "evidence_ids"}
+                            or not isinstance(raw_row.get("id"), str)
+                            or not isinstance(raw_row.get("verdict"), str)
+                            or raw_row.get("verdict") not in {
+                                "supported", "contradicted", "insufficient"}
+                            or not isinstance(raw_row.get("evidence_ids"), list)
+                            or not all(isinstance(value, str)
+                                       for value in raw_row["evidence_ids"])
+                            or len(raw_row["evidence_ids"])
+                               != len(set(raw_row["evidence_ids"]))):
                         raise ValueError(
-                            "review rows must be [claim_id, verdict, evidence_ids]"
+                            "review rows must be structured claim decisions"
                         )
-                    claim_id, verdict, evidence_ids = raw_row
+                    claim_id = raw_row["id"]
+                    verdict = raw_row["verdict"]
+                    evidence_ids = raw_row["evidence_ids"]
+                    supplied_ids = {str(row.get("evidence_id"))
+                                     for row in next(
+                                         item for item in batch
+                                         if item["id"] == claim_id)["evidence"]}
+                    if any(evidence_id not in supplied_ids
+                           for evidence_id in evidence_ids):
+                        raise ValueError("review selected an evidence ID not supplied for its claim")
                     normalized = {"id": claim_id, "verdict": verdict,
                                   "evidence_ids": evidence_ids}
                 else:
@@ -1219,7 +1295,7 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
             try:
                 cache_path.parent.mkdir(parents=True, exist_ok=True)
                 checkpoint = {
-                    "schema_version": 6, "ok": False, "applicable": True,
+                    "schema_version": 7, "ok": False, "applicable": True,
                     "status": "in_progress", "input_fingerprint": fingerprint,
                     "analysis_identity": analysis_identity,
                     "claims_total": len(results) + sum(len(item["references"]) for item in remaining),
@@ -1248,7 +1324,7 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
     violations = [item for item in results if item["status"] != "semantically-supported"]
     ok = not violations and review_error is None
     result = {
-        "schema_version": 6,
+        "schema_version": 7,
         "ok": ok,
         "applicable": True,
         "status": "complete" if ok else ("verification-error" if review_error else "failed"),
