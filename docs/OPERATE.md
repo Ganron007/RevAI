@@ -50,7 +50,7 @@ CADRE_PIPELINE_MODE=large python3 /opt/scripts/intake_v2.py /path/to/sample.exe
 > cd ~/RevAI && sudo ./scripts/deploy.sh --restart && python3 /opt/scripts/v2_validate.py --smoke-only
 > ```
 
-The recommended way to run the whole spine is the **LangGraph ReAct orchestrator** — it plans and executes intake → quick_scan → (winre_dynamic) → agentic deep dive → (function_recovery) → (artifact_gen) → (behavioural_model) → yara_gen → publish v2 → section publish v3 → audit → quality gate, and retries a stage that fails. Parenthesised stages are opt-in and skip themselves when their flag is off. This is what the Console's **Run orch** button drives.
+The recommended way to run the whole spine is the **LangGraph ReAct orchestrator** — it plans and executes intake → quick_scan → (winre_dynamic) → agentic deep dive → (function_recovery) → (artifact_gen) → (behavioural_model) → yara_gen → publish v2 → section publish v3 → audit → quality gate, and retries transient stage failures. A failed report publisher freezes the evidence set; only the audit and quality reads follow. Parenthesised stages are opt-in and skip themselves when their flag is off. This is what the Console's **Run orch** button drives.
 
 ```bash
 # Full agentic spine from a sample path (runs intake first)
@@ -188,6 +188,13 @@ actually produced. A partial run remains inspectable: claim review can assess
 reports that exist, while every missing expected report remains an explicit
 quality failure and prevents a green result.
 
+A publisher failure is terminal for that run's evidence. The orchestrator
+records the failed stage, refuses intake/quick/deep/YARA, optional evidence
+stages and both publishers, and permits only the audit and quality reads. The
+deterministic finalizer also skips verdict reconciliation and enforced
+YARA/publish after the freeze. The audit still runs so the failure is visible;
+it is not turned green.
+
 ### Indicator verification and published-data redaction
 
 The publisher evaluates each report against raw evidence from that same run. Literal indicators are checked in all four reports. Unsupported claims remain visible and fail the quality gate; a clean report cannot mask a failure in another report. Verdict downgrades against the upstream lock are also kept visible and fail quality.
@@ -276,10 +283,16 @@ query the referenced source files during analysis.
 
 ### Depth mode (opt-in, post-pipeline)
 
-`REVAI_DEPTH=1` starts a second, separate run **after** the main pipeline has
-finished. Its objective is to understand **how** the sample works — not whether it
-is malicious. It produces a function map, not a verdict, and it never gates the
-main pipeline. Off by default.
+`REVAI_DEPTH=1` or `REVAI_DEPTH=full` starts a second, separate run **after** the
+main pipeline has finished. Its objective is to understand **how** the sample
+works — not whether it is malicious. It produces a function map, not a verdict,
+and it never gates the main pipeline. Off by default.
+
+`REVAI_DEPTH=full` selects the full depth profile: the same post-pipeline run on
+the domain-node substrate, with every capability domain investigated by its own
+bounded tool-calling node instead of one evidence-only call. It raises the
+ceiling to 14400s and forces emulation, unpack and solver investigation on for
+that run. Long runtimes are expected by design.
 
 Why it is its own mode rather than a budget knob: it is expensive, it is slow,
 its outcome is unpredictable (it loops until the picture is complete), and an
@@ -291,11 +304,12 @@ function or region carries one of four statuses — `understood`, `partial`,
 citation. `not-explored` is the only status excused a citation: it asserts
 nothing beyond that the region was not looked at.
 
-The ceiling (`REVAI_DEPTH_CEILING_SECONDS`, default 7200s) **consolidates rather
-than truncates**. On hitting it, or on an examiner stop, the run writes what it
-knows and declares what remains — so a cutoff is a partial-but-honest map, never
-nothing. Every run reports its cost: N regions understood / partial /
-not-reconstructed / not-explored, plus tokens and seconds.
+The ceiling (`REVAI_DEPTH_CEILING_SECONDS`; default 7200s for the standard
+profile, 14400s for `full`) **consolidates rather than truncates**. On hitting
+it, or on an examiner stop, the run writes what it knows and declares what
+remains — so a cutoff is a partial-but-honest map, never nothing. Every run
+reports its cost: N regions understood / partial / not-reconstructed /
+not-explored, plus tokens and seconds.
 
 Resume: state is checkpointed atomically after every region, so stopping and
 restarting continues rather than restarts, and a stop mid-write cannot corrupt
@@ -315,8 +329,13 @@ not write.
 | Level | How | Status |
 |---|---|---|
 | **L1 light** | `REVAI_STEERING_FILE=<path>` — a file of notes read before the run | shipped |
-| **L2 mid-run** | UI chat while the run is live | **deferred** — live steering was judged too risky for this project right now |
-| **L3 post-hoc** | `POST /api/steer/<sha>` with `{note, level}`; `GET` reads the history | shipped |
+| **L2 mid-run** | UI chat while the run is live | not yet available — next steering surface after depth validation |
+| **L3 post-hoc** | `POST /api/steer/<sha>` with `{note, level}`; `GET` reads the history | API only; no Console surface yet |
+
+The Console currently exposes the L1 pre-run note; the L2 live-chat surface and
+the L3 history view are not yet wired into it. The shared merge point is already
+implemented, so the missing work is the UI and its consumers, not a second
+steering path.
 
 **Precedence is deterministic**: an explicit file written for *this* run wins
 over a note recorded after a previous one.
@@ -346,7 +365,7 @@ nothing looks like it heard something.
 6. **publish** - REPORT-MASTER (LLM-authored, source-tagged)
 7. **correlate** - section Map-Reduce report
 8. **audit** - `audit_pipeline.py` -> `all_green` (incl. depth gate), then `report_quality.py` -> `truly_green`
-8.5. **depth_understanding** - *(optional, `REVAI_DEPTH=1`)* depth mode, run **after** the pipeline has finished (see *Depth mode* above)
+8.5. **depth_understanding** - *(optional, `REVAI_DEPTH=1` or `REVAI_DEPTH=full`)* depth mode, run **after** the pipeline has finished (see *Depth mode* above)
 
 With `REVAI_WINRE_RUN` unset the stage list is identical to the historical order
 (triage -> deep dive): the reorder only takes effect when you opt into detonation,
@@ -570,8 +589,8 @@ the sample executed.
 | `REVAI_WINRE_LLM_SOURCE` | `winre_env` | WinRE always uses its own `/opt/winre/.env` or explicit `WINRE_LLM_*` exports. Legacy `inherit` values are treated as `winre_env`; RevAI provider, model, and key are never forwarded to WinRE. |
 | `ti_enrich` (Console) | off | TI enrichment: VirusTotal + Hybrid Analysis hash lookup. Needs `VT_API_KEY` and `HA_API_KEY` in `/opt/secrets/cadre.env`. Enrichment only — it never clears a local YARA/tool gate. Maps to `REVAI_TI_ENRICH` |
 | `REVAI_TI_ENRICH` | unset | CLI opt-in for TI enrichment (Console: `ti_enrich`) |
-| `depth_ceiling_seconds` (Console) | `7200` | depth mode's wall-clock ceiling. Maps to `REVAI_DEPTH_CEILING_SECONDS` |
-| `REVAI_DEPTH_CEILING_SECONDS` | `7200` | depth mode's ceiling. The ceiling does not truncate — hitting it forces a *consolidate and declare* phase, so a cutoff yields a partial-but-honest map with the remaining unknowns explicitly costed. A non-numeric value falls back to the default rather than failing a run |
+| `depth_ceiling_seconds` (Console) | `7200` | depth mode's wall-clock ceiling for the standard profile; `REVAI_DEPTH=full` defaults to `14400`. Maps to `REVAI_DEPTH_CEILING_SECONDS` |
+| `REVAI_DEPTH_CEILING_SECONDS` | `7200` (`14400` for `full`) | depth mode's ceiling. The ceiling does not truncate — hitting it forces a *consolidate and declare* phase, so a cutoff yields a partial-but-honest map with the remaining unknowns explicitly costed. A non-numeric value falls back to the default rather than failing a run |
 | `REVAI_LLM_ENV` | `/opt/revai/config/llm.env` | RevAI's own LLM config path; WinRE uses its separate env file/exports. The key is never echoed or stored in the Console |
 | `REVAI_WINRE_ROOT` / `REVAI_WINRE_PY` / `REVAI_WINRE_TIMEOUT` | `/opt/winre` / `<root>/venv/bin/python` / `3600` | install + venv locations, subprocess timeout seconds |
 | `REVAI_WITH_WINRE` / `REVAI_WINRE_REPO` / `REVAI_WINRE_REF` | off / `https://github.com/Ganron007/WinRE.git` / `master` | install-time only: the optional WinRE step in `setup-remnux.sh` |

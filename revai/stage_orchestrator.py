@@ -52,6 +52,12 @@ from report_quality import evaluate_sha_publish_quality  # noqa: E402
 
 SCRIPTS = Path(os.environ.get("REVAI_SCRIPTS_DIR") or "/opt/scripts")
 
+# After a report publisher fails, the evidence set is frozen: only the audit
+# (which reads and writes audit artifacts, never sample evidence) may run.
+# Publication is included here so a failed publisher cannot be followed by a
+# retry or by the second publisher; the single-shot guard is a second layer.
+_REPORT_TERMINAL_ALLOWED = frozenset({"run_audit"})
+
 
 def _utc() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -238,6 +244,7 @@ class StageRunner:
         self.sample = sample
         self.events = events
         self._report_stage_calls: dict[str, int] = {}
+        self._report_terminal: dict[str, Any] | None = None
         self.run_log = case_dir(sha) / "orchestrator.log"
         self.run_log.parent.mkdir(parents=True, exist_ok=True)
 
@@ -268,6 +275,74 @@ class StageRunner:
         print(f"[orchestrator] {event['failure_reason']}", flush=True)
         return {key: value for key, value in event.items() if key != "type"}
 
+    @property
+    def report_terminal(self) -> dict[str, Any] | None:
+        """The failed report stage that froze this run's evidence set, if any."""
+        return getattr(self, "_report_terminal", None)
+
+    def _mark_report_terminal(self, name: str, out: dict[str, Any]) -> None:
+        """Freeze evidence after a publisher fails.
+
+        A publisher failure means the v2/v3 artifacts no longer describe the
+        evidence on disk. Re-running intake/quick/deep/YARA would mutate that
+        evidence again and can invalidate a manifest the publisher already
+        consumed; the 2026-10-20 run did exactly that. The freeze is
+        deterministic and independent of planner instructions.
+        """
+        if getattr(self, "_report_terminal", None) is not None:
+            return
+        reason = (
+            out.get("failure_reason")
+            or out.get("error")
+            or out.get("reason")
+            or "report stage did not complete"
+        )
+        self._report_terminal = {
+            "stage": name,
+            "rc": out.get("rc", 1),
+            "reason": str(reason)[:500],
+            "ts": _utc(),
+        }
+        self.events.append({
+            "type": "observe",
+            "tool": "report_stage_stop_guard",
+            "data": dict(self._report_terminal),
+            "ts": _utc(),
+        })
+        print(
+            f"[orchestrator] report stage stop guard: {name} failed; "
+            "evidence-mutating stages are now blocked",
+            flush=True,
+        )
+
+    def _report_failure_guard(self, name: str) -> dict[str, Any] | None:
+        """Return a failed tool result when a stage is forbidden after a freeze."""
+        terminal = getattr(self, "_report_terminal", None)
+        if terminal is None or name in _REPORT_TERMINAL_ALLOWED:
+            return None
+        event = {
+            "type": "tool_result",
+            "tool": name,
+            "cmd": ["report_stage_stop_guard"],
+            "rc": 1,
+            "ok": False,
+            "elapsed_s": 0.0,
+            "ts": _utc(),
+            "attempt": 1,
+            "timed_out": False,
+            "artifacts_written": False,
+            "blocked": True,
+            "blocked_by": terminal.get("stage"),
+            "failure_reason": (
+                f"{name} blocked: {terminal.get('stage')} failed; "
+                "evidence-mutating stages cannot run after a report "
+                "publisher failure"
+            ),
+        }
+        self.events.append(event)
+        print(f"[orchestrator] {event['failure_reason']}", flush=True)
+        return {key: value for key, value in event.items() if key != "type"}
+
     def _run(
         self,
         name: str,
@@ -286,6 +361,9 @@ class StageRunner:
         the semantic audit can disable retries because their partial output has
         no reliable whole-stage resume contract.
         """
+        guard = self._report_failure_guard(name)
+        if guard is not None:
+            return guard
         profile = run_profile()
         retries = int(profile.get("stage_retries") or 0)
         transient_only = bool(profile.get("retry_transient_only", True))
@@ -377,6 +455,8 @@ class StageRunner:
         if attempts > 1:
             out["retried"] = True
             out["retry_reason"] = (reason or "")[:500]
+        if name in ("run_publish", "run_section_publish") and not out["ok"]:
+            self._mark_report_terminal(name, out)
         return out
 
     def _failure_reason(self, marker: str) -> str:
@@ -502,6 +582,9 @@ class StageRunner:
         a missing driver, failed detonation or uncorrelated evidence is a tool
         failure; it must not produce a green dynamic run using stale evidence.
         """
+        guard = self._report_failure_guard("run_winre_dynamic")
+        if guard is not None:
+            return guard
         run_enabled = os.environ.get("REVAI_WINRE_RUN", "").strip().lower() in (
             "1", "true", "yes",
         )
@@ -565,11 +648,15 @@ class StageRunner:
                 "rc": out.get("rc", 1), "tool": "run_winre_dynamic"}
 
     def run_publish(self) -> dict:
+        guard = self._report_failure_guard("run_publish")
+        if guard is not None:
+            return guard
         blocked = self._claim_report_stage("run_publish")
         if blocked is not None:
             return blocked
         preflight = self._prepare_publish("run_publish")
         if preflight is not None:
+            self._mark_report_terminal("run_publish", preflight)
             return preflight
         hitl = os.environ.get("REVAI_HITL_VERDICT", "").strip().lower() in ("1", "true", "yes")
         v = _verdicts(self.sha)
@@ -581,8 +668,14 @@ class StageRunner:
                 "ts": _utc(),
             }
             self.events.append(entry)
-            return {"ok": False, "skipped": True, "hitl": True, **entry}
-        return self._run(
+            stopped = {
+                "ok": False, "skipped": True, "hitl": True, "rc": 1,
+                "failure_reason": "hitl_verdict_conflict",
+                **entry,
+            }
+            self._mark_report_terminal("run_publish", stopped)
+            return stopped
+        out = self._run(
             "run_publish",
             [
                 sys.executable, str(SCRIPTS / "publish_report_v2.py"),
@@ -591,20 +684,30 @@ class StageRunner:
             _stage_timeout("REVAI_STAGE_TIMEOUT_PUBLISH", 14400),
             retry_timeouts=False,
         )
+        if not out.get("ok"):
+            self._mark_report_terminal("run_publish", out)
+        return out
 
     def run_section_publish(self) -> dict:
+        guard = self._report_failure_guard("run_section_publish")
+        if guard is not None:
+            return guard
         blocked = self._claim_report_stage("run_section_publish")
         if blocked is not None:
             return blocked
         preflight = self._prepare_publish("run_section_publish")
         if preflight is not None:
+            self._mark_report_terminal("run_section_publish", preflight)
             return preflight
-        return self._run(
+        out = self._run(
             "run_section_publish",
             [sys.executable, str(SCRIPTS / "section_publisher.py"), self.sha],
             _stage_timeout("REVAI_STAGE_TIMEOUT_PUBLISH", 14400),
             retry_timeouts=False,
         )
+        if not out.get("ok"):
+            self._mark_report_terminal("run_section_publish", out)
+        return out
 
     def _prepare_publish(self, stage: str) -> dict[str, Any] | None:
         hitl = os.environ.get("REVAI_HITL_VERDICT", "").strip().lower() in (
@@ -690,6 +793,9 @@ class StageRunner:
         a sha through case_dir(), which needs REVAI_RUN_MODE to be right, and in
         agentic mode that is `agentic` -- not the scripted default.
         """
+        guard = self._report_failure_guard("run_depth")
+        if guard is not None:
+            return guard
         try:
             from depth_agent import ceiling_seconds, depth_profile, depth_requested
         except Exception as exc:  # pragma: no cover - not deployed
@@ -1169,7 +1275,7 @@ Use tools. Do not claim success without check_quality.ok=true.
     # skips run_yara_gen would fail the audit with no retry path, so we
     # run it deterministically here when missing, then re-run the gate.
     rule_yar = case_dir(sha) / "rule.yar"
-    if not rule_yar.exists() and "run_yara_gen" not in [
+    if runner.report_terminal is None and not rule_yar.exists() and "run_yara_gen" not in [
         e.get("tool") for e in events if e.get("type") == "tool_result"
     ]:
         print(
@@ -1200,7 +1306,24 @@ Use tools. Do not claim success without check_quality.ok=true.
     # that skipped publication or changed evidence after publishing. If it
     # changes the deep artifact here, regenerate reports before the final audit.
     _hitl_env = os.environ.get("REVAI_HITL_VERDICT", "").strip().lower() in ("1", "true", "yes")
-    _reconciliation = _reconcile_deep_verdict(sha, hitl_enabled=_hitl_env)
+    if runner.report_terminal is not None:
+        # The failed publisher already consumed the evidence manifest. Do not
+        # reconcile the deep artifact again; that would mutate evidence after
+        # the failure and can invalidate the manifest a second time.
+        _reconciliation = {"ok": True, "changed": False, "skipped": True}
+        events.append({
+            "type": "observe",
+            "tool": "post_report_failure_finalizer",
+            "data": {
+                "skipped": ["verdict_reconciliation", "enforced_yara",
+                            "enforced_publish"],
+                "reason": "report publisher already failed; preserving evidence",
+                "blocked_by": (runner.report_terminal or {}).get("stage"),
+            },
+            "ts": _utc(),
+        })
+    else:
+        _reconciliation = _reconcile_deep_verdict(sha, hitl_enabled=_hitl_env)
     if not _reconciliation.get("ok"):
         events.append({
             "type": "error", "tool": "verdict_reconciliation",
@@ -1237,7 +1360,8 @@ Use tools. Do not claim success without check_quality.ok=true.
     _did_publish = "run_publish" in [
         e.get("tool") for e in events if e.get("type") == "tool_result"
     ]
-    if not _master_md.exists() and not _did_publish:
+    if (runner.report_terminal is None and not _master_md.exists()
+            and not _did_publish):
         print(
             "[orchestrator] publish missing (planner skipped) — running deterministically",
             flush=True,

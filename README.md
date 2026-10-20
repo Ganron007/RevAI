@@ -65,7 +65,7 @@ All modes run the same stage scripts, the same tool stack, and the same LLM back
 | Mode | Script / Entry | Stage Sequencing | Failure Handling |
 | :--- | :--- | :--- | :--- |
 | **Scripted** *(default)* | `pipeline_single.py` | • Deterministic fixed order (the spine below)<br>• No LLM orchestration | **Zero retries**<br>Failed stage aborts remaining pipeline (predictable, deterministic runtime). |
-| **Agentic** | `stage_orchestrator.py` | • LangGraph ReAct planner (LLM) in policy-pinned order<br>• Observes verdicts/evidence between stages<br>• HITL stop before publish if quick/deep verdicts disagree | **1 bounded retry** *(default)*<br>Handles transient failures (timeouts, connection loss, OOM). Calibrated via `REVAI_*` env / console panel (retries, budget, recursion limit, timeout scale). |
+| **Agentic** | `stage_orchestrator.py` | • LangGraph ReAct planner (LLM) in policy-pinned order<br>• Observes verdicts/evidence between stages<br>• HITL stop before publish if quick/deep verdicts disagree | **1 bounded retry** *(default)*<br>Handles transient failures (timeouts, connection loss, OOM). A failed report publisher freezes evidence; earlier stages are not replayed. Calibrated via `REVAI_*` env / console panel (retries, budget, recursion limit, timeout scale). |
 | **Web Console** | `http://<host>:5000` | • Manual stage buttons (human-paced)<br>• **Run orch** button (full agentic path)<br>• **Analyst steering** — pre-run note (`REVAI_STEERING_FILE`), or a post-hoc note via `/api/steer/<sha>` for the next run | **UI-configured**<br>Run config panel sets retries, budget profile (*standard* / *generous* / *unlimited*), and timeout scale before execution. |
 
 The shared tool stack across all three modes:
@@ -134,8 +134,9 @@ React Console / CLI
    |- 7.  section_publisher.py   section-wise v3 reports (one LLM call per section)
    |- 8.  audit_pipeline.py      all_green per-stage audit
    |        '- report_quality.py -> truly_green quality gate
-   '- 8.5 depth_understanding    [REVAI_DEPTH=1]
+   '- 8.5 depth_understanding    [REVAI_DEPTH=1|full]
             post-pipeline depth run -> understanding.json
+            (full = domain-node substrate, 14400s ceiling)
 ```
 
 Stages 3, 4.5, 4.6, 4.7 and 8.5 are opt-in and skip themselves when their

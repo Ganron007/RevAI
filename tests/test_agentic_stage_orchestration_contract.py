@@ -183,7 +183,9 @@ def test_non_resumable_publish_timeout_is_not_retried(monkeypatch, tmp_path):
     assert len(attempts) == 1
     assert result["rc"] == 124 and result["timed_out"] is True
     assert result["retry_suppressed"] == "timed_out_non_resumable_stage"
-    assert runner.events[-1]["timed_out"] is True
+    tool_events = [e for e in runner.events if e.get("type") == "tool_result"]
+    assert tool_events[-1]["timed_out"] is True
+    assert runner.report_terminal["stage"] == "run_publish"
 
 
 def test_depth_full_invokes_the_convergence_loop(monkeypatch, tmp_path):
@@ -250,3 +252,112 @@ def test_winre_driver_exception_is_a_failed_requested_tool(monkeypatch, tmp_path
     assert out["state"] == "error" and "driver failed" in out["error"]
     assert runner.events[-1]["tool"] == "run_winre_dynamic"
     assert runner.events[-1]["ok"] is False
+
+
+def test_failed_publish_freezes_evidence_but_allows_audit(monkeypatch, tmp_path):
+    """A publisher failure must not be followed by evidence-mutating stages.
+
+    The 2026-10-20 run failed run_publish and then restarted intake, quick scan,
+    deep dive and YARA. That replay changed verdict.json after the report-input
+    manifest and made section publication fail for a second, unrelated reason.
+    """
+    monkeypatch.setattr(so, "case_dir", lambda _sha: tmp_path)
+    monkeypatch.setattr(so.StageRunner, "_prepare_publish", lambda self, stage: None)
+    calls = []
+
+    def fake_run(cmd, **kwargs):
+        name = Path(cmd[1]).name
+        calls.append(name)
+        rc = 1 if name == "publish_report_v2.py" else 0
+        return subprocess.CompletedProcess(cmd, rc, stdout="", stderr="")
+
+    monkeypatch.setattr(so.subprocess, "run", fake_run)
+    events = []
+    runner = so.StageRunner(SHA, None, events)
+
+    published = runner.run_publish()
+    assert published["ok"] is False and published["rc"] == 1
+    assert runner.report_terminal["stage"] == "run_publish"
+
+    quick = runner.run_quick_scan()
+    yara = runner.run_yara_gen()
+    depth = runner.run_depth()
+    assert quick["blocked"] is True and quick["artifacts_written"] is False
+    assert yara["blocked"] is True
+    assert depth["blocked"] is True
+    assert quick["blocked_by"] == "run_publish"
+
+    audit = runner.run_audit()
+    assert audit["ok"] is True
+    assert calls == ["publish_report_v2.py", "audit_pipeline.py"]
+    assert any(
+        e.get("type") == "observe" and e.get("tool") == "report_stage_stop_guard"
+        for e in events
+    )
+
+
+def test_publish_preflight_failure_freezes_the_run(monkeypatch, tmp_path):
+    monkeypatch.setattr(so, "case_dir", lambda _sha: tmp_path)
+    failure = {
+        "ok": False,
+        "rc": 1,
+        "failure_reason": "verdict reconciliation failed",
+    }
+    monkeypatch.setattr(so.StageRunner, "_prepare_publish", lambda self, stage: failure)
+    runner = so.StageRunner(SHA, None, [])
+
+    assert runner.run_publish() is failure
+    assert runner.report_terminal["stage"] == "run_publish"
+    assert runner.report_terminal["reason"] == "verdict reconciliation failed"
+    assert runner.run_quick_scan()["blocked"] is True
+
+
+def test_hitl_publish_stop_freezes_the_run(monkeypatch, tmp_path):
+    monkeypatch.setattr(so, "case_dir", lambda _sha: tmp_path)
+    (tmp_path / "deep_dive").mkdir()
+    (tmp_path / "verdict.json").write_text(
+        json.dumps({"verdict": "malicious"}), encoding="utf-8",
+    )
+    (tmp_path / "deep_dive" / "05-deep-dive.json").write_text(
+        json.dumps({"verdict": "clean"}), encoding="utf-8",
+    )
+    monkeypatch.setenv("REVAI_HITL_VERDICT", "1")
+    runner = so.StageRunner(SHA, None, [])
+
+    stopped = runner.run_publish()
+    assert stopped["ok"] is False and stopped["hitl"] is True
+    assert runner.report_terminal["reason"] == "hitl_verdict_conflict"
+    assert runner.run_quick_scan()["blocked"] is True
+
+
+def test_section_publish_failure_freezes_the_run(monkeypatch, tmp_path):
+    monkeypatch.setattr(so, "case_dir", lambda _sha: tmp_path)
+    monkeypatch.setattr(so.StageRunner, "_prepare_publish", lambda self, stage: None)
+
+    def fake_run(cmd, **kwargs):
+        return subprocess.CompletedProcess(cmd, 1, stdout="", stderr="")
+
+    monkeypatch.setattr(so.subprocess, "run", fake_run)
+    runner = so.StageRunner(SHA, None, [])
+
+    assert runner.run_section_publish()["ok"] is False
+    assert runner.report_terminal["stage"] == "run_section_publish"
+    assert runner.run_quick_scan()["blocked"] is True
+
+
+def test_successful_publishers_do_not_freeze_the_run(monkeypatch, tmp_path):
+    monkeypatch.setattr(so, "case_dir", lambda _sha: tmp_path)
+    monkeypatch.setattr(so.StageRunner, "_prepare_publish", lambda self, stage: None)
+    calls = []
+
+    def fake_run(cmd, **kwargs):
+        calls.append(Path(cmd[1]).name)
+        return subprocess.CompletedProcess(cmd, 0, stdout="", stderr="")
+
+    monkeypatch.setattr(so.subprocess, "run", fake_run)
+    runner = so.StageRunner(SHA, None, [])
+
+    assert runner.run_publish()["ok"] is True
+    assert runner.run_section_publish()["ok"] is True
+    assert runner.report_terminal is None
+    assert calls == ["publish_report_v2.py", "section_publisher.py"]

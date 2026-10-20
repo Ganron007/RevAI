@@ -62,14 +62,15 @@ RevAI supports three modes of execution, all using the same tool stack and LLM b
 | Mode | Script | Stages | Deep Dive |
 |------|--------|--------|-----------|
 | **Scripted** | `pipeline_single.py` | Fixed order: intake -> quick_scan -> [winre_dynamic] -> deep_dive -> [function_recovery] -> [artifact_gen] -> [behavioural_model] -> yara_gen -> publish v2 -> section v3 -> audit -> [depth_understanding] | LangGraph agentic (always) |
-| **Agentic** | `stage_orchestrator.py` | LLM planner decides which stage to call (15 stage tools, policy-pinned order); retries on failure; HITL before publish if verdicts disagree | LangGraph agentic |
+| **Agentic** | `stage_orchestrator.py` | LLM planner decides which stage to call (15 stage tools, policy-pinned order); bounded transient retries; a failed report publisher stops evidence mutation; HITL before publish if verdicts disagree | LangGraph agentic |
 | **Web Console** | `http://<host>:5000` | User clicks individual stage buttons, or **Run orch** for full agentic | LangGraph agentic |
 
 *Bracketed stages are optional: `winre_dynamic` (`REVAI_WINRE_RUN=1`),
 `function_recovery` (`REVAI_ENABLE_AGENTIC_RECOVERY=1`), `artifact_gen`
 (`REVAI_ENABLE_ARTIFACT_GEN=1`), `behavioural_model`
 (`REVAI_ENABLE_BEHAVIOURAL_MODEL=1`) and `depth_understanding`
-(`REVAI_DEPTH=1`) each self-skip when their flag is off.
+(`REVAI_DEPTH=1|full`; `full` uses the domain-node substrate with a 14400s
+ceiling) each self-skip when their flag is off.
 
 The deep dive always runs through the LangGraph ReAct agent — only the stage ordering differs between modes. Usage details: [`OPERATE.md`](OPERATE.md).
 

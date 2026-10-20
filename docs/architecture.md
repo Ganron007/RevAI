@@ -25,7 +25,7 @@ One shared set of stage scripts, five of them optional; three ways to drive them
 | Mode | Driver | Stage order decided by | Retries | Best for |
 |---|---|---|---|---|
 | **Scripted** (default) | `pipeline_single.py` | code — fixed order | none (deterministic) | fast, reproducible runs |
-| **Agentic** | `stage_orchestrator.py` | LangGraph ReAct planner (policy-pinned order) | 1 stage retry (transient) + 1 tool retry (0-3 configurable) | large/obfuscated samples |
+| **Agentic** | `stage_orchestrator.py` | LangGraph ReAct planner (policy-pinned order) | 1 stage retry (transient) + 1 tool retry (0-3 configurable); report-stage freeze after a publisher failure | large/obfuscated samples |
 | **Web Console** | `app.py` + React | human clicks (manual) or the same planner (Run orch) | user-configured values | day-to-day work |
 
 All three execute the same stage scripts; only the decision layer differs. The retry/budget values are user-capped in every mode (see §6).
@@ -100,7 +100,7 @@ failed or stale pack is recorded as a failed tool and cannot produce a green run
 | **9. Publish** | `publish_report_v2.py` | LLM Judge authors `REPORT-MASTER-v2.md` (17 sections) and `REPORT-TECHNICAL-v2.md` (13 sections) from the complete run-bound primary JSON artifacts plus focused evidence. Each report call uses one forced `submit_report` tool call; the exact raw response is retained for audit, and malformed message-text JSON is not treated as Markdown. |
 | **10. Section reports** | `section_publisher.py` | Section map-reduce: per-section LLM passes with cross-section context → `REPORT-MASTER-v3.md` / `REPORT-TECHNICAL-v3.md`. Both receive the complete run-bound primary sources plus topic-routed evidence, and each section uses the same forced structured report contract. Technical evidence is routed to the sections that need it (`TECHNICAL_SECTION_EVIDENCE`); `REVAI_TECHNICAL_SECTIONWISE=0` restores the single-call technical assembly as a rollback lever. |
 | **11. Audit** | `audit_pipeline.py` & `report_quality.py` | Per-stage audit (`all_green`), engine-citation honesty, verdict lock, style gates, depth gate, `truly_green`. Every output file is provenance-checked; exact duplicate compatibility aliases are reviewed once by content digest. Citations must resolve to primary artifacts and exact rows/fields, then the configured model reviews claim support against those excerpts. A valid citation alone is not proof; unsupported, contradicted, malformed, or unreviewed claims keep the report red. |
-| **12. Depth Mode** *(optional)* | `depth_agent.py` | Opt-in, **runs after the audit** (`REVAI_DEPTH=1`). Objective is UNDERSTANDING, not a verdict: it produces a function map (`understanding.json`) and never a judgment, and never gates the pipeline. Every region carries a status from a fixed vocabulary with a reason and an evidence citation, and the loop terminates on a declared unknown set. The ceiling consolidates rather than truncates, so a cutoff yields a partial-but-honest map. |
+| **12. Depth Mode** *(optional)* | `depth_agent.py` | Opt-in, **runs after the audit** (`REVAI_DEPTH=1` or `REVAI_DEPTH=full`). Objective is UNDERSTANDING, not a verdict: it produces a function map (`understanding.json`) and never a judgment, and never gates the pipeline. The standard profile investigates regions from the pipeline evidence; the **full** profile runs each capability domain through its own bounded tool-calling node, forces emulation/unpack/solver investigation on, and raises the ceiling to 14400s. Every region carries a status from a fixed vocabulary with a reason and an evidence citation, and the loop terminates on a declared unknown set. The ceiling consolidates rather than truncates, so a cutoff yields a partial-but-honest map. |
 
 ---
 
@@ -117,7 +117,7 @@ Four players: **User** (caps), **LLM** (judgment), **Agent** (the loop), **Code*
 
 **Tool-level flow**: quick_scan's tool order = code (fixed battery); deep dive's tool order = the LLM agent. Tool retry = code first (user-capped, before the LLM sees the error), then LLM judgment if still failing.
 
-**Stage-level flow**: scripted = code; agentic = planner (policy-pinned); UI manual = human; UI Run-orch = planner with user values. Stage retry = always code (transient-only, count = user knob) — the planner is never asked to decide retries.
+**Stage-level flow**: scripted = code; agentic = planner (policy-pinned); UI manual = human; UI Run-orch = planner with user values. Stage retry = always code (transient-only, count = user knob) — the planner never owns retry counts. A failed report publisher freezes the evidence set: the planner cannot restart an earlier stage, and only audit/quality reads remain.
 
 ---
 
@@ -135,6 +135,7 @@ L2   LLM judgment    deep-dive agent may re-call a tool differently (uncapped
 ```
 
 * **Transient classification** (`is_transient_failure`): timeout, MCP/server connection loss, OOM → retryable. Permission, rule/artifact errors, LLM quality → never retried.
+* **Report-stage freeze**: publishers are single-shot. If either fails, evidence-mutating stages are refused and only the audit/quality reads run. The freeze is recorded as `report_stage_stop_guard` and cannot be overridden by the planner.
 * **LLM call retry**: the shared `llm_judge` helper has a built-in 3-attempt retry for API timeouts.
 * **Visibility**: every retried tool/stage is marked (`retried`, `first_error`, `attempts`) and recorded in traces + audit.
 
