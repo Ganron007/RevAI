@@ -6,6 +6,17 @@ presence describes the implementation; it does not certify the current source
 revision or every sample path. The case studies retain run-specific evidence
 and historical results.
 
+## Current validation state — 2026-10-20
+
+RevAI revision `1ff765f` is deployed on the configured reference runtime and
+its preflight smoke passes. The full local test suite on that revision reports
+**1,095 passed, 14 skipped**. These checks validate code contracts and runtime
+wiring; they do not establish sample-level report quality. No fresh malware
+sample has passed end-to-end acceptance on this revision. The current
+acceptance matrix is maintained separately; historical run sections below
+remain tied to their recorded source revisions. The feature inventory is not a
+release-acceptance certificate.
+
 ## Deterministic extractors (run in quick_scan / deep_dive)
 
 | # | Feature | What it does | Gate (env) | Stage | Artifact |
@@ -101,17 +112,17 @@ and historical results.
 
 | Feature | Gate | Status |
 |---------|------|--------|
-| **TI-enrich (VirusTotal + Hybrid Analysis hash lookup)** | `REVAI_TI_ENRICH=1` + `VT_API_KEY` + `HA_API_KEY` in `/opt/secrets/cadre.env` | **Live** — both providers returning lookups (enrichment-only, never clears local gates). |
-| **WinRE dynamic corroboration + optional detonation trigger** | Console Settings → **Dynamic analysis (WinRE)** (enable, FlareVM address/user/port, SSH key *path*, window, mode, snapshot gate + **Test connection**), pack root `REVAI_WINRE_LOGS` (default `/opt/winre/logs`); triggers: per-case **Run WinRE** button, run-config **Detonate with WinRE before publish** (`REVAI_WINRE_RUN`), or CLI; status at `GET /api/winre/status/<sha>` and the orchestrator's **winre dynamic** chip | **Live** — master and technical prompts receive artifact-derived execution status with distinct RevAI and WinRE scopes. A current WinRE pack adds deterministic runtime evidence to the master and technical reports (sample-launch record, window + coverage caveat, network capture, runtime events, sample-process-tree file create/write rows, Frida-decoded runtime paths, and any agentic-dbg artifact). Decoded path strings are not treated as proof of file creation. Without a pack, runtime observations are omitted and WinRE execution is reported as unavailable or unverified. Contradictory claims remain visible and fail the audit. All failures are recorded (`winre-run.json`) and never block the static run. Corroboration only (`static_yara_wins`). |
-| LLM (OpenRouter-compatible) | `REVAI_LLM_MODEL` / `REVAI_LLM_API_URL` / `REVAI_LLM_API_KEY` / `REVAI_LLM_REASONING` in `/opt/revai/config/llm.env` | configured-llm — live |
+| **TI-enrich (VirusTotal + Hybrid Analysis hash lookup)** | `REVAI_TI_ENRICH=1` + `VT_API_KEY` + `HA_API_KEY` in `/opt/secrets/cadre.env` | Implemented; prior campaigns returned provider lookups. Credentials and provider availability are operator-configured. Enrichment never clears local gates. |
+| **WinRE dynamic corroboration + optional detonation trigger** | Console Settings → **Dynamic analysis (WinRE)** (enable, FlareVM address/user/port, SSH key *path*, window, mode, snapshot gate + **Test connection**), pack root `REVAI_WINRE_LOGS` (default `/opt/winre/logs`); triggers: per-case **Run WinRE** button, run-config **Detonate with WinRE before publish** (`REVAI_WINRE_RUN`), or CLI; status at `GET /api/winre/status/<sha>` and the orchestrator's **winre dynamic** chip | Implemented and deployed; service smoke passes. Current-source sample acceptance remains pending. Master and technical prompts receive artifact-derived execution status with distinct RevAI and WinRE scopes. A current WinRE pack adds deterministic runtime evidence to the master and technical reports (sample-launch record, window + coverage caveat, network capture, runtime events, sample-process-tree file create/write rows, Frida-decoded runtime paths, and any agentic-dbg artifact). Decoded path strings are not treated as proof of file creation. Without a pack, runtime observations are omitted and WinRE execution is reported as unavailable or unverified. Contradictory claims remain visible and fail the audit. All failures are recorded (`winre-run.json`) and never block the static run. Corroboration only (`static_yara_wins`). |
+| LLM (OpenRouter-compatible) | `REVAI_LLM_MODEL` / `REVAI_LLM_API_URL` / `REVAI_LLM_API_KEY` / `REVAI_LLM_REASONING` in `/opt/revai/config/llm.env` | Configured and transport-smoke-tested; current-source sample report quality remains unaccepted. |
 
-## Run status (2026-08-09, 16 samples, all features on)
+## Historical run status (2026-08-09, 16 samples, all features on)
 
 15/16 `all_green`. G1 9/16 · G2 2/16 · G3 7/16 · G4 2/16 · G5 9/16 · G6 11/16 ·
 G7/G9/G10 16/16 · G8 11/16 · angr/z3 2/16 · recovery: named functions on 9/16
 (tasksche 23, vdaudio 14, darkside 8).
 
-## Run status (2026-08-11, revai-tools integration, VM-validated)
+## Historical run status (2026-08-11, revai-tools integration, VM-validated)
 
 Full pipeline on guLoader.exe (REMnux VM 192.168.77.43): `v2_validate.py --smoke-only`
 V2_SMOKE_OK · revai-tools tests 10/10 · quick_scan green (sec: real ASLR/DEP-missing
@@ -121,7 +132,7 @@ tools incl. all three revai_tools (`gate_ok=True hard_failures=[]`) · yara_gen
 
 ---
 
-## Run status (2026-10-05/06 sample campaign — static, both modes)
+## Historical run status (2026-10-05/06 sample campaign — static, both modes)
 
 Three Windows PE samples from the RevEng corpus, each run end-to-end on **both**
 the scripted and the agentic spine, on a rebooted VM with all features enabled.
@@ -152,7 +163,7 @@ documented reason rather than analysed.
 
 ---
 
-## Run status (2026-10-12/13 sample campaign — both modes, reboot before each run)
+## Historical run status (2026-10-12/13 sample campaign — both modes, reboot before each run)
 
 Four samples, each on its own fresh boot, scripted and agentic spines, all
 gates on. Every stage `rc=0` unless noted.
