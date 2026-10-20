@@ -8,14 +8,13 @@ and historical results.
 
 ## Current validation state — 2026-10-20
 
-RevAI revision `bd268a7` is deployed on the configured reference runtime (runtime
-code `b671404`) and its preflight smoke passes. The maintained deployed suite
-reports **1,105 passed, 10 skipped**; targeted docs/timeout/config tests report
-**16/16**. These checks validate code contracts and runtime wiring; they do not
-establish sample-level report quality. The most recent standalone agentic
-attempt on this revision failed report acceptance (uncited claims and unverified
-indicators; the v3 output was absent after a publisher failure), so no fresh
-malware sample has passed end-to-end acceptance on this revision. The current
+RevAI revision `d613565` is deployed on the configured reference runtime and its
+preflight smoke passes. The full maintained deployed suite reports **1,110
+passed, 10 skipped**; targeted deployed tests report **68 passed, 1 skipped**. These checks validate code contracts and runtime wiring; they do not
+establish sample-level report quality. No sample has run on this revision. The
+most recent standalone agentic attempt, on the prior runtime `b671404`, failed
+report acceptance (uncited claims and unverified indicators; the v3 output was
+absent after a publisher failure) and is not counted as a passed sample. The current
 acceptance matrix is maintained separately; historical run sections below
 remain tied to their recorded source revisions. The feature inventory is not a
 release-acceptance certificate.
