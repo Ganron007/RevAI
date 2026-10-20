@@ -45,9 +45,13 @@ Several archived Markdown reports and audit summaries have been editorially
 corrected to remove inaccurate corpus-retrieval and raw-output-completeness
 claims, and to report hash-lookup status from retained run evidence. Where
 present, `section-results-v3.json` remains the original recorded section output.
-The retained pipeline audit describes the original run; it does not certify
-editorially corrected Markdown. These archived edits are documentation cleanup,
-not a rerun or re-acceptance of those samples.
+The current RevAI pipeline does not perform corpus/RAG retrieval. References to
+RAG, a 35,302-record corpus, or targeted retrieval in those original section
+outputs are inaccurate historical model claims; they are preserved as generated
+artifacts and are not evidence that retrieval ran. The retained pipeline audit
+describes the original run; it does not certify editorially corrected Markdown.
+These archived edits are documentation cleanup, not a rerun or re-acceptance of
+those samples.
 
 ## Organization — grouped by pipeline mode
 
