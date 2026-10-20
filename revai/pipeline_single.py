@@ -366,9 +366,9 @@ def build_stages(sha: str, intake_cmd: list[str] | None) -> list[tuple[str, list
           in ("1", "true", "yes", "on") else []),
         ("yara_gen", [sys.executable, str(SCRIPTS / "yara_gen_v2.py"), sha], 1800),
         ("publish_v2", [sys.executable, str(SCRIPTS / "publish_report_v2.py"), sha, "--template", "full"],
-         _stage_timeout("REVAI_STAGE_TIMEOUT_PUBLISH", 7200)),
+         _stage_timeout("REVAI_STAGE_TIMEOUT_PUBLISH", 14400)),
         ("publish_v3", [sys.executable, str(SCRIPTS / "section_publisher.py"), sha],
-         _stage_timeout("REVAI_STAGE_TIMEOUT_PUBLISH", 7200)),
+         _stage_timeout("REVAI_STAGE_TIMEOUT_PUBLISH", 14400)),
         ("audit", [sys.executable, str(SCRIPTS / "audit_pipeline.py"), sha, "--mode", "single"],
          _stage_timeout("REVAI_STAGE_TIMEOUT_AUDIT", 7200)),
     ])

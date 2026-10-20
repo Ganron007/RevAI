@@ -99,6 +99,24 @@ def test_empty_markdown_is_safe():
     assert out == "" and rep == []
 
 
+def test_human_facing_reports_mask_high_confidence_credential_formats():
+    telegram = "123456789:ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+    github = "ghp_" + "A" * 36
+    fine_grained = "github_pat_" + "B" * 70
+    text = (
+        f"Telegram configuration {telegram}; GitHub credential {github}; "
+        f"fine-grained token {fine_grained}. Ordinary API token prose stays."
+    )
+
+    out, categories = rq.redact_credential_like_values(text)
+
+    assert telegram not in out and github not in out and fine_grained not in out
+    assert out.count("[REDACTED ") == 3
+    assert set(categories) == {
+        "telegram-bot-token", "github-personal-access-token"}
+    assert "Ordinary API token prose stays." in out
+
+
 def test_configured_names_are_longest_first(monkeypatch):
     """"mimo-v2.6" and "mimo-v2.6-pro" can both be configured.
 
@@ -153,6 +171,11 @@ def test_every_published_markdown_path_redacts():
         ("revai/audit_pipeline.py", "redact_model_names"),
     ):
         assert needle in source(rel), f"{rel} does not redact model names"
+
+    for rel in ("revai/publish_report_v2.py", "revai/section_publisher.py",
+                "revai/audit_pipeline.py"):
+        assert "redact_credential_like_values" in source(rel), (
+            f"{rel} does not mask credential-shaped values in Markdown")
 
 
 def test_json_artifacts_keep_the_real_name():

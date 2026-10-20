@@ -1236,6 +1236,9 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
                             "reason": str(exc)[:500]}],
             "violations_total": 1,
         }
+    missing_expected_reports = sorted(
+        str(name) for name in output_manifest.get("missing_reports", [])
+    )
     review_methodology = ""
     if semantic_reviewer is None:
         try:
@@ -1550,6 +1553,17 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
         print(f"[report_entailment] batch={batch_index}/{batch_total} "
               f"completed in {elapsed:.1f}s", file=sys.stderr, flush=True)
 
+    # A report set can be incomplete even when every extant file has valid
+    # provenance. Preserve that distinction: review what exists, but make an
+    # absent expected output an explicit fail-closed quality violation.
+    for rel in missing_expected_reports:
+        results.append({
+            "report": Path(rel).name,
+            "claim": "",
+            "status": "missing-report",
+            "reason": "expected report output was not produced before the publisher ended",
+        })
+
     by_status: dict[str, int] = {}
     per_report: dict[str, dict] = {}
     for item in results:
@@ -1572,6 +1586,7 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
         "input_fingerprint": fingerprint,
         "analysis_identity": analysis_identity,
         "report_input_manifest_sha256": manifest_digest,
+        "reports_missing": missing_expected_reports,
         "reports_present": sorted(report_texts),
         "reports_reviewed": sorted(claim_report_texts),
         "duplicate_report_aliases": duplicate_report_aliases,
@@ -1586,7 +1601,7 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
         "review_attempts": review_attempts,
         "review_error": review_error,
     }
-    if not results:
+    if not results and not missing_expected_reports:
         no_claims = {"report": "*", "claim": "", "status": "no-cited-claims",
                      "reason": "no citation-bearing claims were available for review"}
         result.update(ok=False, status="no-cited-claims",

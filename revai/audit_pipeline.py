@@ -1732,8 +1732,12 @@ def main():
     # quality-pack function's try-block, so main() hit a NameError on the
     # first real audit run after that commit (found live 2026-10-03 while
     # re-verifying #35 on winservices; no test executes this render path).
-    from report_quality import redact_model_names
+    from report_quality import redact_model_names, redact_credential_like_values
     audit_md, _redacted = redact_model_names(render_markdown(report))
+    audit_md, credential_categories = redact_credential_like_values(audit_md)
+    if credential_categories:
+        report["credential_like_values_redacted"] = credential_categories
+        out_json.write_text(json.dumps(report, indent=2, default=str))
     if _redacted:
         report.setdefault("model_names_redacted", _redacted)
         out_json.write_text(json.dumps(report, indent=2, default=str))

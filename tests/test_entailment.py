@@ -385,6 +385,42 @@ def test_the_gate_passes_a_report_with_real_citations(tmp_path):
     assert res["by_status"].get("circular", 0) == 0
 
 
+def test_existing_reports_are_reviewed_when_an_expected_output_is_missing(
+        tmp_path):
+    import v2_lib
+
+    case = _case(tmp_path, {
+        "REPORT-MASTER-v3.md": (
+            "The sample imports CreateRemoteThread "
+            "(source: ghidra_query, query_or_table: imports, "
+            "row_or_rule: CreateRemoteThread)."),
+    }, {"deep_dive/00-sql-evidence.json":
+        '{"ghidra": {"imports": "CreateRemoteThread"}}'})
+    sha = "a" * 64
+    context = v2_lib.read_execution_context(
+        sha, mode="scripted", case_root=case)
+    input_manifest = json.loads((case / "publish" /
+                                 "report-input-manifest.json").read_text())
+    digest = v2_lib.report_input_manifest_digest(input_manifest)
+    output = v2_lib.record_report_outputs(
+        case, sha, context, digest,
+        report_names=["REPORT-MASTER-v2.md", "REPORT-TECHNICAL-v2.md",
+                      "REPORT-MASTER-v3.md", "REPORT-TECHNICAL-v3.md"],
+        allow_missing=True)
+    assert output["missing_reports"] == [
+        "REPORT-MASTER-v2.md", "REPORT-TECHNICAL-v2.md",
+        "REPORT-TECHNICAL-v3.md"]
+
+    result = E.check_report_entailment(
+        sha, case_root=case, semantic_reviewer=_review_supported,
+        use_cache=False)
+    assert result["status"] == "failed"
+    assert result["ok"] is False
+    assert result["by_status"]["semantically-supported"] == 1
+    assert result["by_status"]["missing-report"] == 3
+    assert "provenance-invalid" not in result["by_status"]
+
+
 def test_uncited_factual_claims_and_table_rows_block_green(tmp_path):
     case = _case(tmp_path, {
         "REPORT-MASTER-v2.md": (

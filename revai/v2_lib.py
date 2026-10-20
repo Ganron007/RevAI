@@ -473,8 +473,15 @@ def report_execution_comment(sha: str, context: dict,
 
 def record_report_outputs(case_root: Path, sha: str, context: dict,
                           manifest_digest: str,
-                          report_names: list[str] | None = None) -> dict:
-    """Bind current-run Markdown reports to the exact report-input manifest."""
+                          report_names: list[str] | None = None, *,
+                          allow_missing: bool = False) -> dict:
+    """Bind current-run Markdown reports to the exact report-input manifest.
+
+    A final publisher may run after an earlier publisher timed out. In that
+    case it can bind the reports that exist and record the expected missing
+    outputs explicitly, allowing the audit to review extant reports while
+    keeping the overall result red. Strict mode remains the default.
+    """
     root = Path(case_root).resolve()
     path = root / "publish" / "report-output-manifest.json"
     selected = ([root / name for name in report_names] if report_names is not None
@@ -482,14 +489,20 @@ def record_report_outputs(case_root: Path, sha: str, context: dict,
     expected_comment = report_execution_comment(
         sha, context, manifest_digest).encode("utf-8")
     reports: dict[str, dict[str, Any]] = {}
+    expected_reports: list[str] = []
+    missing_reports: list[str] = []
     for report in selected:
         report = Path(report)
         try:
             rel = report.resolve().relative_to(root).as_posix()
         except ValueError as exc:
             raise RuntimeError(f"report is outside its case directory: {report}") from exc
+        expected_reports.append(rel)
         if not report.is_file():
-            raise RuntimeError(f"expected report output is missing: {rel}")
+            if not allow_missing:
+                raise RuntimeError(f"expected report output is missing: {rel}")
+            missing_reports.append(rel)
+            continue
         with report.open("rb") as stream:
             prefix = stream.read(8192)
         if expected_comment not in prefix:
@@ -508,6 +521,8 @@ def record_report_outputs(case_root: Path, sha: str, context: dict,
         "run_id": context["run_id"],
         "mode": context["mode"],
         "report_input_manifest_sha256": manifest_digest,
+        "expected_reports": expected_reports,
+        "missing_reports": missing_reports,
         "reports": reports,
     }
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -533,11 +548,33 @@ def validate_report_output_manifest(case_root: Path, sha: str, context: dict,
             or payload.get("report_input_manifest_sha256") != manifest_digest):
         raise RuntimeError("report output manifest belongs to a different run or evidence set")
     recorded = payload.get("reports") or {}
-    expected_rel = {
-        Path(report).relative_to(case_root).as_posix() for report in report_paths
-    }
-    if set(recorded) != expected_rel:
+    actual_rel: set[str] = set()
+    for report in report_paths:
+        try:
+            actual_rel.add(Path(report).relative_to(case_root).as_posix())
+        except ValueError as exc:
+            raise RuntimeError(f"report is outside its case directory: {report}") from exc
+    if set(recorded) != actual_rel:
         raise RuntimeError("report output manifest does not describe the exact current report set")
+    expected_reports = payload.get("expected_reports")
+    missing_reports = payload.get("missing_reports")
+    if expected_reports is None and missing_reports is None:
+        # Read older strict manifests without weakening their original contract.
+        expected_reports = sorted(actual_rel)
+        missing_reports = []
+    if (not isinstance(expected_reports, list)
+            or not all(isinstance(item, str) for item in expected_reports)
+            or len(expected_reports) != len(set(expected_reports))
+            or not isinstance(missing_reports, list)
+            or not all(isinstance(item, str) for item in missing_reports)
+            or len(missing_reports) != len(set(missing_reports))):
+        raise RuntimeError("report output manifest has invalid expected/missing report lists")
+    expected_set = set(expected_reports)
+    missing_set = set(missing_reports)
+    if (not actual_rel.issubset(expected_set)
+            or actual_rel.intersection(missing_set)
+            or expected_set != actual_rel.union(missing_set)):
+        raise RuntimeError("report output manifest has inconsistent present/missing outputs")
     for report in report_paths:
         try:
             rel = Path(report).relative_to(case_root).as_posix()
@@ -1015,6 +1052,14 @@ def infer_publish_verdict_from_markdown(markdown: str) -> str | None:
     import re as _re
 
     body = strip_accuracy_hold_banner(markdown or "")
+    explicit_sentence = _re.search(
+        r"(?i)\b(?:the\s+)?(?:report\s+)?verdict\s+(?:is|:|-)\s*"
+        r"\*{0,2}_{0,2}\s*(malicious|suspicious|benign|unknown|legitimate|clean)\b",
+        body[:8000],
+    )
+    if explicit_sentence:
+        label = normalize_verdict_label(explicit_sentence.group(1))
+        return label
     decl = _re.search(
         r"(?im)^[^a-z0-9]{0,8}(?:final\s+|overall\s+)?verdict\s*[:\-]\s*"
         r"\*{0,2}_{0,2}\s*([a-z][a-z_\- ]{2,30})",
@@ -4134,6 +4179,19 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                     )
                     time.sleep(sleep_s)
                     continue
+            http_status = getattr(e, "code", None)
+            if (isinstance(http_status, int)
+                    and 400 <= http_status < 500
+                    and http_status not in {408, 425, 429}):
+                # Authentication, billing, request-shape, and model errors are
+                # not transient. Retrying them only burns the report budget and
+                # can multiply provider charges without changing the outcome.
+                print(
+                    f"[llm_judge] attempt {attempt}/{max_retries} HTTP "
+                    f"{http_status} is non-retryable; stopping this request",
+                    flush=True,
+                )
+                break
             _timeout_err = (
                 isinstance(e, TimeoutError)
                 or "timed out" in str(e).lower()

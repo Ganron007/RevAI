@@ -1,10 +1,12 @@
 """Agnes 3.0 Flash requests stay within its published Chat Completions contract."""
 from __future__ import annotations
 
+import io
 import json
 import sys
 import time
 from pathlib import Path
+import urllib.error
 import urllib.request
 
 import pytest
@@ -198,6 +200,33 @@ def test_agnes_timeout_retry_never_disables_thinking(monkeypatch):
     assert len(bodies) == 2
     assert all(body["chat_template_kwargs"] == {"enable_thinking": True}
                for body in bodies)
+
+
+def test_payment_error_is_not_retried(monkeypatch):
+    calls = []
+
+    def payment_required(request, timeout=None):
+        calls.append(request)
+        raise urllib.error.HTTPError(
+            request.full_url, 402, "Payment Required", {},
+            io.BytesIO(b'{"error":"payment required"}'))
+
+    monkeypatch.setattr(urllib.request, "urlopen", payment_required)
+    monkeypatch.setattr(v2_lib, "llm_budget_acquire", lambda *_args, **_kw: 0)
+    monkeypatch.setattr(time, "sleep", lambda *_args, **_kwargs: pytest.fail(
+        "non-transient HTTP 402 must not sleep and retry"))
+    monkeypatch.setenv("REVAI_LLM_API_URL", "https://apihub.agnes-ai.com/v1")
+    monkeypatch.setenv("REVAI_LLM_API_KEY", "test-key")
+    monkeypatch.setenv("REVAI_LLM_MODEL", "agnes-3.0-flash")
+    monkeypatch.setenv("REVAI_LLM_REASONING", "enabled")
+    monkeypatch.setenv("REVAI_LLM_STREAM", "0")
+    monkeypatch.setenv("REVAI_LLM_BUDGET", "0")
+
+    with pytest.raises(urllib.error.HTTPError) as error:
+        v2_lib.llm_judge("prompt", max_retries=5)
+
+    assert error.value.code == 402
+    assert len(calls) == 1
 
 
 def test_agnes_agentic_completeness_retry_preserves_configured_thinking(

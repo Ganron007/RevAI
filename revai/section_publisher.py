@@ -30,6 +30,7 @@ from report_quality import (  # noqa: E402
     ensure_section_heading,
     missing_sections,
     redact_model_names,
+    redact_credential_like_values,
     source_is_fallback,
     stub_sections,
     uncited_report_claims,
@@ -1261,18 +1262,22 @@ def run_section_based_publish(sha: str, tools_results: dict,
     }
     (out_dir / "00-tools-raw.json").write_text(
         json.dumps(persisted_tool_results, indent=2, default=str))
-    (out_dir / "01-section-results.json").write_text(
-        json.dumps({"sections": section_results, "timings": section_timings,
-                    "pass1_initial_results": pass1_initial_results,
-                    "pass2_results": pass2_results,
-                    "pass1_count": len(pass1_initial_results), "pass2_count": len(pass2_results),
-                    "invocation_counts": invocation_counts},
-                   indent=2, default=str)
-    )
+    section_results_json = json.dumps(
+        {"sections": section_results, "timings": section_timings,
+         "pass1_initial_results": pass1_initial_results,
+         "pass2_results": pass2_results,
+         "pass1_count": len(pass1_initial_results),
+         "pass2_count": len(pass2_results),
+         "invocation_counts": invocation_counts},
+        indent=2, default=str)
+    section_results_json, _ = redact_credential_like_values(section_results_json)
+    (out_dir / "01-section-results.json").write_text(section_results_json)
     report_markdown, _master_models = redact_model_names(report_markdown)
     if _master_models:
         print(f"[section_publisher] master_v3: redacted model name(s) "
               f"{_master_models}", flush=True)
+    report_markdown, master_credential_categories = (
+        redact_credential_like_values(report_markdown))
     (out_dir / "02-REPORT-MASTER-v3.md").write_text(report_markdown)
     quick_verdict = (tools_results.get("verdict") or {}).get("verdict")
     deep_verdict = (tools_results.get("deep") or {}).get("verdict")
@@ -1294,8 +1299,8 @@ def run_section_based_publish(sha: str, tools_results: dict,
     # Backward compatibility: also write at logs root
     root_dir = case_dir(sha)
     (root_dir / "REPORT-MASTER-v3.md").write_text(report_markdown)
-    (root_dir / "section-results-v3.json").write_text(
-        json.dumps({"sha256": sha,
+    section_results_v3_json = json.dumps(
+        {"sha256": sha,
                     "run_id": (revai_provenance(sha).get("run_id")),
                     "analysis_mode": (tools_results.get("_execution_context") or {}).get("mode"),
                     "report_input_manifest_sha256": tools_results.get(
@@ -1306,10 +1311,13 @@ def run_section_based_publish(sha: str, tools_results: dict,
                     "pass1_count": len(pass1_initial_results), "pass2_count": len(pass2_results),
                     "invocation_counts": invocation_counts,
                     "master_v3_quality": master_quality,
+                    "credential_like_values_redacted": master_credential_categories,
                     "master_v3_verdict_lock": master_verdict_lock,
                     "dynamic_analysis_status": status_artifact},
-                   indent=2, default=str)
-    )
+        indent=2, default=str)
+    section_results_v3_json, _ = redact_credential_like_values(
+        section_results_v3_json)
+    (root_dir / "section-results-v3.json").write_text(section_results_v3_json)
 
     # Generate technical report alongside the section-based master report
     technical = run_technical_publish(sha, tools_results)
@@ -1399,7 +1407,9 @@ def run_technical_publish(sha: str, tools_results: dict) -> dict:
         expected_run_id=str((tools_results.get("_execution_context") or {}).get(
             "run_id") or ""),
         pack=tools_results.get("dynamic_pack"))
-    (case_dir(sha) / "EVIDENCE-BUNDLE.md").write_text(technical_evidence)
+    safe_bundle, _bundle_redactions = redact_credential_like_values(
+        technical_evidence)
+    (case_dir(sha) / "EVIDENCE-BUNDLE.md").write_text(safe_bundle)
 
     if _technical_sectionwise_enabled():
         # Section-wise is the default path. The monolithic call below is kept
@@ -1698,6 +1708,9 @@ def _finalize_technical(sha: str, technical_report: dict,
         technical_report["model_names_redacted"] = _tech_models
         print(f"[section_publisher] technical_v3: redacted model name(s) "
               f"{_tech_models}", flush=True)
+    tech_md, credential_categories = redact_credential_like_values(tech_md)
+    if credential_categories:
+        technical_report["credential_like_values_redacted"] = credential_categories
     technical_report["markdown"] = tech_md
     technical_verdict_lock = cross_stage_verdict_lock(
         infer_publish_verdict_from_markdown(tech_md),
@@ -1867,7 +1880,12 @@ if __name__ == "__main__":
         report_names=[
             "REPORT-v2.md", "REPORT-MASTER-v2.md", "REPORT-TECHNICAL-v2.md",
             "REPORT-MASTER-v3.md", "REPORT-TECHNICAL-v3.md",
-        ])
+        ],
+        # v2 can time out before all three of its files exist. Bind the v3
+        # outputs and record the absent expected files so audit can inspect
+        # the extant reports while still failing the run for incompleteness.
+        allow_missing=True,
+    )
     print(f"[section_publisher] complete ok={ok} master_ok={master_ok} tech_ok={tech_ok}")
     raise SystemExit(0 if ok else 1)
 

@@ -2419,6 +2419,33 @@ def redact_model_names(markdown: str) -> tuple[str, list[str]]:
     return out, sorted(set(replaced))
 
 
+_REPORT_CREDENTIAL_PATTERNS = (
+    ("telegram-bot-token", re.compile(
+        r"(?<![A-Za-z0-9])\d{6,12}:[A-Za-z0-9_-]{25,}(?![A-Za-z0-9_-])")),
+    ("github-personal-access-token", re.compile(
+        r"(?i)\b(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{30,})\b")),
+)
+
+
+def redact_credential_like_values(markdown: str) -> tuple[str, list[str]]:
+    """Mask high-confidence credential formats in human-facing Markdown.
+
+    Raw tool evidence and LLM call records remain untouched for authorized
+    analysis. The report keeps its surrounding claim and source locator, while
+    the credential itself is replaced before quality checks and publication.
+    Return category names only; never return or log the matched values.
+    """
+    if not markdown:
+        return markdown, []
+    out = markdown
+    categories: list[str] = []
+    for category, pattern in _REPORT_CREDENTIAL_PATTERNS:
+        out, count = pattern.subn(f"[REDACTED {category.upper()}]", out)
+        if count:
+            categories.append(category)
+    return out, categories
+
+
 def _flex_claim_re(value: str) -> re.Pattern:
     """Match any markdown rendering of one indicator value.
 

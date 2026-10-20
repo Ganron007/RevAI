@@ -588,7 +588,7 @@ class StageRunner:
                 sys.executable, str(SCRIPTS / "publish_report_v2.py"),
                 self.sha, "--template", "full",
             ],
-            _stage_timeout("REVAI_STAGE_TIMEOUT_PUBLISH", 7200),
+            _stage_timeout("REVAI_STAGE_TIMEOUT_PUBLISH", 14400),
             retry_timeouts=False,
         )
 
@@ -602,7 +602,7 @@ class StageRunner:
         return self._run(
             "run_section_publish",
             [sys.executable, str(SCRIPTS / "section_publisher.py"), self.sha],
-            _stage_timeout("REVAI_STAGE_TIMEOUT_PUBLISH", 7200),
+            _stage_timeout("REVAI_STAGE_TIMEOUT_PUBLISH", 14400),
             retry_timeouts=False,
         )
 

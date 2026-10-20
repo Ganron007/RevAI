@@ -84,6 +84,7 @@ from report_quality import (  # noqa: E402
     missing_sections,
     PUBLIC_MODEL_LABEL,
     redact_model_names,
+    redact_credential_like_values,
     source_is_fallback,
     stub_sections,
     normalize_heading_text,
@@ -1673,6 +1674,9 @@ def main():
             _refresh_section_metadata(report, md, REPORT_MASTER_SECTIONS)
         )
     md = report_execution_comment(args.sha256, context, manifest_digest) + "\n\n" + md
+    md, credential_categories = redact_credential_like_values(md)
+    if credential_categories:
+        report["credential_like_values_redacted"] = credential_categories
     report["markdown"] = md
     md_path = case / "REPORT-v2.md"
     md_path.write_text(md)
@@ -1730,9 +1734,14 @@ def main():
             expected_run_id=context["run_id"], pack=dynamic_pack)
         technical_evidence = append_dynamic_status_to_technical_evidence(
             technical_evidence, dynamic_status)
-        (ev_dir / "03-technical-evidence.md").write_text(technical_evidence)
+        safe_technical_evidence, _evidence_redactions = (
+            redact_credential_like_values(technical_evidence))
+        (ev_dir / "03-technical-evidence.md").write_text(
+            safe_technical_evidence)
         # Standalone filled evidence bundle (V5.16.6)
-        (case / "EVIDENCE-BUNDLE.md").write_text(technical_evidence)
+        safe_bundle, _bundle_redactions = redact_credential_like_values(
+            technical_evidence)
+        (case / "EVIDENCE-BUNDLE.md").write_text(safe_bundle)
         # No legacy run_scorecard is used. The completed report set is checked
         # by the source-bound claim-support gate during quality aggregation;
         # tool execution truth is checked by audit_pipeline.py.
@@ -2021,6 +2030,10 @@ def main():
             technical_report["model_names_redacted"] = _tech_models
             print(f"[publish_report_v2] technical_v2: redacted model name(s) "
                   f"{_tech_models} -> {PUBLIC_MODEL_LABEL}", flush=True)
+        tech_md, credential_categories = redact_credential_like_values(tech_md)
+        if credential_categories:
+            technical_report["credential_like_values_redacted"] = (
+                credential_categories)
         tech_missing, tech_stubs = _refresh_section_metadata(
             technical_report, tech_md, TECHNICAL_REPORT_SECTIONS
         )

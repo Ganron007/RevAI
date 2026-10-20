@@ -49,6 +49,18 @@ def test_upstream_is_the_most_severe(q, d, expect):
     assert lk.get("upstream") == expect
 
 
+@pytest.mark.parametrize("text,expected", [
+    ("The report verdict is **malicious** (pipeline-locked).", "malicious"),
+    ("Report verdict: suspicious based on the supplied evidence.", "suspicious"),
+    ("The report verdict is **unknown** because evidence is incomplete.",
+     "unknown"),
+])
+def test_explicit_narrative_verdict_is_parsed(text, expected):
+    from v2_lib import infer_publish_verdict_from_markdown
+
+    assert infer_publish_verdict_from_markdown(text) == expected
+
+
 def test_the_verdict_passed_to_the_sections_is_the_locked_one(tmp_path,
                                                               monkeypatch):
     """The section publisher's own loader applies the lock."""

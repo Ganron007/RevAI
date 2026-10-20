@@ -178,9 +178,16 @@ same writer to repair its citations. The semantic review uses the configured
 model, so it is evidence-constrained corroboration rather than independent-model
 certification.
 
-### Indicator claim verification and published-name redaction
+### Indicator verification and published-data redaction
 
-The publisher preserves the generated report text (apart from provider/model-name redaction, which is document hygiene) and evaluates each report against the raw evidence from that same run. Literal indicators are checked in all four reports. Unsupported claims remain visible in the report and fail its quality gate; a clean report cannot mask a failure in another report. Verdict downgrades against the upstream lock are also kept visible and fail quality.
+The publisher evaluates each report against raw evidence from that same run. Literal indicators are checked in all four reports. Unsupported claims remain visible and fail the quality gate; a clean report cannot mask a failure in another report. Verdict downgrades against the upstream lock are also kept visible and fail quality.
+
+Before publication, provider/model names and high-confidence Telegram bot-token
+and GitHub personal-access-token formats are masked in human-facing Markdown.
+Raw tool evidence and raw LLM call records are retained for authorized analysis;
+the published text keeps its surrounding claim and source locator. The report
+JSON records which credential categories were masked without copying their
+values into that metadata.
 
 Evidence from outside the run must be added to the evidence pack and cited before publication. There is no advisory switch that turns unsupported claims green. The report JSON and final audit retain per-report verification results and the evidence files used.
 
