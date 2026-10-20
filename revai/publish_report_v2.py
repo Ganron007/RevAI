@@ -59,11 +59,11 @@ from v2_lib import (  # noqa: E402
     ensure_pipeline_runtime_env,
     get_llm_model,
     hitl_checkpoint,
-    llm_judge,
+    llm_report,
+    extract_llm_report,
     llm_call_metadata,
     load_dynamic_pack,
     load_session,
-    normalize_llm_json,
     provenance_block,
     r2_ai_decompile,
     revai_provenance,
@@ -162,7 +162,8 @@ def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, ya
         "exact artifact path into query_or_table and exact JSONPath into row_or_rule "
         "(for example: source=malcat, query_or_table=deep_dive/01-tools-raw.json, "
         "row_or_rule=$.malcat.file_summary.entropy); do not invent a table label or "
-        "paraphrase a row into a citation.",
+        "paraphrase a row into a citation. If a claim needs multiple JSON fields, "
+        "cite each field in a separate citation; never combine JSONPaths with commas.",
         "",
         f"sha256: {session['sha256']}",
         f"sample_path: {session['sample_path']}",
@@ -401,9 +402,11 @@ def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, ya
         "(source: <engine>, query_or_table: <artifact or table>, "
         "row_or_rule: <exact observed row, address, or rule>). A source name "
         "without a concrete row_or_rule is not a usable citation. Use that exact "
-        "For complete JSON sources, copy the exact artifact path and JSONPath; "
-        "never invent a human-readable table name or paraphrase the cited value. "
-        "parenthesized form at the end of EACH factual sentence. For tables, put "
+        "parenthesized form at the end of EACH factual sentence. For JSON sources, "
+        "copy the exact artifact path and one exact JSONPath per citation; if a claim "
+        "needs multiple fields, repeat the citation rather than joining paths with a comma. "
+        "Never invent a human-readable table name or paraphrase the cited value. "
+        "For tables, put "
         "the full parenthesized citation in the factual claim cell; do not put "
         "bare source metadata in a separate cell. Keep sentences focused so one "
         "citation can be checked against the complete claim. If a cited row does "
@@ -811,22 +814,24 @@ def generate_technical_chunked(
               titles: list[str] | None = None) -> str:
         label = f"{tag} ({', '.join(titles)})" if titles else tag
         try:
-            resp = llm_judge(prompt)
+            resp = llm_report(prompt)
+            if ev_dir is not None:
+                try:
+                    (ev_dir / out_name).write_text(
+                        json.dumps(resp, ensure_ascii=False, indent=2, default=str),
+                        encoding="utf-8",
+                    )
+                except OSError:
+                    pass
+            parsed = extract_llm_report(resp)
+            md = parsed["markdown"]
         except Exception as exc:                     # noqa: BLE001
             errors.append(f"{label}: {type(exc).__name__}: {exc}")
             return ""
-        content = resp["choices"][0]["message"].get("content") or ""
-        parsed = _extract_report_json(content)
-        md = (parsed or {}).get("markdown") or ""
         meta = llm_call_metadata(resp)
         audits.append({"part": tag, "llm_audit": meta,
                        "prompt_chars": len(prompt),
                        "markdown_chars": len(md)})
-        if ev_dir is not None:
-            try:
-                (ev_dir / out_name).write_text(content, encoding="utf-8")
-            except OSError:
-                pass
         return md
 
     def _call_with_split(titles: list[str], tag: str, out_name: str,
@@ -944,16 +949,6 @@ def generate_technical_chunked(
 
 def verify_technical_sections(md: str) -> list[str]:
     return missing_sections(md, TECHNICAL_REPORT_SECTIONS)
-
-
-def _extract_report_json(content: str) -> dict:
-    """Parse LLM JSON; tolerate markdown fences / prose wrapping and key variants.
-
-    Delegates to v2_lib.normalize_llm_json which accepts any content key
-    (markdown / mark / content / body / text / report / output) so the pipeline
-    works with any LLM or gateway regardless of its output format.
-    """
-    return normalize_llm_json(content)
 
 
 def build_deterministic_master(
@@ -1409,11 +1404,10 @@ def main():
                 source_evidence=source_evidence,
                 sections=[title])
             try:
-                r = llm_judge(one)
+                r = llm_report(one)
                 (ev_dir / f"01-master-{si:02d}-raw.json").write_text(
                     json.dumps(r, indent=2, default=str))
-                piece = (_extract_report_json(
-                    r["choices"][0]["message"]["content"]) or {}).get("markdown") or ""
+                piece = extract_llm_report(r)["markdown"]
             except Exception as exc:                 # noqa: BLE001
                 print(f"[publish_report_v2] master section {title!r} failed: "
                       f"{type(exc).__name__}: {str(exc)[:80]}", flush=True)
@@ -1489,14 +1483,12 @@ def main():
                         "verbatim. Return the same JSON shape with the full "
                         "markdown."
                     )
-                    _resp2 = llm_judge(prompt + "\n\n" + _nudge)
+                    _resp2 = llm_report(prompt + "\n\n" + _nudge)
                     (ev_dir / "01b-llm-retry-raw.json").write_text(
                         json.dumps(_resp2, indent=2, default=str)
                     )
-                    _r2 = _extract_report_json(
-                        _resp2["choices"][0]["message"]["content"]
-                    )
-                    _md2 = str(_r2.get("markdown") or "") if isinstance(_r2, dict) else ""
+                    _r2 = extract_llm_report(_resp2)
+                    _md2 = _r2["markdown"]
                     _miss2 = verify_sections(_md2) if _md2 else missing
                     if _md2 and len(_miss2) < len(missing):
                         md = _md2
@@ -1560,14 +1552,13 @@ def main():
                         "Original section for context:\n"
                         f"{original}"
                     )
-                    response = llm_judge(repair_prompt)
+                    response = llm_report(repair_prompt)
                     stub_retry_counter[0] += 1
                     (ev_dir / f"01-master-stub-retry-{stub_retry_counter[0]:02d}-raw.json").write_text(
                         json.dumps(response, indent=2, default=str)
                     )
-                    content = response["choices"][0]["message"]["content"]
-                    parsed = _extract_report_json(content)
-                    return str(parsed.get("markdown") or "") if isinstance(parsed, dict) else ""
+                    parsed = extract_llm_report(response)
+                    return parsed["markdown"]
 
                 md, repair_results = retry_master_stub_sections(
                     md, present_stubs, _retry_master_section
@@ -1794,12 +1785,11 @@ def main():
                 if tech_errors:
                     technical_report["llm_error"] = tech_err
             else:
-                resp_tech = llm_judge(prompt_tech)
+                resp_tech = llm_report(prompt_tech)
                 (ev_dir / "05-llm-technical-raw.json").write_text(
                     json.dumps(resp_tech, indent=2, default=str)
                 )
-                technical_report = _extract_report_json(
-                    resp_tech["choices"][0]["message"]["content"])
+                technical_report = extract_llm_report(resp_tech)
                 meta_tech = llm_call_metadata(resp_tech)
                 meta_tech["request_model"] = get_llm_model()
                 technical_report["model"] = (meta_tech.get("response_model")
@@ -1857,7 +1847,7 @@ def main():
                         source_evidence=source_evidence, sections=[section],
                         retry_instruction=instruction,
                     )
-                    response = llm_judge(retry_prompt)
+                    response = llm_report(retry_prompt)
                     raw_path = ev_dir / f"05c-technical-stub-retry-{len(retry_llm_audits):02d}.json"
                     raw_path.write_text(
                         json.dumps(response, indent=2, default=str),
@@ -1871,9 +1861,7 @@ def main():
                         "response_chars": len(str(response)),
                         "llm_audit": meta,
                     })
-                    parsed = _extract_report_json(
-                        response["choices"][0]["message"].get("content") or ""
-                    )
+                    parsed = extract_llm_report(response)
                     return str((parsed or {}).get("markdown") or "")
 
                 tech_md, repair_results = retry_technical_stub_sections(
@@ -1933,7 +1921,7 @@ def main():
                         "prompt_chars": len(targeted_prompt),
                     }
                     try:
-                        response = llm_judge(targeted_prompt)
+                        response = llm_report(targeted_prompt)
                         raw_path = ev_dir / (
                             f"05b-technical-missing-section-{retry_index:02d}-raw.json"
                         )
@@ -1941,9 +1929,7 @@ def main():
                             json.dumps(response, indent=2, default=str),
                             encoding="utf-8",
                         )
-                        parsed = _extract_report_json(
-                            response["choices"][0]["message"].get("content") or ""
-                        )
+                        parsed = extract_llm_report(response)
                         candidate = ensure_section_heading(
                             str((parsed or {}).get("markdown") or ""), section
                         )

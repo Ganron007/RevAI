@@ -151,7 +151,7 @@ Distinctive capabilities — the things that set RevAI apart. For the full featu
 | Capability | What makes it distinctive |
 | :--- | :--- |
 | **Custom CADRE PE Loader** | Our own Ghidra loader that recovers import tables from packed and binder PEs — [`docs/cadre-pe-loader.md`](docs/cadre-pe-loader.md) |
-| **Agent-loop discipline** | The deep-dive agent is kept honest: budget nudges, duplicate-call detection, and a check that every claim traces to tool output — [`docs/agent-loop-discipline.md`](docs/agent-loop-discipline.md) |
+| **Agent-loop discipline** | The deep-dive agent checks final-answer claims against tool output; a separate report audit checks citations and claim support before a run can pass — [`docs/agent-loop-discipline.md`](docs/agent-loop-discipline.md) |
 | **Malcat native capa engine** | Uses Malcat's own capability engine, which holds up better than Mandiant capa on packed samples — [`docs/malcat-capa-engine.md`](docs/malcat-capa-engine.md) |
 | **In-process yara-x engine** | YARA scanning runs inside the pipeline, with no external `yr` binary — [`docs/OPERATE.md`](docs/OPERATE.md) |
 | **Honest `truly_green` gate** | Green requires the audit, the report quality checks, and zero failed tools to all pass together |

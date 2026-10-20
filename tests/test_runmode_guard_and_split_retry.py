@@ -14,6 +14,7 @@ asked for less at a time.
 """
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -22,6 +23,17 @@ sys.path.insert(0, str(ROOT / "revai"))
 
 import v2_lib  # noqa: E402
 import publish_report_v2 as pub  # noqa: E402
+
+
+def _tool_report(markdown: str) -> dict:
+    return {"choices": [{
+        "finish_reason": "tool_calls",
+        "message": {"tool_calls": [{
+            "type": "function", "id": "report-test",
+            "function": {"name": "submit_report",
+                         "arguments": json.dumps({"markdown": markdown})},
+        }]},
+    }]}
 
 
 # ---------------------------------------------------------------- run-mode guard
@@ -109,13 +121,11 @@ def test_a_failed_chunk_is_retried_one_section_at_a_time(monkeypatch):
         wanted = [t for t in v2_lib.TECHNICAL_REPORT_SECTIONS if f"- {t}" in head]
         asked.append(wanted)
         if len(wanted) > 1:
-            return {"choices": [{"message": {"content": "{}"}}]}   # empty
+            return _tool_report("")   # invalid empty report, triggers section split
         body = "\n\n".join(f"# {t}\n\n{_substantive_body(t)}" for t in wanted)
-        import json
-        return {"choices": [{"message": {"content": json.dumps(
-            {"markdown": body})}}]}
+        return _tool_report(body)
 
-    monkeypatch.setattr(pub, "llm_judge", fake_llm)
+    monkeypatch.setattr(pub, "llm_report", fake_llm)
     md, audits, errors = pub.generate_technical_chunked(
         _session(), {}, {}, {}, [], "EVIDENCE")
 
@@ -141,12 +151,10 @@ def test_split_retry_does_not_run_when_every_group_succeeds(monkeypatch):
         wanted = tuple(t for t in v2_lib.TECHNICAL_REPORT_SECTIONS
                        if f"- {t}" in head)
         asked.append(wanted)
-        import json
         body = "\n\n".join(f"# {t}\n\n{_substantive_body(t)}" for t in wanted)
-        return {"choices": [{"message": {"content": json.dumps(
-            {"markdown": body})}}]}
+        return _tool_report(body)
 
-    monkeypatch.setattr(pub, "llm_judge", fake_llm)
+    monkeypatch.setattr(pub, "llm_report", fake_llm)
     md, audits, errors = pub.generate_technical_chunked(
         _session(), {}, {}, {}, [], "EVIDENCE")
     assert not errors, errors
@@ -169,13 +177,11 @@ def test_a_section_that_fails_alone_is_recorded_exactly_once(monkeypatch):
         head = prompt.split("Rules", 1)[0]
         wanted = [t for t in v2_lib.TECHNICAL_REPORT_SECTIONS if f"- {t}" in head]
         if any("5. Behavioral" in t for t in wanted):
-            return {"choices": [{"message": {"content": "{}"}}]}
-        import json
+            return _tool_report("")
         body = "\n\n".join(f"# {t}\n\n{_substantive_body(t)}" for t in wanted)
-        return {"choices": [{"message": {"content": json.dumps(
-            {"markdown": body})}}]}
+        return _tool_report(body)
 
-    monkeypatch.setattr(pub, "llm_judge", fake_llm)
+    monkeypatch.setattr(pub, "llm_report", fake_llm)
     md, audits, errors = pub.generate_technical_chunked(
         _session(), {}, {}, {}, [], "EVIDENCE")
     assert "# 5. Behavioral & Dynamic Analysis" not in md

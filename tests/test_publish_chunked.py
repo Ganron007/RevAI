@@ -33,6 +33,18 @@ def _substantive_body(title: str) -> str:
             "artifact, its source, and the limits of the conclusion. " * 8)
 
 
+def _report_response(markdown: str, title: str = "Test report") -> dict:
+    return {"choices": [{
+        "finish_reason": "tool_calls",
+        "message": {"tool_calls": [{
+            "type": "function", "id": "test-report",
+            "function": {"name": "submit_report", "arguments": json.dumps({
+                "title": title, "markdown": markdown,
+            })},
+        }]},
+    }]}
+
+
 def test_groups_tile_every_section_exactly_once():
     """No section may be written twice, and none may be dropped."""
     covered: list[int] = []
@@ -152,10 +164,9 @@ def test_chunked_generation_orders_document_and_records_audits(monkeypatch):
         wanted = [t for t in SECTIONS if f"- {t}" in head]
         calls.append((wanted, {"prompt": prompt}))
         body = "\n\n".join(f"# {t}\n\n{_substantive_body(t)}" for t in wanted)
-        return {"choices": [{"message": {"content": json.dumps(
-            {"markdown": body})}}]}
+        return _report_response(body)
 
-    monkeypatch.setattr(pub, "llm_judge", fake_llm)
+    monkeypatch.setattr(pub, "llm_report", fake_llm)
     md, audits, errors = pub.generate_technical_chunked(
         {"sha256": "b" * 64, "sample_path": "/x", "project_name": "p"},
         {}, {}, {}, [], "EVIDENCE")
@@ -193,10 +204,9 @@ def test_chunked_generation_retries_a_stubbed_section_with_full_context(monkeypa
             body = ("MITRE coverage is listed in Appendix A."
                     if title == target and not repair else _substantive_body(title))
             bodies.append(f"# {title}\n\n{body}")
-        return {"choices": [{"message": {"content": json.dumps(
-            {"markdown": "\n\n".join(bodies)})}}]}
+        return _report_response("\n\n".join(bodies))
 
-    monkeypatch.setattr(pub, "llm_judge", fake_llm)
+    monkeypatch.setattr(pub, "llm_report", fake_llm)
     md, audits, errors = pub.generate_technical_chunked(
         {"sha256": "f" * 64, "sample_path": "/x", "project_name": "p"},
         {}, {}, {}, [], "AUTHORITATIVE EVIDENCE")
@@ -223,10 +233,9 @@ def test_failed_stub_retry_keeps_original_and_remains_a_quality_failure(monkeypa
             body = ("No ATT&CK technique is established by this evidence."
                     if repair or title == target else _substantive_body(title))
             bodies.append(f"# {title}\n\n{body}")
-        return {"choices": [{"message": {"content": json.dumps(
-            {"markdown": "\n\n".join(bodies)})}}]}
+        return _report_response("\n\n".join(bodies))
 
-    monkeypatch.setattr(pub, "llm_judge", fake_llm)
+    monkeypatch.setattr(pub, "llm_report", fake_llm)
     md, audits, errors = pub.generate_technical_chunked(
         {"sha256": "1" * 64, "sample_path": "/x", "project_name": "p"},
         {}, {}, {}, [], "AUTHORITATIVE EVIDENCE")
@@ -316,7 +325,7 @@ def test_section_publisher_counts_llm_generations_and_local_sections_truthfully(
     pass2 = [
         {"name": name}
         for index, (name, spec) in enumerate(pub3.REPORT_SECTION_SPECS.items())
-        if spec[3]
+        if spec[2]
     ]
 
     counts = pub3._section_invocation_counts(pass1, pass2)
@@ -335,12 +344,9 @@ def test_first_draft_is_preserved_for_the_support_gate(monkeypatch):
 
     def fake_llm(prompt):
         calls.append(prompt)
-        return {"choices": [{"message": {"content": json.dumps({
-            "title": section,
-            "markdown": f"## {section}\n\n{body}",
-        })}}]}
+        return _report_response(f"## {section}\n\n{body}", title=section)
 
-    monkeypatch.setattr(pub3, "llm_judge", fake_llm)
+    monkeypatch.setattr(pub3, "llm_report", fake_llm)
     monkeypatch.setattr(pub3, "llm_call_metadata", lambda _response: {})
     monkeypatch.setattr(pub3, "get_llm_model", lambda: "test-model")
 
@@ -378,10 +384,9 @@ def test_a_failed_group_is_recorded_and_omits_its_sections(monkeypatch):
             raise RuntimeError("provider exploded")
         wanted = [t for t in SECTIONS if f"- {t}" in head]
         body = "\n\n".join(f"# {t}\n\n{_substantive_body(t)}" for t in wanted)
-        return {"choices": [{"message": {"content": json.dumps(
-            {"markdown": body})}}]}
+        return _report_response(body)
 
-    monkeypatch.setattr(pub, "llm_judge", fake_llm)
+    monkeypatch.setattr(pub, "llm_report", fake_llm)
     md, audits, errors = pub.generate_technical_chunked(
         {"sha256": "c" * 64, "sample_path": "/x", "project_name": "p"},
         {}, {}, {}, [], "EVIDENCE")
@@ -399,7 +404,7 @@ def test_total_failure_raises_so_the_caller_can_fall_back(monkeypatch):
     def fake_llm(prompt):
         raise RuntimeError("all calls fail")
 
-    monkeypatch.setattr(pub, "llm_judge", fake_llm)
+    monkeypatch.setattr(pub, "llm_report", fake_llm)
     md, audits, errors = pub.generate_technical_chunked(
         {"sha256": "d" * 64, "sample_path": "/x", "project_name": "p"},
         {}, {}, {}, [], "EVIDENCE")

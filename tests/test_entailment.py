@@ -16,8 +16,7 @@ import entailment as E  # noqa: E402
 def _review_supported(batch, **_kwargs):
     return {"reviews": [
         {"id": item["id"], "verdict": "supported",
-         "evidence_quote": item["citations"][0]["row"],
-         "reason": "the exact cited observation supports the claim"}
+         "evidence_ids": [row["evidence_id"] for row in item.get("evidence", [])]}
         for item in batch
     ]}
 
@@ -144,6 +143,71 @@ def test_claim_extraction_keeps_every_citation_on_a_sentence():
     assert len(claims) == 1
     assert [c["row"] for c in claims[0]["citations"]] == [
         "CreateRemoteThread", "WinHttpOpen"]
+
+
+def test_grouped_jsonpaths_are_reviewed_as_separate_exact_fields(tmp_path):
+    report = (
+        "The file is a 64-bit PE image "
+        "(source: malcat, query_or_table: deep_dive/01-tools-raw.json, "
+        "row_or_rule: $.malcat.file_summary.type, "
+        "$.malcat.file_summary.architecture)."
+    )
+    artifact = tmp_path / "deep_dive" / "01-tools-raw.json"
+    artifact.parent.mkdir(parents=True)
+    artifact.write_text(json.dumps({"malcat": {"file_summary": {
+        "type": "PE32+", "architecture": "x86-64",
+    }}}), encoding="utf-8")
+
+    claims = E.extract_claims(report)
+
+    assert len(claims) == 1
+    citations = claims[0]["citations"]
+    assert [item["row"] for item in citations] == [
+        "$.malcat.file_summary.type",
+        "$.malcat.file_summary.architecture",
+    ]
+    grounded = [E._ground_citation(item, tmp_path) for item in citations]
+    assert [check["status"] for _, check in grounded] == [
+        "traceable-row", "traceable-row",
+    ]
+    assert [item["json_path"] for item, _ in grounded if item] == [
+        "$.malcat.file_summary.type",
+        "$.malcat.file_summary.architecture",
+    ]
+
+
+def test_grouped_jsonpath_claim_review_receives_both_source_fields(tmp_path):
+    case = _case(tmp_path, {
+        "REPORT-MASTER-v2.md": (
+            "The sample is a 64-bit PE image "
+            "(source: malcat, query_or_table: deep_dive/01-tools-raw.json, "
+            "row_or_rule: $.malcat.file_summary.type, "
+            "$.malcat.file_summary.architecture)."
+        ),
+    }, {
+        "deep_dive/01-tools-raw.json": json.dumps({"malcat": {
+            "file_summary": {"type": "PE32+", "architecture": "x86-64"},
+        }}),
+    })
+    reviewed = []
+
+    def reviewer(batch):
+        reviewed.extend(batch)
+        return {"reviews": [{
+            "id": item["id"], "verdict": "supported",
+            "evidence_ids": [row["evidence_id"] for row in item["evidence"]],
+            "reason": "both cited fields establish the format and architecture",
+        } for item in batch]}
+
+    result = E.check_report_entailment(
+        "a" * 64, case_root=case, semantic_reviewer=reviewer, use_cache=False)
+
+    assert result["ok"] is True, result
+    assert len(reviewed) == 1
+    assert [row["json_path"] for row in reviewed[0]["evidence"]] == [
+        "$.malcat.file_summary.type",
+        "$.malcat.file_summary.architecture",
+    ]
 
 
 def test_claim_extraction_does_not_truncate_a_report_by_default():

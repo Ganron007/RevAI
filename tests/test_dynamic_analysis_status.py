@@ -27,6 +27,17 @@ import section_publisher as SP  # noqa: E402
 import publish_report_v2 as PR  # noqa: E402
 
 
+def _report_tool_response(markdown):
+    return {"choices": [{
+        "finish_reason": "tool_calls",
+        "message": {"tool_calls": [{
+            "type": "function", "id": "report-test",
+            "function": {"name": "submit_report",
+                         "arguments": json.dumps({"markdown": markdown})},
+        }]},
+    }]}
+
+
 # ------------------------------------------------------------- the status helper
 def _start_run(tmp_path, monkeypatch, sha, mode="scripted"):
     logs = tmp_path / "logs"
@@ -444,20 +455,13 @@ def test_v3_dynamic_status_is_injected_into_every_authored_technical_section(mon
     sentinel = "STATUS SENTINEL: WinRE sample launch confirmed; 577 events; pcap present."
     captured = []
 
-    class Response:
-        def __getitem__(self, key):
-            payload = json.dumps({
-                "markdown": "## Section\n\nEvidence-grounded section.",
-            })
-            return [{"message": {"content": f"```json\n{payload}\n```"},
-                     "finish_reason": "stop"}]
-
     def fake_llm(prompt):
         captured.append(prompt)
-        return Response()
+        return _report_tool_response(
+            "## Section\n\nEvidence-grounded section.")
 
     monkeypatch.setattr(SP, "_dynamic_status_sentence", lambda sha: sentinel)
-    monkeypatch.setattr(SP, "llm_judge", fake_llm)
+    monkeypatch.setattr(SP, "llm_report", fake_llm)
     monkeypatch.setattr(SP, "llm_call_metadata", lambda response: {})
     monkeypatch.setattr(SP, "get_llm_model", lambda: "configured-llm")
 
@@ -879,10 +883,9 @@ def test_the_dynamic_section_prompt_carries_the_status(monkeypatch):
 
     def fake_judge(prompt, **kw):
         captured["prompt"] = prompt
-        return {"choices": [{"message": {"content": json.dumps(
-            {"title": "t", "markdown": "m"})}}]}
+        return _report_tool_response("m")
 
-    monkeypatch.setattr(SP, "llm_judge", fake_judge)
+    monkeypatch.setattr(SP, "llm_report", fake_judge)
     monkeypatch.setattr(
         SP, "_dynamic_status_sentence",
         lambda sha: "Dynamic analysis in this run -- emulation NOT performed; "
@@ -900,10 +903,9 @@ def test_the_dynamic_status_is_injected_into_every_master_section(monkeypatch):
 
     def fake_judge(prompt, **kw):
         captured["prompt"] = prompt
-        return {"choices": [{"message": {"content": json.dumps(
-            {"title": "t", "markdown": "m"})}}]}
+        return _report_tool_response("m")
 
-    monkeypatch.setattr(SP, "llm_judge", fake_judge)
+    monkeypatch.setattr(SP, "llm_report", fake_judge)
     monkeypatch.setattr(SP, "_dynamic_status_sentence", lambda sha: "STATUS")
     SP._run_one_section("4. Static Analysis", "ab", {}, {})
     assert "DYNAMIC-ANALYSIS STATUS (authoritative" in captured.get("prompt", "")

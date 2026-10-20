@@ -66,8 +66,11 @@ def test_dynamic_section_renders_pack(tmp_path):
     assert "stop_reason=idle" in text
     assert "bounded by that window" in text
     assert "static_yara_wins`=True" in text
-    # Runtime network: DGA-shaped count and the observed names.
-    assert "DGA-shaped `.biz`: 1" in text
+    # Network packet observations stay unattributed. A domain shape alone is
+    # not a DGA classification, sample ownership claim, or C2 finding.
+    assert "VM-wide DNS observation" in text
+    assert "sample attribution unresolved" in text
+    assert "DGA-shaped" not in text
     assert "pywolwnvd.biz" in text
     assert "talks.vg" in text
     # Dropped path from the Frida summary (system path filtered out).

@@ -27,6 +27,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import sys
 import time
 from pathlib import Path
 from typing import Any, Callable
@@ -71,6 +72,55 @@ _ANALYSIS_WORDS = (
 _VERDICT_WORDS = ("benign", "legitimate", "suspicious", "malicious")
 
 
+def _split_json_path_locators(row: str) -> list[str]:
+    """Expand a citation's comma-separated exact JSONPaths safely.
+
+    Human-authored citations sometimes group sibling fields as
+    ``$.a.type, $.a.architecture``. The resolver intentionally accepts one
+    JSONPath at a time, so expand only when every top-level comma-separated
+    part is itself a valid path. Commas inside quoted keys or brackets remain
+    part of that path, and prose/list-style locators retain their old meaning.
+    """
+    value = str(row or "").strip()
+    if not value.startswith("$"):
+        return [value]
+
+    parts: list[str] = []
+    stack: list[str] = []
+    closing = {"[": "]", "(": ")", "{": "}"}
+    quote: str | None = None
+    escaped = False
+    start = 0
+    for index, char in enumerate(value):
+        if quote:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == quote:
+                quote = None
+            continue
+        if char in "\"'" and stack:
+            quote = char
+        elif char in closing:
+            stack.append(closing[char])
+        elif char in "])}":
+            if not stack or char != stack[-1]:
+                return [value]
+            stack.pop()
+        elif char == "," and not stack:
+            parts.append(value[start:index].strip())
+            start = index + 1
+    if quote or stack:
+        return [value]
+    parts.append(value[start:].strip())
+    if len(parts) < 2 or not all(
+            part.startswith("$") and _parse_json_path(part) is not None
+            for part in parts):
+        return [value]
+    return parts
+
+
 def extract_claims(md: str, limit: int | None = None) -> list[dict]:
     """Every citation-bearing sentence in a report, with its citation.
 
@@ -100,6 +150,14 @@ def extract_claims(md: str, limit: int | None = None) -> list[dict]:
         citations = [item for item in citations if item.get("source")]
         if not citations:
             continue
+        expanded_citations: list[dict] = []
+        for citation in citations:
+            row = str(citation.get("row_or_rule") or "")
+            expanded_citations.extend(
+                {**citation, "row_or_rule": locator}
+                for locator in _split_json_path_locators(row)
+            )
+        citations = expanded_citations
         low = sent.lower()
         if any(w in low[:60] for w in _ANALYSIS_WORDS):
             continue
@@ -1126,6 +1184,25 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
             return {"ok": False, "applicable": True, "status": "report-read-error",
                     "reason": f"cannot read {path.name}: {exc}"}
 
+    # Some v2 runs publish REPORT-v2.md as an exact compatibility alias of
+    # REPORT-MASTER-v2.md. Verify every named output against the output
+    # manifest below, but review claims once per exact content digest. Identical
+    # bytes have identical claims/citations; counting an alias twice inflates
+    # failure totals and repeats review work without adding coverage.
+    digest_to_report: dict[str, str] = {}
+    claim_report_texts: dict[str, str] = {}
+    duplicate_report_aliases: dict[str, str] = {}
+    report_digests: dict[str, str] = {}
+    for report_name, markdown in report_texts.items():
+        digest = hashlib.sha256(markdown.encode("utf-8")).hexdigest()
+        report_digests[report_name] = digest
+        canonical_name = digest_to_report.get(digest)
+        if canonical_name is not None:
+            duplicate_report_aliases[report_name] = canonical_name
+            continue
+        digest_to_report[digest] = report_name
+        claim_report_texts[report_name] = markdown
+
     # A citation can resolve to a file that exists but belongs to an earlier
     # attempt. Bind all subsequent checks to the exact run and the immutable
     # report-input/output manifests before asking a model to judge claims.
@@ -1202,7 +1279,7 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
             except OSError:
                 fingerprint_data.append((rel, "unreadable"))
     fingerprint = hashlib.sha256(json.dumps(
-        {"schema": 7, "verifier": verifier_identity, "identity": analysis_identity,
+        {"schema": 8, "verifier": verifier_identity, "identity": analysis_identity,
          "input_manifest": manifest_digest, "inputs": fingerprint_data},
         sort_keys=True, separators=(",", ":"),
     ).encode()).hexdigest()
@@ -1210,7 +1287,7 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
     if use_cache and semantic_reviewer is None and cache_path.is_file():
         try:
             cached = json.loads(cache_path.read_text(encoding="utf-8"))
-            if (cached.get("schema_version") == 7
+            if (cached.get("schema_version") == 8
                     and cached.get("input_fingerprint") == fingerprint
                     and cached.get("status") in {
                         "complete", "failed", "no-cited-claims"
@@ -1224,7 +1301,7 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
     results: list[dict] = []
     pending: list[dict] = []
     pending_by_key: dict[str, dict] = {}
-    for report_name, markdown in report_texts.items():
+    for report_name, markdown in claim_report_texts.items():
         try:
             from report_quality import uncited_report_claims
             uncited = uncited_report_claims(markdown)
@@ -1305,7 +1382,7 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
         batch_index = offset // 12 + 1
         started = time.monotonic()
         print(f"[report_entailment] batch={batch_index}/{batch_total} "
-              f"claims={len(batch)} started", flush=True)
+              f"claims={len(batch)} started", file=sys.stderr, flush=True)
         response: dict = {}
         try:
             response = reviewer(batch)
@@ -1396,7 +1473,8 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
                                     "status": "not-reviewed",
                                     "reason": "review stopped after the first invalid batch response"})
             print(f"[report_entailment] batch={batch_index}/{batch_total} "
-                  f"failed after {elapsed:.1f}s; stopping fail-closed", flush=True)
+                  f"failed after {elapsed:.1f}s; stopping fail-closed",
+                  file=sys.stderr, flush=True)
             break
 
         elapsed = round(time.monotonic() - started, 3)
@@ -1454,7 +1532,7 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
             try:
                 cache_path.parent.mkdir(parents=True, exist_ok=True)
                 checkpoint = {
-                    "schema_version": 7, "ok": False, "applicable": True,
+                    "schema_version": 8, "ok": False, "applicable": True,
                     "status": "in_progress", "input_fingerprint": fingerprint,
                     "analysis_identity": analysis_identity,
                     "claims_total": len(results) + sum(len(item["references"]) for item in remaining),
@@ -1470,7 +1548,7 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
             except OSError:
                 pass
         print(f"[report_entailment] batch={batch_index}/{batch_total} "
-              f"completed in {elapsed:.1f}s", flush=True)
+              f"completed in {elapsed:.1f}s", file=sys.stderr, flush=True)
 
     by_status: dict[str, int] = {}
     per_report: dict[str, dict] = {}
@@ -1483,7 +1561,7 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
     violations = [item for item in results if item["status"] != "semantically-supported"]
     ok = not violations and review_error is None
     result = {
-        "schema_version": 7,
+        "schema_version": 8,
         "ok": ok,
         "applicable": True,
         "status": "complete" if ok else ("verification-error" if review_error else "failed"),
@@ -1494,6 +1572,10 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
         "input_fingerprint": fingerprint,
         "analysis_identity": analysis_identity,
         "report_input_manifest_sha256": manifest_digest,
+        "reports_present": sorted(report_texts),
+        "reports_reviewed": sorted(claim_report_texts),
+        "duplicate_report_aliases": duplicate_report_aliases,
+        "report_sha256": report_digests,
         "evidence_chars": len(evidence),
         "claims_total": len(results),
         "claims": results,

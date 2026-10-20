@@ -101,7 +101,7 @@ def test_no_llm_call_is_possible_for_this_section(tmp_path, monkeypatch):
     def explode(*a, **kw):
         raise AssertionError("section 8 must not call the LLM")
 
-    monkeypatch.setattr(sp, "llm_judge", explode)
+    monkeypatch.setattr(sp, "llm_report", explode)
     md = sp._build_ioc_section("8" * 64)
     assert "Indicators of Compromise" in md
 

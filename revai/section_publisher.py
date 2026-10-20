@@ -67,10 +67,9 @@ from v2_lib import (
     ensure_pipeline_runtime_env,
     format_malcat_evidence,
     get_llm_model,
-    llm_judge,
+    llm_report,
+    extract_llm_report,
     llm_call_metadata,
-    normalize_llm_content,
-    normalize_llm_json,
     provenance_block,
     revai_provenance,
     assert_report_input_manifest,
@@ -161,7 +160,9 @@ def _section_prompt(section_name: str, description: str, evidence: str,
         "For JSON evidence, cite the exact source artifact path as "
         "query_or_table and the exact JSONPath as row_or_rule (for example: "
         "source: malcat, query_or_table: deep_dive/01-tools-raw.json, "
-        "row_or_rule: $.malcat.file_summary.entropy). Do not invent table names.\n"
+        "row_or_rule: $.malcat.file_summary.entropy). Do not invent table names. "
+        "Use one JSONPath per citation; when a claim needs multiple fields, repeat "
+        "the citation for each field instead of joining paths with commas.\n"
         "EXPLAIN, DON'T DUMP: every evidence row / code block you include must "
         "be introduced and interpreted (what + why + confidence); never paste "
         "evidence bare. Hedge inferences ('likely', 'possibly', 'we assess'). "
@@ -183,7 +184,8 @@ def _section_prompt(section_name: str, description: str, evidence: str,
         "ENTROPY UNITS: whole-file Shannon entropy in bits/byte (0-8); "
         "per-section values must name the section; never present an unlabeled "
         "tool metric as the file's entropy.\n"
-        'Return JSON: {"title": "...", "markdown": "<section content>", "source": "llm_judge"}'
+        "Call submit_report exactly once and put this section's complete Markdown "
+        "in its markdown field. Do not return a JSON envelope in message text."
     )
     return "\n".join(parts)
 
@@ -378,21 +380,13 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
     call_record = None
     mode = (tools_results.get("_execution_context") or {}).get("mode")
     try:
-        resp = llm_judge(prompt)
+        resp = llm_report(prompt)
         response = resp
-        choice = (resp.get("choices") or [{}])[0]
-        if choice.get("finish_reason") not in (None, "stop"):
-            raise ValueError(
-                f"incomplete section response (finish_reason={choice.get('finish_reason')})"
-            )
-        content = resp["choices"][0]["message"]["content"]
-        if not isinstance(content, str) or not content.strip():
-            raise ValueError("section response has no textual content")
         call_record = _persist_llm_call(
             sha, mode, f"master-p{pass_num}", section_name, prompt, response=resp)
-        v = normalize_llm_json(content)
+        v = extract_llm_report(resp)
         result["markdown"] = ensure_section_heading(
-            normalize_llm_content(v) or content, section_name
+            v["markdown"], section_name
         )
         result["title"] = v.get("title", section_name)
         result["first_draft_policy"] = (
@@ -721,6 +715,7 @@ def _build_ioc_section(sha: str, tools_results: dict | None = None) -> str:
 
     total = 0
     lines: list[str] = []
+    per_category_limit = 40
     for key, label in _IOC_KINDS:
         vals = data.get(key) or []
         if isinstance(vals, dict):
@@ -730,8 +725,13 @@ def _build_ioc_section(sha: str, tools_results: dict | None = None) -> str:
             continue
         total += len(shown)
         lines.append(f"**{label}**")
-        for v in shown:
+        for v in shown[:per_category_limit]:
             lines.append(f"- `{v}`")
+        omitted = len(shown) - min(len(shown), per_category_limit)
+        if omitted:
+            lines.append(
+                f"- ... and {omitted} more; the complete set remains in `iocs.json`."
+            )
         lines.append("")
 
     out += ["Every indicator below was produced by the analysis engines named in "
@@ -909,7 +909,9 @@ def _technical_section_prompt(name: str, description: str, evidence: str,
         "- For JSON evidence, query_or_table must be the exact source artifact path "
         "and row_or_rule the exact JSONPath (for example "
         "query_or_table: deep_dive/01-tools-raw.json, "
-        "row_or_rule: $.malcat.file_summary.entropy). Do not invent table names.\n"
+        "row_or_rule: $.malcat.file_summary.entropy). Do not invent table names. "
+        "Use one JSONPath per citation; repeat the citation for each field needed "
+        "to support a claim instead of joining paths with commas.\n"
         "- Use that exact parenthesized syntax at the end of EACH factual sentence. "
         "For table rows, include the full citation in the claim cell; do not put "
         "bare source metadata in a separate cell. Keep each sentence focused so "
@@ -1011,22 +1013,13 @@ def _generate_technical_section(
     response = None
     call_record = None
     try:
-        resp = llm_judge(prompt)
+        resp = llm_report(prompt)
         response = resp
-        choice = (resp.get("choices") or [{}])[0]
-        if choice.get("finish_reason") not in (None, "stop"):
-            raise ValueError(
-                f"incomplete technical section response "
-                f"(finish_reason={choice.get('finish_reason')})"
-            )
-        content = resp["choices"][0]["message"]["content"]
-        if not isinstance(content, str) or not content.strip():
-            raise ValueError("technical section response has no textual content")
         call_record = _persist_llm_call(
             sha, mode, "technical-p1", name, prompt, response=resp)
-        v = normalize_llm_json(content)
+        v = extract_llm_report(resp)
         result["markdown"] = ensure_section_heading(
-            normalize_llm_content(v) or content, name
+            v["markdown"], name
         )
         result["title"] = v.get("title", name)
         result["uncited_claim_count"] = len(
@@ -1489,7 +1482,9 @@ Rules (evidence-first, MORE detail preferred):
 - For JSON evidence, query_or_table must be the exact source artifact path and
   row_or_rule the exact JSONPath (for example
   query_or_table: deep_dive/01-tools-raw.json,
-  row_or_rule: $.malcat.file_summary.entropy). Do not invent table names.
+  row_or_rule: $.malcat.file_summary.entropy). Do not invent table names. Use
+  one JSONPath per citation; repeat the citation for every field needed to
+  support a claim instead of joining paths with commas.
 - The Verdict and Deep-Dive blocks are NARRATIVE CONTEXT, not evidence: their
   `summary` / `verdict.summary` prose was written by an earlier stage. Never
   cite it as a claim's (source: ...). Cite the tool artifact that observed the
@@ -1530,19 +1525,11 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
     mono_call_num = 1
     try:
         mono_prompt = prompt
-        resp = llm_judge(prompt)
+        resp = llm_report(prompt)
         _persist_llm_call(
             sha, (tools_results.get("_execution_context") or {}).get("mode"),
             "technical-monolithic-1", "full-report", mono_prompt, response=resp)
-        if (resp.get("choices") or [{}])[0].get("finish_reason") not in (None, "stop"):
-            raise ValueError(
-                "incomplete technical report response "
-                f"(finish_reason={(resp.get('choices') or [{}])[0].get('finish_reason')})"
-            )
-        content = resp["choices"][0]["message"]["content"]
-        if not isinstance(content, str) or not content.strip():
-            raise ValueError("technical report response has no textual content")
-        technical_report = normalize_llm_json(content)
+        technical_report = extract_llm_report(resp)
         meta = llm_call_metadata(resp)
         meta["request_model"] = get_llm_model()
         technical_report["model"] = meta.get("response_model") or get_llm_model()
@@ -1580,19 +1567,13 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
                     + ". Complete the FULL report with every required heading; "
                     "do not truncate. Return the complete markdown."
                 )
-                resp2 = llm_judge(retry_prompt)
+                resp2 = llm_report(retry_prompt)
                 retry_response = resp2
                 _persist_llm_call(
                     sha, (tools_results.get("_execution_context") or {}).get("mode"),
                     "technical-monolithic-2", "full-report", retry_prompt,
                     response=resp2)
-                if (resp2.get("choices") or [{}])[0].get("finish_reason") not in (None, "stop"):
-                    raise ValueError(
-                        "incomplete technical retry response "
-                        f"(finish_reason={(resp2.get('choices') or [{}])[0].get('finish_reason')})"
-                    )
-                content2 = resp2["choices"][0]["message"]["content"]
-                technical_report2 = normalize_llm_json(content2)
+                technical_report2 = extract_llm_report(resp2)
                 _md2 = str(technical_report2.get("markdown") or "")
                 if len(_md2) > len(_md):
                     technical_report = technical_report2

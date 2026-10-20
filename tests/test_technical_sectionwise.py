@@ -148,7 +148,8 @@ def test_evidence_cap_is_enforced():
     ev = sp._technical_section_evidence("4. Static Code Analysis",
                                        sp._split_evidence_blocks(huge))
     assert len(ev) <= sp._TECHNICAL_EVIDENCE_CAP + 500, len(ev)
-    assert "truncated" in ev.lower(), "the cap must be disclosed, not silent"
+    assert "evidence blocks omitted" in ev.lower(), (
+        "the evidence cap must disclose which content was omitted")
 
 
 # --------------------------------------------------------------------- prompt
@@ -205,13 +206,18 @@ def test_every_prompt_path_carries_the_narrative_rule():
 
 # ------------------------------------------------------------------ behaviour
 
-class _Resp:
+class _Resp(dict):
     def __init__(self, content):
-        self._c = content
-
-    def __getitem__(self, k):
-        msg = {"role": "assistant", "content": self._c}
-        return [{"message": msg, "finish_reason": "stop"}]
+        super().__init__({
+            "choices": [{
+                "finish_reason": "tool_calls",
+                "message": {"tool_calls": [{
+                    "type": "function", "id": "test-report",
+                    "function": {"name": "submit_report",
+                                 "arguments": content},
+                }]},
+            }],
+        })
 
 
 def test_one_failing_section_does_not_lose_the_others(monkeypatch):
@@ -227,10 +233,9 @@ def test_one_failing_section_does_not_lose_the_others(monkeypatch):
         if title == failing:
             raise RuntimeError("simulated section failure")
         return _Resp(json.dumps({"title": title,
-                                "markdown": f"## {title}\n\nsubstantive body",
-                                "source": "llm_judge"}))
+                                "markdown": f"## {title}\n\nsubstantive body"}))
 
-    monkeypatch.setattr(sp, "llm_judge", fake)
+    monkeypatch.setattr(sp, "llm_report", fake)
     monkeypatch.setattr(sp, "llm_call_metadata", lambda r: {})
     monkeypatch.setattr(sp, "get_llm_model", lambda: "m")
 
@@ -250,7 +255,7 @@ def test_section_8_never_calls_the_llm(monkeypatch):
     def explode(*a, **kw):
         raise AssertionError("section 8 must not reach the LLM")
 
-    monkeypatch.setattr(sp, "llm_judge", explode)
+    monkeypatch.setattr(sp, "llm_report", explode)
     blocks = sp._split_evidence_blocks(REAL_EVIDENCE)
     r = sp._generate_technical_section("8. Indicators of Compromise", blocks,
                                        "", "a" * 64)
@@ -261,7 +266,7 @@ def test_section_8_never_calls_the_llm(monkeypatch):
 
 
 def test_section_8_is_included_in_the_assembled_report(monkeypatch):
-    monkeypatch.setattr(sp, "llm_judge", lambda *a, **k: _Resp(
+    monkeypatch.setattr(sp, "llm_report", lambda *a, **k: _Resp(
         json.dumps({"title": "t", "markdown": "## t\n\nbody"})))
     monkeypatch.setattr(sp, "llm_call_metadata", lambda r: {})
     monkeypatch.setattr(sp, "get_llm_model", lambda: "m")
@@ -278,10 +283,9 @@ def test_model_section_preserves_first_draft_for_claim_support_gate(monkeypatch)
 
     def fake(prompt, *a, **kw):
         calls.append(prompt)
-        return _Resp(json.dumps({"title": title, "markdown": initial,
-                                 "source": "llm_judge"}))
+        return _Resp(json.dumps({"title": title, "markdown": initial}))
 
-    monkeypatch.setattr(sp, "llm_judge", fake)
+    monkeypatch.setattr(sp, "llm_report", fake)
     monkeypatch.setattr(sp, "llm_call_metadata", lambda r: {})
     monkeypatch.setattr(sp, "get_llm_model", lambda: "test-model")
 
@@ -304,10 +308,9 @@ def test_technical_section_publisher_restores_known_heading(monkeypatch):
     ) * 8
 
     def fake(_prompt, *a, **kw):
-        return _Resp(json.dumps({"title": title, "markdown": body,
-                                 "source": "llm_judge"}))
+        return _Resp(json.dumps({"title": title, "markdown": body}))
 
-    monkeypatch.setattr(sp, "llm_judge", fake)
+    monkeypatch.setattr(sp, "llm_report", fake)
     monkeypatch.setattr(sp, "llm_call_metadata", lambda _r: {})
     monkeypatch.setattr(sp, "get_llm_model", lambda: "test-model")
 

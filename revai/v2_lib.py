@@ -4351,6 +4351,72 @@ def llm_call_metadata(response: dict) -> dict:
     }
 
 
+REPORT_WRITER_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "submit_report",
+        "description": "Return the complete analyst report as Markdown.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "title": {"type": "string"},
+                "markdown": {"type": "string"},
+            },
+            "required": ["markdown"],
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+def llm_report(prompt: str, **kwargs) -> dict:
+    """Request a report through a constrained function-call response.
+
+    JSON-in-message report envelopes were repeatedly malformed by the provider
+    (including invalid Windows-path escapes), causing valid Markdown to be
+    mistaken for an incomplete draft. Function arguments use the chat API's
+    structured tool-call channel; callers still validate report content and
+    preserve the exact raw response for the run audit.
+    """
+    if "tools" in kwargs or "tool_choice" in kwargs:
+        raise ValueError("llm_report owns its structured report tool contract")
+    return llm_judge(
+        prompt,
+        tools=[REPORT_WRITER_TOOL],
+        tool_choice={"type": "function", "function": {"name": "submit_report"}},
+        **kwargs,
+    )
+
+
+def extract_llm_report(response: dict) -> dict:
+    """Validate and extract the one structured report returned by llm_report."""
+    choices = response.get("choices") if isinstance(response, dict) else None
+    choice = (choices or [{}])[0] if isinstance(choices, list) else {}
+    finish_reason = choice.get("finish_reason")
+    if finish_reason not in ("tool_calls", "stop"):
+        raise ValueError(f"report writer returned incomplete output (finish_reason={finish_reason})")
+    message = choice.get("message") or {}
+    calls = message.get("tool_calls")
+    if not isinstance(calls, list) or len(calls) != 1 or not isinstance(calls[0], dict):
+        raise ValueError("report writer must return exactly one submit_report tool call")
+    function = calls[0].get("function")
+    if (not isinstance(function, dict)
+            or function.get("name") != "submit_report"
+            or not isinstance(function.get("arguments"), str)):
+        raise ValueError("report writer returned an unexpected tool call")
+    payload = json.loads(function["arguments"])
+    if (not isinstance(payload, dict)
+            or set(payload) - {"title", "markdown"}
+            or not isinstance(payload.get("markdown"), str)
+            or not payload["markdown"].strip()):
+        raise ValueError("submit_report requires a non-empty Markdown string and optional title")
+    return {
+        "title": str(payload.get("title") or "RE Report"),
+        "markdown": payload["markdown"],
+        "source": "llm_judge",
+    }
+
+
 _LLM_USAGE_LOCK = __import__("threading").Lock()
 
 
@@ -10541,26 +10607,37 @@ def _sec_behavioral_evidence(tools_results: dict) -> str:
     deep_behavioral = ((tools_results.get("deep") or {}).get("behavioral") or {})
     se = tools_results.get("speakeasy") or deep_behavioral.get("speakeasy") or {}
     if se:
+        calls = se.get("api_calls") or []
+        events = se.get("key_events") or []
         if se.get("speakeasy_ok"):
-            calls = se.get("api_calls") or []
-            events = se.get("key_events") or []
             lines.append(
                 f"  Speakeasy emulation completed: {len(calls)} API call record(s), "
                 f"{len(events)} key event(s) in the returned result."
             )
-            for event in events[:10]:
-                lines.append(f"    - key event: {json.dumps(event, default=str)[:400]}")
-            for api in calls[:15]:
-                if isinstance(api, dict):
-                    lines.append(
-                        f"    - API: {api.get('dll', '?')}.{api.get('name', '?')}: "
-                        f"{api.get('count', 0)} call(s)"
-                    )
+        elif calls or events or se.get("total_api_calls") is not None:
+            # Preserve partial result data without upgrading it to a successful
+            # emulation. A failed/incomplete oracle can still return useful
+            # observations that the report must not silently discard.
+            call_count = se.get("total_api_calls")
+            if call_count is None:
+                call_count = len(calls)
+            lines.append(
+                f"  Speakeasy: {call_count} API calls reported; "
+                "completion status not confirmed."
+            )
         else:
             lines.append(
                 "  Speakeasy emulation did not complete: "
                 f"{se.get('error') or se.get('reason') or 'no successful result'}"
             )
+        for event in events[:10]:
+            lines.append(f"    - key event: {json.dumps(event, default=str)[:400]}")
+        for api in calls[:15]:
+            if isinstance(api, dict):
+                lines.append(
+                    f"    - API: {api.get('dll', '?')}.{api.get('name', '?')}: "
+                    f"{api.get('count', 0)} call(s)"
+                )
     fp = tools_results.get("frida_probe") or {}
     if not fp:
         fp = ((tools_results.get("deep") or {}).get("behavioral") or {}).get("frida_probe") or {}
@@ -10569,7 +10646,9 @@ def _sec_behavioral_evidence(tools_results: dict) -> str:
         lines.append(
             f"  RevAI Frida probe: available={fp.get('frida_available')} "
             f"version={fp.get('frida_version', '?')}; {len(cands)} hook candidate(s) "
-            "from static imports. This probe did not execute or inject into the sample."
+            "from static imports. This is static analysis only; no execution "
+            "or injection by this RevAI component occurred. Runtime traces "
+            "from separate paths such as WinRE are reported separately."
         )
         for candidate in cands[:12]:
             if isinstance(candidate, dict):

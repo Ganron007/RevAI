@@ -33,6 +33,20 @@ class _Response:
         }).encode()
 
 
+class _PayloadResponse:
+    def __init__(self, payload):
+        self.payload = payload
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_args):
+        return False
+
+    def read(self):
+        return json.dumps(self.payload).encode()
+
+
 def test_agnes_reasoning_maps_to_documented_thinking_extension():
     endpoint = "https://apihub.agnes-ai.com/v1/chat/completions"
 
@@ -95,6 +109,69 @@ def test_agnes_llm_judge_sends_only_documented_reasoning_and_output_cap(
     assert "response_format" not in body
     assert "reasoning_effort" not in body
     assert "thinking" not in body
+
+
+def test_report_writer_uses_agnes_structured_tool_contract(monkeypatch):
+    bodies = []
+    response = {
+        "model": "agnes-3.0-flash",
+        "choices": [{
+            "finish_reason": "tool_calls",
+            "message": {
+                "role": "assistant", "content": None,
+                "tool_calls": [{
+                    "type": "function", "id": "call-report",
+                    "function": {"name": "submit_report", "arguments": json.dumps({
+                        "title": "Evidence-based report",
+                        "markdown": "## Executive Summary\\n\\nSample evidence.",
+                    })},
+                }],
+            },
+        }],
+        "usage": {"prompt_tokens": 10, "completion_tokens": 12},
+    }
+
+    def fake_urlopen(request, timeout=None):
+        bodies.append(json.loads(request.data.decode("utf-8")))
+        return _PayloadResponse(response)
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(v2_lib, "llm_budget_acquire", lambda *_args, **_kw: 0)
+    monkeypatch.setenv("REVAI_LLM_API_URL", "https://apihub.agnes-ai.com/v1")
+    monkeypatch.setenv("REVAI_LLM_API_KEY", "test-key")
+    monkeypatch.setenv("REVAI_LLM_MODEL", "agnes-3.0-flash")
+    monkeypatch.setenv("REVAI_LLM_REASONING", "enabled")
+    monkeypatch.setenv("REVAI_LLM_STREAM", "1")
+
+    raw = v2_lib.llm_report("Write an evidence-based report")
+    report = v2_lib.extract_llm_report(raw)
+
+    assert len(bodies) == 1
+    body = bodies[0]
+    assert body["tools"] == [v2_lib.REPORT_WRITER_TOOL]
+    assert body["tool_choice"] == {
+        "type": "function", "function": {"name": "submit_report"}}
+    assert "response_format" not in body
+    assert body["chat_template_kwargs"] == {"enable_thinking": True}
+    assert report == {
+        "title": "Evidence-based report",
+        "markdown": "## Executive Summary\\n\\nSample evidence.",
+        "source": "llm_judge",
+    }
+
+
+def test_report_writer_rejects_missing_or_multiple_tool_calls():
+    empty = {"choices": [{"finish_reason": "tool_calls",
+                          "message": {"tool_calls": []}}]}
+    duplicate = {"choices": [{"finish_reason": "tool_calls", "message": {
+        "tool_calls": [
+            {"function": {"name": "submit_report", "arguments": "{}"}},
+            {"function": {"name": "submit_report", "arguments": "{}"}},
+        ]}}]}
+    with pytest.raises(ValueError, match="exactly one"):
+        v2_lib.extract_llm_report(empty)
+    with pytest.raises(ValueError, match="exactly one"):
+        v2_lib.extract_llm_report(duplicate)
 
 
 def test_agnes_timeout_retry_never_disables_thinking(monkeypatch):

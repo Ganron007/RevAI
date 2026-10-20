@@ -118,7 +118,8 @@ def test_evidence_ingestion_is_presence_gated():
     dd = source("revai/deep_dive_agentic.py")
     assert "dynamic_corroboration_enabled()" in dd, (
         "the deep-dive ingestion is no longer gated on the shared opt-out")
-    assert "load_dynamic_pack(sha)" in dd
+    assert "load_dynamic_pack(" in dd
+    assert "expected_run_id=context.get(\"run_id\")" in dd
     assert "corroborating-only" in dd, (
         "the ingested pack no longer states its authority, so a reader cannot "
         "tell dynamic-observed from static-observed")

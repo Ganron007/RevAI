@@ -1821,7 +1821,13 @@ def uncited_report_claims(markdown: str) -> list[str]:
         if _REPORT_METADATA_PREFIX_RE.match(line):
             continue
 
-        for sentence in _split_report_sentences(raw_line):
+        # Numbered-list syntax is not part of the claim. Without this removal,
+        # the sentence splitter treated `1.` as a standalone uncited assertion
+        # before it reached the actual list item.
+        if re.fullmatch(r"\d+[.)]", line):
+            continue
+        prose_line = re.sub(r"^\s*\d+[.)]\s+", "", raw_line)
+        for sentence in _split_report_sentences(prose_line):
             claim = re.sub(r"\s+", " ", sentence).strip()
             claim = re.sub(r"^(?:[-*+]\s+|>\s*)+", "", claim)
             # A source label alone is not a traceable citation. The entailment
@@ -3224,13 +3230,9 @@ def verify_behavior_prerequisites(markdown: str, import_surface: str,
 
 OUTPUT_FORMAT_CONTRACT = """
 ## OUTPUT FORMAT CONTRACT (mandatory — ASCII only)
-Return ONE JSON object (no prose outside JSON). Schema:
-{
-  "title": "<string>",
-  "markdown": "<full markdown report>",
-  "sections_present": ["1. Executive Summary", "... exact titles ..."],
-  "source": "llm_judge"
-}
+Call the supplied `submit_report` function exactly once. Put the complete report
+in its `markdown` field and, optionally, the document title in `title`. Do not
+put the report in message text or return a JSON envelope in Markdown.
 
 Markdown rules:
 1. Use EXACT level-2 headings with ASCII apostrophe only: ## 11. What We Don't Know

@@ -97,9 +97,9 @@ failed or stale pack is recorded as a failed tool and cannot produce a green run
 | **6. Analysis Scripts** *(optional)* | `artifact_gen.py` | Opt-in verifiable artifact generation: the LLM authors one small, sample-specific extraction script from **structural** evidence (section table, high-entropy regions with offsets, strings with offsets, bounded decompile excerpts — never a decoded answer), the pipeline runs it in a bounded sandbox (isolated interpreter, scrubbed env with no RevAI secrets, address-space/file-size rlimits, timeout, `unshare -n` when available) and then **re-derives every claimed value from the sample bytes** with its own code. Three anti-cheat measurements: the script must read its input argument, hardcoded output literals are flagged, and values already visible in the generation prompt are flagged as not independent. Gated by `REVAI_ENABLE_ARTIFACT_GEN=1`; self-skips with rc=0 otherwise; never gates the verdict. Publish attaches a presence-gated *Appendix: Analysis Scripts* listing only re-derived values. |
 | **7. Behavioural Model** *(optional)* | `behavioural_model.py` | Opt-in (`REVAI_ENABLE_BEHAVIOURAL_MODEL=1`): assembles what the sample *does* from the run's own artifacts into `behavioural_model.json` — capabilities with their provenance, the concrete objects they act on (registry keys, URLs, domains, IPs, files, mutexes), the observations backing each, and the gaps. Built deterministically, never authored by the model: a model-authored behavioural model is a plausible story, and a plausible story about a malware sample is the most expensive kind of wrong. Never gates the verdict; off by default, so a run without it is byte-identical. |
 | **8. Rule Gen** | `yara_gen_v2.py` | Generates YARA + Sigma rules from evidence, provenance-stamped, validated in-process; `iocs.json` extended with revai-tools wallets + defanged IOC merge. |
-| **9. Publish** | `publish_report_v2.py` | LLM Judge authors `REPORT-MASTER-v2.md` (17 sections) and `REPORT-TECHNICAL-v2.md` (13 sections) with the evidence pack appended. |
-| **10. Section reports** | `section_publisher.py` | Section map-reduce: per-section LLM passes with cross-section context → `REPORT-MASTER-v3.md` / `REPORT-TECHNICAL-v3.md`. **Both** reports are generated one section per call. Technical evidence is routed to the sections that need it (`TECHNICAL_SECTION_EVIDENCE`) instead of being sent whole to a single call, and each section's evidence is capped. `REVAI_TECHNICAL_SECTIONWISE=0` restores the single-call technical assembly, retained only as a rollback lever. |
-| **11. Audit** | `audit_pipeline.py` & `report_quality.py` | Per-stage audit (`all_green`), engine-citation honesty, verdict lock, style gates, depth gate, `truly_green`. |
+| **9. Publish** | `publish_report_v2.py` | LLM Judge authors `REPORT-MASTER-v2.md` (17 sections) and `REPORT-TECHNICAL-v2.md` (13 sections) from the complete run-bound primary JSON artifacts plus focused evidence. Each report call uses one forced `submit_report` tool call; the exact raw response is retained for audit, and malformed message-text JSON is not treated as Markdown. |
+| **10. Section reports** | `section_publisher.py` | Section map-reduce: per-section LLM passes with cross-section context → `REPORT-MASTER-v3.md` / `REPORT-TECHNICAL-v3.md`. Both receive the complete run-bound primary sources plus topic-routed evidence, and each section uses the same forced structured report contract. Technical evidence is routed to the sections that need it (`TECHNICAL_SECTION_EVIDENCE`); `REVAI_TECHNICAL_SECTIONWISE=0` restores the single-call technical assembly as a rollback lever. |
+| **11. Audit** | `audit_pipeline.py` & `report_quality.py` | Per-stage audit (`all_green`), engine-citation honesty, verdict lock, style gates, depth gate, `truly_green`. Every output file is provenance-checked; exact duplicate compatibility aliases are reviewed once by content digest. Citations must resolve to primary artifacts and exact rows/fields, then the configured model reviews claim support against those excerpts. A valid citation alone is not proof; unsupported, contradicted, malformed, or unreviewed claims keep the report red. |
 | **12. Depth Mode** *(optional)* | `depth_agent.py` | Opt-in, **runs after the audit** (`REVAI_DEPTH=1`). Objective is UNDERSTANDING, not a verdict: it produces a function map (`understanding.json`) and never a judgment, and never gates the pipeline. Every region carries a status from a fixed vocabulary with a reason and an evidence citation, and the loop terminates on a declared unknown set. The ceiling consolidates rather than truncates, so a cutoff yields a partial-but-honest map. |
 
 ---
@@ -154,7 +154,7 @@ Four features implemented in `deep_dive_agentic.py` and active in both engines (
 
 1. **Budget warnings** — convergence nudges at half and near-end of the step budget.
 2. **Redundant-call detection** — duplicate `(tool, args)` calls are skipped with a nudge; counted in the result.
-3. **Hallucination check** — every `final_answer` claim must be grounded in tool output; ungrounded claims get one correction turn.
+3. **Hallucination check** — the agent's `final_answer` claims are checked against tool output and ungrounded claims get one correction turn. This agent-loop check is not a substitute for the separate report claim-support audit.
 4. **Failure taxonomy** — post-run classification (byte-level reasoning / control-flow misinterpretation / API hallucination / tool misuse / early termination / JSON violations).
 
 ---
@@ -178,12 +178,20 @@ Checkpoints write `/tmp/cadre-hitl/<agent>-<step>.json`; approval flows through 
 
 Reports follow real-world threat-report conventions. Section anatomy (MASTER 17 / TECHNICAL 13) includes a Background & Family Lineage anchor, an Infrastructure/C2 section, detection content and MITRE ATT&CK at the end with IOCs, and structured appendices (Evidence Trail, Module Inventory).
 
-A style contract is enforced at every prompt site:
+A style contract is supplied at every report prompt site; deterministic checks
+and claim review decide whether the generated draft is acceptable. A failed
+draft is retained and the run goes red rather than being treated as evidence of
+successful publication. Report calls receive the run's complete, manifest-bound
+primary JSON source artifacts, with focused evidence routed to the relevant
+sections. The output envelope is a forced `submit_report` tool call, and its raw
+response is retained beside the generated Markdown.
+
+A style contract requires:
 1. Quote-then-translate — every artifact introduced and interpreted
 2. Observation → implication ("we observed X, which indicates Y because Z")
 3. Observed-vs-latent capability annotation
 4. Hedged inference (likely / possibly / we assess)
-5. Evidence traceability — every claim carries `(source: engine)`
+5. Evidence traceability — factual claims carry a resolvable artifact and row/field locator; semantic support is checked separately
 6. Explicit unknowns with reasons
 7. Module-by-module narrative flow
 8. Reader test — no prior context required

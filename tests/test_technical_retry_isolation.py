@@ -29,6 +29,7 @@ the happy path already worked and the bug lived entirely in the error branch.
 from __future__ import annotations
 
 import sys
+import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -43,15 +44,17 @@ class _Boom(RuntimeError):
     pass
 
 
-class _Resp:
+class _Resp(dict):
     def __init__(self, content):
-        self._content = content
-
-    def __getitem__(self, key):
-        if key != "choices":
-            raise KeyError(key)
-        msg = {"role": "assistant", "content": self._content}
-        return [{"message": msg, "finish_reason": "stop"}]
+        super().__init__({"choices": [{
+            "finish_reason": "tool_calls",
+            "message": {"tool_calls": [{
+                "type": "function", "id": "test-report",
+                "function": {"name": "submit_report", "arguments": json.dumps({
+                    "markdown": content,
+                })},
+            }]},
+        }]})
 
 
 # A partial first response: section 1 only, real prose, twelve headings absent.
@@ -75,6 +78,36 @@ def _all_required(md: str) -> bool:
     return not sp.missing_sections(md, sp.TECHNICAL_REPORT_SECTIONS)
 
 
+def _run_monolithic_report(monkeypatch, tmp_path, responses):
+    """Exercise the real monolithic publisher branch with an isolated case."""
+    case_root = tmp_path / "case"
+    case_root.mkdir()
+    remaining = iter(responses)
+
+    def fake_report(_prompt, *args, **kwargs):
+        response = next(remaining)
+        if isinstance(response, BaseException):
+            raise response
+        return response
+
+    monkeypatch.setenv("REVAI_TECHNICAL_SECTIONWISE", "0")
+    monkeypatch.setattr(sp, "case_dir", lambda *_args, **_kwargs: case_root)
+    monkeypatch.setattr(sp, "build_technical_evidence_block",
+                        lambda *_args, **_kwargs: "test evidence")
+    monkeypatch.setattr(sp, "attach_analysis_scripts", lambda evidence, *_a, **_k: evidence)
+    monkeypatch.setattr(sp, "attach_dynamic_corroboration",
+                        lambda evidence, *_a, **_k: evidence)
+    monkeypatch.setattr(sp, "_persist_llm_call", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr(sp, "_finalize_technical",
+                        lambda _sha, report, *_args, **_kwargs: report)
+    monkeypatch.setattr(sp, "llm_report", fake_report)
+    monkeypatch.setattr(sp, "llm_call_metadata", lambda _response: {})
+    monkeypatch.setattr(sp, "get_llm_model", lambda: "test-model")
+    return sp.run_technical_publish("a" * 64, {
+        "sample_path": "fixture.exe", "verdict": {}, "deep": {},
+    })
+
+
 def test_partial_response_is_really_partial():
     """Fixture sanity: if this stops being partial the tests prove nothing."""
     assert sp.missing_sections(PARTIAL, sp.TECHNICAL_REPORT_SECTIONS), (
@@ -88,89 +121,38 @@ def test_full_response_satisfies_every_section():
 
 # ------------------------------------------------ the retry control flow itself
 
-def test_failed_retry_keeps_the_partial_first_response(monkeypatch):
+def test_failed_retry_keeps_the_partial_first_response(monkeypatch, tmp_path):
     """THE regression.
 
     A retry that raises must leave the first response in place. Before the fix
     this propagated to the outer handler and replaced the report with
     "LLM failed: llm_judge failed".
     """
-    calls = {"n": 0}
-
-    def fake_llm_judge(prompt, *a, **kw):
-        calls["n"] += 1
-        if calls["n"] == 1:
-            return _Resp(PARTIAL)
-        raise _Boom("llm_judge failed")
-
-    monkeypatch.setattr(sp, "llm_judge", fake_llm_judge)
-    monkeypatch.setattr(sp, "llm_call_metadata", lambda resp: {})
-    monkeypatch.setattr(sp, "get_llm_model", lambda: "test-model")
-    monkeypatch.setattr(sp, "normalize_llm_json",
-                        lambda c: {"markdown": c, "source": "llm_judge"})
-
-    # Exercise the same block the stage runs, so the test fails if the retry is
-    # ever moved back inside the outer try.
-    technical_report = {"markdown": "", "source": "llm_judge"}
-    try:
-        resp = sp.llm_judge("prompt")
-        technical_report["markdown"] = \
-            sp.normalize_llm_json(resp["choices"][0]["message"]["content"])["markdown"]
-        md = str(technical_report.get("markdown") or "")
-        miss = sp.missing_sections(md, sp.TECHNICAL_REPORT_SECTIONS)
-        assert miss, "fixture must trigger the completeness retry"
-
-        try:
-            resp2 = sp.llm_judge("prompt + nudge")
-            md2 = sp.normalize_llm_json(
-                resp2["choices"][0]["message"]["content"])["markdown"]
-            if len(md2) > len(md):
-                technical_report["markdown"] = md2
-                technical_report["technical_assembly_retried"] = True
-        except Exception as exc:
-            technical_report["technical_assembly_retry_failed"] = str(exc)
-    except Exception as exc:                       # the outer handler
-        technical_report = {"markdown": f"LLM failed: {exc}",
-                            "source": "deterministic_fallback"}
+    technical_report = _run_monolithic_report(
+        monkeypatch, tmp_path, [_Resp(PARTIAL), _Boom("provider timed out")])
 
     assert technical_report.get("source") != "deterministic_fallback", (
         "a failed retry must not downgrade the report")
-    assert "LLM failed:" not in technical_report["markdown"]
     assert technical_report["markdown"] == PARTIAL
     assert "technical_assembly_retry_failed" in technical_report
 
 
-def test_successful_better_retry_still_wins(monkeypatch):
+def test_successful_better_retry_still_wins(monkeypatch, tmp_path):
     """The retry must still be able to improve things -- that is its purpose."""
-    calls = {"n": 0}
-
-    def fake_llm_judge(prompt, *a, **kw):
-        calls["n"] += 1
-        return _Resp(PARTIAL if calls["n"] == 1 else FULL)
-
-    monkeypatch.setattr(sp, "llm_judge", fake_llm_judge)
-    monkeypatch.setattr(sp, "llm_call_metadata", lambda resp: {})
-    monkeypatch.setattr(sp, "get_llm_model", lambda: "test-model")
-
-    md = sp.llm_judge("p")["choices"][0]["message"]["content"]
-    md2 = sp.llm_judge("p + nudge")["choices"][0]["message"]["content"]
-    assert len(md2) > len(md)
-    assert _all_required(md2), "the retry fixture should be complete"
+    technical_report = _run_monolithic_report(
+        monkeypatch, tmp_path, [_Resp(PARTIAL), _Resp(FULL)])
+    assert technical_report["technical_assembly_retried"] is True
+    assert _all_required(technical_report["markdown"]), (
+        "the improved retry should be complete")
 
 
-def test_a_shorter_retry_is_not_adopted(monkeypatch):
+def test_a_shorter_retry_is_not_adopted(monkeypatch, tmp_path):
     """`if len(_md2) > len(_md)` guards against a worse retry replacing a better
     first response. Pinned so the length comparison is not 'simplified' away."""
-    calls = {"n": 0}
-
-    def fake_llm_judge(prompt, *a, **kw):
-        calls["n"] += 1
-        return _Resp(PARTIAL if calls["n"] == 1 else "## 1. Executive Summary\n")
-
-    monkeypatch.setattr(sp, "llm_judge", fake_llm_judge)
-    md = sp.llm_judge("p")["choices"][0]["message"]["content"]
-    md2 = sp.llm_judge("p + nudge")["choices"][0]["message"]["content"]
-    assert not (len(md2) > len(md)), "shorter retry must be rejected"
+    technical_report = _run_monolithic_report(
+        monkeypatch, tmp_path, [_Resp(PARTIAL), _Resp("## 1. Executive Summary\n")])
+    assert technical_report["markdown"] == PARTIAL, (
+        "shorter retry must not replace the first draft")
 
 
 def test_retry_failure_is_recorded_not_swallowed(monkeypatch):
