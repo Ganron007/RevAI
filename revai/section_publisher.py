@@ -1508,7 +1508,7 @@ def run_technical_publish(sha: str, tools_results: dict) -> dict:
     # truth is checked by audit_pipeline.py.
     prompt = f"""# Technical Malware Analysis Report v3
 
-You MUST produce markdown with ALL of these level-2 headings (exact titles, ASCII only):
+The rendered report must contain ALL of these level-2 headings (exact titles, ASCII only); return them as claim-level `sections`:
 {sections}
 
 Rules (evidence-first, MORE detail preferred):

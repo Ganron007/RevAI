@@ -349,6 +349,7 @@ def test_results_are_returned_in_report_order():
 def test_monolithic_block_is_still_present_as_rollback():
     """The rollback lever must not rot into a broken reference."""
     src = source("revai/section_publisher.py")
-    assert "You MUST produce markdown with ALL of these level-2 headings" in src
+    assert "return them as claim-level `sections`" in src
+    assert "STRUCTURED_REPORT_CONTRACT" in src
     assert "technical_assembly_retried" in src, (
         "the monolithic completeness retry must remain intact")
