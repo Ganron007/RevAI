@@ -11,8 +11,8 @@ from typing import Any
 
 
 _OPEN_TO_CLOSE = {"(": ")", "{": "}", "[": "]"}
-_CITATION_START = re.compile(r"[({\[]\s*source\s*:", re.IGNORECASE)
-_FIELD = re.compile(r"^\s*(source|query_or_table|row_or_rule|why)\s*:\s*(.*)$",
+_SOURCE_FIELD = re.compile(r"(?<![\w])source\s*:", re.IGNORECASE)
+_FIELD = re.compile(r"(source|query_or_table|row_or_rule|why)\s*:\s*(.*)$",
                     re.IGNORECASE | re.DOTALL)
 
 
@@ -84,7 +84,7 @@ def _split_fields(body: str) -> dict[str, str]:
     fields: dict[str, str] = {}
     current: str | None = None
     for segment in segments:
-        match = _FIELD.match(segment)
+        match = _FIELD.search(segment)
         if match:
             current = match.group(1).lower()
             fields[current] = match.group(2).strip()
@@ -93,6 +93,47 @@ def _split_fields(body: str) -> dict[str, str]:
             # them. Keep those comma-separated values with their field.
             fields[current] = f"{fields[current]}, {segment}".strip(", ")
     return fields
+
+
+def _enclosing_openers(text: str, index: int) -> list[int]:
+    """Return opening delimiters that can enclose `index`, nearest first.
+
+    This is the fallback for mismatched nesting. The common case uses
+    ``_enclosing_map``, which is linear in the report length; scanning backwards
+    from every ``source:`` token made a 360 KB technical report take seconds.
+    """
+    depth = 0
+    out: list[int] = []
+    for i in range(index - 1, -1, -1):
+        char = text[i]
+        if char in ")]}":
+            depth += 1
+        elif char in _OPEN_TO_CLOSE:
+            if depth:
+                depth -= 1
+            else:
+                out.append(i)
+    return out
+
+
+def _enclosing_map(text: str) -> list[int | None]:
+    """Map each character position to its nearest unmatched opening delimiter.
+
+    A single forward pass replaces one backwards scan per citation. The map is
+    intentionally bracket-only: citation fields may contain quoted text, but a
+    bracket inside a quoted locator is rare and the parser validates the body
+    before accepting it.
+    """
+    stack: list[int] = []
+    out: list[int | None] = [None] * len(text)
+    for index, char in enumerate(text):
+        if char in ")]}":
+            if stack:
+                stack.pop()
+        out[index] = stack[-1] if stack else None
+        if char in _OPEN_TO_CLOSE:
+            stack.append(index)
+    return out
 
 
 def parse_citation_annotations(text: str) -> list[dict[str, Any]]:
@@ -105,18 +146,38 @@ def parse_citation_annotations(text: str) -> list[dict[str, Any]]:
         return []
     out: list[dict[str, Any]] = []
     occupied_until = -1
-    for match in _CITATION_START.finditer(text):
-        start = match.start()
-        if start < occupied_until:
+    enclosing = _enclosing_map(text)
+    for match in _SOURCE_FIELD.finditer(text):
+        source_pos = match.start()
+        if source_pos < occupied_until:
+            continue
+        start = enclosing[source_pos]
+        if start is None or start < occupied_until:
             continue
         end = _annotation_end(text, start)
-        if end is None:
-            continue
-        body = text[start + 1:end - 1]
-        fields = _split_fields(body)
+        fields: dict[str, str] = {}
+        if end is not None and end > source_pos:
+            fields = _split_fields(text[start + 1:end - 1])
         if fields.get("source"):
             out.append({"start": start, "end": end, **fields})
             occupied_until = end
+            continue
+        # Mismatched nesting: the nearest opener did not form a valid citation,
+        # but a farther opener can still enclose the source (e.g.
+        # ``(outer [source: value)``). This path is rare and stays quadratic
+        # only for malformed text.
+        for alt in _enclosing_openers(text, source_pos):
+            if alt >= start or alt < occupied_until:
+                continue
+            end = _annotation_end(text, alt)
+            if end is None or end <= source_pos:
+                continue
+            fields = _split_fields(text[alt + 1:end - 1])
+            if not fields.get("source"):
+                continue
+            out.append({"start": alt, "end": end, **fields})
+            occupied_until = end
+            break
     # Some report responses place the same explicit citation fields in a
     # dedicated Markdown table cell but omit the surrounding parentheses,
     # e.g. `| source: procmon, query_or_table: procmon.csv, row_or_rule: 42 |`.

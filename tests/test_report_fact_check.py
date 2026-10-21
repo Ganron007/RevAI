@@ -98,6 +98,49 @@ def test_documentation_ips_are_excluded():
     assert result["excluded"] == 2
 
 
+def test_hash_inside_a_citation_is_locator_metadata():
+    """The 2026-10-20 report cited a calibration digest inside the citation.
+
+    A digest in `source:`/`sha256` locator text is not an assertion that the
+    sample has that hash. The same digest asserted in prose is still a claim.
+    """
+    digest = "cfc28473a0980dd80052225908b33ce3dce05ee6ee38e863eb8f70a2eae5a3aa"
+    cited = (
+        "Packing is neutral under the calibration contract "
+        f"(source: verdict-calibration, sha256 {digest})."
+    )
+    result = rq.verify_claimed_iocs(cited, "")
+    assert result["unverified"] == 0
+    assert any("citation locator" in item["reason"]
+               for item in result["excluded_items"])
+
+    asserted = f"The sample hash is {digest} (source: verdict.json)."
+    result2 = rq.verify_claimed_iocs(asserted, "")
+    assert result2["unverified"] == 1
+
+
+def test_purge_registry_guidance_is_not_an_indicator():
+    """A remediation step naming keys to clean is guidance, not an observation."""
+    md = (
+        "3. **Purge residual registry entries** under "
+        "`HKLM\\SOFTWARE\\JavaSoft` and "
+        "`HKCU\\Software\\JavaSoft\\Java Web Start` "
+        "(source: floss, query_or_table: quick_scan/00-tools-raw.json, "
+        "row_or_rule: $.floss.strings[17])."
+    )
+    result = rq.verify_claimed_iocs(md, "")
+    assert result["unverified"] == 0
+    assert result["guidance_references"] == 2
+
+
+def test_vendor_remediation_url_is_excluded():
+    """java.com is an Oracle vendor host, like the other benign vendor domains."""
+    result = rq.verify_claimed_iocs(
+        "Reinstall the current supported runtime from `https://java.com`.", "")
+    assert result["unverified"] == 0
+    assert any("vendor" in item["reason"] for item in result["excluded_items"])
+
+
 def test_fenced_code_placeholders_are_not_claims():
     """A code snippet with a placeholder hash is an illustration, not a claim."""
     md = ("## 9. Indicators of Compromise\n\n"

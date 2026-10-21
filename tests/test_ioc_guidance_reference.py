@@ -112,6 +112,41 @@ def test_claim_in_a_sentence_that_merely_mentions_removal_elsewhere():
     assert r"HKLM\EvilCorp\Backdoor" in _unverified(md)
 
 
+def test_conditional_dynamic_plan_is_not_a_claim():
+    """The 2026-10-20 technical report's future-monitoring plan.
+
+    The literal hive paths in that plan are targets for a later detonation, not
+    observations this run made.
+    """
+    md = (
+        "4. **If a dynamic detonation is performed**, focus monitoring on: "
+        "(a) whether `IsDebuggerPresent` gates the path; "
+        "(c) whether `RegDeleteKeyW` targets keys outside "
+        r"`HKCU\Software\JavaSoft\` and `HKLM\SOFTWARE\Oracle\JavaDeploy`."
+    )
+    out = rq.verify_claimed_iocs(md, EV)
+    assert out["unverified"] == 0, out["unverified_items"]
+    assert out["guidance_references"] == 2, out
+
+
+def test_conditional_alerting_guidance_is_not_a_claim():
+    """The 2026-10-20 technical report's capability-alerting sentence."""
+    md = (
+        "If an environment monitors for `RegOpenKeyExW("
+        r"HKCU\Software\JavaSoft\…)` in a single process, this sample triggers."
+    )
+    out = rq.verify_claimed_iocs(md, EV)
+    assert out["unverified"] == 0, out["unverified_items"]
+    assert out["guidance_references"] == 1, out
+
+
+def test_concessive_whether_does_not_launder_a_real_claim():
+    """A bare ``whether ... writes`` clause must not excuse a path claim."""
+    md = ("Whether or not the sample is packed, it writes "
+          r"`HKLM\EvilCorp\Backdoor` at start-up.")
+    assert r"HKLM\EvilCorp\Backdoor" in _unverified(md)
+
+
 def test_non_registry_claims_are_untouched_by_guidance_logic():
     """Guidance framing must not excuse a fabricated URL."""
     md = "Remove the C2 indicator http://c2.example.net/gate.php now."

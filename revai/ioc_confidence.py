@@ -35,6 +35,7 @@ BENIGN_DOMAIN_SUFFIXES = (
     "openxmlformats.org", "ietf.org", "rfc-editor.org",
     "verisign.com", "digicert.com", "globalsign.com", "sectigo.com",
     "adobe.com", "google.com", "gstatic.com", "mozilla.org", "apple.com",
+    "oracle.com", "java.com", "sun.com",
     "apache.org", "openssl.org", "python.org", "gnu.org", "kernel.org",
     "github.com", "githubusercontent.com", "debian.org", "ubuntu.com",
     "intel.com", "nvidia.com", "vmware.com", "ntp.org", "pool.ntp.org",
