@@ -101,6 +101,19 @@ def llm_report_structured(prompt: str, **kwargs):
     return _v2_llm_report_structured(prompt, call=llm_report, **kwargs)
 
 
+def _finalize_schema_provenance(report: dict) -> dict:
+    """Record that a fallback report was not authored through the schema.
+
+    The audit treats an absent key as a pre-schema report for backward
+    compatibility, so a new deterministic fallback that omitted the key would
+    silently pass the schema-provenance check even though it has no citations.
+    Marking it explicitly False makes the fallback visible and fails the gate.
+    """
+    if source_is_fallback(report.get("source")):
+        report["schema_used"] = False
+    return report
+
+
 LOGS = Path("/opt/samples/logs")
 TEMPLATE_PATH = Path("/opt/samples/templates/REPORT-MASTER-headings.md")
 
@@ -1468,6 +1481,7 @@ def main():
             "title": f"RE Report {args.sha256[:12]}",
             "markdown": md_fb,
             "source": "deterministic_fallback",
+            "schema_used": False,
             "template": args.template,
             "llm_error": llm_err,
             "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -1492,6 +1506,7 @@ def main():
                 )
                 report["markdown"] = md
                 report["source"] = "deterministic_fallback_after_incomplete_llm"
+                report["schema_used"] = False
             elif missing:
                 # Completeness retry (2026-08-12, brbbot-class): the single-call
                 # master stopped early (finish_reason=stop at ~1.8K chars) with
@@ -1712,6 +1727,7 @@ def main():
         master_path.write_text(md)
 
     json_path = case / "report-v2.json"
+    _finalize_schema_provenance(report)
     json_path.write_text(json.dumps(report, indent=2))
     audit_write(
         args.sha256,
@@ -1845,6 +1861,7 @@ def main():
                     session, verdict, deep, technical_evidence_base, reason=tech_err
                 ),
                 "source": "deterministic_fallback",
+                "schema_used": False,
                 "template": "technical",
                 "llm_error": tech_err,
             }
@@ -1928,6 +1945,7 @@ def main():
                     reason=tech_err or f"missing_sections:{tech_missing[:3]}",
                 )
                 technical_report["source"] = "deterministic_fallback_after_incomplete_llm"
+                technical_report["schema_used"] = False
             elif tech_missing:
                 # Repair only the missing sections. Re-asking for the entire
                 # 13-section report discarded hours of good output when a
@@ -2085,6 +2103,7 @@ def main():
         tech_md_path.write_text(tech_md)
         (ev_dir / "06-REPORT-TECHNICAL-v2.md").write_text(tech_md)
         tech_json_path = case / "report-technical-v2.json"
+        _finalize_schema_provenance(technical_report)
         tech_json_path.write_text(json.dumps(technical_report, indent=2))
         audit_write(args.sha256, {"source": "publish_report_v2_technical",
                                    "paths": [str(tech_md_path), str(tech_json_path)],

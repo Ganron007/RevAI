@@ -40,6 +40,29 @@ def _report_response(markdown: str, title: str = "Test report") -> dict:
     return structured_tool_response(markdown, title=title)
 
 
+def test_fallback_reports_are_marked_non_schema():
+    """A deterministic fallback must not inherit schema provenance.
+
+    The audit accepts an absent `schema_used` for pre-schema reports. A new
+    fallback that omits the key would therefore pass the schema check despite
+    having no claim-level citations, so the publisher must write False.
+    """
+    for source in (
+        "deterministic_fallback",
+        "deterministic_fallback_after_incomplete_llm",
+    ):
+        report = pub._finalize_schema_provenance({"source": source})
+        assert report["schema_used"] is False, source
+
+    llm = pub._finalize_schema_provenance(
+        {"source": "llm_judge", "schema_used": True})
+    assert llm["schema_used"] is True
+
+    legacy = pub._finalize_schema_provenance({"source": "llm_judge"})
+    assert "schema_used" not in legacy, (
+        "the helper must not invent provenance for a legacy report")
+
+
 def test_groups_tile_every_section_exactly_once():
     """No section may be written twice, and none may be dropped."""
     covered: list[int] = []
