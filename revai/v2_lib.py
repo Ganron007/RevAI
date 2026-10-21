@@ -36,6 +36,11 @@ from urllib.parse import urlsplit
 # intentionally-corrupt packed headers. Found by pyflakes during the 2026-10-02
 # audit; packer_intake imports nothing from v2_lib, so this is not circular.
 from packer_intake import run_packer_scan
+from report_schema import (
+    ReportSchemaError,
+    render_report_document,
+    report_writer_tool_schema,
+)
 
 SESSIONS_DIR = Path("/opt/samples/sessions")
 LOGS_DIR = Path("/opt/samples/logs")
@@ -4409,22 +4414,7 @@ def llm_call_metadata(response: dict) -> dict:
     }
 
 
-REPORT_WRITER_TOOL = {
-    "type": "function",
-    "function": {
-        "name": "submit_report",
-        "description": "Return the complete analyst report as Markdown.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "title": {"type": "string"},
-                "markdown": {"type": "string"},
-            },
-            "required": ["markdown"],
-            "additionalProperties": False,
-        },
-    },
-}
+REPORT_WRITER_TOOL = report_writer_tool_schema()
 
 
 def llm_report(prompt: str, **kwargs) -> dict:
@@ -4446,8 +4436,21 @@ def llm_report(prompt: str, **kwargs) -> dict:
     )
 
 
-def extract_llm_report(response: dict) -> dict:
-    """Validate and extract the one structured report returned by llm_report."""
+def extract_llm_report(
+    response: dict,
+    *,
+    require_schema: bool = False,
+    section_only: bool = True,
+    heading_level: int = 2,
+) -> dict:
+    """Validate and extract the one structured report returned by llm_report.
+
+    The claim-level schema is the production contract: `sections` is rendered
+    deterministically and every observation/table row must carry its citation.
+    `markdown` is accepted only for legacy callers and is rejected when
+    `require_schema=True`, so a master/technical publisher cannot silently fall
+    back to uncited free-form prose.
+    """
     choices = response.get("choices") if isinstance(response, dict) else None
     choice = (choices or [{}])[0] if isinstance(choices, list) else {}
     finish_reason = choice.get("finish_reason")
@@ -4463,16 +4466,83 @@ def extract_llm_report(response: dict) -> dict:
             or not isinstance(function.get("arguments"), str)):
         raise ValueError("report writer returned an unexpected tool call")
     payload = json.loads(function["arguments"])
-    if (not isinstance(payload, dict)
-            or set(payload) - {"title", "markdown"}
-            or not isinstance(payload.get("markdown"), str)
-            or not payload["markdown"].strip()):
+    if not isinstance(payload, dict) or set(payload) - {"title", "markdown", "sections"}:
+        raise ValueError("submit_report returned unexpected arguments")
+    if "sections" in payload:
+        document = {
+            "title": str(payload.get("title") or "RE Report"),
+            "sections": payload["sections"],
+        }
+        markdown = render_report_document(
+            document,
+            heading_level=heading_level,
+            section_only=section_only,
+        )
+        return {
+            "title": document["title"],
+            "markdown": markdown,
+            "source": "llm_judge",
+            "schema_used": True,
+            "document": document,
+        }
+    if require_schema:
+        raise ReportSchemaError([
+            "submit_report must return the claim-level `sections` schema; "
+            "Markdown-only output is not accepted for this report"
+        ])
+    if not isinstance(payload.get("markdown"), str) or not payload["markdown"].strip():
         raise ValueError("submit_report requires a non-empty Markdown string and optional title")
     return {
         "title": str(payload.get("title") or "RE Report"),
         "markdown": payload["markdown"],
         "source": "llm_judge",
+        "schema_used": False,
     }
+
+
+def llm_report_structured(
+    prompt: str,
+    *,
+    section_only: bool = True,
+    heading_level: int = 2,
+    retries: int = 1,
+    call: Any = None,
+    **kwargs,
+) -> tuple[dict, dict]:
+    """Request a claim-level report, retrying once on a schema violation.
+
+    Transport errors from `llm_report` propagate unchanged: they belong to the
+    provider ladder, not to the report schema. Only extraction/validation
+    failures trigger the bounded correction pass.
+    """
+    original = prompt
+    last_error: Exception | None = None
+    attempts = max(0, int(retries)) + 1
+    invoke = call or llm_report
+    for attempt in range(attempts):
+        response = invoke(prompt, **kwargs)
+        try:
+            parsed = extract_llm_report(
+                response,
+                require_schema=True,
+                section_only=section_only,
+                heading_level=heading_level,
+            )
+            return response, parsed
+        except (ReportSchemaError, ValueError, json.JSONDecodeError) as exc:
+            last_error = exc
+            if attempt + 1 >= attempts:
+                break
+            prompt = (
+                f"{original}\n\n## SCHEMA CORRECTION\n"
+                f"The previous response was rejected: {exc}\n"
+                "Return the same content again using the claim-level `sections` "
+                "schema. Every observation and every table row must carry "
+                "`source`, `query_or_table` and `row_or_rule`. Put interpretation "
+                "in `assessment` or `recommendation` blocks; do not return a "
+                "Markdown-only report."
+            )
+    raise last_error if last_error else RuntimeError("structured report failed")
 
 
 _LLM_USAGE_LOCK = __import__("threading").Lock()

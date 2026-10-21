@@ -125,7 +125,16 @@ def test_report_writer_uses_agnes_structured_tool_contract(monkeypatch):
                     "type": "function", "id": "call-report",
                     "function": {"name": "submit_report", "arguments": json.dumps({
                         "title": "Evidence-based report",
-                        "markdown": "## Executive Summary\\n\\nSample evidence.",
+                        "sections": [{
+                            "heading": "Executive Summary",
+                            "blocks": [{
+                                "kind": "observation",
+                                "text": "Sample evidence.",
+                                "source": "malcat",
+                                "query_or_table": "quick_scan/00-tools-raw.json",
+                                "row_or_rule": "$.malcat.file_summary.sha256",
+                            }],
+                        }],
                     })},
                 }],
             },
@@ -155,11 +164,28 @@ def test_report_writer_uses_agnes_structured_tool_contract(monkeypatch):
         "type": "function", "function": {"name": "submit_report"}}
     assert "response_format" not in body
     assert body["chat_template_kwargs"] == {"enable_thinking": True}
-    assert report == {
-        "title": "Evidence-based report",
-        "markdown": "## Executive Summary\\n\\nSample evidence.",
-        "source": "llm_judge",
-    }
+    assert report["schema_used"] is True
+    assert report["title"] == "Evidence-based report"
+    assert report["source"] == "llm_judge"
+    assert report["markdown"] == (
+        "## Executive Summary\n\n"
+        "- Sample evidence. (source: malcat, "
+        "query_or_table: quick_scan/00-tools-raw.json, "
+        "row_or_rule: $.malcat.file_summary.sha256)\n"
+    )
+    assert report["document"]["sections"][0]["heading"] == "Executive Summary"
+    assert v2_lib.REPORT_WRITER_TOOL["function"]["parameters"]["required"] == [
+        "sections"]
+
+
+def test_report_writer_rejects_legacy_markdown_when_schema_is_required():
+    response = {"choices": [{"finish_reason": "tool_calls", "message": {
+        "tool_calls": [{"function": {"name": "submit_report", "arguments": json.dumps({
+            "markdown": "## Executive Summary\n\nUncited prose.\n"})}}]}}]}
+    legacy = v2_lib.extract_llm_report(response)
+    assert legacy["schema_used"] is False
+    with pytest.raises(v2_lib.ReportSchemaError, match="claim-level"):
+        v2_lib.extract_llm_report(response, require_schema=True)
 
 
 def test_report_writer_rejects_missing_or_multiple_tool_calls():

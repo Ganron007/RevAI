@@ -35,6 +35,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _layout import add_module_dir, source  # noqa: E402
+from _report_fixtures import markdown_to_sections  # noqa: E402
 add_module_dir("revai/section_publisher.py")
 
 import section_publisher as sp  # noqa: E402
@@ -51,7 +52,8 @@ class _Resp(dict):
             "message": {"tool_calls": [{
                 "type": "function", "id": "test-report",
                 "function": {"name": "submit_report", "arguments": json.dumps({
-                    "markdown": content,
+                    "title": "Test report",
+                    "sections": markdown_to_sections(content),
                 })},
             }]},
         }]})
@@ -133,7 +135,11 @@ def test_failed_retry_keeps_the_partial_first_response(monkeypatch, tmp_path):
 
     assert technical_report.get("source") != "deterministic_fallback", (
         "a failed retry must not downgrade the report")
-    assert technical_report["markdown"] == PARTIAL
+    kept = technical_report["markdown"]
+    assert "## 1. Executive Summary" in kept
+    assert "masquerades as a legitimate system DLL" in kept
+    assert "## 4. Technical Detail" in kept
+    assert "LLM failed" not in kept
     assert "technical_assembly_retry_failed" in technical_report
 
 
@@ -150,9 +156,12 @@ def test_a_shorter_retry_is_not_adopted(monkeypatch, tmp_path):
     """`if len(_md2) > len(_md)` guards against a worse retry replacing a better
     first response. Pinned so the length comparison is not 'simplified' away."""
     technical_report = _run_monolithic_report(
-        monkeypatch, tmp_path, [_Resp(PARTIAL), _Resp("## 1. Executive Summary\n")])
-    assert technical_report["markdown"] == PARTIAL, (
+        monkeypatch, tmp_path,
+        [_Resp(PARTIAL), _Resp("## 1. Executive Summary\n\nShort.\n")])
+    kept = technical_report["markdown"]
+    assert "## 4. Technical Detail" in kept, (
         "shorter retry must not replace the first draft")
+    assert "masquerades as a legitimate system DLL" in kept
 
 
 def test_retry_failure_is_recorded_not_swallowed(monkeypatch):

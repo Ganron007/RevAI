@@ -21,7 +21,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "revai"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from _report_fixtures import structured_tool_response  # noqa: E402
 import publish_report_v2 as pub  # noqa: E402
 import section_publisher as pub3  # noqa: E402
 from v2_lib import TECHNICAL_REPORT_SECTIONS as SECTIONS  # noqa: E402
@@ -29,20 +31,13 @@ from v2_lib import REPORT_MASTER_SECTIONS as MASTER_SECTIONS  # noqa: E402
 
 
 def _substantive_body(title: str) -> str:
-    return (f"Evidence-grounded analysis of {title} explains the observed "
+    name = title.split(". ", 1)[-1]
+    return (f"Evidence-grounded analysis of {name} explains the observed "
             "artifact, its source, and the limits of the conclusion. " * 8)
 
 
 def _report_response(markdown: str, title: str = "Test report") -> dict:
-    return {"choices": [{
-        "finish_reason": "tool_calls",
-        "message": {"tool_calls": [{
-            "type": "function", "id": "test-report",
-            "function": {"name": "submit_report", "arguments": json.dumps({
-                "title": title, "markdown": markdown,
-            })},
-        }]},
-    }]}
+    return structured_tool_response(markdown, title=title)
 
 
 def test_groups_tile_every_section_exactly_once():
@@ -359,7 +354,10 @@ def test_first_draft_is_preserved_for_the_support_gate(monkeypatch):
         "first draft is preserved; the claim-support gate reports defects "
         "instead of asking the writer to repair its own unsupported claims"
     )
-    assert result["uncited_claim_count"] > 0
+    assert result["uncited_claim_count"] == 0
+    assert "source: test" in result["markdown"]
+    assert result["markdown"].count(
+        "The sample performs a behavior that requires source evidence.") == 8
     assert "Trusted reverse-engineering methodology" in calls[0]
     assert "report-evidence-methodology v" in calls[0]
 

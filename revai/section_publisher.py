@@ -22,8 +22,8 @@ from pathlib import Path
 from typing import Any, Callable
 
 sys.path.insert(0, "/opt/scripts")
+from report_schema import STRUCTURED_REPORT_CONTRACT  # noqa: E402
 from report_quality import (  # noqa: E402
-    OUTPUT_FORMAT_CONTRACT,
     _MALCAT_INSTALLED,
     _MALCAT_OPTIONAL_SECTIONS,
     evaluate_report_markdown,
@@ -68,8 +68,8 @@ from v2_lib import (
     ensure_pipeline_runtime_env,
     format_malcat_evidence,
     get_llm_model,
-    llm_report,
-    extract_llm_report,
+    llm_report as _v2_llm_report,
+    llm_report_structured as _v2_llm_report_structured,
     llm_call_metadata,
     provenance_block,
     revai_provenance,
@@ -92,6 +92,16 @@ from behavioural_model import (  # noqa: E402
 )
 
 from report_sections import attach_alignment_sections  # noqa: E402
+
+
+def llm_report(prompt: str, **kwargs):
+    """Indirection kept patchable by the stage tests."""
+    return _v2_llm_report(prompt, **kwargs)
+
+
+def llm_report_structured(prompt: str, **kwargs):
+    """Structured wrapper that keeps the module-level `llm_report` patch point."""
+    return _v2_llm_report_structured(prompt, call=llm_report, **kwargs)
 
 
 def _section_prompt(section_name: str, description: str, evidence: str,
@@ -130,45 +140,42 @@ def _section_prompt(section_name: str, description: str, evidence: str,
         parts.append("")
     parts.append(
         "## Your task\n"
-        f"Write the '{section_name}' section in markdown. Cite evidence as "
-        "(source: <engine>, query_or_table: <artifact or table>, "
-        "row_or_rule: <exact observed row, address, or rule>). A source label "
-        "without a concrete row_or_rule is not a usable citation. "
-        "Verdict/summary prose is NARRATIVE CONTEXT, never a claim's "
-        "(source: ...): cite the tool row that observed the fact or write "
-        "'not observed'. "
-        "Be concise (200-500 words). Use tables where appropriate. "
-        "ASCII apostrophe only in headings. Do NOT write 'see appendix' stubs.\n"
-        "CITATION SCOPE: put an evidence citation on every factual claim sentence "
-        "and every evidence-table row, not merely once per paragraph. Use the "
-        "original tool/artifact citation shown in the evidence; never cite "
-        "cross-section prose as evidence. Cross-section context is draft text "
-        "for consistency only, not a source of facts. Use the exact "
-        "parenthesized citation form above at the end of each factual sentence. "
-        "For a table row, place the complete citation in the claim cell; do not "
-        "place bare source metadata in another cell. Keep each factual sentence "
-        "focused so its cited rows establish the complete claim. If a source row "
-        "is not available, state the limitation or unknown instead of repeating "
-        "an uncited claim. Prefer one factual sentence per bullet; never use one "
-        "citation to cover multiple sentences, and split independent facts into "
-        "separately cited claims. Before returning, check each factual sentence "
-        "and table claim cell for its own exact source locator; remove any claim "
-        "that cannot be tied to one. When the evidence exposes a verdict score "
-        "and deep-dive confidence, keep them as separate source fields with exact "
-        "labels and values; cite each field and never substitute or combine them. "
-        "If cross-section text conflicts with the pipeline-"
-        "selected verdict control, the control label takes precedence.\n"
-        "For JSON evidence, cite the exact source artifact path as "
-        "query_or_table and the exact JSONPath as row_or_rule (for example: "
-        "source: malcat, query_or_table: deep_dive/01-tools-raw.json, "
-        "row_or_rule: $.malcat.file_summary.entropy). Do not invent table names. "
-        "Use one JSONPath per citation; when a claim needs multiple fields, repeat "
-        "the citation for each field instead of joining paths with commas.\n"
-        "EXPLAIN, DON'T DUMP: every evidence row / code block you include must "
-        "be introduced and interpreted (what + why + confidence); never paste "
-        "evidence bare. Hedge inferences ('likely', 'possibly', 'we assess'). "
-        "A reader with no context must follow the section without asking the "
-        "model for clarification.\n"
+        f"Write the '{section_name}' section as the claim-level `sections` "
+        "document defined below. Use exactly this section heading: "
+        f"'{section_name}'.\n"
+        "Every factual statement is an `observation` block with `source`, "
+        "`query_or_table`, and `row_or_rule`; every table row carries the same "
+        "three fields. The renderer appends the citation and the Evidence column. "
+        "Put interpretation, family/ATT&CK assessment, and uncertainty in "
+        "`assessment` blocks; put actions in `recommendation` blocks. Never put an "
+        "observed fact, indicator, address, hash, path, or domain in an assessment "
+        "or recommendation block.\n"
+        "Verdict/summary prose is NARRATIVE CONTEXT, never an observation source: "
+        "cite the tool row that observed the fact or write 'not observed'.\n"
+        "Be concise (200-500 words). Use tables where appropriate. ASCII apostrophe "
+        "only in headings. Do NOT write 'see appendix' stubs.\n"
+        "CITATION SCOPE: every observation and every table row needs its own exact "
+        "source locator, not one per paragraph. Use the original tool/artifact; "
+        "never cite cross-section prose as evidence. Cross-section context is draft "
+        "text for consistency only, not a source of facts. If a source row is not "
+        "available, state the limitation or unknown in an `assessment`/`note` "
+        "block instead of repeating an uncited claim. Split independent facts into "
+        "separate observations. When the evidence exposes a verdict score and "
+        "deep-dive confidence, keep them as separate source fields with exact labels "
+        "and values; never substitute or combine them. If cross-section text "
+        "conflicts with the pipeline-selected verdict control, the control label "
+        "takes precedence.\n"
+        "For JSON evidence, put the exact source artifact path in `query_or_table` "
+        "and one exact JSONPath in `row_or_rule` (for example: source: malcat, "
+        "query_or_table: deep_dive/01-tools-raw.json, row_or_rule: "
+        "$.malcat.file_summary.entropy). Do not invent table names. Use one "
+        "JSONPath per observation; when a claim needs multiple fields, write one "
+        "observation per field.\n"
+        "EXPLAIN, DON'T DUMP: every evidence row / code block you include must be "
+        "introduced and interpreted (what + why + confidence); never paste evidence "
+        "bare. Hedge inferences ('likely', 'possibly', 'we assess'). A reader with "
+        "no context must follow the section without asking the model for "
+        "clarification.\n"
         "DYNAMIC-ANALYSIS HONESTY: the DYNAMIC-ANALYSIS STATUS line (in the "
         "evidence) is authoritative for the whole run. When discussing runtime, "
         "cite it as source: dynamic_analysis_status and state the relevant "
@@ -185,9 +192,10 @@ def _section_prompt(section_name: str, description: str, evidence: str,
         "ENTROPY UNITS: whole-file Shannon entropy in bits/byte (0-8); "
         "per-section values must name the section; never present an unlabeled "
         "tool metric as the file's entropy.\n"
-        "Call submit_report exactly once and put this section's complete Markdown "
-        "in its markdown field. Do not return a JSON envelope in message text."
+        "Call submit_report exactly once with the claim-level `sections` document. "
+        "Do not return Markdown or a JSON envelope in message text."
     )
+    parts.append(STRUCTURED_REPORT_CONTRACT)
     return "\n".join(parts)
 
 
@@ -376,20 +384,22 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
             md = f"## {section_name}\n\n_(local build — no LLM call)_\n"
         result["markdown"] = md
         result["llm_ok"] = True
+        result["schema_used"] = None
         return result
     response = None
     call_record = None
     mode = (tools_results.get("_execution_context") or {}).get("mode")
     try:
-        resp = llm_report(prompt)
+        resp, v = llm_report_structured(
+            prompt, section_only=True, heading_level=2, retries=1)
         response = resp
         call_record = _persist_llm_call(
             sha, mode, f"master-p{pass_num}", section_name, prompt, response=resp)
-        v = extract_llm_report(resp)
         result["markdown"] = ensure_section_heading(
             v["markdown"], section_name
         )
         result["title"] = v.get("title", section_name)
+        result["schema_used"] = bool(v.get("schema_used"))
         result["first_draft_policy"] = (
             "first draft is preserved; the claim-support gate reports defects "
             "instead of asking the writer to repair its own unsupported claims"
@@ -409,6 +419,7 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
                 response=response, error=f"{type(e).__name__}: {e}")
         result["llm_call"] = call_record
         result["error"] = f"llm: {e}"
+        result["schema_used"] = False
         result["markdown"] = f"## {section_name}\n\n_(LLM call failed: {e})_\n"
     return result
 
@@ -897,30 +908,28 @@ def _technical_section_prompt(name: str, description: str, evidence: str,
         ]
     parts.append(
         "## Rules\n"
-        f"- Write ONLY the '{name}' section, as markdown, beginning with a "
-        "level-2 heading carrying that exact title.\n"
+        f"- Write ONLY the '{name}' section as the claim-level `sections` "
+        "document defined below. Use exactly this section heading: "
+        f"'{name}'.\n"
         "- TECHNICAL report for reverse engineers. Prefer MORE evidence over "
         "less.\n"
         "- COPY tables/rows from the evidence into the section, keeping "
         "addresses and eas exactly.\n"
-        "- Every factual claim sentence and every evidence-table row MUST include "
-        "(source: <engine>, query_or_table: <artifact or table>, row_or_rule: "
-        "<exact observed row, address, or rule>). A source label alone is not a "
-        "usable citation.\n"
-        "- For JSON evidence, query_or_table must be the exact source artifact path "
-        "and row_or_rule the exact JSONPath (for example "
+        "- Every factual statement is an `observation` block with `source: "
+        "<engine>`, `query_or_table: <artifact>`, and `row_or_rule: "
+        "<locator>`; every table row carries the same three fields. The "
+        "renderer appends the citation and the Evidence column. Do not write "
+        "the citation in `text` or add an Evidence cell.\n"
+        "- For JSON evidence, `query_or_table` must be the exact source artifact "
+        "path and `row_or_rule` the exact JSONPath (for example "
         "query_or_table: deep_dive/01-tools-raw.json, "
         "row_or_rule: $.malcat.file_summary.entropy). Do not invent table names. "
-        "Use one JSONPath per citation; repeat the citation for each field needed "
-        "to support a claim instead of joining paths with commas.\n"
-        "- Use that exact parenthesized syntax at the end of EACH factual sentence. "
-        "For table rows, include the full citation in the claim cell; do not put "
-        "bare source metadata in a separate cell. Keep each sentence focused so "
-        "its cited rows establish the complete claim. Prefer one factual sentence "
-        "per bullet; never use one citation to cover multiple sentences, and split "
-        "independent facts into separately cited claims. Before returning, check "
-        "each factual sentence and table claim cell for its own exact source "
-        "locator; remove any claim that cannot be tied to one.\n"
+        "Use one JSONPath per observation; when a claim needs multiple fields, "
+        "write one observation per field.\n"
+        "- Put interpretation, limitations, and family/ATT&CK assessment in "
+        "`assessment` blocks; put actions in `recommendation` blocks; use `note` "
+        "for methodology. Never put an observed fact, indicator, address, hash, "
+        "path, or domain in an assessment, recommendation, or note block.\n"
         "- When evidence exposes a verdict score and deep-dive confidence, keep "
         "them as separate source fields with exact labels and values; cite each "
         "field and never substitute or combine them.\n"
@@ -948,7 +957,7 @@ def _technical_section_prompt(name: str, description: str, evidence: str,
         "an IDA SQL row).\n"
         "- The Verdict and Deep-Dive blocks are NARRATIVE CONTEXT, not "
         "evidence: their `summary` / `verdict.summary` prose was written by an "
-        "earlier stage. Never cite it as a claim's (source: ...). Cite the tool "
+        "earlier stage. Never cite it as a claim's source. Cite the tool "
         "artifact that observed the fact (malcat, yara, floss, capa, ghidra, "
         "deep_dive_agentic); if no tool observed it, write 'not observed'.\n"
         "- FORBIDDEN: curly apostrophes in headings; 'see appendix' as the only "
@@ -959,9 +968,10 @@ def _technical_section_prompt(name: str, description: str, evidence: str,
         "it implies, confidence). Hedge inferences ('likely', 'possibly', 'we "
         "assess').\n"
         "- ASCII apostrophes only.\n"
-        'Return JSON: {"title": "...", "markdown": "<section content>", '
-        '"source": "llm_judge"}'
+        "- Call submit_report exactly once with the claim-level `sections` "
+        "document. Do not return Markdown or a JSON envelope in message text."
     )
+    parts.append(STRUCTURED_REPORT_CONTRACT)
     return "\n".join(parts)
 
 
@@ -982,6 +992,7 @@ def _generate_technical_section(
         result["markdown"] = _build_ioc_section(sha)
         result["deterministic"] = True
         result["llm_ok"] = True
+        result["schema_used"] = None
         return result
 
     try:
@@ -1014,15 +1025,16 @@ def _generate_technical_section(
     response = None
     call_record = None
     try:
-        resp = llm_report(prompt)
+        resp, v = llm_report_structured(
+            prompt, section_only=True, heading_level=2, retries=1)
         response = resp
         call_record = _persist_llm_call(
             sha, mode, "technical-p1", name, prompt, response=resp)
-        v = extract_llm_report(resp)
         result["markdown"] = ensure_section_heading(
             v["markdown"], name
         )
         result["title"] = v.get("title", name)
+        result["schema_used"] = bool(v.get("schema_used"))
         result["uncited_claim_count"] = len(
             uncited_report_claims(result["markdown"]))
         result["first_draft_policy"] = (
@@ -1041,6 +1053,7 @@ def _generate_technical_section(
                 error=f"{type(exc).__name__}: {exc}")
         result["llm_call"] = call_record
         result["error"] = f"llm: {exc}"
+        result["schema_used"] = False
         result["markdown"] = f"## {name}\n\n_(section generation failed: {exc})_\n"
     return result
 
@@ -1118,6 +1131,20 @@ def _section_invocation_counts(pass1_results: list, pass2_results: list) -> dict
         "pass2_llm_generation_calls": sum(1 for result in pass2_results if _requires_llm(result)),
         "local_sections": sum(1 for result in pass1_results if not _requires_llm(result)),
     }
+
+
+def _schema_used_for_results(results: list[dict]) -> bool | None:
+    """Aggregate the claim-level schema flag across model-authored sections.
+
+    Local builders (appendices/signoff and the deterministic IoC section) record
+    `None`; they are not schema-authored and must not make the report fail.
+    A failed model section records `False`.
+    """
+    values = [r.get("schema_used") for r in results
+              if r.get("schema_used") is not None]
+    if not values:
+        return None
+    return all(bool(value) for value in values)
 
 
 def run_section_based_publish(sha: str, tools_results: dict,
@@ -1299,21 +1326,24 @@ def run_section_based_publish(sha: str, tools_results: dict,
     # Backward compatibility: also write at logs root
     root_dir = case_dir(sha)
     (root_dir / "REPORT-MASTER-v3.md").write_text(report_markdown)
+    master_schema_used = _schema_used_for_results(section_results)
     section_results_v3_json = json.dumps(
         {"sha256": sha,
-                    "run_id": (revai_provenance(sha).get("run_id")),
-                    "analysis_mode": (tools_results.get("_execution_context") or {}).get("mode"),
-                    "report_input_manifest_sha256": tools_results.get(
-                        "_report_input_manifest_sha256"),
-                    "sections": section_results, "timings": section_timings,
-                    "pass1_initial_results": pass1_initial_results,
-                    "pass2_results": pass2_results,
-                    "pass1_count": len(pass1_initial_results), "pass2_count": len(pass2_results),
-                    "invocation_counts": invocation_counts,
-                    "master_v3_quality": master_quality,
-                    "credential_like_values_redacted": master_credential_categories,
-                    "master_v3_verdict_lock": master_verdict_lock,
-                    "dynamic_analysis_status": status_artifact},
+         "schema_used": master_schema_used,
+         "run_id": (revai_provenance(sha).get("run_id")),
+         "analysis_mode": (tools_results.get("_execution_context") or {}).get("mode"),
+         "report_input_manifest_sha256": tools_results.get(
+             "_report_input_manifest_sha256"),
+         "sections": section_results, "timings": section_timings,
+         "pass1_initial_results": pass1_initial_results,
+         "pass2_results": pass2_results,
+         "pass1_count": len(pass1_initial_results),
+         "pass2_count": len(pass2_results),
+         "invocation_counts": invocation_counts,
+         "master_v3_quality": master_quality,
+         "credential_like_values_redacted": master_credential_categories,
+         "master_v3_verdict_lock": master_verdict_lock,
+         "dynamic_analysis_status": status_artifact},
         indent=2, default=str)
     section_results_v3_json, _ = redact_credential_like_values(
         section_results_v3_json)
@@ -1447,6 +1477,7 @@ def run_technical_publish(sha: str, tools_results: dict) -> dict:
                 "title": f"Technical Report {sha[:12]}",
                 "markdown": tech_md_built,
                 "source": "llm_judge" if not failed else "partial_llm_judge",
+                "schema_used": _schema_used_for_results(tech_results),
                 "section_results": tech_results,
                 "model": get_llm_model(),
                 "report_input_manifest_sha256": tools_results.get(
@@ -1465,6 +1496,7 @@ def run_technical_publish(sha: str, tools_results: dict) -> dict:
                     f"{technical_evidence_for_report}\n"
                 ),
                 "source": "deterministic_fallback",
+                "schema_used": False,
             }
         return _finalize_technical(
             sha, technical_report, technical_evidence, tools_results,
@@ -1525,7 +1557,7 @@ verdict.json: {json.dumps(verdict or {}, indent=2)[:4000]}
 
 deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
 
-{OUTPUT_FORMAT_CONTRACT}
+{STRUCTURED_REPORT_CONTRACT}
 """
 
     # Bounded retry on incomplete/truncated output (provider finding
@@ -1535,11 +1567,11 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
     mono_call_num = 1
     try:
         mono_prompt = prompt
-        resp = llm_report(prompt)
+        resp, technical_report = llm_report_structured(
+            prompt, section_only=True, heading_level=2, retries=1)
         _persist_llm_call(
             sha, (tools_results.get("_execution_context") or {}).get("mode"),
             "technical-monolithic-1", "full-report", mono_prompt, response=resp)
-        technical_report = extract_llm_report(resp)
         meta = llm_call_metadata(resp)
         meta["request_model"] = get_llm_model()
         technical_report["model"] = meta.get("response_model") or get_llm_model()
@@ -1575,15 +1607,16 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
                     "these sections: "
                     + ", ".join(_miss1)
                     + ". Complete the FULL report with every required heading; "
-                    "do not truncate. Return the complete markdown."
+                    "do not truncate. Return the complete claim-level `sections` "
+                    "document."
                 )
-                resp2 = llm_report(retry_prompt)
+                resp2, technical_report2 = llm_report_structured(
+                    retry_prompt, section_only=True, heading_level=2, retries=1)
                 retry_response = resp2
                 _persist_llm_call(
                     sha, (tools_results.get("_execution_context") or {}).get("mode"),
                     "technical-monolithic-2", "full-report", retry_prompt,
                     response=resp2)
-                technical_report2 = extract_llm_report(resp2)
                 _md2 = str(technical_report2.get("markdown") or "")
                 if len(_md2) > len(_md):
                     technical_report = technical_report2
@@ -1624,6 +1657,7 @@ deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}
                 f"{technical_evidence_for_report}\n"
             ),
             "source": "deterministic_fallback",
+            "schema_used": False,
         }
 
     return _finalize_technical(

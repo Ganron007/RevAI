@@ -28,14 +28,8 @@ import publish_report_v2 as PR  # noqa: E402
 
 
 def _report_tool_response(markdown):
-    return {"choices": [{
-        "finish_reason": "tool_calls",
-        "message": {"tool_calls": [{
-            "type": "function", "id": "report-test",
-            "function": {"name": "submit_report",
-                         "arguments": json.dumps({"markdown": markdown})},
-        }]},
-    }]}
+    from _report_fixtures import structured_tool_response
+    return structured_tool_response(markdown)
 
 
 # ------------------------------------------------------------- the status helper
@@ -894,7 +888,9 @@ def test_the_dynamic_section_prompt_carries_the_status(monkeypatch):
     assert "DYNAMIC-ANALYSIS STATUS" in captured["prompt"], (
         "the authoritative status was not injected into the section prompt")
     assert "emulation NOT performed" in captured["prompt"]
-    assert result["markdown"] == "## 5. Behavioral Analysis\n\nm"
+    assert result["markdown"].startswith("## 5. Behavioral Analysis")
+    assert "- m " in result["markdown"]
+    assert "source: test" in result["markdown"]
 
 
 def test_the_dynamic_status_is_injected_into_every_master_section(monkeypatch):

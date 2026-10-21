@@ -20,20 +20,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "revai"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from _report_fixtures import structured_tool_response  # noqa: E402
 import v2_lib  # noqa: E402
 import publish_report_v2 as pub  # noqa: E402
 
 
 def _tool_report(markdown: str) -> dict:
-    return {"choices": [{
-        "finish_reason": "tool_calls",
-        "message": {"tool_calls": [{
-            "type": "function", "id": "report-test",
-            "function": {"name": "submit_report",
-                         "arguments": json.dumps({"markdown": markdown})},
-        }]},
-    }]}
+    return structured_tool_response(markdown)
 
 
 # ---------------------------------------------------------------- run-mode guard
@@ -108,7 +103,8 @@ def _session() -> dict:
 
 
 def _substantive_body(title: str) -> str:
-    return (f"Evidence-grounded analysis of {title} explains the observed "
+    name = title.split(". ", 1)[-1]
+    return (f"Evidence-grounded analysis of {name} explains the observed "
             "artifact, its source, and the limits of the conclusion. " * 8)
 
 

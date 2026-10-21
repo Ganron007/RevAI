@@ -22,6 +22,7 @@ from citation_syntax import (
     parse_citation_annotations,
     strip_citation_annotations,
 )
+from report_schema import is_non_factual_markdown_line
 
 # Stub / pointer prose that means the LLM narrative was discarded
 _STUB_PATTERNS = (
@@ -1816,6 +1817,13 @@ def uncited_report_claims(markdown: str) -> list[str]:
     for raw_line in lines:
         line = raw_line.strip()
         if not line:
+            in_table = False
+            continue
+        # The claim-level schema renders assessment/recommendation/note blocks
+        # with a fixed marker. These are explicitly non-factual and do not need
+        # a citation, but their text is still scanned for claimed indicators.
+        # The marker is the only exemption: unmarked prose remains a claim.
+        if is_non_factual_markdown_line(line):
             in_table = False
             continue
         if line.startswith("|"):

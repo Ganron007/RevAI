@@ -34,6 +34,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _layout import add_module_dir, source  # noqa: E402
+from _report_fixtures import markdown_to_sections  # noqa: E402
 add_module_dir("revai/section_publisher.py")
 
 import section_publisher as sp  # noqa: E402
@@ -208,13 +209,19 @@ def test_every_prompt_path_carries_the_narrative_rule():
 
 class _Resp(dict):
     def __init__(self, content):
+        payload = json.loads(content) if isinstance(content, str) else dict(content)
+        if "sections" not in payload:
+            payload = {
+                "title": payload.get("title", "Test report"),
+                "sections": markdown_to_sections(payload.get("markdown", "")),
+            }
         super().__init__({
             "choices": [{
                 "finish_reason": "tool_calls",
                 "message": {"tool_calls": [{
                     "type": "function", "id": "test-report",
                     "function": {"name": "submit_report",
-                                 "arguments": content},
+                                 "arguments": json.dumps(payload)},
                 }]},
             }],
         })
@@ -295,8 +302,10 @@ def test_model_section_preserves_first_draft_for_claim_support_gate(monkeypatch)
 
     assert len(calls) == 1
     assert "first draft is preserved" in result["first_draft_policy"]
-    assert result["markdown"] == initial.strip()
-    assert result["uncited_claim_count"] > 0
+    assert result["markdown"].startswith(f"## {title}")
+    assert claim in result["markdown"]
+    assert result["uncited_claim_count"] == 0
+    assert "source: test" in result["markdown"]
     assert "report-evidence-methodology v" in calls[0]
 
 

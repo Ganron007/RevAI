@@ -784,6 +784,26 @@ def audit_yara(log: Path) -> dict:
     }
 
 
+def _schema_provenance_checks(
+    master_v2: dict,
+    master_v3: dict,
+    technical_v2: dict,
+    technical_v3: dict,
+) -> dict[str, bool]:
+    """Claim-level schema provenance for each published report.
+
+    Absent means the report predates the schema and remains readable. An
+    explicit False means this publisher fell back to free-form Markdown or lost
+    a model-authored section, so the report must not pass the audit.
+    """
+    return {
+        "master_schema_ok": master_v2.get("schema_used") is not False,
+        "master_v3_schema_ok": master_v3.get("schema_used") is not False,
+        "tech2_schema_ok": technical_v2.get("schema_used") is not False,
+        "tech3_schema_ok": technical_v3.get("schema_used") is not False,
+    }
+
+
 def audit_publish(log: Path, deep_mtime: float) -> dict:
     r2 = log / "REPORT-MASTER-v2.md"
     r3 = log / "REPORT-MASTER-v3.md"
@@ -904,6 +924,12 @@ def audit_publish(log: Path, deep_mtime: float) -> dict:
         checks.update(_technical_v3_quality_checks(tech3_j, tech3, deep_mtime))
         checks["tech2_no_stubs"] = not (tech2_j.get("sections_stub") or [])
         checks["no_tech2_fallback"] = not source_is_fallback(t2s)
+        # Claim-level schema provenance. Absent means a pre-schema report and
+        # stays backward-compatible; an explicit False means the publisher
+        # knowingly fell back to free-form Markdown or lost a section call.
+        section_v3_j = _load(log / "section-results-v3.json") or {}
+        checks.update(_schema_provenance_checks(
+            j, section_v3_j, tech2_j, tech3_j))
         checks["quality_issues"] = list(qpack.get("issues") or [])
     except Exception as e:
         checks["quality_pack_ok"] = False
@@ -936,6 +962,10 @@ def audit_publish(log: Path, deep_mtime: float) -> dict:
             "v2_no_missing_sections",
             "quality_pack_ok",
             "master_source_llm",
+            "master_schema_ok",
+            "master_v3_schema_ok",
+            "tech2_schema_ok",
+            "tech3_schema_ok",
             "tech2_source_llm",
             "tech3_source_ok",
             "tech3_fresh_vs_deep",

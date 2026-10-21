@@ -173,6 +173,19 @@ call receives that run manifest plus the section-relevant tool observations and
 the versioned RE/report methodology. The technical writer receives the assembled
 evidence pack.
 
+Report writers return a claim-level `sections` document instead of free-form
+Markdown. Each factual observation carries `source`, `query_or_table`, and
+`row_or_rule`; each table row carries the same fields. A deterministic renderer
+is the only producer of the published Markdown: it appends the citation to each
+observation sentence and an `Evidence` cell to each table row, so a factual
+claim cannot reach a report without a locator. Assessment, recommendation, and
+note blocks use the fixed markers `**[Assessment]**`, `**[Recommendation]**`,
+and `**[Note]**`. Citation coverage skips those marked lines, while the
+claimed-indicator and dynamic-execution checks still scan their text. A schema
+or extraction failure gets one correction attempt; transport failures are not
+retried by this layer. Report JSON records `schema_used`; the audit fails an
+explicit false, while an absent key keeps pre-schema reports readable.
+
 The claim gate validates the input and final-report hashes, resolves each
 citation against its source-specific primary artifact, and checks whether the
 whole claim follows from the located evidence. Supported or contradicted reviews
