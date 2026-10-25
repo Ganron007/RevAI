@@ -737,53 +737,61 @@ def _build_ioc_section(sha: str, tools_results: dict | None = None) -> str:
         vals = data.get(key) or []
         if isinstance(vals, dict):
             vals = [vals]
-        shown = [_ioc_value(v) for v in vals if _ioc_value(v)]
+        shown = [(i, _ioc_value(v)) for i, v in enumerate(vals) if _ioc_value(v)]
         if not shown:
             continue
         total += len(shown)
         lines.append(f"**{label}**")
-        for v in shown[:per_category_limit]:
-            lines.append(f"- `{v}`")
+        for i, v in shown[:per_category_limit]:
+            # Every rendered indicator carries its own citation to the exact
+            # row it came from; the citation-coverage gate treats an uncited
+            # bullet as an uncited claim (run 2168d92e: 13 of them).
+            lines.append(
+                f"- `{v}` (source: iocs, query_or_table: iocs.json, "
+                f"row_or_rule: $.{key}[{i}])")
         omitted = len(shown) - min(len(shown), per_category_limit)
         if omitted:
             lines.append(
-                f"- ... and {omitted} more; the complete set remains in `iocs.json`."
+                f"- ... and {omitted} more; the complete set remains in "
+                f"`iocs.json` (source: iocs, query_or_table: iocs.json, "
+                f"row_or_rule: $.{key})."
             )
         lines.append("")
 
-    out += ["Every indicator below was produced by the analysis engines named in "
-            "the attribution line and rendered from `iocs.json`; non-printable "
-            "padding is removed for readability and stored defanging is kept. "
-            "Nothing in this section is inferred, reconstructed, or supplied "
-            "from general knowledge of what malware of this kind usually "
-            "does.", ""]
+    out += ["**[Note]** Every indicator below was produced by the analysis "
+            "engines named in the attribution line and rendered from "
+            "`iocs.json`; non-printable padding is removed for readability "
+            "and stored defanging is kept. Nothing in this section is "
+            "inferred, reconstructed, or supplied from general knowledge of "
+            "what malware of this kind usually does.", ""]
     if lines:
         out += lines
     else:
-        out += ["The extractors ran and produced no indicators.", ""]
+        out += ["**[Note]** The extractors ran and produced no indicators.", ""]
 
     # What was searched and came back empty. This is the part an invented
-    # indicator would otherwise overwrite.
-    empty = [label for key, label in _IOC_KINDS
-             if not (data.get(key) or ({} if key == "hashes" else []))]
-    if empty:
-        out += [f"**Not observed.** No {'; no '.join(empty)} were extracted from "
-                "this sample. Absence here is a statement about what the tools "
-                "recovered, not a claim that the behaviour is absent: a packed "
-                "or obfuscated sample frequently hides these from static "
-                "extraction, and dynamic analysis would be the next step.", ""]
+    # indicator would otherwise overwrite. Each negative finding cites its own
+    # absence-bearing field, and the coverage caveat is non-factual methodology.
+    for key, label in _IOC_KINDS:
+        if data.get(key):
+            continue
+        out.append(
+            f"- No {label.lower()} were extracted "
+            f"(source: iocs, query_or_table: iocs.json, row_or_rule: $.{key}).")
+    out += ["", "**[Note]** Absence above is a statement about what the tools "
+            "recovered, not a claim that the behaviour is absent: a packed or "
+            "obfuscated sample frequently hides these from static extraction, "
+            "and dynamic analysis would be the next step.", ""]
 
     if engines:
-        out += ["**Attribution.** Extracted deterministically from "
+        out += [f"**[Note]** Attribution: extracted deterministically from "
                 + ", ".join(f"`{e}`" for e in engines)
-                + ". Values are shown in the defanged form the extractor "
-                "produced.", ""]
-    out += [f"**Review before sharing.** {str(data.get('note') or '').strip()} "
+                + f". The renderer emitted {total} indicator value(s); the "
+                "complete set with provenance remains in `iocs.json`. Values "
+                "are shown in the defanged form the extractor produced.", ""]
+    out += [f"**[Note]** Review before sharing: {str(data.get('note') or '').strip()} "
             "Incident-response indicator sets routinely contain "
-            "victim-specific data from ransom notes and similar artefacts.",
-            ""]
-    out += [f"Total indicators: **{total}**. Full set with provenance: "
-            "`iocs.json`.", ""]
+            "victim-specific data from ransom notes and similar artefacts.", ""]
     return "\n".join(out)
 
 
@@ -985,11 +993,18 @@ def _generate_technical_section(
     prior_summaries: dict[str, str] | None = None,
     provenance_block_text: str = "", mode: str | None = None,
     source_evidence: str = "",
-    locked_verdict: str | None = None) -> dict[str, Any]:
-    """Generate ONE technical section. Never raises: a failure is recorded."""
+    locked_verdict: str | None = None,
+    failure_reason: str = "") -> dict[str, Any]:
+    """Generate ONE technical section. Never raises: a failure is recorded.
+
+    `failure_reason` carries the previous attempt's error into a repair pass:
+    the retry prompt names what went wrong so the writer can avoid it.
+    """
     description = TECHNICAL_SECTION_DESCRIPTIONS.get(name, name)
     result: dict[str, Any] = {"name": name, "llm_ok": False, "error": None,
                               "pass": 1}
+    if failure_reason:
+        result["repair_of_error"] = failure_reason[:300]
 
     # Section 8 is rendered from iocs.json rather than authored. See
     # _build_ioc_section for the measurement that forced it.
@@ -1024,6 +1039,11 @@ def _generate_technical_section(
         provenance_block_text=provenance_block_text,
         source_evidence=source_evidence,
         locked_verdict=locked_verdict)
+    if failure_reason:
+        prompt += (
+            f"\n\nREPAIR PASS: the previous generation of this section failed "
+            f"({failure_reason[:300]}). Regenerate the section completely from "
+            f"the evidence above.")
     result["evidence_chars"] = len(evidence)
     result["prompt_chars"] = len(prompt)
 
@@ -1115,6 +1135,47 @@ def generate_technical_sectionwise(
 
     order = {n: i for i, n in enumerate(TECHNICAL_REPORT_SECTIONS)}
     results.sort(key=lambda r: order.get(r.get("name", ""), 999))
+
+    # Provider 5xx/empty bursts were killing 2-3 sections per v3 attempt (run
+    # 2168d92e, 2026-10-25: three section-publish attempts each lost sections
+    # to HTTP 500 bursts while the v2 publish's repair loop survived the same
+    # window). Give each failed section ONE bounded re-generation naming the
+    # failure — the same contract as the v2 master's missing-section repair.
+    # A second failure is recorded and the stage still fails honestly.
+    failed = [r for r in results if not r.get("llm_ok")
+              and not r.get("deterministic")]
+    if failed:
+        print(f"  [technical] repair pass: re-generating "
+              f"{len(failed)} failed section(s): "
+              f"{[r.get('name') for r in failed]}", flush=True)
+
+        def _repair_section(result: dict[str, Any]) -> dict[str, Any]:
+            retry = _generate_technical_section(
+                result["name"], blocks, header, sha,
+                provenance_block_text=provenance_block_text,
+                source_evidence=source_evidence, mode=mode,
+                locked_verdict=locked_verdict,
+                failure_reason=str(result.get("error") or "previous attempt failed"))
+            retry["pass"] = 2
+            return retry
+
+        if parallel and len(failed) > 1:
+            with ThreadPoolExecutor(
+                    max_workers=min(max_workers, len(failed))) as pool:
+                retries = list(pool.map(_repair_section, failed))
+        else:
+            retries = [_repair_section(r) for r in failed]
+        by_name = {r.get("name"): r for r in results}
+        for retry in retries:
+            if retry.get("llm_ok"):
+                by_name[retry.get("name")] = retry
+        results = [by_name[r.get("name")] for r in results]
+        results.sort(key=lambda r: order.get(r.get("name", ""), 999))
+        still_failed = [r.get("name") for r in results if not r.get("llm_ok")]
+        print(f"  [technical] repair pass complete; "
+              f"{len(results) - len(still_failed)}/{len(results)} sections ok"
+              + (f"; still failed: {still_failed}" if still_failed else ""),
+              flush=True)
 
     parts = [f"# Technical Malware Analysis Report\n"]
     for r in results:
@@ -1248,11 +1309,15 @@ def run_section_based_publish(sha: str, tools_results: dict,
                 r, dt = _run(name, pass1_results, 2)
                 pass2_results.append(r)
                 pass2_timings.append({"name": name, "pass": 2, "runtime_sec": dt})
-        # Replace pass-1 LLM results with pass-2 results (better quality)
+        # Replace pass-1 LLM results with pass-2 results when pass 2 produced
+        # the better artifact. A pass-2 failure must NOT downgrade a pass-1
+        # success (run 2168d92e attempt 2, 2026-10-25: a 500 burst in pass 2
+        # failed sections that pass 1 had already written).
         for r2 in pass2_results:
             for i, r1 in enumerate(pass1_results):
                 if r1["name"] == r2["name"]:
-                    pass1_results[i] = r2
+                    if r2.get("llm_ok") or not r1.get("llm_ok"):
+                        pass1_results[i] = r2
                     break
 
     invocation_counts = _section_invocation_counts(

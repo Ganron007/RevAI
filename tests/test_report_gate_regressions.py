@@ -741,3 +741,55 @@ def test_the_batch_budget_reaches_llm_judge(monkeypatch):
             "evidence": [], "analysis_identity": {}}
     E._semantic_review_batch([item], budget_s=123)
     assert captured.get("budget_s") == 123, captured
+
+
+# --------------------------------------------------------------------------
+# 6. RC-20: an ENUMERATION-SCOPED denial is truthful about the paths it names.
+# --------------------------------------------------------------------------
+def _dyn_status_emulation_ran():
+    return {
+        "any_dynamic_performed": True,
+        "emulation": {"present": True, "ok": True, "engine_ran": True,
+                      "state": "emulation produced a trace"},
+        "winre": {"pack_present": False, "detonation_ran": None},
+        "frida_runtime": {"trace_artifact_present": False,
+                          "observed_runtime_events": False},
+        "packet_capture": {"present": False},
+        "sentence": "Run-scoped status -- emulation produced a trace.",
+    }
+
+
+def test_an_enumeration_scoped_denial_is_truthful_when_named_paths_are_absent():
+    """Run 2168d92e: the emulation oracle ran (ok=true) while the report's
+    Note truthfully said the THREE OTHER paths were not performed."""
+    md = (
+        "- **[Note]** Limitation: because no dynamic execution path (WinRE "
+        "detonation, Frida runtime trace, or packet capture) was performed, "
+        "runtime indicators are unavailable.\n"
+    )
+    result = RQ._cross_report_consistency(
+        md, md, "", 6.96, _dyn_status_emulation_ran())
+    assert not any("dynamic_performed_but_report_says_none" in v
+                   for v in result["violations"]), result["violations"]
+
+
+def test_an_enumeration_scoped_denial_is_a_lie_when_a_named_path_ran():
+    md = (
+        "- **[Note]** Limitation: because no dynamic execution path (WinRE "
+        "detonation, Frida runtime trace, or packet capture) was performed, "
+        "runtime indicators are unavailable.\n"
+    )
+    status = _dyn_status_emulation_ran()
+    status["frida_runtime"] = {"trace_artifact_present": True,
+                               "observed_runtime_events": True}
+    result = RQ._cross_report_consistency(md, md, "", 6.96, status)
+    assert any("dynamic_performed_but_report_says_none" in v
+               for v in result["violations"]), result["violations"]
+
+
+def test_a_broad_denial_is_still_flagged_when_something_ran():
+    md = "- No dynamic analysis was performed for this sample.\n"
+    result = RQ._cross_report_consistency(
+        md, md, "", 6.96, _dyn_status_emulation_ran())
+    assert any("dynamic_performed_but_report_says_none" in v
+               for v in result["violations"]), result["violations"]

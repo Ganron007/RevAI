@@ -353,3 +353,69 @@ def test_monolithic_block_is_still_present_as_rollback():
     assert "STRUCTURED_REPORT_CONTRACT" in src
     assert "technical_assembly_retried" in src, (
         "the monolithic completeness retry must remain intact")
+
+
+# --- Provider-burst resilience (run 2168d92e, 2026-10-25): three v3 attempts
+# each lost 2-3 sections to HTTP 500 bursts while the v2 publish's repair loop
+# survived the same window. The technical section-wise loop now repairs each
+# failed section once, naming the failure; a pass-2 failure must not downgrade
+# a pass-1 success. -----------------------------------------------------------
+
+def _ok_section(name):
+    return {"name": name, "llm_ok": True, "error": None, "pass": 1,
+            "markdown": f"## {name}\n\nok", "schema_used": True}
+
+
+def _failed_section(name):
+    return {"name": name, "llm_ok": False, "error": "llm: HTTP 500",
+            "pass": 1, "markdown": f"## {name}\n\n_(failed)_",
+            "schema_used": False}
+
+
+def test_a_failed_section_is_repaired_once_and_replaced(tmp_path, monkeypatch):
+    calls = []
+
+    def fake_generate(name, blocks, header, sha, **kwargs):
+        calls.append((name, kwargs.get("failure_reason") or ""))
+        if kwargs.get("failure_reason"):
+            ok = _ok_section(name)
+            ok["pass"] = 1
+            return ok
+        return _failed_section(name)
+
+    monkeypatch.setattr(sp, "_generate_technical_section", fake_generate)
+    results, md = sp.generate_technical_sectionwise(
+        "a" * 64, "## A\n\nevidence", parallel=False)
+    n = len(sp.TECHNICAL_REPORT_SECTIONS)
+    # First attempt for every section + exactly ONE repair per failed section.
+    assert len(calls) == 2 * n, len(calls)
+    repair_reasons = [reason for _, reason in calls if reason]
+    assert len(repair_reasons) == n, repair_reasons
+    # The repair call must carry the previous attempt's error.
+    assert all("HTTP 500" in reason for reason in repair_reasons), repair_reasons[:2]
+    assert all(r["llm_ok"] for r in results), results
+    assert "_(failed)_" not in md
+
+
+def test_a_repair_failure_is_recorded_and_the_report_still_assembles(tmp_path, monkeypatch):
+    def fake_generate(name, blocks, header, sha, **kwargs):
+        return _failed_section(name)
+
+    monkeypatch.setattr(sp, "_generate_technical_section", fake_generate)
+    results, md = sp.generate_technical_sectionwise(
+        "a" * 64, "## A\n\nevidence", parallel=False)
+    assert all(not r["llm_ok"] for r in results), results
+    # The stage never raises; the quality gate fails the report honestly.
+    assert md
+
+
+def test_a_successful_section_is_not_repaired(tmp_path, monkeypatch):
+    calls = []
+
+    def fake_generate(name, blocks, header, sha, **kwargs):
+        calls.append(name)
+        return _ok_section(name)
+
+    monkeypatch.setattr(sp, "_generate_technical_section", fake_generate)
+    sp.generate_technical_sectionwise("a" * 64, "## A\n\nevidence", parallel=False)
+    assert len(calls) == len(sp.TECHNICAL_REPORT_SECTIONS), calls

@@ -109,11 +109,15 @@ def test_no_llm_call_is_possible_for_this_section(tmp_path, monkeypatch):
 # -------------------------------------------------------------- honest absence
 
 def test_absence_is_stated_and_attributed(tmp_path, monkeypatch):
-    """An empty category must be reported, not quietly omitted."""
+    """An empty category must be reported, not quietly omitted.
+
+    Run 2168d92e (2026-10-25): each absence line now cites its own
+    absence-bearing field, per the methodology's negative-finding rule.
+    """
     md = _build(tmp_path, monkeypatch=monkeypatch)
-    assert "Not observed" in md
-    assert "Registry keys" in md
-    assert "Mutexes" in md
+    assert "No registry keys were extracted" in md
+    assert "No mutexes were extracted" in md
+    assert "row_or_rule: $.registry_keys)" in md
     # The point of stating it: absence is about what the tools recovered.
     assert "not a claim that the behaviour is absent" in md
 
@@ -127,7 +131,7 @@ def test_engines_are_attributed(tmp_path, monkeypatch):
 
 def test_total_is_reported_and_points_at_the_source(tmp_path, monkeypatch):
     md = _build(tmp_path, monkeypatch=monkeypatch)
-    assert "Total indicators" in md
+    assert "emitted" in md and "indicator value(s)" in md
     assert "iocs.json" in md
 
 
@@ -156,8 +160,11 @@ def test_nul_padded_value_is_truncated_and_fenced(tmp_path, monkeypatch):
                  if ln.startswith("- ") and "http" in ln]
     assert url_lines, f"URL not rendered as a list item:\n{md}"
     for ln in url_lines:
-        assert ln.strip() == "- `http[:]//icanhazip[.]com`", (
+        # The rendered value is fenced exactly; the line now also carries the
+        # row citation appended after it (citation-coverage gate).
+        assert ln.startswith("- `http[:]//icanhazip[.]com`"), (
             f"trailing junk survived: {ln!r}")
+        assert "row_or_rule: $.urls[" in ln, ln
 
 
 def test_control_characters_are_stripped_from_values():
@@ -213,3 +220,31 @@ def test_large_categories_are_truncated_with_a_count(tmp_path, monkeypatch):
     assert "host59.example[.]com" not in md, "cap not applied"
     assert "and 20 more" in md, "the truncation must be disclosed"
     assert "iocs.json" in md, "the full set must remain reachable"
+
+
+# ------------------------------------------------- citation coverage (RC-16v3)
+# Run 2168d92e attempt 4 (2026-10-25): the section rendered 13 uncited claims —
+# the deterministic boilerplate and the indicator bullets carry no locators —
+# and the quality gate correctly failed the otherwise-complete technical v3.
+
+def test_every_rendered_indicator_carries_a_row_citation(tmp_path, monkeypatch):
+    md = _build(tmp_path, monkeypatch=monkeypatch)
+    from report_quality import uncited_report_claims
+    claims = uncited_report_claims(md)
+    assert claims == [], claims[:4]
+
+
+def test_methodology_lines_are_note_marked(tmp_path, monkeypatch):
+    md = _build(tmp_path, monkeypatch=monkeypatch)
+    assert "**[Note]**" in md
+    for needle in ("Nothing in this section is inferred",
+                   "not a claim that the behaviour is absent",
+                   "Review before sharing"):
+        line = next(ln for ln in md.splitlines() if needle in ln)
+        assert line.lstrip().startswith("**[Note]**"), line
+
+
+def test_a_value_citation_names_its_own_index(tmp_path, monkeypatch):
+    md = _build(tmp_path, monkeypatch=monkeypatch)
+    assert "row_or_rule: $.domains[0])" in md
+    assert "row_or_rule: $.hashes[0])" in md

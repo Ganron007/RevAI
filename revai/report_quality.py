@@ -1043,6 +1043,33 @@ def _dynamic_absence_claim(md: str, dyn_status: dict) -> str | None:
         )
         if speakeasy_only:
             continue
+        # RC-20 (run 2168d92e, 2026-10-25): a sentence that denies a NAMED
+        # ENUMERATION of dynamic paths — "because no dynamic execution path
+        # (WinRE detonation, Frida runtime trace, or packet capture) was
+        # performed" — is truthful when every named path's status is absent,
+        # even while a DIFFERENT path (the emulation oracle, ok=true) ran.
+        # The enumeration scopes the denial; a broad denial of dynamic
+        # analysis with no such scope still fails below.
+        enum_scope = re.search(
+            r"\(([^)]*(?:detonation|winre|frida|packet capture|pcap|emulation|"
+            r"sandbox)[^)]*)\)", lower)
+        if enum_scope and re.search(r"\bno\b", lower):
+            scope_ok = True
+            for item in re.split(r",|\bor\b", enum_scope.group(1)):
+                item = item.strip().lower()
+                if not item:
+                    continue
+                if "winre" in item or "detonation" in item:
+                    scope_ok = scope_ok and not winre_ran
+                elif "frida" in item:
+                    scope_ok = scope_ok and not frida_ran
+                elif "packet capture" in item or "pcap" in item:
+                    scope_ok = scope_ok and not pcap_present
+                elif "emulation" in item or "speakeasy" in item \
+                        or "oracle" in item:
+                    scope_ok = scope_ok and not emulation_ran
+            if scope_ok:
+                continue
         # Reports can state a component-level gap (RevAI's static-only Frida
         # probe) or an unexecuted nested payload (the embedded PE) while the
         # outer sample was run through WinRE. Remove only those scoped clauses;
