@@ -84,3 +84,44 @@ def test_the_verdict_passed_to_the_sections_is_the_locked_one(tmp_path,
     verdict["verdict"] = locked
     assert verdict["verdict"] == "malicious"
     assert verdict["locked_from"] if "locked_from" in verdict else True
+
+
+# --- RC-04b (option b, operator decision 2026-10-25): the published report is
+# the lock authority; a calibration-driven disagreement with the raw triage
+# label is advisory -----------------------------------------------------------
+
+def test_calibration_downgrade_agrees_with_the_published_report():
+    lock = cross_stage_verdict_lock(
+        "suspicious", quick_verdict="malicious", deep_verdict=None,
+        published_verdict="suspicious")
+    assert lock["ok"] is True
+    assert lock["conflict"] is False
+    assert lock["calibration_disagreement"] == {
+        "upstream": "malicious", "publish": "suspicious",
+        "reason": lock["calibration_disagreement"]["reason"]}
+    assert "calibration" in lock["calibration_disagreement"]["reason"]
+
+
+def test_the_claim_must_still_match_the_published_report():
+    lock = cross_stage_verdict_lock(
+        "suspicious", quick_verdict="malicious", deep_verdict=None,
+        published_verdict="malicious")
+    assert lock["ok"] is False
+    assert lock["conflict"] is True
+    assert "published" in lock["reason"]
+
+
+def test_without_a_published_label_the_legacy_contract_applies():
+    lock = cross_stage_verdict_lock(
+        "suspicious", quick_verdict="malicious", deep_verdict=None)
+    assert lock["ok"] is False
+    assert lock["conflict"] is True
+    assert lock["calibration_disagreement"] is None
+
+
+def test_matching_published_and_upstream_has_no_advisory():
+    lock = cross_stage_verdict_lock(
+        "malicious", quick_verdict="malicious", deep_verdict="malicious",
+        published_verdict="malicious")
+    assert lock["ok"] is True
+    assert lock["calibration_disagreement"] is None

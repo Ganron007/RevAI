@@ -846,10 +846,14 @@ def audit_publish(log: Path, deep_mtime: float) -> dict:
             or infer_publish_verdict_from_markdown(text2)
         )
         final_v = j.get("final_verdict") or j.get("verdict")
+        # RC-04b (option b): the audit compares publish-to-published; a
+        # calibration-driven disagreement with the raw triage label is
+        # advisory (calibration_disagreement), not a lock failure.
         lock = cross_stage_verdict_lock(
             pub_claimed,
             quick_verdict=j.get("quick_verdict") or verdict.get("verdict"),
             deep_verdict=j.get("deep_verdict") or deep.get("verdict"),
+            published_verdict=infer_publish_verdict_from_markdown(text2),
         )
         # Persisted conflict wins only if not already hard-aligned to upstream
         hold = j.get("accuracy_hold")
@@ -875,6 +879,7 @@ def audit_publish(log: Path, deep_mtime: float) -> dict:
                     final_v or (persisted or {}).get("upstream") or "malicious",
                     quick_verdict=j.get("quick_verdict") or verdict.get("verdict"),
                     deep_verdict=j.get("deep_verdict") or deep.get("verdict"),
+                    published_verdict=infer_publish_verdict_from_markdown(text2),
                 )
     except Exception as e:
         lock = lock or {"ok": True, "conflict": False, "reason": f"lock_check_error:{e}"}

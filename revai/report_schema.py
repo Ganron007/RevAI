@@ -16,7 +16,10 @@ import json
 import re
 from typing import Any
 
-from citation_syntax import strip_citation_annotations
+from citation_syntax import (
+    is_disassembly_listing_line,
+    strip_citation_annotations,
+)
 
 BLOCK_KINDS = (
     "observation",
@@ -38,6 +41,14 @@ _NON_FACTUAL_MARKER_RE = re.compile(
 )
 _HEADING_PREFIX_RE = re.compile(r"^#+\s*")
 _EVIDENCE_COLUMN_NAMES = {"evidence", "source", "citation", "sources"}
+
+#: RC-19: a locator ending in a named field of an INDEXED element
+#: (`$.yara.matches[10].strings[0]`) addresses a leaf inside a row. A table row
+#: that restates several cells must cite the ROW (`$.yara.matches[10]`) so every
+#: cell is supported; run 65be0144 produced 217 `insufficient` claims dominated
+#: by exactly this row-vs-leaf shape.
+_ROW_LEAF_CITATION_RE = re.compile(
+    r"\[\d+\]\s*\.[A-Za-z_][A-Za-z0-9_]*(?:\s*\[\d+\])*\s*$")
 _SAFE_FENCE_LANG_RE = re.compile(r"[^A-Za-z0-9_+.#-]+")
 
 
@@ -334,6 +345,23 @@ def validate_report_document(document: Any) -> list[str]:
                     errors.append(f"{bwhere}: observation text must be non-empty")
                 elif not strip_citation_annotations(text).strip():
                     errors.append(f"{bwhere}: observation text is only a citation")
+                else:
+                    # RC-18: disassembly belongs in a `code` block. A listing
+                    # pasted into an observation renders as prose and the gate
+                    # counts every listing line as an uncited claim (run
+                    # 65be0144: 12 of them). Reject it here, where the writer
+                    # can still move it, instead of at the audit.
+                    listing_lines = [
+                        line for line in text.splitlines()
+                        if is_disassembly_listing_line(line)
+                    ]
+                    if listing_lines:
+                        errors.append(
+                            f"{bwhere}: observation text contains disassembly "
+                            f"listing lines ({listing_lines[0].strip()[:60]}...); "
+                            "put the raw listing in a `code` block and keep only "
+                            "cited prose observations in the text"
+                        )
                 _citation_fields(block, bwhere, errors)
             elif kind in ("assessment", "recommendation", "note"):
                 if not _text(block.get("text")):
@@ -374,6 +402,16 @@ def validate_report_document(document: Any) -> list[str]:
                         errors.append(
                             f"{rwhere}: cells must contain exactly "
                             f"{len(clean_columns)} values"
+                        )
+                    if (isinstance(cells, list)
+                            and sum(1 for cell in cells if _text(cell)) >= 2
+                            and _ROW_LEAF_CITATION_RE.search(
+                                _text(row.get("row_or_rule")))):
+                        errors.append(
+                            f"{rwhere}: a row with multiple non-empty cells must "
+                            "cite the ROW locator, not a leaf field — drop the "
+                            "trailing `.field` from row_or_rule so every cell "
+                            "is supported"
                         )
                     _citation_fields(row, rwhere, errors)
     return errors
@@ -625,4 +663,8 @@ Rules:
 10. Table cells must be copied from the cited row. Do not use one field to
    support a row that also asserts a technique, a verdict, or a second fact;
    split the row or move the interpretation to `assessment`.
+11. Disassembly, hex dumps and any raw tool listing belong ONLY in a `code`
+   block. An `observation` containing listing lines is rejected: paste the
+   raw listing into `code` (with `language`) and state what it shows in a
+   separate cited `observation`.
 """.strip()

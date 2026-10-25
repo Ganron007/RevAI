@@ -223,3 +223,30 @@ def has_citation_locator(text: str) -> bool:
     """Whether the text contains a source citation with a non-empty row locator."""
     return any(str(citation.get("row_or_rule") or "").strip()
                for citation in parse_citation_annotations(text))
+
+
+#: RC-18: a disassembly listing line that leaked OUTSIDE a code fence. Run
+#: 65be0144 emitted radare2 output as plain indented lines and the narrative
+#: extractor counted every line as an uncited factual claim (12
+#: `missing-citation` entries, all listing lines). Two shapes are recognised:
+#: a box-drawing prefix (r2's `│ 0x0042419b 60 pushal`, `┌ 37: entry0 ()`),
+#: and an address followed by optional byte/ordinal tokens and a mnemonic
+#: (`0x0042419b 60 pushal`, objdump's `401000: 60 e0`). The mnemonic list
+#: keeps prose like "0x401000 is the entry point" from matching.
+_DISASSEMBLY_LISTING_RE = re.compile(
+    r"^\s*(?:[\u2500-\u257f]"
+    r"|0x[0-9a-fA-F]{4,16}\s+(?:[0-9a-fA-F]{1,8}\s+){0,3}"
+    r"(?:push|pop|mov|lea|call|jmp|j[a-z]{1,2}|ret|add|sub|xor|and|or|test|cmp|"
+    r"inc|dec|neg|nop|int|shl|shr|sar|imul|mul|div|pushal|pushad|popal|popad|"
+    r"leave|enter|loop|endbr(?:64|32)|cdq|cdqe|stos|lods|scas|repe?|repne|hlt|"
+    r"out|in|syscall|sysenter|rol|ror|rcl|rcr|shld|shrd|setn?[a-z]|cmov[a-z]{1,3}|"
+    r"fld|fst|fnst|movsxd|movzx|movsx|xz|tz|lzcnt|bswap|cpuid|rdtsc|"
+    r"xchg|cmpxchg|xadd|bound|iret|icebp)(?:[lqwbz])?\b"
+    r"|[0-9a-fA-F]{6,16}:\s+(?:[0-9a-fA-F]{2}\s+){1,8}\S)",
+    re.IGNORECASE,
+)
+
+
+def is_disassembly_listing_line(line: str) -> bool:
+    """Whether a rendered line is a disassembly/hex listing, not prose."""
+    return bool(_DISASSEMBLY_LISTING_RE.match(line or ""))

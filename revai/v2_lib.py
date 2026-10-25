@@ -1068,6 +1068,56 @@ def _head_without_citations(text: str) -> str:
     return "\n".join(kept)
 
 
+def _verdict_match_is_metalinguistic(body: str, match_start: int) -> bool:
+    """True when a matched verdict phrase is quoted or reported speech (RC-17).
+
+    A report that QUOTES another artifact's verdict — "the same artifact's
+    summary text reads 'Verdict: SUSPICIOUS (score 58)'" — is recording a
+    discrepancy, not stating its own verdict. Two shapes are excluded:
+
+    * the match lies inside an unclosed quoted span in its sentence (the
+      quote opened before the word "verdict"), or
+    * a reporting verb ("reads", "states", "says", ...) sits immediately
+      before the match with only "that"/colon/quote characters between.
+
+    The RC-04 shape is deliberately still accepted: in "the triage verdict
+    for this sample is 'malicious'" the quote opens AFTER "is" and encloses
+    only the label, and no reporting verb precedes the phrase.
+    """
+    import re as _re2
+
+    sentence_start = max(
+        body.rfind(".", 0, match_start),
+        body.rfind("!", 0, match_start),
+        body.rfind("?", 0, match_start),
+        body.rfind("\n", 0, match_start),
+    ) + 1
+    prefix = body[sentence_start:match_start]
+    # Walk quote characters that can open or close a span. An apostrophe
+    # between word characters ("analyst's") is neither, so contractions and
+    # possessives cannot fake an unmatched opener. A span still open at the
+    # match means the verdict phrase itself is quoted content.
+    depth = 0
+    for i, ch in enumerate(prefix):
+        if ch not in "'\"`\u201c\u201d\u2018\u2019":
+            continue
+        prev_word = i > 0 and prefix[i - 1].isalnum()
+        next_word = i + 1 < len(prefix) and prefix[i + 1].isalnum()
+        if prev_word and next_word:
+            continue
+        depth = 1 - depth
+    if depth:
+        return True
+    # Reporting verbs only — reads/states/says, per the RC-17 derivation.
+    # Deliberately not "shows"/"notes": "as the evidence shows, the verdict
+    # is malicious" is the report's own statement and must stay accepted.
+    return bool(_re2.search(
+        r"(?is)\b(?:reads?|states?|says?|said)\b"
+        r"(?:\s+that)?(?:\s+the)?\s*[:\-]?\s*[\"'`\u201c\u2018]{0,2}\s*$",
+        prefix.rstrip(),
+    ))
+
+
 def infer_publish_verdict_from_markdown(markdown: str) -> str | None:
     """Infer publish-claimed verdict from report body (never from hold banner).
 
@@ -1085,7 +1135,9 @@ def infer_publish_verdict_from_markdown(markdown: str) -> str | None:
     # quoted. Both shapes are the report stating its verdict explicitly, which
     # always beats the keyword heuristic below (2026-10-23: the master report
     # said exactly that and was read as 'benign' from an unrelated word).
-    explicit_sentence = _re.search(
+    # Quoted/reported speech is skipped (RC-17): the report's own statement
+    # — the first non-metalinguistic explicit sentence — wins.
+    for candidate in _re.finditer(
         r"(?i)\b(?:the\s+)?"
         r"(?:(?:report|pipeline|triage|final|overall)\s+)?verdict"
         r"(?:\s+(?:for|of)\s+(?:this|the)\s+"
@@ -1093,9 +1145,10 @@ def infer_publish_verdict_from_markdown(markdown: str) -> str | None:
         r"(?:\s+is|\s*[:\-])\s*[*_\"'`]*\s*"
         r"(malicious|suspicious|benign|unknown|legitimate|clean)\b",
         body,
-    )
-    if explicit_sentence:
-        label = normalize_verdict_label(explicit_sentence.group(1))
+    ):
+        if _verdict_match_is_metalinguistic(body, candidate.start()):
+            continue
+        label = normalize_verdict_label(candidate.group(1))
         return label
     # The verdict PANEL is the report's own structured verdict statement. It
     # is consulted BEFORE the prose keyword heuristic, because the heuristic
@@ -1159,17 +1212,30 @@ def cross_stage_verdict_lock(
     *,
     quick_verdict: str | None = None,
     deep_verdict: str | None = None,
+    published_verdict: str | None = None,
 ) -> dict:
-    """Fail unless the published label exactly matches the selected pipeline label.
+    """Fail unless the published label matches the verdict authority.
 
-    Both downgrades and upgrades are contradictions. A report must not clear a
-    pipeline-selected malicious result, nor promote a suspicious/unknown result
-    to malicious based on its own narrative. The report can describe uncertainty
-    and disagreement, while the machine verdict remains the upstream label.
+    RC-04b (operator decision 2026-10-25, option b): when `published_verdict`
+    is supplied — the label re-derived from the published markdown — the
+    PUBLISHED REPORT is the authority and the lock requires the publish claim
+    to match it. Calibration may legitimately downgrade the label relative to
+    the raw pipeline verdict; that disagreement is recorded advisorially in
+    `calibration_disagreement` and does not fail the lock. Without
+    `published_verdict` the legacy contract applies: the published label must
+    exactly match the strongest raw pipeline label.
 
-    Returns {ok, conflict, upstream, publish, reason}.
+    Both downgrades and upgrades are contradictions in the legacy mode. A
+    report must not clear a pipeline-selected malicious result, nor promote a
+    suspicious/unknown result to malicious based on its own narrative. The
+    report can describe uncertainty and disagreement, while the machine
+    verdict remains the upstream label.
+
+    Returns {ok, conflict, upstream, publish, published, reason,
+    calibration_disagreement}.
     """
     pub = normalize_verdict_label(publish_verdict)
+    published = normalize_verdict_label(published_verdict)
     upstream_labels = [
         normalize_verdict_label(quick_verdict),
         normalize_verdict_label(deep_verdict),
@@ -1185,7 +1251,25 @@ def cross_stage_verdict_lock(
             upstream = "benign"
     conflict = False
     reason = ""
-    if upstream != "unknown" and pub != upstream:
+    calibration_disagreement = None
+    if published and published != "unknown":
+        # Published-report authority (option b). The publish claim must say
+        # what the report says; the raw upstream comparison is advisory.
+        conflict = pub != published
+        reason = (
+            f"publish={pub} does not match the published report's "
+            f"verdict={published}"
+        ) if conflict else ""
+        if upstream != "unknown" and pub != upstream:
+            calibration_disagreement = {
+                "upstream": upstream,
+                "publish": pub,
+                "reason": (
+                    "the published label differs from the raw pipeline-"
+                    "selected label (verdict calibration); advisory only"
+                ),
+            }
+    elif upstream != "unknown" and pub != upstream:
         conflict = True
         reason = f"publish={pub} does not match pipeline-selected verdict={upstream}"
     return {
@@ -1193,7 +1277,9 @@ def cross_stage_verdict_lock(
         "conflict": conflict,
         "upstream": upstream,
         "publish": pub,
+        "published": published or None,
         "reason": reason,
+        "calibration_disagreement": calibration_disagreement,
     }
 
 
@@ -9387,6 +9473,24 @@ def dynamic_analysis_status(sha: str, logs_dir: Path | None = None,
     if not out["emulation"].get("present"):
         out["emulation"] = {"present": False,
                             "state": "emulation stage produced no oracle result"}
+
+    # RC-05: the engine being INVOKED is a tool status, distinct from whether
+    # an oracle result was produced. The tools-raw record carries
+    # speakeasy_ok independently of 03-oracle.json, and a report may truthfully
+    # say the engine ran when the tool recorded it even when the oracle is
+    # absent. Unknown (None) when the record is missing or unreadable.
+    _engine_ran = None
+    _tools_raw_path = base / "deep_dive" / "01-tools-raw.json"
+    if _tools_raw_path.is_file():
+        try:
+            _tools_raw = json.loads(_tools_raw_path.read_text(
+                encoding="utf-8", errors="replace"))
+            _se = _tools_raw.get("speakeasy")
+            if isinstance(_se, dict) and isinstance(_se.get("speakeasy_ok"), bool):
+                _engine_ran = _se["speakeasy_ok"]
+        except Exception:
+            _engine_ran = None
+    out["emulation"]["engine_ran"] = _engine_ran
 
     # WinRE detonation and runtime-telemetry artifacts.
     try:

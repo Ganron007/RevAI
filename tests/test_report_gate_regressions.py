@@ -278,7 +278,12 @@ def test_a_hallucinated_claim_id_does_not_abort_the_review(tmp_path):
 
 
 def test_an_omitted_claim_verdict_still_fails_closed(tmp_path):
-    """Every expected claim needs its own decision; dropping one is still fatal."""
+    """Every expected claim needs its own decision; dropping one is still fatal.
+
+    RC-09 changed the failure SHAPE: the batch's claims become `not-reviewed`
+    (per-claim reason, review continues) instead of the whole review dying with
+    `verification-error`. Failing closed is unchanged: ok stays false.
+    """
     case = _case(tmp_path, _review_reports(), _review_artifacts())
 
     def reviewer(batch):
@@ -289,7 +294,8 @@ def test_an_omitted_claim_verdict_still_fails_closed(tmp_path):
 
     result = E.check_report_entailment(
         "a" * 64, case_root=case, semantic_reviewer=reviewer, use_cache=False)
-    assert "verification-error" in _statuses(result), result
+    assert "not-reviewed" in _statuses(result), result
+    assert result["ok"] is False
 
 
 def test_the_digit_form_of_a_zero_result_is_a_status_description():
@@ -326,6 +332,87 @@ def test_a_detonation_claim_cannot_be_excused_by_a_zero_result():
         md, md, "", 6.96, _dyn_status_absent())
     assert any("dynamic_execution_claimed" in v
                for v in result["violations"]), result["violations"]
+
+
+# --------------------------------------------------------------------------
+# 4b. RC-05: the dynamic gate is status-driven, not a third marker list.
+# --------------------------------------------------------------------------
+def _dyn_status_with_emulation(engine_ran):
+    st = _dyn_status_absent()
+    st["emulation"] = {
+        "present": False, "engine_ran": engine_ran,
+        "state": "emulation stage produced no oracle result",
+    }
+    return st
+
+
+def test_engine_sentence_with_the_null_result_in_the_next_sentence_passes():
+    """Run 65be0144 (RC-05): the engine ran (speakeasy_ok=true) and the null
+    result lived in the NEXT sentence, which the same-sentence rule missed."""
+    md = (
+        "# 5. Behavioral Analysis\n\n"
+        "Speakeasy emulation ran successfully (speakeasy_ok=true) against the "
+        "sample. The emulation stage recorded zero API calls and produced no "
+        "oracle result.\n"
+    )
+    for status in (_dyn_status_with_emulation(True), _dyn_status_absent()):
+        result = RQ._cross_report_consistency(md, md, "", 6.96, status)
+        assert not any("dynamic_execution_claimed" in v
+                       for v in result["violations"]), (status, result["violations"])
+
+
+def test_engine_sentence_without_a_nearby_null_result_is_flagged():
+    """The engine sentence stands only when the null result is stated within
+    the ±2-sentence window; alone it leaves the reader believing a trace
+    exists."""
+    md = (
+        "# 5. Behavioral Analysis\n\n"
+        "Speakeasy emulation ran successfully (speakeasy_ok=true) against the "
+        "sample.\n\nThe static analysis is described below.\n"
+    )
+    result = RQ._cross_report_consistency(
+        md, md, "", 6.96, _dyn_status_with_emulation(True))
+    assert any("dynamic_execution_claimed" in v
+               for v in result["violations"]), result["violations"]
+
+
+def test_engine_sentence_is_a_fabrication_when_status_says_not_ran():
+    """When the status says the engine did NOT run, the sentence is a
+    fabrication even with a null result nearby."""
+    md = (
+        "# 5. Behavioral Analysis\n\n"
+        "Speakeasy emulation ran successfully against the sample and recorded "
+        "zero API calls.\n"
+    )
+    result = RQ._cross_report_consistency(
+        md, md, "", 6.96, _dyn_status_with_emulation(False))
+    assert any("dynamic_execution_claimed" in v
+               for v in result["violations"]), result["violations"]
+
+
+def test_a_sample_execution_claim_is_never_excused_by_component_status():
+    """The engine may have been invoked, but that never makes the sample
+    executed: sample-attribution claims stay fabrications."""
+    md = (
+        "# 5. Behavioral Analysis\n\n"
+        "The sample executed successfully and produced 120 API calls.\n"
+    )
+    result = RQ._cross_report_consistency(
+        md, md, "", 6.96, _dyn_status_with_emulation(True))
+    assert any("dynamic_execution_claimed" in v
+               for v in result["violations"]), result["violations"]
+
+
+def test_a_negated_sample_claim_still_passes():
+    md = (
+        "# 5. Behavioral Analysis\n\n"
+        "The sample was not executed; every finding above derives from static "
+        "analysis alone.\n"
+    )
+    result = RQ._cross_report_consistency(
+        md, md, "", 6.96, _dyn_status_with_emulation(True))
+    assert not any("dynamic_execution_claimed" in v
+                   for v in result["violations"]), result["violations"]
 
 
 # --------------------------------------------------------------------------
@@ -559,3 +646,98 @@ def test_a_table_key_that_is_not_in_the_table_stays_unresolved(tmp_path):
              "row": row}, case)
         assert located is None, (row, located)
         assert check["status"] == "unresolved-row", check
+
+
+# --------------------------------------------------------------------------
+# 5. RC-09: a failed claim-review batch is skipped, and the review continues.
+#    (Operator decision 2026-10-25; run 13388b1f lost its whole audit when one
+#    batch stalled. Unreviewed claims never count as supported, so the run
+#    stays red with a per-claim reason.)
+# --------------------------------------------------------------------------
+import time as _time  # noqa: E402
+
+
+def _thirteen_claim_reports() -> dict:
+    lines = [
+        f"Finding {i}: the string table records PendingFileRenameOperations "
+        f"at EA 47146 (source: malcat, query_or_table: "
+        f"deep_dive/01-tools-raw.json, row_or_rule: EA=47146)."
+        for i in range(13)
+    ]
+    return {"REPORT-MASTER-v2.md": "\n".join(lines) + "\n"}
+
+
+def _supported_reviews(batch):
+    return {"reviews": [{
+        "id": item["id"], "verdict": "supported",
+        "evidence_ids": [row["evidence_id"] for row in item["evidence"]],
+    } for item in batch]}
+
+
+def test_a_failed_batch_is_skipped_and_the_review_continues(tmp_path):
+    case = _case(tmp_path, _thirteen_claim_reports(), _review_artifacts())
+    batches_seen = []
+
+    def reviewer(batch):
+        batches_seen.append(len(batch))
+        if len(batch) == 12:
+            raise RuntimeError("provider stall")
+        return _supported_reviews(batch)
+
+    result = E.check_report_entailment(
+        "a" * 64, case_root=case, semantic_reviewer=reviewer, use_cache=False)
+    statuses = _statuses(result)
+    assert batches_seen == [12, 1], batches_seen
+    assert statuses.count("not-reviewed") == 12, statuses
+    assert statuses.count("semantically-supported") == 1, statuses
+    assert result["ok"] is False
+    assert result["status"] == "verification-error"
+    assert "1 of 2" in (result.get("review_error") or ""), result.get("review_error")
+    skipped = [row for row in result["claims"] if row["status"] == "not-reviewed"]
+    assert all("provider stall" in row["reason"] for row in skipped), skipped[:2]
+
+
+def test_a_batch_over_its_wall_clock_budget_is_skipped(tmp_path, monkeypatch):
+    case = _case(tmp_path, _thirteen_claim_reports(), _review_artifacts())
+    real_monotonic = _time.monotonic
+    calls = {"n": 0, "offset": 0.0}
+
+    def fake_monotonic():
+        # Cumulative: every call after the first advances the clock by 10ks,
+        # so the first batch is over budget and so is every later one.
+        calls["n"] += 1
+        if calls["n"] > 1:
+            calls["offset"] += 10_000
+        return real_monotonic() + calls["offset"]
+
+    monkeypatch.setattr(E.time, "monotonic", fake_monotonic)
+
+    def reviewer(batch):
+        return _supported_reviews(batch)
+
+    result = E.check_report_entailment(
+        "a" * 64, case_root=case, semantic_reviewer=reviewer, use_cache=False)
+    statuses = _statuses(result)
+    assert statuses.count("not-reviewed") == 13, statuses
+    assert result["ok"] is False
+    assert "wall-clock budget" in (result.get("review_error") or ""), \
+        result.get("review_error")
+
+
+def test_the_batch_budget_reaches_llm_judge(monkeypatch):
+    captured = {}
+
+    def fake_llm_judge(prompt, **kwargs):
+        captured.update(kwargs)
+        return {"choices": [{"finish_reason": "tool_calls", "message": {
+            "tool_calls": [{"function": {
+                "name": "submit_claim_reviews",
+                "arguments": json.dumps({"reviews": []}),
+            }}],
+        }}]}
+
+    monkeypatch.setattr(v2_lib, "llm_judge", fake_llm_judge)
+    item = {"id": "c1", "claim": "x", "citations": [],
+            "evidence": [], "analysis_identity": {}}
+    E._semantic_review_batch([item], budget_s=123)
+    assert captured.get("budget_s") == 123, captured

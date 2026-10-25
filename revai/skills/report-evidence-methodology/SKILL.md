@@ -1,5 +1,5 @@
 name: report-evidence-methodology
-version: 2
+version: 3
 covers: [sample attribution, evidence hierarchy, behavioral inference, source citations, coverage limits, ATT&CK mapping, report structure]
 does_not_cover: [sample-specific conclusions, dynamic collector operation, exact tool schemas]
 
@@ -62,6 +62,19 @@ procedure file; source metadata is not queried during analysis.
   the same entry point; a hex spelling does not contradict a decimal field.
   Likewise a path written with doubled backslashes, an escaped quote, or a
   defanged domain is the same literal as its plain form.
+- Compare verdict words the same way. `| Verdict | malicious |`, a verdict
+  field whose value is `malicious`, and a `Verdict: malicious` prefix are the
+  same label regardless of case or markdown emphasis. A verdict claim agrees
+  with the evidence whenever the LABELS match, even when the evidence row is
+  an object that also carries a score or a state field; mark a verdict claim
+  contradicted only when the labels genuinely differ.
+- A recorded verdict calibration (`verdict-calibration.json`, from → to) is
+  publish-layer relabelling, not a fabrication. When the calibration record is
+  supplied with the claim, a report verdict claim whose label equals the
+  calibrated `to` value is supported even though the raw triage artifact
+  records `from`; the `[Verdict calibration]` annotation in the report is the
+  same fact. Absent a calibration record, a verdict claim that contradicts the
+  verdict artifact remains contradicted.
 - Cite only sources the run actually produced. There is no generic "run
   manifest" source: when an artifact was not produced, say so in a note without
   inventing a citation for it.

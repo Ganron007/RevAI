@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import sys
 import time
@@ -1800,10 +1801,30 @@ _CLAIM_REVIEW_TOOL = {
 }
 
 
+def _load_verdict_calibration(root) -> dict | None:
+    """The case's publish-verdict calibration record, if any (RC-04b option b)."""
+    try:
+        path = Path(root) / "verdict-calibration.json"
+        if not path.is_file():
+            return None
+        cal = json.loads(path.read_text(encoding="utf-8"))
+        if isinstance(cal, dict) and cal.get("to") and cal.get("from"):
+            return cal
+    except Exception:
+        pass
+    return None
+
+
 def _semantic_review_batch(batch: list[dict], *,
                            review_context: dict | None = None,
-                           methodology_block: str = "") -> dict:
-    """Ask the configured model to judge claims against exact, source-bound rows."""
+                           methodology_block: str = "",
+                           budget_s: int | None = None) -> dict:
+    """Ask the configured model to judge claims against exact, source-bound rows.
+
+    `budget_s` is the WALL-CLOCK deadline for the whole batch (RC-09): llm_judge
+    enforces it across its internal retry attempts, so one stalled batch cannot
+    consume 3 attempts x 600 s of the audit stage.
+    """
     from v2_lib import llm_judge
 
     review_input = []
@@ -1849,7 +1870,7 @@ def _semantic_review_batch(batch: list[dict], *,
             # but transient HTTP 5xx/transport failures and Agnes aborts should
             # use the client's bounded retry budget without disabling Thinking.
             prompt, max_retries=3, timeout_s=600, max_tokens_override=8192,
-            temperature_override=0.0,
+            temperature_override=0.0, budget_s=budget_s,
             tools=[_CLAIM_REVIEW_TOOL],
             tool_choice={"type": "function", "function": {
                 "name": "submit_claim_reviews"}},
@@ -2110,6 +2131,27 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
             else:
                 for evidence_index, evidence_item in enumerate(grounded, 1):
                     evidence_item["evidence_id"] = f"E{evidence_index:03d}"
+                # RC-04b (option b): a recorded publish calibration is
+                # legitimate publish-layer relabelling. A verdict claim that
+                # cites the raw triage row also receives the calibration
+                # record as evidence, so the reviewer can tell a calibrated
+                # label from a fabricated one (the methodology skill v3
+                # governs the decision).
+                if any(str(c.get("query") or "").endswith("verdict.json")
+                       for c in citations):
+                    _cal = _load_verdict_calibration(root)
+                    if _cal:
+                        grounded.append({
+                            "evidence_id": "CAL", "artifact":
+                                "verdict-calibration.json",
+                            "json_path": "$", "source":
+                                "verdict-calibration.json",
+                            "query": "verdict-calibration.json", "row": "$.to",
+                            "excerpt": (
+                                f"published verdict calibrated from "
+                                f"{_cal.get('from')} to {_cal.get('to')}: "
+                                f"{_cal.get('reason')}"),
+                        })
                 review_item = {
                     "id": "claim-" + hashlib.sha256(json.dumps(
                         {"text": _norm(claim["text"]), "citations": citations,
@@ -2135,10 +2177,21 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
                     pending.append(review_item)
 
     review_error = None
+    failed_batches: list[int] = []
+    last_batch_error = ""
+    # RC-09: one batch used to have NO overall budget (3 attempts x 600 s of
+    # llm_judge), so a stalled batch could consume ~30 minutes of the audit
+    # stage. The batch now carries its own wall-clock budget; llm_judge
+    # enforces it across its internal attempts.
+    try:
+        batch_budget_s = max(30, int(os.environ.get(
+            "REVAI_REVIEW_BATCH_BUDGET_S", "300") or "300"))
+    except (TypeError, ValueError):
+        batch_budget_s = 300
     if semantic_reviewer is None:
         reviewer = lambda batch: _semantic_review_batch(
             batch, review_context=analysis_identity,
-            methodology_block=review_methodology)
+            methodology_block=review_methodology, budget_s=batch_budget_s)
     else:
         reviewer = semantic_reviewer
     review_attempts: list[dict] = []
@@ -2148,10 +2201,16 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
         batch_index = offset // 12 + 1
         started = time.monotonic()
         print(f"[report_entailment] batch={batch_index}/{batch_total} "
-              f"claims={len(batch)} started", file=sys.stderr, flush=True)
+              f"claims={len(batch)} started (budget {batch_budget_s}s)",
+              file=sys.stderr, flush=True)
         response: dict = {}
         try:
             response = reviewer(batch)
+            elapsed_probe = time.monotonic() - started
+            if batch_budget_s and elapsed_probe > batch_budget_s:
+                raise TimeoutError(
+                    f"claim-review batch exceeded its {batch_budget_s}s "
+                    f"wall-clock budget ({elapsed_probe:.0f}s)")
             raw_reviews = response.get("reviews") if isinstance(response, dict) else None
             if not isinstance(raw_reviews, list):
                 raise ValueError("review response has no reviews list")
@@ -2248,33 +2307,39 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
                     file=sys.stderr, flush=True,
                 )
         except Exception as exc:
-            review_error = f"semantic review unavailable: {type(exc).__name__}: {exc}"
             elapsed = round(time.monotonic() - started, 3)
             metadata = (response.get("_review_metadata") if isinstance(response, dict)
                         else None) or getattr(exc, "review_metadata", {})
+            reason = f"claim-review batch failed: {type(exc).__name__}: {exc}"
             review_attempts.append({
                 "batch": batch_index,
                 "claim_ids": [item["id"] for item in batch],
                 "elapsed_seconds": elapsed,
                 **(metadata if isinstance(metadata, dict) else {}),
-                "error": review_error,
+                "error": reason,
             })
+            # RC-09 (operator decision 2026-10-25: skip and continue): a failed
+            # batch records ITS claims as not-reviewed and the review CONTINUES
+            # with the remaining batches. Unreviewed never counts as supported,
+            # so the run stays red with a per-claim reason -- but one stalled
+            # batch can no longer discard every completed batch and abort the
+            # whole review (run 13388b1f lost its entire audit that way; the
+            # bounded retries are llm_judge's internal attempts under the
+            # batch's wall-clock budget).
             for item in batch:
                 for reference in item["references"]:
-                    results.append({"report": reference["report"],
-                                    "claim": reference["claim"][:240],
-                                    "status": "verification-error", "reason": review_error})
-            remaining = pending[offset + len(batch):]
-            for item in remaining:
-                for reference in item["references"]:
-                    results.append({"report": reference["report"],
-                                    "claim": reference["claim"][:240],
-                                    "status": "not-reviewed",
-                                    "reason": "review stopped after the first invalid batch response"})
+                    results.append({
+                        "report": reference["report"],
+                        "claim": reference["claim"][:240],
+                        "status": "not-reviewed",
+                        "reason": reason[:500],
+                    })
+            failed_batches.append(batch_index)
+            last_batch_error = reason
             print(f"[report_entailment] batch={batch_index}/{batch_total} "
-                  f"failed after {elapsed:.1f}s; stopping fail-closed",
-                  file=sys.stderr, flush=True)
-            break
+                  f"failed after {elapsed:.1f}s; {len(batch)} claim(s) marked "
+                  f"not-reviewed, continuing", file=sys.stderr, flush=True)
+            continue
 
         elapsed = round(time.monotonic() - started, 3)
         metadata = (response.get("_review_metadata") if isinstance(response, dict)
@@ -2352,6 +2417,13 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
     # A report set can be incomplete even when every extant file has valid
     # provenance. Preserve that distinction: review what exists, but make an
     # absent expected output an explicit fail-closed quality violation.
+    if failed_batches:
+        not_reviewed = sum(1 for item in results
+                           if item["status"] == "not-reviewed")
+        review_error = (
+            f"{len(failed_batches)} of {batch_total} claim-review batches "
+            f"failed; {not_reviewed} claim(s) not-reviewed "
+            f"(last error: {last_batch_error})")
     for rel in missing_expected_reports:
         results.append({
             "report": Path(rel).name,

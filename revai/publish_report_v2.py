@@ -1362,6 +1362,88 @@ def build_deterministic_technical(
     return "\n".join(parts)
 
 
+def _authorize_republish(case: Path, manifest_digest: str) -> dict | None:
+    """Validate the persisted provider-stub failure record for ONE republish.
+
+    RC-16: the authorization exists, records the provider-stub class, carries
+    the SAME report-input manifest digest (evidence unchanged), and has not
+    been consumed. Consuming happens immediately on authorization — a
+    republish that crashes has still used its one shot.
+    """
+    try:
+        path = Path(case) / "publish-failure.json"
+        if not path.is_file():
+            return None
+        record = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    if not isinstance(record, dict) or record.get("schema") != "publish-failure/v1":
+        return None
+    if record.get("class") != "provider-stub":
+        return None
+    if int(record.get("republish_count") or 0) > 0:
+        return None
+    if str(record.get("manifest_sha256") or "") != str(manifest_digest):
+        return None
+    record["republish_count"] = 1
+    record["republished_at"] = datetime.now(timezone.utc).isoformat()
+    try:
+        (Path(case) / "publish-failure.json").write_text(
+            json.dumps(record, indent=2), encoding="utf-8")
+    except OSError:
+        return None
+    return record
+
+
+def _record_publish_failure(
+    case: Path,
+    manifest_digest: str,
+    *,
+    master_stubs: list,
+    master_missing: list,
+    tech_stubs: list,
+    lock_ok: bool,
+    source: str,
+) -> None:
+    """Persist the publish failure with its class, for the RC-16 republish gate.
+
+    The provider-stub class is the ONLY republish-authorized failure: missing
+    or stubbed sections caused by provider 5xx/empty responses while the
+    verdict lock was green. A prior consumed republish count is carried
+    forward so a repeated stub failure cannot mint a fresh authorization.
+    """
+    stub_shaped = bool(master_stubs or tech_stubs or source == "llm_incomplete")
+    failure_class = "provider-stub" if (stub_shaped and lock_ok) else "other"
+    prior_count = 0
+    try:
+        path = Path(case) / "publish-failure.json"
+        if path.is_file():
+            prior = json.loads(path.read_text(encoding="utf-8"))
+            if isinstance(prior, dict):
+                prior_count = int(prior.get("republish_count") or 0)
+    except (OSError, json.JSONDecodeError, TypeError, ValueError):
+        prior_count = 0
+    record = {
+        "schema": "publish-failure/v1",
+        "class": failure_class,
+        "manifest_sha256": manifest_digest,
+        "master_stubs": list(master_stubs)[:12],
+        "master_missing": list(master_missing)[:12],
+        "tech_stubs": list(tech_stubs)[:12],
+        "publish_source": source,
+        "verdict_lock_ok": bool(lock_ok),
+        "republish_count": prior_count,
+        "ts": datetime.now(timezone.utc).isoformat(),
+    }
+    try:
+        (Path(case) / "publish-failure.json").write_text(
+            json.dumps(record, indent=2), encoding="utf-8")
+        print(f"[publish_report_v2] publish failure recorded: class="
+              f"{failure_class} republish_count={prior_count}", flush=True)
+    except OSError:
+        pass
+
+
 def main():
     env_info = ensure_pipeline_runtime_env()
     print(f"[publish_report_v2] runtime env: model={os.environ.get('REVAI_LLM_MODEL', '')}", flush=True)
@@ -1374,6 +1456,15 @@ def main():
              "groups. Kept for comparison only: a single call cannot exceed the "
              "per-request budget allows, comes back truncated, "
              "and cannot complete for a large sample.",
+    )
+    ap.add_argument(
+        "--republish-stub", action="store_true",
+        help="RC-16 (operator decision 2026-10-25): authorize ONE explicit "
+             "re-run of this publish stage on UNCHANGED evidence after a "
+             "provider-stub failure. Requires publish-failure.json to record "
+             "the provider-stub class and the same report-input manifest "
+             "digest; the authorization is consumed by the attempt and the "
+             "republish is recorded in the report JSON audit trail.",
     )
     args = ap.parse_args()
 
@@ -1541,6 +1632,27 @@ def main():
     assert_report_input_manifest(manifest, required_report_inputs)
     validate_report_input_manifest(manifest, args.sha256, context, case)
     manifest_digest = report_input_manifest_digest(manifest)
+
+    # RC-16 (operator decision 2026-10-25: allow a narrow republish): an
+    # explicit single-stage re-run is permitted ONLY on unchanged evidence
+    # after a provider-stub-class failure, once. Everything else about the
+    # report-stage freeze is unchanged.
+    republish_record = None
+    if args.republish_stub:
+        republish_record = _authorize_republish(case, manifest_digest)
+        if republish_record is None:
+            print(
+                "[publish_report_v2] republish denied: publish-failure.json "
+                "must exist, record the provider-stub class, carry the SAME "
+                "report-input manifest digest, and not have been consumed yet",
+                flush=True,
+            )
+            sys.exit(1)
+        print(
+            f"[publish_report_v2] republish authorized: attempt 2 of 1 "
+            f"(provider-stub class, manifest {manifest_digest[:12]}...)",
+            flush=True,
+        )
     source_evidence = format_report_source_evidence(case, manifest)
     session["_report_provenance_block"] = format_report_input_manifest(manifest)
     session["_report_input_manifest_sha256"] = manifest_digest
@@ -1932,7 +2044,41 @@ def main():
         )
         report["publish_llm_verdict_raw"] = _pcal.get("raw")
         pub_claimed = _pcal.get("verdict")
-    lock = cross_stage_verdict_lock(pub_claimed, quick_verdict=quick_v, deep_verdict=deep_v)
+        # RC-04b (option b, operator decision 2026-10-25): the calibrated label
+        # is the verdict-of-record. Print it into the report so the published
+        # markdown says what the lock compares against, persist it for the v3
+        # stage, and keep the raw triage label on record upstream. The
+        # annotation is the FIRST explicit verdict sentence, so re-derivation
+        # reads the published label.
+        cal_note = (
+            "> **[Verdict calibration]** The published verdict for this sample "
+            f"is **{pub_claimed}**. The raw publish-model claim "
+            f"({_pcal.get('raw')}) was calibrated to {pub_claimed}: "
+            f"{_pcal.get('reason')} The raw pipeline-selected label remains "
+            "recorded in verdict.json and the publish record.\n"
+        )
+        _md_lines = md.splitlines(keepends=True)
+        if _md_lines:
+            _head = _md_lines[0]
+            if not _head.endswith("\n"):
+                _head += "\n"
+            md = _head + "\n" + cal_note + "".join(_md_lines[1:])
+        else:
+            md = cal_note
+        report["verdict_calibration"] = {
+            "from": _pcal.get("raw"), "to": pub_claimed,
+            "reason": _pcal.get("reason"),
+        }
+        try:
+            _cal_path = case / "verdict-calibration.json"
+            _cal_path.write_text(json.dumps(
+                report["verdict_calibration"], indent=2), encoding="utf-8")
+        except OSError as _cal_exc:
+            print(f"[publish_report_v2] verdict-calibration.json unwritable: "
+                  f"{_cal_exc}", flush=True)
+    lock = cross_stage_verdict_lock(
+        pub_claimed, quick_verdict=quick_v, deep_verdict=deep_v,
+        published_verdict=infer_publish_verdict_from_markdown(md))
     report["quick_verdict"] = quick_v
     report["deep_verdict"] = deep_v
     report["publish_llm_verdict"] = pub_claimed
@@ -1965,6 +2111,14 @@ def main():
     report["verdict"] = final_v  # backward-compat machine field = final locked
     report["verdict_lock"] = lock
     report["markdown"] = md
+    if isinstance(verdict, dict) and final_v and final_v != quick_v:
+        # RC-04b (option b): the calibrated label is the verdict-of-record for
+        # every downstream report this process still writes (the technical
+        # report), so the report set agrees and the cross-report gate compares
+        # like with like. The raw label stays in verdict.json on disk, in
+        # report["quick_verdict"] and in the calibration record.
+        verdict["calibrated_from"] = quick_v
+        verdict["verdict"] = final_v
 
     report["provenance"] = revai_provenance(args.sha256)
     report.update({
@@ -2361,10 +2515,15 @@ def main():
         tech_md = attach_what_we_dont_know(tech_md, args.sha256,
                                            scan_text=_report_scan_text,
                                            pack=dynamic_pack)
+        # RC-04b (option b): when calibration moved the published label, the
+        # technical report is locked to the SAME verdict-of-record, not to the
+        # raw triage label — the report set must agree. With no calibration
+        # this is exactly the legacy comparison.
+        _expected_verdict = (verdict or {}).get("verdict") or quick_v
         tech_verdict_lock = cross_stage_verdict_lock(
             infer_publish_verdict_from_markdown(tech_md),
-            quick_verdict=quick_v,
-            deep_verdict=deep_v,
+            quick_verdict=_expected_verdict,
+            deep_verdict=deep_v if _expected_verdict == quick_v else None,
         )
         technical_report["verdict_lock"] = tech_verdict_lock
         technical_report["markdown"] = tech_md
@@ -2429,6 +2588,13 @@ def main():
         verdict_lock=lock,
     )
     report["quality"] = q_master
+    if republish_record is not None:
+        # RC-16: the republish is part of the report's own audit trail.
+        report["republish"] = {
+            "authorized": "provider-stub",
+            "manifest_sha256": manifest_digest,
+            "republished_at": republish_record.get("republished_at"),
+        }
     json_path.write_text(json.dumps(report, indent=2))
 
     tech_ok = True
@@ -2460,6 +2626,16 @@ def main():
         f"tech_source={(locals().get('technical_report') or {}).get('source')}",
         flush=True,
     )
+    if not ok:
+        _record_publish_failure(
+            case, manifest_digest,
+            master_stubs=master_stubs,
+            master_missing=master_missing,
+            tech_stubs=(locals().get("tech_stubs") or [])
+            if args.template == "full" else [],
+            lock_ok=bool(lock.get("ok", False)),
+            source=str(report.get("source") or ""),
+        )
     sys.exit(0 if ok else 1)
 
 

@@ -351,3 +351,111 @@ def test_a_table_at_the_end_of_a_section_is_accepted():
     doc["sections"][0]["blocks"].append(_table(["a", "b"]))
     errors = validate_report_document(doc)
     assert not errors, errors
+
+
+# --- RC-18: disassembly belongs in `code` blocks, and listing lines that leak
+# outside a fence are source material, not uncited claims ---------------------
+
+def _code_block(text, language="r2"):
+    return {"kind": "code", "text": text, "language": language}
+
+
+R2_LISTING = (
+    "│ 0x0042419b 60 pushal\n"
+    "│ 0x0042419c 61 popal\n"
+    "┌ 37: entry0 ();\n"
+)
+
+
+def test_an_observation_cannot_carry_a_disassembly_listing():
+    doc = _doc(_observation(
+        "The unpacked entry point is 0x8320.\n" + R2_LISTING))
+    errors = validate_report_document(doc)
+    assert any("code" in error and "listing" in error.lower()
+               for error in errors), errors
+
+
+def test_the_same_listing_in_a_code_block_is_accepted():
+    doc = _doc(
+        _observation("The unpacked entry point is 0x8320."),
+        _code_block(R2_LISTING),
+    )
+    assert validate_report_document(doc) == []
+
+
+def test_plain_prose_with_an_address_is_not_rejected():
+    doc = _doc(_observation(
+        "0x401000 is the entry point; 0x8320 (33440) is the packed entry."))
+    assert validate_report_document(doc) == []
+
+
+def test_listing_lines_outside_a_fence_are_not_uncited_claims():
+    markdown = (
+        "## 6. Unpacking\n\n"
+        "┌ 37: entry0 ();\n"
+        "│ 0x0042419b 60 pushal\n"
+        "0x0042419c 61 popal\n"
+        "\n"
+        "The unpacked entry point is 0x8320.\n"
+    )
+    claims = uncited_report_claims(markdown)
+    assert claims == ["The unpacked entry point is 0x8320."], claims
+
+
+def test_a_listing_inside_a_fence_is_still_excluded():
+    markdown = (
+        "## 6. Unpacking\n\n"
+        "```\n" + R2_LISTING + "```\n"
+        "\n"
+        "The unpacked entry point is 0x8320.\n"
+    )
+    assert uncited_report_claims(markdown) == [
+        "The unpacked entry point is 0x8320."]
+
+
+# --- RC-19: a multi-cell row must cite the ROW locator, not a leaf field -----
+
+def _row(cells, row_or_rule, source="yara", query="deep_dive/01-tools-raw.json"):
+    return {"cells": cells, "source": source, "query_or_table": query,
+            "row_or_rule": row_or_rule}
+
+
+def test_a_multi_cell_row_cannot_cite_a_leaf_of_an_indexed_row():
+    doc = _doc({
+        "kind": "table",
+        "columns": ["Rule", "String", "Offset", "Hits"],
+        "rows": [_row(["keylogger", "$f1", "158640", "10"],
+                      "$.yara.matches[10].strings[0]")],
+    })
+    errors = validate_report_document(doc)
+    assert any("ROW locator" in error for error in errors), errors
+
+
+def test_the_same_row_citing_the_row_locator_is_accepted():
+    doc = _doc({
+        "kind": "table",
+        "columns": ["Rule", "String", "Offset", "Hits"],
+        "rows": [_row(["keylogger", "$f1", "158640", "10"],
+                      "$.yara.matches[10]")],
+    })
+    assert validate_report_document(doc) == []
+
+
+def test_a_two_cell_row_citing_a_document_root_is_accepted():
+    """verdict.json's row IS `$.verdict`; the rule targets indexed leaves."""
+    doc = _doc({
+        "kind": "table",
+        "columns": ["Field", "Value"],
+        "rows": [_row(["Report verdict", "malicious"], "$.verdict",
+                      source="verdict", query="verdict.json")],
+    })
+    assert validate_report_document(doc) == []
+
+
+def test_a_single_cell_row_may_still_cite_a_leaf():
+    doc = _doc({
+        "kind": "table",
+        "columns": ["Matched string"],
+        "rows": [_row(["$f1"], "$.yara.matches[10].strings[0]")],
+    })
+    assert validate_report_document(doc) == []

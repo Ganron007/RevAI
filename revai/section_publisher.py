@@ -340,8 +340,13 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
                      if isinstance(quick_result, dict) else None)
     deep_verdict = (deep_result.get("verdict")
                     if isinstance(deep_result, dict) else None)
+    # RC-04b: a recorded publish calibration overrides the raw triage labels
+    # for the verdict CONTROL only; evidence dicts are untouched.
+    _control_label = tools_results.get("_verdict_control_label")
     verdict_control = cross_stage_verdict_lock(
-        None, quick_verdict=quick_verdict, deep_verdict=deep_verdict)
+        None,
+        quick_verdict=_control_label or quick_verdict,
+        deep_verdict=None if _control_label else deep_verdict)
     locked_verdict = verdict_control.get("upstream") or "unknown"
     if locked_verdict != "unknown":
         evidence = (
@@ -1308,10 +1313,11 @@ def run_section_based_publish(sha: str, tools_results: dict,
     (out_dir / "02-REPORT-MASTER-v3.md").write_text(report_markdown)
     quick_verdict = (tools_results.get("verdict") or {}).get("verdict")
     deep_verdict = (tools_results.get("deep") or {}).get("verdict")
+    _control_label = tools_results.get("_verdict_control_label")
     master_verdict_lock = cross_stage_verdict_lock(
         infer_publish_verdict_from_markdown(report_markdown),
-        quick_verdict=quick_verdict,
-        deep_verdict=deep_verdict,
+        quick_verdict=_control_label or quick_verdict,
+        deep_verdict=None if _control_label else deep_verdict,
     )
     master_quality = evaluate_report_markdown(
         report_markdown,
@@ -1451,12 +1457,16 @@ def run_technical_publish(sha: str, tools_results: dict) -> dict:
         try:
             quick_result = tools_results.get("verdict")
             deep_result = tools_results.get("deep")
+            _control_label = tools_results.get("_verdict_control_label")
             verdict_control = cross_stage_verdict_lock(
                 None,
-                quick_verdict=(quick_result.get("verdict")
-                               if isinstance(quick_result, dict) else None),
+                quick_verdict=(
+                    _control_label
+                    or (quick_result.get("verdict")
+                        if isinstance(quick_result, dict) else None)),
                 deep_verdict=(deep_result.get("verdict")
-                              if isinstance(deep_result, dict) else None),
+                              if isinstance(deep_result, dict) else None)
+                if not _control_label else None,
             )
             tech_results, tech_md_built = generate_technical_sectionwise(
                 sha, technical_evidence,
@@ -1746,10 +1756,13 @@ def _finalize_technical(sha: str, technical_report: dict,
     if credential_categories:
         technical_report["credential_like_values_redacted"] = credential_categories
     technical_report["markdown"] = tech_md
+    _control_label = tools_results.get("_verdict_control_label")
     technical_verdict_lock = cross_stage_verdict_lock(
         infer_publish_verdict_from_markdown(tech_md),
-        quick_verdict=(tools_results.get("verdict") or {}).get("verdict"),
-        deep_verdict=(tools_results.get("deep") or {}).get("verdict"),
+        quick_verdict=(_control_label
+                       or (tools_results.get("verdict") or {}).get("verdict")),
+        deep_verdict=(tools_results.get("deep") or {}).get("verdict")
+        if not _control_label else None,
     )
     technical_report["verdict_lock"] = technical_verdict_lock
     q = evaluate_report_markdown(
@@ -1870,6 +1883,26 @@ if __name__ == "__main__":
     deep_raw.pop("_cadre_provenance", None)
     tools_results.update(quick_raw)
     tools_results.update(deep_raw)
+
+    # RC-04b (option b, operator decision 2026-10-25): a recorded publish
+    # calibration is the verdict-of-record for the v3 reports too, so the whole
+    # report set agrees. The raw triage labels stay untouched in
+    # verdict.json/deep-dive.json (they remain citable evidence); only the
+    # verdict CONTROL below reads the override.
+    try:
+        _cal_path = mode_dir / "verdict-calibration.json"
+        if not _cal_path.is_file():
+            _cal_path = case_dir(sha) / "verdict-calibration.json"
+        if _cal_path.is_file():
+            _cal = json.loads(_cal_path.read_text(encoding="utf-8"))
+            _cal_to = str(_cal.get("to") or "").strip()
+            if _cal_to:
+                tools_results["_verdict_control_label"] = _cal_to
+                print(f"[section_publisher] verdict calibration applied: "
+                      f"{_cal.get('from')} -> {_cal_to}", flush=True)
+    except (OSError, json.JSONDecodeError) as _cal_exc:
+        print(f"[section_publisher] verdict-calibration.json unreadable: "
+              f"{_cal_exc}", flush=True)
 
     from v2_lib import cross_stage_verdict_lock
     _quick_verdict = (verdict or {}).get("verdict")

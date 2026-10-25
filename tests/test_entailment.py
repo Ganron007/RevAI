@@ -586,7 +586,10 @@ def test_semantic_review_api_failure_is_not_a_pass(tmp_path):
         "a" * 64, case_root=case, semantic_reviewer=unavailable)
     assert result["ok"] is False
     assert result["status"] == "verification-error"
-    assert result["by_status"]["verification-error"] == 1
+    # RC-09: a failed batch marks ITS claims not-reviewed (the review now
+    # continues with later batches) instead of labelling them
+    # verification-error; the run still fails closed.
+    assert result["by_status"]["not-reviewed"] == 1
 
 
 def test_completed_semantic_review_is_cached_by_report_and_evidence_hash(tmp_path, monkeypatch):
@@ -890,3 +893,56 @@ def test_a_value_selector_that_matches_nothing_stays_unresolved(tmp_path):
         "row": '$.floss.strings["/api/heartbeat.php"]'}, case)
     assert located is None
     assert check["status"] == "unresolved-row", check
+
+
+def test_a_verdict_claim_also_receives_the_calibration_record(tmp_path):
+    """RC-04b (option b): a claim citing the raw triage row is reviewed with
+    the calibration record alongside it, so a calibrated published label is
+    distinguishable from a fabricated one."""
+    case = _case(
+        tmp_path,
+        {"REPORT-MASTER-v2.md":
+         "The published verdict for this sample is suspicious "
+         "(source: verdict, query_or_table: verdict.json, "
+         "row_or_rule: $.verdict)."},
+        {"verdict.json": json.dumps({"verdict": "malicious", "score": 90}),
+         "verdict-calibration.json": json.dumps({
+             "from": "malicious", "to": "suspicious",
+             "reason": "no behavioral-intent evidence"})})
+    seen = []
+
+    def reviewer(batch):
+        for item in batch:
+            seen.append(item)
+        return {"reviews": [{
+            "id": item["id"], "verdict": "insufficient", "evidence_ids": [],
+        } for item in batch]}
+
+    result = E.check_report_entailment(
+        "a" * 64, case_root=case, semantic_reviewer=reviewer, use_cache=False)
+    assert seen, result
+    evidence_ids = [row["evidence_id"] for row in seen[0]["evidence"]]
+    assert "CAL" in evidence_ids, evidence_ids
+    cal_row = next(row for row in seen[0]["evidence"]
+                   if row["evidence_id"] == "CAL")
+    assert "malicious to suspicious" in cal_row["excerpt"], cal_row
+
+
+def test_no_calibration_record_means_no_cal_row(tmp_path):
+    case = _case(
+        tmp_path,
+        {"REPORT-MASTER-v2.md":
+         "The published verdict for this sample is malicious "
+         "(source: verdict, query_or_table: verdict.json, "
+         "row_or_rule: $.verdict)."},
+        {"verdict.json": json.dumps({"verdict": "malicious", "score": 90})})
+
+    def reviewer(batch):
+        return {"reviews": [{
+            "id": item["id"], "verdict": "insufficient", "evidence_ids": [],
+        } for item in batch]}
+
+    result = E.check_report_entailment(
+        "a" * 64, case_root=case, semantic_reviewer=reviewer, use_cache=False)
+    for row in result["claims"]:
+        assert row.get("status") != "missing-citation", row

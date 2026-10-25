@@ -19,6 +19,7 @@ from typing import Any
 
 from citation_syntax import (
     has_citation_locator,
+    is_disassembly_listing_line,
     parse_citation_annotations,
     strip_citation_annotations,
 )
@@ -617,6 +618,28 @@ _DYN_EXECUTED_RE = re.compile(
     re.IGNORECASE,
 )
 
+#: RC-05: claims that attribute EXECUTION or OBSERVED BEHAVIOUR to the SAMPLE.
+#: These are fabrications whenever `any_dynamic_performed` is false, whatever
+#: the component statuses say -- the engine may have been invoked, but that
+#: never makes the sample executed. Kept to prose shapes (articles, subjects,
+#: counts) so honest table cells like "| Sample executed | no |" do not match;
+#: the after-match negation window also tolerates a leading table pipe now.
+_DYN_SAMPLE_EXECUTED_RE = re.compile(
+    r"(?:\bthe\s+(?:sample|specimen|binary|executable|malware)\s+"
+    r"(?:was\s+|is\s+)?(?:executed|run|ran|launched|detonated))"
+    r"|(?:\b(?:we|this\s+analysis|the\s+pipeline|the\s+orchestrator)\s+"
+    r"(?:executed|ran|launched|detonated)\s+the\s+(?:sample|specimen|binary))"
+    r"|(?:\bsample\s+launch\s+(?:was\s+)?confirmed)"
+    r"|(?:\b(?:runtime|dynamic|behavioral|behavioural)\s+"
+    r"(?:behaviou?r|events?|activity|traces?)\s+(?:was|were)\s+"
+    r"(?:observed|recorded|captured|collected))"
+    r"|(?:\bdetonation\s+(?:of\s+the\s+)?(?:sample|specimen)\s+"
+    r"(?:ran|completed|succeeded|produced))"
+    r"|(?:\bthe\s+(?:sample|specimen)\s+produced\s+\d+\s+"
+    r"(?:api\s+)?(?:calls?|events?))",
+    re.IGNORECASE,
+)
+
 #: A component can be truthfully described as having been INVOKED while it
 #: produced nothing. That is a status description, not a claim that the sample
 #: executed, and the sentence has to say so about the SAME component: "the
@@ -650,6 +673,43 @@ def _sentence_window_after(md: str, end: int, limit: int = 200) -> str:
         if char in ".!?\n":
             return tail[:i].lower()
     return tail.lower()
+
+
+def _emulation_null_result_nearby(md: str, start: int, end: int,
+                                  window: int = 2) -> bool:
+    """A null result for the EMULATION component within ±`window` sentences.
+
+    RC-05: the null result may live in the sentence AFTER the engine claim
+    ("Speakeasy emulation ran successfully (speakeasy_ok=true) against the
+    sample. The emulation stage recorded zero API calls."), which the
+    same-sentence-only rule flagged on run 65be0144. A neighbouring sentence
+    counts only when it names the emulation subject too, so a DIFFERENT
+    component's null result cannot excuse the engine sentence; the same
+    sentence needs no subject check because the match itself names it.
+    """
+    bounds: list[tuple[int, int]] = []
+    sentence_start = 0
+    for i, ch in enumerate(md):
+        if ch in ".!?\n":
+            bounds.append((sentence_start, i + 1))
+            sentence_start = i + 1
+    if sentence_start < len(md):
+        bounds.append((sentence_start, len(md)))
+    index = None
+    for i, (s, e) in enumerate(bounds):
+        if s <= start < e:
+            index = i
+            break
+    if index is None:
+        return False
+    for j in range(max(0, index - window),
+                   min(len(bounds), index + window + 1)):
+        text = md[bounds[j][0]:bounds[j][1]].lower()
+        if not any(marker in text for marker in _DYN_COMPONENT_ABSENCE_MARKERS):
+            continue
+        if j == index or _DYN_EMULATION_SUBJECT_RE.search(text):
+            return True
+    return False
 
 
 #: The verdict panel has two shapes: the legacy bold `**Final**` cell, and the
@@ -858,7 +918,7 @@ def _negation_window_before(md: str, start: int) -> str:
     return md[lb + 1:start].lower()
 
 
-def _affirmative_dynamic_claim(md: str) -> str | None:
+def _affirmative_dynamic_claim(md: str, dyn_status: dict | None = None) -> str | None:
     """The first dynamic-execution claim in `md` that is NOT negated.
 
     Returns the matched phrase, or None. A claim whose context negates it
@@ -870,33 +930,43 @@ def _affirmative_dynamic_claim(md: str) -> str | None:
     measured on msil_crypt_dotnet agentic 2026-10-13, where a report that
     correctly said "Frida instrumentation was not performed" was failed as
     a fabrication.
+
+    RC-05 redesign (status-driven, replacing the marker-list ladder):
+      * a claim that attributes execution or observed behaviour to the SAMPLE
+        is a fabrication whenever no dynamic analysis ran -- no component
+        status can make it true;
+      * an ENGINE-invocation sentence about the emulation component is judged
+        by the status contract: when the tool recorded `engine_ran=True`
+        (speakeasy_ok) the sentence is true about the TOOL and stands only if
+        the null result is stated in the same or a neighbouring (±2) sentence;
+        when `engine_ran=False` the sentence is a fabrication; unknown keeps
+        the honest-null allowance;
+      * every other mechanism claim (detonation, sandbox, Frida trace) either
+        happened or did not, so with `any_dynamic_performed=false` it stays
+        flagged.
     """
     if not md:
         return None
-    for m in _DYN_EXECUTED_RE.finditer(md):
-        window = _negation_window_before(md, m.start())
-        after = md[m.end():m.end() + 45].lstrip()
-        if any(neg in window for neg in _DYN_NEGATION_MARKERS):
-            continue
-        if _DYN_NEGATED_AFTER_RE.match(after):
-            continue
-        # A component can be truthfully described as INVOKED while it produced
-        # nothing, as long as the rest of the sentence says so about that same
-        # component: "the Speakeasy emulation ran and recorded zero API calls
-        # and zero key events, consistent with the emulation stage producing no
-        # oracle result". That is a status description, not a claim that the
-        # sample executed, and it is the truthful wording the prompt asks for.
-        # The allowance applies ONLY to the emulation component, which is the
-        # one that can be invoked and still produce no oracle result; a
-        # detonation or sandbox either ran or did not, so those claims stay
-        # flagged (2026-10-23/24: two master/technical reports were failed for
-        # truthful emulation sentences).
-        if _DYN_EMULATION_SUBJECT_RE.search(m.group(0)):
-            sentence_after = _sentence_window_after(md, m.end())
-            if any(marker in sentence_after
-                   for marker in _DYN_COMPONENT_ABSENCE_MARKERS):
+    emulation = ((dyn_status or {}).get("emulation") or {})
+    engine_ran = emulation.get("engine_ran")
+    for regex in (_DYN_SAMPLE_EXECUTED_RE, _DYN_EXECUTED_RE):
+        for m in regex.finditer(md):
+            window = _negation_window_before(md, m.start())
+            after = md[m.end():m.end() + 45].lstrip(" \t|*_")
+            if any(neg in window for neg in _DYN_NEGATION_MARKERS):
                 continue
-        return m.group(0).strip()
+            if _DYN_NEGATED_AFTER_RE.match(after):
+                continue
+            if _DYN_EMULATION_SUBJECT_RE.search(m.group(0)) \
+                    and regex is _DYN_EXECUTED_RE:
+                # The emulation allowance: a status description of the TOOL,
+                # never of the sample. See the docstring for the status rule.
+                if engine_ran is False:
+                    return m.group(0).strip()
+                if _emulation_null_result_nearby(md, m.start(), m.end()):
+                    continue
+                return m.group(0).strip()
+            return m.group(0).strip()
     return None
 
 
@@ -1090,8 +1160,10 @@ def _cross_report_consistency(
         # No dynamic analysis ran. An affirmative execution claim anywhere is a
         # fabrication; name the phrase and the ground truth. The claim must be
         # AFFIRMATIVE -- a negation ("no Frida trace was captured") is the
-        # honest statement this fix is meant to produce.
-        claim = _affirmative_dynamic_claim(all_md)
+        # honest statement this fix is meant to produce. The claim is judged
+        # against the component status (RC-05): engine-invocation sentences are
+        # evaluated against `engine_ran`, sample-attribution claims never pass.
+        claim = _affirmative_dynamic_claim(all_md, dyn_status or {})
         checks["dyn_executed_claim"] = bool(claim)
         if claim:
             gt = (f" (ground truth: {dyn_status.get('sentence')})"
@@ -1918,6 +1990,12 @@ def uncited_report_claims(markdown: str) -> list[str]:
 
         in_table = False
         if line.startswith("#") or line.startswith("<!--"):
+            continue
+        # RC-18: a disassembly listing that leaked outside a code fence is
+        # source material, not a narrative claim. The schema rejects such
+        # blocks at generation time; this keeps any that still slip through
+        # from inflating uncited_claims (run 65be0144: 12 listing lines).
+        if is_disassembly_listing_line(line):
             continue
         # Bold-only labels are markdown headings even when the author chose
         # not to use ``#`` syntax. Treating these as unsupported factual claims

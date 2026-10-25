@@ -42,3 +42,60 @@ def test_the_verdict_panel_wins_over_a_clearance_word_in_the_prose():
 def test_an_explicit_verdict_sentence_still_wins():
     md = "# Report\n\n**Verdict: SUSPICIOUS (score 30)**\n\n" + MASTER
     assert v2_lib.infer_publish_verdict_from_markdown(md) == "suspicious"
+
+
+# --- RC-17: a QUOTED discrepancy is not the report's own verdict -------------
+# Run 65be0144 (latent): the report contained "the same artifact's summary
+# text reads 'Verdict: SUSPICIOUS (score 58)'" while its own verdict was
+# malicious. The explicit-sentence regex can match the quoted text; only the
+# accident of the own sentence appearing first kept the result correct.
+
+QUOTED_DISCREPANCY = (
+    "# Cross-Check\n\nThe same artifact's summary text reads "
+    "'Verdict: SUSPICIOUS (score 58)', which differs from this analysis.\n\n"
+)
+
+
+def test_quoted_discrepancy_loses_to_the_reports_own_statement():
+    md = QUOTED_DISCREPANCY + MASTER
+    assert v2_lib.infer_publish_verdict_from_markdown(md) == "malicious"
+
+
+def test_quoted_discrepancy_after_the_own_statement_is_ignored():
+    md = MASTER + "\n## Appendix\n\n" + QUOTED_DISCREPANCY
+    assert v2_lib.infer_publish_verdict_from_markdown(md) == "malicious"
+
+
+def test_metalinguistic_prefix_classification():
+    f = v2_lib._verdict_match_is_metalinguistic
+    # Reported speech, quote opened before the verdict phrase.
+    assert f("The same artifact's summary text reads 'Verdict: SUSPICIOUS'", 41)
+    # Double-quoted variant.
+    assert f('The summary states "Verdict: SUSPICIOUS"', 21)
+    # Reporting verb with "the" between it and the phrase.
+    assert f("The analyst's note says the verdict is suspicious", 28)
+    # The RC-04 own-statement shape stays accepted (quote opens after "is").
+    assert not f("The triage verdict for this sample is 'malicious'", 0)
+    # A reporting verb followed by a comma is not immediately adjacent.
+    assert not f("As the evidence shows, the verdict is malicious", 27)
+    # An apostrophe inside a possessive is not a quote opener.
+    assert not f("The analyst's note: the verdict is malicious", 25)
+    # Empty prefix.
+    assert not f("Verdict: malicious", 0)
+
+
+def test_the_calibration_annotation_is_the_published_verdict():
+    """RC-04b (option b): the annotation is the FIRST explicit verdict
+    sentence, so re-derivation reads the calibrated label even when the body
+    still narrates the raw triage verdict."""
+    md = (
+        "# REPORT-MASTER-v2\n\n"
+        "> **[Verdict calibration]** The published verdict for this sample "
+        "is **suspicious**. The raw publish-model claim (malicious) was "
+        "calibrated to suspicious: protection/obfuscation signals present "
+        "but no behavioral-intent evidence. The raw pipeline-selected label "
+        "remains recorded in verdict.json and the publish record.\n\n"
+        "## Executive Summary\n\n"
+        "The triage verdict for this sample is 'malicious' with a score of 90.\n"
+    )
+    assert v2_lib.infer_publish_verdict_from_markdown(md) == "suspicious"
