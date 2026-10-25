@@ -617,8 +617,58 @@ _DYN_EXECUTED_RE = re.compile(
     re.IGNORECASE,
 )
 
+#: A component can be truthfully described as having been INVOKED while it
+#: produced nothing. That is a status description, not a claim that the sample
+#: executed, and the sentence has to say so about the SAME component: "the
+#: Speakeasy emulation ran and recorded zero API calls" is honest; "the WinRE
+#: detonation ran and no packet capture was produced" claims the detonation
+#: while only a DIFFERENT component is absent, so it is still a run claim.
+_DYN_COMPONENT_ABSENCE_MARKERS = (
+    "zero api", "zero call", "zero event", "zero key event", "no oracle result",
+    "produced no oracle", "produced no result", "produced no api",
+    "produced no key", "recorded no api", "recorded no call",
+    # Reports write the same fact with digits ("recorded 0 API calls and 0 key
+    # events"), which the word-only list missed on 2026-10-24 and failed a
+    # truthful sentence a second time.
+    " 0 api", " 0 call", " 0 event", " 0 key event", "recorded 0",
+    "no api call", "no key event",
+)
+
+#: Only an EMULATOR can be invoked and produce nothing: Speakeasy starts, runs
+#: the sample under emulation, and may reach no oracle result. A detonation,
+#: sandbox run or packet capture either happened or did not, so "the detonation
+#: ran and recorded 0 events" is still a claim that the sample executed and is
+#: deliberately NOT covered by the allowance above.
+_DYN_EMULATION_SUBJECT_RE = re.compile(
+    r"emulat|speakeasy|oracle", re.IGNORECASE)
+
+
+def _sentence_window_after(md: str, end: int, limit: int = 200) -> str:
+    """The rest of the current sentence after `end`, lowercased and bounded."""
+    tail = md[end:end + limit]
+    for i, char in enumerate(tail):
+        if char in ".!?\n":
+            return tail[:i].lower()
+    return tail.lower()
+
+
+#: The verdict panel has two shapes: the legacy bold `**Final**` cell, and the
+#: claim-level schema's plain `| Verdict | malicious | ... |` table row (the
+#: renderer emits the table, so the cell is not bold). The second shape is
+#: what the schema-authored master report carries, and reading it is what
+#: stopped a report whose prose said "a benign reading cannot stand" from
+#: being read as a 'benign' report (2026-10-21: a false
+#: `master_tech_verdict_mismatch`).
+#: The verdict panel has two shapes: the legacy bold `**Final**` cell, and the
+#: claim-level schema's plain `| Verdict | malicious | ... |` table row (the
+#: renderer emits the table, so the cell is not bold). The second shape is
+#: what the schema-authored master report carries, and reading it is what
+#: stopped a report whose prose said "a benign reading cannot stand" from
+#: being read as a 'benign' report (2026-10-21: a false
+#: `master_tech_verdict_mismatch`).
 _VERDICT_PANEL_RE = re.compile(
-    r"\|\s*\*\*Final\*\*\s*\|\s*\*+([^*|]+?)\*+\s*\|",
+    r"\|\s*\*\*Final\*\*\s*\|\s*\*+([^*|]+?)\*+\s*\|"
+    r"|\|\s*\**Verdict\**\s*\|\s*\**([^*|]+?)\**\s*\|",
     re.IGNORECASE,
 )
 
@@ -765,7 +815,10 @@ def _entropy_claim_violations(md: str, file_entropy: float) -> list[str]:
 
 def _panel_final_verdict(md: str) -> str:
     m = _VERDICT_PANEL_RE.search(md or "")
-    return (m.group(1) or "").strip().lower() if m else ""
+    if not m:
+        return ""
+    value = m.group(1) if m.group(1) is not None else m.group(2)
+    return (value or "").strip().strip("*").strip().lower()
 
 
 # Words that make a dynamic-execution phrase a NEGATION rather than a claim.
@@ -827,6 +880,22 @@ def _affirmative_dynamic_claim(md: str) -> str | None:
             continue
         if _DYN_NEGATED_AFTER_RE.match(after):
             continue
+        # A component can be truthfully described as INVOKED while it produced
+        # nothing, as long as the rest of the sentence says so about that same
+        # component: "the Speakeasy emulation ran and recorded zero API calls
+        # and zero key events, consistent with the emulation stage producing no
+        # oracle result". That is a status description, not a claim that the
+        # sample executed, and it is the truthful wording the prompt asks for.
+        # The allowance applies ONLY to the emulation component, which is the
+        # one that can be invoked and still produce no oracle result; a
+        # detonation or sandbox either ran or did not, so those claims stay
+        # flagged (2026-10-23/24: two master/technical reports were failed for
+        # truthful emulation sentences).
+        if _DYN_EMULATION_SUBJECT_RE.search(m.group(0)):
+            sentence_after = _sentence_window_after(md, m.end())
+            if any(marker in sentence_after
+                   for marker in _DYN_COMPONENT_ABSENCE_MARKERS):
+                continue
         return m.group(0).strip()
     return None
 
@@ -1245,7 +1314,13 @@ def evaluate_sha_publish_quality(logs_dir: Path, sha: str, *,
     checks["claim_entailment"] = _ent
     if not _ent.get("ok"):
         _ent_status = str(_ent.get("status") or "failed")
-        issues.append(f"claim_entailment:{_ent_status}")
+        # Name the actual cause in the ISSUE, not only inside the artifact: a
+        # reviewer failure and a genuine claim failure are different problems,
+        # and the audit summary is what an operator reads first (2026-10-24).
+        _ent_reason = str(_ent.get("review_error") or _ent.get("reason") or "")[:200]
+        issues.append(
+            f"claim_entailment:{_ent_status}"
+            + (f": {_ent_reason}" if _ent_reason else ""))
         for _v in (_ent.get("violations") or [])[:20]:
             issues.append(f"entailment:{_v.get('status')}:"
                           f"{str(_v.get('claim'))[:120]}")
@@ -2064,7 +2139,17 @@ def _hash_mention_is_report_metadata(
             explicitly_labelled = bool(re.search(
                 r"\b(?:attested|report[- ]input|input|evidence|source)\s+artifact\b"
                 r"|\bartifact\s+(?:sha-?256|digest|hash)\b"
-                r"|\b(?:sha-?256|digest|hash)\b.{0,80}\b(?:artifact|file)\b",
+                r"|\b(?:sha-?256|digest|hash)\b.{0,80}\b(?:artifact|file)\b"
+                # The report-input manifest table renders rows as
+                # `| artifact | digest | size | attested | (source: manifest,
+                # query_or_table: revai-report-input-manifest/v1,
+                # row_or_rule: $.artifacts[N]) |`.  These are run provenance
+                # rows, not sample indicators. Keep the exemption tied to the
+                # manifest citation, not merely to the word "attested".
+                r"|\b(?:attested|manifest|artifact)\b.{0,140}\b"
+                r"(?:revai-report-input-manifest|source:\s*manifest"
+                r"|query_or_table:\s*manifest|\$\.artifacts\[\d+\])"
+                r"|\$\.artifacts\[\d+\]",
                 folded,
             ))
         else:

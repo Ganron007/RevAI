@@ -1,4 +1,5 @@
 """The claim-level report schema must make citation coverage structural."""
+import json
 import sys
 from pathlib import Path
 
@@ -163,3 +164,190 @@ def test_tool_schema_requires_sections_and_citation_rows():
     row = block["items"]["properties"]["rows"]["items"]
     assert set(row["required"]) == {
         "cells", "source", "query_or_table", "row_or_rule"}
+
+def test_compound_and_prose_jsonpaths_are_rejected_at_the_schema_boundary():
+    for row in (
+        "$.malcat.views.imports and $.capa.top_rules",
+        "$.malcat.views.imports, $.capa.top_rules",
+        "$.malcat.views.imports; $.capa.top_rules",
+        "$.malcat.views.imports (no WinInet entries)",
+        "$.status.packet_capture.present=false, files=0",
+    ):
+        errors = validate_report_document(_doc(_observation(row=row)))
+        assert any("row_or_rule must be one exact" in error for error in errors), (
+            row, errors)
+
+
+def test_exact_filter_range_assignment_and_named_bracket_locators_are_accepted():
+    for row in (
+        "$.malcat.views.imports[ea=1..3].name",
+        "$.malcat.views.imports[ea=1,3].name",
+        "$.malcat.views.imports[54..56].name",
+        "$.malcat.file_summary.metadata[VersionInfo::OriginalFilename]",
+        "$.packer.sections[UPX1]",
+        "$.status.packet_capture.present=false",
+        "$.function_results[?(@.function_address==\"5368798524\")].function_name",
+        "$text",
+    ):
+        errors = validate_report_document(_doc(_observation(row=row)))
+        assert not errors, (row, errors)
+
+
+def test_sections_returned_as_a_json_string_are_recovered():
+    """The provider sometimes returns `sections` as a JSON string.
+
+    Measured 2026-10-21 on a real run: a master section was lost entirely
+    because the container was a string even though the content was complete
+    and correctly cited. The container is coerced; the CONTENT is still
+    validated by exactly the same rules.
+    """
+    section = {
+        "heading": "1. Sample Identification",
+        "blocks": [_observation()],
+    }
+    doc = {"sections": json.dumps([section])}
+    errors = validate_report_document(doc)
+    assert not errors, errors
+    markdown = render_report_document(doc, heading_level=1)
+    assert "1. Sample Identification" in markdown
+
+
+def test_sections_returned_double_wrapped_in_an_object_are_recovered():
+    """`{"title": ..., "sections": [...]}` is the document nested one level deep."""
+    section = {
+        "heading": "1. Sample Identification",
+        "blocks": [_observation()],
+    }
+    doc = {"sections": {"title": "RE Report", "sections": [section]}}
+    errors = validate_report_document(doc)
+    assert not errors, errors
+    markdown = render_report_document(doc, heading_level=1)
+    assert "1. Sample Identification" in markdown
+
+
+def test_a_single_section_object_is_treated_as_a_one_section_document():
+    section = {
+        "heading": "1. Sample Identification",
+        "blocks": [_observation()],
+    }
+    doc = {"sections": section}
+    errors = validate_report_document(doc)
+    assert not errors, errors
+    assert "1. Sample Identification" in render_report_document(doc, heading_level=1)
+
+
+def test_the_container_error_names_the_shape_that_was_actually_returned():
+    """The correction pass can only fix what the error names."""
+    errors = validate_report_document({"sections": "not-an-array"})
+    assert errors
+    assert "JSON STRING" in errors[0], errors
+    errors = validate_report_document({"sections": {"heading": "x"}})
+    assert errors
+    assert "OBJECT" in errors[0], errors
+
+
+def test_an_unrecoverable_container_is_still_rejected():
+    errors = validate_report_document({"sections": 42})
+    assert errors
+    assert "non-empty array" in errors[0], errors
+
+
+def test_complete_sections_survive_a_truncated_sections_string():
+    """A truncated JSON array still contains complete sections worth keeping.
+
+    Measured 2026-10-21: one master section was returned as a JSON string
+    whose array was cut off mid-way, and the whole 9.7 KB of correctly cited
+    content was lost to a parse error. The complete sections BEFORE the cut
+    are recovered; the partial one is dropped, never guessed at.
+    """
+    good = {
+        "heading": "1. Sample Identification",
+        "blocks": [_observation()],
+    }
+    partial = '{"heading": "2. Broken", "blocks": [{"kind": "observ'
+    text = json.dumps([good])[:-1] + "," + partial
+    doc = {"sections": text}
+    errors = validate_report_document(doc)
+    assert not errors, errors
+    markdown = render_report_document(doc, heading_level=1)
+    assert "1. Sample Identification" in markdown
+    assert "2. Broken" not in markdown
+
+
+def test_a_repeated_section_heading_keeps_only_the_fullest_copy():
+    """The writer sometimes answers one section request with that section twice.
+
+    Measured 2026-10-21: a request for one section came back as a full
+    21-block copy followed by a 1-block repeat, so the published report
+    carried the same heading twice. The repeat is a strict subset and carries
+    no new finding.
+    """
+    full = {
+        "heading": "1. Sample Identification",
+        "blocks": [_observation(), _observation(), _observation()],
+    }
+    repeat = {
+        "heading": "1. Sample Identification",
+        "blocks": [_observation()],
+    }
+    doc = {"sections": [full, repeat]}
+    errors = validate_report_document(doc)
+    assert not errors, errors
+    markdown = render_report_document(doc, heading_level=1)
+    assert markdown.count("# 1. Sample Identification") == 1, markdown[:400]
+
+
+def test_a_truncated_first_copy_does_not_displace_a_fuller_later_one():
+    thin = {
+        "heading": "2. Classification",
+        "blocks": [_observation()],
+    }
+    full = {
+        "heading": "2. Classification",
+        "blocks": [_observation(), _observation()],
+    }
+    doc = {"sections": [thin, full]}
+    markdown = render_report_document(doc, heading_level=1)
+    assert markdown.count("# 2. Classification") == 1, markdown[:400]
+
+
+def _table(cells: list[str]) -> dict:
+    return {
+        "kind": "table",
+        "columns": ["Field", "Value"],
+        "rows": [{
+            "cells": cells, "source": "malcat", "query_or_table": "x",
+            "row_or_rule": "$.malcat.file_summary.type",
+        }],
+    }
+
+
+def test_two_adjacent_tables_are_rejected_at_the_schema_boundary():
+    """Back-to-back tables render as one dump and fail the quality gate.
+
+    Measured 2026-10-24: a complete technical report failed publication with
+    `technical_v2:orphan_tables:4` -- four places where a table immediately
+    followed another table with no prose between them. The schema can say so
+    while the writer can still fix it, instead of at the gate after the whole
+    report has been generated.
+    """
+    doc = _doc(_table(["a", "b"]))
+    doc["sections"][0]["blocks"].append(_table(["c", "d"]))
+    errors = validate_report_document(doc)
+    assert any("two tables cannot be adjacent" in e for e in errors), errors
+
+
+def test_a_table_after_prose_is_accepted():
+    doc = _doc(_table(["a", "b"]))
+    doc["sections"][0]["blocks"].append(_observation())
+    doc["sections"][0]["blocks"].append(_table(["c", "d"]))
+    errors = validate_report_document(doc)
+    assert not errors, errors
+
+
+def test_a_table_at_the_end_of_a_section_is_accepted():
+    """A section may legitimately end with a summary table."""
+    doc = _doc(_observation())
+    doc["sections"][0]["blocks"].append(_table(["a", "b"]))
+    errors = validate_report_document(doc)
+    assert not errors, errors

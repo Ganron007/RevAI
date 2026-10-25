@@ -77,6 +77,11 @@ def _truncate(s: str, n: int = 4000) -> str:
     return s[:n] + f"... (truncated {len(s) - n} chars)"
 
 
+def _bounded_tool_payload(payload: Any, limit: int = 6000) -> str:
+    """Serialize a planner tool result without exceeding the model context."""
+    return _truncate(json.dumps(payload, default=str), limit)
+
+
 def _verdict_label(v: str) -> str:
     """Normalize a verdict string to its core label for conflict comparison.
 
@@ -743,7 +748,7 @@ class StageRunner:
                 sys.executable, str(SCRIPTS / "audit_pipeline.py"),
                 self.sha, "--mode", "single",
             ],
-            _stage_timeout("REVAI_STAGE_TIMEOUT_AUDIT", 7200),
+            _stage_timeout("REVAI_STAGE_TIMEOUT_AUDIT", 10800),
             # The audit calls the semantic reviewer over many claim batches.
             # Restarting the entire audit on timeout replays completed calls;
             # bounded per-request retries handle transient provider failures.
@@ -949,8 +954,15 @@ def _build_lc_tools(runner: StageRunner, need_intake: bool) -> list:
     def _add(name: str, fn: Callable, desc: str, schema: type[BaseModel] = Empty):
         def _runner(**kwargs):
             if schema is Empty:
-                return json.dumps(fn(), default=str)
-            return json.dumps(fn(**kwargs), default=str)
+                payload = fn()
+            else:
+                payload = fn(**kwargs)
+            # The ReAct state keeps every tool result for the whole run. A
+            # full audit/report/evidence payload can push the planner past the
+            # provider context limit (measured: 941,883 tokens vs 524,288 on
+            # 2026-10-21). The full artifact remains on disk; the planner only
+            # needs a bounded summary and can fetch a specific file explicitly.
+            return _bounded_tool_payload(payload, 6000)
 
         _runner.__name__ = name
         _runner.__doc__ = desc
@@ -1287,7 +1299,7 @@ Use tools. Do not claim success without check_quality.ok=true.
             ra = runner._run(
                 "run_audit",
                 [sys.executable, str(SCRIPTS / "audit_pipeline.py"), sha, "--mode", "single"],
-                _stage_timeout("REVAI_STAGE_TIMEOUT_AUDIT", 7200),
+                _stage_timeout("REVAI_STAGE_TIMEOUT_AUDIT", 10800),
                 retry_timeouts=False,
                 retry_stage_failures=False,
             )
@@ -1420,7 +1432,7 @@ Use tools. Do not claim success without check_quality.ok=true.
         runner._run(
             "run_audit",
             [sys.executable, str(SCRIPTS / "audit_pipeline.py"), sha, "--mode", "single"],
-            _stage_timeout("REVAI_STAGE_TIMEOUT_AUDIT", 7200),
+            _stage_timeout("REVAI_STAGE_TIMEOUT_AUDIT", 10800),
             retry_timeouts=False,
             retry_stage_failures=False,
         )

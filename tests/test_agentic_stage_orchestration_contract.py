@@ -361,3 +361,9 @@ def test_successful_publishers_do_not_freeze_the_run(monkeypatch, tmp_path):
     assert runner.run_section_publish()["ok"] is True
     assert runner.report_terminal is None
     assert calls == ["publish_report_v2.py", "section_publisher.py"]
+
+def test_planner_tool_results_are_capped_at_six_thousand_chars():
+    payload = {"data": "x" * 10000}
+    result = so._bounded_tool_payload(payload, 6000)
+    assert len(result) > 6000
+    assert result.endswith("chars)")

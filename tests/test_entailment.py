@@ -689,3 +689,204 @@ def test_artifact_provenance_must_bind_exact_artifact_path():
         v2_lib.validate_case_artifact_identity(
             payload, "a" * 64, {"run_id": "1" * 32, "mode": "scripted"},
             "verdict.json")
+
+# ------------------------------------------------- structured locator syntax
+def test_jsonpath_supports_quoted_dot_keys_filters_ranges_and_name_keys():
+    data = {
+        "malcat": {
+            "file_summary": {"metadata": {
+                "Debug::Date.Debug.Codeview": "2019-10-14 19:13:42",
+                "VersionInfo::OriginalFilename": "AppVShNotify.exe",
+            }},
+            "decompilations": {"58224": "decompiled function"},
+            "views": {
+                "imports": [
+                    {"ea": 1, "name": "a"}, {"ea": 2, "name": "b"},
+                    {"ea": 3, "name": "c"}, {"ea": 4, "name": "d"},
+                ],
+                "strings": [
+                    {"ea": 10, "text": "one"}, {"ea": 20, "text": "two"},
+                ],
+            },
+        },
+        "packer": {"sections": [
+            {"name": ".text", "entropy": 6.1},
+            {"name": "UPX1", "entropy": 7.993},
+        ]},
+        "r2_decomp": {"disassembly": {"0x140015f38": "push rbp"}},
+        "function_results": [
+            {"function_address": 5368798524, "function_name": "init"},
+        ],
+        "yara": {"matches": [
+            {"rule": "IP", "strings": [{"offset": 273440, "length": 18}]},
+        ]},
+    }
+    cases = [
+        ('$.malcat.file_summary.metadata."Debug::Date.Debug.Codeview"',
+         "2019-10-14 19:13:42"),
+        ("$.malcat.file_summary.metadata[VersionInfo::OriginalFilename]",
+         "AppVShNotify.exe"),
+        ("$.malcat.decompilations[58224]", "decompiled function"),
+        ("$.malcat.views.imports[ea=1..3].name", ["a", "b", "c"]),
+        ("$.malcat.views.imports[ea=1,3].name", ["a", "c"]),
+        ("$.malcat.views.imports[0..1].name", ["a", "b"]),
+        ("$.malcat.views.strings[ea=10,20].text", ["one", "two"]),
+        ("$.packer.sections[UPX1].entropy", 7.993),
+        ("$.r2_decomp.disassembly[0x140015f38]", "push rbp"),
+        ('$.function_results[?(@.function_address=="5368798524")].function_name',
+         "init"),
+        ('$.yara.matches[rule="IP"].strings[0].offset', 273440),
+    ]
+    for expression, expected in cases:
+        resolved = E._resolve_json_path(data, expression)
+        assert resolved is not None, expression
+        assert resolved[1] == expected, (expression, resolved)
+
+
+def test_combined_locator_uses_each_engine_branch_as_its_source(tmp_path):
+    md = (
+        "The rule and capability are both present "
+        "(source: yara, query_or_table: deep_dive/01-tools-raw.json, "
+        "row_or_rule: $.yara.matches[0].rule and $.capa.top_rules[0].name)."
+    )
+    artifacts = {
+        "deep_dive/01-tools-raw.json": json.dumps({
+            "yara": {"matches": [{"rule": "IP"}]},
+            "capa": {"top_rules": [{"name": "receive data"}]},
+        }),
+    }
+    case = _case(tmp_path, {"REPORT-MASTER-v2.md": md}, artifacts)
+    claims = E.extract_claims(md)
+    assert len(claims) == 1
+    citations = claims[0]["citations"]
+    assert [item["source"] for item in citations] == ["yara", "capa"]
+    grounded = [E._ground_citation(item, case) for item in citations]
+    assert [check["status"] for _, check in grounded] == [
+        "traceable-row", "traceable-row"]
+
+
+def test_exact_assignment_is_compared_and_a_mismatch_stays_unresolved(tmp_path):
+    case = _case(tmp_path, {"REPORT-MASTER-v2.md": "placeholder"}, {
+        "iocs.json": json.dumps({"ips": ["5.1.154.0"], "domains": []}),
+    })
+    good = {
+        "source": "iocs", "query": "iocs.json", "row": "$.ips[0]",
+        "expected_value": "'5.1.154.0'",
+    }
+    located, check = E._ground_citation(good, case)
+    assert located is not None, check
+    assert check["status"] == "traceable-row"
+    assert "value" not in located
+
+    bad = dict(good, expected_value="'10.0.0.1'")
+    located, check = E._ground_citation(bad, case)
+    assert located is None
+    assert check["status"] == "unresolved-row"
+    assert "does not match" in check["reason"]
+
+
+def test_assignment_claims_split_into_exact_citations_and_ground(tmp_path):
+    md = (
+        "The IOC file contains one address and no domains "
+        "(source: iocs, query_or_table: iocs.json, row_or_rule: "
+        "$.ips[0]='5.1.154.0'; $.domains=[])."
+    )
+    case = _case(tmp_path, {"REPORT-MASTER-v2.md": md}, {
+        "iocs.json": json.dumps({"ips": ["5.1.154.0"], "domains": []}),
+    })
+    claims = E.extract_claims(md)
+    assert len(claims) == 1
+    citations = claims[0]["citations"]
+    assert [item["row"] for item in citations] == ["$.ips[0]", "$.domains"]
+    assert [item.get("expected_value") for item in citations] == [
+        "'5.1.154.0'", "[]"]
+    assert [E._ground_citation(item, case)[1]["status"] for item in citations] == [
+        "traceable-row", "traceable-row"]
+
+
+def test_prose_and_compound_locators_are_not_assignment_citations():
+    assert E._parse_assignment_locator(
+        "$.malcat.views.imports (no WinInet/WS2_32 entries)") is None
+    assert E._parse_assignment_locator("$.a and $.b") is None
+    assert E._parse_assignment_locator("$.a=1; $.b=2") is None
+
+
+def test_claim_narrative_drops_only_the_provenance_header_and_appendices():
+    md = (
+        "<!-- provenance header: sha256 " + "a" * 64 + " -->\n\n"
+        "# 1. Executive Summary\n\n"
+        "The authored claim says the sample imports CreateFileW "
+        "(source: malcat, query_or_table: quick_scan/00-tools-raw.json, "
+        "row_or_rule: $.malcat.views.imports[0].name).\n\n"
+        "## 11. Detection Guidance\n\n"
+        "Authored guidance sentence with concrete evidence.\n\n"
+        "## Appendix: Structured Evidence\n\n"
+        "The appendix contains fabricated uncited text for this test.\n"
+    )
+    body = E._claim_narrative(md)
+    assert "The authored claim" in body
+    assert "Authored guidance" in body
+    assert "fabricated uncited" not in body
+    assert "provenance header" not in body
+
+
+def test_manifest_artifact_digest_rows_are_provenance_not_sample_iocs():
+    import report_quality as R
+    digest = "0f8ade1d" + "a" * 56
+    row = (
+        f"| quick_scan/ti-enrich.json | {digest} | 1059 | attested | "
+        "(source: manifest, query_or_table: revai-report-input-manifest/v1, "
+        "row_or_rule: $.artifacts[3]) |"
+    )
+    result = R.verify_claimed_iocs(
+        row, "", metadata_hashes={digest: "input_artifact_digest"})
+    assert result["unverified"] == 0, result
+    assert result["excluded"] >= 1, result
+
+
+def test_verdict_json_is_resolvable_machine_evidence(tmp_path):
+    """A citation to the locked pipeline verdict must resolve.
+
+    The master report cites `verdict.json` for the verdict and the score, and
+    those citations were `unresolved-source` until the artifact was added to
+    the primary evidence set (2026-10-21).
+    """
+    case = tmp_path / "logs" / ("a" * 64) / "scripted"
+    case.mkdir(parents=True)
+    (case / "verdict.json").write_text(json.dumps(
+        {"verdict": "malicious", "score": 91}), encoding="utf-8")
+    for source, row in (("verdict", "$.verdict"), ("verdict", "$.score")):
+        located, check = E._ground_citation(
+            {"source": source, "query": "verdict.json", "row": row}, case)
+        assert located is not None, (source, row, check)
+        assert check["status"] == "traceable-row", check
+
+
+def test_a_string_bracket_on_a_string_array_is_a_value_selector(tmp_path):
+    """`$.floss.strings["/api/heartbeat.php"]` names the element's VALUE.
+
+    FLOSS returns an array of plain strings, so a quoted bracket is a value
+    selector, not a key. The match is exact.
+    """
+    case = tmp_path / "logs" / ("a" * 64) / "scripted"
+    (case / "deep_dive").mkdir(parents=True)
+    (case / "deep_dive" / "01-tools-raw.json").write_text(json.dumps(
+        {"floss": {"strings": ["https://", "/api/heartbeat.php", "/beacon"]}}),
+        encoding="utf-8")
+    located, check = E._ground_citation({
+        "source": "floss", "query": "deep_dive/01-tools-raw.json",
+        "row": '$.floss.strings["/api/heartbeat.php"]'}, case)
+    assert located is not None, check
+    assert check["status"] == "traceable-row", check
+
+
+def test_a_value_selector_that_matches_nothing_stays_unresolved(tmp_path):
+    case = tmp_path / "logs" / ("a" * 64) / "scripted"
+    (case / "deep_dive").mkdir(parents=True)
+    (case / "deep_dive" / "01-tools-raw.json").write_text(json.dumps(
+        {"floss": {"strings": ["https://", "/beacon"]}}), encoding="utf-8")
+    located, check = E._ground_citation({
+        "source": "floss", "query": "deep_dive/01-tools-raw.json",
+        "row": '$.floss.strings["/api/heartbeat.php"]'}, case)
+    assert located is None
+    assert check["status"] == "unresolved-row", check

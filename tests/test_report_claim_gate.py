@@ -35,7 +35,12 @@ def test_entailment_checker_exception_is_a_quality_failure(tmp_path, monkeypatch
     claim_check = result["checks"]["claim_entailment"]
     assert claim_check["ok"] is False
     assert claim_check["status"] == "error"
-    assert "claim_entailment:error" in result["issues"]
+    # RC-14: the issue must carry the failure reason, not just the status.
+    entailment_issues = [
+        issue for issue in result["issues"] if issue.startswith("claim_entailment:error")
+    ]
+    assert entailment_issues, result["issues"]
+    assert "claim review timed out" in entailment_issues[0]
 
 
 def test_short_factual_assertion_is_not_exempt_from_citation():

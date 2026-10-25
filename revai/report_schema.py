@@ -12,6 +12,7 @@ structural distinction the free-form report contract could not enforce.
 """
 from __future__ import annotations
 
+import json
 import re
 from typing import Any
 
@@ -53,6 +54,151 @@ def is_non_factual_markdown_line(line: str) -> bool:
     return bool(_NON_FACTUAL_MARKER_RE.match(line or ""))
 
 
+def normalize_sections(value: Any) -> Any:
+    """Normalize a provider's `sections` value to the list the contract wants.
+
+    The report writer is asked for ``sections`` as an array of section objects.
+    The provider sometimes returns the same content in a shape that is
+    structurally wrong but semantically correct (measured 2026-10-21 on a real
+    run, 2 of 17 master sections):
+
+      * ``sections`` is a JSON STRING containing the array;
+      * ``sections`` is an OBJECT that wraps the array (``{"title": ...,
+        "sections": [...]}``) - the whole document nested one level too deep;
+      * ``sections`` is an OBJECT that wraps the array under another key.
+
+    Each of these lost a whole section to a schema rejection even though the
+    content was complete and correctly cited. This coercion only changes the
+    CONTAINER: the recovered sections are validated by exactly the same rules,
+    and a shape that cannot be resolved this way is still rejected.
+    """
+    if isinstance(value, list):
+        return value
+    if isinstance(value, str):
+        text = value.strip()
+        if not text:
+            return value
+        try:
+            decoded = json.loads(text)
+        except (TypeError, ValueError):
+            repaired = _repair_truncated_sections(text)
+            return repaired if repaired is not None else value
+        return normalize_sections(decoded)
+    if isinstance(value, dict):
+        inner = value.get("sections")
+        if isinstance(inner, (list, str)):
+            coerced = normalize_sections(inner)
+            if isinstance(coerced, list):
+                return coerced
+        # A single section object is a one-element document.
+        if "heading" in value and "blocks" in value:
+            return [value]
+    return value
+
+
+def _repair_truncated_sections(text: str) -> Any:
+    """Recover the COMPLETE sections from a truncated JSON array.
+
+    Measured 2026-10-21: the provider returned one master section as a JSON
+    string whose array was cut off mid-way, so the whole section (9.7 KB of
+    correctly cited content) was lost to a parse error. The complete sections
+    BEFORE the truncation point are still valid JSON objects and are still
+    worth keeping.
+
+    Only whole, parseable section objects are returned. A partially written
+    section is dropped, never guessed at, and the caller validates whatever
+    comes back by exactly the same rules.
+    """
+    decoder = json.JSONDecoder()
+    start = text.find("[")
+    if start < 0:
+        return None
+    recovered: list = []
+    index = start + 1
+    while True:
+        while index < len(text) and text[index] in " \t\r\n,":
+            index += 1
+        if index >= len(text) or text[index] != "{":
+            break
+        try:
+            section, end = decoder.raw_decode(text, index)
+        except ValueError:
+            break
+        if isinstance(section, dict):
+            recovered.append(section)
+        index = end
+    return recovered or None
+
+
+def normalize_report_document(document: Any) -> Any:
+    """Normalize a provider's report document without losing content.
+
+    Two container shapes are recovered here, and only the CONTAINER changes:
+
+      * ``sections`` in a wrong shape (a JSON string, a wrapper object, a
+        single section) -- see :func:`normalize_sections`;
+    A table that declares its own ``Evidence``/``Source`` column is NOT
+    recovered here. That shape stays a rejection: the renderer appends a
+    deterministic Evidence column carrying the row's citation, and two columns
+    under one header would let a reader mistake the model's prose for the
+    real citation. The error message names the defect so the writer can fix
+    it on the next attempt.
+
+    Every claim-level rule is still enforced on the normalized document: the
+    citation fields, the one-fact-per-row rule and the exact-locator rule are
+    unchanged.
+    """
+    if not isinstance(document, dict):
+        return document
+    out = dict(document)
+    out["sections"] = _dedupe_sections(normalize_sections(document.get("sections")))
+    return out
+
+
+def _section_heading_key(section: Any) -> str:
+    """The comparable identity of a section: its heading, normalized."""
+    if not isinstance(section, dict):
+        return ""
+    return re.sub(r"\s+", " ", _HEADING_PREFIX_RE.sub("", _text(section.get("heading")))).casefold()
+
+
+def _dedupe_sections(sections: Any) -> Any:
+    """Drop a repeated section heading, keeping the fullest copy.
+
+    Measured 2026-10-21: the report writer answered a request for ONE section
+    with that section twice -- a full 21-block copy followed by a 1-block
+    repeat. The renderer emitted both, so the published report carried the
+    same heading twice and the second copy was a strict subset of the first.
+
+    The report is a document of sections, not a stream: a repeated heading is
+    the writer restating itself, and the repeat carries no new finding. The
+    copy with the most blocks is kept, so a truncated first attempt cannot
+    displace a complete later one.
+    """
+    if not isinstance(sections, list):
+        return sections
+    best: dict = {}
+    order: list = []
+    others: list = []
+    for section in sections:
+        key = _section_heading_key(section)
+        if not key:
+            others.append(section)
+            continue
+        blocks = section.get("blocks") if isinstance(section, dict) else None
+        size = len(blocks) if isinstance(blocks, list) else 0
+        if key not in best:
+            best[key] = (section, size)
+            order.append(key)
+        elif size > best[key][1]:
+            best[key] = (section, size)
+    out: list = []
+    for key in order:
+        out.append(best[key][0])
+    out.extend(others)
+    return out
+
+
 def _text(value: Any) -> str:
     if value is None:
         return ""
@@ -78,6 +224,30 @@ def _balanced(value: str) -> bool:
     return not stack
 
 
+def _exact_json_locator(value: str) -> bool:
+    """Whether a `$`-rooted locator is exactly one resolvable expression.
+
+    A compound locator (`$.a and $.b`, `$.a, $.b`, `$.a; $.b`, a prose
+    parenthetical, or a multi-assignment) cannot be checked as one row: the
+    verifier would either fail every such row or, worse, accidentally resolve
+    one part and certify the rest. Reject it at the schema boundary and make
+    the writer split the observation or move the interpretation to an
+    assessment.
+    """
+    text = (value or "").strip()
+    if text == "$text":
+        return True
+    try:
+        from entailment import _parse_assignment_locator, _parse_json_path
+    except Exception:
+        # The deployed flat layout always contains entailment. If it is
+        # unavailable, preserve the previous schema behavior rather than
+        # rejecting every report for an unrelated import problem.
+        return True
+    return (_parse_json_path(text) is not None
+            or _parse_assignment_locator(text) is not None)
+
+
 def _citation_fields(block: dict[str, Any], where: str,
                      errors: list[str]) -> dict[str, str]:
     out: dict[str, str] = {}
@@ -89,6 +259,13 @@ def _citation_fields(block: dict[str, Any], where: str,
         if not _balanced(value):
             errors.append(f"{where}: {field} has unbalanced brackets")
             continue
+        if field == "row_or_rule" and value.startswith("$") and not _exact_json_locator(value):
+            errors.append(
+                f"{where}: row_or_rule must be one exact JSONPath, one exact "
+                "path=value, or a non-$ rule/row name; split compound "
+                "locators and move prose interpretation to an assessment"
+            )
+            continue
         out[field] = value
     return out
 
@@ -98,9 +275,23 @@ def validate_report_document(document: Any) -> list[str]:
     errors: list[str] = []
     if not isinstance(document, dict):
         return ["document must be an object"]
+    raw_sections = document.get("sections")
+    document = normalize_report_document(document)
     sections = document.get("sections")
     if not isinstance(sections, list) or not sections:
-        return ["document.sections must be a non-empty array"]
+        # Name the shape that was actually received. "must be a non-empty
+        # array" alone did not tell the writer what it had done wrong, and the
+        # correction pass repeated the same container error.
+        raw = raw_sections
+        if isinstance(raw, str):
+            detail = ("you returned `sections` as a JSON STRING; return it as a "
+                      "JSON ARRAY of section objects")
+        elif isinstance(raw, dict):
+            detail = ("you returned `sections` as an OBJECT; return it as a JSON "
+                      "ARRAY of section objects")
+        else:
+            detail = "return it as a JSON ARRAY of section objects"
+        return [f"document.sections must be a non-empty array: {detail}"]
     for si, section in enumerate(sections):
         where = f"sections[{si}]"
         if not isinstance(section, dict):
@@ -124,6 +315,19 @@ def validate_report_document(document: Any) -> list[str]:
             if kind not in BLOCK_KINDS:
                 errors.append(f"{bwhere}: kind must be one of {', '.join(BLOCK_KINDS)}")
                 continue
+            if (kind == "table" and bi > 0
+                    and _text((blocks[bi - 1] or {}).get("kind")).lower()
+                    == "table"):
+                # Two tables with nothing between them render as one visual
+                # dump and the quality gate fails the report for orphan tables
+                # (2026-10-24: four such pairs failed a complete technical
+                # report). Say so at the schema boundary, where the writer can
+                # still fix it, instead of at the gate after publication.
+                errors.append(
+                    f"{bwhere}: two tables cannot be adjacent; put an "
+                    "`observation` block between them that states what the "
+                    "second table adds"
+                )
             if kind == "observation":
                 text = _text(block.get("text"))
                 if not text:
@@ -265,6 +469,7 @@ def render_report_document(
     level is 1 for the master report (its sections are level-1 headings) and 2
     for the technical report and section publisher.
     """
+    document = normalize_report_document(document)
     errors = validate_report_document(document)
     if errors:
         raise ReportSchemaError(errors)
@@ -275,7 +480,7 @@ def render_report_document(
         title = _text(document.get("title"))
         if title:
             parts.append(f"# {title}")
-    for section in document.get("sections") or []:
+    for section in normalize_sections(document.get("sections")) or []:
         heading = _HEADING_PREFIX_RE.sub("", _text(section.get("heading")))
         parts.append(f"{prefix} {heading}")
         for block in section.get("blocks") or []:
@@ -400,4 +605,24 @@ Rules:
    only. Use `## 11. What We Don't Know`, not a curly apostrophe.
 5. If a fact cannot be tied to one source row, omit it or state the limitation
    in an `assessment`/`note` block. Never invent a locator.
+6. A requested section is always required. If it has no supported findings,
+   return one section object with the exact heading and at least one `note` or
+   `assessment` block stating the limitation. Never return `sections: []` and
+   never omit the section.
+7. Put ONE fact in each observation and each table row. Cite the exact scalar
+   field that contains that fact, not a parent object, a list length, a
+   decompilation blob, or a summary. Split compound claims into separate
+   observations instead of citing one object for several assertions.
+8. Do not combine locators. A `row_or_rule` must name exactly one JSONPath,
+   address, rule, or row. Two sources or two fields require two observations
+   (or two table rows), each with its own citation. Never write a locator such
+   as `$.a ... and $.b ...`, `$.a, $.b`, or a combined source label.
+9. A derived or interpretive statement (for example "packed", "likely a
+   loader", "consistent with persistence") belongs in `assessment`; the
+   observation must state only the exact measured value. A negative finding
+   ("no Winsock imports") must cite an exact absence-bearing field or be a
+   `note`, never an unrelated count or parent object.
+10. Table cells must be copied from the cited row. Do not use one field to
+   support a row that also asserts a technique, a verdict, or a second fact;
+   split the row or move the interpretation to `assessment`.
 """.strip()

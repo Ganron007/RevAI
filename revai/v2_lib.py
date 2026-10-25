@@ -38,6 +38,8 @@ from urllib.parse import urlsplit
 from packer_intake import run_packer_scan
 from report_schema import (
     ReportSchemaError,
+    normalize_report_document,
+    normalize_sections,
     render_report_document,
     report_writer_tool_schema,
 )
@@ -1045,6 +1047,27 @@ def strip_accuracy_hold_banner(markdown: str) -> str:
     return "\n".join(lines)
 
 
+def _head_without_citations(text: str) -> str:
+    """Drop report lines that carry a citation annotation.
+
+    A cited line is an EVIDENCE observation: it describes a tool's output about
+    some object in the sample, not the report's own verdict. The claim-level
+    schema keeps verdict-level statements in assessment/panel blocks, which
+    carry no citation, so the keyword heuristic must read only those.
+
+    Measured 2026-10-23: the master report's only occurrence of "benign" in its
+    first 2500 characters was "the benign 'move.txt' filename" inside a FLOSS
+    observation, and the heuristic read the whole report as benign while its own
+    explicit sentence said "The triage verdict for this sample is 'malicious'".
+    """
+    kept: list[str] = []
+    for line in text.splitlines():
+        if re.search(r"\(\s*source:\s*[^)]+\)", line, re.IGNORECASE):
+            continue
+        kept.append(line)
+    return "\n".join(kept)
+
+
 def infer_publish_verdict_from_markdown(markdown: str) -> str | None:
     """Infer publish-claimed verdict from report body (never from hold banner).
 
@@ -1057,14 +1080,37 @@ def infer_publish_verdict_from_markdown(markdown: str) -> str | None:
     import re as _re
 
     body = strip_accuracy_hold_banner(markdown or "")
+    # A verdict statement can name its subject: "The triage verdict for this
+    # sample is 'malicious' with a score of 90." The label is also often
+    # quoted. Both shapes are the report stating its verdict explicitly, which
+    # always beats the keyword heuristic below (2026-10-23: the master report
+    # said exactly that and was read as 'benign' from an unrelated word).
     explicit_sentence = _re.search(
-        r"(?i)\b(?:the\s+)?(?:report\s+)?verdict\s+(?:is|:|-)\s*"
-        r"\*{0,2}_{0,2}\s*(malicious|suspicious|benign|unknown|legitimate|clean)\b",
-        body[:8000],
+        r"(?i)\b(?:the\s+)?"
+        r"(?:(?:report|pipeline|triage|final|overall)\s+)?verdict"
+        r"(?:\s+(?:for|of)\s+(?:this|the)\s+"
+        r"(?:sample|binary|file|specimen|case|malware))?"
+        r"(?:\s+is|\s*[:\-])\s*[*_\"'`]*\s*"
+        r"(malicious|suspicious|benign|unknown|legitimate|clean)\b",
+        body,
     )
     if explicit_sentence:
         label = normalize_verdict_label(explicit_sentence.group(1))
         return label
+    # The verdict PANEL is the report's own structured verdict statement. It
+    # is consulted BEFORE the prose keyword heuristic, because the heuristic
+    # reads the first 2500 characters and a single word in the executive
+    # summary ("a benign/legitimate tool cannot stand") was read as the
+    # report's verdict while the panel said "malicious" (2026-10-21: a
+    # false `master_tech_verdict_mismatch`).
+    try:
+        from report_quality import _panel_final_verdict
+
+        panel = _panel_final_verdict(body)
+        if panel and panel != "unknown":
+            return panel
+    except Exception:
+        pass
     decl = _re.search(
         r"(?im)^[^a-z0-9]{0,8}(?:final\s+|overall\s+)?verdict\s*[:\-]\s*"
         r"\*{0,2}_{0,2}\s*([a-z][a-z_\- ]{2,30})",
@@ -1075,7 +1121,7 @@ def infer_publish_verdict_from_markdown(markdown: str) -> str | None:
         if label != "unknown":
             return label
     body = body.lower()
-    head = body[:2500]
+    head = _head_without_citations(body[:2500])
     clearance = any(
         x in head
         for x in (
@@ -2694,7 +2740,7 @@ def load_session_for_id(session_id: str) -> dict:
 # See docs/PIPELINE-MODES.md
 PIPELINE_MODE_STANDARD = "standard"
 PIPELINE_MODE_LARGE = "large"
-LARGE_SIZE_BYTES = int(os.environ.get("CADRE_LARGE_SIZE_BYTES", str(30 * 1024 * 1024)))
+LARGE_SIZE_BYTES = int(os.environ.get("CADRE_LARGE_SIZE_BYTES", str(2 * 1024 * 1024)))
 LARGE_FUNC_COUNT = int(os.environ.get("CADRE_LARGE_FUNC_COUNT", "8000"))
 LARGE_EMBEDDED_PE = int(os.environ.get("CADRE_LARGE_EMBEDDED_PE", "3"))
 
@@ -3662,6 +3708,74 @@ def _log_llm_timing(attempt: int, max_retries: int, model: str,
     )
 
 
+
+#: Requests abandoned at their hard deadline leave a daemon thread (and its
+#: provider connection) behind. They are not reclaimable -- a blocked socket
+#: read cannot be interrupted from another thread on Linux -- so the count is
+#: capped. Past the cap the client fails fast instead of piling up
+#: connections: a run that abandoned this many requests is already broken, and
+#: an unbounded pile of half-open connections would break the NEXT run too.
+_MAX_ABANDONED_LLM_REQUESTS = 8
+_abandoned_llm_requests: list = []
+
+
+def _run_with_deadline(func, timeout_s, label):
+    """Run ``func`` under a hard wall-clock deadline.
+
+    ``urllib``'s socket timeout is a PER-READ timeout: a provider that keeps
+    the connection alive with periodic bytes resets it, so a stalled request
+    never trips it and the caller blocks forever. Measured 2026-10-21: a
+    publish stage sat in ``poll()`` for 55 minutes on a single request and
+    had to be killed by hand.
+
+    A worker thread that is still running at the deadline is abandoned (it is
+    a daemon, so the process can still exit) and the caller gets
+    ``TimeoutError``. The LLM ladder already classifies a timeout as
+    retryable, so the caller can fail or retry the section instead of hanging
+    the whole stage. Unlike a signal-based timer this works in any thread.
+    """
+    import threading
+
+    if len(_abandoned_llm_requests) >= _MAX_ABANDONED_LLM_REQUESTS:
+        raise TimeoutError(
+            f"{label} was not started: {len(_abandoned_llm_requests)} earlier "
+            "requests were already abandoned at their hard deadline, so the "
+            "provider is not delivering complete responses"
+        )
+
+    box: dict = {}
+
+    def _runner():
+        try:
+            box["value"] = func()
+        except BaseException as exc:  # noqa: BLE001
+            box["error"] = exc
+
+    thread = threading.Thread(target=_runner, daemon=True, name="revai-llm-http")
+    thread.start()
+    thread.join(timeout=max(1.0, float(timeout_s)))
+    if thread.is_alive():
+        _abandoned_llm_requests.append(thread)
+        raise TimeoutError(
+            f"{label} exceeded its {int(timeout_s)}s hard deadline: the provider "
+            "kept the connection alive without delivering a complete response"
+        )
+    if "error" in box:
+        raise box["error"]
+    return box.get("value")
+
+
+def _http_post_bytes(req, timeout_s, label="LLM request"):
+    """POST a request and read the whole body under a hard wall-clock deadline."""
+    import urllib.request
+
+    def _do():
+        with urllib.request.urlopen(req, timeout=timeout_s) as resp:
+            return resp.read()
+
+    return _run_with_deadline(_do, timeout_s, label)
+
+
 def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
               reasoning: str | None = None, timeout_s: int | None = None,
               budget_s: int | None = None,
@@ -3971,11 +4085,13 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
             try:
                 data, smetrics = (None, {})
                 if _llm_streaming_enabled() and tools is None:
-                    data, smetrics = _post_llm_streaming(
-                        api_url,
-                        {"Content-Type": "application/json",
-                         "Authorization": f"Bearer {api_key}"},
-                        body, attempt_timeout_s)
+                    data, smetrics = _run_with_deadline(
+                        lambda: _post_llm_streaming(
+                            api_url,
+                            {"Content-Type": "application/json",
+                             "Authorization": f"Bearer {api_key}"},
+                            body, attempt_timeout_s),
+                        attempt_timeout_s, "LLM streaming request")
                     if data is not None:
                         _log_llm_timing(attempt, max_retries,
                                         effective_model, smetrics,
@@ -3989,9 +4105,8 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                         print(f"[llm_judge] streaming failed "
                               f"({smetrics['error']}); falling back to a plain "
                               f"POST", flush=True)
-                    with urllib.request.urlopen(req,
-                                                timeout=attempt_timeout_s) as resp:
-                        raw_body = resp.read()
+                    raw_body = _http_post_bytes(
+                        req, attempt_timeout_s, "LLM request")
                     data = json.loads(raw_body.decode())
                     _log_llm_timing(attempt, max_retries, effective_model,
                                     {"streamed": False}, current_reasoning)
@@ -4374,14 +4489,15 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                 },
                 method="POST",
             )
-            with urllib.request.urlopen(req, timeout=fallback_window_s) as resp:
-                data = json.loads(resp.read().decode())
-                data = _attach_request_audit(
-                    data, attempt_number=f"final-reasoning-{fallback_reasoning}",
-                    timeout_seconds=fallback_window_s)
-                llm_usage_journal(model=effective_model, response=data,
-                                  note=f"attempt=final-reasoning-{fallback_reasoning}")
-                return data
+            raw_fallback = _http_post_bytes(
+                req, fallback_window_s, "LLM fallback request")
+            data = json.loads(raw_fallback.decode())
+            data = _attach_request_audit(
+                data, attempt_number=f"final-reasoning-{fallback_reasoning}",
+                timeout_seconds=fallback_window_s)
+            llm_usage_journal(model=effective_model, response=data,
+                              note=f"attempt=final-reasoning-{fallback_reasoning}")
+            return data
         except Exception as e:
             last_error = e
             print(
@@ -4471,8 +4587,9 @@ def extract_llm_report(
     if "sections" in payload:
         document = {
             "title": str(payload.get("title") or "RE Report"),
-            "sections": payload["sections"],
+            "sections": normalize_sections(payload["sections"]),
         }
+        document = normalize_report_document(document)
         markdown = render_report_document(
             document,
             heading_level=heading_level,
@@ -4540,8 +4657,26 @@ def llm_report_structured(
                 "schema. Every observation and every table row must carry "
                 "`source`, `query_or_table` and `row_or_rule`. Put interpretation "
                 "in `assessment` or `recommendation` blocks; do not return a "
-                "Markdown-only report."
+                "Markdown-only report. A requested section with no supported "
+                "findings must contain one `note` or `assessment` block; never "
+                "return `sections: []` or omit the section. Use one exact scalar "
+                "locator per observation/table row, split compound claims, and "
+                "do not combine JSONPaths or sources with `and`, commas, or "
+                "semicolons.\n"
+                "`sections` must be a JSON ARRAY of section objects, each with "
+                "`heading` and `blocks`. Do not return it as a JSON string, do "
+                "not wrap it in an object, and do not add an `Evidence`/`Source` "
+                "column to a table: the renderer adds that column itself from "
+                "the row's citation."
             )
+    if last_error is not None:
+        # Preserve the rejected model output for diagnosis. The publisher writes
+        # this to a failed-raw artifact; without it, a schema rejection is
+        # indistinguishable from a provider failure after the fact.
+        try:
+            last_error.raw_response = response  # type: ignore[attr-defined]
+        except Exception:
+            pass
     raise last_error if last_error else RuntimeError("structured report failed")
 
 
@@ -12807,7 +12942,7 @@ def r2_decompile(sample_path: str, function_addrs: list | None = None, timeout: 
             disc = subprocess.run(
                 ["r2", "-q", "-c", "aa; afl~[0,3]", sample_path],
                 capture_output=True, text=True, encoding="utf-8",
-                errors="replace", timeout=60,
+                errors="replace", timeout=120,
             )
             function_addrs = []
             for line in (disc.stdout or "").splitlines():

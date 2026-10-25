@@ -1,5 +1,5 @@
 name: report-evidence-methodology
-version: 1
+version: 2
 covers: [sample attribution, evidence hierarchy, behavioral inference, source citations, coverage limits, ATT&CK mapping, report structure]
 does_not_cover: [sample-specific conclusions, dynamic collector operation, exact tool schemas]
 
@@ -51,6 +51,24 @@ procedure file; source metadata is not queried during analysis.
 - Keep the executive report concise and decision-focused; keep the technical
   report reproducible, with exact rows, addresses, values, process attribution,
   time bounds and enough interpretation to explain why each observation matters.
+
+## Cite a row, and read a value the way the artifact stores it
+
+- A multi-column row is one fact set. Cite the ROW, not one leaf field, when the
+  claim restates several of its cells: `.layout[2]` supports a whole layout row,
+  while `.layout[2].name` supports only the name. A leaf citation under a row
+  claim leaves the other cells unsupported and is reported as insufficient.
+- Compare numbers by VALUE, not by spelling. `0x8320`, `33440` and `33,440` are
+  the same entry point; a hex spelling does not contradict a decimal field.
+  Likewise a path written with doubled backslashes, an escaped quote, or a
+  defanged domain is the same literal as its plain form.
+- Cite only sources the run actually produced. There is no generic "run
+  manifest" source: when an artifact was not produced, say so in a note without
+  inventing a citation for it.
+- A table or list may be addressed by a row key: `$.path` for an exact JSONPath,
+  `field=value` for a named row, and `table: key` for a row of a named table.
+  Use whichever the artifact supports, and copy the table path exactly.
+
 
 ## Verdict calibration
 

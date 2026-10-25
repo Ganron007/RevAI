@@ -176,7 +176,7 @@ def test_chunked_generation_orders_document_and_records_audits(monkeypatch):
     """Front matter leads, appendices trail, and every call is audited."""
     calls: list[tuple[list[str], dict]] = []
 
-    def fake_llm(prompt):
+    def fake_llm(prompt, **_kwargs):
         # figure out which headings this chunk was asked for
         head = prompt.split("Rules", 1)[0]
         wanted = [t for t in SECTIONS if f"- {t}" in head]
@@ -211,7 +211,7 @@ def test_chunked_generation_retries_a_stubbed_section_with_full_context(monkeypa
     target = "10. MITRE ATT&CK Mapping"
     targeted_retries: list[str] = []
 
-    def fake_llm(prompt):
+    def fake_llm(prompt, **_kwargs):
         head = prompt.split("Rules", 1)[0]
         wanted = [title for title in SECTIONS if f"- {title}" in head]
         repair = "## Targeted section repair" in prompt
@@ -242,7 +242,7 @@ def test_chunked_generation_retries_a_stubbed_section_with_full_context(monkeypa
 def test_failed_stub_retry_keeps_original_and_remains_a_quality_failure(monkeypatch):
     target = "10. MITRE ATT&CK Mapping"
 
-    def fake_llm(prompt):
+    def fake_llm(prompt, **_kwargs):
         head = prompt.split("Rules", 1)[0]
         wanted = [title for title in SECTIONS if f"- {title}" in head]
         repair = "## Targeted section repair" in prompt
@@ -360,7 +360,7 @@ def test_first_draft_is_preserved_for_the_support_gate(monkeypatch):
     body = "The sample performs a behavior that requires source evidence. " * 8
     calls = []
 
-    def fake_llm(prompt):
+    def fake_llm(prompt, **_kwargs):
         calls.append(prompt)
         return _report_response(f"## {section}\n\n{body}", title=section)
 
@@ -399,7 +399,7 @@ def test_technical_writers_receive_the_run_evidence_manifest():
 
 def test_a_failed_group_is_recorded_and_omits_its_sections(monkeypatch):
     """Fail-open per group: record the error, do not invent filler text."""
-    def fake_llm(prompt):
+    def fake_llm(prompt, **_kwargs):
         head = prompt.split("Rules", 1)[0]
         if "- 5. Behavioral & Dynamic Analysis" in head:
             raise RuntimeError("provider exploded")
@@ -422,7 +422,7 @@ def test_a_failed_group_is_recorded_and_omits_its_sections(monkeypatch):
 
 def test_total_failure_raises_so_the_caller_can_fall_back(monkeypatch):
     """If every call fails the caller must get an exception, not a stub report."""
-    def fake_llm(prompt):
+    def fake_llm(prompt, **_kwargs):
         raise RuntimeError("all calls fail")
 
     monkeypatch.setattr(pub, "llm_report", fake_llm)

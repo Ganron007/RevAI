@@ -114,6 +114,123 @@ def _finalize_schema_provenance(report: dict) -> dict:
     return report
 
 
+def _unresolved_citations(parsed: dict, root: Path) -> list[str]:
+    """Citations in one generated section that do not resolve to evidence.
+
+    A wrong locator is currently discovered only by the audit, hours after the
+    report was written: measured 2026-10-24, 613 of 1019 claims in one run were
+    unresolved, 496 of them a single mis-path shape. The writer can fix its own
+    citation while the section is still in hand, so validate here and let the
+    caller ask for one correction instead of publishing a report that cannot
+    pass.
+    """
+    document = parsed.get("document") if isinstance(parsed, dict) else None
+    sections = (document or {}).get("sections") if isinstance(document, dict) else None
+    if not isinstance(sections, list):
+        return []
+    try:
+        import entailment
+    except Exception:                       # noqa: BLE001 - fail open
+        return []
+    failures: list[str] = []
+    for section in sections:
+        if not isinstance(section, dict):
+            continue
+        for block in section.get("blocks") or []:
+            if not isinstance(block, dict):
+                continue
+            kind = block.get("kind")
+            if kind == "observation":
+                rows = [block]
+            elif kind == "table":
+                rows = list(block.get("rows") or [])
+            else:
+                continue
+            for row in rows:
+                if not isinstance(row, dict):
+                    continue
+                source = str(row.get("source") or "").strip()
+                query = str(row.get("query_or_table") or "").strip()
+                locator = str(row.get("row_or_rule") or "").strip()
+                if not source or not locator:
+                    continue
+                try:
+                    located, check = entailment._ground_citation(
+                        {"source": source, "query": query, "row": locator},
+                        Path(root))
+                except Exception:           # noqa: BLE001 - fail open
+                    continue
+                if located is None:
+                    failures.append(
+                        f"source={source} query={query} row_or_rule={locator} "
+                        f"({check.get('status')}: {check.get('reason')})")
+    return failures
+
+
+def _citation_correction_note(failures: list[str]) -> str:
+    listed = "\n".join(f"- {item}" for item in failures[:40])
+    more = ("" if len(failures) <= 40
+            else f"\n({len(failures) - 40} more of the same kind are not listed)")
+    return (
+        "\n\n## CITATION CORRECTION\n"
+        "These citations in your previous response do not resolve against the "
+        f"evidence:\n{listed}{more}\n\n"
+        "Return the same content again with every citation pointing at a row "
+        "that exists. Copy the path exactly from the evidence JSON shown below; "
+        "never construct a path from memory. A path under "
+        "`$.upx_second_pass.tools.<engine>` is a NESTED document with its own "
+        "engine branches. If no existing row supports a sentence, move that "
+        "sentence into an `assessment` block or drop the claim."
+    )
+
+
+def repair_section_citations(
+    prompt: str,
+    parsed: dict,
+    root: Path,
+    *,
+    section_only: bool,
+    heading_level: int,
+    label: str,
+    ev_dir: Path | None = None,
+    out_name: str | None = None,
+) -> tuple[dict, int]:
+    """Ask for one citation-corrected retry when a section mis-cites evidence.
+
+    Returns (parsed, remaining_failures). The corrected section is kept ONLY
+    when it resolves strictly more citations; otherwise the original is kept,
+    so this pass can never replace a good section with a worse one. The audit
+    still checks the final report either way -- this does not weaken any gate.
+    """
+    failures = _unresolved_citations(parsed, root)
+    if not failures:
+        return parsed, 0
+    try:
+        response, corrected = llm_report_structured(
+            prompt + _citation_correction_note(failures),
+            section_only=section_only,
+            heading_level=heading_level,
+            retries=1,
+            timeout_s=REPORT_CALL_TIMEOUT_S,
+        )
+    except Exception as exc:                # noqa: BLE001
+        print(f"[publish_report_v2] {label} citation repair failed: "
+              f"{type(exc).__name__}: {str(exc)[:90]}", flush=True)
+        return parsed, len(failures)
+    if ev_dir is not None and out_name:
+        try:
+            (ev_dir / out_name).write_text(
+                json.dumps(response, indent=2, default=str), encoding="utf-8")
+        except OSError:
+            pass
+    remaining = _unresolved_citations(corrected, root)
+    print(f"[publish_report_v2] {label} citation repair: "
+          f"{len(failures)} unresolved -> {len(remaining)}", flush=True)
+    if len(remaining) >= len(failures):
+        return parsed, len(failures)
+    return corrected, len(remaining)
+
+
 LOGS = Path("/opt/samples/logs")
 TEMPLATE_PATH = Path("/opt/samples/templates/REPORT-MASTER-headings.md")
 
@@ -215,7 +332,21 @@ def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, ya
             "detonation is a separate runtime path. Do not describe one component's "
             "absence as absence of all dynamic analysis. Cite run-wide status as "
             "(source: dynamic_analysis_status, query_or_table: "
-            "dynamic-analysis-status.json, row_or_rule: $.sentence).",
+            "dynamic-analysis-status.json, row_or_rule: $.sentence). The status "
+            "objects are under `$.status.*` in that file: for example "
+            "`$.status.frida_runtime.trace_artifact_present`, "
+            "`$.status.winre.pack_present`, `$.status.packet_capture.present`. "
+            "The Speakeasy call/event counts live in "
+            "`deep_dive/01-tools-raw.json` under `$.speakeasy.api_calls` and "
+            "`$.speakeasy.key_events`, NOT under `$.status`. Cite only a field "
+            "that is present in the supplied status object; use a note for an "
+            "absent component rather than inventing `$.status.<engine>`. "
+            "Match the status wording exactly: when a component's `present` "
+            "field is false, say it produced no result - never that it 'ran', "
+            "'ran but recorded zero calls', or 'executed'. A stage that did "
+            "not run is not a stage that ran and found nothing, and the audit "
+            "fails an affirmative execution claim against a run that performed "
+            "none.",
             compact_json_for_prompt(dynamic_status, max_chars=3500),
             "",
         ]
@@ -553,6 +684,21 @@ def build_prompt_technical(session: dict, verdict: dict | None, deep: dict | Non
         "- AI-recovered function labels are hypotheses. Cite the underlying disassembly/decompilation and describe the label as a recovery hypothesis unless a program symbol or independent source confirms it.",
         "- Do not cite LLM-generated summaries, prior report sections, or verdict prose as the evidence source. Cite the original tool artifact and an exact row that is present in its raw case output.",
         "- RULE-NAME ATTRIBUTION: YARA rule names (anti_dbg, screenshot, win_registry, win_token, IsPE64, ...) belong to source=yara ONLY. capa rules have descriptive names (modify access privileges, delete registry key, ...) and come from capa/malcat-capa. Never list YARA rule names under capa, and never list capa rules under yara. Quote each engine's rules exactly as its own table shows them.",
+        "- An indicator is a value the evidence actually contains. A registry key may be claimed as an "
+        "observed artifact ONLY when its full path appears in the tool output; a service or value NAME "
+        "from a string or decompilation is not a key path. Report the name as an observation and put the "
+        "implied key in an `assessment` block, e.g. 'the service name Lcss implies a key under "
+        "HKLM\\SYSTEM\\CurrentControlSet\\Services'. The same applies to paths built by joining a directory "
+        "with a filename, or a domain assembled from string fragments.",
+        "- CITATION PATHS MUST BE COPIED, NEVER CONSTRUCTED. Read the key names from the JSON in the "
+        "evidence pack and use exactly those. Structural facts that have been mis-cited: "
+        "`deep_dive/01-tools-raw.json` holds one branch per ENGINE at the top level (`$.malcat`, `$.yara`, "
+        "`$.capa`, `$.pe_imports`, ...); the UPX second pass is a NESTED document under "
+        "`$.upx_second_pass.tools.<engine>` and has its own copies of those branches. Malcat's "
+        "decompilations live at `$.malcat.decompilations.\"<ea>\".decompilation` (NOT under `views`; "
+        "`views` holds strings, imports, sections, entropy, yara_hits). `$.pe_imports` has `signals`, "
+        "`import_count` and `hint` — there is no `imports` array there. If a path you want is not visible "
+        "in the JSON, do not invent it: cite the closest path that IS present, or state the limitation.",
         "- Use tables heavily. Include code fences for disasm/decompilation excerpts from evidence.",
         "- Mark unknowns with '(unknown)' and why. Prefer attaching evidence over theory.",
         "- Do NOT omit the Static Code Analysis disassembly blocks that appear in Structured Evidence.",
@@ -684,6 +830,14 @@ def _refresh_section_metadata(
 #: binding constraint; the oversized REQUEST was. Splitting to one section per
 #: call removes the overflow at the source, which is what the v3 technical
 #: report already does (section_publisher.TECHNICAL_SECTION_EVIDENCE).
+#: A single report section is a large generation: measured 2026-10-21, the
+#: technical body parts took 5-6 minutes each. The shared LLM timeout (300 s
+#: default, 600 s in the lab env) is a per-read socket timeout, so it is not a
+#: bound on a legitimate long generation. This is the wall-clock budget for one
+#: report call, and it is what the hard deadline enforces.
+REPORT_CALL_TIMEOUT_S = int(os.environ.get("REVAI_REPORT_CALL_TIMEOUT_S", "900"))
+
+
 TECHNICAL_BODY_GROUPS: tuple[tuple[int, int], ...] = tuple(
     (i, i + 1) for i in range(2, 11))
 #: Written last, with the body's text supplied as context: the Executive Summary
@@ -850,7 +1004,8 @@ def generate_technical_chunked(
         label = f"{tag} ({', '.join(titles)})" if titles else tag
         try:
             resp, parsed = llm_report_structured(
-                prompt, section_only=True, heading_level=2, retries=1)
+                prompt, section_only=True, heading_level=2, retries=1,
+                timeout_s=REPORT_CALL_TIMEOUT_S)
             if ev_dir is not None:
                 try:
                     (ev_dir / out_name).write_text(
@@ -859,6 +1014,13 @@ def generate_technical_chunked(
                     )
                 except OSError:
                     pass
+            if ev_dir is not None:
+                parsed, _remaining = repair_section_citations(
+                    prompt, parsed, ev_dir.parent,
+                    section_only=True, heading_level=2, label=label,
+                    ev_dir=ev_dir,
+                    out_name=out_name.replace(".json", "-citation-repair.json"),
+                )
             md = parsed["markdown"]
         except Exception as exc:                     # noqa: BLE001
             errors.append(f"{label}: {type(exc).__name__}: {exc}")
@@ -1415,13 +1577,20 @@ def main():
     # ============================================================
     report: dict[str, Any]
     llm_err: str | None = None
+    master_targeted_attempts: list[dict[str, Any]] = []
     try:
         # One section per call. A single call for all 17 sections overflowed the
         # per-request output budget (finish=length at 48,813 chars on win32k_dll,
         # 2026-10-02), and each overflow was rejected as truncated and retried,
         # consuming the stage budget on responses that were thrown away.
-        master_pieces: list[str] = []
+        master_by_title: dict[str, str] = {}
         master_failed: list[str] = []
+        # Why each section failed, so the targeted repair can state the actual
+        # defect instead of only noting that the section is missing. A repair
+        # prompt that does not name the defect repeats it (measured 2026-10-21:
+        # the model kept returning `sections` in the wrong container and the
+        # repair never mentioned the container error).
+        master_failure_reason: dict[str, str] = {}
         for si, title in enumerate(REPORT_MASTER_SECTIONS):
             one = build_prompt_full(
                 session, verdict, deep, yara_meta, audit,
@@ -1440,25 +1609,116 @@ def main():
                 sections=[title])
             try:
                 r, parsed = llm_report_structured(
-                    one, section_only=True, heading_level=1, retries=1)
+                    one, section_only=True, heading_level=1, retries=1,
+                    timeout_s=REPORT_CALL_TIMEOUT_S)
                 (ev_dir / f"01-master-{si:02d}-raw.json").write_text(
                     json.dumps(r, indent=2, default=str))
+                parsed, _remaining = repair_section_citations(
+                    one, parsed, case,
+                    section_only=True, heading_level=1,
+                    label=f"master section {si + 1}/"
+                          f"{len(REPORT_MASTER_SECTIONS)} {title[:30]}",
+                    ev_dir=ev_dir,
+                    out_name=f"01-master-{si:02d}-citation-repair-raw.json",
+                )
                 piece = parsed["markdown"]
             except Exception as exc:                 # noqa: BLE001
+                raw = getattr(exc, "raw_response", None)
+                if raw is not None:
+                    (ev_dir / f"01-master-{si:02d}-failed-raw.json").write_text(
+                        json.dumps(raw, indent=2, default=str))
+                master_failure_reason[title] = (
+                    f"{type(exc).__name__}: {str(exc)[:400]}")
                 print(f"[publish_report_v2] master section {title!r} failed: "
                       f"{type(exc).__name__}: {str(exc)[:80]}", flush=True)
                 piece = ""
             if piece.strip():
-                master_pieces.append(piece)
+                master_by_title[title] = piece
             else:
                 master_failed.append(title)
             print(f"[publish_report_v2] master section {si + 1}/"
                   f"{len(REPORT_MASTER_SECTIONS)} {title[:44]}: "
                   f"{len(piece)} chars"
                   f"{' (FAILED)' if not piece.strip() else ''}", flush=True)
+
+        # A failed master section used to trigger a full 17-section retry. That
+        # repeats hours of accepted work and failed the same way on a section
+        # with no findings. Repair only the failed sections, in place, with an
+        # explicit no-findings fallback.
+        for retry_index, title in enumerate(list(master_failed), start=1):
+            targeted_prompt = build_prompt_full(
+                session, verdict, deep, yara_meta, audit,
+                dotnet_result=dotnet_result, r2_decomp=r2_decomp,
+                r2_ai=r2_ai, frida_trace=frida_trace, upx=upx,
+                xor_hits=xor_hits, olevba=olevba, peepdf=peepdf,
+                malcat_result=malcat_result, capa_result=capa_result,
+                yara_result=yara_result, floss_result=floss_result,
+                pe_imports_result=pe_imports_result,
+                recovery_evidence=recovery_evidence,
+                dynamic_status=dynamic_status,
+                dynamic_evidence=dynamic_evidence,
+                ioc_evidence=ioc_evidence,
+                ti_evidence=ti_evidence,
+                source_evidence=source_evidence,
+                sections=[title],
+            )
+            targeted_prompt += (
+                "\n\n## Targeted missing-section repair\n"
+                f"The previous response did not return the required section "
+                f"'{title}'. Return exactly one section object with that exact "
+                "heading. If the evidence supports no factual finding for this "
+                "section, return one `note` or `assessment` block that states "
+                "the limitation honestly. Never return `sections: []` and never "
+                "omit the heading. Do not rewrite any other section."
+            )
+            reason = master_failure_reason.get(title, "")
+            if reason:
+                targeted_prompt += (
+                    "\n\n### Why the previous attempt was rejected\n"
+                    f"{reason}\n\nFix exactly that. `sections` must be a JSON "
+                    "ARRAY of section objects, each with `heading` and `blocks`. "
+                    "Do not return it as a JSON string, do not wrap it in an "
+                    "object, and do not return Markdown instead."
+                )
+            attempt: dict[str, Any] = {"section": title, "accepted": False}
+            try:
+                response, parsed = llm_report_structured(
+                    targeted_prompt, section_only=True, heading_level=1,
+                    retries=1, timeout_s=REPORT_CALL_TIMEOUT_S)
+                raw_path = ev_dir / (
+                    f"01-master-{retry_index:02d}-missing-section-raw.json"
+                )
+                raw_path.write_text(json.dumps(response, indent=2, default=str))
+                candidate = str((parsed or {}).get("markdown") or "").strip()
+                if candidate and title.casefold() in candidate.casefold():
+                    master_by_title[title] = candidate
+                    master_failed.remove(title)
+                    attempt["accepted"] = True
+                    attempt["response_chars"] = len(candidate)
+                else:
+                    attempt["reason"] = "response did not contain the required heading"
+            except Exception as retry_exc:           # noqa: BLE001
+                raw = getattr(retry_exc, "raw_response", None)
+                if raw is not None:
+                    (ev_dir / f"01-master-{retry_index:02d}-missing-section-failed-raw.json"
+                     ).write_text(json.dumps(raw, indent=2, default=str))
+                attempt["reason"] = (
+                    f"{type(retry_exc).__name__}: {str(retry_exc)[:160]}"
+                )
+            master_targeted_attempts.append(attempt)
+            print(
+                f"[publish_report_v2] master missing-section repair "
+                f"{title[:44]}: {'accepted' if attempt['accepted'] else 'retained missing'}"
+                f" ({attempt.get('reason')})",
+                flush=True,
+            )
+        master_md = "\n\n".join(
+            master_by_title[title] for title in REPORT_MASTER_SECTIONS
+            if title in master_by_title
+        )
         report = {
             "title": f"RE Report {args.sha256[:12]}",
-            "markdown": "\n\n".join(master_pieces),
+            "markdown": master_md,
             "source": "llm_judge",
             "schema_used": not master_failed,
             "template": args.template,
@@ -1466,6 +1726,10 @@ def main():
             "section_wise": True,
             "sections_failed": master_failed,
         }
+        if master_targeted_attempts:
+            report["master_missing_section_repair_attempts"] = (
+                master_targeted_attempts
+            )
         if master_failed:
             report["model"] = get_llm_model()
             report["llm_audit"] = llm_call_metadata({}) or {}
@@ -1507,11 +1771,14 @@ def main():
                 report["markdown"] = md
                 report["source"] = "deterministic_fallback_after_incomplete_llm"
                 report["schema_used"] = False
-            elif missing:
+            elif missing and not master_targeted_attempts:
                 # Completeness retry (2026-08-12, brbbot-class): the single-call
                 # master stopped early (finish_reason=stop at ~1.8K chars) with
                 # most sections unwritten. ONE bounded retry with a
                 # completeness nudge; accept only a strictly-better draft.
+                # When the targeted per-section repair already ran, do NOT
+                # re-request all 17 sections: that repeats accepted work and
+                # failed identically on a no-findings section.
                 try:
                     _nudge = (
                         "Your previous draft is INCOMPLETE — these required "
@@ -1524,7 +1791,8 @@ def main():
                     )
                     _resp2, _r2 = llm_report_structured(
                         prompt + "\n\n" + _nudge,
-                        section_only=True, heading_level=1, retries=1)
+                        section_only=True, heading_level=1, retries=1,
+                        timeout_s=REPORT_CALL_TIMEOUT_S)
                     (ev_dir / "01b-llm-retry-raw.json").write_text(
                         json.dumps(_resp2, indent=2, default=str)
                     )
@@ -1595,7 +1863,7 @@ def main():
                     )
                     response, parsed = llm_report_structured(
                         repair_prompt, section_only=True, heading_level=1,
-                        retries=1)
+                        retries=1, timeout_s=REPORT_CALL_TIMEOUT_S)
                     stub_retry_counter[0] += 1
                     (ev_dir / f"01-master-stub-retry-{stub_retry_counter[0]:02d}-raw.json").write_text(
                         json.dumps(response, indent=2, default=str)
@@ -1622,6 +1890,15 @@ def main():
                 report["quality_fail"] = {"missing": missing, "stubs": stubs}
             missing = verify_sections(md)
             stubs = stub_sections(md, REPORT_MASTER_SECTIONS)
+        # Schema provenance is a statement about the FINAL report, not the first
+        # attempt. A targeted section repair that restores completeness makes
+        # the published report schema-authored again; a fallback or an
+        # incomplete final report never does.
+        report["schema_used"] = bool(
+            not missing
+            and not stubs
+            and not source_is_fallback(report.get("source"))
+        )
         report["sections_missing"] = missing
         report["sections_stub"] = stubs
         report["sections_complete"] = len(REPORT_MASTER_SECTIONS) - len(missing)
@@ -1713,6 +1990,11 @@ def main():
     if args.template == "full":
         report["sections_missing"], report["sections_stub"] = (
             _refresh_section_metadata(report, md, REPORT_MASTER_SECTIONS)
+        )
+        report["schema_used"] = bool(
+            not report["sections_missing"]
+            and not report["sections_stub"]
+            and not source_is_fallback(report.get("source"))
         )
     md = report_execution_comment(args.sha256, context, manifest_digest) + "\n\n" + md
     md, credential_categories = redact_credential_like_values(md)
@@ -1838,7 +2120,8 @@ def main():
                     technical_report["llm_error"] = tech_err
             else:
                 resp_tech, technical_report = llm_report_structured(
-                    prompt_tech, section_only=True, heading_level=2, retries=1)
+                    prompt_tech, section_only=True, heading_level=2, retries=1,
+                    timeout_s=REPORT_CALL_TIMEOUT_S)
                 (ev_dir / "05-llm-technical-raw.json").write_text(
                     json.dumps(resp_tech, indent=2, default=str)
                 )
@@ -1902,7 +2185,7 @@ def main():
                     )
                     response, parsed = llm_report_structured(
                         retry_prompt, section_only=True, heading_level=2,
-                        retries=1)
+                        retries=1, timeout_s=REPORT_CALL_TIMEOUT_S)
                     raw_path = ev_dir / f"05c-technical-stub-retry-{len(retry_llm_audits):02d}.json"
                     raw_path.write_text(
                         json.dumps(response, indent=2, default=str),
@@ -1978,7 +2261,7 @@ def main():
                     try:
                         response, parsed = llm_report_structured(
                             targeted_prompt, section_only=True, heading_level=2,
-                            retries=1)
+                            retries=1, timeout_s=REPORT_CALL_TIMEOUT_S)
                         raw_path = ev_dir / (
                             f"05b-technical-missing-section-{retry_index:02d}-raw.json"
                         )
@@ -2011,6 +2294,16 @@ def main():
                                 if inserted:
                                     attempt["response_chars"] = len(candidate_section)
                     except Exception as retry_exc:
+                        raw = getattr(retry_exc, "raw_response", None)
+                        if raw is not None:
+                            raw_path = ev_dir / (
+                                f"05b-technical-missing-section-"
+                                f"{retry_index:02d}-failed-raw.json"
+                            )
+                            raw_path.write_text(
+                                json.dumps(raw, indent=2, default=str),
+                                encoding="utf-8",
+                            )
                         attempt["reason"] = (
                             f"{type(retry_exc).__name__}: {str(retry_exc)[:160]}"
                         )
@@ -2021,6 +2314,14 @@ def main():
                 technical_report["markdown"] = tech_md
                 tech_missing = verify_technical_sections(tech_md)
                 tech_stubs = stub_sections(tech_md, TECHNICAL_REPORT_SECTIONS)
+                # The targeted repair restored the structured report. Record
+                # that provenance on the final artifact; leaving schema_used
+                # False makes a successfully repaired report look like a
+                # fallback to the audit.
+                if (not tech_missing and not tech_stubs
+                        and not source_is_fallback(
+                            technical_report.get("source"))):
+                    technical_report["schema_used"] = True
             if tech_missing or tech_stubs:
                 if not source_is_fallback(technical_report.get("source")):
                     technical_report["source"] = "llm_incomplete" if (tech_missing or tech_stubs) else technical_report.get("source")

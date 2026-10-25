@@ -1622,6 +1622,18 @@ def main():
         help="Accepted for compatibility; showcase pack is always written.",
     )
     args = ap.parse_args()
+    # The semantic claim review calls the LLM. Running this stage by hand (over
+    # SSH, outside the orchestrator) did not load llm.env, so the review failed
+    # instantly with "LLM API key not configured" and every claim became
+    # `verification-error` -- a misleading red that looked like a report defect
+    # (2026-10-24). Load the same config every other stage uses.
+    try:
+        from v2_lib import ensure_pipeline_runtime_env
+
+        ensure_pipeline_runtime_env()
+    except Exception as exc:                # noqa: BLE001 - stay runnable
+        print(f"[audit_pipeline] env bootstrap skipped: "
+              f"{type(exc).__name__}: {exc}", file=sys.stderr, flush=True)
     # Mode-keyed by design: auditing the flat directory would silently report on
     # legacy artifacts instead of the run you asked about.
     require_run_mode("audit_pipeline")
