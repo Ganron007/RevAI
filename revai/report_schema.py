@@ -329,16 +329,14 @@ def validate_report_document(document: Any) -> list[str]:
             if (kind == "table" and bi > 0
                     and _text((blocks[bi - 1] or {}).get("kind")).lower()
                     == "table"):
-                # Two tables with nothing between them render as one visual
-                # dump and the quality gate fails the report for orphan tables
-                # (2026-10-24: four such pairs failed a complete technical
-                # report). Say so at the schema boundary, where the writer can
-                # still fix it, instead of at the gate after publication.
-                errors.append(
-                    f"{bwhere}: two tables cannot be adjacent; put an "
-                    "`observation` block between them that states what the "
-                    "second table adds"
-                )
+                # REASSESSED 2026-10-26: two adjacent tables are a LAYOUT
+                # concern, and the report quality gate already counts and caps
+                # them (`orphan_tables` <= 2). Rejecting them here made the
+                # claim-integrity schema fail repairs for a style defect and
+                # LOST whole sections (master 4 on run 7e51a300). The writer
+                # is still told to separate tables; the gate still fails a
+                # report that overdoes it.
+                pass
             if kind == "observation":
                 text = _text(block.get("text"))
                 if not text:

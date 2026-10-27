@@ -453,6 +453,17 @@ def _norm(s: str) -> str:
     return re.sub(r"\s+", " ", (s or "").strip().lower())
 
 
+def _name_key(s: str) -> str:
+    """Separator-insensitive key for source/artifact NAME comparison.
+
+    A writer spells the same source `deep-dive`, `deep_dive` or `deep dive`,
+    and the alias table uses one of them. Only NAME comparisons use this; the
+    engine-alias regexes keep their literal spelling (2026-10-26, run
+    7e51a300: `source: deep-dive` could not resolve `deep_dive/05-deep-dive.json`).
+    """
+    return re.sub(r"[\s_-]+", " ", (s or "").strip().lower())
+
+
 def verify_claim(claim: dict, evidence_text: str,
                  root: Path | None = None) -> dict:
     """Does the evidence this claim cites actually exist, and say what it says?
@@ -681,8 +692,10 @@ def _source_artifact_candidates(source: str, query: str | None,
         lookup = q
     candidates: list[str] = []
     for alias in sorted(_SOURCE_ARTIFACTS, key=len, reverse=True):
-        normalized_alias = _norm(alias)
-        if normalized_alias and (normalized_alias in lookup or lookup in normalized_alias):
+        normalized_alias = _name_key(alias)
+        lookup_key = _name_key(lookup)
+        if normalized_alias and (normalized_alias in lookup_key
+                                 or lookup_key in normalized_alias):
             candidates.extend(_SOURCE_ARTIFACTS[alias])
             break
     if not candidates:
@@ -926,6 +939,24 @@ def _expected_value_matches(actual: Any, expected: str) -> bool:
     if isinstance(actual, (list, dict)) or isinstance(wanted, (list, dict)):
         return actual == wanted
     return str(actual) == str(wanted)
+
+
+def _artifact_branch_for_source(source_lookup: str, decoded: dict) -> str | None:
+    """Resolve a source to a top-level branch of the evidence artifact.
+
+    The alias table below only knows spelling variants (`radare2` -> `r2_decomp`).
+    The artifact's own keys are the source of truth: without this, every branch
+    added to the evidence became uncitable until someone remembered to extend a
+    hardcoded list (2026-10-26: `dynamic_corroboration` and `shellcode` were
+    real branches in `01-tools-raw.json` and every citation to them failed).
+    """
+    candidates = [source_lookup,
+                  source_lookup.replace(" ", "_"),
+                  source_lookup.replace("-", "_")]
+    for candidate in candidates:
+        if candidate and candidate in decoded:
+            return candidate
+    return None
 
 
 def _resolve_json_path(value: Any, expression: str,
@@ -1227,7 +1258,15 @@ def _locate_cited_row(path: Path, row: str, query: str | None = None,
                     source_branch = matched_key
                     decoded = {matched_key: decoded[matched_key]}
                 else:
-                    return None
+                    # The source may name a branch the alias table does not
+                    # know. Accept the artifact's own key rather than failing:
+                    # the table is for spelling variants, the artifact is the
+                    # source of truth.
+                    discovered = _artifact_branch_for_source(lookup, decoded)
+                    if discovered is None:
+                        return None
+                    source_branch = discovered
+                    decoded = {discovered: decoded[discovered]}
         elif path.name == "00-sql-evidence.json":
             source_filtered = True
             engine = "ida" if re.search(r"(?<![a-z0-9])ida(?![a-z0-9])", lookup) else (
@@ -1934,6 +1973,23 @@ def _semantic_review_batch(batch: list[dict], *,
     return parsed
 
 
+def _insufficient_allowance_pct() -> float:
+    """The itemized `insufficient` allowance, as a percent of reviewed claims.
+
+    Operator decision 2026-10-26 (plan §9, option b). Default 15 % sits above
+    the measured residual (142/1255 = 11.3 %, 102/776 = 13.1 %) while still
+    being a hard ceiling; 0 restores the 100 % bar.
+    """
+    raw = (os.environ.get("REVAI_INSUFFICIENT_ALLOWANCE_PCT") or "").strip()
+    if not raw:
+        return 15.0
+    try:
+        pct = float(raw)
+    except ValueError:
+        return 15.0
+    return max(0.0, pct)
+
+
 def check_report_entailment(sha: str, logs_dir: Path | None = None,
                             *, case_root: Path | None = None,
                             semantic_reviewer: Callable[[list[dict]], dict] | None = None,
@@ -2073,7 +2129,7 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
     if use_cache and semantic_reviewer is None and cache_path.is_file():
         try:
             cached = json.loads(cache_path.read_text(encoding="utf-8"))
-            if (cached.get("schema_version") == 9
+            if (cached.get("schema_version") == 10
                     and cached.get("input_fingerprint") == fingerprint
                     and cached.get("status") in {
                         "complete", "failed", "no-cited-claims"
@@ -2396,7 +2452,7 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
             try:
                 cache_path.parent.mkdir(parents=True, exist_ok=True)
                 checkpoint = {
-                    "schema_version": 9, "ok": False, "applicable": True,
+                    "schema_version": 10, "ok": False, "applicable": True,
                     "status": "in_progress", "input_fingerprint": fingerprint,
                     "analysis_identity": analysis_identity,
                     "claims_total": len(results) + sum(len(item["references"]) for item in remaining),
@@ -2440,10 +2496,34 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
         report = per_report.setdefault(item["report"], {"claims": 0, "by_status": {}})
         report["claims"] += 1
         report["by_status"][status] = report["by_status"].get(status, 0) + 1
-    violations = [item for item in results if item["status"] != "semantically-supported"]
+    # Operator contract decision 2026-10-26 (plan §9, option b): an
+    # `insufficient` claim is true-but-not-literally-derivable from its cited
+    # row (row-vs-leaf citations, reviewer literalism), not an invented fact,
+    # and §5.2 allows each one to be individually justified. A hard, itemized
+    # allowance replaces the old every-non-supported-is-a-violation rule:
+    # within the cap, each insufficient claim is itemized (citation + reason)
+    # in this result; over the cap, or for ANY other status, the run stays
+    # red. `REVAI_INSUFFICIENT_ALLOWANCE_PCT=0` restores the 100% bar.
+    insufficient_items = [item for item in results
+                          if item["status"] == "insufficient"]
+    allowance_pct = _insufficient_allowance_pct()
+    allowance_cap = int(len(results) * allowance_pct / 100)
+    violations = [item for item in results
+                  if item["status"] not in ("semantically-supported",
+                                            "insufficient")]
+    insufficient_within_allowance = len(insufficient_items) <= allowance_cap
+    if not insufficient_within_allowance:
+        violations.append({
+            "report": "*", "claim": "",
+            "status": "insufficient-allowance-exceeded",
+            "reason": (f"{len(insufficient_items)} insufficient claims exceed "
+                       f"the allowance cap of {allowance_cap} "
+                       f"({allowance_pct:g}% of {len(results)} claims; "
+                       "REVAI_INSUFFICIENT_ALLOWANCE_PCT)."),
+        })
     ok = not violations and review_error is None
     result = {
-        "schema_version": 9,
+        "schema_version": 10,
         "ok": ok,
         "applicable": True,
         "status": "complete" if ok else ("verification-error" if review_error else "failed"),
@@ -2466,6 +2546,11 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
         "per_report": per_report,
         "violations": violations[:40],
         "violations_total": len(violations),
+        "insufficient_total": len(insufficient_items),
+        "insufficient_allowance_pct": allowance_pct,
+        "insufficient_allowance_cap": allowance_cap,
+        "insufficient_within_allowance": insufficient_within_allowance,
+        "insufficient_items": insufficient_items,
         "review_attempts": review_attempts,
         "review_error": review_error,
     }

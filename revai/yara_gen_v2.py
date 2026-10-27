@@ -316,7 +316,15 @@ def extract_iocs(sha256: str, sample_path: Path, verdict: dict | None,
     return {
         "sha256": sha256,
         "family": (verdict or {}).get("family_guess") or "unknown",
-        "verdict": f"{((verdict or {}).get('verdict') or 'unknown')}@{((verdict or {}).get('confidence') or '')}",
+        # A machine field must hold the LABEL, not a compound. It used to be
+        # f"{verdict}@{confidence}"; with no confidence that produced
+        # "suspicious@", and every report citing $.verdict was then judged
+        # contradicted against its own "suspicious" (2026-10-26, run 7e51a300).
+        "verdict": ((verdict or {}).get("verdict") or "unknown"),
+        "confidence": ((verdict or {}).get("confidence")
+                       if verdict else None),
+        "verdict_raw": f"{((verdict or {}).get('verdict') or 'unknown')}"
+                       f"@{((verdict or {}).get('confidence') or '')}",
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "hashes": hashes,
         "domains": _clean([m.group(0) for m in domain_re.finditer(joined)], exclude_ext=True),

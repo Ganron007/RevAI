@@ -41,6 +41,8 @@ from v2_lib import (
     TECHNICAL_REPORT_SECTIONS,
     require_run_mode,
     case_dir,
+    deterministic_dynamic_section_md,
+    dynamic_evidence_substantive,
     _sec_identity_evidence,
     _sec_classification_evidence,
     _sec_triage_evidence,
@@ -1014,6 +1016,24 @@ def _generate_technical_section(
         result["llm_ok"] = True
         result["schema_used"] = None
         return result
+
+    # Section 5 is evidence-conditioned (RC-27, operator decision 2026-10-27):
+    # without a WinRE detonation there is no behavioral evidence to interpret,
+    # so the section renders deterministically from the run status instead of
+    # asking the model to author prose whose only true sentence is 'not
+    # performed'. Mirrors the v2 publisher's rule exactly.
+    if name == "5. Behavioral & Dynamic Analysis":
+        try:
+            from v2_lib import dynamic_analysis_status
+            _dyn = dynamic_analysis_status(sha)
+        except Exception:                     # noqa: BLE001 - unreadable status
+            _dyn = None                       # -> LLM path, never a false claim
+        if _dyn is not None and not dynamic_evidence_substantive(_dyn):
+            result["markdown"] = deterministic_dynamic_section_md(_dyn)
+            result["deterministic"] = True
+            result["llm_ok"] = True
+            result["schema_used"] = None
+            return result
 
     try:
         evidence = _technical_section_evidence(name, blocks, header)

@@ -464,14 +464,21 @@ class StageRunner:
             self._mark_report_terminal(name, out)
         return out
 
+    #: Only the FINAL lines of an attempt are a failure signature. A 4 KB tail
+    #: still contained an EARLIER, recovered timeout and re-classified a
+    #: quality failure as transient (2026-10-26, run d9836cde). 800 chars keeps
+    #: the last line(s) of a traceback and the stage's own summary.
+    _FAILURE_TAIL_CHARS = 800
+
     def _failure_reason(self, marker: str) -> str:
-        """Pull the failure text of the last stage attempt from the run log."""
+        """The tail of the last stage attempt, where the failure is reported."""
         try:
             txt = self.run_log.read_text(encoding="utf-8", errors="replace")
             idx = txt.rfind(marker)
             if idx < 0:
                 return ""
-            return txt[idx : idx + 12000]
+            block = txt[idx:]
+            return block[-self._FAILURE_TAIL_CHARS:]
         except Exception:
             return ""
 

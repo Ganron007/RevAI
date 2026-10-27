@@ -37,6 +37,9 @@ from v2_lib import (  # noqa: E402
     build_technical_evidence_block,
     format_ti_hash_enrichment_evidence,
     case_dir,
+    deterministic_dynamic_section_md,
+    dynamic_evidence_substantive,
+    ensure_verdict_panel,
     assert_report_input_manifest,
     compact_json_for_prompt,
     format_report_input_manifest,
@@ -184,6 +187,19 @@ def _citation_correction_note(failures: list[str]) -> str:
     )
 
 
+def _section_verdict(markdown: str) -> str | None:
+    """The verdict label a generated section states, or None when it states none."""
+    try:
+        from v2_lib import infer_publish_verdict_from_markdown
+
+        label = infer_publish_verdict_from_markdown(markdown or "")
+    except Exception:                       # noqa: BLE001 - fail open
+        return None
+    if not label or label == "unknown":
+        return None
+    return label
+
+
 def repair_section_citations(
     prompt: str,
     parsed: dict,
@@ -194,27 +210,45 @@ def repair_section_citations(
     label: str,
     ev_dir: Path | None = None,
     out_name: str | None = None,
+    expected_verdict: str | None = None,
 ) -> tuple[dict, int]:
-    """Ask for one citation-corrected retry when a section mis-cites evidence.
+    """Ask for one corrected retry when a section mis-cites evidence or a verdict.
 
     Returns (parsed, remaining_failures). The corrected section is kept ONLY
-    when it resolves strictly more citations; otherwise the original is kept,
-    so this pass can never replace a good section with a worse one. The audit
-    still checks the final report either way -- this does not weaken any gate.
+    when it resolves at least as many citations AND its verdict agrees with the
+    pipeline-locked label; otherwise the original is kept, so this pass can
+    never replace a good section with a worse one. The audit still checks the
+    final report either way -- this does not weaken any gate.
     """
     failures = _unresolved_citations(parsed, root)
-    if not failures:
+    found_verdict = _section_verdict(parsed.get("markdown") or "")
+    verdict_bad = bool(expected_verdict and found_verdict
+                       and found_verdict != expected_verdict)
+    if not failures and not verdict_bad:
         return parsed, 0
+    note = _citation_correction_note(failures) if failures else ""
+    if verdict_bad:
+        # The report must use the pipeline-locked label (2026-10-26, run
+        # 7e51a300: the technical report asserted "Verdict: benign SDK
+        # component" while the locked verdict was suspicious, which failed both
+        # the lock and the cross-report check).
+        note += (
+            "\n\n## VERDICT CORRECTION\n"
+            f"This section states the sample verdict as '{found_verdict}', but "
+            f"the pipeline-locked verdict is '{expected_verdict}'. Return the "
+            f"same section using '{expected_verdict}' as the verdict label; "
+            "keep every finding, observation and citation unchanged."
+        )
     try:
         response, corrected = llm_report_structured(
-            prompt + _citation_correction_note(failures),
+            prompt + note,
             section_only=section_only,
             heading_level=heading_level,
             retries=1,
             timeout_s=REPORT_CALL_TIMEOUT_S,
         )
     except Exception as exc:                # noqa: BLE001
-        print(f"[publish_report_v2] {label} citation repair failed: "
+        print(f"[publish_report_v2] {label} correction failed: "
               f"{type(exc).__name__}: {str(exc)[:90]}", flush=True)
         return parsed, len(failures)
     if ev_dir is not None and out_name:
@@ -224,11 +258,16 @@ def repair_section_citations(
         except OSError:
             pass
     remaining = _unresolved_citations(corrected, root)
-    print(f"[publish_report_v2] {label} citation repair: "
-          f"{len(failures)} unresolved -> {len(remaining)}", flush=True)
-    if len(remaining) >= len(failures):
-        return parsed, len(failures)
-    return corrected, len(remaining)
+    new_verdict = _section_verdict(corrected.get("markdown") or "")
+    verdict_ok = (not expected_verdict) or (new_verdict in (None, expected_verdict))
+    print(f"[publish_report_v2] {label} correction: "
+          f"{len(failures)} unresolved -> {len(remaining)}, "
+          f"verdict {found_verdict or '-'} -> {new_verdict or '-'} "
+          f"(locked {expected_verdict or '-'})", flush=True)
+    if verdict_ok and len(remaining) <= len(failures) and (
+            len(remaining) < len(failures) or verdict_bad):
+        return corrected, len(remaining)
+    return parsed, len(failures)
 
 
 LOGS = Path("/opt/samples/logs")
@@ -986,6 +1025,8 @@ def generate_technical_chunked(
     recovery_evidence: str = "", final_verdict: str | None = None,
     source_evidence: str = "",
     ev_dir: Path | None = None,
+    expected_verdict: str | None = None,
+    dynamic_status: dict | None = None,
 ) -> tuple[str, list[dict], list[str]]:
     """Generate the technical report as several bounded calls.
 
@@ -1020,6 +1061,7 @@ def generate_technical_chunked(
                     section_only=True, heading_level=2, label=label,
                     ev_dir=ev_dir,
                     out_name=out_name.replace(".json", "-citation-repair.json"),
+                    expected_verdict=expected_verdict,
                 )
             md = parsed["markdown"]
         except Exception as exc:                     # noqa: BLE001
@@ -1048,8 +1090,23 @@ def generate_technical_chunked(
             sections=titles,
             prior_sections_md=prior_sections_md)
         md = _call(prompt, tag, out_name, titles=titles)
-        if md or len(titles) == 1:
+        if md:
             return md
+        if len(titles) == 1:
+            # A single-section chunk used to return empty with NO retry, so a
+            # transient provider failure permanently lost the section
+            # (2026-10-26: three technical body sections were lost to a 500
+            # burst, and the report then failed publication on missing
+            # sections). One bounded retry, same content, no new contract.
+            nudge = (
+                prompt
+                + "\n\n## RETRY\n"
+                "The previous call returned no usable content. Return the same "
+                "section now, complete and schema-valid."
+            )
+            return _call(nudge, f"{tag}-retry",
+                         out_name.replace(".json", "-retry.json"),
+                         titles=titles)
         print(f"[publish_report_v2] {tag} returned nothing; retrying "
               f"{len(titles)} section(s) individually", flush=True)
         recovered: list[str] = []
@@ -1072,13 +1129,33 @@ def generate_technical_chunked(
     audits: list[dict] = []
     errors: list[str] = []
     body_text: list[str] = []
+    body_mds: dict[int, str] = {}
     for gi, (a, b) in enumerate(TECHNICAL_BODY_GROUPS):
         titles = TECHNICAL_REPORT_SECTIONS[a:b]
+        if (titles == ["5. Behavioral & Dynamic Analysis"]
+                and dynamic_status is not None
+                and not dynamic_evidence_substantive(dynamic_status)):
+            # Evidence-conditioned section (operator decision 2026-10-27,
+            # RC-27): with no WinRE detonation there is no behavioral evidence
+            # to interpret, so the section renders deterministically from the
+            # run status instead of spending an LLM call on prose whose only
+            # true sentence is 'not performed' -- the exact section provider
+            # stalls ate on run 683066829c23.
+            md = deterministic_dynamic_section_md(dynamic_status)
+            body_mds[gi] = md
+            audits.append({"part": f"body-{gi}", "deterministic": True,
+                           "markdown_chars": len(md),
+                           "reason": "no runtime-analysis mechanism executed "
+                                     "the sample; rendered from the "
+                                     "dynamic-analysis status"})
+            print(f"[publish_report_v2] technical body part {gi + 1}/"
+                  f"{len(TECHNICAL_BODY_GROUPS)}: {len(md)} chars "
+                  f"(deterministic)", flush=True)
+            continue
         errs_before = len(errors)
         md = _call_with_split(titles, f"body-{gi}", f"05-body-{gi:02d}-raw.json")
         if md:
-            slots["body"].append(md)
-            body_text.append(md)
+            body_mds[gi] = md
         elif len(errors) == errs_before:
             # the call returned without raising, so it must have returned
             # nothing usable -- most likely an output-size overflow
@@ -1087,6 +1164,32 @@ def generate_technical_chunked(
         print(f"[publish_report_v2] technical body part {gi + 1}/"
               f"{len(TECHNICAL_BODY_GROUPS)}: {len(md)} chars"
               f"{' (FAILED)' if not md else ''}", flush=True)
+
+    # RC-29 (operator decision 2026-10-27): one bounded sweeper pass for body
+    # groups that lost their section to provider stalls -- the first call AND
+    # the RC-22 bounded retry produced no response at all (run 683066829c23:
+    # two sections lost this way). Re-calls ONLY the missing groups, once,
+    # same content. A group the sweeper also loses stays honestly lost, and a
+    # group that failed on CONTENT is not re-run: this is not the RC-16
+    # republish and does not touch the no-retry-on-quality rule.
+    for gi, (a, b) in enumerate(TECHNICAL_BODY_GROUPS):
+        if gi in body_mds:
+            continue
+        titles = TECHNICAL_REPORT_SECTIONS[a:b]
+        md = _call_with_split(titles, f"body-{gi}-sweep",
+                              f"05-body-{gi:02d}-sweep-raw.json")
+        if md:
+            body_mds[gi] = md
+            audits.append({"part": f"body-{gi}-sweep", "sweeper": True,
+                           "markdown_chars": len(md)})
+        print(f"[publish_report_v2] technical body part {gi + 1}/"
+              f"{len(TECHNICAL_BODY_GROUPS)} sweeper: "
+              f"{'recovered' if gi in body_mds else 'still missing'}",
+              flush=True)
+
+    # Assemble in section order even when a group was recovered late.
+    slots["body"] = [body_mds[gi] for gi in sorted(body_mds)]
+    body_text = list(slots["body"])
 
     prior = "\n\n".join(body_text)[:24000]
     for tag, (a, b) in (("wrap", TECHNICAL_WRAP_RANGE),
@@ -1704,6 +1807,18 @@ def main():
         # repair never mentioned the container error).
         master_failure_reason: dict[str, str] = {}
         for si, title in enumerate(REPORT_MASTER_SECTIONS):
+            if (title == "5. Behavioral Analysis"
+                    and not dynamic_evidence_substantive(dynamic_status)):
+                # Evidence-conditioned (RC-27, operator decision 2026-10-27):
+                # same rule as the technical section 5 -- no detonation, no
+                # behavioral evidence, deterministic rendering, no LLM call.
+                piece = deterministic_dynamic_section_md(
+                    dynamic_status_record, title=title, heading_level=1)
+                master_by_title[title] = piece
+                print(f"[publish_report_v2] master section {si + 1}/"
+                      f"{len(REPORT_MASTER_SECTIONS)} {title[:44]}: "
+                      f"{len(piece)} chars (deterministic)", flush=True)
+                continue
             one = build_prompt_full(
                 session, verdict, deep, yara_meta, audit,
                 dotnet_result=dotnet_result, r2_decomp=r2_decomp,
@@ -1732,6 +1847,7 @@ def main():
                           f"{len(REPORT_MASTER_SECTIONS)} {title[:30]}",
                     ev_dir=ev_dir,
                     out_name=f"01-master-{si:02d}-citation-repair-raw.json",
+                    expected_verdict=(verdict or {}).get("verdict"),
                 )
                 piece = parsed["markdown"]
             except Exception as exc:                 # noqa: BLE001
@@ -2151,6 +2267,11 @@ def main():
             and not source_is_fallback(report.get("source"))
         )
     md = report_execution_comment(args.sha256, context, manifest_digest) + "\n\n" + md
+    # RC-28 (operator decision 2026-10-27): the verdict panel is machine data
+    # and must not depend on the writer happening to render a table (run
+    # 683066829c23: the master had no panel row, so the hollow check could not
+    # compare panels). One panel, stating the published verdict-of-record.
+    md = ensure_verdict_panel(md, pub_claimed)
     md, credential_categories = redact_credential_like_values(md)
     if credential_categories:
         report["credential_like_values_redacted"] = credential_categories
@@ -2254,6 +2375,8 @@ def main():
                     final_verdict=report.get("final_verdict"),
                     source_evidence=source_evidence,
                     ev_dir=ev_dir,
+                    expected_verdict=(verdict or {}).get("verdict"),
+                    dynamic_status=dynamic_status,
                 )
                 if tech_errors:
                     tech_err = "; ".join(tech_errors)
@@ -2558,6 +2681,7 @@ def main():
 
         tech_md = (report_execution_comment(args.sha256, context, manifest_digest)
                    + "\n\n" + tech_md)
+        tech_md = ensure_verdict_panel(tech_md, pub_claimed)
         technical_report["markdown"] = tech_md
         tech_md_path = case / "REPORT-TECHNICAL-v2.md"
         tech_md_path.write_text(tech_md)

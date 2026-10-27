@@ -957,6 +957,13 @@ def _affirmative_dynamic_claim(md: str, dyn_status: dict | None = None) -> str |
                 continue
             if _DYN_NEGATED_AFTER_RE.match(after):
                 continue
+            # A CONDITIONAL clause is a hypothesis about the code, not a claim
+            # that this run executed the sample: "if the binary is executed,
+            # the lack of ASLR weakens the host's posture" (2026-10-26, run
+            # d9836cde). Skip when the sentence introduces the match with
+            # if/unless/whether.
+            if re.search(r"\b(?:if|unless|whether)\b", window):
+                continue
             if _DYN_EMULATION_SUBJECT_RE.search(m.group(0)) \
                     and regex is _DYN_EXECUTED_RE:
                 # The emulation allowance: a status description of the TOOL,
@@ -1080,6 +1087,34 @@ def _dynamic_absence_claim(md: str, dyn_status: dict) -> str | None:
         # behaviour (source: dynamic-analysis-status, ... runtime events
         # captured)").
         prose_sentence = strip_citation_annotations(sentence)
+        # A denial scoped to NAMED components is truthful when every component
+        # it names is absent, even if a DIFFERENT component ran. Measured
+        # 2026-10-26 (RC-20b): "No packet-capture artifact was produced for
+        # this run; ... records 'no packet capture artifact present'" was
+        # failed while the emulation oracle ran, because the previous rule only
+        # recognised a PARENTHESISED enumeration. A broad denial that names no
+        # component ("no dynamic analysis was performed") still falls through
+        # and fails, which is correct when something did run.
+        named_status: list[bool | None] = []
+        for _label, _ran, _pattern in (
+                ("winre", winre_ran, r"\b(?:winre|detonation)\b"),
+                ("frida", frida_ran, r"\bfrida\b"),
+                ("pcap", pcap_present, r"\b(?:packet[- ]capture|pcap)\b"),
+                ("emulation", emulation_ran,
+                 r"\b(?:speakeasy|emulation|oracle)\b"),
+        ):
+            if re.search(_pattern, prose_sentence, re.IGNORECASE):
+                named_status.append(_ran)
+        if re.search(r"\bsandbox\b", prose_sentence, re.IGNORECASE):
+            # No status is recorded for a sandbox; never grant the exemption.
+            named_status.append(None)
+        _broad_denial = re.search(
+            r"\bno\s+(?:dynamic|runtime)\s+(?:analysis|activity|run)\b"
+            r"|\bno\s+(?:dynamic|runtime)\s+execution(?!\s+paths?\b)",
+            prose_sentence, re.IGNORECASE)
+        if (named_status and not _broad_denial
+                and all(_ran is False for _ran in named_status)):
+            continue
         dynamic_claim_text = _DYN_META_NEGATION_RE.sub("", prose_sentence)
         dynamic_claim_text = _DYN_META_AFFIRMATION_RE.sub("", dynamic_claim_text)
         dynamic_claim_text = _DYN_INNER_PAYLOAD_GAP_RE.sub("", dynamic_claim_text)

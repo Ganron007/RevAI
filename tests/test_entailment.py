@@ -946,3 +946,130 @@ def test_no_calibration_record_means_no_cal_row(tmp_path):
         "a" * 64, case_root=case, semantic_reviewer=reviewer, use_cache=False)
     for row in result["claims"]:
         assert row.get("status") != "missing-citation", row
+
+
+# --------------------------------------------------------------------------
+# Operator contract decision 2026-10-26 (plan §9, option b): `insufficient`
+# claims are allowed up to a hard, itemized cap; everything else stays red.
+# --------------------------------------------------------------------------
+def _review_mixed_insufficient(batch, **_kwargs):
+    reviews = []
+    for item in batch:
+        claims = " ".join(r.get("claim", "")
+                          for r in item.get("references", []))
+        ids = [row["evidence_id"] for row in item.get("evidence", [])]
+        if "monkey" in claims:
+            reviews.append({"id": item["id"], "verdict": "insufficient",
+                            "reason": "the cited row names the rule but "
+                                      "cannot confirm the full sentence",
+                            "evidence_ids": ids})
+        else:
+            reviews.append({"id": item["id"], "verdict": "supported",
+                            "evidence_ids": ids})
+    return {"reviews": reviews}
+
+
+def _mixed_allowance_case(tmp_path):
+    """Two supported claims + three claims the reviewer marks insufficient."""
+    return _case(tmp_path, {
+        "REPORT-MASTER-v2.md":
+            "The sample imports CreateRemoteThread "
+            "(source: ghidra_query, query_or_table: imports, "
+            "row_or_rule: CreateRemoteThread).\n"
+            "The sample imports CreateRemoteThread from the studied module "
+            "(source: ghidra_query, query_or_table: imports, "
+            "row_or_rule: CreateRemoteThread).\n"
+            "The matched monkey YARA rule is domain "
+            "(source: yara, query_or_table: deep_dive/01-tools-raw.json, "
+            "row_or_rule: $.yara.matches[0].rule).\n"
+            "The monkey indicator appears in the matched rule "
+            "(source: yara, query_or_table: deep_dive/01-tools-raw.json, "
+            "row_or_rule: $.yara.matches[0].rule).\n"
+            "The monkey family string is present in the matched rule name "
+            "(source: yara, query_or_table: deep_dive/01-tools-raw.json, "
+            "row_or_rule: $.yara.matches[0].rule)."},
+        {"deep_dive/00-sql-evidence.json":
+         '{"ghidra": {"imports": "CreateRemoteThread"}}',
+         "deep_dive/01-tools-raw.json":
+         '{"yara": {"matches": [{"rule": "domain"}]}}'})
+
+
+def test_insufficient_within_the_allowance_passes_and_is_itemized(
+        tmp_path, monkeypatch):
+    monkeypatch.setenv("REVAI_INSUFFICIENT_ALLOWANCE_PCT", "60")
+    case = _mixed_allowance_case(tmp_path)
+    res = E.check_report_entailment(
+        "a" * 64, case_root=case, semantic_reviewer=_review_mixed_insufficient,
+        use_cache=False)
+    assert res["ok"] is True, res["violations"]
+    assert res["status"] == "complete"
+    assert res["insufficient_total"] == 3
+    assert res["insufficient_allowance_cap"] == 3
+    assert res["insufficient_within_allowance"] is True
+    assert len(res["insufficient_items"]) == 3
+    item = res["insufficient_items"][0]
+    assert "cited row" in item["reason"], item
+    assert item["reviewed_evidence"], item
+    assert item["reviewed_evidence"][0]["source"] == "yara"
+    assert not any(v["status"] == "insufficient-allowance-exceeded"
+                   for v in res["violations"])
+
+
+def test_insufficient_over_the_allowance_stays_red(tmp_path, monkeypatch):
+    monkeypatch.setenv("REVAI_INSUFFICIENT_ALLOWANCE_PCT", "40")
+    case = _mixed_allowance_case(tmp_path)
+    res = E.check_report_entailment(
+        "a" * 64, case_root=case, semantic_reviewer=_review_mixed_insufficient,
+        use_cache=False)
+    assert res["ok"] is False
+    assert res["status"] == "failed"
+    assert res["insufficient_total"] == 3
+    assert res["insufficient_allowance_cap"] == 2
+    assert res["insufficient_within_allowance"] is False
+    assert any(v["status"] == "insufficient-allowance-exceeded"
+               for v in res["violations"])
+
+
+def test_a_zero_allowance_restores_the_100_percent_bar(tmp_path, monkeypatch):
+    monkeypatch.setenv("REVAI_INSUFFICIENT_ALLOWANCE_PCT", "0")
+    case = _mixed_allowance_case(tmp_path)
+    res = E.check_report_entailment(
+        "a" * 64, case_root=case, semantic_reviewer=_review_mixed_insufficient,
+        use_cache=False)
+    assert res["ok"] is False
+    assert res["insufficient_allowance_cap"] == 0
+    assert res["insufficient_within_allowance"] is False
+
+
+def test_contradicted_claims_stay_red_regardless_of_the_allowance(
+        tmp_path, monkeypatch):
+    monkeypatch.setenv("REVAI_INSUFFICIENT_ALLOWANCE_PCT", "100")
+
+    def reviewer(batch, **_kwargs):
+        return {"reviews": [
+            {"id": item["id"],
+             "verdict": "contradicted"
+                        if "monkey" in " ".join(
+                            r.get("claim", "")
+                            for r in item.get("references", []))
+                        else "supported",
+             "reason": "the row states the opposite",
+             "evidence_ids": [row["evidence_id"]
+                              for row in item.get("evidence", [])]}
+            for item in batch]}
+
+    case = _mixed_allowance_case(tmp_path)
+    res = E.check_report_entailment(
+        "a" * 64, case_root=case, semantic_reviewer=reviewer, use_cache=False)
+    assert res["ok"] is False
+    assert res["insufficient_total"] == 0
+    assert all(v["status"] == "contradicted" for v in res["violations"])
+
+
+def test_the_default_allowance_is_15_percent(monkeypatch):
+    monkeypatch.delenv("REVAI_INSUFFICIENT_ALLOWANCE_PCT", raising=False)
+    assert E._insufficient_allowance_pct() == 15.0
+    monkeypatch.setenv("REVAI_INSUFFICIENT_ALLOWANCE_PCT", "not-a-number")
+    assert E._insufficient_allowance_pct() == 15.0
+    monkeypatch.setenv("REVAI_INSUFFICIENT_ALLOWANCE_PCT", "-5")
+    assert E._insufficient_allowance_pct() == 0.0

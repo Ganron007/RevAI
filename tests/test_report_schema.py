@@ -322,19 +322,19 @@ def _table(cells: list[str]) -> dict:
     }
 
 
-def test_two_adjacent_tables_are_rejected_at_the_schema_boundary():
-    """Back-to-back tables render as one dump and fail the quality gate.
+def test_two_adjacent_tables_are_accepted_by_the_schema():
+    """Layout is the quality gate's job, not the claim schema's.
 
-    Measured 2026-10-24: a complete technical report failed publication with
-    `technical_v2:orphan_tables:4` -- four places where a table immediately
-    followed another table with no prose between them. The schema can say so
-    while the writer can still fix it, instead of at the gate after the whole
-    report has been generated.
+    Reassessed 2026-10-26: rejecting adjacency here lost a whole master section
+    when a REPAIR responded with two tables (run 7e51a300, section 4); the
+    writer had no second chance and the report failed publication. The report
+    quality gate still counts and caps orphan tables, so an over-tabled report
+    is still red -- at the gate that owns style, not at the claim boundary.
     """
     doc = _doc(_table(["a", "b"]))
     doc["sections"][0]["blocks"].append(_table(["c", "d"]))
     errors = validate_report_document(doc)
-    assert any("two tables cannot be adjacent" in e for e in errors), errors
+    assert not errors, errors
 
 
 def test_a_table_after_prose_is_accepted():

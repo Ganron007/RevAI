@@ -464,6 +464,12 @@ def test_v3_dynamic_status_is_injected_into_every_authored_technical_section(mon
             # This section is rendered deterministically from iocs.json and
             # does not make model-authored execution claims.
             continue
+        if name == "5. Behavioral & Dynamic Analysis":
+            # Evidence-conditioned (RC-27): with no detonation on record this
+            # section renders deterministically and authors nothing; its own
+            # two-direction coverage lives in
+            # test_conditional_dynamic_section.py.
+            continue
         result = SP._generate_technical_section(name, [], "context", "a" * 64)
         assert result["llm_ok"], result
         assert result["markdown"].startswith(f"## {name}")

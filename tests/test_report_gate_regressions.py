@@ -793,3 +793,278 @@ def test_a_broad_denial_is_still_flagged_when_something_ran():
         md, md, "", 6.96, _dyn_status_emulation_ran())
     assert any("dynamic_performed_but_report_says_none" in v
                for v in result["violations"]), result["violations"]
+
+
+# --------------------------------------------------------------------------
+# RC-20b (2026-10-26, run a16be1aa): a denial that names ONE absent component
+# is truthful even when a different component (the emulation oracle) ran.
+# --------------------------------------------------------------------------
+def test_single_named_absent_component_is_truthful():
+    md = (
+        "# 6. Network Indicators & C2\n\n"
+        "- No packet-capture artifact was produced for this run; the "
+        "dynamic-analysis-status file records 'no packet capture artifact "
+        "present'. (source: dynamic-analysis-status.json, query_or_table: "
+        "dynamic-analysis-status.json, row_or_rule: $.status.packet_capture)\n"
+    )
+    result = RQ._cross_report_consistency(
+        md, md, "", 6.96, _dyn_status_emulation_ran())
+    assert not any("dynamic_performed_but_report_says_none" in v
+                   for v in result["violations"]), result["violations"]
+
+
+# --------------------------------------------------------------------------
+# RC-23 (2026-10-26, run a16be1aa): any top-level branch of the evidence
+# artifact is citable by its own name - the alias table is for spelling
+# variants, not for enumerating what may be cited.
+# --------------------------------------------------------------------------
+def test_a_branch_without_a_hardcoded_alias_is_citable(tmp_path):
+    case = tmp_path / "logs" / SHA / "scripted"
+    (case / "deep_dive").mkdir(parents=True)
+    (case / "deep_dive" / "01-tools-raw.json").write_text(json.dumps({
+        "shellcode": {"shellcode_section": {"ea": 4096, "size": 128}},
+        "dynamic_corroboration": {"pack_present": False},
+        "yara": {"matches": [{"rule": "domain"}]},
+    }), encoding="utf-8")
+    for source, row in (
+        ("shellcode", "$.shellcode.shellcode_section.ea"),
+        ("dynamic_corroboration", "$.dynamic_corroboration.pack_present"),
+        ("dynamic corroboration", "$.dynamic_corroboration.pack_present"),
+    ):
+        located, check = E._ground_citation(
+            {"source": source, "query": "deep_dive/01-tools-raw.json",
+             "row": row}, case)
+        assert located is not None, (source, row, check)
+        assert check["status"] == "traceable-row", check
+
+
+def test_an_unknown_source_is_still_rejected(tmp_path):
+    case = tmp_path / "logs" / SHA / "scripted"
+    (case / "deep_dive").mkdir(parents=True)
+    (case / "deep_dive" / "01-tools-raw.json").write_text(json.dumps({
+        "yara": {"matches": [{"rule": "domain"}]},
+    }), encoding="utf-8")
+    located, check = E._ground_citation(
+        {"source": "not_an_engine", "query": "deep_dive/01-tools-raw.json",
+         "row": "$.yara.matches[0].rule"}, case)
+    assert located is None, located
+    assert check["status"] == "unresolved-row", check
+
+
+# --------------------------------------------------------------------------
+# RC-22 (2026-10-26, run a16be1aa): a single-section technical chunk that
+# returns nothing must be retried once, not silently lost.
+# --------------------------------------------------------------------------
+def test_a_failed_single_section_chunk_is_retried_once(monkeypatch):
+    import publish_report_v2 as pub
+    from _report_fixtures import structured_tool_response
+
+    prompts: list[str] = []
+
+    def fake_llm(prompt, **kwargs):
+        prompts.append(prompt)
+        head = prompt.split("Rules", 1)[0]
+        titles = [t for t in pub.TECHNICAL_REPORT_SECTIONS if f"- {t}" in head]
+        if "## RETRY" not in prompt:
+            raise RuntimeError("HTTP Error 500: Internal Server Error")
+        body = "\n\n".join(
+            f"## {t}\n\nGrounded analysis of {t.split('. ', 1)[-1]} explains "
+            "the observed artifact, its source and the limits of the finding. "
+            "The file has one section. The import table is small."
+            for t in titles)
+        return structured_tool_response(body)
+
+    monkeypatch.setattr(pub, "llm_report", fake_llm)
+    md, _audits, _errors = pub.generate_technical_chunked(
+        {"sha256": "b" * 64, "sample_path": "/x", "project_name": "p"},
+        {}, {}, {}, [], "EVIDENCE")
+
+    assert any("## RETRY" in p for p in prompts), \
+        "a failed single-section chunk was not retried"
+    assert md.strip(), "the retry did not recover any section"
+
+
+# --------------------------------------------------------------------------
+# 13. Adjacent tables are a LAYOUT defect: the schema accepts them (so a
+#     repair cannot lose a section over them) and the quality gate still caps
+#     them. Both halves are pinned so the style rule is not left unguarded.
+# --------------------------------------------------------------------------
+
+def _adjacent_table_markdown(tables: int) -> str:
+    """`tables` tables separated only by a blank line (no prose between).
+
+    The gate counts a table whose next non-empty line is another table, so N
+    tables back-to-back yield N-1 orphans and the cap is 2.
+    """
+    block = "| a | b |\n| --- | --- |\n| 1 | 2 |"
+    rows = "\n\n".join(block for _ in range(tables))
+    return ("# Technical report\n\n## 1. Executive Summary\n\n"
+            "The sample was analysed statically and every observation below "
+            "is bound to an exact evidence row.\n\n" + rows +
+            "\n\nThe tables above summarise the same evidence.\n")
+
+
+def test_the_quality_gate_still_caps_orphan_tables():
+    three = RQ.evaluate_report_markdown(
+        _adjacent_table_markdown(3), required_sections=[], min_total_chars=0,
+        label="technical_v2")
+    four = RQ.evaluate_report_markdown(
+        _adjacent_table_markdown(4), required_sections=[], min_total_chars=0,
+        label="technical_v2")
+    assert three.get("style", {}).get("table_orphans", 0) <= 2, three
+    assert not any("orphan_tables" in i for i in three["issues"]), three["issues"]
+    assert any("orphan_tables" in i for i in four["issues"]), four["issues"]
+
+
+# --------------------------------------------------------------------------
+# 14. The transient classifier must read the FAILURE, not the whole attempt.
+#     (2026-10-26, run 7e51a300: a schema/quality publish failure was retried
+#     because the attempt log mentions timeout settings.)
+# --------------------------------------------------------------------------
+def test_a_quality_failure_is_not_retried_because_of_log_noise(tmp_path):
+    import types
+    import stage_orchestrator as SO
+    import v2_lib
+
+    log = tmp_path / "run.log"
+    marker = "===== 2026-10-26T06:19:15Z run_publish ATTEMPT 1 CMD /x\n"
+    noise = "[publish_report_v2] timeout_s=900 connection pool ready socket ok\n"
+    body = "[publish_report_v2] master section 4/17 ...\n" * 500
+    tail = ("[publish_report_v2] QUALITY FAIL master: "
+            "missing=['4. Static Analysis'] stubs=[]\n"
+            "[publish_report_v2] complete ok=False master_missing=1\n"
+            "===== rc=1\n")
+    log.write_text(marker + noise + body + tail, encoding="utf-8")
+
+    fake = types.SimpleNamespace(
+        run_log=log,
+        _FAILURE_TAIL_CHARS=SO.StageRunner._FAILURE_TAIL_CHARS)
+    reason = SO.StageRunner._failure_reason(fake, marker)
+    assert "timeout_s=900" not in reason, reason[:200]
+    assert "QUALITY FAIL" in reason, reason[:200]
+    assert not v2_lib.is_transient_failure(reason)
+
+
+def test_a_provider_5xx_still_counts_as_transient():
+    import v2_lib
+    assert v2_lib.is_transient_failure("HTTP Error 502: Bad Gateway")
+    assert v2_lib.is_transient_failure("upstream capacity: please retry later")
+    assert not v2_lib.is_transient_failure(
+        "QUALITY FAIL master: missing=['4. Static Analysis']")
+
+
+# --------------------------------------------------------------------------
+# 15. A section that states a verdict contradicting the locked label is
+#     repaired once (run 7e51a300: technical said "benign SDK component").
+# --------------------------------------------------------------------------
+def _verdict_section(markdown: str) -> dict:
+    return {"markdown": markdown,
+            "document": {"sections": [{
+                "heading": "1. Executive Summary",
+                "blocks": [{"kind": "observation", "text": "The PE is managed.",
+                            "source": "malcat",
+                            "query_or_table": "deep_dive/01-tools-raw.json",
+                            "row_or_rule": "$.malcat.file_summary.type"}]}]}}
+
+
+def test_a_contradictory_verdict_in_a_section_is_repaired(tmp_path, monkeypatch):
+    import publish_report_v2 as PUB
+    case = tmp_path / "logs" / SHA / "scripted"
+    (case / "deep_dive").mkdir(parents=True)
+    (case / "deep_dive" / "01-tools-raw.json").write_text(json.dumps({
+        "malcat": {"file_summary": {"type": "PE32"}},
+    }), encoding="utf-8")
+    original = _verdict_section(
+        "# 1. Executive Summary\n\nThe package is vendor-signed. "
+        "Verdict: benign SDK component; no further triage needed.\n")
+    corrected = _verdict_section(
+        "# 1. Executive Summary\n\nThe package is vendor-signed. "
+        "The locked report verdict is suspicious.\n")
+    monkeypatch.setattr(PUB, "llm_report_structured", lambda *a, **k: ({}, corrected))
+    parsed, remaining = PUB.repair_section_citations(
+        "p", original, case, section_only=True, heading_level=2, label="t",
+        expected_verdict="suspicious")
+    assert parsed is corrected, "the verdict repair was not kept"
+    assert remaining == 0
+
+
+def test_a_verdict_repair_that_still_contradicts_is_rejected(tmp_path, monkeypatch):
+    import publish_report_v2 as PUB
+    case = tmp_path / "logs" / SHA / "scripted"
+    (case / "deep_dive").mkdir(parents=True)
+    (case / "deep_dive" / "01-tools-raw.json").write_text(json.dumps({
+        "malcat": {"file_summary": {"type": "PE32"}},
+    }), encoding="utf-8")
+    original = _verdict_section(
+        "# 1. Executive Summary\n\nVerdict: benign SDK component.\n")
+    still_bad = _verdict_section(
+        "# 1. Executive Summary\n\nVerdict: benign SDK component.\n")
+    monkeypatch.setattr(PUB, "llm_report_structured", lambda *a, **k: ({}, still_bad))
+    parsed, _remaining = PUB.repair_section_citations(
+        "p", original, case, section_only=True, heading_level=2, label="t",
+        expected_verdict="suspicious")
+    assert parsed is original, "a still-contradictory repair was kept"
+
+
+def test_a_consistent_section_costs_no_extra_call(tmp_path, monkeypatch):
+    import publish_report_v2 as PUB
+    case = tmp_path / "logs" / SHA / "scripted"
+    (case / "deep_dive").mkdir(parents=True)
+    (case / "deep_dive" / "01-tools-raw.json").write_text(json.dumps({
+        "malcat": {"file_summary": {"type": "PE32"}},
+    }), encoding="utf-8")
+    section = _verdict_section(
+        "# 1. Executive Summary\n\nThe locked report verdict is suspicious.\n")
+    called = []
+    monkeypatch.setattr(PUB, "llm_report_structured",
+                        lambda *a, **k: called.append(1) or ({}, section))
+    parsed, remaining = PUB.repair_section_citations(
+        "p", section, case, section_only=True, heading_level=2, label="t",
+        expected_verdict="suspicious")
+    assert parsed is section
+    assert remaining == 0
+    assert not called, "a consistent section triggered a repair call"
+
+
+# --------------------------------------------------------------------------
+# 16. The IoC pack stores the verdict LABEL, not "verdict@confidence".
+# --------------------------------------------------------------------------
+def test_the_ioc_pack_stores_a_clean_verdict_label(tmp_path):
+    import yara_gen_v2 as YG
+
+    sample = tmp_path / "s.bin"
+    sample.write_bytes(b"MZ" + b"\x00" * 64)
+    iocs = YG.extract_iocs("a" * 64, sample,
+                           {"verdict": "suspicious", "family_guess": "x"}, [])
+    assert iocs["verdict"] == "suspicious", iocs["verdict"]
+    assert iocs["confidence"] is None
+    assert iocs["verdict_raw"] == "suspicious@"
+
+
+# --------------------------------------------------------------------------
+# 17. A CONDITIONAL execution clause is a hypothesis, not a run claim.
+#     (2026-10-26, run d9836cde: "if the binary is executed, the lack of ASLR
+#     weakens the host's posture" was flagged as a fabricated run.)
+# --------------------------------------------------------------------------
+def test_a_conditional_execution_clause_is_not_a_run_claim():
+    md = (
+        "# 7. Capability Assessment\n\n"
+        "- The structural anomalies are neutral. However, their absence does "
+        "mean that if the binary is executed, the lack of ASLR, DEP/NX and a "
+        "stack cookie weakens the host's exploit-mitigation posture.\n"
+    )
+    result = RQ._cross_report_consistency(
+        md, md, "", 6.96, _dyn_status_absent())
+    assert not any("dynamic_execution_claimed" in v
+                   for v in result["violations"]), result["violations"]
+
+
+def test_an_observed_execution_claim_is_still_flagged():
+    md = (
+        "# 5. Behavioral Analysis\n\n"
+        "- The sample executed and created a service named Lcss.\n"
+    )
+    result = RQ._cross_report_consistency(
+        md, md, "", 6.96, _dyn_status_absent())
+    assert any("dynamic_execution_claimed" in v
+               for v in result["violations"]), result["violations"]

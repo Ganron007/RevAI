@@ -881,6 +881,11 @@ _TRANSIENT_MARKERS = (
     "timeout", "timed out", "mcp", "connection", "refused", "reset by peer",
     "server died", "not running", "socket", "transport", "closed",
     "segmentation", "memoryerror", "killed", "oom",
+    # Provider transport failures are the class the operator authorised a
+    # whole-stage republish for. Without these, a genuine 5xx stall is NOT
+    # retried while a quality failure used to be (2026-10-26).
+    "http error 5", "bad gateway", "service unavailable", "gateway timeout",
+    "upstream", "please retry later",
 )
 
 
@@ -1116,6 +1121,64 @@ def _verdict_match_is_metalinguistic(body: str, match_start: int) -> bool:
         r"(?:\s+that)?(?:\s+the)?\s*[:\-]?\s*[\"'`\u201c\u2018]{0,2}\s*$",
         prefix.rstrip(),
     ))
+
+
+#: The verdict panel row a report must carry. Machine data, not prose: the
+#: hollow check compares panels across reports and against the locked verdict.
+_VERDICT_PANEL_ROW_RE = re.compile(
+    r"^\s*\|\s*\*{0,2}(?:Final|Verdict)\*{0,2}\s*\|", re.IGNORECASE)
+_VERDICT_PANEL_NOTE_RE = re.compile(
+    r"^\s*>\s*\*\*\[Verdict calibration\]\*\*", re.IGNORECASE)
+
+
+def ensure_verdict_panel(markdown: str, label: str) -> str:
+    """Make the report carry exactly one verdict panel stating `label`.
+
+    The panel is the report's own structured verdict statement, but its
+    existence used to depend on the writer happening to render a table
+    (run `683066829c23`: the master had no panel row at all, so the hollow
+    check could not compare panels and failed `verdict.panels_unreadable`).
+    The published label is the calibrated verdict-of-record (RC-04b) -- the
+    raw model claim stays recorded in `publish_llm_verdict_raw` and the
+    calibration note. Idempotent: a correct panel is kept byte-for-byte, a
+    disagreeing panel is corrected to the published label, duplicates are
+    dropped, and a missing panel is inserted right after the calibration note
+    (or the first heading) so the note remains the first verdict sentence.
+    """
+    label = (label or "").strip().strip("*").strip().lower()
+    if not label or label == "unknown" or not markdown:
+        return markdown
+    row = f"| Verdict | {label} |\n"
+    out: list[str] = []
+    seen = False
+    for line in markdown.splitlines(keepends=True):
+        if _VERDICT_PANEL_ROW_RE.match(line):
+            if not seen:
+                seen = True
+                out.append(row)
+            continue
+        out.append(line)
+    if seen:
+        return "".join(out)
+    insert_at = 0
+    after_heading = -1
+    for i, line in enumerate(out):
+        if _VERDICT_PANEL_NOTE_RE.match(line):
+            insert_at = i + 1
+            break
+        if after_heading < 0 and line.lstrip().startswith("#"):
+            after_heading = i + 1
+    else:
+        insert_at = after_heading if after_heading >= 0 else len(out)
+    if insert_at == 0 and after_heading >= 0:
+        insert_at = after_heading
+    if insert_at > 0 and not out[insert_at - 1].endswith("\n"):
+        out[insert_at - 1] += "\n"
+    if insert_at < len(out) and out[insert_at].strip():
+        out.insert(insert_at, "\n")
+        insert_at += 1
+    out.insert(insert_at, row)
+    return "".join(out)
 
 
 def infer_publish_verdict_from_markdown(markdown: str) -> str | None:
@@ -9727,6 +9790,78 @@ PROV_OBSERVED = "observed"    # determination backed by cited tool evidence
 PROV_INFERRED = "inferred"    # investigated, but no determination or no evidence
 PROV_UNKNOWN = "unknown"      # not examined, or the node failed
 PROVENANCE_TIERS = (PROV_OBSERVED, PROV_INFERRED, PROV_UNKNOWN)
+
+
+def _dynamic_status_core(status: dict | None) -> dict:
+    """Accept either the persisted record (`dynamic-analysis-status.json`) or
+    its `status` member -- callers hold both shapes."""
+    if isinstance(status, dict) and "winre" not in status \
+            and isinstance(status.get("status"), dict):
+        return status["status"]
+    return status or {}
+
+
+def dynamic_evidence_substantive(status: dict | None) -> bool:
+    """Did a runtime path actually execute the sample and leave behavior to
+    interpret?
+
+    Today that is only the WinRE detonation (`winre.detonation_ran`). The
+    Speakeasy oracle tool *running* is not sample behavior: its traces on the
+    current runs are null-to-thin and the honest content for them is a
+    deterministic rendering of the run status, not model interpretation. The
+    RevAI Frida probe is static candidate analysis by its own definition and
+    never executes the sample. When WinRE is integrated this flips to the LLM
+    path automatically, because detonation is the condition.
+
+    Operator decision 2026-10-27: report sections are evidence-conditioned
+    like the pipeline stages -- a section whose evidence base does not exist
+    is rendered deterministically, not authored from nothing.
+    """
+    return ((_dynamic_status_core(status).get("winre") or {})
+            .get("detonation_ran") is True)
+
+
+def deterministic_dynamic_section_md(status: dict | None, *,
+                                     title: str = "5. Behavioral & Dynamic Analysis",
+                                     heading_level: int = 2) -> str:
+    """The no-execution Behavioral/Dynamic Analysis section, rendered here.
+
+    An unconditional section template made the writer produce this section
+    even when nothing observed the sample running (run `683066829c23`: WinRE
+    absent, Frida static-only, no capture -- and both LLM attempts on the
+    section stalled, publishing the whole technical report as a fallback).
+    When `dynamic_evidence_substantive` is False, this block IS the section:
+    it quotes the authoritative run status verbatim and cites it, so no model
+    call is spent on prose whose only true sentence is 'not performed'.
+    """
+    hashes = "#" * max(1, int(heading_level))
+    core = _dynamic_status_core(status)
+    sentence = (str((status or {}).get("sentence") or "").strip()
+                or str(core.get("sentence") or "").strip())
+    cit = ("(source: dynamic_analysis_status, query_or_table: "
+           "dynamic-analysis-status.json, row_or_rule: $.sentence)")
+    lines = [
+        f"{hashes} {title}",
+        "",
+        "No runtime-analysis mechanism observed this sample in this run, so "
+        "this report contains no behavioral or network-activity evidence to "
+        f"interpret. {cit}",
+        "",
+    ]
+    if sentence:
+        lines += [
+            "The run-scoped dynamic-analysis status, read from this run's own "
+            f"artifacts, records: {sentence} {cit}",
+            "",
+        ]
+    lines += [
+        "Behavioral and network observations are absent by evidence absence, "
+        "not by omission. Capability and detection findings rest on static "
+        "analysis and are covered in their own sections. "
+        + cit,
+        "",
+    ]
+    return "\n".join(lines)
 
 
 def _capability_provenance(status: str, evidence_n: int, truncated: bool,
