@@ -617,14 +617,26 @@ def format_report_input_manifest(manifest: dict) -> str:
     )
 
 
-def format_report_source_evidence(case_root: Path, manifest: dict) -> str:
-    """Render complete run-bound primary source artifacts for report calls.
+def format_report_source_evidence(case_root: Path, manifest: dict) -> tuple[str, dict]:
+    """Render run-bound primary source artifacts for report calls.
 
     Report writers previously saw curated evidence cards while the claim gate
     resolved citations against source JSON. That left the model to invent
     human-readable row labels that did not map back to the exact tool output.
-    This block gives each report call the full primary source files and stable
-    JSON paths; it never silently truncates an artifact.
+    This block gives each report call the primary source files and stable
+    JSON paths.
+
+    RC-30 (2026-10-28): a corpus bigger than the context-safe budget used to
+    RAISE and kill the whole publish (run `023e73576c1b`: 1,496,099 > 900,000
+    chars from two ~750 KB tool-raw files). The fail-closed raise protected
+    against a problem that cannot exist: the claim gate verifies citations
+    against the ATTESTED case files, never against this prompt text, so
+    bounding the render cannot create an unresolvable citation -- it only
+    means the writer cannot discover rows in the elided middle. Now an
+    oversized corpus renders each artifact proportionally bounded (head+tail
+    with an explicit elision marker); the elisions are returned in the meta
+    dict and recorded in the report JSON. Integrity guards keep raising:
+    absent/unattested/changed artifacts are still fatal.
     """
     if (not isinstance(manifest, dict)
             or manifest.get("schema") != "revai-report-input-manifest/v1"):
@@ -635,7 +647,7 @@ def format_report_source_evidence(case_root: Path, manifest: dict) -> str:
         if isinstance(item, dict)
     }
     root = Path(case_root).resolve()
-    blocks: list[str] = [
+    header: list[str] = [
         "## Complete run-bound primary source artifacts",
         "These are complete source files from this sample and execution, not "
         "summaries or retrieval results. Tool and sample-controlled values are "
@@ -648,14 +660,13 @@ def format_report_source_evidence(case_root: Path, manifest: dict) -> str:
         "explicit coverage limit, not evidence that the sample lacks behavior.",
         "",
     ]
-    total_chars = sum(len(item) for item in blocks)
-    included = 0
+    rendered: list[tuple[str, str]] = []          # (rel, block)
     for rel in REPORT_SOURCE_EVIDENCE_ARTIFACTS:
         entry = entries.get(rel)
         if not isinstance(entry, dict):
             raise RuntimeError(f"report source artifact is absent from input manifest: {rel}")
         if entry.get("status") == "not-produced":
-            blocks.append(f"- `{rel}`: not produced in this execution.")
+            rendered.append((rel, f"- `{rel}`: not produced in this execution."))
             continue
         if entry.get("status") != "attested":
             raise RuntimeError(
@@ -679,21 +690,72 @@ def format_report_source_evidence(case_root: Path, manifest: dict) -> str:
             default=2,
         )
         fence = "`" * max(3, fence_run + 1)
-        block = (
+        rendered.append((rel, (
             f"### `{rel}` — sha256 `{digest}`, {len(raw_bytes)} bytes\n"
             f"{fence}json\n{raw_text.rstrip()}\n{fence}\n"
-        )
-        total_chars += len(block)
-        if total_chars > REPORT_SOURCE_EVIDENCE_MAX_CHARS:
-            raise RuntimeError(
-                "complete primary report source evidence exceeds the configured "
-                f"context-safe limit ({total_chars} > "
-                f"{REPORT_SOURCE_EVIDENCE_MAX_CHARS} characters); no source was clipped")
-        blocks.append(block)
-        included += 1
-    if included == 0:
+        )))
+    whole_total = sum(len(block) for block in header) \
+        + sum(len(block) for _rel, block in rendered)
+    if not any(block.startswith("### `") for _rel, block in rendered):
         raise RuntimeError("no attested primary source artifacts are available to report writers")
-    return "\n".join(blocks)
+    meta: dict = {
+        "limit_chars": REPORT_SOURCE_EVIDENCE_MAX_CHARS,
+        "total_chars": whole_total,
+        "elided_chars": 0,
+        "elisions": {},
+    }
+    if whole_total <= REPORT_SOURCE_EVIDENCE_MAX_CHARS:
+        return "\n".join(header) + "\n" + "\n".join(
+            block for _rel, block in rendered), meta
+
+    # Bounded render: small artifacts stay whole; only the oversized ones are
+    # head+tail bounded, sharing the remaining budget proportionally to their
+    # sizes. Every artifact stays represented (heading, digest, shape); the
+    # elided middles are recorded here and in the report JSON; the complete
+    # attested file remains bound in the input manifest, which is what every
+    # citation resolves against at audit time.
+    fixed_allow = 20_000
+    header_chars = sum(len(block) for block in header)
+    small_total = sum(len(block) for _r, block in rendered
+                      if len(block) <= fixed_allow)
+    big_total = sum(len(block) for _r, block in rendered
+                    if len(block) > fixed_allow)
+    big_budget = max(1_000, REPORT_SOURCE_EVIDENCE_MAX_CHARS - header_chars
+                     - small_total - len(rendered) * 100)
+    blocks: list[str] = []
+    for rel, block in rendered:
+        if len(block) <= fixed_allow or big_total <= 0:
+            blocks.append(block)
+            continue
+        share = int(big_budget * len(block) / big_total)
+        if share >= len(block) - 200:
+            blocks.append(block)
+            continue
+        body = block.split("\n", 2)[2]        # drop the heading + digest line
+        keep = max(400, share)
+        head_keep = keep // 2
+        tail_keep = keep - head_keep
+        elided = len(body) - head_keep - tail_keep
+        marker = (f"\n... [{elided} characters elided from the middle of this "
+                  "artifact to fit the context-safe budget; the complete "
+                  "attested file is bound in the report input manifest and "
+                  "every citation resolves against it on disk. Rows in the "
+                  "elided middle are a coverage limit, not evidence of "
+                  "absence.]\n")
+        head_line, digest_line, _rest = block.split("\n", 2)
+        blocks.append(head_line + "\n" + digest_line + "\n"
+                      + body[:head_keep].rstrip() + marker
+                      + body[-tail_keep:].lstrip() + "\n")
+        meta["elisions"][rel] = elided
+    meta["elided_chars"] = sum(meta["elisions"].values())
+    out = "\n".join(header) + "\n" + "\n".join(blocks)
+    if len(out) > REPORT_SOURCE_EVIDENCE_MAX_CHARS + 2_000:
+        # A pathological ratio can still overshoot; fail loudly rather than
+        # drift into an unbounded prompt.
+        raise RuntimeError(
+            "bounded source evidence still exceeds the context-safe limit "
+            f"({len(out)} > {REPORT_SOURCE_EVIDENCE_MAX_CHARS})")
+    return out, meta
 
 
 _FLAT_CASE_DIR_WARNED: set[str] = set()

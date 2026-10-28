@@ -1756,7 +1756,18 @@ def main():
             f"(provider-stub class, manifest {manifest_digest[:12]}...)",
             flush=True,
         )
-    source_evidence = format_report_source_evidence(case, manifest)
+    source_evidence, source_evidence_meta = format_report_source_evidence(
+        case, manifest)
+    if source_evidence_meta.get("elided_chars"):
+        # RC-30: oversized corpus rendered bounded, not fatal. The elisions
+        # are a coverage limit recorded on the report, not an error.
+        print(f"[publish_report_v2] source evidence bounded: "
+              f"{source_evidence_meta['total_chars']} -> "
+              f"{source_evidence_meta['limit_chars']} chars "
+              f"(elided {source_evidence_meta['elided_chars']} across "
+              f"{len(source_evidence_meta['elisions'])} artifact(s))",
+              flush=True)
+    session["_report_source_evidence_meta"] = source_evidence_meta
     session["_report_provenance_block"] = format_report_input_manifest(manifest)
     session["_report_input_manifest_sha256"] = manifest_digest
     ev_dir = case / "publish"
@@ -2284,6 +2295,7 @@ def main():
         master_path.write_text(md)
 
     json_path = case / "report-v2.json"
+    report["source_evidence"] = source_evidence_meta
     _finalize_schema_provenance(report)
     json_path.write_text(json.dumps(report, indent=2))
     audit_write(
@@ -2687,6 +2699,7 @@ def main():
         tech_md_path.write_text(tech_md)
         (ev_dir / "06-REPORT-TECHNICAL-v2.md").write_text(tech_md)
         tech_json_path = case / "report-technical-v2.json"
+        technical_report["source_evidence"] = source_evidence_meta
         _finalize_schema_provenance(technical_report)
         tech_json_path.write_text(json.dumps(technical_report, indent=2))
         audit_write(args.sha256, {"source": "publish_report_v2_technical",
