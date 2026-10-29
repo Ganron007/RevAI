@@ -40,6 +40,15 @@ BENIGN_DOMAIN_SUFFIXES = (
     "github.com", "githubusercontent.com", "debian.org", "ubuntu.com",
     "intel.com", "nvidia.com", "vmware.com", "ntp.org", "pool.ntp.org",
     "example.com", "schemas.microsoft.com",
+    # Open-source project infrastructure referenced by legitimate ELF/Linux
+    # binaries (RC-31b, 2026-10-29: run 1bea8094's report mentioned
+    # translationproject.org and wiki.xiph.org -- gettext/Xiph reference
+    # strings in the sample -- and the checker had no class for them). Same
+    # class as the gnu.org/kernel.org entries above, measured on real runs.
+    "xiph.org", "translationproject.org", "sourceforge.net", "gnome.org",
+    "freedesktop.org", "sqlite.org", "zlib.net",
+    "x.org", "ffmpeg.org", "tldp.org", "cairographics.org", "libsdl.org",
+    "libpng.org", "samba.org",
 )
 
 _IPV4_RE = re.compile(r"^(?:\d{1,3}\.){3}\d{1,3}$")

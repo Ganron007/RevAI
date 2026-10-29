@@ -79,3 +79,20 @@ def test_annotate_empty_pack():
     block = ic.annotate({})
     assert block["items"] == []
     assert block["counts"] == {"high": 0, "medium": 0, "low": 0}
+
+
+# RC-31b (2026-10-29, run 1bea8094): open-source project infrastructure
+# referenced by legitimate ELF/Linux binaries is the same well-known class as
+# gnu.org/kernel.org -- the checker had no class for translationproject.org
+# and wiki.xiph.org and the report went red on two benign reference domains.
+def test_open_source_infrastructure_domains_are_benign():
+    for domain in ("translationproject.org", "wiki.xiph.org", "xiph.org",
+                   "ftp.gnu.org" if False else "sqlite.org",
+                   "git.kernel.org", "www.ffmpeg.org"):
+        assert ic.is_benign_domain(domain), domain
+
+
+def test_an_unknown_c2_shaped_domain_is_still_not_benign():
+    assert not ic.is_benign_domain("payload-drop-109-199.example.net")
+    assert not ic.is_benign_domain("c2.beacon-evil.org")
+    assert not ic.is_benign_domain("xn--steal-crd.org")

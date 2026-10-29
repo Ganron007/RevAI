@@ -68,7 +68,9 @@ def test_the_renderer_quotes_the_status_and_cites_it():
     md = v2_lib.deterministic_dynamic_section_md(_record())
     assert "## 5. Behavioral & Dynamic Analysis" in md
     assert _STATUS_SENTENCE in md
-    assert md.count("(source: dynamic_analysis_status") == 3
+    # One citation per sentence: a sentence after the last citation
+    # reads as the report's uncited claim (RC-31a, run 1bea8094).
+    assert md.count("(source: dynamic_analysis_status") == 4
     master = v2_lib.deterministic_dynamic_section_md(
         _record(), title="5. Behavioral Analysis", heading_level=1)
     assert "# 5. Behavioral Analysis" in master
@@ -278,3 +280,14 @@ def test_v3_section5_falls_back_to_llm_when_status_is_unreadable(monkeypatch):
         "5. Behavioral & Dynamic Analysis", [], "header", SHA)
     assert calls, "an unreadable status must fall through to the LLM path"
     assert result.get("deterministic") is not True
+
+
+def test_the_deterministic_section_has_zero_uncited_claims():
+    """RC-31a (run 1bea8094): the closing sentence sat AFTER the citation and
+    read as the report's one uncited claim, failing the quality gate. The
+    cited sentence must end the paragraph."""
+    md = v2_lib.deterministic_dynamic_section_md(_record())
+    pack = RQ.evaluate_report_markdown(
+        md, required_sections=["5. Behavioral & Dynamic Analysis"],
+        min_total_chars=0, label="technical_v2")
+    assert pack["style"]["uncited_claim_count"] == 0, pack["style"]

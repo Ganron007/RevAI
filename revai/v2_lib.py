@@ -9917,10 +9917,11 @@ def deterministic_dynamic_section_md(status: dict | None, *,
             "",
         ]
     lines += [
+        "Capability and detection findings rest on static analysis and are "
+        f"covered in their own sections. {cit}",
+        "",
         "Behavioral and network observations are absent by evidence absence, "
-        "not by omission. Capability and detection findings rest on static "
-        "analysis and are covered in their own sections. "
-        + cit,
+        f"not by omission. {cit}",
         "",
     ]
     return "\n".join(lines)
