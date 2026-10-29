@@ -2048,12 +2048,30 @@ def uncited_report_claims(markdown: str) -> list[str]:
         if is_non_factual_markdown_line(line):
             in_table = False
             continue
+        # Machine-rendered verdict lines are pipeline output, not model
+        # claims (#6-a, 2026-10-29): the RC-04b calibration blockquote is
+        # printed by the publisher itself (its provenance is the publish
+        # record and verdict-calibration.json), and it read as two uncited
+        # claims on run b4e280408534. A blockquote line that is not the
+        # calibration marker stays a claim.
+        if line.startswith(">") and "[verdict calibration]" in line.lower():
+            in_table = False
+            continue
         if line.startswith("|"):
             cells = [cell.strip() for cell in line.strip("|").split("|")]
             if not in_table:
                 in_table = True
                 continue
             if all(re.fullmatch(r"\s*:?-{2,}:?\s*", cell) for cell in cells):
+                continue
+            # The verdict panel row is the report's own structured verdict
+            # statement (#6-a): machine-checked by the verdict locks and the
+            # panel-agreement gate, not a claim that needs a citation. Match
+            # the exact panel shapes the locks read (| Verdict | ... | and
+            # | **Final** | ... |); any other row stays a claim.
+            if cells and re.fullmatch(
+                    r"(?:\*\*)?(?:verdict|final)(?:\*\*)?", cells[0],
+                    re.IGNORECASE):
                 continue
             # A populated Evidence/Source cell is not provenance by itself.
             # Require a parseable citation with a concrete row locator so the

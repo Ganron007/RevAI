@@ -1068,3 +1068,33 @@ def test_an_observed_execution_claim_is_still_flagged():
         md, md, "", 6.96, _dyn_status_absent())
     assert any("dynamic_execution_claimed" in v
                for v in result["violations"]), result["violations"]
+
+
+# --------------------------------------------------------------------------
+# #6-a (2026-10-29, runs b4e280408534 + 1bea8094): machine-rendered verdict
+# lines are pipeline output, not model claims -- the RC-04b calibration
+# blockquote and the verdict panel row carry no citation by construction and
+# their provenance is the publish record itself.
+# --------------------------------------------------------------------------
+def test_machine_verdict_lines_are_not_uncited_claims():
+    md = (
+        "# Executive Summary\n\n"
+        "> **[Verdict calibration]** The published verdict for this sample "
+        "is **suspicious**. The raw publish-model claim (malicious) was "
+        "calibrated to suspicious: protection signals are neutral.\n\n"
+        "| Verdict | suspicious |\n\n"
+        "- A model observation without a citation stays a claim.\n"
+    )
+    uncited = RQ.uncited_report_claims(md)
+    assert not any("[Verdict calibration]" in u for u in uncited), uncited
+    assert not any(u.strip("| ").startswith("Verdict") for u in uncited), \
+        uncited
+    assert any("model observation" in u for u in uncited), \
+        "unmarked prose must remain a claim"
+
+
+def test_a_table_row_claiming_verdict_stays_cited():
+    md = ("# Report\n\n| finding | detail |\n| --- | --- |\n"
+          "| beacon | 109-199-107-123.sslip.io |\n")
+    uncited = RQ.uncited_report_claims(md)
+    assert any("beacon" in u for u in uncited), uncited
