@@ -84,6 +84,7 @@ from report_quality import (  # noqa: E402
     VERDICT_CALIBRATION_CONTRACT,
     ensure_section_heading,
     evaluate_report_markdown,
+    count_table_orphans,
     missing_sections,
     PUBLIC_MODEL_LABEL,
     redact_model_names,
@@ -953,6 +954,58 @@ def _upsert_report_section(markdown: str, title: str, candidate: str,
     return current.rstrip() + "\n\n" + replacement + "\n", True
 
 
+def retry_orphan_table_sections(
+    markdown: str,
+    sections: list[str],
+    retry_section,
+) -> tuple[str, list[dict[str, Any]]]:
+    """Regenerate only sections containing adjacent-table pairs (RC-32).
+
+    The callback receives (section title, original section text) and returns a
+    one-section draft. A retry replaces the original only when the section is
+    found, carries NO orphan pair itself, and still passes the stub gate -- so
+    the pass can never make the report worse. A section the repair also fails
+    stays as-is; the quality gate still fails honestly. Never supplies
+    substitute prose.
+    """
+    current = markdown or ""
+    attempts: list[dict[str, Any]] = []
+    for section in sections:
+        span = _report_section_span(current, section)
+        if span is None:
+            attempts.append({"section": section, "accepted": False,
+                             "reason": "original section heading not found"})
+            continue
+        original = current[span[0]:span[1]].strip()
+        try:
+            candidate_md = ensure_section_heading(
+                str(retry_section(section, original) or ""), section
+            )
+        except Exception as exc:  # the first report remains intact on retry failure
+            attempts.append({"section": section, "accepted": False,
+                             "reason": f"retry raised {type(exc).__name__}: {exc}"})
+            continue
+        candidate_span = _report_section_span(candidate_md, section)
+        if candidate_span is None:
+            attempts.append({"section": section, "accepted": False,
+                             "reason": "retry did not return the required section heading"})
+            continue
+        candidate = candidate_md[candidate_span[0]:candidate_span[1]].strip()
+        if stub_sections(candidate, [section]):
+            attempts.append({"section": section, "accepted": False,
+                             "reason": "retry section still fails stub quality gate"})
+            continue
+        if count_table_orphans(candidate) > 0:
+            attempts.append({"section": section, "accepted": False,
+                             "reason": "retry section still has adjacent tables"})
+            continue
+        current = (current[:span[0]].rstrip() + "\n\n" + candidate + "\n\n"
+                   + current[span[1]:].lstrip("\r\n"))
+        attempts.append({"section": section, "accepted": True,
+                         "reason": "retry section has no adjacent tables"})
+    return current, attempts
+
+
 def retry_report_stub_sections(
     markdown: str,
     sections: list[str],
@@ -1244,6 +1297,57 @@ def generate_technical_chunked(
                     f"stub retry for {result['section']!r} not accepted: "
                     f"{result['reason']}"
                 )
+
+    # RC-32 (2026-10-29, run a2386cbd): one bounded orphan-table repair pass.
+    # RC-11 removed the schema rejection so a repair cannot lose a section;
+    # the writer is told to separate tables, but this run still published 3
+    # adjacent-table pairs against the gate's cap of 2 -- the report's only
+    # quality defect. Mirror the stub retry: regenerate ONLY the sections
+    # containing orphan pairs, once each; a replacement is kept only when it
+    # carries no orphan pair itself, so the pass can never make the report
+    # worse. A section the repair also fails stays as-is and the gate still
+    # fails honestly.
+    total_orphans = count_table_orphans(markdown)
+    if total_orphans > 2:
+        orphan_secs = []
+        for section in TECHNICAL_REPORT_SECTIONS:
+            span = _report_section_span(markdown, section)
+            if span is not None and count_table_orphans(
+                    markdown[span[0]:span[1]]) > 0:
+                orphan_secs.append(section)
+
+        def _retry_orphan(section: str, original: str) -> str:
+            instruction = (
+                f"The tables in '{section}' are placed back to back with no "
+                "prose between them. The report's table-orphan gate counted "
+                f"{total_orphans} such pairs against a cap of 2. Rewrite ONLY "
+                "this section: between every pair of adjacent tables insert "
+                "a short observation block stating what the second table "
+                "adds. Keep every table row, finding and citation unchanged, "
+                "and preserve the exact required heading.\n\n"
+                "Previous section:\n" + original[:4000]
+            )
+            prompt = build_prompt_technical(
+                session, verdict, deep, yara_meta, audit, technical_evidence,
+                recovery_evidence, final_verdict,
+                source_evidence=source_evidence, sections=[section],
+                retry_instruction=instruction,
+            )
+            return _call(prompt, f"orphan-retry-{section[:24]}",
+                         f"05-orphan-retry-{len(audits):02d}.json",
+                         titles=[section])
+
+        markdown, orphan_results = retry_orphan_table_sections(
+            markdown, orphan_secs, _retry_orphan)
+        for result in orphan_results:
+            audits.append({"part": "orphan-retry-result", **result})
+            if not result["accepted"]:
+                errors.append(
+                    f"orphan-table retry for {result['section']!r} not "
+                    f"accepted: {result['reason']}")
+            else:
+                print(f"[publish_report_v2] orphan-table repair accepted "
+                      f"for {result['section']!r}", flush=True)
     return markdown, audits, errors
 
 
@@ -1955,6 +2059,59 @@ def main():
             master_by_title[title] for title in REPORT_MASTER_SECTIONS
             if title in master_by_title
         )
+        # RC-32: the master carries the same orphan-table cap as the
+        # technical report (run d9836cde failed on master_v2:orphan_tables:3).
+        # One bounded repair pass, same keep-only-if-clean rule as the
+        # technical path.
+        total_master_orphans = count_table_orphans(master_md)
+        if total_master_orphans > 2:
+            master_orphan_secs = []
+            for section in REPORT_MASTER_SECTIONS:
+                span = _report_section_span(master_md, section)
+                if span is not None and count_table_orphans(
+                        master_md[span[0]:span[1]]) > 0:
+                    master_orphan_secs.append(section)
+
+            def _retry_master_orphan(section: str, original: str) -> str:
+                instruction = (
+                    f"The tables in '{section}' are placed back to back with "
+                    "no prose between them. The report's table-orphan gate "
+                    f"counted {total_master_orphans} such pairs against a cap "
+                    "of 2. Rewrite ONLY this section: between every pair of "
+                    "adjacent tables insert a short observation block stating "
+                    "what the second table adds. Keep every table row, "
+                    "finding and citation unchanged, and preserve the exact "
+                    "required heading.\n\nPrevious section:\n"
+                    + original[:4000]
+                )
+                one = build_prompt_full(
+                    session, verdict, deep, yara_meta, audit,
+                    dotnet_result=dotnet_result, r2_decomp=r2_decomp,
+                    r2_ai=r2_ai, frida_trace=frida_trace, upx=upx,
+                    xor_hits=xor_hits, olevba=olevba, peepdf=peepdf,
+                    malcat_result=malcat_result, capa_result=capa_result,
+                    yara_result=yara_result, floss_result=floss_result,
+                    pe_imports_result=pe_imports_result,
+                    recovery_evidence=recovery_evidence,
+                    dynamic_status=dynamic_status,
+                    dynamic_evidence=dynamic_evidence,
+                    ioc_evidence=ioc_evidence,
+                    ti_evidence=ti_evidence,
+                    source_evidence=source_evidence, sections=[section],
+                    retry_instruction=instruction,
+                )
+                _r, parsed = llm_report_structured(
+                    one, section_only=True, heading_level=1, retries=1,
+                    timeout_s=REPORT_CALL_TIMEOUT_S)
+                return parsed["markdown"]
+
+            master_md, master_orphan_results = retry_orphan_table_sections(
+                master_md, master_orphan_secs, _retry_master_orphan)
+            for attempt in master_orphan_results:
+                print(f"[publish_report_v2] master orphan-table repair "
+                      f"{attempt['section'][:44]}: "
+                      f"{'accepted' if attempt['accepted'] else 'retained'} "
+                      f"({attempt.get('reason')})", flush=True)
         report = {
             "title": f"RE Report {args.sha256[:12]}",
             "markdown": master_md,

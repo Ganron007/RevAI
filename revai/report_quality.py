@@ -311,6 +311,46 @@ VERDICT_CALIBRATION_CONTRACT = """VERDICT CALIBRATION (mandatory — keygenme fa
 """
 
 
+def count_table_orphans(md: str) -> int:
+    """Count dump-style orphan tables by the quality gate's own rule.
+
+    A table block immediately followed by another table (no prose between),
+    or a table at end-of-text with no interpretation, counts as one orphan.
+    Table -> heading is legitimate (a section may end with a summary table).
+    Shared with the orphan-table repair pass (RC-32) so the gate and the
+    repair can never drift apart.
+    """
+    lines_n = list((md or "").splitlines())
+    in_table = False
+    table_ends = []
+    for i, l in enumerate(lines_n):
+        if l.lstrip().startswith("|"):
+            if not in_table:
+                in_table = True
+            continue
+        if in_table:
+            in_table = False
+            table_ends.append(i)
+    orphan = 0
+    for i in table_ends:
+        nxt = ""
+        for j in range(i, min(i + 40, len(lines_n))):
+            l = lines_n[j].strip()
+            if not l:
+                continue
+            nxt = l
+            break
+        if not nxt:
+            orphan += 1  # table at EOF with no following interpretation
+            continue
+        # Table immediately followed by another table with no prose between
+        # = dump-style orphan. Table -> heading is legitimate (a section
+        # may end with a summary table).
+        if nxt.startswith("|"):
+            orphan += 1
+    return orphan
+
+
 def evaluate_report_markdown(
     md: str,
     *,
@@ -405,34 +445,7 @@ def evaluate_report_markdown(
         # after it (before the next table or heading) is a dump-style orphan.
         # This is the precise signal — global ratio alone is too blunt for
         # table-heavy technical reports (IATs, IOC tables are legitimate).
-        lines_n = list(style_md.splitlines())
-        in_table = False
-        table_ends = []
-        for i, l in enumerate(lines_n):
-            if l.lstrip().startswith("|"):
-                if not in_table:
-                    in_table = True
-                continue
-            if in_table:
-                in_table = False
-                table_ends.append(i)
-        orphan = 0
-        for i in table_ends:
-            nxt = ""
-            for j in range(i, min(i + 40, len(lines_n))):
-                l = lines_n[j].strip()
-                if not l:
-                    continue
-                nxt = l
-                break
-            if not nxt:
-                orphan += 1  # table at EOF with no following interpretation
-                continue
-            # Table immediately followed by another table with no prose between
-            # = dump-style orphan. Table -> heading is legitimate (a section
-            # may end with a summary table).
-            if nxt.startswith("|"):
-                orphan += 1
+        orphan = count_table_orphans(style_md)
         style["table_orphans"] = orphan
         style["tables_ok"] = orphan <= 2
         idxs = [i for i, l in enumerate(content) if l.lstrip().startswith("```")]
