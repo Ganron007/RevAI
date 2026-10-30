@@ -420,15 +420,25 @@ def _row(cells, row_or_rule, source="yara", query="deep_dive/01-tools-raw.json")
             "row_or_rule": row_or_rule}
 
 
-def test_a_multi_cell_row_cannot_cite_a_leaf_of_an_indexed_row():
-    doc = _doc({
+def test_a_multi_cell_row_citing_a_leaf_is_normalized_to_the_row():
+    """RC-34 supersedes the RC-19 rejection: a leaf locator cannot bind every
+    cell, but its PARENT ROW locator can -- so the schema normalizes the
+    leaf to the row instead of killing the section (run 27799373 lost three
+    master sections to this exact shape)."""
+    doc = _doc(_table(["name", "note"]))
+    doc["sections"][0]["blocks"] = [{
         "kind": "table",
-        "columns": ["Rule", "String", "Offset", "Hits"],
-        "rows": [_row(["keylogger", "$f1", "158640", "10"],
-                      "$.yara.matches[10].strings[0]")],
-    })
+        "columns": ["name", "note"],
+        "rows": [{"cells": ["SEH", "handlers may exist"],
+                  "source": "revai_tools_sec",
+                  "query_or_table": "deep_dive/01-tools-raw.json",
+                  "row_or_rule": "$.revai_tools_sec.findings[4].note"}],
+    }]
     errors = validate_report_document(doc)
-    assert any("ROW locator" in error for error in errors), errors
+    assert not errors, errors
+    row = doc["sections"][0]["blocks"][0]["rows"][0]
+    assert row["row_or_rule"] == "$.revai_tools_sec.findings[4]"
+
 
 
 def test_the_same_row_citing_the_row_locator_is_accepted():
@@ -459,3 +469,75 @@ def test_a_single_cell_row_may_still_cite_a_leaf():
         "rows": [_row(["$f1"], "$.yara.matches[10].strings[0]")],
     })
     assert validate_report_document(doc) == []
+
+
+# --------------------------------------------------------------------------
+# RC-34 (2026-10-30, run 27799373): a multi-cell table row citing a LEAF
+# field is normalized to its parent ROW locator instead of killing the whole
+# section. The row locator is strictly broader, so the citation is preserved
+# and strengthened; every other rule still applies.
+# --------------------------------------------------------------------------
+def test_a_multi_cell_leaf_row_is_normalized_to_the_row_locator():
+    doc = _doc(_table(["name", "note"]))
+    doc["sections"][0]["blocks"] = [{
+        "kind": "table",
+        "columns": ["name", "note"],
+        "rows": [{"cells": ["SEH", "handlers may exist"],
+                  "source": "revai_tools_sec",
+                  "query_or_table": "deep_dive/01-tools-raw.json",
+                  "row_or_rule": "$.revai_tools_sec.findings[4].note"}],
+    }]
+    errors = validate_report_document(doc)
+    assert not errors, errors
+    row = doc["sections"][0]["blocks"][0]["rows"][0]
+    assert row["row_or_rule"] == "$.revai_tools_sec.findings[4]"
+
+
+def test_a_multi_cell_leaf_row_with_a_trailing_index_is_normalized():
+    """The leaf AND any brackets after it are stripped, keeping the row
+    index: strings[0].value -> strings[0]."""
+    doc = _doc(_table(["name", "note"]))
+    doc["sections"][0]["blocks"] = [{
+        "kind": "table",
+        "columns": ["name", "note"],
+        "rows": [{"cells": ["only-value", "second cell"],
+                  "source": "malcat",
+                  "query_or_table": "deep_dive/01-tools-raw.json",
+                  "row_or_rule": "$.malcat.views.strings[0].value"}],
+    }]
+    errors = validate_report_document(doc)
+    assert not errors, errors
+    row = doc["sections"][0]["blocks"][0]["rows"][0]
+    assert row["row_or_rule"] == "$.malcat.views.strings[0]"
+
+
+def test_a_one_non_empty_cell_row_keeps_its_leaf_locator():
+    """A leaf locator binds a single non-empty cell fine; RC-34 only
+    normalizes multi-cell rows."""
+    doc = _doc(_table(["name", "note"]))
+    doc["sections"][0]["blocks"] = [{
+        "kind": "table",
+        "columns": ["name", "note"],
+        "rows": [{"cells": ["only-value", ""],
+                  "source": "malcat",
+                  "query_or_table": "deep_dive/01-tools-raw.json",
+                  "row_or_rule": "$.malcat.views.strings[0].value"}],
+    }]
+    errors = validate_report_document(doc)
+    assert not errors, errors
+    row = doc["sections"][0]["blocks"][0]["rows"][0]
+    assert row["row_or_rule"] == "$.malcat.views.strings[0].value"
+
+
+def test_a_compound_locator_is_still_rejected():
+    doc = _doc(_table(["name", "note"]))
+    doc["sections"][0]["blocks"] = [{
+        "kind": "table",
+        "columns": ["name", "note"],
+        "rows": [{"cells": ["a", "b"],
+                  "source": "x",
+                  "query_or_table": "y.json",
+                  "row_or_rule": "$.a[0].f and $.b[1]"}],
+    }]
+    errors = validate_report_document(doc)
+    assert any("one exact JSONPath" in e for e in errors), errors

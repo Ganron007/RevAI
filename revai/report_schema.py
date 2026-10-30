@@ -49,6 +49,8 @@ _EVIDENCE_COLUMN_NAMES = {"evidence", "source", "citation", "sources"}
 #: by exactly this row-vs-leaf shape.
 _ROW_LEAF_CITATION_RE = re.compile(
     r"\[\d+\]\s*\.[A-Za-z_][A-Za-z0-9_]*(?:\s*\[\d+\])*\s*$")
+_TRAILING_LEAF_RE = re.compile(
+    r"\.[A-Za-z_][A-Za-z0-9_]*(?:\[\d+\])*\s*$")
 _SAFE_FENCE_LANG_RE = re.compile(r"[^A-Za-z0-9_+.#-]+")
 
 
@@ -163,7 +165,43 @@ def normalize_report_document(document: Any) -> Any:
         return document
     out = dict(document)
     out["sections"] = _dedupe_sections(normalize_sections(document.get("sections")))
+    _normalize_table_row_locators(out["sections"])
     return out
+
+
+def _normalize_table_row_locators(sections: Any) -> None:
+    """RC-34: multi-cell table rows citing a LEAF field are normalized to
+    their parent ROW locator, in place.
+
+    Measured on run 27799373: the writer cited `$.x.y[31].field` in a
+    multi-cell row; the schema rejected the leaf (a leaf cannot bind every
+    cell), the WHOLE section died, and the targeted repair repeated the same
+    shape — three master sections lost to a one-cell formatting slip. The
+    row locator is strictly broader (the gate then verifies the entire row),
+    so the normalization preserves and strengthens the citation while every
+    other rule is still enforced on the normalized document.
+    """
+    if not isinstance(sections, list):
+        return
+    for section in sections:
+        if not isinstance(section, dict):
+            continue
+        for block in section.get("blocks") or []:
+            if not isinstance(block, dict) or block.get("kind") != "table":
+                continue
+            for row in block.get("rows") or []:
+                if not isinstance(row, dict):
+                    continue
+                cells = row.get("cells")
+                if (not isinstance(cells, list)
+                        or sum(1 for cell in cells if _text(cell)) < 2):
+                    continue
+                value = _text(row.get("row_or_rule"))
+                if value.startswith("$"):
+                    # Strip only the trailing leaf (and any brackets AFTER
+                    # it), keeping the row index: $.x.findings[4].note ->
+                    # $.x.findings[4].
+                    row["row_or_rule"] = _TRAILING_LEAF_RE.sub("", value).strip()
 
 
 def _section_heading_key(section: Any) -> str:
