@@ -1073,3 +1073,34 @@ def test_the_default_allowance_is_15_percent(monkeypatch):
     assert E._insufficient_allowance_pct() == 15.0
     monkeypatch.setenv("REVAI_INSUFFICIENT_ALLOWANCE_PCT", "-5")
     assert E._insufficient_allowance_pct() == 0.0
+
+
+# --------------------------------------------------------------------------
+# #6-b (2026-10-30, run 0aa935f2): the reviewer's verdict semantics must treat
+# verbatim evidence-row restatements as supported and verdict.json-citing
+# claims as claims about what the artifact RECORDS (a recorded calibration is
+# not a conflict with the cited row).
+# --------------------------------------------------------------------------
+def test_the_review_prompt_carries_the_restatement_and_calibration_rules(
+        monkeypatch):
+    import v2_lib
+
+    captured = {}
+
+    def fake_llm_judge(prompt, **kwargs):
+        captured["prompt"] = prompt
+        import json as _json
+        arguments = _json.dumps({"reviews": []})
+        return {"choices": [{"finish_reason": "tool_calls", "message": {
+            "tool_calls": [{"type": "function", "id": "t1", "function": {
+                "name": "submit_claim_reviews", "arguments": arguments}}]}}]}
+
+    monkeypatch.setattr(v2_lib, "llm_judge", fake_llm_judge)
+    batch = [{"id": "c1", "claim": "The sample imports CreateRemoteThread.",
+              "references": [], "evidence": [{"evidence_id": "e1"}],
+              "analysis_identity": {}}]
+    E._semantic_review_batch(batch, review_context={}, methodology_block="")
+    prompt = captured["prompt"]
+    assert "VERBATIM" in prompt and "RESTATEMENT" in prompt
+    assert "recorded calibration" in prompt
+    assert "verdict.json" in prompt

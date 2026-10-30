@@ -156,3 +156,38 @@ def test_the_helper_accepts_a_clean_replacement():
     assert attempts and attempts[0]["accepted"]
     assert RQ.count_table_orphans(out) == 0
     assert "## 7. Capabilities" in out  # the rest of the report is intact
+
+
+# --------------------------------------------------------------------------
+# RC-33 (2026-10-30, run 0aa935f2): the technical IoC section is assembled
+# deterministically from iocs.json — the model cannot invent indicator-shaped
+# strings there (the #42 MachineGuid class).
+# --------------------------------------------------------------------------
+def test_the_technical_ioc_section_is_deterministic(monkeypatch):
+    import publish_report_v2 as pub
+    calls = _fake_llm(monkeypatch, set())
+    md, audits, errors = pub.generate_technical_chunked(
+        {"sha256": SHA, "sample_path": "/x", "project_name": "p"},
+        {}, {}, {}, [], "EVIDENCE", dynamic_status={})
+    assert not errors, errors
+    # The LLM was never ASKED for the IoC section (its title may still appear
+    # in other prompts' section lists or the wrap's prior-section text).
+    for c in calls:
+        head = c.split("Rules", 1)[0]
+        requested = [t for t in pub.TECHNICAL_REPORT_SECTIONS
+                     if f"- {t}" in head]
+        assert "8. Indicators of Compromise" not in requested, requested
+    # The deterministic section is present with its honesty note (the test
+    # case has no iocs.json, so the absent-indicator branch renders).
+    assert "## 8. Indicators of Compromise" in md
+    assert "No indicator set was produced for this sample" in md
+    assert "Nothing is claimed here" in md
+    assert any(a.get("part", "").startswith("body-") and a.get("deterministic")
+               for a in audits), audits
+
+
+def test_v3_and_v2_ioc_renderers_agree():
+    import section_publisher as sp
+    import v2_lib
+    assert sp._build_ioc_section("b" * 64) == \
+        v2_lib.deterministic_ioc_section_md("b" * 64)

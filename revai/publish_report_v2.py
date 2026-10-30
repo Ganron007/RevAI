@@ -38,6 +38,7 @@ from v2_lib import (  # noqa: E402
     format_ti_hash_enrichment_evidence,
     case_dir,
     deterministic_dynamic_section_md,
+    deterministic_ioc_section_md,
     dynamic_evidence_substantive,
     ensure_verdict_panel,
     assert_report_input_manifest,
@@ -1185,6 +1186,22 @@ def generate_technical_chunked(
     body_mds: dict[int, str] = {}
     for gi, (a, b) in enumerate(TECHNICAL_BODY_GROUPS):
         titles = TECHNICAL_REPORT_SECTIONS[a:b]
+        if titles == ["8. Indicators of Compromise"]:
+            # RC-33 (2026-10-30, run 0aa935f2): the IoC section is assembled
+            # deterministically from iocs.json — the #42 class is the model
+            # writing indicator-shaped strings from training data (the
+            # MachineGuid tell). Never calls the LLM; every rendered value
+            # cites its exact iocs.json row. Mirrors the v3 section-8 rule.
+            md = deterministic_ioc_section_md(str(session.get("sha256") or ""))
+            body_mds[gi] = md
+            audits.append({"part": f"body-{gi}", "deterministic": True,
+                           "markdown_chars": len(md),
+                           "reason": "rendered from iocs.json; the writer "
+                                     "cannot invent indicators here"})
+            print(f"[publish_report_v2] technical body part {gi + 1}/"
+                  f"{len(TECHNICAL_BODY_GROUPS)}: {len(md)} chars "
+                  f"(deterministic)", flush=True)
+            continue
         if (titles == ["5. Behavioral & Dynamic Analysis"]
                 and dynamic_status is not None
                 and not dynamic_evidence_substantive(dynamic_status)):

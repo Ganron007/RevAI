@@ -9927,6 +9927,131 @@ def deterministic_dynamic_section_md(status: dict | None, *,
     return "\n".join(lines)
 
 
+#: The iocs.json indicator kinds the deterministic IoC section renders, in
+#: report order. Shared with section_publisher's v3 renderer (RC-33).
+IOC_KINDS: tuple[tuple[str, str], ...] = (
+    ("hashes", "File hashes"),
+    ("domains", "Domains"),
+    ("urls", "URLs"),
+    ("ips", "IP addresses"),
+    ("files", "File names / paths"),
+    ("registry_keys", "Registry keys"),
+    ("mutexes", "Mutexes"),
+    ("emails", "Email addresses"),
+    ("wallets_btc", "Cryptocurrency addresses (BTC)"),
+    ("wallets_eth", "Cryptocurrency addresses (ETH)"),
+)
+
+
+def _ioc_value(v) -> str:
+    """Render one indicator value readably.
+
+    Extraction keeps defanged forms and can carry trailing junk from a string
+    table: a NUL-padded value such as a URL followed by padding bytes and
+    unrelated text. NUL padding and control characters are stripped and the
+    value is fenced, so the report shows what the tool saw rather than embedding
+    invisible bytes in the markdown.
+    """
+    if isinstance(v, dict):
+        parts = [f"{k}={_ioc_value(x)}" for k, x in v.items()]
+        return ", ".join(parts)
+    s = str(v)
+    # Cut at the first NUL, then strip control characters.
+    if "\x00" in s:
+        s = s.split("\x00", 1)[0]
+    s = "".join(ch for ch in s if ch.isprintable() or ch == " ")
+    return s.strip().rstrip("\\").strip() or str(v)
+
+
+def deterministic_ioc_section_md(sha: str, *,
+                                 title: str = "8. Indicators of Compromise",
+                                 heading_level: int = 2,
+                                 logs_dir: Path | None = None) -> str:
+    """Render the Indicators of Compromise section from iocs.json (RC-33).
+
+    Never calls the LLM: the #42 class is the model writing indicator-shaped
+    strings from training data (the doubled-backslash MachineGuid tell), so
+    the IoC section is assembled deterministically from the extractor output,
+    every rendered value cited to its exact iocs.json row. Absence is reported
+    explicitly and attributed; nothing is inferred or supplied from general
+    knowledge. Shared with section_publisher's v3 renderer.
+    """
+    hashes = "#" * max(1, int(heading_level))
+    out = [f"{hashes} {title}", ""]
+    iocs_path = case_dir(sha) / "iocs.json"
+    data: dict = {}
+    if iocs_path.is_file():
+        try:
+            data = json.loads(iocs_path.read_text(errors="replace")) or {}
+        except Exception as exc:                  # noqa: BLE001
+            out += [f"Indicator extraction could not be read: {exc}.", ""]
+    if not data:
+        out += ["No indicator set was produced for this sample, so no "
+                "indicators are listed. Nothing is claimed here: an absent "
+                "indicator set means the extractors produced nothing to report, "
+                "not that the sample is clean.", ""]
+        return "\n".join(out)
+
+    sources = data.get("source") or []
+    engines = sorted({str(s) for s in sources if s})
+
+    total = 0
+    lines: list[str] = []
+    per_category_limit = 40
+    for key, label in IOC_KINDS:
+        vals = data.get(key) or []
+        if isinstance(vals, dict):
+            vals = [vals]
+        shown = [(i, _ioc_value(v)) for i, v in enumerate(vals) if _ioc_value(v)]
+        if not shown:
+            continue
+        total += len(shown)
+        lines.append(f"**{label}**")
+        for i, v in shown[:per_category_limit]:
+            lines.append(
+                f"- `{v}` (source: iocs, query_or_table: iocs.json, "
+                f"row_or_rule: $.{key}[{i}])")
+        omitted = len(shown) - min(len(shown), per_category_limit)
+        if omitted:
+            lines.append(
+                f"- ... and {omitted} more; the complete set remains in "
+                f"`iocs.json` (source: iocs, query_or_table: iocs.json, "
+                f"row_or_rule: $.{key}).")
+        lines.append("")
+
+    out += ["**[Note]** Every indicator below was produced by the analysis "
+            "engines named in the attribution line and rendered from "
+            "`iocs.json`; non-printable padding is removed for readability "
+            "and stored defanging is kept. Nothing in this section is "
+            "inferred, reconstructed, or supplied from general knowledge of "
+            "what malware of this kind usually does.", ""]
+    if lines:
+        out += lines
+    else:
+        out += ["**[Note]** The extractors ran and produced no indicators.", ""]
+
+    for key, label in IOC_KINDS:
+        if data.get(key):
+            continue
+        out.append(
+            f"- No {label.lower()} were extracted "
+            f"(source: iocs, query_or_table: iocs.json, row_or_rule: $.{key}).")
+    out += ["", "**[Note]** Absence above is a statement about what the tools "
+            "recovered, not a claim that the behaviour is absent: a packed or "
+            "obfuscated sample frequently hides these from static extraction, "
+            "and dynamic analysis would be the next step.", ""]
+
+    if engines:
+        out += [f"**[Note]** Attribution: extracted deterministically from "
+                + ", ".join(f"`{e}`" for e in engines)
+                + f". The renderer emitted {total} indicator value(s); the "
+                "complete set with provenance remains in `iocs.json`. Values "
+                "are shown in the defanged form the extractor produced.", ""]
+    out += [f"**[Note]** Review before sharing: {str(data.get('note') or '').strip()} "
+            "Incident-response indicator sets routinely contain "
+            "victim-specific data from ransom notes and similar artefacts.", ""]
+    return "\n".join(out)
+
 def _capability_provenance(status: str, evidence_n: int, truncated: bool,
                            contradicts: bool) -> str:
     """How a capability determination was reached -- from the record, not prose.

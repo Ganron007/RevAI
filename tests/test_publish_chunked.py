@@ -429,11 +429,21 @@ def test_total_failure_raises_so_the_caller_can_fall_back(monkeypatch):
     md, audits, errors = pub.generate_technical_chunked(
         {"sha256": "d" * 64, "sample_path": "/x", "project_name": "p"},
         {}, {}, {}, [], "EVIDENCE")
-    # Every section must be accounted for. The exact error count depends on the
-    # split-retry layer -- a group that fails is retried per section, so one
-    # group can log several entries -- so assert coverage, not a total.
+    # Every LLM-authored section must be accounted for. The exact error count
+    # depends on the split-retry layer -- a group that fails is retried per
+    # section, so one group can log several entries -- so assert coverage, not
+    # a total. RC-33: the IoC section (8) is deterministic and renders even
+    # under total LLM failure, so it is accounted for by content, not by an
+    # error entry.
     for title in SECTIONS:
+        if title == "8. Indicators of Compromise":
+            assert "## 8. Indicators of Compromise" in md, title
+            assert "No indicator set was produced for this sample" in md
+            continue
         assert any(title in e for e in errors), (
             f"no error names {title!r}: {errors}")
     assert any("all calls fail" in e for e in errors), errors
-    assert not md.strip(), "no content should be produced when all calls fail"
+    # RC-33: the deterministic IoC section renders even under total LLM
+    # failure -- the md is exactly that section and nothing model-authored.
+    assert md.strip().startswith("## 8. Indicators of Compromise"), md[:200]
+    assert len([l for l in md.splitlines() if l.startswith("## ")]) == 1

@@ -27,7 +27,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "revai"))
 
-import section_publisher as sp  # noqa: E402
+import section_publisher as sp
+import v2_lib  # noqa: E402
 
 # Verbatim from the win32k_dll case. Note registry_keys is EMPTY and the URL
 # carries NUL padding plus trailing text -- both are the real shapes.
@@ -67,7 +68,7 @@ def _build(tmp_path, payload=REAL_IOCS, monkeypatch=None):
     """
     _write_iocs(tmp_path, payload)
     if monkeypatch is not None:
-        monkeypatch.setattr(sp, "case_dir", lambda sha: tmp_path / "scripted")
+        monkeypatch.setattr(v2_lib, "case_dir", lambda sha: tmp_path / "scripted")
     return sp._build_ioc_section("8" * 64)
 
 
@@ -96,7 +97,7 @@ def test_only_values_present_in_iocs_json_appear(tmp_path, monkeypatch):
 
 
 def test_no_llm_call_is_possible_for_this_section(tmp_path, monkeypatch):
-    monkeypatch.setattr(sp, "case_dir", lambda sha: tmp_path / "scripted")
+    monkeypatch.setattr(v2_lib, "case_dir", lambda sha: tmp_path / "scripted")
 
     def explode(*a, **kw):
         raise AssertionError("section 8 must not call the LLM")
@@ -183,7 +184,7 @@ def test_missing_iocs_json_is_handled_honestly(tmp_path, monkeypatch):
     # Deliberately do NOT write iocs.json -- this is the no-extraction case.
     case = tmp_path / "scripted"
     case.mkdir(parents=True, exist_ok=True)
-    monkeypatch.setattr(sp, "case_dir", lambda sha: case)
+    monkeypatch.setattr(v2_lib, "case_dir", lambda sha: case)
     md = sp._build_ioc_section("8" * 64)
     assert "No indicator set was produced" in md
     assert "not that the sample is clean" in md
@@ -193,7 +194,7 @@ def test_corrupt_iocs_json_does_not_crash_the_section(tmp_path, monkeypatch):
     case = tmp_path / "scripted"
     case.mkdir(parents=True, exist_ok=True)
     (case / "iocs.json").write_text("{not json", encoding="utf-8")
-    monkeypatch.setattr(sp, "case_dir", lambda sha: case)
+    monkeypatch.setattr(v2_lib, "case_dir", lambda sha: case)
     md = sp._build_ioc_section("8" * 64)
     assert "could not be read" in md
 

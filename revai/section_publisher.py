@@ -707,10 +707,13 @@ def _ioc_value(v) -> str:
 def _build_ioc_section(sha: str, tools_results: dict | None = None) -> str:
     """Render section 8 from iocs.json. Never calls the LLM.
 
-    Absence is reported explicitly and attributed: "no registry keys were
-    observed" plus the engines that searched is a finding. Inventing the
-    canonical Run key to fill the space is not.
+    RC-33: the renderer moved to v2_lib.deterministic_ioc_section_md so the
+    v2 chunked path shares it; the absence/attribution semantics are
+    unchanged ("no registry keys were observed" plus the engines that
+    searched is a finding; inventing the canonical Run key is not).
     """
+    from v2_lib import deterministic_ioc_section_md
+    return deterministic_ioc_section_md(sha)
     tools_results = tools_results or {}
     title = "8. Indicators of Compromise"
     out = [f"## {title}", ""]
