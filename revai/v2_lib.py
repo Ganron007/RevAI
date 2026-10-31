@@ -10008,6 +10008,20 @@ def deterministic_ioc_section_md(sha: str, *,
         total += len(shown)
         lines.append(f"**{label}**")
         for i, v in shown[:per_category_limit]:
+            if isinstance(vals[i], dict):
+                # A dict row (e.g. hashes[0] = {sha256, sha1, md5}) is one
+                # bullet per key, each citing its own LEAF row: the row dict
+                # itself does not resolve as a reviewable excerpt (RC-37,
+                # run d680765e: the sha256/sha1/md5 line came back
+                # unresolved-row twice).
+                for k, kv in vals[i].items():
+                    kv_text = _ioc_value(kv)
+                    if not kv_text:
+                        continue
+                    lines.append(
+                        f"- {k}: `{kv_text}` (source: iocs, query_or_table: "
+                        f"iocs.json, row_or_rule: $.{key}[{i}].{k})")
+                continue
             lines.append(
                 f"- `{v}` (source: iocs, query_or_table: iocs.json, "
                 f"row_or_rule: $.{key}[{i}])")
@@ -10030,16 +10044,19 @@ def deterministic_ioc_section_md(sha: str, *,
     else:
         out += ["**[Note]** The extractors ran and produced no indicators.", ""]
 
-    for key, label in IOC_KINDS:
-        if data.get(key):
-            continue
-        out.append(
-            f"- No {label.lower()} were extracted "
-            f"(source: iocs, query_or_table: iocs.json, row_or_rule: $.{key}).")
-    out += ["", "**[Note]** Absence above is a statement about what the tools "
-            "recovered, not a claim that the behaviour is absent: a packed or "
-            "obfuscated sample frequently hides these from static extraction, "
-            "and dynamic analysis would be the next step.", ""]
+    absence = [f"- **[Note]** No {label.lower()} were extracted."
+               for key, label in IOC_KINDS if not data.get(key)]
+    if absence:
+        # Absence statements are non-factual methodology (the gate's own
+        # rule for [Note] blocks): citing `$.key` for a key that does not
+        # EXIST in iocs.json reads as unresolved-row (RC-37, run d680765e:
+        # four of them on the DOC sample).
+        out += ["**[Note]** What was searched and came back empty:", ""]
+        out += absence
+        out += ["", "**[Note]** Absence above is a statement about what the "
+            "tools recovered, not a claim that the behaviour is absent: a "
+            "packed or obfuscated sample frequently hides these from static "
+            "extraction, and dynamic analysis would be the next step.", ""]
 
     if engines:
         out += [f"**[Note]** Attribution: extracted deterministically from "

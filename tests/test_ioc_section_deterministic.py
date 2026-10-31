@@ -112,13 +112,15 @@ def test_no_llm_call_is_possible_for_this_section(tmp_path, monkeypatch):
 def test_absence_is_stated_and_attributed(tmp_path, monkeypatch):
     """An empty category must be reported, not quietly omitted.
 
-    Run 2168d92e (2026-10-25): each absence line now cites its own
-    absence-bearing field, per the methodology's negative-finding rule.
+    RC-37 (2026-10-30): absence lines are [Note]-marked and carry NO
+    citation -- `$.key` for a key that does not exist in iocs.json reads as
+    unresolved-row (run d680765e: four of them).
     """
     md = _build(tmp_path, monkeypatch=monkeypatch)
     assert "No registry keys were extracted" in md
     assert "No mutexes were extracted" in md
-    assert "row_or_rule: $.registry_keys)" in md
+    assert "row_or_rule: $.registry_keys)" not in md
+    assert "**[Note]** What was searched and came back empty:" in md
     # The point of stating it: absence is about what the tools recovered.
     assert "not a claim that the behaviour is absent" in md
 
@@ -248,4 +250,7 @@ def test_methodology_lines_are_note_marked(tmp_path, monkeypatch):
 def test_a_value_citation_names_its_own_index(tmp_path, monkeypatch):
     md = _build(tmp_path, monkeypatch=monkeypatch)
     assert "row_or_rule: $.domains[0])" in md
-    assert "row_or_rule: $.hashes[0])" in md
+    # RC-37: a dict-valued row (hashes[0] = {sha256, sha1, md5}) renders one
+    # bullet per key, each citing its own LEAF path -- the row dict itself
+    # does not resolve as a reviewable excerpt.
+    assert "row_or_rule: $.hashes[0].sha256)" in md
