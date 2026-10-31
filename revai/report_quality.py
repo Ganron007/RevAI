@@ -1903,6 +1903,30 @@ def _is_doc_placeholder_ip(value: str) -> bool:
     v = (value or "").strip().strip(".")
     return v.startswith(_DOC_IP_PREFIXES) or v == "255.255.255.255"
 
+
+def _is_private_range_ip(value: str) -> bool:
+    """RFC 1918 / CGNAT / link-local ranges (RC-38a, 2026-11-01).
+
+    A private-range address in report prose is network-environment context,
+    not a hunt target: every LAN uses these, the checker's own vendor-domain
+    doctrine says exactly this class is not an indicator, and an UNVERIFIED
+    private IP means the writer invented a generic LAN address -- the same
+    measured noise as the benign-domain class (RC-31b). A private IP that
+    the evidence corpus actually contains stays VERIFIED (present in
+    evidence); only the invented ones land here.
+    """
+    v = (value or "").strip().lstrip(".").split("/")[0]
+    parts = v.split(".")
+    if len(parts) != 4 or not all(p.isdigit() and 0 <= int(p) <= 255
+                                  for p in parts):
+        return False
+    a, b = int(parts[0]), int(parts[1])
+    return (a == 10                     # RFC 1918: 10/8
+            or (a == 172 and 16 <= b <= 31)   # RFC 1918: 172.16/12
+            or (a == 192 and b == 168)         # RFC 1918: 192.168/16
+            or (a == 100 and 64 <= b <= 127)   # CGNAT: 100.64/10
+            or a == 169 and b == 254)          # link-local 169.254/16
+
 #: Only indicators whose final label is a real TLD count as domain claims.
 #: Without this, prose and code identifiers ("powershell.exe",
 #: "capability.attack.execution") parse as domains and inflate the unverified set.
@@ -2478,6 +2502,11 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
         if kind == "ip" and _is_doc_placeholder_ip(plain):
             excluded.append({"type": kind, "value": raw,
                              "reason": "documentation/placeholder address range (RFC 5737/loopback)"})
+            continue
+        if kind == "ip" and _is_private_range_ip(plain):
+            excluded.append({"type": kind, "value": raw,
+                             "reason": "private-range network address (RFC 1918/CGNAT/link-local) -- "
+                                       "LAN context, not a hunt target"})
             continue
         if kind in ("domain", "url"):
             try:

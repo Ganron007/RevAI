@@ -1098,3 +1098,24 @@ def test_a_table_row_claiming_verdict_stays_cited():
           "| beacon | 109-199-107-123.sslip.io |\n")
     uncited = RQ.uncited_report_claims(md)
     assert any("beacon" in u for u in uncited), uncited
+
+
+# --------------------------------------------------------------------------
+# RC-38a (2026-11-01, run 6e123e7f): private-range IPs in report prose are
+# LAN context, not hunt targets -- the same measured calibration class as
+# the benign-domain list (RC-31b). An UNVERIFIED private IP means the writer
+# invented a generic LAN address; one present in the evidence stays verified.
+# --------------------------------------------------------------------------
+def test_private_range_ips_are_excluded_from_unverified_iocs(tmp_path):
+    md = ("# Report\n\n"
+          "- The sample references 192.168.0.20 and 192.168.0.254.\n"
+          "- The sample contacts 203.0.113.10 (documentation range).\n"
+          "- The sample contacts 8.8.8.8.\n")
+    e = "corpus"
+    res = RQ.verify_claimed_iocs(md, e)
+    items = (res.get("unverified_items") or [])
+    values = [i.get("value") for i in items]
+    assert "192.168.0.20" not in values and "192.168.0.254" not in values, values
+    assert "203.0.113.10" not in values, values
+    # A PUBLIC IP with no evidence stays unverified (fail-closed).
+    assert "8.8.8.8" in values, values
