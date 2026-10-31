@@ -1016,9 +1016,14 @@ def sections_containing_values(markdown: str, sections: list[str],
         span = _report_section_span(markdown, section)
         if span is None:
             continue
-        text = markdown[span[0]:span[1]].replace("[.]", ".").replace("[:]", ":")
+        # Both sides are normalized the same way: defang variants resolved
+        # AND backslashes removed (report text carries doubled backslashes,
+        # checker values carry single ones -- run d1ceae3f).
+        text = (markdown[span[0]:span[1]].replace("[.]", ".")
+                .replace("[:]", ":").replace("\\", ""))
         for value in values:
-            plain = value.replace("[.]", ".").replace("[:]", ":").replace("\\", "")
+            plain = (value.replace("[.]", ".").replace("[:]", ":")
+                     .replace("\\", ""))
             if plain and plain in text:
                 out.append(section)
                 break
@@ -1069,9 +1074,10 @@ def retry_unverified_ioc_sections(
             attempts.append({"section": section, "accepted": False,
                              "reason": "retry section still fails stub quality gate"})
             continue
-        lowered = candidate.lower().replace("[.]", ".").replace("[:]", ":")
-        if any(v.replace("[.]", ".").replace("[:]", ":").lower() in lowered
-               for v in unverified_values):
+        lowered = (candidate.lower().replace("[.]", ".").replace("[:]", ":")
+                   .replace("\\", ""))
+        if any(v.replace("[.]", ".").replace("[:]", ":").replace("\\", "")
+               .lower() in lowered for v in unverified_values):
             attempts.append({"section": section, "accepted": False,
                              "reason": "retry section still contains the unverified indicator"})
             continue

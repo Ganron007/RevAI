@@ -271,3 +271,17 @@ def test_sections_containing_values_finds_defanged_and_plain():
         md, ["A", "B", "C"],
         ["plain-example.org", "defanged[.]example.org"])
     assert sorted(found) == ["A", "B"]
+
+
+def test_sections_containing_values_handles_doubled_backslashes():
+    """Run d1ceae3f: the report text carries DOUBLED backslashes while the
+    checker's values carry single ones -- the matcher must normalize both
+    sides or the repair never finds the invented indicator."""
+    import publish_report_v2 as pub
+    md = ("## 6. Network Indicators & C2\n\nThe sample reads "
+          "HKEY_CURRENT_USER\\Software\\Borland\\Locales at "
+          "startup.\n")
+    found = pub.sections_containing_values(
+        md, ["6. Network Indicators & C2"],
+        ["HKEY_CURRENT_USER\Software\Borland\Locales"])
+    assert found == ["6. Network Indicators & C2"], found
