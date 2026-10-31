@@ -313,7 +313,8 @@ def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, ya
                       ioc_evidence: str = "",
                       ti_evidence: str = "",
                       source_evidence: str = "",
-                      sections: list[str] | None = None) -> str:
+                      sections: list[str] | None = None,
+                      retry_instruction: str = "") -> str:
     """Master report prompt.
 
     `sections` restricts the requested headings to a subset. The master report
@@ -617,6 +618,8 @@ def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, ya
         "never substitute one for the other or combine them into a new score. "
         "Headings MUST use ASCII apostrophe only (Don't, not Don’t)."
     )
+    if retry_instruction:
+        lines += ["", "## Targeted section repair", retry_instruction]
     return "\n".join(lines)
 
 
@@ -1469,8 +1472,9 @@ def generate_technical_chunked(
         except Exception:                     # noqa: BLE001 - gate reads fail open
             _unverified = []
         if _unverified:
-            _ioc_secs = sections_containing_values(
+            _ioc_secs = [s for s in sections_containing_values(
                 markdown, TECHNICAL_REPORT_SECTIONS, _unverified)
+                if s != "8. Indicators of Compromise"]  # RC-33: deterministic, iocs-sourced
 
             def _retry_ioc(section: str, original: str) -> str:
                 values = ", ".join(f"`{v}`" for v in _unverified)
