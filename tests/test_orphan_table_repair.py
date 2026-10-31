@@ -219,3 +219,55 @@ def test_the_master_ioc_section_is_deterministic(monkeypatch):
         "b" * 64, title="9. Indicators of Compromise", heading_level=1)
     assert out.startswith("# 9. Indicators of Compromise")
     assert "Nothing is claimed here" in out
+
+
+# --------------------------------------------------------------------------
+# RC-36 (2026-10-31, run 3b70ad56): one bounded unverified-IoC repair pass --
+# the #42 class writes indicator-shaped strings from training data into
+# model-authored prose; the deterministic IoC sections cannot reach those.
+# --------------------------------------------------------------------------
+def test_the_helper_rejects_a_section_that_keeps_the_indicator():
+    import publish_report_v2 as pub
+    md = ("## 6. Network Indicators & C2\n\nThe sample contacts "
+          "c2.beacon-evil.org over HTTPS.\n")
+    calls = []
+
+    def bad_retry(section, original):
+        calls.append(section)
+        return md  # still contains the indicator
+
+    out, attempts = pub.retry_unverified_ioc_sections(
+        md, ["6. Network Indicators & C2"],
+        ["c2.beacon-evil.org"], bad_retry)
+    assert calls == ["6. Network Indicators & C2"]
+    assert attempts and not attempts[0]["accepted"]
+    assert "c2.beacon-evil.org" in out  # unchanged
+
+
+def test_the_helper_accepts_a_cleaned_section():
+    import publish_report_v2 as pub
+    md = ("## 6. Network Indicators & C2\n\nThe sample contacts "
+          "c2.beacon-evil.org over HTTPS for command-and-control.\n")
+    cleaned = ("## 6. Network Indicators & C2\n\nNo command-and-control "
+               "contact was observed in this run's evidence corpus, and the "
+               "appendix lists the network metadata the tools actually "
+               "recovered for review. The strings the writer had attributed "
+               "to that contact are absent from every tool output bound to "
+               "this execution, so the claim was removed rather than left "
+               "unsupported for the reader.\n")
+    out, attempts = pub.retry_unverified_ioc_sections(
+        md, ["6. Network Indicators & C2"],
+        ["c2.beacon-evil.org"], lambda s, o: cleaned)
+    assert attempts and attempts[0]["accepted"]
+    assert "c2.beacon-evil.org" not in out
+    assert "No command-and-control" in out
+
+
+def test_sections_containing_values_finds_defanged_and_plain():
+    import publish_report_v2 as pub
+    md = ("## A\n\nplain-example.org here.\n\n## B\n\n"
+          "defanged[.]example.org there.\n\n## C\n\nclean.\n")
+    found = pub.sections_containing_values(
+        md, ["A", "B", "C"],
+        ["plain-example.org", "defanged[.]example.org"])
+    assert sorted(found) == ["A", "B"]

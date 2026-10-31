@@ -1007,6 +1007,81 @@ def retry_orphan_table_sections(
     return current, attempts
 
 
+def sections_containing_values(markdown: str, sections: list[str],
+                                values: list[str]) -> list[str]:
+    """The sections whose text contains any of the (defang-insensitive)
+    values."""
+    out = []
+    for section in sections:
+        span = _report_section_span(markdown, section)
+        if span is None:
+            continue
+        text = markdown[span[0]:span[1]].replace("[.]", ".").replace("[:]", ":")
+        for value in values:
+            plain = value.replace("[.]", ".").replace("[:]", ":").replace("\\", "")
+            if plain and plain in text:
+                out.append(section)
+                break
+    return out
+
+
+def retry_unverified_ioc_sections(
+    markdown: str,
+    sections: list[str],
+    unverified_values: list[str],
+    retry_section,
+) -> tuple[str, list[dict[str, Any]]]:
+    """Regenerate only sections containing UNVERIFIED indicators (RC-36).
+
+    Run 3b70ad56: both reports failed the quality gate on exactly one
+    invented indicator each (a canonical Run-key path and a 4-char domain)
+    written from training data into model-authored prose. The deterministic
+    IoC sections cannot help there; the repair asks the writer to REMOVE the
+    invented indicator (or cite it if it genuinely appears in the cited
+    evidence). A replacement is kept only when it contains none of the
+    unverified values and still passes the stub gate -- the pass can never
+    make the report worse. The CHECKER is untouched (#35: never loosen it).
+    """
+    current = markdown or ""
+    attempts: list[dict[str, Any]] = []
+    for section in sections:
+        span = _report_section_span(current, section)
+        if span is None:
+            attempts.append({"section": section, "accepted": False,
+                             "reason": "original section heading not found"})
+            continue
+        original = current[span[0]:span[1]].strip()
+        try:
+            candidate_md = ensure_section_heading(
+                str(retry_section(section, original) or ""), section
+            )
+        except Exception as exc:  # the first report remains intact on retry failure
+            attempts.append({"section": section, "accepted": False,
+                             "reason": f"retry raised {type(exc).__name__}: {exc}"})
+            continue
+        candidate_span = _report_section_span(candidate_md, section)
+        if candidate_span is None:
+            attempts.append({"section": section, "accepted": False,
+                             "reason": "retry did not return the required section heading"})
+            continue
+        candidate = candidate_md[candidate_span[0]:candidate_span[1]].strip()
+        if stub_sections(candidate, [section]):
+            attempts.append({"section": section, "accepted": False,
+                             "reason": "retry section still fails stub quality gate"})
+            continue
+        lowered = candidate.lower().replace("[.]", ".").replace("[:]", ":")
+        if any(v.replace("[.]", ".").replace("[:]", ":").lower() in lowered
+               for v in unverified_values):
+            attempts.append({"section": section, "accepted": False,
+                             "reason": "retry section still contains the unverified indicator"})
+            continue
+        current = (current[:span[0]].rstrip() + "\n\n" + candidate + "\n\n"
+                   + current[span[1]:].lstrip("\r\n"))
+        attempts.append({"section": section, "accepted": True,
+                         "reason": "retry section no longer contains the unverified indicator"})
+    return current, attempts
+
+
 def retry_report_stub_sections(
     markdown: str,
     sections: list[str],
@@ -1365,6 +1440,68 @@ def generate_technical_chunked(
             else:
                 print(f"[publish_report_v2] orphan-table repair accepted "
                       f"for {result['section']!r}", flush=True)
+
+    # RC-36 (2026-10-31, run 3b70ad56): one bounded unverified-IoC repair
+    # pass. The #42 class is the model writing indicator-shaped strings from
+    # training data into model-authored PROSE (the deterministic IoC section
+    # cannot reach those). Mirror the orphan repair: regenerate ONLY the
+    # sections containing unverified indicators, once, with a remove-or-cite
+    # instruction; a replacement is kept only when it contains none of the
+    # unverified values and still passes the stub gate. The CHECKER is
+    # untouched (#35: never loosen it); a section the repair also fails
+    # stays as-is and the gate still fails honestly.
+    if ev_dir is not None:
+        try:
+            _pack = evaluate_report_markdown(
+                markdown, required_sections=TECHNICAL_REPORT_SECTIONS,
+                min_total_chars=0, label="technical_v2",
+                evidence_root=ev_dir.parent)
+            _unverified = [str(item.get("value")) for item in
+                           (_pack.get("claimed_ioc_verification") or {})
+                           .get("unverified_items") or []
+                           if item.get("value")]
+        except Exception:                     # noqa: BLE001 - gate reads fail open
+            _unverified = []
+        if _unverified:
+            _ioc_secs = sections_containing_values(
+                markdown, TECHNICAL_REPORT_SECTIONS, _unverified)
+
+            def _retry_ioc(section: str, original: str) -> str:
+                values = ", ".join(f"`{v}`" for v in _unverified)
+                instruction = (
+                    "The previous draft contained indicator-shaped strings "
+                    f"that appear NOWHERE in this run's evidence corpus: "
+                    f"{values}. They were written from general knowledge, "
+                    "not from the cited tools — that is fabrication. Rewrite "
+                    "ONLY this section: remove those strings and any sentence "
+                    "that depends on them, or cite a concrete evidence row "
+                    "that actually contains the value if one truly exists. "
+                    "Keep every other finding and citation unchanged, and "
+                    "preserve the exact required heading. Do not add new "
+                    "indicator-shaped strings.\n\nPrevious section:\n"
+                    + original[:4000]
+                )
+                prompt = build_prompt_technical(
+                    session, verdict, deep, yara_meta, audit, technical_evidence,
+                    recovery_evidence, final_verdict,
+                    source_evidence=source_evidence, sections=[section],
+                    retry_instruction=instruction,
+                )
+                return _call(prompt, f"ioc-retry-{section[:24]}",
+                             f"05-ioc-retry-{len(audits):02d}.json",
+                             titles=[section])
+
+            markdown, ioc_results = retry_unverified_ioc_sections(
+                markdown, _ioc_secs, _unverified, _retry_ioc)
+            for result in ioc_results:
+                audits.append({"part": "ioc-retry-result", **result})
+                if not result["accepted"]:
+                    errors.append(
+                        f"unverified-IoC retry for {result['section']!r} not "
+                        f"accepted: {result['reason']}")
+                else:
+                    print(f"[publish_report_v2] unverified-IoC repair "
+                          f"accepted for {result['section']!r}", flush=True)
     return markdown, audits, errors
 
 
@@ -2140,6 +2277,66 @@ def main():
                 master_md, master_orphan_secs, _retry_master_orphan)
             for attempt in master_orphan_results:
                 print(f"[publish_report_v2] master orphan-table repair "
+                      f"{attempt['section'][:44]}: "
+                      f"{'accepted' if attempt['accepted'] else 'retained'} "
+                      f"({attempt.get('reason')})", flush=True)
+        # RC-35/RC-36: the master's IoC repair pass (same bounded
+        # keep-only-if-clean pattern; the #42 prose-invention class applies
+        # to the master's model-authored sections too).
+        try:
+            _mqpack = evaluate_report_markdown(
+                master_md, required_sections=REPORT_MASTER_SECTIONS,
+                min_total_chars=0, label="master_v2", evidence_root=case)
+            _m_unverified = [str(item.get("value")) for item in
+                             (_mqpack.get("claimed_ioc_verification") or {})
+                             .get("unverified_items") or []
+                             if item.get("value")]
+        except Exception:                     # noqa: BLE001 - gate reads fail open
+            _m_unverified = []
+        if _m_unverified:
+            _m_secs = sections_containing_values(
+                master_md, REPORT_MASTER_SECTIONS, _m_unverified)
+
+            def _retry_master_ioc(section: str, original: str) -> str:
+                values = ", ".join(f"`{v}`" for v in _m_unverified)
+                instruction = (
+                    "The previous draft contained indicator-shaped strings "
+                    f"that appear NOWHERE in this run's evidence corpus: "
+                    f"{values}. They were written from general knowledge, "
+                    "not from the cited tools — that is fabrication. Rewrite "
+                    "ONLY this section: remove those strings and any sentence "
+                    "that depends on them, or cite a concrete evidence row "
+                    "that actually contains the value if one truly exists. "
+                    "Keep every other finding and citation unchanged, and "
+                    "preserve the exact required heading. Do not add new "
+                    "indicator-shaped strings.\n\nPrevious section:\n"
+                    + original[:4000]
+                )
+                one = build_prompt_full(
+                    session, verdict, deep, yara_meta, audit,
+                    dotnet_result=dotnet_result, r2_decomp=r2_decomp,
+                    r2_ai=r2_ai, frida_trace=frida_trace, upx=upx,
+                    xor_hits=xor_hits, olevba=olevba, peepdf=peepdf,
+                    malcat_result=malcat_result, capa_result=capa_result,
+                    yara_result=yara_result, floss_result=floss_result,
+                    pe_imports_result=pe_imports_result,
+                    recovery_evidence=recovery_evidence,
+                    dynamic_status=dynamic_status,
+                    dynamic_evidence=dynamic_evidence,
+                    ioc_evidence=ioc_evidence,
+                    ti_evidence=ti_evidence,
+                    source_evidence=source_evidence, sections=[section],
+                    retry_instruction=instruction,
+                )
+                _r, parsed = llm_report_structured(
+                    one, section_only=True, heading_level=1, retries=1,
+                    timeout_s=REPORT_CALL_TIMEOUT_S)
+                return parsed["markdown"]
+
+            master_md, master_ioc_results = retry_unverified_ioc_sections(
+                master_md, _m_secs, _m_unverified, _retry_master_ioc)
+            for attempt in master_ioc_results:
+                print(f"[publish_report_v2] master unverified-IoC repair "
                       f"{attempt['section'][:44]}: "
                       f"{'accepted' if attempt['accepted'] else 'retained'} "
                       f"({attempt.get('reason')})", flush=True)
