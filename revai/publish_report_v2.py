@@ -1939,6 +1939,20 @@ def main():
         # repair never mentioned the container error).
         master_failure_reason: dict[str, str] = {}
         for si, title in enumerate(REPORT_MASTER_SECTIONS):
+            if title == "9. Indicators of Compromise":
+                # RC-35 (2026-10-31, run 9d4b4c39): same rule as the
+                # technical section 8 — the IoC section is assembled
+                # deterministically from iocs.json (the #42 class is the
+                # model inventing indicator-shaped strings; this run's
+                # master invented 12).
+                piece = deterministic_ioc_section_md(
+                    str(session.get("sha256") or ""),
+                    title="9. Indicators of Compromise", heading_level=1)
+                master_by_title[title] = piece
+                print(f"[publish_report_v2] master section {si + 1}/"
+                      f"{len(REPORT_MASTER_SECTIONS)} {title[:44]}: "
+                      f"{len(piece)} chars (deterministic)", flush=True)
+                continue
             if (title == "5. Behavioral Analysis"
                     and not dynamic_evidence_substantive(dynamic_status)):
                 # Evidence-conditioned (RC-27, operator decision 2026-10-27):
