@@ -1104,3 +1104,25 @@ def test_the_review_prompt_carries_the_restatement_and_calibration_rules(
     assert "VERBATIM" in prompt and "RESTATEMENT" in prompt
     assert "recorded calibration" in prompt
     assert "verdict.json" in prompt
+
+
+# --------------------------------------------------------------------------
+# RC-38b (2026-11-01, run 27799373 replay): Malcat metadata keys are
+# "Namespace::Name" with SPACES ("Exports::Module name") -- the parser
+# rejected the space and three real citations died. A spaced segment is
+# accepted only with the :: namespace marker; other spaced segments stay
+# rejected.
+# --------------------------------------------------------------------------
+def test_malcat_double_colon_metadata_keys_parse_and_resolve():
+    data = {"malcat": {"file_summary": {"metadata": {
+        "Exports::Module name": "FlashUpdate.exe",
+        "Debug::Path": "C:\src\FlashUpdate.pdb"}}}}
+    path = "$.malcat.file_summary.metadata.Exports::Module name"
+    status, value = E._resolve_json_path(data, path)
+    assert status == "resolved-row" or status == "traceable-row" or value == "FlashUpdate.exe", (status, value)
+    assert E._parse_json_path("$.malcat.file_summary.metadata.Debug::Path") is not None
+
+
+def test_a_spaced_segment_without_the_namespace_marker_still_fails():
+    assert E._parse_json_path("$.a.b has spaces") is None
+    assert E._parse_json_path("$.a.Export Module") is None

@@ -791,7 +791,14 @@ def _parse_json_path(
             while end < len(text) and text[end] not in ".[":
                 end += 1
             key = text[index:end]
-            if not key or any(char.isspace() for char in key):
+            if not key:
+                return None
+            # RC-38b: Malcat metadata keys are "Namespace::Name" and carry
+            # spaces ("Exports::Module name"). A bare segment with a space is
+            # accepted ONLY when it carries the Malcat `::` namespace marker;
+            # every other spaced segment stays rejected (compound locators
+            # are split/rejected upstream).
+            if any(char.isspace() for char in key) and "::" not in key:
                 return None
             tokens.append(key)
             index = end
