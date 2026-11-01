@@ -198,10 +198,16 @@ def _normalize_table_row_locators(sections: Any) -> None:
                     continue
                 value = _text(row.get("row_or_rule"))
                 if value.startswith("$"):
-                    # Strip only the trailing leaf (and any brackets AFTER
-                    # it), keeping the row index: $.x.findings[4].note ->
-                    # $.x.findings[4].
-                    row["row_or_rule"] = _TRAILING_LEAF_RE.sub("", value).strip()
+                    # Strip trailing leaf segments until the path ends at an
+                    # array-indexed element: $.yara.matches[3].strings[0]
+                    # .offset -> $.yara.matches[3] (the row the gate can
+                    # verify). Bounded so a pathological path cannot loop.
+                    for _ in range(4):
+                        if not _ROW_LEAF_CITATION_RE.search(
+                                _text(row.get("row_or_rule"))):
+                            break
+                        row["row_or_rule"] = _TRAILING_LEAF_RE.sub(
+                            "", _text(row.get("row_or_rule"))).strip()
 
 
 def _section_heading_key(section: Any) -> str:

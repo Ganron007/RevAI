@@ -420,6 +420,25 @@ def _row(cells, row_or_rule, source="yara", query="deep_dive/01-tools-raw.json")
             "row_or_rule": row_or_rule}
 
 
+def test_a_deep_leaf_chain_strips_down_to_the_indexed_row():
+    """RC-34 (run 27799373 replay): $.yara.matches[3].strings[0].offset has
+    TWO leaf levels after the match index -- one strip still leaves a leaf.
+    The normalization iterates down to the indexed row the gate can verify."""
+    doc = _doc(_table(["name", "note"]))
+    doc["sections"][0]["blocks"] = [{
+        "kind": "table",
+        "columns": ["name", "note"],
+        "rows": [{"cells": ["offset", "0x40"],
+                  "source": "yara",
+                  "query_or_table": "deep_dive/01-tools-raw.json",
+                  "row_or_rule": "$.yara.matches[3].strings[0].offset"}],
+    }]
+    errors = validate_report_document(doc)
+    assert not errors, errors
+    row = doc["sections"][0]["blocks"][0]["rows"][0]
+    assert row["row_or_rule"] == "$.yara.matches[3]"
+
+
 def test_a_multi_cell_row_citing_a_leaf_is_normalized_to_the_row():
     """RC-34 supersedes the RC-19 rejection: a leaf locator cannot bind every
     cell, but its PARENT ROW locator can -- so the schema normalizes the
