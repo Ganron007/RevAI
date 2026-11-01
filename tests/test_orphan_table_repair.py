@@ -8,6 +8,7 @@ them back to back. The repair mirrors the stub retry: regenerate ONLY the
 sections containing orphan pairs, once, and keep a replacement only when it
 carries no orphan pair itself.
 """
+import json
 import sys
 from pathlib import Path
 
@@ -285,3 +286,65 @@ def test_sections_containing_values_handles_doubled_backslashes():
         md, ["6. Network Indicators & C2"],
         ["HKEY_CURRENT_USER\Software\Borland\Locales"])
     assert found == ["6. Network Indicators & C2"], found
+
+
+# --------------------------------------------------------------------------
+# RC-39 (2026-10-31): the per-section ROW MANIFEST -- each section's prompt
+# carries its own citable artifact rows with exact locators, read from the
+# artifacts directly (never the elided corpus). Kills the row-index
+# mis-citation class and the insufficient explosion.
+# --------------------------------------------------------------------------
+def test_the_manifest_lists_rows_with_exact_locators(tmp_path, monkeypatch):
+    import v2_lib
+    case = tmp_path / "scripted"
+    case.mkdir(parents=True)
+    (case / "deep_dive").mkdir()
+    (case / "deep_dive" / "01-tools-raw.json").write_text(json.dumps({
+        "malcat": {"views": {"imports": [
+            {"ea": 903352, "name": "kernel32.OutputDebugStringA", "num_refs": 1}]}}}))
+    monkeypatch.setattr(v2_lib, "case_dir", lambda sha, mode=None: case)
+    out = v2_lib.build_section_row_manifest("a" * 64, "6. Network Indicators & C2")
+    assert "[`malcat.views.imports[0]`]" in out
+    assert "kernel32.OutputDebugStringA" in out
+    assert "the ONLY rows you may cite" in out
+
+
+def test_deterministic_sections_have_no_manifest(tmp_path, monkeypatch):
+    import v2_lib
+    monkeypatch.setattr(v2_lib, "case_dir", lambda sha, mode=None: tmp_path)
+    assert v2_lib.build_section_row_manifest("a" * 64, "8. Indicators of Compromise") == ""
+    assert v2_lib.build_section_row_manifest("a" * 64, "5. Behavioral & Dynamic Analysis") == ""
+
+
+def test_the_technical_prompt_carries_the_manifest(tmp_path, monkeypatch):
+    import publish_report_v2 as pub
+    import v2_lib
+    case = tmp_path / "scripted"
+    case.mkdir(parents=True)
+    (case / "deep_dive").mkdir()
+    (case / "deep_dive" / "01-tools-raw.json").write_text(json.dumps({
+        "malcat": {"views": {"imports": [
+            {"ea": 903352, "name": "kernel32.OutputDebugStringA", "num_refs": 1}]}}}))
+    monkeypatch.setattr(v2_lib, "case_dir", lambda sha, mode=None: case)
+    prompt = pub.build_prompt_technical(
+        {"sha256": SHA, "sample_path": "/x", "project_name": "p"},
+        {}, {}, {}, [], "EVIDENCE", sections=["6. Network Indicators & C2"])
+    assert "## Section row manifest (deterministic)" in prompt
+    assert "malcat.views.imports[0]" in prompt
+
+
+def test_the_master_prompt_carries_the_manifest_via_the_alias(tmp_path, monkeypatch):
+    import publish_report_v2 as pub
+    import v2_lib
+    case = tmp_path / "scripted"
+    case.mkdir(parents=True)
+    (case / "deep_dive").mkdir()
+    (case / "deep_dive" / "01-tools-raw.json").write_text(json.dumps({
+        "malcat": {"views": {"imports": [
+            {"ea": 903352, "name": "kernel32.OutputDebugStringA", "num_refs": 1}]}}}))
+    monkeypatch.setattr(v2_lib, "case_dir", lambda sha, mode=None: case)
+    prompt = pub.build_prompt_full(
+        {"sha256": SHA, "sample_path": "/x", "project_name": "p"},
+        {}, {}, {}, [], sections=["6. Network Analysis & C2"])
+    assert "## Section row manifest (deterministic)" in prompt
+    assert "malcat.views.imports[0]" in prompt

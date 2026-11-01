@@ -39,6 +39,8 @@ from v2_lib import (  # noqa: E402
     case_dir,
     deterministic_dynamic_section_md,
     deterministic_ioc_section_md,
+    build_section_row_manifest,
+    build_section_row_manifest,
     dynamic_evidence_substantive,
     ensure_verdict_panel,
     assert_report_input_manifest,
@@ -297,6 +299,18 @@ def load_audit_tail(sha: str, limit: int = 40) -> list:
 
 def section_checklist() -> str:
     return "\n".join(f"- {s}" for s in REPORT_MASTER_SECTIONS)
+
+
+#: RC-39: the master's section titles map to the technical row-manifest
+#: sources (the same artifact rows feed both reports).
+MASTER_ROW_MANIFEST_ALIAS: dict[str, str] = {
+    "4. Static Analysis": "4. Static Code Analysis",
+    "6. Network Analysis & C2": "6. Network Indicators & C2",
+    "7. Capability Assessment": "7. Capabilities Assessment",
+    "10. Detection Rules": "9. Detection Engineering",
+    "11. MITRE ATT&CK Mapping": "10. MITRE ATT&CK Mapping",
+    "3. Background & Family Lineage": "9. Detection Engineering",
+}
 
 
 def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, yara_meta: dict | None, audit: list,
@@ -618,6 +632,14 @@ def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, ya
         "never substitute one for the other or combine them into a new score. "
         "Headings MUST use ASCII apostrophe only (Don't, not Don’t)."
     )
+    for section in (sections or []):
+        mapped = MASTER_ROW_MANIFEST_ALIAS.get(section)
+        if not mapped:
+            continue
+        manifest = build_section_row_manifest(
+            str(session.get("sha256") or ""), mapped)
+        if manifest:
+            lines += ["", manifest, ""]
     if retry_instruction:
         lines += ["", "## Targeted section repair", retry_instruction]
     return "\n".join(lines)
@@ -813,6 +835,11 @@ def build_prompt_technical(session: dict, verdict: dict | None, deep: dict | Non
         "When in doubt, explain more — never paste evidence bare. "
         "CRITICAL: heading `## 11. What We Don't Know` must use ASCII apostrophe (U+0027)."
     )
+    for section in (sections or []):
+        manifest = build_section_row_manifest(
+            str(session.get("sha256") or ""), section)
+        if manifest:
+            lines += ["", manifest, ""]
     if retry_instruction:
         lines += ["", "## Targeted section repair", retry_instruction]
     return "\n".join(lines)

@@ -9963,6 +9963,126 @@ def _ioc_value(v) -> str:
     return s.strip().rstrip("\\").strip() or str(v)
 
 
+#: RC-39: which artifact row-sources feed which technical section's row
+#: manifest. Each entry: (artifact_rel_path, array_path_after_root, label).
+#: The manifest is read from the ARTIFACTS directly -- never from the
+#: elided prompt corpus -- so a section always sees its own evidence rows
+#: even when RC-30 bounded the corpus away.
+SECTION_ROW_SOURCES: dict[str, tuple[tuple[str, str, str], ...]] = {
+    "3. File Layout & Structural Analysis": (
+        ("deep_dive/01-tools-raw.json", "malcat.views.anomalies", "anomalies"),
+        ("deep_dive/01-tools-raw.json", "yara.matches", "yara"),
+    ),
+    "4. Static Code Analysis": (
+        ("deep_dive/01-tools-raw.json", "malcat.views.strings", "strings"),
+        ("deep_dive/01-tools-raw.json", "malcat.views.anomalies", "anomalies"),
+    ),
+    "6. Network Indicators & C2": (
+        ("iocs.json", "domains", "domains"),
+        ("iocs.json", "urls", "urls"),
+        ("iocs.json", "ips", "ips"),
+        ("deep_dive/01-tools-raw.json", "malcat.views.imports", "imports"),
+    ),
+    "7. Capabilities Assessment": (
+        ("quick_scan/00-tools-raw.json", "capa.top_rules", "capa"),
+        ("deep_dive/01-tools-raw.json", "malcat.views.anomalies", "anomalies"),
+    ),
+    "9. Detection Engineering": (
+        ("rule.yara.json", "yara.matches", "yara"),
+        ("deep_dive/01-tools-raw.json", "yara.matches", "yara"),
+    ),
+    "10. MITRE ATT&CK Mapping": (
+        ("quick_scan/00-tools-raw.json", "capa.top_rules", "capa"),
+    ),
+}
+
+_SECTION_MANIFEST_ROW_CAP = 40
+
+
+def _read_artifact_rows(case_root: Path, rel: str, array_path: str) -> list:
+    """Read one artifact and return the array at ``array_path`` ([] if absent)."""
+    path = case_root / rel
+    if not path.is_file():
+        return []
+    try:
+        data = json.loads(path.read_text(errors="replace")) or {}
+    except Exception:                         # noqa: BLE001
+        return []
+    node = data
+    for segment in array_path.split("."):
+        if not isinstance(node, dict) or segment not in node:
+            return []
+        node = node[segment]
+    if isinstance(node, dict):
+        return [node]
+    return node if isinstance(node, list) else []
+
+
+def _summarize_row(value, limit: int = 200) -> str:
+    """A compact one-line summary of an artifact row for the manifest."""
+    if isinstance(value, dict):
+        parts = [f"{k}={_ioc_value(v)}" for k, v in value.items()
+                 if _ioc_value(v)]
+        text = ", ".join(parts)
+    else:
+        text = _ioc_value(value)
+    return text[:limit]
+
+
+def build_section_row_manifest(sha: str, section: str,
+                               logs_dir: Path | None = None) -> str:
+    """The deterministic SECTION ROW MANIFEST for one technical section.
+
+    RC-39 (2026-10-31): the two remaining failure classes are the writer
+    citing row indices it cannot see (the corpus elision hides whole
+    artifacts) and asserting beyond its evidence. This manifest is read
+    from the ARTIFACTS directly, so the section's prompt always carries
+    its own citable rows with their exact locators; the writer is told to
+    cite only manifest rows, verbatim. Deterministic sections (5 and 8)
+    have no manifest. Empty when the artifacts offer nothing.
+    """
+    sources = SECTION_ROW_SOURCES.get(section)
+    if not sources:
+        return ""
+    mode = os.environ.get("REVAI_RUN_MODE", "").strip() or None
+    root = case_dir(sha, mode)
+    blocks: list[str] = []
+    total = 0
+    for rel, array_path, label in sources:
+        rows = _read_artifact_rows(root, rel, array_path)
+        if not rows:
+            continue
+        shown = 0
+        lines: list[str] = []
+        for i, value in enumerate(rows):
+            summary = _summarize_row(value)
+            if not summary:
+                continue
+            if shown >= _SECTION_MANIFEST_ROW_CAP:
+                lines.append(
+                    f"- ... and {len(rows) - shown} more rows; the complete "
+                    f"array remains in `{rel}` at `{array_path}`.")
+                break
+            lines.append(
+                f"- [`{array_path}[{i}]`] {summary}")
+            shown += 1
+            total += 1
+        if lines:
+            blocks.append(f"**{label}** — `{rel}` at `{array_path}`:")
+            blocks.extend(lines)
+            blocks.append("")
+    if not blocks:
+        return ""
+    head = ("## Section row manifest (deterministic)\n\n"
+            "These rows were read directly from this run's artifacts and are "
+            "the ONLY rows you may cite in this section, with the locators "
+            "shown in brackets. Copy rows verbatim when tabulating; cite the "
+            "locator exactly as shown; never alter a value, index or path. "
+            "Rows not listed here may be discussed WITHOUT a citation, never "
+            "with an invented one.\n\n")
+    return head + "\n".join(blocks)
+
+
 def deterministic_ioc_section_md(sha: str, *,
                                  title: str = "8. Indicators of Compromise",
                                  heading_level: int = 2,
