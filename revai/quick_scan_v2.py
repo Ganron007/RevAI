@@ -842,9 +842,23 @@ def main():
         "summary": (llm_verdict.get("summary") if llm_ok else "") or "",
         "key_evidence": (llm_verdict.get("key_evidence") if llm_ok else []) or [],
     }, default=str)
+    # #6c (2026-11-01, run d680765e): the format decides whether the
+    # behavioral-signal floor may apply. A NON-executable container (a text
+    # "DOC", data, a document) cannot fire behavioral tools — behavioral
+    # vocabulary in its CONTENT is descriptive data, and generic YARA
+    # patterns on text are false positives. Executable formats keep every
+    # rule unchanged; an unknown format (malcat failed) preserves the old
+    # behavior.
+    _ftype = ""
+    if isinstance(malcat, dict):
+        _ftype = str((malcat.get("file_summary") or {}).get("type") or "")
+    _executable = (bool(re.search(r"pe32|pe32\+|elf|mach-?o|msil|dotnet",
+                                  _ftype, re.I)) if _ftype else None)
     if llm_ok:
-        llm_verdict = calibrate_verdict(llm_verdict, _ev_text)
-    v1_verdict = calibrate_verdict(v1_verdict, _ev_text)
+        llm_verdict = calibrate_verdict(llm_verdict, _ev_text,
+                                        executable=_executable)
+    v1_verdict = calibrate_verdict(v1_verdict, _ev_text,
+                                   executable=_executable)
     if llm_ok:
         # Compare: agreement = same family-tier verdict.
         llm_g = (llm_verdict.get("verdict") or "").strip().lower()

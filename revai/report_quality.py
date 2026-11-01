@@ -2400,6 +2400,14 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
     banner_commits = {m.group(1).lower()
                       for m in _PROVENANCE_BANNER_RE.finditer(markdown or "")}
     evidence = (evidence_text or "").lower()
+    # RC-38 (2026-10-31, run b9a71102): the raw file text is NOT how an
+    # indicator appears after JSON escaping and defanging -- JSON doubles
+    # backslashes (HKCU\Environment in raw text vs HKCU\Environment in
+    # the value) and the extractors store defanged domains/IPs
+    # (08[.]8[.]8[.]8). A value that appears in EITHER variant is verified:
+    # both come from the same attested artifacts.
+    evidence_json_plain = (evidence.replace("\\\\", "\\")
+                           .replace("[.]", ".").replace("[:]", ":"))
     sample_sha = _sample_sha256()
     if isinstance(metadata_hashes, dict):
         report_artifact_hashes = {
@@ -2572,7 +2580,8 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
             # excluded ALL unobserved mentions, so the exact fabrication #42
             # exists for -- a canonical path written from training data --
             # shipped while the audit counted zero.
-            if plain in evidence or raw.lower() in evidence:
+            if (plain in evidence or plain in evidence_json_plain
+                    or raw.lower() in evidence):
                 verified.append({"type": kind, "value": raw})
                 continue
             matched = _evidence_has_regkey(plain, evidence_text or "")
@@ -2592,7 +2601,8 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
                 continue
             unverified.append({"type": kind, "value": raw})
             continue
-        if plain in evidence or raw.lower() in evidence:
+        if (plain in evidence or plain in evidence_json_plain
+                or raw.lower() in evidence):
             verified.append({"type": kind, "value": raw})
         else:
             unverified.append({"type": kind, "value": raw})

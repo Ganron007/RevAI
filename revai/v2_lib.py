@@ -7000,7 +7000,8 @@ def calibration_evidence_text(summary: str, key_evidence, findings,
     }, default=str)
 
 
-def calibrate_verdict(verdict: dict, evidence_text: str) -> dict:
+def calibrate_verdict(verdict: dict, evidence_text: str, *,
+                      executable: bool | None = None) -> dict:
     """Verdict calibration gate — symmetric, evidence-owned (2026-08-07).
 
     CEILING: malicious → suspicious when evidence is protection/obfuscation
@@ -7057,8 +7058,36 @@ def calibrate_verdict(verdict: dict, evidence_text: str) -> dict:
             "evidence; malicious capped to suspicious (obfuscation is neutral)"
         )
         return out
+    # RC-39/#6c (2026-11-01, run d680765e): a NON-EXECUTABLE input whose
+    # evidence contains no strict behavioral-intent signals cannot stand at
+    # suspicious — its only matches were generic YARA patterns on content
+    # (run d680765e: the `domain` rule matching the word "Tokyo" in a 94-
+    # byte text file). The FLOOR is also skipped: behavioral vocabulary in
+    # a TEXT file's content is descriptive data, not a tool-fired behavioral
+    # rule (capa cannot even run on a non-executable). The caller passes
+    # executable=False only when the intake/malcat determined the input has
+    # no executable container; None preserves the old behavior.
+    if executable is False and label in ("suspicious", "malicious"):
+        hits = _signal_hits(text, _BEHAVIORAL_INTENT_SIGNALS_STRICT)
+        if hits:
+            out = dict(verdict)
+            out.setdefault("verdict_intent_signals", hits[:8])
+            return out
+        out = dict(verdict)
+        out["verdict"] = "benign"
+        try:
+            out["score"] = min(int(out.get("score") or 0), 20)
+        except (TypeError, ValueError):
+            out["score"] = 20
+        out["verdict_calibrated"] = True
+        out["calibration_reason"] = (
+            "non-executable input; the only matches are generic YARA "
+            "patterns and the content carries no behavioral-intent signals; "
+            "suspicious capped to benign (data is not a capability)"
+        )
+        return out
     # FLOOR: benign/legitimate claimed but behavioral-intent evidence exists
-    if label == "benign":
+    if label == "benign" and executable is not False:
         hits = _signal_hits(text, _BEHAVIORAL_INTENT_SIGNALS)
         if not hits:
             return verdict

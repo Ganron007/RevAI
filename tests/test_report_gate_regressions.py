@@ -1119,3 +1119,76 @@ def test_private_range_ips_are_excluded_from_unverified_iocs(tmp_path):
     assert "203.0.113.10" not in values, values
     # A PUBLIC IP with no evidence stays unverified (fail-closed).
     assert "8.8.8.8" in values, values
+
+
+# --------------------------------------------------------------------------
+# #6c (2026-11-01, run d680765e): a NON-executable input whose evidence has
+# no strict behavioral signals cannot stand at suspicious -- its only
+# matches were generic YARA patterns on content (the `domain` rule matching
+# the word "Tokyo" in a 94-byte text file). The FLOOR is skipped for
+# non-executables: behavioral vocabulary in file CONTENT is descriptive
+# data, not a tool-fired rule. executable=None/True preserve every rule.
+# --------------------------------------------------------------------------
+def test_a_non_executable_input_with_no_strict_signals_caps_to_benign():
+    v = {"verdict": "suspicious", "score": 60}
+    out = v2_lib.calibrate_verdict(
+        v, "yara rule 'domain' matched the word Tokyo; no other findings",
+        executable=False)
+    assert out["verdict"] == "benign", out
+    assert out["verdict_calibrated"] is True
+    assert "non-executable" in out["calibration_reason"]
+
+
+def test_a_non_executable_input_with_real_signals_stays():
+    v = {"verdict": "suspicious", "score": 60}
+    out = v2_lib.calibrate_verdict(
+        v, "macro auto-executes and writes Startup folder persistence",
+        executable=False)
+    assert out["verdict"] == "suspicious", out
+
+
+def test_the_floor_is_skipped_for_non_executables():
+    v = {"verdict": "benign", "score": 10}
+    out = v2_lib.calibrate_verdict(
+        v, "macro text describes a parasitic exe infector in prose",
+        executable=False)
+    assert out["verdict"] == "benign", out
+    assert not out.get("verdict_raised"), out
+
+
+def test_executable_none_and_true_preserve_every_rule():
+    v = {"verdict": "benign", "score": 10}
+    out = v2_lib.calibrate_verdict(
+        v, "token manipulation and credential access signals observed")
+    assert out["verdict"] == "suspicious" and out.get("verdict_raised"), out
+    out = v2_lib.calibrate_verdict(
+        v, "token manipulation and credential access signals observed",
+        executable=True)
+    assert out["verdict"] == "suspicious" and out.get("verdict_raised"), out
+
+
+# --------------------------------------------------------------------------
+# RC-38 (2026-10-31, run b9a71102): the corpus is RAW FILE TEXT -- JSON
+# doubles backslashes and the extractors store defanged values -- so the
+# match must try the JSON-plain/undefanged variants too. api.telegram.org
+# stays unverified (genuinely invented; nowhere in the artifacts).
+# --------------------------------------------------------------------------
+def test_json_escaped_and_defanged_corpus_values_verify():
+    import json as _json
+    iocs = {"registry_keys": ["HKCU\Environment\WINDIR"],
+            "ips": ["08[.]8[.]8[.]8"]}
+    corpus = ("raw tool output follows\n" + _json.dumps(iocs) + "\nend\n")
+    md = ("# Report\n\nThe sample reads HKCU\Environment\WINDIR and "
+          "resolves 8.8.8.8.\n")
+    res = RQ.verify_claimed_iocs(md, corpus)
+    values = [i.get("value") for i in (res.get("unverified_items") or [])]
+    assert "HKCU\Environment\WINDIR" not in values, values
+    assert "8.8.8.8" not in values, values
+    assert res.get("verified") == 2, res.get("verified")
+
+
+def test_a_genuinely_invented_indicator_stays_unverified():
+    md = ("# Report\n\nThe sample contacts api.telegram.org for C2.\n")
+    res = RQ.verify_claimed_iocs(md, "raw tool output with no such domain")
+    values = [i.get("value") for i in (res.get("unverified_items") or [])]
+    assert "api.telegram.org" in values, values
