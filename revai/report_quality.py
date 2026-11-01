@@ -486,6 +486,11 @@ def evaluate_report_markdown(
     if evidence_root is not None:
         try:
             evidence_text, evidence_files = collect_evidence_text(Path(evidence_root))
+            # RC-38: the attested iocs.json values, rendered exactly as the
+            # deterministic IoC section renders them, are part of the
+            # verification corpus (extractor output = tool evidence).
+            evidence_text = (evidence_text + "\n"
+                             + _iocs_rendered_evidence(Path(evidence_root)))
             ioc_verification = verify_claimed_iocs(
                 md or "", evidence_text,
                 metadata_hashes=_report_metadata_hashes(Path(evidence_root)),
@@ -3026,6 +3031,46 @@ def _ioc_factcheck_issue(claims: dict) -> str | None:
     """
     count = int(claims.get("unverified") or 0)
     return f"report:unverified_iocs:{count}" if count else None
+
+
+def _iocs_rendered_evidence(root: Path) -> str:
+    """The attested iocs.json values, rendered exactly as the deterministic
+    IoC section renders them (RC-38, 2026-10-31).
+
+    Design call (operator-delegated): the extractor output IS tool evidence.
+    iocs.json is an attested, digest-verified artifact produced by the
+    deterministic extractors; a value the deterministic IoC section rendered
+    from it must VERIFY, not fail on a raw-vs-rendered form mismatch (NUL
+    padding, control characters). An indicator that is nowhere in iocs.json
+    AND nowhere in the raw corpus stays unverified -- the fabrication check
+    is untouched.
+    """
+    path = root / "iocs.json"
+    if not path.is_file():
+        return ""
+    try:
+        data = json.loads(path.read_text(errors="replace")) or {}
+    except Exception:                         # noqa: BLE001
+        return ""
+    vals: list[str] = []
+    for key in ("hashes", "domains", "urls", "ips", "files", "registry_keys",
+                "mutexes", "emails", "wallets_btc", "wallets_eth"):
+        v = data.get(key) or []
+        if isinstance(v, dict):
+            v = [v]
+        for item in v:
+            candidates = item.values() if isinstance(item, dict) else [item]
+            for cand in candidates:
+                text = str(cand)
+                # Same cleanup the deterministic renderer applies: cut at the
+                # first NUL, strip control characters.
+                if "\x00" in text:
+                    text = text.split("\x00", 1)[0]
+                text = "".join(ch for ch in text
+                               if ch.isprintable() or ch == " ").strip()
+                if text:
+                    vals.append(text)
+    return " ".join(vals)
 
 
 def collect_evidence_text(root: Path, max_bytes: int = 40 * 1024 * 1024) -> tuple[str, list[str]]:

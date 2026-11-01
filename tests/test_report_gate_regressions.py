@@ -1192,3 +1192,31 @@ def test_a_genuinely_invented_indicator_stays_unverified():
     res = RQ.verify_claimed_iocs(md, "raw tool output with no such domain")
     values = [i.get("value") for i in (res.get("unverified_items") or [])]
     assert "api.telegram.org" in values, values
+
+
+# --------------------------------------------------------------------------
+# RC-38 provenance (2026-11-01, operator-delegated design call): the
+# attested iocs.json values, rendered exactly as the deterministic IoC
+# section renders them, are tool evidence -- a report citing such a value
+# verifies even when the RAW corpus form differs (NUL padding, defanging).
+# An indicator that is nowhere in iocs.json AND nowhere in the corpus stays
+# unverified (the fabrication check is untouched).
+# --------------------------------------------------------------------------
+def test_iocs_rendered_values_verify_against_the_attested_artifact():
+    import json as _json
+    import tempfile
+    case = Path(tempfile.mkdtemp())
+    iocs = {"domains": ["api.telegram.org" + chr(0) + "padding"],
+            "ips": ["08[.]8[.]8[.]8"]}
+    (case / "iocs.json").write_text(_json.dumps(iocs))
+    md = ("# Report\n\n## 8. Indicators of Compromise\n\n"
+          "- `api.telegram.org` (source: iocs, query_or_table: iocs.json, "
+          "row_or_rule: $.domains[0])\n"
+          "- The sample resolves 8.8.8.8.\n")
+    # The rendered-values variant comes from the evidence root, so exercise
+    # the corpus assembly directly:
+    corpus = RQ.collect_evidence_text(case)[0] + "\n" + RQ._iocs_rendered_evidence(case)
+    res = RQ.verify_claimed_iocs(md, corpus)
+    values = [i.get("value") for i in (res.get("unverified_items") or [])]
+    assert "api.telegram.org" not in values, values
+    assert "8.8.8.8" not in values, values

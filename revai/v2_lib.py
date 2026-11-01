@@ -10016,8 +10016,12 @@ SECTION_ROW_SOURCES: dict[str, tuple[tuple[str, str, str], ...]] = {
         ("quick_scan/00-tools-raw.json", "capa.top_rules", "capa"),
         ("deep_dive/01-tools-raw.json", "malcat.views.anomalies", "anomalies"),
     ),
+    "5. Behavioral & Dynamic Analysis": (
+        ("deep_dive/03-oracle.json", "entry_points", "emulation entry points"),
+        ("deep_dive/03-oracle.json", "dyn_imports", "dynamic imports"),
+    ),
     "9. Detection Engineering": (
-        ("rule.yara.json", "yara.matches", "yara"),
+        ("rule.yara.json", "strings", "rule strings"),
         ("deep_dive/01-tools-raw.json", "yara.matches", "yara"),
     ),
     "10. MITRE ATT&CK Mapping": (
