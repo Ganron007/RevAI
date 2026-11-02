@@ -1220,3 +1220,33 @@ def test_iocs_rendered_values_verify_against_the_attested_artifact():
     values = [i.get("value") for i in (res.get("unverified_items") or [])]
     assert "api.telegram.org" not in values, values
     assert "8.8.8.8" not in values, values
+
+
+# --------------------------------------------------------------------------
+# RC-41 (2026-11-01, run daa532b3): the writer failed to state a clear
+# verdict — the publish claim was "unknown". The lock cannot verify a
+# verdict that does not exist. calibrate_publish_claim falls back to the
+# pipeline-selected label and records the writer's failure to commit.
+# --------------------------------------------------------------------------
+def test_an_unknown_publish_claim_falls_back_to_the_locked_label():
+    out = v2_lib.calibrate_publish_claim(
+        "unknown", quick_verdict={"verdict": "malicious", "score": 72},
+        deep_verdict={"verdict": "malicious"}, evidence_text="no signals")
+    assert out["verdict"] == "malicious", out
+    assert out["changed"] is True
+    assert "did not state a clear verdict" in out["reason"]
+
+
+def test_an_empty_publish_claim_also_falls_back():
+    out = v2_lib.calibrate_publish_claim(
+        "", quick_verdict={"verdict": "suspicious", "score": 40},
+        evidence_text="")
+    assert out["verdict"] == "suspicious", out
+
+
+def test_a_real_publish_claim_is_not_overridden():
+    out = v2_lib.calibrate_publish_claim(
+        "suspicious", quick_verdict={"verdict": "suspicious", "score": 40},
+        evidence_text="")
+    assert out["verdict"] == "suspicious", out
+    assert not out.get("changed") or out["raw"] == "suspicious"

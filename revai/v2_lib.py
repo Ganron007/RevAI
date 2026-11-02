@@ -7122,7 +7122,23 @@ def calibrate_publish_claim(
     {verdict, changed, reason, raw, signals}.
     """
     raw = str(pub_claimed or "").strip()
-    if not raw:
+    # RC-41 (2026-11-01, run daa532b3): the writer failed to state a clear
+    # verdict — the publish claim was "unknown" (or empty). The lock cannot
+    # verify a verdict that does not exist. Fall back to the pipeline-
+    # selected label (the locked verdict from the quick/triage stage) and
+    # record the writer's failure to commit.
+    if not raw or normalize_verdict_label(raw) == "unknown":
+        locked = ""
+        if isinstance(quick_verdict, dict):
+            locked = str(quick_verdict.get("verdict") or "").strip()
+        if not locked and isinstance(deep_verdict, dict):
+            locked = str(deep_verdict.get("verdict") or "").strip()
+        if locked and locked not in ("unknown", ""):
+            return {"verdict": locked, "changed": True,
+                    "reason": "the publish model did not state a clear "
+                              "verdict (unknown); publish claim defaulted "
+                              "to the pipeline-selected label",
+                    "raw": raw or "unknown", "signals": None}
         return {"verdict": "", "changed": False, "reason": "", "raw": "",
                 "signals": None}
     # Only the triage *labels* go into the payload: the verdicts' narrative prose
