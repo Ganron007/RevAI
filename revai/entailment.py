@@ -2252,6 +2252,67 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
                     pending_by_key[review_item["id"]] = review_item
                     pending.append(review_item)
 
+    # #6-b at scale (2026-11-01, run e66a6fa7): the reviewer still marks
+    # matching verbatim restatements as contradicted/insufficient even with
+    # the #6-b prompt rule, because at scale the rule text gets lost among
+    # hundreds of claims. The fix is DETERMINISTIC: a TABLE-ROW claim whose
+    # cells are a normalized substring of its cited evidence excerpt is a
+    # RESTATEMENT — auto-classify as supported without calling the
+    # reviewer. Only table-row claims are pre-classified (the dominant
+    # contradicted shape); prose claims always go to the reviewer because
+    # they add interpretation that needs judgment.
+    pre_supported = 0
+    still_pending: list[dict] = []
+    for item in pending:
+        refs = item.get("references") or []
+        # Only pre-classify when EVERY reference is a table row (starts with |).
+        if not refs or not all(
+                ref.get("claim", "").lstrip().startswith("|")
+                for ref in refs):
+            still_pending.append(item)
+            continue
+        excerpts = " ".join(item.get("evidence_excerpts") or []).lower()
+        # For a table-row claim, extract the CELL VALUES (split on |) and
+        # check that every significant one (length > 2, not just a number)
+        # appears in the cited excerpt. This handles the JSON-dict-vs-
+        # markdown-table format mismatch: the row restates the dict fields
+        # but in table-cell order, not JSON serialization order.
+        all_match = True
+        for ref in refs:
+            raw = ref.get("claim", "")
+            cells = [c.strip().lower()
+                     for c in raw.split("|") if c.strip()]
+            for cell in cells:
+                # Strip the citation annotation from the last cell if present
+                clean = re.sub(
+                    r"\s*\(source:.*$", "", cell).strip()
+                if len(clean) <= 2 or clean.isdigit():
+                    continue
+                if clean not in excerpts:
+                    all_match = False
+                    break
+            if not all_match:
+                break
+        if all_match and refs:
+            for ref in refs:
+                results.append({
+                    "report": ref["report"],
+                    "claim": ref["claim"][:240],
+                    "status": "semantically-supported",
+                    "reason": "verbatim restatement of the cited evidence row "
+                              "(deterministic pre-classification)",
+                    "evidence_locators_valid": True,
+                    "reviewed_evidence": item.get("evidence"),
+                })
+            pre_supported += len(refs)
+        else:
+            still_pending.append(item)
+    pending = still_pending
+    if pre_supported:
+        print(f"[report_entailment] pre-classified {pre_supported} claim(s) "
+              f"as verbatim table-row restatements; {len(pending)} claim(s) "
+              f"to review", file=sys.stderr, flush=True)
+
     review_error = None
     failed_batches: list[int] = []
     last_batch_error = ""

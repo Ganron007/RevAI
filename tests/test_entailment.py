@@ -1126,3 +1126,61 @@ def test_malcat_double_colon_metadata_keys_parse_and_resolve():
 def test_a_spaced_segment_without_the_namespace_marker_still_fails():
     assert E._parse_json_path("$.a.b has spaces") is None
     assert E._parse_json_path("$.a.Export Module") is None
+
+
+# --------------------------------------------------------------------------
+# #6-b at scale (2026-11-01, run e66a6fa7): verbatim restatements are
+# auto-classified as supported WITHOUT calling the reviewer — the
+# deterministic pre-classification removes the largest contradicted source
+# from the reviewer's workload.
+# --------------------------------------------------------------------------
+def test_verbatim_restatements_are_pre_classified_as_supported(tmp_path, monkeypatch):
+    case = _case(tmp_path, {
+        "REPORT-MASTER-v2.md":
+            "| XorInLoop | 3 | code | 3 | XOR instruction in a loop | "
+            "(source: malcat, query_or_table: deep_dive/01-tools-raw.json, "
+            "row_or_rule: $.malcat.views.anomalies[0])\n"},
+        {"deep_dive/01-tools-raw.json":
+         '{"malcat": {"views": {"anomalies": [{"name": "XorInLoop", '
+         '"level": 3, "category": "code", "num_hits": 3, '
+         '"description": "XOR instruction in a loop"}]}}}'})
+
+    called = []
+    def reviewer(batch, **_kwargs):
+        called.append(batch)
+        return {"reviews": [{"id": item["id"], "verdict": "insufficient",
+                             "evidence_ids": []} for item in batch]}
+
+    res = E.check_report_entailment(
+        "a" * 64, case_root=case, semantic_reviewer=reviewer, use_cache=False)
+    # The verbatim restatement was pre-classified; the reviewer was NOT called
+    # (or if called for other claims, this claim was not in the batch).
+    row = next(r for r in res["claims"]
+               if "XorInLoop" in r.get("claim", ""))
+    assert row["status"] == "semantically-supported", row
+    assert "verbatim restatement" in row.get("reason", ""), row
+
+
+def test_a_non_restatement_still_goes_to_the_reviewer(tmp_path, monkeypatch):
+    case = _case(tmp_path, {
+        "REPORT-MASTER-v2.md":
+            "The sample implements custom crypto using XOR loops "
+            "(source: malcat, query_or_table: deep_dive/01-tools-raw.json, "
+            "row_or_rule: $.malcat.views.anomalies[0])\n"},
+        {"deep_dive/01-tools-raw.json":
+         '{"malcat": {"views": {"anomalies": [{"name": "XorInLoop", '
+         '"level": 3, "category": "code", "num_hits": 3, '
+         '"description": "XOR instruction in a loop"}]}}}'})
+
+    called = []
+    def reviewer(batch, **_kwargs):
+        called.append(batch)
+        return {"reviews": [{"id": item["id"], "verdict": "supported",
+                             "evidence_ids": [row["evidence_id"]
+                                              for row in item.get("evidence", [])]}
+                            for item in batch]}
+
+    res = E.check_report_entailment(
+        "a" * 64, case_root=case, semantic_reviewer=reviewer, use_cache=False)
+    assert called, "a non-restatement must reach the reviewer"
+    assert res["by_status"]["semantically-supported"] == 1

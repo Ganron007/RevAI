@@ -310,6 +310,7 @@ MASTER_ROW_MANIFEST_ALIAS: dict[str, str] = {
     "10. Detection Rules": "9. Detection Engineering",
     "11. MITRE ATT&CK Mapping": "10. MITRE ATT&CK Mapping",
     "3. Background & Family Lineage": "9. Detection Engineering",
+    "5. Behavioral Analysis": "5. Behavioral & Dynamic Analysis",
 }
 
 
