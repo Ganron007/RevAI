@@ -1209,6 +1209,46 @@ def generate_technical_sectionwise(
               + (f"; still failed: {still_failed}" if still_failed else ""),
               flush=True)
 
+    # RC-40b (2026-11-01, run f08c2158): a sustained provider stall killed
+    # 12/13 v3 sections AND the first repair pass. Add a second sweep pass:
+    # re-generate each still-failed section one more time. A second failure
+    # stays honestly lost — this is the same bounded contract as the v2
+    # path's RC-29 sweeper.
+    still_failed = [r for r in results if not r.get("llm_ok")
+                    and not r.get("deterministic")]
+    if still_failed:
+        print(f"  [technical] RC-40b sweep pass: re-generating "
+              f"{len(still_failed)} still-failed section(s)", flush=True)
+
+        def _sweep_section(result: dict[str, Any]) -> dict[str, Any]:
+            retry = _generate_technical_section(
+                result["name"], blocks, header, sha,
+                provenance_block_text=provenance_block_text,
+                source_evidence=source_evidence, mode=mode,
+                locked_verdict=locked_verdict,
+                failure_reason="RC-40b sweep: previous attempts failed")
+            retry["pass"] = 3
+            retry["sweeper"] = True
+            return retry
+
+        if parallel and len(still_failed) > 1:
+            with ThreadPoolExecutor(
+                    max_workers=min(max_workers, len(still_failed))) as pool:
+                sweeps = list(pool.map(_sweep_section, still_failed))
+        else:
+            sweeps = [_sweep_section(r) for r in still_failed]
+        by_name = {r.get("name"): r for r in results}
+        for sweep in sweeps:
+            if sweep.get("llm_ok"):
+                by_name[sweep.get("name")] = sweep
+        results = [by_name[r.get("name")] for r in results]
+        results.sort(key=lambda r: order.get(r.get("name", ""), 999))
+        still = [r.get("name") for r in results if not r.get("llm_ok")]
+        print(f"  [technical] sweep pass complete; "
+              f"{len(results) - len(still)}/{len(results)} sections ok"
+              + (f"; still failed: {still}" if still else ""),
+              flush=True)
+
     parts = [f"# Technical Malware Analysis Report\n"]
     for r in results:
         md = (r.get("markdown") or "").strip()
