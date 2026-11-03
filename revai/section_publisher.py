@@ -1249,6 +1249,51 @@ def generate_technical_sectionwise(
               + (f"; still failed: {still}" if still else ""),
               flush=True)
 
+    # RC-40c (2026-11-02, run 5ddb16ba): the v3 path needs QUALITY-based
+    # retries in addition to generation-failure retries. A section that was
+    # GENERATED (llm_ok=True) but classified as a stub by the quality gate
+    # passes all three generation-failure passes without being re-generated.
+    # The fix: after the sweep pass, check each section against the stub
+    # gate and re-generate stub-quality sections once with a targeted
+    # instruction. A section that is still a stub after the quality retry
+    # stays as-is and the fallback still fires honestly.
+    stub_secs = [r for r in results if r.get("llm_ok")
+                 and not r.get("deterministic")
+                 and stub_sections(r.get("markdown") or "", [r.get("name", "")])]
+    if stub_secs:
+        print(f"  [technical] RC-40c quality pass: re-generating "
+              f"{len(stub_secs)} stub-quality section(s): "
+              f"{[r.get('name') for r in stub_secs]}", flush=True)
+
+        def _quality_retry(result: dict[str, Any]) -> dict[str, Any]:
+            original = result.get("markdown") or ""
+            retry = _generate_technical_section(
+                result["name"], blocks, header, sha,
+                provenance_block_text=provenance_block_text,
+                source_evidence=source_evidence, mode=mode,
+                locked_verdict=locked_verdict,
+                failure_reason=(
+                    f"RC-40c quality retry: the previous draft for "
+                    f"'{result['name']}' was classified as a stub by the "
+                    f"quality gate. Rewrite with substantive analysis."))
+            retry["pass"] = 3
+            retry["quality_retry"] = True
+            return retry
+
+        for result in stub_secs:
+            retry = _quality_retry(result)
+            by_name = {r.get("name"): r for r in results}
+            if retry.get("llm_ok") and not stub_sections(
+                    retry.get("markdown") or "", [retry.get("name", "")]):
+                by_name[retry["name"]] = retry
+                results = [by_name[r.get("name")] for r in results]
+                print(f"  [technical] quality retry accepted for "
+                      f"{retry['name']!r}", flush=True)
+            else:
+                print(f"  [technical] quality retry retained for "
+                      f"{result['name']!r} (still stub or failed)",
+                      flush=True)
+
     parts = [f"# Technical Malware Analysis Report\n"]
     for r in results:
         md = (r.get("markdown") or "").strip()
