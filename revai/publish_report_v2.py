@@ -2626,6 +2626,12 @@ def main():
         except OSError as _cal_exc:
             print(f"[publish_report_v2] verdict-calibration.json unwritable: "
                   f"{_cal_exc}", flush=True)
+    # RC-42 (2026-11-03, runs daa532b3 + ee068010): the verdict panel must be
+    # in the markdown BEFORE the lock reads it. The panel is machine data —
+    # if the writer did not state a clear verdict, the panel IS the verdict
+    # source for the lock. Without this ordering, the lock read the
+    # pre-panel markdown, found no verdict statement, and read `unknown`.
+    md = ensure_verdict_panel(md, pub_claimed)
     lock = cross_stage_verdict_lock(
         pub_claimed, quick_verdict=quick_v, deep_verdict=deep_v,
         published_verdict=infer_publish_verdict_from_markdown(md))
