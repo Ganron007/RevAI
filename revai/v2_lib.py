@@ -10128,7 +10128,15 @@ def build_section_row_manifest(sha: str, section: str,
             "shown in brackets. Copy rows verbatim when tabulating; cite the "
             "locator exactly as shown; never alter a value, index or path. "
             "Rows not listed here may be discussed WITHOUT a citation, never "
-            "with an invented one.\n\n")
+            "with an invented one.\n\n"
+            "EVIDENCE BOUNDARY: every factual statement in this section must "
+            "be directly supported by a manifest row. Do not add capability "
+            "assessments, behavioral inferences, threat evaluations, or "
+            "comparisons to known malware families that go beyond what the "
+            "manifest rows show. If the manifest does not contain a row for "
+            "a capability or behavior, state that it was not detected in "
+            "this run's evidence — do not infer it from the file type, "
+            "packer, or file name.\n\n")
     return head + "\n".join(blocks)
 
 
