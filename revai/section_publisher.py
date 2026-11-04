@@ -1123,7 +1123,7 @@ def _technical_sectionwise_enabled() -> bool:
 
 
 def generate_technical_sectionwise(
-    sha: str, technical_evidence: str, *, parallel: bool = True,
+    sha: str, technical_evidence: str, *, parallel: bool = False,
     max_workers: int = 6,
     provenance_block_text: str = "", mode: str | None = None,
     source_evidence: str = "",
