@@ -3119,6 +3119,20 @@ def main():
             verdict_lock=tech_verdict_lock,
         )
         technical_report["quality"] = q_tech
+        # RC-45: structured section receipts for the audit and the repair
+        # passes. Each receipt carries the section's quality state with
+        # recovery guidance — instead of the current pass/fail issue count.
+        technical_report["section_receipts"] = [{
+            "section": "technical_v2",
+            "quality_ok": q_tech.get("ok"),
+            "source": technical_report.get("source"),
+            "uncited_claims": len((q_tech.get("style") or {}).get("uncited_claim_examples") or []),
+            "unverified_iocs": [{"type": i.get("type"), "value": i.get("value")}
+                                for i in (q_tech.get("claimed_ioc_verification") or {}).get("unverified_items") or []],
+            "orphan_tables": (q_tech.get("style") or {}).get("table_orphans"),
+            "recovery": ("remove or cite the unverified indicators; "
+                         "separate the orphan tables; cite the uncited claims"),
+        }]
 
         tech_md = (report_execution_comment(args.sha256, context, manifest_digest)
                    + "\n\n" + tech_md)
@@ -3154,6 +3168,16 @@ def main():
         verdict_lock=lock,
     )
     report["quality"] = q_master
+    report["section_receipts"] = [{
+        "section": "master_v2",
+        "quality_ok": q_master.get("ok"),
+        "source": report.get("source"),
+        "uncited_claims": len((q_master.get("style") or {}).get("uncited_claim_examples") or []),
+        "unverified_iocs": [{"type": i.get("type"), "value": i.get("value")}
+                            for i in (q_master.get("claimed_ioc_verification") or {}).get("unverified_items") or []],
+        "orphan_tables": (q_master.get("style") or {}).get("table_orphans"),
+        "recovery": "remove or cite the unverified indicators; separate the orphan tables",
+    }]
     if republish_record is not None:
         # RC-16: the republish is part of the report's own audit trail.
         report["republish"] = {

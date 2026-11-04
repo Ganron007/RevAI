@@ -10078,6 +10078,55 @@ def _summarize_row(value, limit: int = 200) -> str:
     return text[:limit]
 
 
+def build_section_frontier(sha: str, section: str,
+                           section_markdown: str,
+                           logs_dir: Path | None = None) -> str:
+    """The investigation frontier for one section: cited vs un-cited manifest
+    rows with explicit dispositions.
+
+    RC-43 (2026-11-01, from the Verified IDA adoption): the writer cites
+    some manifest rows and silently ignores others. The un-cited rows become
+    `insufficient` claims because the writer asserts beyond what it cited.
+    The frontier makes every manifest row explicitly accounted for: cited,
+    not-material, or deferred.
+    """
+    sources = SECTION_ROW_SOURCES.get(section)
+    if not sources:
+        return ""
+    mode = os.environ.get("REVAI_RUN_MODE", "").strip() or None
+    root = case_dir(sha, mode)
+    cited = set()
+    # Extract the cited locators from the section markdown
+    import re as _re
+    for m in _re.finditer(r"row_or_rule:\s*(\$[^)]+)", section_markdown or ""):
+        cited.add(m.group(1).strip().rstrip(")."))
+    rows_by_locator = {}
+    for rel, array_path, label in sources:
+        rows = _read_artifact_rows(root, rel, array_path)
+        for i, value in enumerate(rows):
+            locator = f"$.{array_path}[{i}]"
+            summary = _summarize_row(value)
+            if summary:
+                rows_by_locator[locator] = (rel, array_path, i, summary, label)
+    un_cited = {loc: info for loc, info in rows_by_locator.items()
+                if loc not in cited}
+    if not un_cited:
+        return ""
+    lines = ["## Section frontier (deterministic)", "",
+             "These manifest rows were NOT cited in the section prose.",
+             "They are recorded as not-material for this section unless",
+             "a finding below explains why they were omitted.", ""]
+    for loc, (rel, array_path, i, summary, label) in sorted(un_cited.items())[:20]:
+        lines.append(f"- [{loc}] {summary[:120]}")
+    lines.append("")
+    lines.append("**[Note]** Un-cited rows above are a coverage boundary, "
+                 "not evidence of absence. The writer addressed the cited "
+                 "rows; the un-cited rows remain available for follow-up "
+                 "analysis.")
+    lines.append("")
+    return "\n".join(lines)
+
+
 def build_section_row_manifest(sha: str, section: str,
                                logs_dir: Path | None = None) -> str:
     """The deterministic SECTION ROW MANIFEST for one technical section.
@@ -10136,7 +10185,26 @@ def build_section_row_manifest(sha: str, section: str,
             "manifest rows show. If the manifest does not contain a row for "
             "a capability or behavior, state that it was not detected in "
             "this run's evidence — do not infer it from the file type, "
-            "packer, or file name.\n\n")
+            "packer, or file name.\n\n"
+            "ANALYTICAL DISCIPLINE (adopted from Verified IDA):\n"
+            "- Separate direct observations from contextual inference. "
+            "Record uncertainty when the evidence does not establish a "
+            "direction, algorithm, field role, or ownership rule.\n"
+            "- Treat function names, YARA rules, capa techniques, and "
+            "import entries as separate claims. Support each at the "
+            "precision you apply — a rule name alone does not prove intent.\n"
+            "- Persist supported conclusions at natural analytical "
+            "boundaries instead of postponing all annotations until one "
+            "final section.\n"
+            "- When evidence changes your interpretation of an earlier "
+            "section, propagate the revision through the dependent "
+            "sections. Do not preserve a stale conclusion because it was "
+            "written earlier.\n"
+            "- Qualify every finding by what the evidence shows and what "
+            "it does not. A partial match is not a full match.\n"
+            "- Prioritize consequential behavior over metadata matches. "
+            "Anonymous inventory and scanner suggestions are navigation "
+            "aids, not automatic findings.\n\n")
     return head + "\n".join(blocks)
 
 
