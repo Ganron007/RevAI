@@ -160,6 +160,40 @@ def build_behavioural_model(sha: str, logs_dir: Path | None = None,
                 obs["table"] = m.group(2).strip()
             observations.append(obs)
 
+    # --- citations: per-capability RESOLVABLE locators (plan #8 exit) -----
+    # #8's exit criterion: every capability in the model cites a resolved row.
+    # The ledger's evidence items are free text; their leading
+    # `engine table:` token names the engine whose branch exists in
+    # deep_dive/01-tools-raw.json (`$.<engine>`). A citation carries the
+    # exact locator; validate_model_citations() resolves each against the
+    # real artifact and the model records the honest count.
+    tools_raw = "deep_dive/01-tools-raw.json"
+    engine_seen: set[str] = set()
+    for key in keys:
+        e = domains.get(key) or {}
+        cites: list[dict] = []
+        for item in (e.get("evidence_items") or [])[:8]:
+            m = re.match(r"^\s*([a-z_0-9]+)\s+", str(item))
+            if not m:
+                continue
+            eng = m.group(1)
+            if eng in engine_seen or eng in ("none", "the", "no"):
+                continue
+            engine_seen.add(eng)
+            cites.append({
+                "source": eng,
+                "query": tools_raw,
+                "row": f"$.{eng}",
+            })
+        if len(cites) >= 6:
+            cites = cites[:6]
+        if cites:
+            # attach to the matching capability row
+            for cap in capabilities:
+                if cap["key"] == key:
+                    cap["citations"] = cites
+                    break
+
     pc = (cov or {}).get("provenance_counts") or {}
     model = {
         "engine": "behavioural-model",
@@ -174,6 +208,61 @@ def build_behavioural_model(sha: str, logs_dir: Path | None = None,
         "iocs_present": bool(iocs),
     }
     return model
+
+
+def validate_model_citations(model: dict, case_root: Path | None = None,
+                             logs_dir: Path | None = None) -> dict:
+    """Resolve every capability citation against the case's real artifacts.
+
+    Plan #8's exit criterion made checkable: each capability's citations are
+    exact locators (source + query + row); this walks them through the audit's
+    own row-resolution path and records the honest count. A citation that does
+    not resolve is NOT dropped — it stays listed with resolved=False, because
+    a model that silently hides its unresolvable citations is exactly the
+    plausible-story failure the deterministic build exists to prevent.
+    """
+    if not model or not model.get("capabilities"):
+        return {"citations_total": 0, "citations_resolved": 0}
+    root = Path(case_root) if case_root else None
+    if root is None:
+        try:
+            from v2_lib import LOGS_DIR
+        except Exception:
+            return {"citations_total": 0, "citations_resolved": 0}
+        root = Path(logs_dir) if logs_dir else Path(LOGS_DIR)
+        root = root / str(model.get("sha256") or "")
+        # mode-keyed layout: prefer an existing mode dir
+        for mode in ("agentic", "scripted", "ui"):
+            p = root / mode
+            if p.is_dir():
+                root = p
+                break
+    try:
+        import entailment as _E
+    except Exception:
+        return {"citations_total": 0, "citations_resolved": 0}
+    total = resolved = 0
+    for cap in model.get("capabilities") or []:
+        ok = 0
+        for cite in cap.get("citations") or []:
+            total += 1
+            cite["resolved"] = False
+            for path in _E._source_artifact_candidates(
+                    str(cite.get("source") or ""), cite.get("query"), root):
+                hit = _E._locate_cited_row(
+                    path, str(cite.get("row") or ""), cite.get("query"),
+                    cite.get("source"))
+                if hit:
+                    cite["resolved"] = True
+                    cite["artifact"] = path.name
+                    ok += 1
+                    break
+        resolved += ok
+        cap["citations_resolved"] = ok
+        cap["citations_total"] = len(cap.get("citations") or [])
+    model["citations_total"] = total
+    model["citations_resolved"] = resolved
+    return {"citations_total": total, "citations_resolved": resolved}
 
 
 def format_behavioural_model(model: dict) -> str:
@@ -243,6 +332,25 @@ def format_behavioural_model(model: dict) -> str:
             more = f" (+{len(vals) - 12} more)" if len(vals) > 12 else ""
             lines.append(f"- **{label}** ({len(vals)}): {shown}{more}")
 
+    # RC-52 (plan #8 exit): the capability citations, rendered so a claim
+    # checker (and a reader) can resolve each one against the real artifact.
+    cited = [c for c in caps if c.get("citations")]
+    if cited:
+        lines += ["", "### Capability citations", "",
+                  "Exact evidence locators behind each capability; each one is "
+                  "resolved against the artifact at model-build time.",
+                  ""]
+        for c in cited:
+            parts = []
+            for cite in c.get("citations") or []:
+                mark = "resolved" if cite.get("resolved") else "UNRESOLVED"
+                parts.append(
+                    f"`(source: {cite.get('source')}, query_or_table: "
+                    f"{cite.get('query')}, row_or_rule: {cite.get('row')})` "
+                    f"[{mark}]")
+            lines.append(f"- **{c['title']}**: " + " ".join(parts))
+        lines.append("")
+
     pc = model.get("provenance_counts") or {}
     lines += ["",
               f"**Model provenance: {pc.get('observed', 0)} observed, "
@@ -270,6 +378,12 @@ def attach_behavioural_model(md: str, sha: str, *,
         return md
     try:
         model = build_behavioural_model(sha, logs_dir=logs_dir)
+        # RC-52: resolve the citations before rendering so the published
+        # block always carries the honest resolved/unresolved marks.
+        try:
+            validate_model_citations(model, logs_dir=logs_dir)
+        except Exception:
+            pass
         block = format_behavioural_model(model)
         if not block:
             return md

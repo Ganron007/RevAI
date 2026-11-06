@@ -374,6 +374,7 @@ nothing looks like it heard something.
 4.5. **function_recovery** - *(optional, `REVAI_ENABLE_AGENTIC_RECOVERY=1`)* agentic function-name recovery (see below)
 4.6. **artifact_gen** - *(optional, `REVAI_ENABLE_ARTIFACT_GEN=1`)* verifiable analysis scripts: the LLM authors a sample-specific extraction script, the pipeline runs it sandboxed and re-derives every claimed value from the sample bytes
 4.7. **behavioural_model** - *(optional, `REVAI_ENABLE_BEHAVIOURAL_MODEL=1`)* deterministic behavioural model assembled from the run's own artifacts into `behavioural_model.json` — capabilities with provenance, the concrete objects they act on, and the gaps. Never authored by the model, never gates the verdict
+4.75. **deep-dive domain-graph phase** - *(optional, `REVAI_DEEP_DIVE_GRAPH=1`; step budget `REVAI_DEEP_DIVE_GRAPH_MAX_STEPS`, default 16)* plan #20: the deep dive's flat ReAct planner loop is REPLACED by the domain-node graph (the #26 depth substrate) — one bounded tool-calling node per capability domain, its per-domain determinations and history merged into the deep-dive findings, then the normal final-verdict step. A failed or empty graph pass falls back to the flat planner loop, so a stated failure never costs the deep dive
 5. **yara_gen** - YARA + Sigma
 6. **publish** - REPORT-MASTER (LLM-authored, source-tagged)
 7. **correlate** - section Map-Reduce report

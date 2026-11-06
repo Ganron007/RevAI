@@ -1460,6 +1460,22 @@ def _classify_failures(history: list, final_answer: dict, *,
     }
 
 
+def _full_graph_max_steps() -> int:
+    """The step budget for the RC-53 domain-graph deep-dive phase.
+
+    Mirrors depth_agent's full-profile default (16 steps per pass across the
+    domain nodes); an explicit REVAI_DEEP_DIVE_GRAPH_MAX_STEPS wins.
+    """
+    raw = os.environ.get("REVAI_DEEP_DIVE_GRAPH_MAX_STEPS", "").strip()
+    try:
+        val = int(raw)
+        if val > 0:
+            return val
+    except ValueError:
+        pass
+    return 16
+
+
 def _custom_loop_body(sha: str, max_steps: int = MAX_STEPS) -> dict:
     """JSON planner custom loop (stopgap / fallback)."""
     session = load_session(sha)
@@ -1542,11 +1558,52 @@ def _custom_loop_body(sha: str, max_steps: int = MAX_STEPS) -> dict:
     if checklist_ok and not _history_has_sql_deep(history):
         _seed_sql_deep(0)
 
+    # RC-53 (plan #20, 2026-11-07): the flat ReAct planner loop can be
+    # REPLACED by the domain-node graph (the #26 depth substrate,
+    # agentic_langgraph.run_langgraph_deep_dive) — one bounded tool-calling
+    # node per capability domain instead of one flat loop. Opt-in with
+    # REVAI_DEEP_DIVE_GRAPH=1; the default stays byte-identical. When the
+    # graph pass runs, its per-domain determinations and history merge into
+    # this run's findings and the planner loop is skipped (the domain graph
+    # IS the investigation); the final-verdict step below still runs and
+    # reads the merged record. A failed graph pass falls back to the flat
+    # loop — a stated failure must not cost the whole deep dive.
+    domain_phase_done = False
+    if os.environ.get("REVAI_DEEP_DIVE_GRAPH", "").strip().lower() in (
+            "1", "true", "on"):
+        try:
+            from agentic_langgraph import run_langgraph_deep_dive
+            _graph_steps = _full_graph_max_steps()
+            print(f"[deep_dive_agentic] RC-53 domain-graph phase "
+                  f"(REVAI_DEEP_DIVE_GRAPH=1, steps={_graph_steps})",
+                  flush=True)
+            dom = run_langgraph_deep_dive(sha, max_steps=_graph_steps) or {}
+            _dg = (dom.get("findings") or {}).get("domain_graph") or {}
+            if _dg.get("domains"):
+                findings["domain_graph"] = _dg
+                findings["domain_findings"] = str(
+                    (dom.get("findings") or {}).get("domain_findings") or "")
+                history.extend([h for h in (dom.get("history") or [])
+                                if str(h.get("tool") or "").startswith("domain:")])
+                domain_phase_done = True
+                print(f"[deep_dive_agentic] domain-graph phase merged: "
+                      f"{len(_dg.get('domains') or {})} domains", flush=True)
+            else:
+                print("[deep_dive_agentic] domain-graph phase produced no "
+                      "domain record; falling back to the flat planner loop",
+                      flush=True)
+        except Exception as exc:  # noqa: BLE001
+            print(f"[deep_dive_agentic] domain-graph phase failed "
+                  f"({type(exc).__name__}: {exc}); falling back to the flat "
+                  "planner loop", flush=True)
+
     planner_failures = 0
     seen_signatures: set = set()
     redundant_calls = 0
     hallucination_corrected = False
     for step in range(1, max_steps + 1):
+        if domain_phase_done:
+            break
         sql_ok = _history_has_sql_deep(history)
         messages = build_messages(
             session, step, max_steps, history, findings, source_decisions, tool_list, file_type,

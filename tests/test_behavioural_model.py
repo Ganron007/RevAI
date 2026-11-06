@@ -226,3 +226,58 @@ def test_stage_runner_records_model_child_failure(tmp_path, monkeypatch):
     result = runner.run_behavioural_model()
     assert result["ok"] is False and result["rc"] == 7
     assert runner.events[-1]["rc"] == 7
+
+
+# ---------------------------------------------------------------- RC-52 (plan #8 exit)
+# Every capability in the model must cite a RESOLVED row. The citations are
+# exact locators derived from the evidence items' leading engine token; the
+# validator resolves each through the audit's own row-resolution path and the
+# model records the honest count. An unresolvable citation is marked, never
+# hidden.
+def test_capability_citations_resolve_against_the_tool_raw_artifact(tmp_path):
+    case = _case(tmp_path, ALL, evidence_for=_ev("surface", "persistence"))
+    # The evidence items' leading token is the engine; the branch must exist
+    # in 01-tools-raw.json for the citation to resolve.
+    (case / "deep_dive" / "01-tools-raw.json").write_text(json.dumps(
+        {"ghidra_query": {"imports": ["RegSetValueExA"], "strings": []}}),
+        encoding="utf-8")
+    import behavioural_model as BM
+    model = BM.build_behavioural_model(SHA, case_root=case)
+    assert model.get("capabilities"), model
+    cited = [c for c in model["capabilities"] if c.get("citations")]
+    assert cited, "capabilities with engine-prefixed evidence must carry citations"
+    out = BM.validate_model_citations(model, case_root=case)
+    assert out["citations_total"] >= 1
+    assert out["citations_resolved"] == out["citations_total"], model
+    for c in cited:
+        for cite in c["citations"]:
+            assert cite["resolved"] is True, cite
+            assert cite["artifact"] == "01-tools-raw.json"
+
+
+def test_an_unresolvable_citation_is_marked_not_hidden(tmp_path):
+    case = _case(tmp_path, ALL, evidence_for=_ev("surface"))
+    # NO 01-tools-raw.json in the case: the citation cannot resolve. It must
+    # stay listed with resolved=False and the honest count must reflect it.
+    import behavioural_model as BM
+    model = BM.build_behavioural_model(SHA, case_root=case)
+    out = BM.validate_model_citations(model, case_root=case)
+    assert out["citations_total"] >= 1
+    assert out["citations_resolved"] == 0, out
+    for c in model["capabilities"]:
+        for cite in c.get("citations") or []:
+            assert cite["resolved"] is False, cite
+
+
+def test_the_rendered_section_shows_the_citations_with_resolution_marks(tmp_path):
+    case = _case(tmp_path, ALL, evidence_for=_ev("surface", "persistence"))
+    (case / "deep_dive" / "01-tools-raw.json").write_text(json.dumps(
+        {"ghidra_query": {"imports": ["RegSetValueExA"]}}), encoding="utf-8")
+    import behavioural_model as BM
+    model = BM.build_behavioural_model(SHA, case_root=case)
+    BM.validate_model_citations(model, case_root=case)
+    block = BM.format_behavioural_model(model)
+    assert "### Capability citations" in block
+    assert "source: ghidra_query" in block
+    assert "[resolved]" in block
+    assert "row_or_rule: $.ghidra_query" in block
