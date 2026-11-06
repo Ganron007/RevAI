@@ -8,8 +8,12 @@ from __future__ import annotations
 
 import re
 
+# Control characters are excluded from the open-ended class: a "URL" pulled
+# from binary data must not absorb NUL-separated fragments (run 36: a malformed
+# URL row carried literal NUL bytes through iocs.json -> the row manifests ->
+# the published reports; RC-47).
 _URL_RE = re.compile(
-    r"(?i)\b(?:https?|ftp)://[^\s\"'<>()\[\]{}\\]+"
+    r"(?i)\b(?:https?|ftp)://[^\s\x00-\x1f\x7f\"'<>()\[\]{}\\]+"
 )
 _IPV4_RE = re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b")
 _EMAIL_RE = re.compile(r"\b[\w.+-]+@[\w-]+(?:\.[\w-]+)+\b")
@@ -19,6 +23,16 @@ _REGKEY_RE = re.compile(
     r"(?i)\b(?:HKEY_[A-Z_]+|HKLM|HKCU|HKCR|HKU)\\[A-Za-z0-9_\\ .-]+"
 )
 _DOMAIN_RE = re.compile(r"\b(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}\b", re.I)
+
+
+#: C0 control characters (except the markdown-significant \t) and DEL never
+#: belong in an indicator. Belt-and-braces on top of the regex classes: a value
+#: that reaches extraction through a different path is still clean.
+_CTRL_RE = re.compile(r"[\x00-\x08\x0b-\x1f\x7f]")
+
+
+def _strip_control_chars(value: str) -> str:
+    return _CTRL_RE.sub("", value)
 
 
 def _defang_url(url: str) -> str:
@@ -58,30 +72,33 @@ def extract_iocs(data: bytes) -> dict[str, list[str]]:
     seen: dict[str, set[str]] = {k: set() for k in iocs}
 
     for u in _URL_RE.findall(text):
-        d = _defang_url(u.strip(".,;"))
+        d = _defang_url(_strip_control_chars(u.strip(".,;")))
         if d not in seen["urls"]:
             seen["urls"].add(d)
             iocs["urls"].append(d)
     for ip in _IPV4_RE.findall(text):
         if _valid_ip(ip) and not ip.startswith("0."):
-            d = _defang_ip(ip)
+            d = _defang_ip(_strip_control_chars(ip))
             if d not in seen["ips"]:
                 seen["ips"].add(d)
                 iocs["ips"].append(d)
     for e in _EMAIL_RE.findall(text):
-        d = _defang_email(e)
+        d = _defang_email(_strip_control_chars(e))
         if d not in seen["emails"]:
             seen["emails"].add(d)
             iocs["emails"].append(d)
     for b in _BTC_RE.findall(text):
+        b = _strip_control_chars(b)
         if b not in seen["wallets_btc"]:
             seen["wallets_btc"].add(b)
             iocs["wallets_btc"].append(b)
     for e in _ETH_RE.findall(text):
+        e = _strip_control_chars(e)
         if e not in seen["wallets_eth"]:
             seen["wallets_eth"].add(e)
             iocs["wallets_eth"].append(e)
     for r in _REGKEY_RE.findall(text):
+        r = _strip_control_chars(r)
         if r not in seen["registry_keys"]:
             seen["registry_keys"].add(r)
             iocs["registry_keys"].append(r)

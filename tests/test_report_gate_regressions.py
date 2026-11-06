@@ -1250,3 +1250,48 @@ def test_a_real_publish_claim_is_not_overridden():
         evidence_text="")
     assert out["verdict"] == "suspicious", out
     assert not out.get("changed") or out["raw"] == "suspicious"
+
+
+# --------------------------------------------------------------------------
+# RC-47 (run 36): a malformed URL extracted from binary data carried literal
+# NUL bytes through iocs.json -> the row manifests -> BOTH technical reports
+# (15 NUL bytes each). The yara_gen extractor must stop at control characters,
+# and the publish boundary must sanitize whatever still reaches a report.
+# --------------------------------------------------------------------------
+def test_yara_gen_ioc_pack_strips_control_chars(tmp_path):
+    import yara_gen_v2 as YG
+
+    sample = tmp_path / "s.bin"
+    sample.write_bytes(b"MZ" + b"\x00" * 64)
+    strings = ["http://localhost:\x00error:\x00num9\x00invalid",
+               "http://clean.example.com/path"]
+    iocs = YG.extract_iocs("a" * 64, sample, None, strings)
+    assert iocs["urls"], "expected urls"
+    for u in iocs["urls"]:
+        assert "\x00" not in u, u
+        assert "error" not in u, u
+    # yara_gen_v2 stores urls UNdefanged (unlike iocs.py) — pin that contract.
+    assert any("clean.example.com" in u for u in iocs["urls"]), iocs["urls"]
+
+
+def test_sanitize_report_markdown_strips_control_chars_keeps_structure():
+    md = ("| a\x00b | c\x0bd |\n"
+          "| e\x07f | g\x7fh |\n"
+          "tab\there\nnewline\n")
+    out = v2_lib.sanitize_report_markdown(md)
+    assert "\x00" not in out and "\x0b" not in out
+    assert "\x07" not in out and "\x7f" not in out
+    assert "\t" in out and "\n" in out, "structural whitespace must survive"
+    assert "| ab | cd |" in out
+
+
+
+
+def test_sanitize_report_markdown_passes_clean_text_through():
+    md = ("# Report\n\n"
+          "normal text with (source: iocs, query_or_table: urls)\n")
+    assert v2_lib.sanitize_report_markdown(md) == md
+
+
+def test_sanitize_report_markdown_handles_empty():
+    assert v2_lib.sanitize_report_markdown("") == ""

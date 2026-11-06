@@ -112,7 +112,7 @@ def test_a_failed_chunk_is_retried_one_section_at_a_time(monkeypatch):
     """A group that returns nothing must not take its sections down with it."""
     asked: list[list[str]] = []
 
-    def fake_llm(prompt):
+    def fake_llm(prompt, *args, **kwargs):  # timeout_s kwarg (RC-40b+)
         head = prompt.split("Rules", 1)[0]
         wanted = [t for t in v2_lib.TECHNICAL_REPORT_SECTIONS if f"- {t}" in head]
         asked.append(wanted)
@@ -142,7 +142,7 @@ def test_split_retry_does_not_run_when_every_group_succeeds(monkeypatch):
     """
     asked: list[tuple[str, ...]] = []
 
-    def fake_llm(prompt):
+    def fake_llm(prompt, *args, **kwargs):  # timeout_s kwarg (RC-40b+)
         head = prompt.split("Rules", 1)[0]
         wanted = tuple(t for t in v2_lib.TECHNICAL_REPORT_SECTIONS
                        if f"- {t}" in head)
@@ -159,6 +159,11 @@ def test_split_retry_does_not_run_when_every_group_succeeds(monkeypatch):
     expected = {tuple(T[a:b]) for a, b in pub.TECHNICAL_BODY_GROUPS}
     expected |= {tuple(T[slice(*pub.TECHNICAL_WRAP_RANGE)]),
                  tuple(T[slice(*pub.TECHNICAL_TAIL_RANGE)])}
+    # RC-33: section 8 is rendered deterministically from iocs.json and its
+    # group's LLM call is skipped — a group is called only when it contains
+    # at least one model-authored section.
+    expected = {g for g in expected
+                if any(s != "8. Indicators of Compromise" for s in g)}
     assert len(asked) == len(expected), (
         f"expected one call per group ({len(expected)}), got {len(asked)}: "
         f"{[len(a) for a in asked]}")
@@ -168,8 +173,16 @@ def test_split_retry_does_not_run_when_every_group_succeeds(monkeypatch):
 
 
 def test_a_section_that_fails_alone_is_recorded_exactly_once(monkeypatch):
-    """Whatever layer notices the failure, the section is reported one time."""
-    def fake_llm(prompt):
+    """One error record per bounded attempt — no duplicate report of one try.
+
+    Since the RC-29/RC-40b sweep passes, a failing section is attempted up to
+    four bounded times (initial, single-section retry, sweep, sweep-retry) and
+    EACH attempt records its own error entry (distinct attempt labels). The
+    original defect this test pins was the same attempt reported by multiple
+    layers; distinct-attempt records are the audit trail, duplication is the
+    defect.
+    """
+    def fake_llm(prompt, *args, **kwargs):  # timeout_s kwarg (RC-40b+)
         head = prompt.split("Rules", 1)[0]
         wanted = [t for t in v2_lib.TECHNICAL_REPORT_SECTIONS if f"- {t}" in head]
         if any("5. Behavioral" in t for t in wanted):
@@ -181,11 +194,15 @@ def test_a_section_that_fails_alone_is_recorded_exactly_once(monkeypatch):
     md, audits, errors = pub.generate_technical_chunked(
         _session(), {}, {}, {}, [], "EVIDENCE")
     assert "# 5. Behavioral & Dynamic Analysis" not in md
-    # section 5 is its own group (4,5), so the split layer is not involved --
-    # the group caller records it. Either message is fine; twice is not.
     mentioning = [e for e in errors if "Behavioral" in e]
-    assert len(mentioning) == 1, (
-        f"the failing section must be reported exactly once: {errors}")
+    # Bounded: at most one record per pass (initial + retry + sweep +
+    # sweep-retry), and each record names a DISTINCT attempt.
+    assert 1 <= len(mentioning) <= 4, (
+        f"the failing section must be recorded once per bounded attempt, "
+        f"not duplicated: {errors}")
+    labels = [e.split(" (")[0] for e in mentioning]
+    assert len(set(labels)) == len(labels), (
+        f"one attempt must not be reported twice: {labels}")
     # and the rest of the report still landed
     assert "# 1. Executive Summary" in md
     assert "# 13. Appendix B: Analysis Environment" in md

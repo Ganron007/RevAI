@@ -43,6 +43,7 @@ from v2_lib import (
     case_dir,
     deterministic_dynamic_section_md,
     dynamic_evidence_substantive,
+    sanitize_report_markdown,
     _sec_identity_evidence,
     _sec_classification_evidence,
     _sec_triage_evidence,
@@ -1295,9 +1296,17 @@ def generate_technical_sectionwise(
                       flush=True)
 
     parts = [f"# Technical Malware Analysis Report\n"]
+    # RC-48 (2026-11-07): the assembly loop was broken by an indentation slip
+    # in 429c1d40 (2026-11-02) — `if md:` was dedented OUTSIDE the loop, so
+    # only the LAST section's markdown was ever appended and the assembled v3
+    # technical was a one-section report. Every subsequent run's v3 technical
+    # silently fell to the RC-43 v2-carry (whose carried content passes the
+    # quality gates), which masked the defect: runs 33/34/35 were recorded as
+    # "the v3 path GREEN" when the v3 path never produced a full report. The
+    # full-suite test_technical_sectionwise call-count assertions caught it.
     for r in results:
         md = (r.get("markdown") or "").strip()
-    if md:
+        if md:
             parts.append(md)
             parts.append("")
 
@@ -1577,6 +1586,7 @@ def run_section_based_publish(sha: str, tools_results: dict,
               f"{_master_models}", flush=True)
     report_markdown, master_credential_categories = (
         redact_credential_like_values(report_markdown))
+    report_markdown = sanitize_report_markdown(report_markdown)
     (out_dir / "02-REPORT-MASTER-v3.md").write_text(report_markdown)
     quick_verdict = (tools_results.get("verdict") or {}).get("verdict")
     deep_verdict = (tools_results.get("deep") or {}).get("verdict")
@@ -2072,6 +2082,7 @@ def _finalize_technical(sha: str, technical_report: dict,
     technical_report["quality"] = q
 
     tech_path = case_dir(sha) / "REPORT-TECHNICAL-v3.md"
+    tech_md = sanitize_report_markdown(tech_md)
     tech_path.write_text(tech_md)
     (case_dir(sha) / "correlate" / "03-REPORT-TECHNICAL-v3.md").write_text(tech_md)
     (case_dir(sha) / "report-technical-v3.json").write_text(

@@ -51,6 +51,7 @@ from v2_lib import (  # noqa: E402
     require_run_mode,
     require_execution_context,
     report_input_manifest,
+    sanitize_report_markdown,
     report_input_manifest_digest,
     record_report_outputs,
     report_execution_comment,
@@ -2715,6 +2716,7 @@ def main():
     md, credential_categories = redact_credential_like_values(md)
     if credential_categories:
         report["credential_like_values_redacted"] = credential_categories
+    md = sanitize_report_markdown(md)
     report["markdown"] = md
     md_path = case / "REPORT-v2.md"
     md_path.write_text(md)
@@ -3137,6 +3139,7 @@ def main():
         tech_md = (report_execution_comment(args.sha256, context, manifest_digest)
                    + "\n\n" + tech_md)
         tech_md = ensure_verdict_panel(tech_md, pub_claimed)
+        tech_md = sanitize_report_markdown(tech_md)
         technical_report["markdown"] = tech_md
         tech_md_path = case / "REPORT-TECHNICAL-v2.md"
         tech_md_path.write_text(tech_md)

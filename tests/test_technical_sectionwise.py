@@ -362,8 +362,12 @@ def test_monolithic_block_is_still_present_as_rollback():
 # a pass-1 success. -----------------------------------------------------------
 
 def _ok_section(name):
+    # The body must clear the stub gate (min 180 body chars, report_quality
+    # stub_sections) since RC-40c re-generates stub-quality sections — a
+    # minimal body would double every call count these tests assert on.
+    body = "Substantive analysis body for the mocked section. " * 6
     return {"name": name, "llm_ok": True, "error": None, "pass": 1,
-            "markdown": f"## {name}\n\nok", "schema_used": True}
+            "markdown": f"## {name}\n\n{body}", "schema_used": True}
 
 
 def _failed_section(name):

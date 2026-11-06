@@ -73,6 +73,34 @@ def test_iocs_defang():
     assert any("c2[.]evil[.]example[.]com" in d for d in iocs["domains"])
 
 
+# RC-47 (run 36): a URL pulled from binary data absorbed NUL-separated
+# fragments and carried literal control bytes through iocs.json -> the row
+# manifests -> the published reports. The extraction must stop at control
+# characters and never emit one.
+def test_iocs_url_extraction_stops_at_control_chars():
+    data = (b"http://localhost:\x00error:\x00num9\x00f9\x00f19\x00invalid "
+            b"http://clean.example.com/path")
+    iocs = iocs_mod.extract_iocs(data)
+    assert iocs["urls"], "expected at least one URL"
+    for u in iocs["urls"]:
+        for ch in u:
+            assert ch >= " " or ch == "\t", f"control char {ch!r} in {u!r}"
+    # The NUL-carrying match must not contain the binary tail at all.
+    assert not any("error" in u for u in iocs["urls"]), iocs["urls"]
+    assert any("clean[.]example[.]com" in u for u in iocs["urls"])
+
+
+def test_iocs_no_control_chars_in_any_category():
+    data = (b"1.2.\x003.4 admin@\x00evil.com "
+            b"HKLM\\Software\x00\\Run bad\x00name.exe "
+            b"http://x.y/\x00z")
+    iocs = iocs_mod.extract_iocs(data)
+    for cat, values in iocs.items():
+        for v in values:
+            for ch in v:
+                assert ch >= " " or ch == "\t", f"control char {ch!r} in {cat}: {v!r}"
+
+
 def test_pe_parse_minimal():
     data = _minimal_pe()
     import tempfile, os

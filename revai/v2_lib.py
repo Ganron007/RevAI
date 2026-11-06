@@ -1193,6 +1193,30 @@ _VERDICT_PANEL_NOTE_RE = re.compile(
     r"^\s*>\s*\*\*\[Verdict calibration\]\*\*", re.IGNORECASE)
 
 
+#: C0 control characters that never belong in published markdown. Tab is kept
+#: (inside-table alignment); \n and \r are structural. RC-47 (run 36): a
+#: malformed URL extracted from binary data carried literal NUL bytes through
+#: iocs.json and the row manifests into both technical reports.
+_REPORT_CONTROL_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
+
+
+def sanitize_report_markdown(markdown: str) -> str:
+    """Strip control characters a published report must never carry.
+
+    Applied at the write boundary of every published markdown artifact, on top
+    of the source-side fix (the IoC extractors no longer emit control
+    characters), so a value that reaches the report through ANY other artifact
+    path is still cleaned. Citation integrity is preserved because the source
+    fix makes every downstream copy of an indicator -- iocs.json, the row
+    manifests, the writer prompt, the citation -- clean before this boundary
+    ever sees it; the boundary cannot desynchronize a citation from its
+    manifest for artifacts produced by the fixed pipeline.
+    """
+    if not markdown:
+        return markdown
+    return _REPORT_CONTROL_RE.sub("", markdown)
+
+
 def ensure_verdict_panel(markdown: str, label: str) -> str:
     """Make the report carry exactly one verdict panel stating `label`.
 

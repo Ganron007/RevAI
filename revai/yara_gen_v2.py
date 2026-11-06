@@ -278,7 +278,11 @@ def extract_iocs(sha256: str, sample_path: Path, verdict: dict | None,
     """
     domain_re = re.compile(r"(?<![\w.-])(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}(?![\w.-])", re.IGNORECASE)
     ip_re = re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b")
-    url_re = re.compile(r"(?:https?|ftp)://[^\s\"']+", re.IGNORECASE)
+    # Control characters excluded from the open-ended class: a "URL" pulled
+    # from binary data must not absorb NUL-separated fragments (RC-47, run 36:
+    # a malformed URL row carried literal NUL bytes into iocs.json, the row
+    # manifests, and the published reports).
+    url_re = re.compile(r"(?:https?|ftp)://[^\s\x00-\x1f\x7f\"']+", re.IGNORECASE)
     file_re = re.compile(r"\b[\w.-]+\.(?:exe|dll|scr|bat|cmd|ps1|vbs|js|tmp|dat)\b", re.IGNORECASE)
     reg_re = re.compile(r"\bHK(?:LM|CU|CR|U)\\[A-Za-z0-9_\\ .-]+", re.IGNORECASE)
     mutex_re = re.compile(r"\b(?:Global\\|Local\\)?[A-Za-z0-9_]{8,64}(?:Mutex|_mutex|msi|shell)\b", re.IGNORECASE)
@@ -297,11 +301,15 @@ def extract_iocs(sha256: str, sample_path: Path, verdict: dict | None,
     _FILE_EXTS = (".exe", ".dll", ".scr", ".bat", ".cmd", ".ps1", ".vbs", ".js",
                   ".tmp", ".dat", ".sys", ".bin", ".doc", ".docx", ".pdf", ".zip")
 
+    #: C0 control characters (except \t) and DEL never belong in an indicator;
+    #: belt-and-braces across every IoC type (RC-47).
+    _ctrl_re = re.compile(r"[\x00-\x08\x0b-\x1f\x7f]")
+
     def _clean(matches: list[str], *, exclude_ext: bool = False) -> list[str]:
         seen: set[str] = set()
         out = []
         for m in matches:
-            m = m.strip().strip(".,;:()[]{}'\"")
+            m = _ctrl_re.sub("", m).strip().strip(".,;:()[]{}'\"")
             if len(m) < 4:
                 continue
             if exclude_ext and m.lower().endswith(_FILE_EXTS):
