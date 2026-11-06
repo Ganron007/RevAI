@@ -1295,3 +1295,19 @@ def test_sanitize_report_markdown_passes_clean_text_through():
 
 def test_sanitize_report_markdown_handles_empty():
     assert v2_lib.sanitize_report_markdown("") == ""
+
+
+# --------------------------------------------------------------------------
+# RC-49c (run 36): the classification evidence rendered `deep_confidence:` as
+# a bare field name, so the writer invented `verdict.json $.deep_confidence`
+# — a key in NO artifact — and 3 claims resolved as unresolved-row. The
+# evidence text now carries the real locator.
+# --------------------------------------------------------------------------
+def test_classification_evidence_states_the_real_deep_confidence_locator():
+    ev = v2_lib._sec_classification_evidence({
+        "verdict": {"verdict": "suspicious", "family_guess": "x",
+                    "agreement": "yes"},
+        "deep": {"confidence": 90, "source": "llm_judge"},
+    })
+    assert "deep_confidence: 90" in ev, ev
+    assert "deep_dive/05-deep-dive.json $.confidence" in ev, ev

@@ -11457,7 +11457,14 @@ def _sec_classification_evidence(tools_results: dict) -> str:
         lines.append(f"  agreement: {verdict.get('agreement', '?')}")
         lines.append(f"  v1_summary: {verdict.get('v1_summary', {})}")
     if deep:
-        lines.append(f"  deep_confidence: {deep.get('confidence', '?')}")
+        # RC-49c (run 36): the writer cited `verdict.json $.deep_confidence` —
+        # a key that exists in NO artifact (the writer invented the path from
+        # this field name). State the real locator beside the value so the
+        # citation resolves: the deep verdict's confidence lives at
+        # deep_dive/05-deep-dive.json $.confidence.
+        lines.append(
+            f"  deep_confidence: {deep.get('confidence', '?')} "
+            f"(deep_dive/05-deep-dive.json $.confidence)")
         lines.append(f"  deep_source: {deep.get('source', '?')}")
     ti = tools_results.get("ti_enrich")
     if ti is not None:

@@ -1010,13 +1010,30 @@ def _resolve_json_path(value: Any, expression: str,
         if isinstance(token, int):
             if isinstance(current, dict):
                 key = str(token)
-                if key not in current:
-                    return None
-                current = current[key]
+                if key in current:
+                    current = current[key]
+                    continue
+                # RC-49a (run 36): writers index dict-shaped containers —
+                # `$.hashes[0].sha1` where `hashes` is {sha256, sha1, md5}.
+                # The `[0]` names the container's entry; on a dict (whose
+                # keys are the field names, and a numeric-string key "0"
+                # was already tried above) resolving the dict itself and
+                # continuing is the same row, strictly broader, never a
+                # different field.
                 continue
             if not isinstance(current, list) or token >= len(current):
                 return None
             current = current[token]
+            continue
+        if token == "length" and isinstance(current, (list, str)):
+            # RC-49b (run 36): `$.dynamic_resolve.ordinal_imports.length` —
+            # a checkable claim about the array's size.
+            current = len(current)
+            continue
+        if (token == "length" and isinstance(current, dict)
+                and "length" not in current):
+            current = len(current)
+            continue
         elif isinstance(token, tuple):
             kind, key, expected = token
             if kind == "key_or_name":
@@ -1704,9 +1721,27 @@ def _resolve_ea_row(locator: str, data: Any) -> tuple[str, Any] | None:
                 _walk(child, f"{path}[{index}]")
 
     _walk(data)
-    if len(hits) != 1:
+    # RC-49d (run 36): malcat artifacts carry the same branch under two
+    # spellings (`malcat.structures[48]` and `malcat.views.structures[48]`),
+    # which inflated one logical row into three hits and failed the
+    # uniqueness rule. Dedupe by ROW CONTENT: identical content at multiple
+    # paths is one row; genuinely different rows sharing an ea (imports vs
+    # structures views) stay ambiguous -- the locator names one row, and a
+    # guess is not a resolution.
+    unique: list[tuple[str, Any]] = []
+    seen_content: set[str] = set()
+    for path, row in hits:
+        try:
+            content = json.dumps(row, sort_keys=True, default=str)
+        except (TypeError, ValueError):
+            content = repr(row)
+        if content in seen_content:
+            continue
+        seen_content.add(content)
+        unique.append((path, row))
+    if len(unique) != 1:
         return None
-    return hits[0]
+    return unique[0]
 
 
 def _ground_citation(citation: dict, root: Path) -> tuple[dict | None, dict]:

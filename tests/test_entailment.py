@@ -1129,6 +1129,57 @@ def test_a_spaced_segment_without_the_namespace_marker_still_fails():
 
 
 # --------------------------------------------------------------------------
+# RC-49 (run 36): two writer-side locator shapes failed resolution although
+# the rows exist — an index on a dict-shaped container ($.hashes[0].sha1)
+# and a .length segment on an array. Both are checkable claims about real
+# rows; the resolver now resolves them.
+# --------------------------------------------------------------------------
+def test_an_index_on_a_dict_container_resolves_the_container():
+    data = {"hashes": {"sha256": "a" * 64, "sha1": "b" * 40, "md5": "c" * 32}}
+    _status, value = E._resolve_json_path(data, "$.hashes[0].sha1")
+    assert value == "b" * 40, value
+
+
+def test_an_index_on_a_list_container_still_indexes():
+    data = {"hashes": [{"sha1": "d" * 40}, {"sha1": "e" * 40}]}
+    _status, value = E._resolve_json_path(data, "$.hashes[1].sha1")
+    assert value == "e" * 40, value
+
+
+def test_a_length_segment_resolves_an_array_size():
+    data = {"dynamic_resolve": {"ordinal_imports": [{"name": "Ordinal_116"},
+                                                    {"name": "Ordinal_115"}]}}
+    _status, value = E._resolve_json_path(
+        data, "$.dynamic_resolve.ordinal_imports.length")
+    assert value == 2, value
+
+
+def test_a_real_length_key_still_wins_over_the_count():
+    data = {"table": {"length": 5, "rows": [1, 2]}}
+    _status, value = E._resolve_json_path(data, "$.table.length")
+    assert value == 5, value
+
+
+def test_an_ea_row_duplicated_by_branch_spelling_resolves():
+    # RC-49d (run 36): malcat carries the same branch under two spellings;
+    # one logical row must not count as ambiguous because of that.
+    row = {"ea": 2127736, "name": "WinHttpOpen"}
+    data = {"malcat": {"views": {"structures": [row]},
+                       "structures": [row]}}
+    out = E._resolve_ea_row("ea=2127736", data)
+    assert out is not None, out
+    _path, value = out
+    assert value["name"] == "WinHttpOpen"
+
+
+def test_genuinely_different_rows_sharing_an_ea_stay_ambiguous():
+    data = {"malcat": {"views": {
+        "imports": [{"ea": 2127736, "name": "WinHttpOpen"}],
+        "structures": [{"ea": 2127736, "name": "some struct"}]}}}
+    assert E._resolve_ea_row("ea=2127736", data) is None
+
+
+# --------------------------------------------------------------------------
 # #6-b at scale (2026-11-01, run e66a6fa7): verbatim restatements are
 # auto-classified as supported WITHOUT calling the reviewer — the
 # deterministic pre-classification removes the largest contradicted source
