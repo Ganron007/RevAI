@@ -2045,6 +2045,91 @@ def _insufficient_allowance_pct() -> float:
     return max(0.0, pct)
 
 
+#: RC-51 (2026-11-07, run be1f8c8f): the defang normalization shared by the
+#: pre-classification and the row-index-drift check.
+_DEFANG_VARIANTS = (("[.]", "."), ("[:]", ":"), ("[@]", "@"),
+                     ("(.)", "."), ("(:)", ":"))
+
+
+def _undefang(text: str) -> str:
+    t = text or ""
+    for a, b in _DEFANG_VARIANTS:
+        t = t.replace(a, b)
+    return t
+
+
+def _row_index_drift(root: Path, claim_text: str,
+                     evidence_rows: list[dict]) -> str | None:
+    """Whether a contradicted table-row claim restates a DIFFERENT row of its
+    cited artifact (row-index drift), and that row's excerpt.
+
+    Run 36's largest contradicted class (43/49): the writer rendered the IoC
+    confidence rows correctly but cited drifted row indices
+    (`$.confidence.items[8]` for a row that actually lives at items[5]) — the
+    reviewer correctly rejects the CITED row, so the claim reads as
+    "contradicted" although nothing contradicts its CONTENT. The deterministic
+    check: every significant (undefanged) cell of the table-row claim appears
+    in exactly ONE distinct row's content across the cited artifact(s). One
+    match -> the claim is a true restatement of a real row, cited with the
+    wrong index: an imprecise citation (`insufficient`), not a contradiction.
+    Zero or several matches -> leave the reviewer's verdict untouched.
+    """
+    claim = claim_text or ""
+    if not claim.lstrip().startswith("|"):
+        return None
+    cells: list[str] = []
+    for cell in (c.strip().lower() for c in claim.split("|") if c.strip()):
+        clean = re.sub(r"\s*\(source:.*$", "", cell).strip()
+        clean = _undefang(clean)
+        if len(clean) <= 2 or clean.isdigit():
+            continue
+        cells.append(clean)
+    if not cells:
+        return None
+    artifact_paths: list[Path] = []
+    for row in evidence_rows or []:
+        name = str((row or {}).get("artifact") or "")
+        if name and (root / name).is_file() and root / name not in artifact_paths:
+            artifact_paths.append(root / name)
+    if not artifact_paths:
+        return None
+    distinct: dict[str, str] = {}
+    for path in artifact_paths:
+        try:
+            decoded = json.loads(path.read_text(encoding="utf-8",
+                                                errors="replace"))
+        except (OSError, json.JSONDecodeError):
+            continue
+
+        def _walk(value: Any) -> None:
+            if isinstance(value, dict):
+                try:
+                    content = json.dumps(value, ensure_ascii=False,
+                                         sort_keys=True, default=str)
+                except (TypeError, ValueError):
+                    content = repr(value)
+                low = _undefang(content.lower())
+                if all(cell in low for cell in cells):
+                    distinct.setdefault(content, content)
+                for child in value.values():
+                    _walk(child)
+            elif isinstance(value, list):
+                for child in value:
+                    _walk(child)
+
+        _walk(decoded)
+    # Keep only MINIMAL matches: a container dict's serialized content also
+    # contains its matching row's text (run 36: the confidence wrapper and the
+    # items branch both matched when only the row did). A match that contains
+    # another match is a container, not the row.
+    contents = list(distinct.keys())
+    minimal = [c for c in contents
+               if not any(other != c and other in c for other in contents)]
+    if len(minimal) != 1:
+        return None
+    return minimal[0][:800]
+
+
 def check_report_entailment(sha: str, logs_dir: Path | None = None,
                             *, case_root: Path | None = None,
                             semantic_reviewer: Callable[[list[dict]], dict] | None = None,
@@ -2307,6 +2392,13 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
             still_pending.append(item)
             continue
         excerpts = " ".join(item.get("evidence_excerpts") or []).lower()
+        # RC-50 (2026-11-07, run be1f8c8f): the IoC-confidence table rows
+        # failed this match because the claim cells are DEFANGED
+        # (`uni02e5[.]cn`) while the artifact holds the raw value
+        # (`uni02e5.cn`) — 43 of run 36's 49 contradicted were exactly this
+        # format gap. Normalize the defang bracketing on BOTH sides before
+        # the containment check (module-level _undefang, shared with RC-51).
+        excerpts = _undefang(excerpts)
         # For a table-row claim, extract the CELL VALUES (split on |) and
         # check that every significant one (length > 2, not just a number)
         # appears in the cited excerpt. This handles the JSON-dict-vs-
@@ -2321,6 +2413,7 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
                 # Strip the citation annotation from the last cell if present
                 clean = re.sub(
                     r"\s*\(source:.*$", "", cell).strip()
+                clean = _undefang(clean)
                 if len(clean) <= 2 or clean.isdigit():
                     continue
                 if clean not in excerpts:
@@ -2538,19 +2631,45 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
                 len(evidence_ids) == len(set(evidence_ids))
                 and len(selected_evidence) == len(evidence_ids)
             )
+            drift_fired = False
             if verdict == "supported" and evidence_ids and locator_valid:
                 status = "semantically-supported"
             elif verdict == "contradicted" and evidence_ids and locator_valid:
-                status = "contradicted"
+                # RC-51: a contradicted TABLE-ROW claim whose cells match
+                # exactly one DIFFERENT row of the cited artifact is row-index
+                # drift (run 36: 43/49) — a true restatement cited with the
+                # wrong index. An imprecise citation (insufficient), not a
+                # contradiction; the defect stays visible in the reason.
+                drift_excerpt = None
+                try:
+                    drift_excerpt = _row_index_drift(
+                        root, item["references"][0].get("claim", "")
+                        if item.get("references") else "",
+                        selected_evidence)
+                except Exception:  # noqa: BLE001
+                    drift_excerpt = None
+                if drift_excerpt is not None:
+                    status = "insufficient"
+                    drift_fired = True
+                else:
+                    status = "contradicted"
             elif verdict == "insufficient" and locator_valid:
                 status = "insufficient"
             else:
                 status = "invalid-review" if review else "review-missing"
             for reference in item["references"]:
+                if drift_fired:
+                    drift_reason = (
+                        "row-index drift: the claim restates a real row of the "
+                        "cited artifact, but the cited row locator names a "
+                        "different row (RC-51; the writer's per-section "
+                        "skeleton fix is the open item)")
+                else:
+                    drift_reason = str(review.get("reason") or "")[:500]
                 results.append({
                     "report": reference["report"], "claim": reference["claim"][:240],
                     "status": status,
-                    "reason": str(review.get("reason") or "")[:500],
+                    "reason": drift_reason,
                     "evidence_locators_valid": locator_valid,
                     "reviewed_evidence": [{
                         "evidence_id": evidence_id,

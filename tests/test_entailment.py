@@ -1212,6 +1212,115 @@ def test_verbatim_restatements_are_pre_classified_as_supported(tmp_path, monkeyp
     assert "verbatim restatement" in row.get("reason", ""), row
 
 
+# RC-50 (2026-11-07, run be1f8c8f): 43 of the 49 contradicted claims were the
+# IoC confidence table rows — verbatim restatements that FAILED this
+# pre-classification because the claim cells are DEFANGED (`uni02e5[.]cn`)
+# while the artifact holds the raw value (`uni02e5.cn`). The pre-classification
+# now undefangs both sides before the containment check.
+def test_a_defanged_table_row_restatement_is_pre_classified(tmp_path,
+                                                            monkeypatch):
+    case = _case(tmp_path, {
+        "REPORT-MASTER-v2.md":
+            "| uni02e5[.]cn | .cn | medium | 60 | well-formed domain matched "
+            "as a bare string | (source: iocs, query_or_table: iocs.json, "
+            "row_or_rule: $.confidence.items[0])\n"},
+        {"iocs.json":
+         '{"confidence": {"items": [{"indicator": "uni02e5.cn", '
+         '"tld": ".cn", "severity": "medium", "score": 60, '
+         '"reason": "well-formed domain matched as a bare string"}]}}'})
+
+    called = []
+
+    def reviewer(batch, **_kwargs):
+        called.append(batch)
+        return {"reviews": [{"id": item["id"], "verdict": "insufficient",
+                             "evidence_ids": []} for item in batch]}
+
+    res = E.check_report_entailment(
+        "a" * 64, case_root=case, semantic_reviewer=reviewer, use_cache=False)
+    row = next(r for r in res["claims"]
+               if "uni02e5" in r.get("claim", ""))
+    assert row["status"] == "semantically-supported", row
+    assert "verbatim restatement" in row.get("reason", ""), row
+    assert not called, (
+        "the defanged restatement must not reach the reviewer")
+
+
+# RC-51 (2026-11-07, run be1f8c8f): 43 of the 49 contradicted claims were the
+# IoC confidence rows cited with DRIFTED row indices — the claim restates a
+# real row of the artifact but the cited locator names a different row, so the
+# reviewer correctly rejects the CITED row and the claim reads as
+# "contradicted" although nothing contradicts its content. The deterministic
+# post-check reclassifies exactly-one-other-row matches as `insufficient`
+# (row-index drift), keeping the defect visible in the reason.
+def test_row_index_drift_reclassifies_as_insufficient(tmp_path, monkeypatch):
+    items = [{"value": f"filler{i}[.]cn", "score": 40, "tier": "low",
+              "reason": "bare string match"} for i in range(5)]
+    items.append({"value": "uni02e5[.]cn", "score": 60, "tier": "medium",
+                  "reason": "well-formed domain matched as a bare string"})
+    items.extend({"value": f"pad{i}[.]cn", "score": 40, "tier": "low",
+                  "reason": "bare string match"} for i in range(3))
+    # items[8] exists (so the cited locator resolves) but is NOT the row the
+    # claim restates — the writer drifted 3 indices down.
+    case = _case(tmp_path, {
+        "REPORT-MASTER-v2.md":
+            "| uni02e5[.]cn | medium | 60 | well-formed domain matched "
+            "as a bare string | (source: iocs, query_or_table: iocs.json, "
+            "row_or_rule: $.confidence.items[8])\n"},
+        {"iocs.json": json.dumps({"confidence": {"items": items}})})
+
+    def reviewer(batch, **_kwargs):
+        return {"reviews": [{"id": item["id"], "verdict": "contradicted",
+                             "evidence_ids": [item["evidence"][0]["evidence_id"]],
+                             "reason": "the cited row is a different domain"}
+                            for item in batch]}
+
+    res = E.check_report_entailment(
+        "a" * 64, case_root=case, semantic_reviewer=reviewer, use_cache=False)
+    row = next(r for r in res["claims"]
+               if "uni02e5" in r.get("claim", ""))
+    assert row["status"] == "insufficient", row
+    assert "row-index drift" in row.get("reason", ""), row
+
+
+def test_row_index_drift_does_not_fire_on_zero_or_many_matches(tmp_path,
+                                                               monkeypatch):
+    # Two DISTINCT rows contain the claim's cells (the score differs, so the
+    # row contents are not identical) -> ambiguous -> the reviewer's
+    # contradicted verdict stands. The CITED row (items[8]) must not contain
+    # the cells, or the pre-classification would support the claim before the
+    # reviewer ever saw it.
+    items = [{"value": "filler[.]cn", "score": 40, "tier": "low",
+              "reason": "bare string match"} for _ in range(3)]
+    items.append({"value": "uni[.]cn", "score": 50, "tier": "medium",
+                  "reason": "well-formed domain matched as a bare string"})
+    items.append({"value": "uni[.]cn", "score": 70, "tier": "medium",
+                  "reason": "well-formed domain matched as a bare string"})
+    items.extend({"value": f"pad{i}[.]cn", "score": 40, "tier": "low",
+                  "reason": "bare string match"} for i in range(3))
+    items.append({"value": "other[.]cn", "score": 10, "tier": "low",
+                  "reason": "nothing matching here"})  # items[8]: cited row
+    case = _case(tmp_path, {
+        "REPORT-MASTER-v2.md":
+            "| uni[.]cn | medium | well-formed domain matched as a bare "
+            "string | (source: iocs, query_or_table: iocs.json, "
+            "row_or_rule: $.confidence.items[8])\n"},
+        {"iocs.json": json.dumps({"confidence": {"items": items}})})
+
+    def reviewer(batch, **_kwargs):
+        return {"reviews": [{"id": item["id"], "verdict": "contradicted",
+                             "evidence_ids": [item["evidence"][0]["evidence_id"]],
+                             "reason": "ambiguous rows"}
+                            for item in batch]}
+
+    res = E.check_report_entailment(
+        "a" * 64, case_root=case, semantic_reviewer=reviewer, use_cache=False)
+    row = next(r for r in res["claims"]
+               if "uni[.]cn" in r.get("claim", ""))
+    assert row["status"] == "contradicted", row
+    assert "row-index drift" not in row.get("reason", ""), row
+
+
 def test_a_non_restatement_still_goes_to_the_reviewer(tmp_path, monkeypatch):
     case = _case(tmp_path, {
         "REPORT-MASTER-v2.md":

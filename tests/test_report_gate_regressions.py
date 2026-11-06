@@ -1311,3 +1311,24 @@ def test_classification_evidence_states_the_real_deep_confidence_locator():
     })
     assert "deep_confidence: 90" in ev, ev
     assert "deep_dive/05-deep-dive.json $.confidence" in ev, ev
+
+
+def test_ioc_extraction_excludes_loopback_urls():
+    import iocs as iocs_mod
+    data = (b"http://localhost:8080/admin http://127.0.0.1/x "
+            b"http://c2.evil.example.com/gate")
+    iocs = iocs_mod.extract_iocs(data)
+    assert not any("localhost" in u for u in iocs["urls"]), iocs["urls"]
+    assert not any("127[.]0[.]0[.]1" in u for u in iocs["urls"]), iocs["urls"]
+    assert any("c2[.]evil[.]example[.]com" in u for u in iocs["urls"])
+
+
+def test_yara_gen_ioc_pack_excludes_loopback_urls(tmp_path):
+    import yara_gen_v2 as YG
+    sample = tmp_path / "s.bin"
+    sample.write_bytes(b"MZ" + b"\x00" * 64)
+    strings = ["http://localhost:8080/admin", "http://c2.evil.com/gate"]
+    iocs = YG.extract_iocs("a" * 64, sample, None, strings)
+    assert not any("localhost" in u for u in iocs["urls"]), iocs["urls"]
+    # yara_gen stores urls UNdefanged (pinned in the RC-47 test above).
+    assert any("c2.evil" in u for u in iocs["urls"]), iocs["urls"]

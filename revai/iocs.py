@@ -30,6 +30,12 @@ _DOMAIN_RE = re.compile(r"\b(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}
 #: that reaches extraction through a different path is still clean.
 _CTRL_RE = re.compile(r"[\x00-\x08\x0b-\x1f\x7f]")
 
+#: Loopback hosts are infrastructure, never indicators (RC-50b, run 36: a
+#: malformed `http://localhost:` URL extracted from binary data was cited as
+#: an indicator and contradicted three times by the reviewer).
+_LOOPBACK_HOST_RE = re.compile(
+    r"(?i)^https?://(?:localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)(?:[:/]|$)")
+
 
 def _strip_control_chars(value: str) -> str:
     return _CTRL_RE.sub("", value)
@@ -73,6 +79,8 @@ def extract_iocs(data: bytes) -> dict[str, list[str]]:
 
     for u in _URL_RE.findall(text):
         d = _defang_url(_strip_control_chars(u.strip(".,;")))
+        if _LOOPBACK_HOST_RE.match(u):
+            continue
         if d not in seen["urls"]:
             seen["urls"].add(d)
             iocs["urls"].append(d)

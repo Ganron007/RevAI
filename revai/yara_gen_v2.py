@@ -305,12 +305,18 @@ def extract_iocs(sha256: str, sample_path: Path, verdict: dict | None,
     #: belt-and-braces across every IoC type (RC-47).
     _ctrl_re = re.compile(r"[\x00-\x08\x0b-\x1f\x7f]")
 
+    #: Loopback hosts are infrastructure, never indicators (RC-50b, run 36).
+    _loopback_re = re.compile(
+        r"(?i)^(?:https?://)?(?:localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)(?:[:/]|$)")
+
     def _clean(matches: list[str], *, exclude_ext: bool = False) -> list[str]:
         seen: set[str] = set()
         out = []
         for m in matches:
             m = _ctrl_re.sub("", m).strip().strip(".,;:()[]{}'\"")
             if len(m) < 4:
+                continue
+            if _loopback_re.match(m):
                 continue
             if exclude_ext and m.lower().endswith(_FILE_EXTS):
                 continue
