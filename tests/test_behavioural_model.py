@@ -24,13 +24,14 @@ import behavioural_model as B  # noqa: E402
 SHA = "a" * 64
 
 
-def _case(tmp_path, domains, answers=None, evidence_for=None, iocs=None):
+def _case(tmp_path, domains, answers=None, evidence_for=None, iocs=None,
+          engine_token="ghidra_query"):
     case = tmp_path / "logs" / SHA / "scripted"
     (case / "deep_dive").mkdir(parents=True)
     hist = []
     for k, st in domains.items():
-        ev = ["ghidra_query imports: RegSetValueExA present",
-              "ghidra_query strings: 'SOFTWARE\\...\\Run' at 4254488"] \
+        ev = [f"{engine_token} imports: RegSetValueExA present",
+              f"{engine_token} strings: 'SOFTWARE\\...\\Run' at 4254488"] \
             if (evidence_for or {}).get(k) else []
         hist.append({"tool": f"domain:{k}",
                      "result": {"status": st,
@@ -235,12 +236,13 @@ def test_stage_runner_records_model_child_failure(tmp_path, monkeypatch):
 # model records the honest count. An unresolvable citation is marked, never
 # hidden.
 def test_capability_citations_resolve_against_the_tool_raw_artifact(tmp_path):
-    case = _case(tmp_path, ALL, evidence_for=_ev("surface", "persistence"))
-    # The evidence items' leading token is the engine; the branch must exist
-    # in 01-tools-raw.json for the citation to resolve.
+    # A TOOL token (persisted in 01-tools-raw.json) resolves to that branch:
+    # yara_scan -> $.yara (the RC-52 refinement maps the engine spelling to
+    # the artifact's actual branch key).
+    case = _case(tmp_path, ALL, evidence_for=_ev("surface", "persistence"),
+                 engine_token="yara_scan")
     (case / "deep_dive" / "01-tools-raw.json").write_text(json.dumps(
-        {"ghidra_query": {"imports": ["RegSetValueExA"], "strings": []}}),
-        encoding="utf-8")
+        {"yara": {"matches": []}}), encoding="utf-8")
     import behavioural_model as BM
     model = BM.build_behavioural_model(SHA, case_root=case)
     assert model.get("capabilities"), model
@@ -252,13 +254,16 @@ def test_capability_citations_resolve_against_the_tool_raw_artifact(tmp_path):
     for c in cited:
         for cite in c["citations"]:
             assert cite["resolved"] is True, cite
+            assert cite["row"] == "$.yara", cite
             assert cite["artifact"] == "01-tools-raw.json"
 
 
 def test_an_unresolvable_citation_is_marked_not_hidden(tmp_path):
-    case = _case(tmp_path, ALL, evidence_for=_ev("surface"))
-    # NO 01-tools-raw.json in the case: the citation cannot resolve. It must
-    # stay listed with resolved=False and the honest count must reflect it.
+    # A token with NO branch anywhere (no 01-tools-raw.json, and the token is
+    # not a SQL engine) cannot resolve. It must stay listed with resolved=False
+    # and the honest count must reflect it.
+    case = _case(tmp_path, ALL, evidence_for=_ev("surface"),
+                 engine_token="nosuchtool")
     import behavioural_model as BM
     model = BM.build_behavioural_model(SHA, case_root=case)
     out = BM.validate_model_citations(model, case_root=case)
@@ -270,14 +275,15 @@ def test_an_unresolvable_citation_is_marked_not_hidden(tmp_path):
 
 
 def test_the_rendered_section_shows_the_citations_with_resolution_marks(tmp_path):
-    case = _case(tmp_path, ALL, evidence_for=_ev("surface", "persistence"))
+    case = _case(tmp_path, ALL, evidence_for=_ev("surface", "persistence"),
+                 engine_token="yara_scan")
     (case / "deep_dive" / "01-tools-raw.json").write_text(json.dumps(
-        {"ghidra_query": {"imports": ["RegSetValueExA"]}}), encoding="utf-8")
+        {"yara": {"matches": []}}), encoding="utf-8")
     import behavioural_model as BM
     model = BM.build_behavioural_model(SHA, case_root=case)
     BM.validate_model_citations(model, case_root=case)
     block = BM.format_behavioural_model(model)
     assert "### Capability citations" in block
-    assert "source: ghidra_query" in block
+    assert "source: yara_scan" in block
     assert "[resolved]" in block
-    assert "row_or_rule: $.ghidra_query" in block
+    assert "row_or_rule: $.yara" in block

@@ -680,7 +680,12 @@ def _source_artifact_candidates(source: str, query: str | None,
                                 root: Path) -> list[Path]:
     """Resolve a citation to source-specific machine evidence, never report prose."""
     exact_path = (query or "").strip().strip("` ").replace("\\", "/")
-    if exact_path in _PRIMARY_EVIDENCE_ARTIFACTS:
+    # RC-52 (live proof, run 36 copy): an exact artifact path in the query
+    # maps directly when the file is part of the case evidence — the deep
+    # dive's own record (agentic_deep_dive.json) is evidence the SQL engines'
+    # observations resolve against, but it is not in the PRIMARY set.
+    if (exact_path in _PRIMARY_EVIDENCE_ARTIFACTS
+            or exact_path in _EVIDENCE_ARTIFACTS):
         path = root / exact_path
         return [path] if path.is_file() else []
     src = _norm(source)

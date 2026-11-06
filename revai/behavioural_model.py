@@ -168,6 +168,37 @@ def build_behavioural_model(sha: str, logs_dir: Path | None = None,
     # exact locator; validate_model_citations() resolves each against the
     # real artifact and the model records the honest count.
     tools_raw = "deep_dive/01-tools-raw.json"
+    # RC-52 refinement (live proof, run 36 copy): the evidence text names the
+    # ENGINE (ghidra_query, yara_scan) while the tool-raw artifact's branch
+    # keys are the TOOL names (yara, malcat, ...). Resolve each token to the
+    # actual branch key: exact match, else the token's leading segment
+    # (`yara_scan` -> `yara`). A token with no branch keeps its own spelling
+    # and stays honestly unresolved at validation time.
+    raw_keys: set[str] = set()
+    for cand in (root / "deep_dive" / "01-tools-raw.json",
+                 base / sha / "deep_dive" / "01-tools-raw.json"):
+        if cand.is_file():
+            d = _load_json(cand)
+            raw_keys = {k for k in d.keys() if not k.startswith("_")}
+            break
+
+    def _branch_for(engine: str) -> tuple[str | None, str]:
+        """(query, row) for an engine token — the tool-raw branch when the
+        tool persists there, the dive history for the SQL engines (their
+        observations are recorded in agentic_deep_dive.json's history, not a
+        tool-raw branch)."""
+        if engine in ("ghidra", "ghidra_query", "ida", "ida_query", "sql"):
+            return "deep_dive/agentic_deep_dive.json", "$.history"
+        if engine in raw_keys:
+            return tools_raw, f"$.{engine}"
+        head = engine.split("_", 1)[0]
+        if head in raw_keys:
+            return tools_raw, f"$.{head}"
+        for k in raw_keys:
+            if engine.startswith(k) or k.startswith(engine):
+                return tools_raw, f"$.{k}"
+        return None, f"$.{engine}"
+
     engine_seen: set[str] = set()
     for key in keys:
         e = domains.get(key) or {}
@@ -180,10 +211,11 @@ def build_behavioural_model(sha: str, logs_dir: Path | None = None,
             if eng in engine_seen or eng in ("none", "the", "no"):
                 continue
             engine_seen.add(eng)
+            query, row = _branch_for(eng)
             cites.append({
                 "source": eng,
-                "query": tools_raw,
-                "row": f"$.{eng}",
+                "query": query or tools_raw,
+                "row": row,
             })
         if len(cites) >= 6:
             cites = cites[:6]
