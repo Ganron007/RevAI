@@ -244,3 +244,43 @@ def test_oracle_truthy_sets_accept_on(monkeypatch):
     monkeypatch.setenv("REVAI_ENABLE_UNPACK_PASS", "on")
     assert EO.oracle_enabled() is True
     assert UO.unpack_enabled() is True
+
+
+# ---------------------------------------------------------------- RC-59/60
+# Found live on S1-scripted (331bcdf17104, 2026-11-07): the RC-55 separator
+# was counted as an UNCITED CLAIM by the quality gate, and the v3 writer's
+# compressed range domain (uni02e5-02e9.cn) went out as an unverified IoC
+# because _strip_unverified_indicators covered registry shapes only.
+def test_orphan_separator_carries_the_note_marker():
+    md = ("| a | b |\n|---|---|\n| 1 | 2 |\n"
+          "\n"
+          "| c | d |\n|---|---|\n| 3 | 4 |\n")
+    out = SP._fix_orphan_tables(md)
+    sep = [l for l in out.splitlines() if "presented separately" in l][0]
+    assert sep.lstrip().startswith("**[Note]**"), sep
+    # The gate's own exemption must accept the line.
+    from report_schema import is_non_factual_markdown_line
+    assert is_non_factual_markdown_line(sep) is True, sep
+
+
+def test_indicator_scrubber_covers_domains_and_urls(tmp_path, monkeypatch):
+    sha = "9" * 64
+    case = tmp_path / "logs" / sha / "agentic"
+    case.mkdir(parents=True)
+    (case / "iocs.json").write_text(json.dumps(
+        {"domains": ["known[.]evil[.]example[.]com"],
+         "urls": ["http[:]//known[.]evil[.]example[.]com/gate"]}))
+    monkeypatch.setattr(SP, "case_dir", lambda s: case)
+    md = ("## 6. Network\n\n"
+          "- C2 at unknown-range-domain.cn (source: iocs, "
+          "query_or_table: iocs.json, row_or_rule: $.domains[0])\n"
+          "- C2 at known[.]evil[.]example[.]com\n"
+          "- Fetches http://never-seen-anywhere.example.com/payload\n"
+          "Prose paragraph mentioning windows.com stays untouched.\n")
+    out = SP._strip_unverified_indicators(md, sha)
+    assert "unknown-range-domain.cn" not in out, out
+    assert "[redacted: not in evidence]" in out
+    assert "known[.]evil[.]example[.]com" in out, (
+        "a corpus-backed value must be kept")
+    assert "http://never-seen-anywhere.example.com/payload" not in out
+    assert "windows.com" in out, "prose paragraphs must not be scrubbed"

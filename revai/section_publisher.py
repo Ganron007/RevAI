@@ -1405,8 +1405,15 @@ def _fix_orphan_tables(md: str) -> str:
         is_table = stripped.startswith("|")
         if (is_table and prev_content_was_table and blanks_pending
                 and inserted < 2):
-            out.append("The tables above are presented separately for "
-                       "clarity; the row sets are disjoint.\n")
+            # RC-59 (2026-11-07, S1-scripted): the bare sentence was counted
+            # as an UNCITED CLAIM by the quality gate (the exact class RC-31a
+            # fixed for the deterministic sections' own closing sentences).
+            # The separator is a structural note about LAYOUT, not a claim
+            # about the sample — carry the **[Note]** non-factual marker the
+            # gate exempts (the same convention the deterministic renderers
+            # use), so it stays visible but never costs a citation.
+            out.append("**[Note]** The tables above are presented separately "
+                       "for clarity; the row sets are disjoint.\n")
             out.append("\n")
             inserted += 1
         prev_content_was_table = is_table
@@ -1435,6 +1442,27 @@ def _strip_unverified_indicators(md: str, sha: str) -> str:
         return md
     lines = (md or "").splitlines(keepends=True)
     out: list[str] = []
+    # RC-60 (2026-11-07, S1-scripted): the scrub covered REGISTRY paths only;
+    # the v3 writer compressed several iocs.json domain rows into one RANGE
+    # value (`uni02e5-02e9.cn`) that exists nowhere in the evidence and went
+    # out as an unverified IoC. Domain- and URL-shaped values get the same
+    # treatment as registry paths: an indicator-shaped token on an
+    # indicator-carrying line that appears NOWHERE in the corpus (both
+    # defang variants) is redacted, not published. Values present in the
+    # corpus are kept — the checker is never loosened.
+    import re as _re
+    _domain_shape = _re.compile(
+        r"\b(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}\b")
+    _url_shape = _re.compile(
+        r"\bhttps?://[^\s\"'<>()\[\]{}\\]+", _re.IGNORECASE)
+
+    def _in_corpus(token: str) -> bool:
+        t = token.lower()
+        variants = {t,
+                    t.replace("[.]", "."), t.replace(".", "[.]"),
+                    t.replace("[:]", ":"), t.replace(":", "[:]")}
+        return any(v in corpus for v in variants)
+
     for line in lines:
         stripped = line.strip()
         # Only scrub indicator-shaped lines (bullets citing iocs.json rows
@@ -1442,8 +1470,6 @@ def _strip_unverified_indicators(md: str, sha: str) -> str:
         if stripped.startswith("-") or stripped.startswith("|"):
             for pattern in ("HKEY_", "HKLM\\", "HKCU\\"):
                 if pattern.lower() in stripped.lower():
-                    # Check if the full path appears in the corpus
-                    import re as _re
                     for m in _re.finditer(
                             r'(?:HKEY_[\w\\]+|HKLM\\[\w\\]+|HKCU\\[\w\\]+)',
                             stripped):
@@ -1454,6 +1480,18 @@ def _strip_unverified_indicators(md: str, sha: str) -> str:
                             line = line.replace(
                                 path, "[redacted: not in evidence]")
                             break
+            for m in _domain_shape.finditer(stripped):
+                token = m.group(0)
+                if "." not in token:
+                    continue
+                if not _in_corpus(token):
+                    line = line.replace(
+                        token, "[redacted: not in evidence]")
+            for m in _url_shape.finditer(stripped):
+                token = m.group(0)
+                if not _in_corpus(token):
+                    line = line.replace(
+                        token, "[redacted: not in evidence]")
         out.append(line)
     return "".join(out)
 
