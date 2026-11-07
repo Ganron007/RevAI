@@ -28,6 +28,12 @@ const DEFAULT_RUN_CONFIG: RunConfig = {
   unpack_pass: false,
   deobfuscation_pass: false,
   artifact_gen: false,
+  behavioural_model: false,
+  domain_graph: false,
+  deep_dive_graph: false,
+  deep_dive_graph_max_steps: 16,
+  ti_enrich: false,
+  hitl_verdict: false,
   winre_dynamic: true,
   recovery_max_funcs: 40,
   recovery_tier_cap: 5,
@@ -113,6 +119,15 @@ export default function SettingsPage() {
           unpack_pass: Boolean(rc.unpack_pass),
           deobfuscation_pass: Boolean(rc.deobfuscation_pass),
           artifact_gen: Boolean(rc.artifact_gen),
+          // Plan #8/#20 (2026-11-07): the behavioural model, the domain-graph
+          // substrate and the domain-graph deep-dive phase; plus the CLI-parity
+          // gates the SPA never sent (ti_enrich) and the HITL verdict stop.
+          behavioural_model: Boolean(rc.behavioural_model),
+          domain_graph: Boolean(rc.domain_graph),
+          deep_dive_graph: Boolean(rc.deep_dive_graph),
+          deep_dive_graph_max_steps: Number(rc.deep_dive_graph_max_steps ?? 16),
+          ti_enrich: Boolean(rc.ti_enrich),
+          hitl_verdict: Boolean(rc.hitl_verdict),
           winre_dynamic: Boolean(rc.winre_dynamic ?? true),
           recovery_max_funcs: Number(rc.recovery_max_funcs ?? 40),
           recovery_tier_cap: Number(rc.recovery_tier_cap ?? 5),
@@ -484,6 +499,54 @@ export default function SettingsPage() {
                 onChange={(e) => setRc({ ...rc, artifact_gen: e.target.value === '1' })}
               >
                 <option value="1">On — generate + verify extraction script</option>
+                <option value="0">Off (default)</option>
+              </Select>
+            </Field>
+            <Field
+              label="Behavioural model (plan #8)"
+              hint="deterministic what-the-sample-does model from the run's own artifacts: capabilities with provenance, the objects they act on, and the gaps — each capability citing exact evidence rows"
+            >
+              <Select
+                value={rc.behavioural_model ? '1' : '0'}
+                onChange={(e) => setRc({ ...rc, behavioural_model: e.target.value === '1' })}
+              >
+                <option value="1">On — append the behavioural model</option>
+                <option value="0">Off (default)</option>
+              </Select>
+            </Field>
+            <Field
+              label="Domain-graph capability coverage (plan #20 substrate)"
+              hint="one bounded tool-calling node per capability domain; produces the per-domain capability ledger the behavioural model reads"
+            >
+              <Select
+                value={rc.domain_graph ? '1' : '0'}
+                onChange={(e) => setRc({ ...rc, domain_graph: e.target.value === '1' })}
+              >
+                <option value="1">On — domain-node capability ledger</option>
+                <option value="0">Off (default)</option>
+              </Select>
+            </Field>
+            <Field
+              label="Domain-graph deep dive (plan #20)"
+              hint="REPLACE the flat ReAct deep-dive planner loop with the domain-node graph (forces the capability substrate on). A failed graph pass falls back to the flat loop"
+            >
+              <Select
+                value={rc.deep_dive_graph ? '1' : '0'}
+                onChange={(e) => setRc({ ...rc, deep_dive_graph: e.target.value === '1' })}
+              >
+                <option value="1">On — domain-node deep dive</option>
+                <option value="0">Off (default)</option>
+              </Select>
+            </Field>
+            <Field
+              label="HITL verdict stop"
+              hint="halt before publish when the quick and deep verdicts disagree, for human reconciliation (the scripted and agentic spines already honor this)"
+            >
+              <Select
+                value={rc.hitl_verdict ? '1' : '0'}
+                onChange={(e) => setRc({ ...rc, hitl_verdict: e.target.value === '1' })}
+              >
+                <option value="1">On — stop on verdict conflict</option>
                 <option value="0">Off (default)</option>
               </Select>
             </Field>

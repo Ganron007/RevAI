@@ -79,21 +79,32 @@ def _feature_gates() -> set[str]:
 
 def test_every_feature_gate_is_reachable_from_the_console_or_exempt():
     app = resolve("revai/app.py").read_text(encoding="utf-8", errors="replace")
+    # 2026-11-07 review: the original check accepted the gate's literal string
+    # ANYWHERE in app.py — a STAGE_DETAILS prose mention satisfied it while
+    # get_stage_env never translated the flag (REVAI_ENABLE_BEHAVIOURAL_MODEL
+    # passed falsely for weeks). The reachable surface is the get_stage_env
+    # function body: extract it and require the gate there.
+    m = re.search(r"def get_stage_env\(.*?(?=\ndef |\nclass )", app,
+                  re.DOTALL)
+    stage_env = m.group(0) if m else ""
     run_cfg = set(re.findall(r'"([a-z_0-9]+)"', app))
     unreachable = []
     for gate in sorted(_feature_gates()):
-        if gate in EXEMPT or gate in app:
+        if gate in EXEMPT:
+            continue
+        if gate in stage_env:
             continue
         # a run_config key reaches the stage through get_stage_env, so the gate
         # is reachable from the Console under its rc name
         snake = re.sub(r"^REVAI_(ENABLE_)?", "", gate).lower()
-        if snake in run_cfg:
+        if snake in run_cfg and snake in stage_env:
             continue
         unreachable.append(gate)
     assert not unreachable, (
-        "these FEATURE gates are read by the pipeline but the Console cannot "
-        f"set them: {unreachable}\nWire them (run_config + get_stage_env), or "
-        "add them to EXEMPT naming the surface they are reachable through.")
+        "these FEATURE gates are read by the pipeline but get_stage_env does "
+        f"not translate them: {unreachable}\nWire them (run_config + "
+        "get_stage_env), or add them to EXEMPT naming the surface they are "
+        "reachable through.")
 
 
 def test_depth_mode_is_runnable_from_the_console():

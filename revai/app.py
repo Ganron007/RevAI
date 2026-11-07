@@ -100,6 +100,11 @@ STAGES = [
     ("function_recovery", "function_recovery", str(SCRIPTS_DIR / "agentic_recover_v4.py"), []),
     ("artifact_gen", "artifact_gen", str(SCRIPTS_DIR / "artifact_gen.py"), []),
     ("yara_gen",   "yara_gen",   str(SCRIPTS_DIR / "yara_gen_v2.py"),     []),
+    # Plan #8 (2026-11-07): the behavioural-model stage joins the Console's
+    # registry — self-skips (rc=0) when REVAI_ENABLE_BEHAVIOURAL_MODEL is
+    # unset, the same contract as function_recovery/artifact_gen. Without
+    # this row the Console could not run stage 4.7 at all.
+    ("behavioural_model", "behavioural_model", str(SCRIPTS_DIR / "behavioural_model.py"), []),
     ("publish",    "publish",    str(SCRIPTS_DIR / "publish_report_v2.py"), ["--template", "full"]),
     ("correlate",  "correlate",  str(SCRIPTS_DIR / "section_publisher.py"), []),
     ("audit",      "audit",      str(SCRIPTS_DIR / "audit_pipeline.py"),   []),
@@ -120,6 +125,9 @@ STAGE_DEPS = {
     "function_recovery": ["deep_dive"],
     "artifact_gen": ["deep_dive"],
     "yara_gen": ["deep_dive"],
+    # The behavioural model reads the run's artifacts (the domain ledger and
+    # iocs.json); the scripted spine inserts it after yara_gen, before publish.
+    "behavioural_model": ["yara_gen"],
     "publish": ["yara_gen"],
     "correlate": ["publish"],
     "audit": ["correlate"],
@@ -926,15 +934,26 @@ def get_stage_env(rc: dict | None = None) -> dict[str, str]:
     if "agentic_recovery" in rc:
         env["REVAI_ENABLE_AGENTIC_RECOVERY"] = "1" if rc["agentic_recovery"] else "0"
     # Optional analysis-stage toggles (emulation oracle / unpack pass / angr-z3 /
-    # verifiable artifact generation)
+    # verifiable artifact generation) — plus the 2026-11-07 additions: the
+    # behavioural model (plan #8), the domain-graph deep-dive phase (#20) and
+    # its step budget.
     for _key, _flag in (
         ("emulation_oracle", "REVAI_ENABLE_EMULATION_ORACLE"),
         ("unpack_pass", "REVAI_ENABLE_UNPACK_PASS"),
         ("deobfuscation_pass", "ENABLE_DEOBFUSCATION_PASS"),
         ("artifact_gen", "REVAI_ENABLE_ARTIFACT_GEN"),
+        ("behavioural_model", "REVAI_ENABLE_BEHAVIOURAL_MODEL"),
+        ("domain_graph", "REVAI_DOMAIN_GRAPH"),
+        ("deep_dive_graph", "REVAI_DEEP_DIVE_GRAPH"),
     ):
         if _key in rc:
             env[_flag] = "1" if rc[_key] else "0"
+    if rc.get("deep_dive_graph_max_steps") is not None:
+        try:
+            env["REVAI_DEEP_DIVE_GRAPH_MAX_STEPS"] = str(
+                int(rc["deep_dive_graph_max_steps"]))
+        except (TypeError, ValueError):
+            pass
     if rc.get("recovery_max_funcs") is not None:
         env["REVAI_AGENTIC_RECOVERY_MAX_FUNCS"] = str(int(rc["recovery_max_funcs"]))
     if rc.get("recovery_tier_cap") is not None:
@@ -950,12 +969,17 @@ def get_stage_env(rc: dict | None = None) -> dict[str, str]:
     # The two gates that used to be CLI-only. ti_enrich is a boolean like the
     # rest; the ceiling is a number, so a bad value must not kill a run -- it
     # falls back to the pipeline default, which is what depth_agent does.
-    env["REVAI_TI_ENRICH"] = "1" if rc.get("ti_enrich") else "0"
-    try:
-        env["REVAI_DEPTH_CEILING_SECONDS"] = str(
-            int(rc.get("depth_ceiling_seconds") or 7200))
-    except (TypeError, ValueError):
-        env["REVAI_DEPTH_CEILING_SECONDS"] = "7200"
+    # 2026-11-07 review: set ONLY when the run config actually carries the
+    # key — an unconditional write disabled a service-env REVAI_TI_ENRICH=1
+    # for every Console run and masked depth_agent's full-profile ceiling.
+    if "ti_enrich" in rc:
+        env["REVAI_TI_ENRICH"] = "1" if rc.get("ti_enrich") else "0"
+    if rc.get("depth_ceiling_seconds") is not None:
+        try:
+            env["REVAI_DEPTH_CEILING_SECONDS"] = str(
+                int(rc["depth_ceiling_seconds"]))
+        except (TypeError, ValueError):
+            pass
     # The depth profile (#26): "d0" or "full". Absent leaves the exported
     # env (or the default) in place, so a CLI-exported REVAI_DEPTH=full is
     # never silently downgraded by a Console run that did not choose one.
@@ -996,7 +1020,8 @@ def _session_pipeline_mode(sha: str) -> str:
         return "single"
 
 
-def build_stage_command(stage: str, sha: str, sample_path: str) -> list:
+def build_stage_command(stage: str, sha: str, sample_path: str,
+                        rc_snapshot: dict | None = None) -> list:
     label, script, extra_args = STAGE_INFO[stage]
     if stage == "intake":
         override = (os.environ.get("CADRE_PIPELINE_MODE") or "single").strip().lower()
@@ -1020,11 +1045,16 @@ def build_stage_command(stage: str, sha: str, sample_path: str) -> list:
         # Depth is opt-in, so the button must set the gate itself: an operator
         # clicking "Depth" in the Console has already opted in, and requiring
         # them to ALSO export REVAI_DEPTH=1 by hand is the parity gap.
-        # An EXPLICIT exported value passes through untouched: REVAI_DEPTH=full
-        # is a profile (#26), and flattening it to 1 here would silently run
-        # the D0 substrate from a click that asked for the full one.
+        # An EXPLICIT choice passes through untouched: the run snapshot's
+        # depth_profile (d0/full) is set in the child env by get_stage_env,
+        # and a server-exported REVAI_DEPTH=full is a profile (#26) that a
+        # bare `env REVAI_DEPTH=1` prefix must not flatten — 2026-11-07
+        # review: this check used to read the SERVER env only, so a Console
+        # run-config "full" was flattened by the prefix.
         cmd = ["python3", script, sha]
-        if not (os.environ.get("REVAI_DEPTH") or "").strip():
+        _rc_profile = str((rc_snapshot or {}).get("depth_profile") or ""
+                          ).strip().lower()
+        if not _rc_profile and not (os.environ.get("REVAI_DEPTH") or "").strip():
             cmd = ["env", "REVAI_DEPTH=1"] + cmd
         return cmd
     if stage == "audit":
@@ -1047,10 +1077,10 @@ def run_stage(sha: str, stage: str, sample_path: str, rc_snapshot: dict | None =
     (standalone single-stage click) capture one now.
     """
     task_id = uuid.uuid4().hex[:12]
-    cmd = build_stage_command(stage, sha, sample_path)
-    now = datetime.now(timezone.utc).isoformat()
     if rc_snapshot is None:
         rc_snapshot = snapshot_run_config()
+    cmd = build_stage_command(stage, sha, sample_path, rc_snapshot)
+    now = datetime.now(timezone.utc).isoformat()
     with tasks_lock:
         tasks[task_id] = {
             "task_id": task_id, "sha": sha, "stage": stage,
@@ -1207,6 +1237,30 @@ def run_all_stages(sha: str, sample_path: str) -> str:
     def _seq():
         for stage, _, _, _ in STAGES:
             ts = datetime.now(timezone.utc).strftime("%H:%M:%S")
+            # HITL verdict-conflict stop (2026-11-07 review, parity with the
+            # scripted + agentic spines): before publish, when the gate is on
+            # and quick != deep, halt for human review instead of publishing
+            # a verdict nobody reconciled.
+            if stage.startswith("publish") and (
+                    rc_snapshot.get("hitl_verdict")
+                    or os.environ.get("REVAI_HITL_VERDICT", "").strip().lower()
+                    in ("1", "true", "yes", "on")):
+                try:
+                    from pipeline_single import _deep_verdict, _quick_verdict
+                    qv, dv = _quick_verdict(sha), _deep_verdict(sha)
+                except Exception:
+                    qv, dv = "", ""
+                if qv and dv and qv != dv:
+                    with tasks_lock:
+                        tasks[master_id]["log"].append(
+                            f"[{ts}] HITL stop before {stage}: "
+                            f"quick_verdict={qv} deep_verdict={dv} -- "
+                            "reconcile and resume manually")
+                        tasks[master_id]["status"] = "error"
+                        tasks[master_id]["returncode"] = 0
+                        tasks[master_id]["finished_at"] = (
+                            datetime.now(timezone.utc).isoformat())
+                    return
             with tasks_lock:
                 tasks[master_id]["log"].append(f"[{ts}] ---> starting stage: {stage}")
             subtask_id = run_stage(sha, stage, sample_path, rc_snapshot=rc_snapshot)
@@ -1412,6 +1466,13 @@ _RUN_CONFIG_KEYS = (
     # absent from every persisted key list, so an operator could only set it by
     # exporting a variable. CLI/UI parity is a must, so it joins the rest.
     "behavioural_model",
+    # 2026-11-07 review: the domain-graph deep-dive phase (#20) and the
+    # capability-coverage substrate. REVAI_DOMAIN_GRAPH turns on the per-domain
+    # capability ledger; REVAI_DEEP_DIVE_GRAPH replaces the flat ReAct planner
+    # loop with the domain-node graph (it forces the domain mode on).
+    "domain_graph", "deep_dive_graph", "deep_dive_graph_max_steps",
+    # HITL verdict-conflict stop (Run All parity with the other spines).
+    "hitl_verdict",
 )
 
 

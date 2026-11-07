@@ -36,7 +36,7 @@ export default function HelpPage() {
 
         <Section id="start" title="Getting started">
           <p>
-            This console drives a <strong>seven-stage malware-analysis pipeline</strong> (plus one{' '}
+            This console drives the <strong>malware-analysis pipeline</strong> (the stage list below is served live from the backend) (plus one{' '}
             <em>optional</em> function-recovery stage) on the REMnux
             lab host. You stage a binary, the orchestrator runs every stage, and each run is gated on
             evidence quality. There are three main areas:

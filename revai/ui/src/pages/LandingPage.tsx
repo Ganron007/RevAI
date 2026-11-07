@@ -105,7 +105,7 @@ export default function LandingPage() {
                 <span className="pathway-body">
                   <span className="pathway-title">How the pipeline works</span>
                   <span className="pathway-desc">
-                    The seven stages (plus the optional function-recovery stage), the quality gates
+                    The pipeline stages (including the optional recovery, artifact-gen and behavioural-model stages), the quality gates
                     (including the depth gate), verdicts, and how to read a run.
                   </span>
                 </span>

@@ -378,7 +378,10 @@ def test_the_stage_gates_accept_the_profile():
         "silently run the D0 substrate")
     app = source("revai/app.py")
     # The Console's depth button must not flatten an exported profile either.
-    assert 'if not (os.environ.get("REVAI_DEPTH") or "").strip():' in app
+    # 2026-11-07 review: the gate check also honors the run snapshot's
+    # depth_profile, so a Console "full" choice is never flattened by the
+    # env prefix.
+    assert 'if not _rc_profile and not (os.environ.get("REVAI_DEPTH") or "").strip():' in app
     assert '"REVAI_DEPTH=1"' in app, "the button's own opt-in stays"
     # The run-config carries the profile and maps it to the env.
     assert '"depth_profile"' in app

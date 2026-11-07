@@ -231,6 +231,7 @@ export const LlmSettingsSchema = z
         profile: optStr,
         depth_profile: optStr,
         depth_full_max_steps: optNum,
+        depth_ceiling_seconds: optNum,
         stage_retries: optNum,
         tool_retries: optNum,
         timeout_scale: optNum,
@@ -246,11 +247,19 @@ export const LlmSettingsSchema = z
         unpack_pass: optBool,
         deobfuscation_pass: optBool,
         artifact_gen: optBool,
+        // Plan #8/#20 (2026-11-07): the behavioural model, the domain-graph
+        // capability substrate and the domain-graph deep-dive phase.
+        behavioural_model: optBool,
+        domain_graph: optBool,
+        deep_dive_graph: optBool,
+        deep_dive_graph_max_steps: optNum,
         recovery_max_funcs: optNum,
         recovery_tier_cap: optNum,
         winre_dynamic: optBool,
         winre_logs: optStr,
         winre_run: optBool,
+        ti_enrich: optBool,
+        hitl_verdict: optBool,
       })
       .optional(),
     // Optional dynamic companion (WinRE) — non-secret; key is a path only.
@@ -312,6 +321,7 @@ export const STAGE_ORDER = [
   'deep_dive',
   'function_recovery',
   'yara_gen',
+  'behavioural_model',
   'publish',
   'correlate',
   'audit',
@@ -323,6 +333,7 @@ export const STAGE_LABELS: Record<string, string> = {
   deep_dive: 'Deep Dive',
   function_recovery: 'Function Recovery',
   yara_gen: 'YARA',
+  behavioural_model: 'Behavioural Model',
   publish: 'Publish',
   correlate: 'Section',
   audit: 'Audit',

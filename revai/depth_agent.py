@@ -110,11 +110,14 @@ def depth_profile() -> str:
     vocabulary was built. It is deliberately NOT a truthy alias for "on":
     `depth_enabled()` keeps its narrow meaning so the two profiles can never
     be confused at a call site, and the stage gates use `depth_requested()`.
+    2026-11-07 review: "d0" is accepted as an explicit D0 spelling — the
+    Console's depth selector sends it (SettingsPage default) and the reader
+    silently dropped it, making every Console D0 selection a silent skip.
     """
     raw = (os.environ.get(DEPTH_ENV) or "").strip().lower()
     if raw == PROFILE_FULL:
         return PROFILE_FULL
-    if raw in ("1", "true", "on"):
+    if raw in ("1", "true", "on") or raw == "d0":
         return PROFILE_D0
     return ""
 
