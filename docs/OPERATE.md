@@ -370,7 +370,7 @@ nothing looks like it heard something.
 1. **intake** - session + Ghidra (optional IDA)
 2. **quick_scan** - triage tools (capa, yara, floss, malcat, pe_imports, packer, **revai-tools sec/sinks**) -> `evidence-pack.md` -> LLM verdict
 3. **winre_dynamic** - *(optional, `REVAI_WINRE_RUN=1`)* Flare detonation. Runs **between triage and the deep dive** so the deep dive ingests it as evidence: the pack's observed domains, sample-process-tree file create/write rows, Frida-decoded runtime paths, and unpack artifact are rendered into the deep-dive prompt under their own heading, outside the findings budget, and added to `deep_dive/evidence-pack.md`. Decoded paths do not prove file creation. Dynamic findings are **corroborating only** - a static finding is never overridden by a dynamic observation (`static_yara_wins`). With no pack the prompt is byte-identical to a static-only run. Auto-skips when WinRE is not installed.
-4. **deep_dive** - agentic LangGraph ReAct deep dive (`deep_dive_agentic`; `deep_dive_v2` for standard mode) - checklist + agent callable include **revai-tools sec/sinks/audit**
+4. **deep_dive** - agentic LangGraph deep dive (`deep_dive_agentic` — one engine; `deep_dive_v2` survives only in the smoke validator, not the pipeline). With `REVAI_DEEP_DIVE_GRAPH=1` the dive runs the domain-node graph (4.75). Checklist + agent-callable include **revai-tools sec/sinks/audit**
 4.5. **function_recovery** - *(optional, `REVAI_ENABLE_AGENTIC_RECOVERY=1`)* agentic function-name recovery (see below)
 4.6. **artifact_gen** - *(optional, `REVAI_ENABLE_ARTIFACT_GEN=1`)* verifiable analysis scripts: the LLM authors a sample-specific extraction script, the pipeline runs it sandboxed and re-derives every claimed value from the sample bytes
 4.7. **behavioural_model** - *(optional, `REVAI_ENABLE_BEHAVIOURAL_MODEL=1`)* deterministic behavioural model assembled from the run's own artifacts into `behavioural_model.json` — capabilities with provenance, the concrete objects they act on, and the gaps. Never authored by the model, never gates the verdict
@@ -390,7 +390,7 @@ Shell examples:
 ```bash
 python3 /opt/scripts/quick_scan_v2.py <sha256>
 python3 /opt/scripts/quick_scan_v2.py <sha256> --skip-malcat   # when Malcat is not installed
-python3 /opt/scripts/deep_dive_v2.py <sha256>          # standard
+python3 /opt/scripts/deep_dive_agentic.py <sha256>     # the deep dive (one engine)
 python3 /opt/scripts/deep_dive_agentic.py <sha256>     # large
 python3 /opt/scripts/agentic_recover_v4.py <sha256>    # optional stage — see below
 python3 /opt/scripts/yara_gen_v2.py --family MyFamily <sha256>
@@ -482,7 +482,7 @@ Tunables (all optional, defaults shown):
 | `REVAI_AGENTIC_RECOVERY_ORACLE_SLOTS` | 3 | guaranteed pool slots for emulation-oracle executed functions |
 | `REVAI_AGENTIC_RECOVERY_CONF_THRESHOLD` | 0.7 | minimum confidence for a recovered name to be written back |
 | `REVAI_AGENTIC_RECOVERY_SIG_THRESHOLD` | 0.80 | similarity threshold for the signature-DB naming pass |
-| `REVAI_AUTO_WRITEBACK` | 0 | `1` lets standard-mode deep dives write recovered names into the Ghidra/IDA DB automatically |
+| `REVAI_AUTO_WRITEBACK` | 0 | **dead in the pipeline** (2026-11-07 review): its only reader is `deep_dive_v2.py`, which no run mode invokes any more (smoke validation only). Kept documented so a stale env export is explainable |
 
 **Analysis-stage extras (all off by default, all opt-in):**
 
