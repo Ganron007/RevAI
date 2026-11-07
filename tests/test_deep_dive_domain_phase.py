@@ -6,6 +6,7 @@ tool-calling node per capability domain. Default OFF: production byte-
 identical. A failed or empty graph pass falls back to the flat loop.
 """
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -186,3 +187,45 @@ def test_an_empty_graph_record_also_falls_back(monkeypatch, tmp_path):
     out = DDA._custom_loop_body("a" * 64, max_steps=1)
     assert not (out.get("findings") or {}).get("domain_graph")
     assert planner_called, "an empty graph record must fall back to the flat loop"
+
+
+# The PRODUCTION langgraph path: REVAI_DEEP_DIVE_GRAPH=1 forces the
+# DOMAIN-NODE mode of the same substrate (REVAI_DOMAIN_GRAPH), which the #26
+# depth run proved live. setdefault semantics: an operator's explicit
+# REVAI_DOMAIN_GRAPH value still wins.
+def test_langgraph_path_forces_the_domain_mode(monkeypatch, tmp_path):
+    monkeypatch.setenv("REVAI_DEEP_DIVE_GRAPH", "1")
+    monkeypatch.delenv("REVAI_DOMAIN_GRAPH", raising=False)
+    captured = {}
+
+    fake_mod = type(sys)("agentic_langgraph")
+
+    def _fake(sha, max_steps=16, helpers=None):
+        captured["domain_graph_env"] = os.environ.get("REVAI_DOMAIN_GRAPH")
+        return {"findings": {}, "history": []}
+
+    fake_mod.run_langgraph_deep_dive = _fake
+    monkeypatch.setitem(sys.modules, "agentic_langgraph", fake_mod)
+    monkeypatch.setattr(DDA, "langgraph_helpers", lambda: {})
+    out = DDA.agentic_deep_dive("a" * 64)
+    assert captured.get("domain_graph_env") == "1", captured
+    assert out == {"findings": {}, "history": []}
+
+
+def test_langgraph_path_respects_an_explicit_domain_graph_value(monkeypatch):
+    monkeypatch.setenv("REVAI_DEEP_DIVE_GRAPH", "1")
+    monkeypatch.setenv("REVAI_DOMAIN_GRAPH", "0")
+    captured = {}
+
+    fake_mod = type(sys)("agentic_langgraph")
+
+    def _fake(sha, max_steps=16, helpers=None):
+        captured["domain_graph_env"] = os.environ.get("REVAI_DOMAIN_GRAPH")
+        return {"findings": {}, "history": []}
+
+    fake_mod.run_langgraph_deep_dive = _fake
+    monkeypatch.setitem(sys.modules, "agentic_langgraph", fake_mod)
+    monkeypatch.setattr(DDA, "langgraph_helpers", lambda: {})
+    DDA.agentic_deep_dive("a" * 64)
+    assert captured.get("domain_graph_env") == "0", (
+        "an operator's explicit REVAI_DOMAIN_GRAPH must win over the forcing")

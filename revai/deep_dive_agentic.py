@@ -2123,6 +2123,21 @@ def agentic_deep_dive(sha: str, max_steps: int = MAX_STEPS) -> dict:
         engine = "langgraph"
 
     if engine == "langgraph":
+        # RC-53 (plan #20): REVAI_DEEP_DIVE_GRAPH=1 switches this dive to the
+        # DOMAIN-NODE mode of the SAME substrate — agentic_langgraph already
+        # implements the domain graph behind REVAI_DOMAIN_GRAPH (the #26
+        # depth run proved it live: one bounded tool-calling node per
+        # capability domain, statuses with citations, the record landing in
+        # findings.domain_graph where build_capability_coverage reads it).
+        # Forcing the mode here means the production langgraph path gets the
+        # named-domain structure without a second engine. setdefault: an
+        # operator's explicit REVAI_DOMAIN_GRAPH value still wins.
+        if os.environ.get("REVAI_DEEP_DIVE_GRAPH", "").strip().lower() in (
+                "1", "true", "on"):
+            os.environ.setdefault("REVAI_DOMAIN_GRAPH", "1")
+            print("[deep_dive_agentic] RC-53: REVAI_DOMAIN_GRAPH forced on "
+                  "(REVAI_DEEP_DIVE_GRAPH=1) — the dive runs the domain-node "
+                  "graph", flush=True)
         try:
             from agentic_langgraph import run_langgraph_deep_dive  # type: ignore
 
