@@ -408,6 +408,19 @@ def attach_behavioural_model(md: str, sha: str, *,
     if os.environ.get("REVAI_DISABLE_BEHAVIOURAL_MODEL", "").strip().lower() \
             in ("1", "true", "yes", "on"):
         return md
+    # 2026-11-07 review (B5): the docstring promised "no-ops when ... the
+    # feature is off" but the enable flag was never checked here — with the
+    # domain ledger present, BOTH publishers appended a freshly built model
+    # block even though stage 4.7 never ran. Gate: the feature must be
+    # enabled, OR the stage must have already written its artifact (a run
+    # whose behavioural_model.json exists keeps its section).
+    if not behavioural_model_enabled():
+        try:
+            from v2_lib import case_dir as _cd
+            if not (_cd(sha) / "behavioural_model.json").is_file():
+                return md
+        except Exception:
+            return md
     try:
         model = build_behavioural_model(sha, logs_dir=logs_dir)
         # RC-52: resolve the citations before rendering so the published

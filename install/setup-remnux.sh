@@ -36,6 +36,22 @@ apt-get install -y --no-install-recommends \
 # ghidra apt package may place files outside /opt/ghidra — normalize below
 ok "apt packages installed"
 
+# Node.js >= 18 for the Console UI build (scripts/deploy.sh runs `npm ci` +
+# `npm run build`; without Node a fresh VM silently skips the Console with
+# only a warning — 2026-11-07 review). NodeSource for >= 18; the distro
+# package is the fallback.
+if ! command -v npm >/dev/null 2>&1; then
+  if command -v curl >/dev/null 2>&1; then
+    (curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+       && apt-get install -y nodejs) \
+      || apt-get install -y nodejs npm \
+      || warn "Node.js not installed — the Console UI build will be skipped"
+  else
+    apt-get install -y nodejs npm || warn "Node.js not installed — the Console UI build will be skipped"
+  fi
+fi
+command -v npm >/dev/null 2>&1 && ok "Node.js present: $(node --version)" || true
+
 # =========================================================================
 hdr "Step 2/13 — Locate / normalize Ghidra → /opt/ghidra"
 # =========================================================================

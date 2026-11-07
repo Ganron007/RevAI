@@ -872,31 +872,37 @@ def test_gate_ignores_dynamic_words_inside_a_citation_locator():
 
 
 # ------------------------------------------------------------- section injection
-def test_the_dynamic_section_prompt_carries_the_status(monkeypatch):
-    """The section prompt must receive the authoritative status line, so the
-    model states it rather than inferring execution from tool names.
+def test_the_non_substantive_dynamic_section_is_deterministic(monkeypatch):
+    """A non-substantive dynamic section is RENDERED, not authored (RC-54).
 
-    This is the source-layer fix: without it the model had to decide whether
-    the oracle 'ran' and got it wrong.
+    The original contract injected the authoritative status into the section
+    PROMPT; RC-54 (2026-11-07) went further for the v3 master — with no
+    detonation the section is deterministic from the status (the same rule
+    as the v2 master, RC-27), so there is no prompt to inject into and no
+    model that could misstate execution. The status sentence is carried
+    verbatim in the rendered section.
     """
-    captured = {}
-
-    def fake_judge(prompt, **kw):
-        captured["prompt"] = prompt
-        return _report_tool_response("m")
-
-    monkeypatch.setattr(SP, "llm_report", fake_judge)
     monkeypatch.setattr(
         SP, "_dynamic_status_sentence",
         lambda sha: "Dynamic analysis in this run -- emulation NOT performed; "
                     "Frida: not performed; WinRE detonation: not performed.")
-    result = SP._run_one_section("5. Behavioral Analysis", "ab", {}, {})
-    assert "DYNAMIC-ANALYSIS STATUS" in captured["prompt"], (
-        "the authoritative status was not injected into the section prompt")
-    assert "emulation NOT performed" in captured["prompt"]
+
+    def _no_llm(prompt, **kw):
+        raise AssertionError("a non-substantive section must not call the LLM")
+
+    monkeypatch.setattr(SP, "llm_report_structured", _no_llm)
+    # The run's status travels in tools_results (the production shape);
+    # the section renders THAT sentence verbatim.
+    tools = {"_dynamic_status": {
+        "status": "not_performed",
+        "sentence": ("Dynamic analysis in this run -- emulation NOT "
+                     "performed; Frida: not performed; WinRE detonation: "
+                     "not performed.")}}
+    result = SP._run_one_section("5. Behavioral Analysis", "ab", tools, {})
+    assert result["llm_ok"] is True
+    assert result.get("deterministic") is True, result
     assert result["markdown"].startswith("## 5. Behavioral Analysis")
-    assert "- m " in result["markdown"]
-    assert "source: test" in result["markdown"]
+    assert "emulation NOT performed" in result["markdown"], result["markdown"]
 
 
 def test_the_dynamic_status_is_injected_into_every_master_section(monkeypatch):

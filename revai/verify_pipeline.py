@@ -405,11 +405,15 @@ def check_hygiene(root: Path | None = None) -> None:
 # --- 5. env contract -------------------------------------------------------
 
 #: Documented but intentionally deploy-time/ops-only (not read by Python).
+#: 2026-11-07 review: the stale suppressions were removed — REVAI_LLM_TIMEOUT,
+#: REVAI_PROGRESS_STREAM_SECONDS, REVAI_DISABLE_IOC_CONFIDENCE,
+#: REVAI_DISABLE_DYNAMIC_SECTION, REVAI_DISABLE_GAP_SECTION and
+#: REVAI_WINRE_LOGS are LIVE Python reads (v2_lib.py 4205/8886/9349/10689/7358,
+#: app.py 2888) and are documented in OPERATE/CONFIGURE; the allowlist was
+#: hiding exactly them from the env-contract check.
 _ENV_ALLOWLIST = {
-    "REVAI_FORCE_API_INDEX", "REVAI_HOME", "REVAI_LLM_TIMEOUT",
-    "REVAI_PROGRESS_STREAM_SECONDS",
-    "REVAI_DISABLE_IOC_CONFIDENCE", "REVAI_DISABLE_DYNAMIC_SECTION",
-    "REVAI_DISABLE_GAP_SECTION", "REVAI_WINRE_LOGS",
+    # Deploy-time only (consumed by scripts/deploy.sh, not Python).
+    "REVAI_FORCE_API_INDEX",
     # Written by the sync/deploy step (provenance), not a user knob.
     "REVAI_COMMIT",
     # Runtime layout / set automatically by the Console at launch, not user knobs.

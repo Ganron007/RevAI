@@ -2094,8 +2094,31 @@ def _row_index_drift(root: Path, claim_text: str,
     artifact_paths: list[Path] = []
     for row in evidence_rows or []:
         name = str((row or {}).get("artifact") or "")
-        if name and (root / name).is_file() and root / name not in artifact_paths:
-            artifact_paths.append(root / name)
+        if not name:
+            continue
+        # RC-58 (2026-11-07): grounded evidence rows carry the artifact
+        # BASENAME (`01-tools-raw.json`), so a root/basename lookup only
+        # ever found root-level artifacts (iocs.json) — every deep_dive/*
+        # and quick_scan/* drifted row kept the harsher contradicted status.
+        # Resolve the basename through the same source/query mapping the
+        # checker itself uses, then fall back to a recursive name match.
+        candidates: list[Path] = []
+        try:
+            candidates = _source_artifact_candidates(
+                str((row or {}).get("source") or ""),
+                (row or {}).get("query"), root)
+        except Exception:  # noqa: BLE001
+            candidates = []
+        matched = [p for p in candidates if p.is_file() and p.name == name]
+        if not matched:
+            matched = [p for p in candidates if p.is_file()
+                       and str(p).endswith(name)]
+        if not matched and name:
+            hits = sorted(root.rglob(name))[:1]
+            matched = [p for p in hits if p.is_file()]
+        for p in matched:
+            if p not in artifact_paths:
+                artifact_paths.append(p)
     if not artifact_paths:
         return None
     distinct: dict[str, str] = {}
@@ -2133,6 +2156,14 @@ def _row_index_drift(root: Path, claim_text: str,
     if len(minimal) != 1:
         return None
     return minimal[0][:800]
+
+
+#: RC-56 (2026-11-07): the result-cache fingerprint's classifier-generation
+#: key. Bump on EVERY classification-behavior change — RC-49/50/51 changed
+#: statuses without touching this key, so a byte-identical case re-audited
+#: offline reused stale pre-RC-51 verdicts from claim-entailment.json.
+#: History: 9 = option-b era; 10 = RC-49/50/51/52 classifiers.
+_FINGERPRINT_SCHEMA = 10
 
 
 def check_report_entailment(sha: str, logs_dir: Path | None = None,
@@ -2266,7 +2297,8 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
             except OSError:
                 fingerprint_data.append((rel, "unreadable"))
     fingerprint = hashlib.sha256(json.dumps(
-        {"schema": 9, "verifier": verifier_identity, "identity": analysis_identity,
+        {"schema": _FINGERPRINT_SCHEMA, "verifier": verifier_identity,
+         "identity": analysis_identity,
          "input_manifest": manifest_digest, "inputs": fingerprint_data},
         sort_keys=True, separators=(",", ":"),
     ).encode()).hexdigest()

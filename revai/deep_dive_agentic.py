@@ -1570,7 +1570,13 @@ def _custom_loop_body(sha: str, max_steps: int = MAX_STEPS) -> dict:
     # loop — a stated failure must not cost the whole deep dive.
     domain_phase_done = False
     if os.environ.get("REVAI_DEEP_DIVE_GRAPH", "").strip().lower() in (
-            "1", "true", "on"):
+            "1", "true", "yes", "on"):
+        # 2026-11-07 review (B6): the langgraph branch forces the domain
+        # mode on; the custom branch must too, or custom+flag ran a complete
+        # FLAT langgraph dive (no domain_graph in findings), logged the
+        # fallback and then ran the planner loop anyway — doubled LLM cost,
+        # no domain structure. setdefault: an operator's explicit value wins.
+        os.environ.setdefault("REVAI_DOMAIN_GRAPH", "1")
         try:
             from agentic_langgraph import run_langgraph_deep_dive
             _graph_steps = _full_graph_max_steps()
@@ -2133,7 +2139,7 @@ def agentic_deep_dive(sha: str, max_steps: int = MAX_STEPS) -> dict:
         # named-domain structure without a second engine. setdefault: an
         # operator's explicit REVAI_DOMAIN_GRAPH value still wins.
         if os.environ.get("REVAI_DEEP_DIVE_GRAPH", "").strip().lower() in (
-                "1", "true", "on"):
+                "1", "true", "yes", "on"):
             os.environ.setdefault("REVAI_DOMAIN_GRAPH", "1")
             print("[deep_dive_agentic] RC-53: REVAI_DOMAIN_GRAPH forced on "
                   "(REVAI_DEEP_DIVE_GRAPH=1) — the dive runs the domain-node "

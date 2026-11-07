@@ -303,6 +303,43 @@ def _persist_llm_call(sha: str, mode: str | None, stage: str, section: str,
     return metadata
 
 
+def _master_deterministic_section(section_name: str, sha: str,
+                                  tools_results: dict) -> str | None:
+    """RC-54 (2026-11-07): the v2 and v3 MASTER paths must agree on which
+    sections are deterministic.
+
+    The v2 master renders "9. Indicators of Compromise" deterministically
+    (RC-35) and "5. Behavioral Analysis" when no detonation ran (RC-27); the
+    v3 master LLM-authored both — the invented-indicator class RC-35 closed
+    on v2 was live again on v3, and the provider-stall bait RC-27 removed
+    was still present. Same renderers, same conditions, same content source
+    as the v2 master; heading_level=2 (the v3 master assembles `##`
+    sections; the v2 master inlines them at level 1).
+    """
+    if section_name == "9. Indicators of Compromise":
+        try:
+            from v2_lib import deterministic_ioc_section_md
+            return deterministic_ioc_section_md(
+                sha, title="9. Indicators of Compromise", heading_level=2)
+        except Exception:  # noqa: BLE001
+            return None
+    if section_name == "5. Behavioral Analysis":
+        try:
+            from v2_lib import (deterministic_dynamic_section_md,
+                                dynamic_analysis_status,
+                                dynamic_evidence_substantive)
+            status = tools_results.get("_dynamic_status")
+            if not isinstance(status, dict) or not status:
+                status = dynamic_analysis_status(sha)
+            if dynamic_evidence_substantive(status):
+                return None
+            return deterministic_dynamic_section_md(
+                status, title="5. Behavioral Analysis", heading_level=2)
+        except Exception:  # noqa: BLE001
+            return None
+    return None
+
+
 def _run_one_section(section_name: str, sha: str, tools_results: dict,
                     prior_summaries: dict,
                     pass1_results: list = None,
@@ -402,6 +439,18 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
         result["markdown"] = md
         result["llm_ok"] = True
         result["schema_used"] = None
+        return result
+    # RC-54: the deterministic master sections render here, exactly as the
+    # v2 master renders them — no LLM call, no invented indicators, no
+    # provider-stall bait. A failed deterministic build falls through to the
+    # LLM path rather than losing the section.
+    deterministic_md = _master_deterministic_section(
+        section_name, sha, tools_results)
+    if deterministic_md:
+        result["markdown"] = deterministic_md
+        result["llm_ok"] = True
+        result["schema_used"] = None
+        result["deterministic"] = True
         return result
     response = None
     call_record = None
@@ -1330,26 +1379,38 @@ def _fix_orphan_tables(md: str) -> str:
     another table (run e66a6fa7: orphan_tables:3 against a cap of 2 in the
     v3 technical). A one-sentence separator between them is a deterministic
     fix that preserves the content and satisfies the gate.
+
+    RC-55 (2026-11-07): the original state machine never fired — the blank
+    line between two tables reset its `in_table` flag before the next `|`
+    line arrived, so the insertion branch was unreachable and the transform
+    returned its input byte-identically (found by the 2026-11-07 full
+    review; the gate then failed with no remedy). Rewritten around the
+    gate's own definition: a table row whose previous non-blank line was
+    also a table row, with blank lines in between, is an adjacent table.
+    Contiguous rows (no blank between) are one table and stay untouched.
     """
     if count_table_orphans(md or "") == 0:
         return md
     lines = (md or "").splitlines(keepends=True)
     out: list[str] = []
-    in_table = False
-    for i, line in enumerate(lines):
+    prev_content_was_table = False
+    blanks_pending = 0
+    inserted = 0
+    for line in lines:
         stripped = line.strip()
-        if stripped.startswith("|"):
-            if in_table and out and out[-1].strip() == "":
-                # The previous non-blank was a table row and we hit a blank
-                # line — the NEXT | line would be an adjacent table.
-                if i + 1 < len(lines) and lines[i + 1].strip().startswith("|"):
-                    out.append("The tables above are presented separately "
-                               "for clarity; the row sets are disjoint.\n")
-                    out.append("\n")
-            if not in_table:
-                in_table = True
-        elif in_table:
-            in_table = False
+        if not stripped:
+            blanks_pending += 1
+            out.append(line)
+            continue
+        is_table = stripped.startswith("|")
+        if (is_table and prev_content_was_table and blanks_pending
+                and inserted < 2):
+            out.append("The tables above are presented separately for "
+                       "clarity; the row sets are disjoint.\n")
+            out.append("\n")
+            inserted += 1
+        prev_content_was_table = is_table
+        blanks_pending = 0
         out.append(line)
     return "".join(out)
 

@@ -195,7 +195,7 @@ def inspect_getsource() -> str:
 
 
 def oracle_enabled() -> bool:
-    return os.environ.get(_ORACLE_ENABLED, "0").strip().lower() in ("1", "true", "yes")
+    return os.environ.get(_ORACLE_ENABLED, "0").strip().lower() in ("1", "true", "yes", "on")
 
 
 if __name__ == "__main__":

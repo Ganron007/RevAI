@@ -164,6 +164,10 @@ def test_attach_is_a_noop_without_a_model(tmp_path):
 
 
 def test_attach_appends_and_opt_out_is_honoured(tmp_path, monkeypatch):
+    # 2026-11-07 review (B5): the attach honors the enable gate — the
+    # feature ON is the appends path here (the artifact-exists path is
+    # pinned separately in test_full_review_fixes).
+    monkeypatch.setenv("REVAI_ENABLE_BEHAVIOURAL_MODEL", "1")
     case = _case(tmp_path, ALL, evidence_for=_ev("surface"),
                  iocs={"urls": ["http://x/"]})
     md = "## Report\n\nbody\n"

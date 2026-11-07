@@ -271,7 +271,7 @@ def run_unpack_pass(sample_path: str, out_dir: str,
 
 
 def unpack_enabled() -> bool:
-    return os.environ.get("REVAI_ENABLE_UNPACK_PASS", "0").strip().lower() in ("1", "true", "yes")
+    return os.environ.get("REVAI_ENABLE_UNPACK_PASS", "0").strip().lower() in ("1", "true", "yes", "on")
 
 
 if __name__ == "__main__":

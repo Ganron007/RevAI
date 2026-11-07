@@ -356,7 +356,10 @@ def test_section_publisher_counts_llm_generations_and_local_sections_truthfully(
 
 
 def test_first_draft_is_preserved_for_the_support_gate(monkeypatch):
-    section = "5. Behavioral Analysis"
+    # RC-54: section 5 without a substantive detonation is DETERMINISTIC on
+    # the v3 master (no LLM call) — pin the first-draft policy on a section
+    # that reaches the writer.
+    section = "2. Classification"
     body = "The sample performs a behavior that requires source evidence. " * 8
     calls = []
 

@@ -18,6 +18,12 @@ frida-tools
 langgraph
 langchain-core
 langchain-openai
+# 2026-11-07 review: directly imported (agentic_langgraph.py,
+# stage_orchestrator.py); previously only a transitive langchain dep.
+pydantic
+# 2026-11-07 review: soft .NET-capability dependency (v2_lib.py try/except
+# import; without it the .NET/MSIL source silently degrades).
+dnfile
 
 # Deobfuscation / constraint solving
 z3-solver

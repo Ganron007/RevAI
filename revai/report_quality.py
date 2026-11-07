@@ -53,6 +53,12 @@ _FALLBACK_SOURCES = (
 _OK_SOURCES = (
     "llm_judge",
     "llm_raw_markdown",
+    # RC-57 (2026-11-07): the v3 sectionwise publisher's honest label for a
+    # report where SOME sections failed. The content IS model-authored; the
+    # failed sections are counted by the missing/stub checks. Rejecting the
+    # label here reddened the whole v3 report on a technicality the RC-43
+    # carry could not rescue (missing/stubs empty in exactly that shape).
+    "partial_llm_judge",
     "section_publisher",
 )
 

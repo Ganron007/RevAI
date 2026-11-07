@@ -40,7 +40,6 @@ from v2_lib import (  # noqa: E402
     deterministic_dynamic_section_md,
     deterministic_ioc_section_md,
     build_section_row_manifest,
-    build_section_row_manifest,
     dynamic_evidence_substantive,
     ensure_verdict_panel,
     assert_report_input_manifest,

@@ -80,7 +80,8 @@ def _env_float(name: str, legacy: str, default: float) -> float:
 def recovery_enabled() -> bool:
     """Gated by REVAI_ENABLE_AGENTIC_RECOVERY=1 (legacy ENABLE_AGENTIC_RECOVERY honored)."""
     return (os.environ.get("REVAI_ENABLE_AGENTIC_RECOVERY") or os.environ.get(
-        "ENABLE_AGENTIC_RECOVERY", "0")).strip().lower() in ("1", "true", "yes")
+        "ENABLE_AGENTIC_RECOVERY", "0")).strip().lower() in (
+        "1", "true", "yes", "on")
 
 
 DEFAULT_MAX_FUNCS = _env_int("REVAI_AGENTIC_RECOVERY_MAX_FUNCS", "AGENTIC_RECOVERY_MAX_FUNCS", 200)

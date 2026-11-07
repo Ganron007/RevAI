@@ -160,7 +160,7 @@ def run_single(sample: Path | None, sha: str | None, mode: str = "standard") -> 
     abort_on = {"intake", "quick_scan", "deep_dive"}
     t0 = time.time()
     for name, cmd, timeout in stages:
-        if name.startswith("publish") and os.environ.get("REVAI_HITL_VERDICT", "").strip() in ("1", "true", "yes"):
+        if name.startswith("publish") and os.environ.get("REVAI_HITL_VERDICT", "").strip().lower() in ("1", "true", "yes", "on"):
             qv, dv = _quick_verdict(sha), _deep_verdict(sha)
             if qv and dv and qv != dv:
                 entry = {
@@ -244,9 +244,28 @@ def finalize_trace(trace: dict, audit_path: Path | None = None) -> dict:
             audit = {}
     if audit_ok and audit:
         trace["all_green"] = bool(audit.get("all_green"))
+        # 2026-11-07 review (B15): the documented trace carries
+        # quality_green/truly_green (OPERATE.md trace section) but the
+        # scripted spine set only all_green — parity with the agentic trace.
+        quality = {}
+        try:
+            sha = trace.get("sha256") or ""
+            qpath = case_dir(sha) / "quality-gate.json"
+            if qpath.exists():
+                quality = json.loads(qpath.read_text())
+        except Exception:
+            quality = {}
+        # The scripted spine breaks on the first failed stage, so reaching
+        # the audit means no stage failed; the tool-fail term the agentic
+        # trace adds has no scripted equivalent beyond that.
+        quality_green = bool(quality.get("quality_green"))
+        trace["quality_green"] = quality_green
+        trace["truly_green"] = bool(audit.get("all_green")) and quality_green
         trace["stage_ok"] = audit.get("stage_ok")
         return trace
     trace["all_green"] = False
+    trace["quality_green"] = False
+    trace["truly_green"] = False
     trace["stage_ok"] = {
         s.get("stage"): bool(s.get("ok")) for s in trace.get("stages", [])
     }
@@ -370,7 +389,10 @@ def build_stages(sha: str, intake_cmd: list[str] | None) -> list[tuple[str, list
         ("publish_v3", [sys.executable, str(SCRIPTS / "section_publisher.py"), sha],
          _stage_timeout("REVAI_STAGE_TIMEOUT_PUBLISH", 14400)),
         ("audit", [sys.executable, str(SCRIPTS / "audit_pipeline.py"), sha, "--mode", "single"],
-         _stage_timeout("REVAI_STAGE_TIMEOUT_AUDIT", 7200)),
+         # 2026-11-07 review: 7200 contradicted the documented default
+         # (OPERATE.md: 10800, matching the agentic spine) — a scripted audit
+         # got a 1-hour-smaller claim-review budget than every other mode.
+         _stage_timeout("REVAI_STAGE_TIMEOUT_AUDIT", 10800)),
     ])
     # D0 depth mode, strictly LAST. It is NOT a pipeline stage: it runs after the
     # reports and the audit exist, because everything it reads as starting
