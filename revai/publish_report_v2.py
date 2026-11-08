@@ -74,6 +74,11 @@ from v2_lib import (  # noqa: E402
     r2_ai_decompile,
     revai_provenance,
     _sec_iocs_evidence,
+    _technical_heading_key,
+    _report_section_span,
+    _technical_section_span,
+    sections_containing_values,
+    retry_unverified_ioc_sections,
 )
 from behavioural_model import (  # noqa: E402
     attach_behavioural_model,
@@ -918,45 +923,6 @@ TECHNICAL_WRAP_RANGE = (0, 2)
 TECHNICAL_TAIL_RANGE = (11, 13)
 
 
-def _technical_heading_key(title: str) -> str:
-    value = normalize_heading_text(title).strip()
-    value = re.sub(r"[*_`~]", "", value)
-    value = re.sub(r"^\d+\s*\.\s*", "", value)
-    return re.sub(r"\s+", " ", value).casefold()
-
-
-def _report_section_span(markdown: str, title: str) -> tuple[int, int] | None:
-    """Locate one numbered report section by its Markdown heading boundary."""
-    heading_re = re.compile(r"(?m)^\s{0,3}(#{1,6})\s+(.+?)\s*#*\s*$")
-    target = _technical_heading_key(title)
-    required_heading_keys = {
-        _technical_heading_key(required_title)
-        for required_title in (*REPORT_MASTER_SECTIONS, *TECHNICAL_REPORT_SECTIONS)
-    }
-    headings = list(heading_re.finditer(markdown or ""))
-    for index, match in enumerate(headings):
-        if _technical_heading_key(match.group(2)) != target:
-            continue
-        level = len(match.group(1))
-        end = len(markdown)
-        for following in headings[index + 1:]:
-            following_key = _technical_heading_key(following.group(2))
-            # Model output does not keep heading levels consistent. A required
-            # report section always starts a new replaceable span, even when a
-            # previous section used `#` and the next uses `##` (or vice versa).
-            if (len(following.group(1)) <= level
-                    or following_key in required_heading_keys):
-                end = following.start()
-                break
-        return match.start(), end
-    return None
-
-
-def _technical_section_span(markdown: str, title: str) -> tuple[int, int] | None:
-    """Compatibility name for the shared v2/v3 report section locator."""
-    return _report_section_span(markdown, title)
-
-
 def _upsert_report_section(markdown: str, title: str, candidate: str,
                            required_sections: list[str]) -> tuple[str, bool]:
     """Insert or replace one canonical section without regenerating its peers."""
@@ -1035,87 +1001,6 @@ def retry_orphan_table_sections(
                    + current[span[1]:].lstrip("\r\n"))
         attempts.append({"section": section, "accepted": True,
                          "reason": "retry section has no adjacent tables"})
-    return current, attempts
-
-
-def sections_containing_values(markdown: str, sections: list[str],
-                                values: list[str]) -> list[str]:
-    """The sections whose text contains any of the (defang-insensitive)
-    values."""
-    out = []
-    for section in sections:
-        span = _report_section_span(markdown, section)
-        if span is None:
-            continue
-        # Both sides are normalized the same way: defang variants resolved
-        # AND backslashes removed (report text carries doubled backslashes,
-        # checker values carry single ones -- run d1ceae3f).
-        text = (markdown[span[0]:span[1]].replace("[.]", ".")
-                .replace("[:]", ":").replace("\\", ""))
-        for value in values:
-            plain = (value.replace("[.]", ".").replace("[:]", ":")
-                     .replace("\\", ""))
-            if plain and plain in text:
-                out.append(section)
-                break
-    return out
-
-
-def retry_unverified_ioc_sections(
-    markdown: str,
-    sections: list[str],
-    unverified_values: list[str],
-    retry_section,
-) -> tuple[str, list[dict[str, Any]]]:
-    """Regenerate only sections containing UNVERIFIED indicators (RC-36).
-
-    Run 3b70ad56: both reports failed the quality gate on exactly one
-    invented indicator each (a canonical Run-key path and a 4-char domain)
-    written from training data into model-authored prose. The deterministic
-    IoC sections cannot help there; the repair asks the writer to REMOVE the
-    invented indicator (or cite it if it genuinely appears in the cited
-    evidence). A replacement is kept only when it contains none of the
-    unverified values and still passes the stub gate -- the pass can never
-    make the report worse. The CHECKER is untouched (#35: never loosen it).
-    """
-    current = markdown or ""
-    attempts: list[dict[str, Any]] = []
-    for section in sections:
-        span = _report_section_span(current, section)
-        if span is None:
-            attempts.append({"section": section, "accepted": False,
-                             "reason": "original section heading not found"})
-            continue
-        original = current[span[0]:span[1]].strip()
-        try:
-            candidate_md = ensure_section_heading(
-                str(retry_section(section, original) or ""), section
-            )
-        except Exception as exc:  # the first report remains intact on retry failure
-            attempts.append({"section": section, "accepted": False,
-                             "reason": f"retry raised {type(exc).__name__}: {exc}"})
-            continue
-        candidate_span = _report_section_span(candidate_md, section)
-        if candidate_span is None:
-            attempts.append({"section": section, "accepted": False,
-                             "reason": "retry did not return the required section heading"})
-            continue
-        candidate = candidate_md[candidate_span[0]:candidate_span[1]].strip()
-        if stub_sections(candidate, [section]):
-            attempts.append({"section": section, "accepted": False,
-                             "reason": "retry section still fails stub quality gate"})
-            continue
-        lowered = (candidate.lower().replace("[.]", ".").replace("[:]", ":")
-                   .replace("\\", ""))
-        if any(v.replace("[.]", ".").replace("[:]", ":").replace("\\", "")
-               .lower() in lowered for v in unverified_values):
-            attempts.append({"section": section, "accepted": False,
-                             "reason": "retry section still contains the unverified indicator"})
-            continue
-        current = (current[:span[0]].rstrip() + "\n\n" + candidate + "\n\n"
-                   + current[span[1]:].lstrip("\r\n"))
-        attempts.append({"section": section, "accepted": True,
-                         "reason": "retry section no longer contains the unverified indicator"})
     return current, attempts
 
 

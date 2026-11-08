@@ -10069,6 +10069,35 @@ SECTION_ROW_SOURCES: dict[str, tuple[tuple[str, str, str], ...]] = {
     ),
 }
 
+#: RC-62: artifact row sources from the unpacked payload (UPX second pass).
+#: When a sample is packed, the second pass runs tools on the unpacked binary
+#: and stores results under `upx_second_pass.tools.<engine>`. Including these
+#: in the section row manifest lets the writer cite unpacked rows verbatim.
+UPX_SECTION_ROW_SOURCES: dict[str, tuple[tuple[str, str, str], ...]] = {
+    "3. File Layout & Structural Analysis": (
+        ("deep_dive/01-tools-raw.json", "upx_second_pass.tools.malcat.views.anomalies", "unpacked anomalies"),
+        ("deep_dive/01-tools-raw.json", "upx_second_pass.tools.yara.matches", "unpacked yara"),
+    ),
+    "4. Static Code Analysis": (
+        ("deep_dive/01-tools-raw.json", "upx_second_pass.tools.malcat.views.strings", "unpacked strings"),
+        ("deep_dive/01-tools-raw.json", "upx_second_pass.tools.floss.strings", "unpacked floss"),
+        ("deep_dive/01-tools-raw.json", "upx_second_pass.tools.malcat.views.anomalies", "unpacked anomalies"),
+    ),
+    "6. Network Indicators & C2": (
+        ("deep_dive/01-tools-raw.json", "upx_second_pass.tools.malcat.views.imports", "unpacked imports"),
+    ),
+    "7. Capabilities Assessment": (
+        ("deep_dive/01-tools-raw.json", "upx_second_pass.tools.capa.top_rules", "unpacked capa"),
+        ("deep_dive/01-tools-raw.json", "upx_second_pass.tools.malcat.views.anomalies", "unpacked anomalies"),
+    ),
+    "9. Detection Engineering": (
+        ("deep_dive/01-tools-raw.json", "upx_second_pass.tools.yara.matches", "unpacked yara"),
+    ),
+    "10. MITRE ATT&CK Mapping": (
+        ("deep_dive/01-tools-raw.json", "upx_second_pass.tools.capa.top_rules", "unpacked capa"),
+    ),
+}
+
 _SECTION_MANIFEST_ROW_CAP = 40
 
 
@@ -10114,11 +10143,19 @@ def build_section_frontier(sha: str, section: str,
     The frontier makes every manifest row explicitly accounted for: cited,
     not-material, or deferred.
     """
-    sources = SECTION_ROW_SOURCES.get(section)
-    if not sources:
+    base_sources = SECTION_ROW_SOURCES.get(section)
+    if not base_sources:
         return ""
     mode = os.environ.get("REVAI_RUN_MODE", "").strip() or None
     root = case_dir(sha, mode)
+    sources = list(base_sources)
+    if (root / "deep_dive/01-tools-raw.json").is_file():
+        try:
+            _raw_peek = json.loads((root / "deep_dive/01-tools-raw.json").read_text(errors="replace")) or {}
+            if "upx_second_pass" in _raw_peek:
+                sources.extend(UPX_SECTION_ROW_SOURCES.get(section, ()))
+        except Exception:
+            pass
     cited = set()
     # Extract the cited locators from the section markdown
     import re as _re
@@ -10163,11 +10200,19 @@ def build_section_row_manifest(sha: str, section: str,
     cite only manifest rows, verbatim. Deterministic sections (5 and 8)
     have no manifest. Empty when the artifacts offer nothing.
     """
-    sources = SECTION_ROW_SOURCES.get(section)
-    if not sources:
+    base_sources = SECTION_ROW_SOURCES.get(section)
+    if not base_sources:
         return ""
     mode = os.environ.get("REVAI_RUN_MODE", "").strip() or None
     root = case_dir(sha, mode)
+    sources = list(base_sources)
+    if (root / "deep_dive/01-tools-raw.json").is_file():
+        try:
+            _raw_peek = json.loads((root / "deep_dive/01-tools-raw.json").read_text(errors="replace")) or {}
+            if "upx_second_pass" in _raw_peek:
+                sources.extend(UPX_SECTION_ROW_SOURCES.get(section, ()))
+        except Exception:
+            pass
     blocks: list[str] = []
     total = 0
     for rel, array_path, label in sources:
@@ -10230,6 +10275,121 @@ def build_section_row_manifest(sha: str, section: str,
             "Anonymous inventory and scanner suggestions are navigation "
             "aids, not automatic findings.\n\n")
     return head + "\n".join(blocks)
+
+
+def _technical_heading_key(title: str) -> str:
+    from report_quality import normalize_heading_text
+    value = normalize_heading_text(title).strip()
+    value = re.sub(r"[*_`~]", "", value)
+    value = re.sub(r"^\d+\s*\.\s*", "", value)
+    return re.sub(r"\s+", " ", value).casefold()
+
+
+def _report_section_span(markdown: str, title: str) -> tuple[int, int] | None:
+    """Locate one numbered report section by its Markdown heading boundary."""
+    heading_re = re.compile(r"(?m)^\s{0,3}(#{1,6})\s+(.+?)\s*#*\s*$")
+    target = _technical_heading_key(title)
+    required_heading_keys = {
+        _technical_heading_key(required_title)
+        for required_title in (*REPORT_MASTER_SECTIONS, *TECHNICAL_REPORT_SECTIONS)
+    }
+    headings = list(heading_re.finditer(markdown or ""))
+    for index, match in enumerate(headings):
+        if _technical_heading_key(match.group(2)) != target:
+            continue
+        level = len(match.group(1))
+        end = len(markdown)
+        for following in headings[index + 1:]:
+            following_key = _technical_heading_key(following.group(2))
+            if (len(following.group(1)) <= level
+                    or following_key in required_heading_keys):
+                end = following.start()
+                break
+        return match.start(), end
+    return None
+
+
+def _technical_section_span(markdown: str, title: str) -> tuple[int, int] | None:
+    """Compatibility name for the shared v2/v3 report section locator."""
+    return _report_section_span(markdown, title)
+
+
+def sections_containing_values(markdown: str, sections: list[str],
+                                values: list[str]) -> list[str]:
+    """The sections whose text contains any of the (defang-insensitive) values."""
+    out = []
+    for section in sections:
+        span = _report_section_span(markdown, section)
+        if span is None:
+            continue
+        text = (markdown[span[0]:span[1]].replace("[.]", ".")
+                .replace("[:]", ":").replace("\\", ""))
+        for value in values:
+            plain = (value.replace("[.]", ".").replace("[:]", ":")
+                     .replace("\\", ""))
+            if plain and plain in text:
+                out.append(section)
+                break
+    return out
+
+
+def retry_unverified_ioc_sections(
+    markdown: str,
+    sections: list[str],
+    unverified_values: list[str],
+    retry_section,
+) -> tuple[str, list[dict[str, Any]]]:
+    """Regenerate only sections containing UNVERIFIED indicators (RC-36).
+
+    Run 3b70ad56: both reports failed the quality gate on exactly one
+    invented indicator each (a canonical Run-key path and a 4-char domain)
+    written from training data into model-authored prose. The deterministic
+    IoC sections cannot help there; the repair asks the writer to REMOVE the
+    invented indicator (or cite it if it genuinely appears in the cited
+    evidence). A replacement is kept only when it contains none of the
+    unverified values and still passes the stub gate -- the pass can never
+    make the report worse. The CHECKER is untouched (#35: never loosen it).
+    """
+    from report_quality import ensure_section_heading, stub_sections
+    current = markdown or ""
+    attempts: list[dict[str, Any]] = []
+    for section in sections:
+        span = _report_section_span(current, section)
+        if span is None:
+            attempts.append({"section": section, "accepted": False,
+                             "reason": "original section heading not found"})
+            continue
+        original = current[span[0]:span[1]].strip()
+        try:
+            candidate_md = ensure_section_heading(
+                str(retry_section(section, original) or ""), section
+            )
+        except Exception as exc:  # the first report remains intact on retry failure
+            attempts.append({"section": section, "accepted": False,
+                             "reason": f"retry raised {type(exc).__name__}: {exc}"})
+            continue
+        candidate_span = _report_section_span(candidate_md, section)
+        if candidate_span is None:
+            attempts.append({"section": section, "accepted": False,
+                             "reason": "retry did not return the required section heading"})
+            continue
+        candidate = candidate_md[candidate_span[0]:candidate_span[1]].strip()
+        if stub_sections(candidate, [section]):
+            attempts.append({"section": section, "accepted": False,
+                             "reason": "retry section still fails stub quality gate"})
+            continue
+        lowered = (candidate.lower().replace("[.]", ".").replace("[:]", ":")
+                   .replace("\\", ""))
+        if any(v.replace("[.]", ".").replace("[:]", ":").replace("\\", "")
+               .lower() in lowered for v in unverified_values):
+            attempts.append({"section": section, "accepted": False,
+                             "reason": "retry section still contains the unverified indicator"})
+            continue
+        current = (current[:span[0]].rstrip() + "\n\n" + candidate + "\n\n"
+                   + current[span[1]:].lstrip("\r\n"))
+        attempts.append({"section": section, "accepted": True,
+                         "reason": "retry section no longer contains the unverified indicator"})
+    return current, attempts
 
 
 def deterministic_ioc_section_md(sha: str, *,

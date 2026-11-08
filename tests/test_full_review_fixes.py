@@ -284,3 +284,158 @@ def test_indicator_scrubber_covers_domains_and_urls(tmp_path, monkeypatch):
         "a corpus-backed value must be kept")
     assert "http://never-seen-anywhere.example.com/payload" not in out
     assert "windows.com" in out, "prose paragraphs must not be scrubbed"
+    assert "(source: iocs, query_or_table: iocs.json, row_or_rule: $.domains[0])" in out, (
+        "citations must never be scrubbed")
+
+
+# ---------------------------------------------------------------- RC-61
+# S2-agentic surfaced that the v3 MASTER had NO unverified-IoC repair;
+# 4 invented indicators in master prose caused section_publish rc=1.
+# Ported RC-36's keep-only-if-clean regeneration to the v3 master:
+# accepted when cleaned, retained honestly when still dirty or stub.
+def test_rc61_v3_master_unverified_ioc_repair_accepted(tmp_path, monkeypatch):
+    sha = "a" * 64
+    case = tmp_path / "logs" / sha / "agentic"
+    case.mkdir(parents=True)
+    (case / "iocs.json").write_text(json.dumps({"domains": [], "urls": []}))
+    monkeypatch.setattr(SP, "case_dir", lambda s: case)
+    monkeypatch.setenv("_SECTION_SHA", sha)
+
+    # Offending draft containing an invented indicator
+    invented_ioc = "HKCU\\Software\\Classes\\CLSID\\{310DE29C-0AD3-4A43-A2DB-221F1160CACB}"
+    dirty_sec = (f"## 7. Capabilities Assessment\n\nThe malware establishes persistence via "
+                 f"{invented_ioc} in COM registration.\n")
+    clean_sec = (
+        "## 7. Capabilities Assessment\n\n"
+        "The malware establishes persistence through Windows service creation and scheduled task "
+        "execution across the host environment. The persistence mechanisms were observed in static "
+        "decompilation of the service installer subroutines. COM CLSID registration was not observed "
+        "in any tool artifact, and the indicators previously cited were removed because they do not "
+        "appear anywhere in the evidence corpus.\n"
+    )
+
+    full_md = (f"# RE Report — {sha[:12]}\n\n"
+               + "\n\n".join(f"## {s}\n\nSubstantive analysis for {s} with valid citations and findings across the whole sample."
+                             for s in SP.REPORT_MASTER_SECTIONS if s != "7. Capabilities Assessment")
+               + "\n\n" + dirty_sec)
+
+    # Test retry_unverified_ioc_sections directly with clean replacement
+    repaired_md, attempts = SP.retry_unverified_ioc_sections(
+        full_md, ["7. Capabilities Assessment"], [invented_ioc],
+        lambda sec, orig: clean_sec
+    )
+    assert len(attempts) == 1
+    assert attempts[0]["accepted"] is True
+    assert attempts[0]["section"] == "7. Capabilities Assessment"
+    assert invented_ioc not in repaired_md
+    assert "Windows service creation and scheduled task" in repaired_md
+
+
+def test_rc61_v3_master_unverified_ioc_repair_retained(tmp_path, monkeypatch):
+    sha = "b" * 64
+    case = tmp_path / "logs" / sha / "agentic"
+    case.mkdir(parents=True)
+    (case / "iocs.json").write_text(json.dumps({"domains": [], "urls": []}))
+    monkeypatch.setattr(SP, "case_dir", lambda s: case)
+
+    invented_ioc = "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ShellExecuteHooks"
+    dirty_sec = (f"## 7. Capabilities Assessment\n\nPersistence is configured through "
+                 f"{invented_ioc} registry hook.\n")
+    # Retry still contains the invented indicator and is long enough not to be a stub
+    still_dirty_sec = (
+        f"## 7. Capabilities Assessment\n\n"
+        f"Rewritten section still mentioning {invented_ioc} because the writer refused to drop it. "
+        "The sample configures persistence across multiple registry hooks and service installations "
+        "as observed across various decompilation routines and disassembly listings recovered from "
+        "the static analysis stage.\n"
+    )
+
+    full_md = (f"# RE Report — {sha[:12]}\n\n"
+               + "\n\n".join(f"## {s}\n\nSubstantive content for {s} with sufficient detailed findings."
+                             for s in SP.REPORT_MASTER_SECTIONS if s != "7. Capabilities Assessment")
+               + "\n\n" + dirty_sec)
+
+    repaired_md, attempts = SP.retry_unverified_ioc_sections(
+        full_md, ["7. Capabilities Assessment"], [invented_ioc],
+        lambda sec, orig: still_dirty_sec
+    )
+    assert len(attempts) == 1
+    assert attempts[0]["accepted"] is False
+    assert "still contains the unverified indicator" in attempts[0]["reason"]
+    # Original section is preserved honestly
+    assert dirty_sec.strip() in repaired_md
+
+
+# ---------------------------------------------------------------- RC-62
+# S2's 239 unresolved-rows were caused by _strip_unverified_indicators
+# mutilating citations (e.g. tools.malcat, 00-tools-raw.json) into
+# [redacted: not in evidence]. Citations, JSONPaths, and file extensions
+# must NEVER be scrubbed. Also, UPX second-pass rows must be present in
+# section row manifests for packed samples.
+def test_rc62_indicator_scrubber_preserves_citations_and_paths(tmp_path, monkeypatch):
+    sha = "c" * 64
+    case = tmp_path / "logs" / sha / "agentic"
+    case.mkdir(parents=True)
+    (case / "iocs.json").write_text(json.dumps({"domains": [], "urls": []}))
+    monkeypatch.setattr(SP, "case_dir", lambda s: case)
+
+    md = (
+        "## 4. Static Analysis\n\n"
+        "- Capa matched create service on unpacked image. (source: capa, "
+        "query_or_table: deep_dive/01-tools-raw.json, row_or_rule: $.upx_second_pass.tools.capa.top_rules[6])\n"
+        "- YARA fired on sample. (source: yara, query_or_table: quick_scan/00-tools-raw.json, "
+        "row_or_rule: $.upx_second_pass.tools.yara.matches[3])\n"
+        "- The file sample_unpacked.exe imports kernel32.dll. (source: malcat, "
+        "query_or_table: deep_dive/01-tools-raw.json, row_or_rule: $.upx_second_pass.tools.malcat.file_summary.sha256)\n"
+        "- C2 at bad-unknown-range.cn (source: iocs, query_or_table: iocs.json, row_or_rule: $.domains[0])\n"
+    )
+    out = SP._strip_unverified_indicators(md, sha)
+    # The actual unverified domain must be scrubbed:
+    assert "bad-unknown-range.cn" not in out
+    assert "[redacted: not in evidence]" in out
+    # But citations, JSONPaths, and file extensions must be 100% intact:
+    assert "query_or_table: deep_dive/01-tools-raw.json" in out
+    assert "row_or_rule: $.upx_second_pass.tools.capa.top_rules[6]" in out
+    assert "query_or_table: quick_scan/00-tools-raw.json" in out
+    assert "row_or_rule: $.upx_second_pass.tools.yara.matches[3]" in out
+    assert "sample_unpacked.exe" in out
+    assert "kernel32.dll" in out
+    assert "row_or_rule: $.upx_second_pass.tools.malcat.file_summary.sha256" in out
+    assert "query_or_table: iocs.json" in out
+
+
+def test_rc62_section_row_manifest_includes_upx_second_pass(tmp_path, monkeypatch):
+    import v2_lib
+    sha = "d" * 64
+    case = tmp_path / "logs" / sha / "agentic"
+    (case / "deep_dive").mkdir(parents=True)
+    tools_raw = {
+        "upx_second_pass": {
+            "tools": {
+                "malcat": {
+                    "views": {
+                        "anomalies": [{"name": "SuspiciousSection", "ea": 4096}],
+                        "strings": [{"value": "C:\\unm0ve.txt", "ea": 50936}],
+                    }
+                },
+                "capa": {
+                    "top_rules": [{"rule": "create service", "category": "persistence"}]
+                },
+                "yara": {
+                    "matches": [{"rule": "CreateService", "offset": 9124}]
+                }
+            }
+        }
+    }
+    (case / "deep_dive" / "01-tools-raw.json").write_text(json.dumps(tools_raw))
+    monkeypatch.setattr(v2_lib, "case_dir", lambda s, mode=None: case)
+
+    manifest_sec3 = v2_lib.build_section_row_manifest(sha, "3. File Layout & Structural Analysis")
+    assert "upx_second_pass.tools.malcat.views.anomalies[0]" in manifest_sec3
+
+    manifest_sec4 = v2_lib.build_section_row_manifest(sha, "4. Static Code Analysis")
+    assert "upx_second_pass.tools.malcat.views.strings[0]" in manifest_sec4
+
+    manifest_sec7 = v2_lib.build_section_row_manifest(sha, "7. Capabilities Assessment")
+    assert "upx_second_pass.tools.capa.top_rules[0]" in manifest_sec7
+

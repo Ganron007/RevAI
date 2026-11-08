@@ -89,6 +89,9 @@ from v2_lib import (
     _categorize_string,
     dynamic_analysis_status,
     build_section_row_manifest,
+    _report_section_span,
+    sections_containing_values,
+    retry_unverified_ioc_sections,
 )
 from report_quality import (  # noqa: E402
     count_table_orphans,
@@ -120,7 +123,8 @@ def _section_prompt(section_name: str, description: str, evidence: str,
                     prior_sections_summary: str,
                     cross_context: str = "",
                     provenance_block_text: str = "",
-                    source_evidence: str = "") -> str:
+                    source_evidence: str = "",
+                    retry_instruction: str = "") -> str:
     """Render a focused section prompt with the complete source corpus attached.
 
     Both passes receive the same run-bound source artifacts. Pass 1 uses its
@@ -149,6 +153,10 @@ def _section_prompt(section_name: str, description: str, evidence: str,
     if cross_context:
         parts.append("## Cross-section context (draft context from other sections in pass 1)")
         parts.append(cross_context)
+        parts.append("")
+    if retry_instruction:
+        parts.append("## Targeted section repair")
+        parts.append(retry_instruction)
         parts.append("")
     parts.append(
         "## Your task\n"
@@ -343,12 +351,14 @@ def _master_deterministic_section(section_name: str, sha: str,
 def _run_one_section(section_name: str, sha: str, tools_results: dict,
                     prior_summaries: dict,
                     pass1_results: list = None,
-                    pass_num: int = 1) -> dict:
+                    pass_num: int = 1,
+                    retry_instruction: str = "") -> dict:
     """Run one section: gather run-bound evidence, call LLM and record the exchange.
 
     Pass 1 (pass_num=1): no cross-section context (parallel-friendly).
     Pass 2 (pass_num=2): includes the pass-1 results from all other sections
         as a 'Cross-section context' block so the LLM can cite them.
+    Pass 3 (pass_num=3 with retry_instruction): RC-61 targeted section repair.
 
     Returns: {"name": str, "markdown": str, "evidence_chars": int,
               "llm_ok": bool, "error": str|None, "pass": int, "prompt_chars": int}
@@ -363,6 +373,8 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
         "error": None,
         "pass": pass_num,
     }
+    if retry_instruction:
+        result["retry_instruction"] = retry_instruction
     # 1. Gather evidence (filtered for this section)
     try:
         evidence = gather_fn(tools_results) if gather_fn else ""
@@ -425,7 +437,8 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
                             provenance_block_text=str(
                                 tools_results.get("_report_provenance_block") or ""),
                             source_evidence=str(
-                                tools_results.get("_report_source_evidence") or ""))
+                                tools_results.get("_report_source_evidence") or ""),
+                            retry_instruction=retry_instruction)
     result["prompt_chars"] = len(prompt)
     result["cross_refs_included"] = bool(cross_context)
     # 6. Call LLM (or use local builder)
@@ -455,12 +468,13 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
     response = None
     call_record = None
     mode = (tools_results.get("_execution_context") or {}).get("mode")
+    stage_tag = "master-repair" if retry_instruction else f"master-p{pass_num}"
     try:
         resp, v = llm_report_structured(
             prompt, section_only=True, heading_level=2, retries=1)
         response = resp
         call_record = _persist_llm_call(
-            sha, mode, f"master-p{pass_num}", section_name, prompt, response=resp)
+            sha, mode, stage_tag, section_name, prompt, response=resp)
         result["markdown"] = ensure_section_heading(
             v["markdown"], section_name
         )
@@ -481,7 +495,7 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
     except Exception as e:
         if call_record is None:
             call_record = _persist_llm_call(
-                sha, mode, f"master-p{pass_num}", section_name, prompt,
+                sha, mode, stage_tag, section_name, prompt,
                 response=response, error=f"{type(e).__name__}: {e}")
         result["llm_call"] = call_record
         result["error"] = f"llm: {e}"
@@ -1450,11 +1464,23 @@ def _strip_unverified_indicators(md: str, sha: str) -> str:
     # indicator-carrying line that appears NOWHERE in the corpus (both
     # defang variants) is redacted, not published. Values present in the
     # corpus are kept — the checker is never loosened.
+    # RC-62 (2026-11-07, S2-agentic): citation parentheses `(source: ...)`
+    # and file extensions / JSONPaths must NEVER be scrubbed. When `_domain_shape`
+    # matched `raw.json`, `tools.malcat`, `pe_imports.json` inside citations,
+    # it replaced them with `[redacted: not in evidence]` which created 238
+    # unresolved citations. Citations are masked out before scrubbing and
+    # restored after; non-domain file extensions and JSONPaths are spared.
     import re as _re
     _domain_shape = _re.compile(
         r"\b(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}\b")
     _url_shape = _re.compile(
         r"\bhttps?://[^\s\"'<>()\[\]{}\\]+", _re.IGNORECASE)
+    _NON_DOMAIN_EXTS = frozenset({
+        ".json", ".exe", ".dll", ".sys", ".cpl", ".ocx", ".drv", ".log",
+        ".txt", ".py", ".cpp", ".c", ".h", ".md", ".dat", ".bin", ".vir",
+        ".tmp", ".bat", ".cmd", ".vbs", ".ps1", ".asm", ".rst", ".yaml",
+        ".yml", ".toml", ".ini", ".cfg", ".conf", ".sig", ".yar", ".yara"
+    })
 
     def _in_corpus(token: str) -> bool:
         t = token.lower()
@@ -1468,30 +1494,48 @@ def _strip_unverified_indicators(md: str, sha: str) -> str:
         # Only scrub indicator-shaped lines (bullets citing iocs.json rows
         # or prose with indicator-shaped strings); keep everything else.
         if stripped.startswith("-") or stripped.startswith("|"):
+            # RC-62: Protect citation parentheticals `(source: ...)` from scrubbing
+            cits: list[str] = []
+            def _save_cit(m):
+                idx = len(cits)
+                cits.append(m.group(0))
+                return f"\x00REVAI_CIT_{idx}\x00"
+
+            line_to_scrub = _re.sub(r'\(source:\s*[^)]+\)', _save_cit, line)
+
             for pattern in ("HKEY_", "HKLM\\", "HKCU\\"):
-                if pattern.lower() in stripped.lower():
+                if pattern.lower() in line_to_scrub.lower():
                     for m in _re.finditer(
                             r'(?:HKEY_[\w\\]+|HKLM\\[\w\\]+|HKCU\\[\w\\]+)',
-                            stripped):
+                            line_to_scrub):
                         path = m.group(0)
                         if (path.lower().replace("\\\\", "\\")
                                 not in corpus
                                 and path.lower() not in corpus):
-                            line = line.replace(
+                            line_to_scrub = line_to_scrub.replace(
                                 path, "[redacted: not in evidence]")
                             break
-            for m in _domain_shape.finditer(stripped):
+            for m in _domain_shape.finditer(line_to_scrub):
                 token = m.group(0)
                 if "." not in token:
                     continue
+                tok_lower = token.lower()
+                if any(tok_lower.endswith(ext) for ext in _NON_DOMAIN_EXTS):
+                    continue
+                if token.startswith("$") or "/" in token or "\\" in token:
+                    continue
                 if not _in_corpus(token):
-                    line = line.replace(
+                    line_to_scrub = line_to_scrub.replace(
                         token, "[redacted: not in evidence]")
-            for m in _url_shape.finditer(stripped):
+            for m in _url_shape.finditer(line_to_scrub):
                 token = m.group(0)
                 if not _in_corpus(token):
-                    line = line.replace(
+                    line_to_scrub = line_to_scrub.replace(
                         token, "[redacted: not in evidence]")
+
+            for idx, cit in enumerate(cits):
+                line_to_scrub = line_to_scrub.replace(f"\x00REVAI_CIT_{idx}\x00", cit)
+            line = line_to_scrub
         out.append(line)
     return "".join(out)
 
@@ -1705,6 +1749,81 @@ def run_section_based_publish(sha: str, tools_results: dict,
         verdict_lock=master_verdict_lock,
     )
 
+    # RC-61 (2026-11-07, S2-agentic): port RC-36's keep-only-if-clean
+    # unverified-IoC repair to the v3 MASTER. The v3 master previously lacked
+    # unverified-IoC repair; S2's master v3 failed on unverified_iocs:4 in
+    # prose (which the RC-60 scrubber spares by design).
+    # Mirror the v2 master path: regenerate offending master sections once
+    # with the targeted instruction; accept replacement only if it contains
+    # none of the unverified values and still passes stub quality gate.
+    m_unverified = [
+        str(item.get("value"))
+        for item in (master_quality.get("claimed_ioc_verification") or {}).get("unverified_items") or []
+        if item.get("value")
+    ]
+    master_ioc_results: list[dict[str, Any]] = []
+    if m_unverified:
+        m_secs = sections_containing_values(
+            report_markdown, REPORT_MASTER_SECTIONS, m_unverified
+        )
+        # Skip deterministic sections (e.g. section 9, 15, 16)
+        m_secs = [
+            s for s in m_secs
+            if REPORT_SECTION_SPECS.get(s, (None, None, False))[2]
+            and not _master_deterministic_section(s, sha, tools_results)
+        ]
+
+        def _retry_master_ioc(section: str, original: str) -> str:
+            values = ", ".join(f"`{v}`" for v in m_unverified)
+            instruction = (
+                "The previous draft contained indicator-shaped strings "
+                f"that appear NOWHERE in this run's evidence corpus: "
+                f"{values}. They were written from general knowledge, "
+                "not from the cited tools — that is fabrication. Rewrite "
+                "ONLY this section: remove those strings and any sentence "
+                "that depends on them, or cite a concrete evidence row "
+                "that actually contains the value if one truly exists. "
+                "Keep every other finding and citation unchanged, and "
+                "preserve the exact required heading. Do not add new "
+                "indicator-shaped strings.\n\nPrevious section:\n"
+                + original[:4000]
+            )
+            r = _run_one_section(
+                section, sha, tools_results, prior_summaries={},
+                pass1_results=pass1_results, pass_num=3,
+                retry_instruction=instruction)
+            return r.get("markdown") or ""
+
+        report_markdown, master_ioc_results = retry_unverified_ioc_sections(
+            report_markdown, m_secs, m_unverified, _retry_master_ioc
+        )
+        for attempt in master_ioc_results:
+            print(f"[section_publisher] master unverified-IoC repair "
+                  f"{attempt['section'][:44]}: "
+                  f"{'accepted' if attempt['accepted'] else 'retained'} "
+                  f"({attempt.get('reason')})", flush=True)
+
+        if any(attempt.get("accepted") for attempt in master_ioc_results):
+            report_markdown, _master_models = redact_model_names(report_markdown)
+            report_markdown, master_credential_categories = (
+                redact_credential_like_values(report_markdown))
+            report_markdown = sanitize_report_markdown(report_markdown)
+            (out_dir / "02-REPORT-MASTER-v3.md").write_text(report_markdown)
+            master_verdict_lock = cross_stage_verdict_lock(
+                infer_publish_verdict_from_markdown(report_markdown),
+                quick_verdict=_control_label or quick_verdict,
+                deep_verdict=None if _control_label else deep_verdict,
+            )
+            master_quality = evaluate_report_markdown(
+                report_markdown,
+                required_sections=REPORT_MASTER_SECTIONS,
+                source="llm_judge",
+                min_total_chars=1500,
+                label="master_v3",
+                evidence_root=case_dir(sha),
+                verdict_lock=master_verdict_lock,
+            )
+
     # Backward compatibility: also write at logs root
     root_dir = case_dir(sha)
     (root_dir / "REPORT-MASTER-v3.md").write_text(report_markdown)
@@ -1723,6 +1842,7 @@ def run_section_based_publish(sha: str, tools_results: dict,
          "pass2_count": len(pass2_results),
          "invocation_counts": invocation_counts,
          "master_v3_quality": master_quality,
+         "master_unverified_ioc_repair_attempts": master_ioc_results,
          "credential_like_values_redacted": master_credential_categories,
          "master_v3_verdict_lock": master_verdict_lock,
          "dynamic_analysis_status": status_artifact},
@@ -1744,6 +1864,7 @@ def run_section_based_publish(sha: str, tools_results: dict,
         "report_markdown": report_markdown,
         "report_size": len(report_markdown),
         "master_quality": master_quality,
+        "master_unverified_ioc_repair_attempts": master_ioc_results,
         "master_verdict_lock": master_verdict_lock,
         "technical": technical,
     }
