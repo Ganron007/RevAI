@@ -524,3 +524,39 @@ def test_rc66_agentic_langgraph_chatopenai_request_timeout(monkeypatch):
     except Exception:
         pass
     assert passed_kwargs.get("request_timeout") == 450.0
+
+
+def test_rc67_defanged_email_in_evidence_matches_plain_claim():
+    import report_quality as rq
+    evidence = "Found indicators: armada[.]collective[@]gmail[.]com in binary strings."
+    # Plain email in report
+    md_plain = "Attribution note: contact was armada.collective@gmail.com for ransom."
+    res = rq.verify_claimed_iocs(md_plain, evidence)
+    assert res["unverified"] == 0, f"Expected 0 unverified, got: {res["unverified_items"]}"
+    assert res["unverified"] == 0
+    assert any(x.get("value") == "armada.collective@gmail.com" or "armada" in str(x) for x in res.get("verified_items", [])) or res["verified"] >= 1
+    # Invented email
+    md_invented = "Attribution note: contact was attacker@evilcorp.com for ransom."
+    res_inv = rq.verify_claimed_iocs(md_invented, evidence)
+    assert res_inv["unverified"] >= 1
+    assert any(x.get("value") == "attacker@evilcorp.com" for x in res_inv["unverified_items"])
+
+
+def test_rc67_conditional_guidance_host_where_executed_not_flagged():
+    import report_quality as rq
+    # Defender guidance / conditional host remediation must NOT be flagged
+    guidance = (
+        "| Rebuild or reimage any host where the sample executed with confirmed "
+        "user-level access; a targeted file removal is insufficient |"
+    )
+    dyn_status = {"status": {"any_dynamic_performed": False}}
+    assert rq._affirmative_dynamic_claim(guidance, dyn_status) is None
+
+    # Host where binary ran
+    guidance2 = "Isolate any systems where the malware ran immediately."
+    assert rq._affirmative_dynamic_claim(guidance2, dyn_status) is None
+
+    # Genuine execution assertion MUST be flagged
+    assertion = "During analysis, the sample was executed and connected to C2."
+    got = rq._affirmative_dynamic_claim(assertion, dyn_status)
+    assert got is not None

@@ -985,8 +985,13 @@ def _affirmative_dynamic_claim(md: str, dyn_status: dict | None = None) -> str |
             # that this run executed the sample: "if the binary is executed,
             # the lack of ASLR weakens the host's posture" (2026-10-26, run
             # d9836cde). Skip when the sentence introduces the match with
-            # if/unless/whether.
-            if re.search(r"\b(?:if|unless|whether)\b", window):
+            # if/unless/whether/whenever/in case, or is defender guidance on
+            # hosts/endpoints where execution occurred in the wild.
+            if re.search(
+                r"\b(?:if|unless|whether|whenever|in the event that|in case)\b"
+                r"|\b(?:hosts?|endpoints?|systems?|machines?|environments?)\s+where\b",
+                window,
+            ):
                 continue
             if _DYN_EMULATION_SUBJECT_RE.search(m.group(0)) \
                     and regex is _DYN_EXECUTED_RE:
@@ -2428,8 +2433,11 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
     # the value) and the extractors store defanged domains/IPs
     # (08[.]8[.]8[.]8). A value that appears in EITHER variant is verified:
     # both come from the same attested artifacts.
+    # Defanged indicators in evidence can contain [.] or [dot] or (.) as
+    # well as [:] and [@] or [at] for emails (from extract_iocs).
     evidence_json_plain = (evidence.replace("\\\\", "\\")
-                           .replace("[.]", ".").replace("[:]", ":"))
+                           .replace("[.]", ".").replace("[dot]", ".").replace("(.)", ".")
+                           .replace("[:]", ":").replace("[@]", "@").replace("[at]", "@"))
     sample_sha = _sample_sha256()
     if isinstance(metadata_hashes, dict):
         report_artifact_hashes = {
