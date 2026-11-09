@@ -846,6 +846,16 @@ def test_manifest_artifact_digest_rows_are_provenance_not_sample_iocs():
     assert result["unverified"] == 0, result
     assert result["excluded"] >= 1, result
 
+    # RC-63: Notes citing input artifact digests (e.g. artifact (sha256 <hash>))
+    note = (
+        "- **[Note]** All coverage limits stated in this section are derived from "
+        f"the run-scoped DYNAMIC-ANALYSIS STATUS artifact (sha256 {digest}) and the run manifest."
+    )
+    result_note = R.verify_claimed_iocs(
+        note, "", metadata_hashes={digest: "input_artifact_digest"})
+    assert result_note["unverified"] == 0, result_note
+    assert result_note["excluded"] >= 1, result_note
+
 
 def test_verdict_json_is_resolvable_machine_evidence(tmp_path):
     """A citation to the locked pipeline verdict must resolve.

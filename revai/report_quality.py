@@ -2344,7 +2344,8 @@ def _hash_mention_is_report_metadata(
         elif metadata_kind == "input_artifact_digest":
             explicitly_labelled = bool(re.search(
                 r"\b(?:attested|report[- ]input|input|evidence|source)\s+artifact\b"
-                r"|\bartifact\s+(?:sha-?256|digest|hash)\b"
+                r"|\bartifact\s*[\(:\[]?\s*(?:sha-?256|digest|hash)\b"
+                r"|\bartifact\b.{0,80}\b(?:sha-?256|digest|hash)\b"
                 r"|\b(?:sha-?256|digest|hash)\b.{0,80}\b(?:artifact|file)\b"
                 # The report-input manifest table renders rows as
                 # `| artifact | digest | size | attested | (source: manifest,
