@@ -84,6 +84,7 @@ from v2_lib import (
     report_execution_comment,
     cross_stage_verdict_lock,
     infer_publish_verdict_from_markdown,
+    ensure_verdict_panel,
     require_execution_context,
     validate_report_input_manifest,
     _categorize_string,
@@ -1734,10 +1735,23 @@ def run_section_based_publish(sha: str, tools_results: dict,
     quick_verdict = (tools_results.get("verdict") or {}).get("verdict")
     deep_verdict = (tools_results.get("deep") or {}).get("verdict")
     _control_label = tools_results.get("_verdict_control_label")
+    _cal_file = case_dir(sha) / "verdict-calibration.json"
+    _cal_data = {}
+    if _cal_file.is_file():
+        try:
+            _cal_data = json.loads(_cal_file.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    _cal_verdict = _cal_data.get("to")
+    expected_master_verdict = _control_label or _cal_verdict or quick_verdict
+    if expected_master_verdict:
+        report_markdown = ensure_verdict_panel(report_markdown, expected_master_verdict)
+    (out_dir / "02-REPORT-MASTER-v3.md").write_text(report_markdown)
     master_verdict_lock = cross_stage_verdict_lock(
         infer_publish_verdict_from_markdown(report_markdown),
-        quick_verdict=_control_label or quick_verdict,
-        deep_verdict=None if _control_label else deep_verdict,
+        quick_verdict=expected_master_verdict,
+        deep_verdict=None if (_control_label or _cal_verdict) else deep_verdict,
+        published_verdict=infer_publish_verdict_from_markdown(report_markdown),
     )
     master_quality = evaluate_report_markdown(
         report_markdown,
@@ -1808,11 +1822,14 @@ def run_section_based_publish(sha: str, tools_results: dict,
             report_markdown, master_credential_categories = (
                 redact_credential_like_values(report_markdown))
             report_markdown = sanitize_report_markdown(report_markdown)
+            if expected_master_verdict:
+                report_markdown = ensure_verdict_panel(report_markdown, expected_master_verdict)
             (out_dir / "02-REPORT-MASTER-v3.md").write_text(report_markdown)
             master_verdict_lock = cross_stage_verdict_lock(
                 infer_publish_verdict_from_markdown(report_markdown),
-                quick_verdict=_control_label or quick_verdict,
-                deep_verdict=None if _control_label else deep_verdict,
+                quick_verdict=expected_master_verdict,
+                deep_verdict=None if (_control_label or _cal_verdict) else deep_verdict,
+                published_verdict=infer_publish_verdict_from_markdown(report_markdown),
             )
             master_quality = evaluate_report_markdown(
                 report_markdown,
@@ -2282,14 +2299,30 @@ def _finalize_technical(sha: str, technical_report: dict,
         technical_report["credential_like_values_redacted"] = credential_categories
     technical_report["markdown"] = tech_md
     _control_label = tools_results.get("_verdict_control_label")
+    _cal_file = case_dir(sha) / "verdict-calibration.json"
+    _cal_data = {}
+    if _cal_file.is_file():
+        try:
+            _cal_data = json.loads(_cal_file.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    _cal_verdict = _cal_data.get("to")
+    _expected_verdict = (
+        _control_label
+        or _cal_verdict
+        or (tools_results.get("verdict") or {}).get("verdict")
+    )
+    if _expected_verdict:
+        tech_md = ensure_verdict_panel(tech_md, _expected_verdict)
     technical_verdict_lock = cross_stage_verdict_lock(
         infer_publish_verdict_from_markdown(tech_md),
-        quick_verdict=(_control_label
-                       or (tools_results.get("verdict") or {}).get("verdict")),
+        quick_verdict=_expected_verdict,
         deep_verdict=(tools_results.get("deep") or {}).get("verdict")
-        if not _control_label else None,
+        if not (_control_label or _cal_verdict) else None,
+        published_verdict=infer_publish_verdict_from_markdown(tech_md),
     )
     technical_report["verdict_lock"] = technical_verdict_lock
+    technical_report["markdown"] = tech_md
     q = evaluate_report_markdown(
         tech_md,
         required_sections=TECHNICAL_REPORT_SECTIONS,

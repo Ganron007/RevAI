@@ -1175,12 +1175,23 @@ def _verdict_match_is_metalinguistic(body: str, match_start: int) -> bool:
         depth = 1 - depth
     if depth:
         return True
-    # Reporting verbs only — reads/states/says, per the RC-17 derivation.
+    # RC-64: If the match is inside unclosed parentheses within the sentence
+    # (e.g. "- **[Note]** The v1_summary (verdict: malicious, score: 290)")
+    # it is a parenthetical field mention, not the report's verdict declaration.
+    if prefix.count("(") > prefix.count(")"):
+        return True
+    # RC-64: If the subject is an upstream tool, engine, stage, or artifact
+    # (e.g. "The iocs.json tool verdict for this sample is 'malicious'"),
+    # it is citing that specific tool's output, not stating the report's verdict.
+    if _re2.search(r"\b(?:tool|engine|source|artifact|sub-?pipeline|stage|classifier)\s*$", prefix.rstrip()):
+        return True
+    # Reporting verbs only — reads/states/says, per the RC-17 derivation,
+    # plus returned/assigned/recorded/yielded (RC-64).
     # Deliberately not "shows"/"notes": "as the evidence shows, the verdict
     # is malicious" is the report's own statement and must stay accepted.
     return bool(_re2.search(
-        r"(?is)\b(?:reads?|states?|says?|said)\b"
-        r"(?:\s+that)?(?:\s+the)?\s*[:\-]?\s*[\"'`\u201c\u2018]{0,2}\s*$",
+        r"(?is)\b(?:reads?|states?|says?|said|returned|assigned|recorded|yielded)\b"
+        r"(?:\s+that)?(?:\s+the)?(?:\s+a)?\s*[:\-]?\s*[\"'`\u201c\u2018]{0,2}\s*$",
         prefix.rstrip(),
     ))
 

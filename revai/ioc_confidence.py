@@ -49,6 +49,10 @@ BENIGN_DOMAIN_SUFFIXES = (
     "freedesktop.org", "sqlite.org", "zlib.net",
     "x.org", "ffmpeg.org", "tldp.org", "cairographics.org", "libsdl.org",
     "libpng.org", "samba.org",
+    # Threat intelligence / malware repository / vendor platforms referenced
+    # in analyst recommendations or telemetry (RC-64, run 2a02b50282ab).
+    "abuse.ch", "virustotal.com", "hybrid-analysis.com", "mandiant.com",
+    "urlhaus.abuse.ch", "malwarebazaar.abuse.ch",
 )
 
 _IPV4_RE = re.compile(r"^(?:\d{1,3}\.){3}\d{1,3}$")

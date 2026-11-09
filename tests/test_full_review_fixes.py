@@ -439,3 +439,41 @@ def test_rc62_section_row_manifest_includes_upx_second_pass(tmp_path, monkeypatc
     manifest_sec7 = v2_lib.build_section_row_manifest(sha, "7. Capabilities Assessment")
     assert "upx_second_pass.tools.capa.top_rules[0]" in manifest_sec7
 
+
+# ---------------------------------------------------------------- RC-64
+def test_rc64_threat_intel_domains_are_benign():
+    from ioc_confidence import is_benign_domain
+    assert is_benign_domain("abuse.ch") is True
+    assert is_benign_domain("Abuse.ch") is True
+    assert is_benign_domain("virustotal.com") is True
+    assert is_benign_domain("hybrid-analysis.com") is True
+    assert is_benign_domain("mandiant.com") is True
+    assert is_benign_domain("evil-c2.com") is False
+
+
+def test_rc64_verdict_metalinguistic_filtering():
+    import v2_lib
+    body = (
+        "## 2. Classification\n"
+        "- The iocs.json tool verdict for this sample is 'malicious'.\n"
+        "- **[Note]** The v1_summary (verdict: malicious, score: 290)\n"
+        "- **[Assessment]** The pipeline-selected verdict is 'suspicious' rather than 'malicious'.\n"
+    )
+    inferred = v2_lib.infer_publish_verdict_from_markdown(body)
+    assert inferred == "suspicious", inferred
+
+
+def test_rc64_v3_reports_ensure_verdict_panel(tmp_path, monkeypatch):
+    import v2_lib
+    sha = "e" * 64
+    case = tmp_path / "logs" / sha / "agentic"
+    case.mkdir(parents=True)
+    (case / "verdict-calibration.json").write_text(json.dumps({
+        "from": "malicious", "to": "suspicious", "reason": "obfuscation only"
+    }))
+    raw_md = "# RE Report\n\nSome findings."
+    panelled = v2_lib.ensure_verdict_panel(raw_md, "suspicious")
+    assert "| Verdict | suspicious |" in panelled
+    assert v2_lib.infer_publish_verdict_from_markdown(panelled) == "suspicious"
+
+
