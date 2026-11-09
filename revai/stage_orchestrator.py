@@ -1147,10 +1147,12 @@ def run_langgraph_orchestrator(sample: Path | None, sha: str | None) -> dict:
     planner = get_planner_model()
     judgment = get_verdict_model()
 
+    timeout_s = max(30.0, float(os.environ.get("REVAI_LLM_TIMEOUT", "300")))
     llm = ChatOpenAI(
         model=planner,
         api_key=api_key,
         base_url=api_url,
+        request_timeout=timeout_s,
         # REVAI_LLM_TEMPERATURE, honoured here too (see agentic_langgraph).
         temperature=get_llm_temperature(),
         **get_llm_chat_options(2048, api_url=api_url),

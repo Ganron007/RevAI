@@ -477,3 +477,50 @@ def test_rc64_v3_reports_ensure_verdict_panel(tmp_path, monkeypatch):
     assert v2_lib.infer_publish_verdict_from_markdown(panelled) == "suspicious"
 
 
+
+
+# ---------------------------------------------------------------- RC-66
+def test_rc66_pipeline_single_deep_dive_timeout(monkeypatch):
+    import pipeline_single as ps
+    stages = ps.build_stages("a" * 64, None)
+    dd_stage = next(s for s in stages if s[0] == "deep_dive")
+    assert dd_stage[2] == 14400
+
+    monkeypatch.setenv("REVAI_STAGE_TIMEOUT_DEEP_DIVE", "3600")
+    stages2 = ps.build_stages("a" * 64, None)
+    dd_stage2 = next(s for s in stages2 if s[0] == "deep_dive")
+    assert dd_stage2[2] == 3600
+
+
+def test_rc66_agentic_langgraph_chatopenai_request_timeout(monkeypatch):
+    import agentic_langgraph as alg
+    from unittest.mock import MagicMock
+    monkeypatch.setenv("REVAI_LLM_TIMEOUT", "450")
+    monkeypatch.setattr(alg, "load_session", lambda sha: {"session_id": "s1", "file_type": {"format": "pe"}})
+    monkeypatch.setattr(alg, "_build_lc_tools", lambda *a, **k: [])
+    monkeypatch.setattr(alg, "case_dir", lambda sha: MagicMock())
+    passed_kwargs = {}
+    class DummyChatOpenAI:
+        def __init__(self, **kwargs):
+            passed_kwargs.update(kwargs)
+    monkeypatch.setattr(alg, "ChatOpenAI", DummyChatOpenAI)
+    monkeypatch.setenv("REVAI_LLM_API_URL", "http://127.0.0.1:8000")
+    monkeypatch.setenv("REVAI_LLM_API_KEY", "dummy")
+    try:
+        alg.run_langgraph_deep_dive("b" * 64, max_steps=1, helpers={
+            "ToolRegistry": lambda: None,
+            "CHECKLIST_PE": [],
+            "SQL_DEEP_TOOLS": [],
+            "_run_standard_checklist": lambda *a, **k: ([], {}, {}, {"ok": True}),
+            "_history_has_sql_deep": lambda h: True,
+            "_tool_call_ok": lambda r: True,
+            "_coerce_final_answer": lambda x: {},
+            "_finalize_agentic_result": lambda *a, **k: {},
+            "load_intake_validation": lambda sha: {},
+            "GHIDRA_SCHEMA": "",
+            "IDA_SCHEMA": "",
+            "MAX_TOOL_RESULT_CHARS": 1000,
+        })
+    except Exception:
+        pass
+    assert passed_kwargs.get("request_timeout") == 450.0

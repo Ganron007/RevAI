@@ -347,7 +347,8 @@ def build_stages(sha: str, intake_cmd: list[str] | None) -> list[tuple[str, list
             [sys.executable, str(SCRIPTS / "winre_runner.py"), sha],
             7200,
         ))
-    stages.append(("deep_dive", [sys.executable, str(SCRIPTS / "deep_dive_agentic.py"), sha], 14400))
+    stages.append(("deep_dive", [sys.executable, str(SCRIPTS / "deep_dive_agentic.py"), sha],
+                   _stage_timeout("REVAI_STAGE_TIMEOUT_DEEP_DIVE", 14400)))
     # Optional v4 function-recovery stage (opt-in, between deep dive and yara).
     # Gated by REVAI_ENABLE_AGENTIC_RECOVERY=1 (legacy ENABLE_AGENTIC_RECOVERY
     # honored). Never required for green -- recovery output feeds the reports.

@@ -656,11 +656,17 @@ def run_domain_deep_dive(sha: str, max_steps: int, helpers: dict,
             f" \"answer\": \"...\", \"evidence\": [\"...\"], \"reason\": \"...\"}}\n"
         )
         agent = create_react_agent(llm, tools=lc_tools, prompt=_prompt)
-        msgs = agent.invoke(
-            {"messages": [("user", f"Investigate {key} for "
-                                     f"{session.get('sample_path', '')}")]},
-            config={"recursion_limit": limit},
-        )
+        try:
+            msgs = agent.invoke(
+                {"messages": [("user", f"Investigate {key} for "
+                                         f"{session.get('sample_path', '')}")]},
+                config={"recursion_limit": limit},
+            )
+        except Exception as exc:
+            print(f"[agentic_langgraph] node {key} invoke failed: {exc}", flush=True)
+            text = f"investigation error: {exc}"
+            finish = "error"
+            msgs = {}
         history_msgs = msgs.get("messages") or []
         text = ""
         finish = None
@@ -924,10 +930,12 @@ def run_langgraph_deep_dive(sha: str, max_steps: int = 10, helpers: dict | None 
     except Exception:
         progress_path = None
 
+    timeout_s = max(30.0, float(os.environ.get("REVAI_LLM_TIMEOUT", "300")))
     llm = ChatOpenAI(
         model=planner_model,
         api_key=api_key,
         base_url=api_url,
+        request_timeout=timeout_s,
         # REVAI_LLM_TEMPERATURE, honoured here too: this site hardcoded 0.0,
         # so the setting only ever applied to the urllib request path.
         temperature=get_llm_temperature(),
