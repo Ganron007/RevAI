@@ -857,6 +857,18 @@ def test_manifest_artifact_digest_rows_are_provenance_not_sample_iocs():
     assert result_note["excluded"] >= 1, result_note
 
 
+    # RC-65: Well-known empty string/payload digests (e.g. md5(""))
+    empty_note = (
+        "- The malcat string table records 'd41d8cd98f00b2' at ea 78591 "
+        "(the first 16 hex characters of the MD5 hash of an empty string: "
+        "d41d8cd98f00b204e9800998ecf8427e)."
+    )
+    result_empty = R.verify_claimed_iocs(empty_note, "")
+    assert result_empty["unverified"] == 0, result_empty
+    assert result_empty["excluded"] >= 1, result_empty
+    assert any(x.get("value") == "d41d8cd98f00b204e9800998ecf8427e" for x in result_empty["excluded_items"])
+
+
 def test_verdict_json_is_resolvable_machine_evidence(tmp_path):
     """A citation to the locked pipeline verdict must resolve.
 

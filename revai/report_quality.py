@@ -1909,6 +1909,16 @@ def _claims_text(markdown: str) -> str:
 #: in prose (examples), never claims about the sample.
 _DOC_IP_PREFIXES = ("192.0.2.", "198.51.100.", "203.0.113.", "127.", "0.0.0.0")
 
+#: Well-known cryptographic digests of empty payloads (0-byte content).
+#: Reverse engineers and analysts reference these in notes when explaining
+#: zero-length structures or string prefixes (RC-65, run 2a02b50282ab).
+_EMPTY_PAYLOAD_HASHES = frozenset({
+    "d41d8cd98f00b204e9800998ecf8427e",  # MD5("")
+    "da39a3ee5e6b4b0d3255bfef95601890afd80709",  # SHA1("")
+    "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",  # SHA256("")
+})
+
+
 
 def _is_doc_placeholder_ip(value: str) -> bool:
     v = (value or "").strip().strip(".")
@@ -2510,6 +2520,12 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
                 excluded.append({
                     "type": kind, "value": raw,
                     "reason": "the analysed sample's own sha256, not an indicator",
+                })
+                continue
+            if plain in _EMPTY_PAYLOAD_HASHES:
+                excluded.append({
+                    "type": kind, "value": raw,
+                    "reason": "well-known digest of empty payload/string, not a sample indicator",
                 })
                 continue
             cited = any(c.startswith(plain) or plain.startswith(c)
