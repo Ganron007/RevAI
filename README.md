@@ -123,6 +123,9 @@ React Console / CLI
    |- 4.  deep_dive_agentic.py   AGENTIC LangGraph ReAct deep dive
    |        (Ghidra/IDA SQL, capa, Malcat, FLOSS, YARA, r2, revai-tools,
    |         api_lookup, load_skill)
+   |        '- 4.75 domain-graph phase [REVAI_DEEP_DIVE_GRAPH=1]
+   |             one bounded tool-calling node per capability domain
+   |             replaces the flat planner loop (falls back on failure)
    |- 4.5 function_recovery      [REVAI_ENABLE_AGENTIC_RECOVERY=1]
    |        agentic function-name recovery, names cited in reports
    |- 4.6 artifact_gen           [REVAI_ENABLE_ARTIFACT_GEN=1]
