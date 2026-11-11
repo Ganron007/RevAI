@@ -18,6 +18,26 @@ sys.path.insert(0, str(ROOT / "revai"))
 import winre_runner as WR  # noqa: E402
 
 
+
+
+def _full_manifest(case):
+    """A manifest covering every REPORT_INPUT_ARTIFACTS entry: the dynamic
+    pack attested, everything else not-produced."""
+    import hashlib
+    import v2_lib
+    manifest = {"schema": "revai-report-input-manifest/v1", "artifacts": []}
+    for rel in v2_lib.REPORT_INPUT_ARTIFACTS:
+        p = case / rel
+        if p.is_file():
+            raw = p.read_bytes()
+            manifest["artifacts"].append({
+                "path": rel, "sha256": hashlib.sha256(raw).hexdigest(),
+                "size_bytes": len(raw), "status": "attested",
+            })
+        else:
+            manifest["artifacts"].append({"path": rel, "status": "not-produced"})
+    return manifest
+
 def _cfg(**over):
     cfg = {
         "enabled": True, "flare_host": "192.0.2.42", "flare_user": "FLARE-VM",
@@ -207,3 +227,55 @@ def test_attest_clean_invokes_the_gate_attest(monkeypatch):
     assert calls[0][1:5] == ["-m", "winre.snapshot_gate", "attest",
                              "--action"]
     assert calls[0][5] == "verified_clean"
+
+
+# ---------------------------------------------------------------- RC-71
+# Found live on S1 mode-a (integrated detonation): the WinRE dynamic pack's
+# raw Frida invocation rows filled 884 KB of the 900 KB report-evidence
+# corpus -> every technical publish prompt exceeded the provider context ->
+# 30 non-retryable HTTP 400s -> the technical report lost 5 sections. The
+# writer render elides the raw rows (the claim review reads the complete
+# attested file); the summary and attribution counts stay visible.
+def test_dynamic_pack_render_elides_raw_invocations(tmp_path):
+    import v2_lib
+    sha = "7" * 64
+    case = tmp_path / "logs" / sha / "agentic"
+    case.mkdir(parents=True)
+    big_rows = [{"invocation_id": f"{i}:1:1", "api": "NtWriteFile",
+                 "args": ["h", "buf", f"payload-{i}" * 20]} for i in range(3000)]
+    pack = {"frida_summary": {"calls": [{"api": "NtWriteFile", "count": 3000}]},
+            "frida_trace": {"attribution_status": "sample_process_tree",
+                            "attributed_call_count": 296,
+                            "invocations": big_rows}}
+    (case / "deep_dive").mkdir(parents=True)
+    (case / "deep_dive" / "02-dynamic-pack.json").write_text(json.dumps(pack))
+    manifest = _full_manifest(case)
+    rendered, meta = v2_lib.format_report_source_evidence(case, manifest)
+    assert "RC-71 render elision: 3000 raw invocation rows" in rendered, (
+        "the raw rows must be elided from the writer render")
+    assert "payload-" not in rendered, (
+        "no raw row payload may reach the writer render")
+    assert "attribution_status" in rendered, (
+        "the summary + attribution counts stay visible to the writer")
+    # the attested FILE is untouched
+    import json as _json
+    on_disk = _json.loads(
+        (case / "deep_dive" / "02-dynamic-pack.json").read_text())
+    assert len(on_disk["frida_trace"]["invocations"]) == 3000, (
+        "the attested artifact must keep every row for claim review")
+
+
+def test_a_small_dynamic_pack_renders_whole(tmp_path):
+    import v2_lib
+    sha = "8" * 64
+    case = tmp_path / "logs" / sha / "agentic"
+    case.mkdir(parents=True)
+    pack = {"frida_summary": {"calls": []},
+            "frida_trace": {"attribution_status": "none",
+                            "invocations": []}}
+    (case / "deep_dive").mkdir(parents=True)
+    (case / "deep_dive" / "02-dynamic-pack.json").write_text(json.dumps(pack))
+    manifest = _full_manifest(case)
+    rendered, _meta = v2_lib.format_report_source_evidence(case, manifest)
+    assert "RC-71 render elision" not in rendered, (
+        "an empty invocation list must not be flagged as elided")

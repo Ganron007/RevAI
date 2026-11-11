@@ -690,9 +690,43 @@ def format_report_source_evidence(case_root: Path, manifest: dict) -> tuple[str,
             default=2,
         )
         fence = "`" * max(3, fence_run + 1)
+        # RC-71 (2026-11-11, S1 mode-a): the WinRE dynamic pack's raw Frida
+        # invocation rows (`frida_trace.invocations` — every API call with
+        # full details) are claim-review corpus, not writer input. On the
+        # first integrated run the pack alone was 884 KB of the 900 KB
+        # corpus budget, pushing every technical publish prompt past the
+        # provider's context limit (30 non-retryable HTTP 400s -> the
+        # technical report lost 5 sections). The writer sees the SUMMARY
+        # (frida_summary, attribution counts, integrity) and an explicit
+        # elision marker for the raw rows; the complete attested file stays
+        # bound in the input manifest, which is what every citation resolves
+        # against at audit time.
+        render_text = raw_text
+        render_note = ""
+        if rel.endswith("02-dynamic-pack.json"):
+            try:
+                pack_obj = json.loads(render_text)
+                trace = pack_obj.get("frida_trace")
+                if (isinstance(trace, dict)
+                        and isinstance(trace.get("invocations"), list)
+                        and len(trace["invocations"]) > 0):
+                    n = len(trace["invocations"])
+                    trace["invocations"] = (
+                        f"[RC-71 render elision: {n} raw invocation rows "
+                        f"elided from the writer render — complete run-attested "
+                        f"rows remain in the attested artifact this citation "
+                        f"resolves against]")
+                    render_text = json.dumps(pack_obj, indent=2,
+                                             default=str)
+                    render_note = (f"frida_trace.invocations ({n} rows) "
+                                   f"elided from the writer render")
+            except (json.JSONDecodeError, TypeError, AttributeError):
+                render_text = raw_text
+                render_note = ""
         rendered.append((rel, (
             f"### `{rel}` — sha256 `{digest}`, {len(raw_bytes)} bytes\n"
-            f"{fence}json\n{raw_text.rstrip()}\n{fence}\n"
+            + (f"_{render_note}_\n" if render_note else "")
+            + f"{fence}json\n{render_text.rstrip()}\n{fence}\n"
         )))
     whole_total = sum(len(block) for block in header) \
         + sum(len(block) for _rel, block in rendered)
