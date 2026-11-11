@@ -133,9 +133,15 @@ export const OrchLiveSchema = z
             marker: optBool,
             ledger_clean: optBool,
             last_action: optStr,
+            blocked: optBool,
+            reason: optStr,
             error: optStr,
+            vm_state: z
+              .object({ last_action: optStr, detail: optStr })
+              .partial()
+              .nullish(),
           })
-          .partial()
+          .passthrough()
           .nullish(),
         run: z
           .object({

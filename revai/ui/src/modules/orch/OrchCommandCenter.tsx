@@ -263,8 +263,9 @@ export default function OrchCommandCenter() {
   }
 
   const gate = live?.winre?.gate as
-    | { mode?: string; marker?: boolean; ledger_clean?: boolean; last_action?: string; error?: string }
+    | { mode?: string; marker?: boolean; ledger_clean?: boolean; last_action?: string; blocked?: boolean; reason?: string; error?: string; vm_state?: { last_action?: string; detail?: string } | null }
     | undefined
+  const gateLastAction = gate?.last_action ?? gate?.vm_state?.last_action
   const gateDirty = !!gate && gate.marker === true && gate.ledger_clean !== true
 
   useEffect(() => {
@@ -370,7 +371,7 @@ export default function OrchCommandCenter() {
         <span style={{ marginLeft: 'auto', alignSelf: 'center' }}>
           {gate && (gateDirty || gate.ledger_clean === false) && (
             <span style={{ marginRight: 'var(--sp-2)', fontSize: 11, color: 'var(--danger)' }}>
-              gate dirty ({gate.last_action ?? '—'}) — restore the FlareVM, then attest
+              gate dirty ({gateLastAction ?? '—'}) — restore the FlareVM, then attest
             </span>
           )}
           <Button
