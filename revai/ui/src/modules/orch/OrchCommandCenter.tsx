@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { orchTrace, runWinre } from '../../api/client'
+import { attestWinre, orchTrace, runWinre } from '../../api/client'
 import { STAGE_LABELS, STAGE_ORDER } from '../../api/schema'
 import { Badge, Button, EmptyState, Icon, Kpi, Panel, SourceBadge } from '../../ds'
 import { useCase } from '../../pages/caseContext'
@@ -241,6 +241,32 @@ export default function OrchCommandCenter() {
     }
   }
 
+  // RC-69 (2026-11-11): after the operator restored the FlareVM in the
+  // hypervisor, one click records the control-plane attestation so the gate
+  // re-arms. The restore itself is deliberately NOT a product feature.
+  const doAttestWinre = async () => {
+    setWinreBusy(true)
+    setWinreMsg(null)
+    try {
+      const r = await attestWinre()
+      setWinreMsg(
+        r.ok
+          ? 'attested verified_clean — the gate is armed'
+          : `attest failed: ${r.error ?? `rc=${r.rc ?? '—'}`}`,
+      )
+      void refreshLive()
+    } catch (e) {
+      setWinreMsg(`attest failed: ${e instanceof Error ? e.message : String(e)}`)
+    } finally {
+      setWinreBusy(false)
+    }
+  }
+
+  const gate = live?.winre?.gate as
+    | { mode?: string; marker?: boolean; ledger_clean?: boolean; last_action?: string; error?: string }
+    | undefined
+  const gateDirty = !!gate && gate.marker === true && gate.ledger_clean !== true
+
   useEffect(() => {
     if (!sha || live?.running || !live?.artifacts?.orchestrator_trace) return
     let cancelled = false
@@ -299,24 +325,28 @@ export default function OrchCommandCenter() {
           value={
             !live?.winre
               ? '—'
-              : live.winre.run?.state === 'running'
-                ? 'running…'
-                : !live.winre.corroboration_enabled
-                  ? 'off'
-                  : live.winre.pack_present
-                    ? `pack · ${live.winre.dns ?? 0} DNS`
-                    : live.winre.root_present
-                      ? 'no pack'
-                      : 'not configured'
+              : live.winre.run?.state === 'restore_required' || live.winre.restore_required
+                ? 'restore required'
+                : live.winre.run?.state === 'running'
+                  ? 'running…'
+                  : !live.winre.corroboration_enabled
+                    ? 'off'
+                    : live.winre.pack_present
+                      ? `pack · ${live.winre.dns ?? 0} DNS`
+                      : live.winre.root_present
+                        ? 'no pack'
+                        : 'not configured'
           }
           tone={
-            live?.winre?.run?.state === 'running'
-              ? 'info'
-              : live?.winre?.run?.state === 'failed'
-                ? 'danger'
-                : live?.winre?.pack_present
-                  ? 'ok'
-                  : undefined
+            live?.winre?.run?.state === 'restore_required' || live?.winre?.restore_required
+              ? 'danger'
+              : live?.winre?.run?.state === 'running'
+                ? 'info'
+                : live?.winre?.run?.state === 'failed'
+                  ? 'danger'
+                  : live?.winre?.pack_present
+                    ? 'ok'
+                    : undefined
           }
           tip={
             live?.winre
@@ -327,6 +357,7 @@ export default function OrchCommandCenter() {
                 `decoded_paths=${live.winre.frida_decoded_paths ?? 0} ` +
                 `artifact=${live.winre.unpack_artifact ?? '—'} section=${live.winre.section_renders} ` +
                 `run=${live.winre.run?.state ?? '—'}${live.winre.run?.error ? ` (${live.winre.run.error})` : ''} ` +
+                `${live.winre.run?.restore_hint ? `hint: ${live.winre.run.restore_hint} ` : ''}` +
                 `${live.winre.run?.clock?.skew_s != null ? `clock_skew=${live.winre.run.clock.skew_s}s${live.winre.run.clock.warn ? '!' : ''} ` : ''}` +
                 `available=${live.winre.available?.ok ? 'yes' : (live.winre.available?.reason ?? '—')}`
               : 'WinRE dynamic corroboration status unavailable'
@@ -337,6 +368,20 @@ export default function OrchCommandCenter() {
           value={live?.elapsed_s != null ? fmtDur(live.elapsed_s) : '—'}
         />
         <span style={{ marginLeft: 'auto', alignSelf: 'center' }}>
+          {gate && (gateDirty || gate.ledger_clean === false) && (
+            <span style={{ marginRight: 'var(--sp-2)', fontSize: 11, color: 'var(--danger)' }}>
+              gate dirty ({gate.last_action ?? '—'}) — restore the FlareVM, then attest
+            </span>
+          )}
+          <Button
+            size="sm"
+            tone={gateDirty ? 'primary' : 'ghost'}
+            disabled={winreBusy || !gate || (gate.marker !== true || gate.ledger_clean === true)}
+            onClick={() => void doAttestWinre()}
+            title="After restoring the FlareVM to its GOLD snapshot, record the verified-clean attestation from this control plane"
+          >
+            {winreBusy ? '…' : 'Attest clean'}
+          </Button>
           <Button
             size="sm"
             tone="ghost"

@@ -2853,14 +2853,35 @@ def api_winre_status(sha):
     except Exception as e:
         out = {"error": str(e), "pack_present": False}
     try:
-        from winre_runner import availability, read_run_status
+        from winre_runner import availability, read_run_status, snapshot_state
 
         out["run"] = read_run_status(sha)
         ok, reason = availability()
         out["available"] = {"ok": ok, "reason": reason}
+        # RC-69 (2026-11-11): the Console renders the snapshot-gate card from
+        # this — RevAI is the control plane, so the gate state (marker,
+        # ledger, last action) and the restore/attest workflow are surfaced
+        # here instead of living only in WinRE's own UI.
+        out["gate"] = snapshot_state()
     except Exception as e:
         out["available"] = {"ok": False, "reason": f"winre_runner unavailable: {e}"}
     return jsonify(out)
+
+
+@app.route("/api/winre/attest", methods=["POST"])
+def api_winre_attest():
+    """Attest `verified_clean` after the operator restored the FlareVM.
+
+    RC-69 (2026-11-11): the restore itself is deliberately a hypervisor
+    action WinRE never performs; this records the control-plane attestation
+    once the operator has reverted and the guest marker is verified.
+    """
+    try:
+        from winre_runner import attest_clean
+
+        return jsonify(attest_clean())
+    except Exception as e:
+        return jsonify({"ok": False, "error": f"{type(e).__name__}: {e}"})
 
 
 @app.route("/api/winre/test", methods=["POST"])

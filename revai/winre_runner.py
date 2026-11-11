@@ -538,6 +538,86 @@ def summarize_pack(sha: str, logs_root: Path | str, *,
         return {"pack_present": False, "pack": {"pack_error": f"{type(e).__name__}: {e}"}}
 
 
+def snapshot_state(cfg: dict | None = None) -> dict:
+    """The WinRE snapshot-gate state, read from the control plane.
+
+    RevAI IS the control plane (snapshot_gate runs on this host), so the
+    runner can pre-flight the gate before spending an SSH round trip and the
+    Console can show the operator exactly what to do. Returns {} when the
+    gate tooling cannot be reached at all.
+    """
+    cfg = cfg or settings()
+    try:
+        r = subprocess.run(
+            [str(cfg["python"]), "-m", "winre.snapshot_gate", "status"],
+            cwd=str(cfg["root"]), capture_output=True, text=True, timeout=60)
+    except Exception as e:  # noqa: BLE001
+        return {"error": f"{type(e).__name__}: {e}"}
+    try:
+        return json.loads(r.stdout)
+    except (json.JSONDecodeError, TypeError):
+        return {"error": (r.stderr or r.stdout or "no output")[:300]}
+
+
+def attest_clean(cfg: dict | None = None) -> dict:
+    """Attest `verified_clean` from this control plane (operator action).
+
+    The hypervisor restore itself is deliberately an operator action (WinRE
+    never reverts the VM); this only records the attestation after the
+    operator has reverted and the marker is verified.
+    """
+    cfg = cfg or settings()
+    try:
+        r = subprocess.run(
+            [str(cfg["python"]), "-m", "winre.snapshot_gate", "attest",
+             "--action", "verified_clean"],
+            cwd=str(cfg["root"]), capture_output=True, text=True, timeout=120)
+    except Exception as e:  # noqa: BLE001
+        return {"ok": False, "error": f"{type(e).__name__}: {e}"}
+    out = (r.stdout or "").strip()
+    try:
+        parsed = json.loads(out)
+    except (json.JSONDecodeError, TypeError):
+        parsed = {"raw": out[-300:], "stderr": (r.stderr or "")[-300:]}
+    return {"ok": r.returncode == 0, "rc": r.returncode, **(
+        parsed if isinstance(parsed, dict) else {"raw": out[-300:]})}
+
+
+#: RC-68 (2026-11-11): the restore hint the Console renders when the gate is
+#: dirty or a run was refused. Reverts are manual by design (WinRE never
+#: reverts the VM itself); the hint names the snapshot and the attest step.
+_RESTORE_HINT = ("revert the FlareVM to the GOLD snapshot in the hypervisor, "
+                 "then run Attest (snapshot_gate attest --action verified_clean) "
+                 "from this control plane")
+
+#: Log signatures WinRE's gate refusal leaves behind (vm_gate.dirty_blocker's
+#: printed record) — matched case-insensitively when a run still fails.
+_GATE_REFUSAL_SIGNATURES = (
+    "how_to_clear", "no verifiable clean marker",
+    "restore the snapshot and attest", "not attested clean",
+)
+
+
+def _restore_required_payload(sha: str, cfg: dict, run_id: str,
+                              gate: dict) -> dict:
+    payload = {
+        "state": "restore_required",
+        "error": "snapshot gate dirty: detonation refused before guest execution",
+        "restore_required": True,
+        "restore_hint": _RESTORE_HINT,
+        "gate": {k: gate.get(k) for k in
+                 ("mode", "marker", "ledger_clean", "last_action")
+                 if k in gate},
+        "run_id": run_id,
+        "host": cfg["flare_host"],
+        "ts": datetime.now(timezone.utc).isoformat(),
+    }
+    _write_status(sha, payload)
+    print(f"[winre_runner] restore_required: revert the FlareVM, then attest "
+          f"(gate={payload['gate']})", flush=True)
+    return {"ok": False, "restore_required": True, **payload}
+
+
 def run_dynamic(
     sha: str,
     *,
@@ -558,6 +638,24 @@ def run_dynamic(
             import uuid
             run_id = uuid.uuid4().hex
     cfg = s or settings()
+    # RC-70 (2026-11-11): detonation and debugger work are separate gated
+    # executions — under the enforce snapshot gate ONE invocation asking for
+    # both is refused before anything runs (one execution per verified
+    # restore). Refuse it here with the documented path instead of launching
+    # a command the gate will kill.
+    if cfg.get("agentic_dbg"):
+        payload = {
+            "state": "failed",
+            "error": ("agentic_dbg is a separate gated execution: restore and "
+                      "attest a clean snapshot, then run the standalone WinRE "
+                      "--agentic-dbg pass (--dynamic and --agentic-dbg cannot "
+                      "share one execution)"),
+            "run_id": run_id,
+            "ts": datetime.now(timezone.utc).isoformat(),
+        }
+        _write_status(sha, payload)
+        print(f"[winre_runner] failed: {payload['error']}", flush=True)
+        return {"ok": False, **payload}
     ok, reason = availability(cfg)
     if not ok and not force:
         payload = {
@@ -571,6 +669,17 @@ def run_dynamic(
         _write_status(sha, payload)
         print(f"[winre_runner] skipped: {reason}", flush=True)
         return {"ok": True, "skipped": True, "reason": reason, **payload}
+
+    # RC-68 (2026-11-11): pre-flight the snapshot gate from the control plane
+    # so a dirty VM produces a clear restore_required state with the revert +
+    # attest hint BEFORE an SSH round trip — not a bare rc=1 with the reason
+    # buried in winre-run.log.
+    gate = snapshot_state(cfg)
+    if gate and not gate.get("error"):
+        ledger_clean = gate.get("ledger_clean") is True
+        marker = gate.get("marker") is True
+        if not (marker and ledger_clean):
+            return _restore_required_payload(sha, cfg, run_id, gate)
 
     sp = sample_path or sample_path_for(sha)
     if not sp or not Path(sp).is_file():
@@ -640,8 +749,23 @@ def run_dynamic(
     pack_present = bool(summary["pack_present"])
     pack_info: dict[str, Any] = summary["pack"] or {}
 
+    # RC-68 fallback: a mid-run gate refusal (marker consumed between the
+    # pre-flight and the guest execution) shows up as a failed rc with the
+    # refusal record in winre-run.log. Surface it with the same restore hint.
+    restore_required = False
+    if rc != 0:
+        try:
+            log_tail = Path(log_path).read_text(
+                encoding="utf-8", errors="replace").lower()[-8000:]
+            restore_required = any(
+                sig in log_tail for sig in _GATE_REFUSAL_SIGNATURES)
+        except OSError:
+            restore_required = False
+
     payload = {
-        "state": "ok" if rc == 0 and pack_present else ("ok_no_pack" if rc == 0 else "failed"),
+        "state": ("restore_required" if restore_required else
+                  "ok" if rc == 0 and pack_present else
+                  ("ok_no_pack" if rc == 0 else "failed")),
         "rc": rc,
         "duration_s": duration,
         "host": cfg["flare_host"],
@@ -657,6 +781,8 @@ def run_dynamic(
         "clock": clock,
         "llm": llm_meta,
         "error": error,
+        "restore_required": restore_required,
+        **({"restore_hint": _RESTORE_HINT} if restore_required else {}),
         "finished_at": datetime.now(timezone.utc).isoformat(),
     }
     _write_status(sha, payload)

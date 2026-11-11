@@ -125,6 +125,18 @@ export const OrchLiveSchema = z
         corroboration_enabled: optBool,
         section_enabled: optBool,
         section_renders: optBool,
+        // RC-69 (2026-11-11): the snapshot-gate card + the restore-required UX.
+        restore_required: optBool,
+        gate: z
+          .object({
+            mode: optStr,
+            marker: optBool,
+            ledger_clean: optBool,
+            last_action: optStr,
+            error: optStr,
+          })
+          .partial()
+          .nullish(),
         run: z
           .object({
             state: optStr,
@@ -132,6 +144,8 @@ export const OrchLiveSchema = z
             duration_s: optNum,
             pack_present: optBool,
             error: optStr,
+            restore_required: optBool,
+            restore_hint: optStr,
             clock: z
               .object({ ok: z.boolean(), skew_s: optNum, warn: z.boolean(), detail: optStr })
               .partial()

@@ -232,3 +232,15 @@ export async function runWinre(sha: string) {
     error?: string
   }>
 }
+
+// RC-69 (2026-11-11): the snapshot gate lives on this control plane; the
+// Console shows its state and records the verified-clean attestation after
+// the operator restored the FlareVM in the hypervisor.
+export async function attestWinre() {
+  return raw('/api/winre/attest', { method: 'POST' }) as Promise<{
+    ok: boolean
+    rc?: number
+    error?: string
+    [k: string]: unknown
+  }>
+}

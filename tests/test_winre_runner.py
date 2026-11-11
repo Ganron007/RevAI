@@ -164,6 +164,11 @@ def test_requested_run_without_a_correlated_pack_is_not_success(
     monkeypatch.setattr(wr, "remote_clock_skew", lambda _cfg: {"warn": False})
     monkeypatch.setattr(wr, "resolve_winre_llm", lambda _cfg: ({}, {"configured": True}))
     monkeypatch.setattr(wr, "_child_env", lambda _cfg: {})
+    # RC-68: the gate pre-flight is mocked clean here — this test exercises
+    # the pack-correlation path, not the gate.
+    monkeypatch.setattr(wr, "snapshot_state", lambda _cfg: {
+        "mode": "enforce", "marker": True, "ledger_clean": True,
+        "last_action": "verified_clean"})
     monkeypatch.setattr(wr, "summarize_pack", lambda *_a, **_kw: {
         "pack_present": False,
         "pack": {},
