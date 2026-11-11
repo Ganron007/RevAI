@@ -279,3 +279,35 @@ def test_a_small_dynamic_pack_renders_whole(tmp_path):
     rendered, _meta = v2_lib.format_report_source_evidence(case, manifest)
     assert "RC-71 render elision" not in rendered, (
         "an empty invocation list must not be flagged as elided")
+
+
+# ---------------------------------------------------------------- RC-72
+# Found live on the S1 WinRE-boosted run: the provider returns HTTP 400 as a
+# CAPACITY error under load — the exact same payload succeeded on replay
+# twice. The old rule treated every 4xx (except 408/425/429) as
+# non-retryable and lost whole report sections to it. Now 400 retries ONCE
+# (a permanent shape error also fails the retry, so nothing is papered
+# over), and the response body is captured for diagnosis.
+def test_http400_retry_contract_is_in_the_loop():
+    import inspect
+    import v2_lib
+    src = inspect.getsource(v2_lib)
+    assert "retrying once" in src and "capacity error" in src, (
+        "the 400-once retry must be in the llm_judge loop")
+    assert "http_status not in {408, 425, 429}" in src
+    # The body is captured for diagnosis:
+    assert "_body = _raw.decode" in src
+    # The retry is bounded (same_effort_retry_done is set before continue):
+    assert "same_effort_retry_done = True" in src
+    assert "time.sleep(20)" in src
+
+
+def test_http400_retry_is_bounded_to_one():
+    import inspect
+    import v2_lib
+    src = inspect.getsource(v2_lib)
+    # The retry sets the same flag the same-effort retry uses, so a second
+    # 400 on the same request breaks instead of looping.
+    seg = src[src.find("if http_status == 400 and not same_effort_retry_done"):]
+    assert "same_effort_retry_done = True" in seg[:400]
+    assert seg.count("continue", 0, seg.find("_timeout_err")) >= 1

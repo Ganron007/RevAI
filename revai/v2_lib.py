@@ -4583,12 +4583,35 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
             if (isinstance(http_status, int)
                     and 400 <= http_status < 500
                     and http_status not in {408, 425, 429}):
-                # Authentication, billing, request-shape, and model errors are
-                # not transient. Retrying them only burns the report budget and
-                # can multiply provider charges without changing the outcome.
+                # Authentication, billing, and model errors are not transient.
+                # HTTP 400 specifically is the exception: measured live on the
+                # WinRE-boosted S1 run (RC-72, 2026-11-11), this provider
+                # returns 400 as a CAPACITY error under load — the exact same
+                # payload succeeded on replay twice. A permanent request-shape
+                # error also fails the retry, so retrying 400 once costs one
+                # extra call on real shape errors and recovers whole report
+                # sections on the capacity ones. 401/403/404/422 stay
+                # non-retryable (shape/auth/class problems never heal).
+                _body = ""
+                try:
+                    _raw = e.read()  # type: ignore[union-attr]
+                    _body = _raw.decode("utf-8", "replace")[:300] if _raw else ""
+                except Exception:  # noqa: BLE001
+                    _body = ""
+                if http_status == 400 and not same_effort_retry_done:
+                    same_effort_retry_done = True
+                    print(
+                        f"[llm_judge] attempt {attempt}/{max_retries} HTTP 400 "
+                        f"(body={_body[:200] or 'n/a'}); retrying once — this "
+                        "provider returns 400 as a capacity error under load",
+                        flush=True,
+                    )
+                    time.sleep(20)
+                    continue
                 print(
                     f"[llm_judge] attempt {attempt}/{max_retries} HTTP "
-                    f"{http_status} is non-retryable; stopping this request",
+                    f"{http_status} is non-retryable; stopping this request"
+                    + (f" (body={_body[:200]})" if _body else ""),
                     flush=True,
                 )
                 break
