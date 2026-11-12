@@ -88,7 +88,17 @@ REPORT_SOURCE_EVIDENCE_ARTIFACTS = (
     "intake-validation.json",
     "malcat-triage.json",
 )
-REPORT_SOURCE_EVIDENCE_MAX_CHARS = 900_000
+#: RC-73 (2026-11-11): the corpus cap is token-safe for the provider's
+#: 524,288-token context. The old 900,000-char cap fit when the corpus was
+#: prose-heavy, but JSON-dense content (the WinRE dynamic pack's summaries,
+#: hashes, and paths) tokenizes at ~1.6 chars/token — an 844k-char technical
+#: prompt exceeded 524k tokens and the provider 400s every such call
+#: ("Requested token count exceeds the model's maximum context length",
+#: captured live by RC-72's body capture on S1 mode-a pass 2). 600,000 chars
+#: at the worst observed ratio leaves ~140k tokens of headroom below the
+#: limit. Env-configurable for other providers.
+REPORT_SOURCE_EVIDENCE_MAX_CHARS = int(
+    os.environ.get("REVAI_SOURCE_EVIDENCE_MAX_CHARS", "") or 600_000)
 
 
 def case_dir(sha: str, mode: str | None = None) -> Path:

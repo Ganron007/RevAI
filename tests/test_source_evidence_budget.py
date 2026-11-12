@@ -131,3 +131,18 @@ def test_no_manifest_still_raises(tmp_path):
         raise AssertionError("invalid manifest did not raise")
     except RuntimeError as exc:
         assert "valid input manifest" in str(exc)
+
+
+def test_the_corpus_cap_is_env_configurable(monkeypatch):
+    # RC-73: the cap must be tunable per provider (the Agnes endpoint's
+    # 524,288-token context 400s on JSON-dense 844k-char prompts).
+    monkeypatch.setenv("REVAI_SOURCE_EVIDENCE_MAX_CHARS", "400000")
+    import importlib
+    import v2_lib
+    importlib.reload(v2_lib)
+    assert v2_lib.REPORT_SOURCE_EVIDENCE_MAX_CHARS == 400000
+    monkeypatch.setenv("REVAI_SOURCE_EVIDENCE_MAX_CHARS", "")
+    importlib.reload(v2_lib)
+    assert v2_lib.REPORT_SOURCE_EVIDENCE_MAX_CHARS == 600000
+    importlib.reload(v2_lib)
+    assert v2_lib.REPORT_SOURCE_EVIDENCE_MAX_CHARS == 600000
