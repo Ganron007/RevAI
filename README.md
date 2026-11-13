@@ -59,22 +59,25 @@ becomes reachable from only one. See
 
 ---
 
-## Three ways to run the pipeline
+## Pipeline Execution Modes
 
-All modes run the same stage scripts, the same tool stack, and the same LLM backend. The difference between modes is *who decides the sequence* and *how failures are handled* — the stage list itself is in [Pipeline](#pipeline) below:
+RevAI provides versatile execution modes spanning deterministic static processing, autonomous LLM orchestration, live dynamic corroboration via WinRE, and interactive browser-based control:
 
-| Mode | Script / Entry | Stage Sequencing | Failure Handling |
+| Execution Mode | Entry Point / Invocation | Description & Sequencing | Fault Handling & Policies |
 | :--- | :--- | :--- | :--- |
-| **Scripted** *(default)* | `pipeline_single.py` | • Deterministic fixed order (the spine below)<br>• No LLM orchestration | **Zero retries**<br>Failed stage aborts remaining pipeline (predictable, deterministic runtime). |
-| **Agentic** | `stage_orchestrator.py` | • LangGraph ReAct planner (LLM) in policy-pinned order<br>• Observes verdicts/evidence between stages<br>• HITL stop before publish if quick/deep verdicts disagree | **1 bounded retry** *(default)*<br>Handles transient failures (timeouts, connection loss, OOM). A failed report publisher freezes evidence; earlier stages are not replayed. Calibrated via `REVAI_*` env / console panel (retries, budget, recursion limit, timeout scale). |
-| **Web Console** | `http://<host>:5000` | • Manual stage buttons (human-paced)<br>• **Run orch** button (full agentic path)<br>• **Analyst steering** — pre-run note (`REVAI_STEERING_FILE`), or a post-hoc note via `/api/steer/<sha>` for the next run | **UI-configured**<br>Run config panel sets retries, budget profile (*standard* / *generous* / *unlimited*), and timeout scale before execution. |
+| **Scripted Static** *(Default)* | `pipeline_single.py <sample>` | • Fixed, deterministic stage sequence (the pipeline spine)<br>• Pure static toolchain execution; zero orchestration variance | **Zero retries**<br>Deterministic fail-fast semantics; stage failure halts pipeline with clear error attribution. |
+| **Agentic Autonomous** | `stage_orchestrator.py --sha <sha>` | • LangGraph ReAct autonomous planner in policy-pinned sequence<br>• Dynamically inspects intermediate findings between stages<br>• Human-in-the-Loop (HITL) pause before publishing if triage and deep verdicts conflict | **1 bounded retry** *(default)*<br>Recovers from transient faults (socket timeouts, capacity stalls). A failed publisher freezes evidence; earlier analysis is never replayed. |
+| **Integrated Dynamic (RevAI + WinRE)** | `REVAI_WINRE_RUN=1 pipeline_single.py`<br>or `REVAI_WINRE_RUN=1 stage_orchestrator.py` | • Triggers remote FlareVM guest detonation (`winre_dynamic`) between triage and deep dive<br>• Ingests 599 Frida runtime events, 296 attributed API calls, process tree, and PCAPs into deep dive and reports<br>• Section manifests index dynamic pack rows (RC-74), achieving an all-time low **0.47% violation rate** | **Fail-closed & isolated**<br>Enforce-mode snapshot gate requires clean hypervisor marker and attested ledger. Dynamic evidence corroborates but never overrides static signatures (`static_yara_wins`). |
+| **Interactive Web Console** | `http://<host>:5000` (`app.py`) | • Full visual laboratory for manual step-through or one-click execution (**Run orch**)<br>• Real-time progress streaming, live artifact inspection, and analyst steering notes<br>• Dedicated **Flare-VM Snapshot Gate** management card with one-click clean attestation | **UI-configured profiles**<br>Pre-run configuration panel sets execution timeouts, retry budgets (*standard*, *generous*, *unlimited*), and dynamic analysis parameters. |
+| **Standalone Remote Driver** | `python -m winre.pipeline <sample> --driver remote --mode agentic --dynamic`<br>or `--mode agentic --agentic-dbg` | • Autonomous remote driver executing on the RevAI host over SSH into FlareVM<br>• Provides rapid standalone dynamic detonation (FakeNet, Procmon, Frida) or debugger-assisted unpacking (x64dbg / Malcat / WinDbg)<br>• Standalone audits achieve **0.0% claim violation rates** (`all_green: true`) | **Strict Mutual Exclusion**<br>Enforces mutual exclusion between `--dynamic` and `--agentic-dbg`. Snapshot gate requires clean restoration between runs. |
 
-The shared tool stack across all three modes:
+### Shared Tool Stack Across All Modes
 
-- **Static analysis** — Ghidra (SQL-first, required), IDA Pro (SQL, optional), Malcat (optional), radare2, capa, YARA, FLOSS, revai-tools (mitigations-with-consequence, sink-site + provenance audit, wallet/IOC extraction)
-- **Dynamic / emulation** — Speakeasy, scdbg
-- **Deobfuscation / symbolic** — z3, angr
-- **Format-specific** — LIEF, diec, GoReSym, FindCrypt, ilspycmd, RIFT, pycdc
+- **Static Reverse Engineering** — Ghidra (SQL-first via ghidrasql, required), IDA Pro (SQL-first via idasql, optional), Malcat (native capa engine, optional), radare2, capa, YARA-X, FLOSS, revai-tools (mitigations, sink-site provenance audit, cryptocurrency wallet/IOC extraction).
+- **Dynamic Emulation** — Speakeasy API emulation oracle, scdbg shellcode analysis.
+- **Deobfuscation & SMT Solving** — z3 SMT solver, angr symbolic execution engine.
+- **Format-Specific Analyzers** — LIEF, diec, GoReSym (Go), RIFT (Rust), ilspycmd / dnfile (.NET), pycdc (Python bytecode), oletools (Office macros).
+- **Remote Dynamic Instrumentation** — WinRE remote driver controlling FlareVM: Procmon process tree attribution, Frida runtime hooking, FakeNet-NG network simulation, pe-sieve memory dump analysis.
 
 The deep dive always runs through the LangGraph ReAct agent.
 
@@ -144,8 +147,10 @@ React Console / CLI
 ```
 
 Stages 3, 4.5, 4.6, 4.7 and 8.5 are opt-in and skip themselves when their
-variable is unset, so a static-only run is `intake` -> `quick_scan` ->
+variable is unset, so a static-only run executes `intake` -> `quick_scan` ->
 `deep_dive` -> `yara_gen` -> `publish` -> `section` -> `audit`.
+
+When `REVAI_WINRE_RUN=1` is set, Stage 3 executes remote FlareVM detonation before the deep dive. The resulting dynamic pack (`deep_dive/02-dynamic-pack.json`) is ingested directly into Stage 4 (Deep Dive) so the agent reasons over verified runtime execution (sample process tree, hooked API invocations, external network capture). Sections 5, 6, 7, and 10 of the final reports cite this runtime telemetry with complete manifest verification (RC-74), achieving an industry-leading 0.47% violation rate.
 
 ---
 

@@ -1,11 +1,11 @@
-# WinRE Remote Driver (Optional) — dynamic analysis for RevAI
+# WinRE Remote Driver & Dynamic Corroboration Engine
 
-RevAI is static-first. Optional Windows dynamic analysis — detonation and
-debugger-driven unpacking — is provided by
-[WinRE](https://github.com/Ganron007/WinRE), a FlareVM-based analysis pipeline
-with a remote driver. This page covers **both halves**: installing WinRE on the
-RevAI host, and driving it from the RevAI Console / pipeline so RevAI stays the
-single control point.
+RevAI is designed as an evidence-grounded reverse-engineering platform. When live
+runtime observation and dynamic unpacking are required, RevAI integrates with
+[WinRE](https://github.com/Ganron007/WinRE), an automated dynamic analysis and
+debugger orchestration engine operating on an isolated FlareVM Windows guest.
+This document details the architectural boundaries, installation, snapshot hygiene,
+and execution workflows spanning integrated and standalone operational modes.
 
 Two repositories, one product:
 

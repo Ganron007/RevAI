@@ -55,33 +55,43 @@ If `REVAI_LLM_API_KEY` is not set, the fallback chain is:
 1. `REVAI_LLM_API_KEY` from the process environment
 2. `/opt/secrets/cadre.env` (legacy lab secrets file)
 
-### Optional: WinRE (the dynamic companion)
+### WinRE Dynamic Companion Configuration
 
-WinRE is an optional second product on this same host (`/opt/winre`). Its LLM
-configuration stays separate from RevAI in every mode. Resolution order, first
-match wins per variable:
+WinRE operates as an automated dynamic execution engine and remote driver on this host (`/opt/winre`), orchestrating an isolated FlareVM Windows guest over SSH/MCP. Its LLM configuration stays strictly separate from RevAI in every mode. Resolution order, first match wins per variable:
 
-1. the process environment (`WINRE_LLM_*`),
+1. The process environment (`WINRE_LLM_*`),
 2. WinRE's own env file: `WINRE_ENV` when set, otherwise `/opt/winre/.env`.
 
-| Where | What to write |
+| Configuration Surface | What to write / manage |
 |---|---|
 | `/opt/revai/config/llm.env` | RevAI provider, model, key and reasoning only |
-| `/opt/winre/.env` (chmod 600, never commit) | `WINRE_LLM_BASE_URL`, `WINRE_LLM_MODEL`, `WINRE_LLM_API_KEY`, `WINRE_LLM_REASONING` — any value set here wins |
-| FlareVM | **nothing** — the Windows VM never holds LLM configuration; all LLM calls happen in the driver process on this host |
+| `/opt/winre/.env` (chmod 600, never commit) | `WINRE_LLM_BASE_URL`, `WINRE_LLM_MODEL`, `WINRE_LLM_API_KEY`, `WINRE_LLM_REASONING` |
+| FlareVM Guest | **Nothing** — the Windows VM never holds LLM configuration; all LLM calls happen in the driver process on the REMnux host |
+| RevAI Console (**Dynamic analysis**) | FlareVM address, SSH user/port, SSH key **path** (chmod 600), detonation window, driver mode, and snapshot gate |
 
-RevAI never fills missing WinRE settings from its own configuration. The legacy
-`REVAI_WINRE_LLM_SOURCE=inherit` setting is treated as `winre_env`; it cannot
-enable sharing. An agentic pass without WinRE's required settings is refused
-up front with `winre_llm_unset`. **Test connection** reports the source without
-echoing the key. Running WinRE's CLI directly instead of through RevAI:
+RevAI never fills missing WinRE settings from its own configuration. An agentic pass without WinRE's required settings is refused up front with `winre_llm_unset`. **Test connection** (`POST /api/winre/test`) probes SSH reachability and reports the LLM source without echoing the key.
+
+#### Driver & Detonation Flags
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `REVAI_WINRE_ENABLED` | `off` | Master switch enabling dynamic analysis in the Console and pipeline. |
+| `REVAI_WINRE_RUN` | `off` | Pipeline trigger: detonates sample before deep dive in scripted or agentic runs. |
+| `REVAI_WINRE_MODE` | `agentic` | Remote driver mode: `agentic` (LangGraph ReAct) or `static` (deterministic). |
+| `REVAI_WINRE_WINDOW` | `150` | Maximum detonation window in seconds (`--max-seconds`). |
+| `REVAI_WINRE_SNAPSHOT_GATE` | `enforce` | Snapshot gate policy: `enforce` (strictly requires clean hypervisor marker and attested ledger), `observe` (advisory), or `off`. |
+| `REVAI_WINRE_LOGS` | `/opt/winre/logs` | Evidence pack root directory scanned by `load_dynamic_pack()`. |
+| `FLARE_HOST` / `FLARE_USER` | `192.168.77.42` / `FLARE-VM` | Windows FlareVM guest IP address and SSH user account. |
+| `FLARE_SSH_KEY` / `FLARE_SSH_PORT` | `~/.ssh/winre-flare` / `22` | Path to private SSH key on REMnux host (chmod 600) and SSH port. |
+
+Running WinRE's CLI directly instead of through RevAI:
 
 ```bash
-/opt/scripts/winre-llm-env.sh --check     # what would be used
-eval "$(/opt/scripts/winre-llm-env.sh)"   # export into this shell
+/opt/scripts/winre-llm-env.sh --check     # verify configured variables
+eval "$(/opt/scripts/winre-llm-env.sh)"   # export into current shell
 ```
 
-Full guide: [`WINRE-REMOTE.md`](WINRE-REMOTE.md).
+Full operational guide: [`WINRE-REMOTE.md`](WINRE-REMOTE.md).
 
 ## Optional: IDA Pro
 

@@ -132,3 +132,4 @@ deep-dive evidence pack, and `iocs.json` (`revai_tools` provenance block).
 
 - Per-tool operational details: [`docs/OPERATE.md`](OPERATE.md)
 - Install/prereqs: [`docs/PREREQUISITES.md`](PREREQUISITES.md)
+- Remote dynamic companion (WinRE): [`docs/WINRE-REMOTE.md`](WINRE-REMOTE.md)

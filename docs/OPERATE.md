@@ -61,6 +61,14 @@ python3 /opt/scripts/stage_orchestrator.py --sha <sha256>
 
 # Deterministic single-mode spine (no planner)
 python3 /opt/scripts/pipeline_single.py /path/to/sample.exe
+
+# Integrated dynamic runs with WinRE FlareVM detonation:
+REVAI_WINRE_RUN=1 python3 /opt/scripts/stage_orchestrator.py /path/to/sample.exe
+REVAI_WINRE_RUN=1 python3 /opt/scripts/pipeline_single.py /path/to/sample.exe
+
+# Standalone WinRE remote-driver runs (independent triage):
+PYTHONPATH=/opt/winre python3 -m winre.pipeline /path/to/sample.exe --driver remote --mode agentic --dynamic
+PYTHONPATH=/opt/winre python3 -m winre.pipeline /path/to/sample.exe --driver remote --mode agentic --agentic-dbg
 ```
 
 The run writes `orchestrator_trace.json` and the stage trace under `logs/<sha256>/<mode>/` — mode-keyed like every other artifact; the trace's final line carries `all_green` / `quality_green` / `truly_green`, and `truly_green` is the honest pass/fail.
