@@ -159,6 +159,11 @@ def _section_prompt(section_name: str, description: str, evidence: str,
         parts.append("## Targeted section repair")
         parts.append(retry_instruction)
         parts.append("")
+    sha = os.environ.get("_SECTION_SHA", "").strip()
+    if sha:
+        manifest = build_section_row_manifest(sha, section_name)
+        if manifest:
+            parts.extend((manifest, ""))
     parts.append(
         "## Your task\n"
         f"Write the '{section_name}' section as the claim-level `sections` "
@@ -998,6 +1003,10 @@ def _technical_section_prompt(name: str, description: str, evidence: str,
             "for behavior, capability, family, or ATT&CK claims.",
             "",
         ]
+    if sha:
+        manifest = build_section_row_manifest(sha, name)
+        if manifest:
+            parts.extend((manifest, ""))
     parts.append(
         "## Rules\n"
         f"- Write ONLY the '{name}' section as the claim-level `sections` "

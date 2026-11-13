@@ -560,3 +560,165 @@ def test_rc67_conditional_guidance_host_where_executed_not_flagged():
     assertion = "During analysis, the sample was executed and connected to C2."
     got = rq._affirmative_dynamic_claim(assertion, dyn_status)
     assert got is not None
+
+
+# ---------------------------------------------------------------- RC-74
+def test_rc74_dynamic_section_row_manifest_includes_dynamic_pack(tmp_path, monkeypatch):
+    import v2_lib
+    import report_manifest
+    sha = "e" * 64
+    case = tmp_path / "logs" / sha / "agentic"
+    (case / "deep_dive").mkdir(parents=True)
+    dynamic_pack = {
+        "present": True,
+        "frida_summary": {
+            "top_apis": [["RegOpenKeyExW", 240], ["VirtualAlloc", 4]],
+            "hook_coverage": {
+                "apis_fired": ["RegOpenKeyExW", "VirtualAlloc"],
+                "not_fired": ["CreateProcessW"],
+            },
+            "network_endpoints": [{"ip": "192.168.1.100", "port": 443, "proto": "tcp"}],
+            "sockaddrs": ["192.168.1.100:443"],
+            "process_events": [{"pid": 6504, "event": "spawn"}],
+        },
+        "procmon_sample_events": [
+            {"row": 1, "pid": 6504, "operation": "RegCreateKey", "path": "HKLM\\Software\\Test"}
+        ],
+        "procmon_summary": {
+            "process_spawns": [{"child_pid": 7000}],
+            "persistence": [{"type": "registry", "key": "HKLM\\Run\\Test"}],
+            "behavior_timeline_events": [{"time": "11:00:00", "event": "RegKeyCreated"}],
+            "dropped_files_appdata": [{"path": "C:\\AppData\\drop.exe"}],
+        },
+        "network": {
+            "pcaps": ["traffic.pcap"]
+        },
+        "dynamic_stage": {
+            "findings": {
+                "correlation": {"counts": {"confirmed": 0, "unverifiable": 39}}
+            }
+        }
+    }
+    (case / "deep_dive" / "02-dynamic-pack.json").write_text(json.dumps(dynamic_pack))
+    monkeypatch.setattr(v2_lib, "case_dir", lambda s, mode=None: case)
+
+    # Test via v2_lib and re-exported report_manifest module
+    manifest_sec5 = report_manifest.build_section_row_manifest(sha, "5. Behavioral & Dynamic Analysis")
+    assert "frida_summary.top_apis[0]" in manifest_sec5
+    assert "RegOpenKeyExW, 240" in manifest_sec5
+    assert "frida_summary.hook_coverage.apis_fired[0]" in manifest_sec5
+    assert "procmon_sample_events[0]" in manifest_sec5
+    assert "dynamic_stage.findings.correlation.counts[0]" in manifest_sec5
+
+    # Master title alias resolution
+    manifest_master5 = report_manifest.build_section_row_manifest(sha, "5. Behavioral Analysis")
+    assert "frida_summary.top_apis[0]" in manifest_master5
+
+    # Section 6: Network Indicators
+    manifest_sec6 = report_manifest.build_section_row_manifest(sha, "6. Network Indicators & C2")
+    assert "frida_summary.network_endpoints[0]" in manifest_sec6
+    assert "network.pcaps[0]" in manifest_sec6
+
+    # Section 7: Capabilities
+    manifest_sec7 = report_manifest.build_section_row_manifest(sha, "7. Capabilities Assessment")
+    assert "frida_summary.hook_coverage.apis_fired[0]" in manifest_sec7
+    assert "procmon_summary.persistence[0]" in manifest_sec7
+
+    # Section 10: MITRE
+    manifest_sec10 = report_manifest.build_section_row_manifest(sha, "10. MITRE ATT&CK Mapping")
+    assert "frida_summary.hook_coverage.apis_fired[0]" in manifest_sec10
+
+
+def test_rc74_dynamic_envelope_jsonpath_resolution(tmp_path):
+    import entailment as E
+    pack = {
+        "_cadre_provenance": {"sha256": "f" * 64, "run_id": "r1", "artifact": "deep_dive/02-dynamic-pack.json"},
+        "dynamic_stage": {
+            "manifest": {
+                "coverage": {"pe_sieve": {"status": "clean"}, "windbg": {"status": "ok"}}
+            },
+            "findings": {
+                "correlation": {"counts": {"unverifiable": 39, "confirmed": 0}},
+                "limitations": ["none", "timeout", "simulated", "sandboxed", "heuristic"],
+                "findings": {
+                    "network": {
+                        "frida_endpoint_count": 0,
+                        "beacons": [],
+                        "c2": [],
+                        "leads": [{"host": "malware.example"}]
+                    },
+                    "frida_coverage": {
+                        "apis_fired": ["VirtualAlloc", "RegOpenKeyExW"],
+                        "not_fired": ["CreateProcessW"],
+                        "calls_observed": 296,
+                        "unavailable": [{"api": "InternetOpenW"}]
+                    },
+                    "file_provenance": {"successful_writes": 0},
+                    "memory": {"triage": {"reason": "no memory injection detected"}},
+                    "window": {"effective_s": 150.0}
+                }
+            }
+        },
+        "procmon_sample_events": [
+            {"row": 100, "pid": 6504, "operation": "CreateFile", "path": "C:\\Windows\\test"}
+        ],
+        "frida_summary": {
+            "network_endpoint_count": 0
+        }
+    }
+    p = tmp_path / "02-dynamic-pack.json"
+    p.write_text(json.dumps(pack))
+
+    # Envelope aliases resolving against deep_dive/02-dynamic-pack.json
+    cit1 = E._locate_cited_row(p, "$.correlation.counts.unverifiable", "deep_dive/02-dynamic-pack.json", "winre")
+    assert cit1 is not None and cit1["value"] == 39
+
+    cit2 = E._locate_cited_row(p, "$.findings.network.frida_endpoint_count", "deep_dive/02-dynamic-pack.json", "winre")
+    assert cit2 is not None and cit2["value"] == 0
+
+    cit3 = E._locate_cited_row(p, "$.findings.frida_coverage.apis_fired", "deep_dive/02-dynamic-pack.json", "winre")
+    assert cit3 is not None and "VirtualAlloc" in cit3["value"]
+
+    cit4 = E._locate_cited_row(p, "$.findings.window.effective_s", "deep_dive/02-dynamic-pack.json", "winre")
+    assert cit4 is not None and cit4["value"] == 150.0
+
+    cit5 = E._locate_cited_row(p, "$.manifest.coverage.pe_sieve.status", "deep_dive/02-dynamic-pack.json", "winre")
+    assert cit5 is not None and cit5["value"] == "clean"
+
+    cit6 = E._locate_cited_row(p, "$.findings.limitations[4]", "deep_dive/02-dynamic-pack.json", "winre")
+    assert cit6 is not None and cit6["value"] == "heuristic"
+
+    cit7 = E._locate_cited_row(p, "$.dynamic_stage.findings.network.leads[0].host", "deep_dive/02-dynamic-pack.json", "winre")
+    assert cit7 is not None and cit7["value"] == "malware.example"
+
+    # Non-dollar indexed locator
+    cit8 = E._locate_cited_row(p, "procmon_sample_events[0]", "deep_dive/02-dynamic-pack.json", "procmon")
+    assert cit8 is not None and cit8["value"]["operation"] == "CreateFile"
+
+
+def test_rc74_non_dollar_indexed_row_normalization(tmp_path):
+    import entailment as E
+    iocs_path = tmp_path / "iocs.json"
+    iocs_path.write_text(json.dumps({"domains": ["c2.test", "evil.org"], "urls": ["http://c2.test/gate"]}))
+    
+    yara_path = tmp_path / "rule.yara.json"
+    yara_path.write_text(json.dumps({"strings": ["$s1 = evil", "$s2 = malware"]}))
+
+    tools_path = tmp_path / "01-tools-raw.json"
+    tools_path.write_text(json.dumps({"yara": {"matches": [{"rule": "Trojan_Downloader", "offset": 128}]}}))
+
+    # domains[0] and urls[0] in iocs.json without leading $
+    cit_dom = E._locate_cited_row(iocs_path, "domains[0]", "iocs.json", "iocs")
+    assert cit_dom is not None and cit_dom["value"] == "c2.test"
+
+    cit_url = E._locate_cited_row(iocs_path, "urls[0]", "iocs.json", "iocs")
+    assert cit_url is not None and cit_url["value"] == "http://c2.test/gate"
+
+    # strings[1] in rule.yara.json without leading $
+    cit_str = E._locate_cited_row(yara_path, "strings[1]", "rule.yara.json", "yara-gen")
+    assert cit_str is not None and cit_str["value"] == "$s2 = malware"
+
+    # yara.matches[0] in 01-tools-raw.json without leading $
+    cit_yara = E._locate_cited_row(tools_path, "yara.matches[0]", "deep_dive/01-tools-raw.json", "yara")
+    assert cit_yara is not None and cit_yara["value"]["rule"] == "Trojan_Downloader"
+

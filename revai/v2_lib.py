@@ -8603,6 +8603,12 @@ def _dynamic_observability(pack: dict | None) -> dict[str, Any]:
         "failure_count": len(failures) if "failures" in coverage else None,
         "not_fired": not_fired,
         "not_fired_count": len(not_fired) if "not_fired" in coverage else None,
+        "apis_fired": coverage.get("apis_fired") or [
+            x for x in (installed or []) if x not in (not_fired or [])
+        ],
+        "apis_fired_count": len(coverage.get("apis_fired") or [
+            x for x in (installed or []) if x not in (not_fired or [])
+        ]),
         "calls_observed": calls,
         "max_calls": max_calls,
         "call_limit_reached": call_limit_reached,
@@ -10176,6 +10182,50 @@ UPX_SECTION_ROW_SOURCES: dict[str, tuple[tuple[str, str, str], ...]] = {
     ),
 }
 
+#: Dynamic detonation / execution row sources from WinRE & runtime trace.
+#: When dynamic analysis executes, results are stored in `deep_dive/02-dynamic-pack.json`.
+#: Including these in the section row manifest allows the writer to cite verified
+#: runtime facts (Frida events, hooked API calls, process tree, network endpoints) verbatim.
+DYNAMIC_SECTION_ROW_SOURCES: dict[str, tuple[tuple[str, str, str], ...]] = {
+    "5. Behavioral & Dynamic Analysis": (
+        ("deep_dive/02-dynamic-pack.json", "frida_summary.top_apis", "runtime top APIs"),
+        ("deep_dive/02-dynamic-pack.json", "frida_summary.hook_coverage.apis_fired", "runtime APIs fired"),
+        ("deep_dive/02-dynamic-pack.json", "frida_summary.hook_coverage.not_fired", "runtime APIs not fired"),
+        ("deep_dive/02-dynamic-pack.json", "frida_summary.process_events", "runtime process events"),
+        ("deep_dive/02-dynamic-pack.json", "procmon_sample_events", "sample process events"),
+        ("deep_dive/02-dynamic-pack.json", "procmon_summary.behavior_timeline_events", "runtime procmon timeline"),
+        ("deep_dive/02-dynamic-pack.json", "procmon_summary.process_spawns", "runtime process spawns"),
+        ("deep_dive/02-dynamic-pack.json", "procmon_summary.persistence", "runtime procmon persistence"),
+        ("deep_dive/02-dynamic-pack.json", "procmon_summary.dropped_files_appdata", "runtime dropped files"),
+        ("deep_dive/02-dynamic-pack.json", "dynamic_stage.findings.correlation.counts", "runtime correlation counts"),
+    ),
+    "6. Network Indicators & C2": (
+        ("deep_dive/02-dynamic-pack.json", "frida_summary.network_endpoints", "runtime network endpoints"),
+        ("deep_dive/02-dynamic-pack.json", "frida_summary.sockaddrs", "runtime socket addresses"),
+        ("deep_dive/02-dynamic-pack.json", "network.pcaps", "captured PCAP files"),
+    ),
+    "7. Capabilities Assessment": (
+        ("deep_dive/02-dynamic-pack.json", "frida_summary.hook_coverage.apis_fired", "runtime APIs fired"),
+        ("deep_dive/02-dynamic-pack.json", "procmon_summary.persistence", "runtime persistence"),
+        ("deep_dive/02-dynamic-pack.json", "procmon_summary.process_spawns", "runtime process spawns"),
+    ),
+    "10. MITRE ATT&CK Mapping": (
+        ("deep_dive/02-dynamic-pack.json", "frida_summary.hook_coverage.apis_fired", "runtime APIs fired"),
+        ("deep_dive/02-dynamic-pack.json", "procmon_summary.persistence", "runtime persistence"),
+        ("deep_dive/02-dynamic-pack.json", "procmon_summary.process_spawns", "runtime process spawns"),
+    ),
+}
+
+SECTION_NAME_ALIASES: dict[str, str] = {
+    "4. Static Analysis": "4. Static Code Analysis",
+    "6. Network Analysis & C2": "6. Network Indicators & C2",
+    "7. Capability Assessment": "7. Capabilities Assessment",
+    "10. Detection Rules": "9. Detection Engineering",
+    "11. MITRE ATT&CK Mapping": "10. MITRE ATT&CK Mapping",
+    "3. Background & Family Lineage": "9. Detection Engineering",
+    "5. Behavioral Analysis": "5. Behavioral & Dynamic Analysis",
+}
+
 _SECTION_MANIFEST_ROW_CAP = 40
 
 
@@ -10204,6 +10254,8 @@ def _summarize_row(value, limit: int = 200) -> str:
         parts = [f"{k}={_ioc_value(v)}" for k, v in value.items()
                  if _ioc_value(v)]
         text = ", ".join(parts)
+    elif isinstance(value, (list, tuple)):
+        text = ", ".join(_ioc_value(v) for v in value if _ioc_value(v))
     else:
         text = _ioc_value(value)
     return text[:limit]
@@ -10221,7 +10273,8 @@ def build_section_frontier(sha: str, section: str,
     The frontier makes every manifest row explicitly accounted for: cited,
     not-material, or deferred.
     """
-    base_sources = SECTION_ROW_SOURCES.get(section)
+    canonical_section = SECTION_NAME_ALIASES.get(section, section)
+    base_sources = SECTION_ROW_SOURCES.get(canonical_section)
     if not base_sources:
         return ""
     mode = os.environ.get("REVAI_RUN_MODE", "").strip() or None
@@ -10231,7 +10284,14 @@ def build_section_frontier(sha: str, section: str,
         try:
             _raw_peek = json.loads((root / "deep_dive/01-tools-raw.json").read_text(errors="replace")) or {}
             if "upx_second_pass" in _raw_peek:
-                sources.extend(UPX_SECTION_ROW_SOURCES.get(section, ()))
+                sources.extend(UPX_SECTION_ROW_SOURCES.get(canonical_section, ()))
+        except Exception:
+            pass
+    if (root / "deep_dive/02-dynamic-pack.json").is_file():
+        try:
+            _dyn_peek = json.loads((root / "deep_dive/02-dynamic-pack.json").read_text(errors="replace")) or {}
+            if _dyn_peek.get("present") or _dyn_peek.get("frida_summary") or _dyn_peek.get("dynamic_stage"):
+                sources.extend(DYNAMIC_SECTION_ROW_SOURCES.get(canonical_section, ()))
         except Exception:
             pass
     cited = set()
@@ -10278,7 +10338,8 @@ def build_section_row_manifest(sha: str, section: str,
     cite only manifest rows, verbatim. Deterministic sections (5 and 8)
     have no manifest. Empty when the artifacts offer nothing.
     """
-    base_sources = SECTION_ROW_SOURCES.get(section)
+    canonical_section = SECTION_NAME_ALIASES.get(section, section)
+    base_sources = SECTION_ROW_SOURCES.get(canonical_section)
     if not base_sources:
         return ""
     mode = os.environ.get("REVAI_RUN_MODE", "").strip() or None
@@ -10288,7 +10349,14 @@ def build_section_row_manifest(sha: str, section: str,
         try:
             _raw_peek = json.loads((root / "deep_dive/01-tools-raw.json").read_text(errors="replace")) or {}
             if "upx_second_pass" in _raw_peek:
-                sources.extend(UPX_SECTION_ROW_SOURCES.get(section, ()))
+                sources.extend(UPX_SECTION_ROW_SOURCES.get(canonical_section, ()))
+        except Exception:
+            pass
+    if (root / "deep_dive/02-dynamic-pack.json").is_file():
+        try:
+            _dyn_peek = json.loads((root / "deep_dive/02-dynamic-pack.json").read_text(errors="replace")) or {}
+            if _dyn_peek.get("present") or _dyn_peek.get("frida_summary") or _dyn_peek.get("dynamic_stage"):
+                sources.extend(DYNAMIC_SECTION_ROW_SOURCES.get(canonical_section, ()))
         except Exception:
             pass
     blocks: list[str] = []

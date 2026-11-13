@@ -300,6 +300,8 @@ _SOURCE_ARTIFACTS: dict[str, tuple[str, ...]] = {
     "recovered function names": ("function_recovery.json",),
     "yara": ("rule.yara.json", "deep_dive/01-tools-raw.json"),
     "yara_gen": ("rule.yara.json",),
+    "yara-gen": ("rule.yara.json",),
+    "yara_generator": ("rule.yara.json",),
     "yara_gen_v2": ("rule.yara.json",),
     "yara matches": ("rule.yara.json", "deep_dive/01-tools-raw.json"),
     "yara_scan": ("deep_dive/01-tools-raw.json",),
@@ -977,6 +979,44 @@ def _resolve_json_path(value: Any, expression: str,
     tokens = _parse_json_path(expression)
     if tokens is None:
         return None
+    # 0. Emulation oracle alias: $.emulation_oracle.<field> -> $.<field>
+    if tokens and tokens[0] == "emulation_oracle" and len(tokens) > 1:
+        tokens = tokens[1:]
+
+    # 0b. Dynamic pack envelope aliases for deep_dive/02-dynamic-pack.json:
+    # WinRE's findings report structure nests findings, correlation, manifest,
+    # and limitations under `dynamic_stage.findings`. Writers cite them directly as
+    # `$.findings.network...`, `$.correlation.counts...`, `$.manifest...`, or `$.findings.limitations`.
+    if isinstance(value, dict) and "dynamic_stage" in value and tokens:
+        first = tokens[0]
+        if first == "correlation":
+            tokens = ["dynamic_stage", "findings", "correlation"] + tokens[1:]
+        elif first == "manifest":
+            if isinstance(value.get("dynamic_stage"), dict) and "manifest" in value["dynamic_stage"]:
+                tokens = ["dynamic_stage", "manifest"] + tokens[1:]
+            else:
+                tokens = ["dynamic_stage", "findings", "manifest"] + tokens[1:]
+        elif first == "limitations":
+            tokens = ["dynamic_stage", "findings", "limitations"] + tokens[1:]
+        elif first == "findings":
+            if len(tokens) > 1 and tokens[1] == "correlation":
+                tokens = ["dynamic_stage", "findings", "correlation"] + tokens[2:]
+            elif len(tokens) > 1 and tokens[1] == "manifest":
+                tokens = ["dynamic_stage", "manifest"] + tokens[2:]
+            elif len(tokens) > 1 and tokens[1] == "limitations":
+                tokens = ["dynamic_stage", "findings", "limitations"] + tokens[2:]
+            elif len(tokens) > 1 and tokens[1] == "frida_endpoint_count":
+                tokens = ["dynamic_stage", "findings", "findings", "network", "frida_endpoint_count"] + tokens[2:]
+            else:
+                tokens = ["dynamic_stage", "findings", "findings"] + tokens[1:]
+        elif first == "dynamic_stage" and len(tokens) > 2 and tokens[1] == "findings":
+            if tokens[2] in {
+                "network", "frida_coverage", "file_provenance", "memory",
+                "window", "persistence", "process_spawns", "created_files",
+                "device_writes", "system_loads", "drops", "anti_emulation"
+            }:
+                tokens = ["dynamic_stage", "findings", "findings"] + tokens[2:]
+
     # Malcat exposes imports and strings under `views`; writers commonly use
     # the shorter `$.malcat.imports` / `$.malcat.strings` spelling. This is a
     # location alias for the same field, not a fuzzy lookup: every later token
@@ -1038,6 +1078,13 @@ def _resolve_json_path(value: Any, expression: str,
         if (token == "length" and isinstance(current, dict)
                 and "length" not in current):
             current = len(current)
+            continue
+        if (token == "apis_fired" and isinstance(current, dict)
+                and "apis_fired" not in current
+                and "installed" in current and "not_fired" in current):
+            installed = current.get("installed") or []
+            not_fired = set(current.get("not_fired") or [])
+            current = [x for x in installed if x not in not_fired]
             continue
         elif isinstance(token, tuple):
             kind, key, expected = token
@@ -1374,22 +1421,30 @@ def _locate_cited_row(path: Path, row: str, query: str | None = None,
         # query_or_table and a JSONPath in row_or_rule. Resolve the path against
         # the exact, manifest-bound source file; do not treat it as a fuzzy
         # field-name search or accept a similarly named value elsewhere.
-        if (row or "").strip().startswith("$"):
-            resolved = _resolve_json_path(decoded, row, source_branch)
-            if resolved is None:
+        row_clean = (row or "").strip()
+        is_normalized_jsonpath = False
+        if not row_clean.startswith("$") and re.match(
+            r"^[a-zA-Z0-9_.]+(\[\d+\])+(\.[a-zA-Z0-9_.]+)*$", row_clean
+        ):
+            row_clean = "$." + row_clean if not row_clean.startswith(".") else "$" + row_clean
+            is_normalized_jsonpath = True
+        if row_clean.startswith("$"):
+            resolved = _resolve_json_path(decoded, row_clean, source_branch)
+            if resolved is not None:
+                json_path, value = resolved
+                try:
+                    excerpt = json.dumps(
+                        value, ensure_ascii=False, sort_keys=True, default=str)
+                except (TypeError, ValueError):
+                    excerpt = str(value)
+                return {
+                    "artifact": path.name,
+                    "json_path": json_path,
+                    "excerpt": excerpt[:4000],
+                    "value": value,
+                }
+            if not is_normalized_jsonpath:
                 return None
-            json_path, value = resolved
-            try:
-                excerpt = json.dumps(
-                    value, ensure_ascii=False, sort_keys=True, default=str)
-            except (TypeError, ValueError):
-                excerpt = str(value)
-            return {
-                "artifact": path.name,
-                "json_path": json_path,
-                "excerpt": excerpt[:4000],
-                "value": value,
-            }
 
         # A `field=value` locator names one row by a field/value pair
         # (`rule=domain` for the YARA match whose rule is `domain`). The schema
