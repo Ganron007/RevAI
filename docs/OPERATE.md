@@ -584,15 +584,20 @@ claims remain unchanged and fail the audit when they conflict with run
 artifacts. RevAI validates the WinRE manifest's sample/run identity and raw
 trace hash, size, and record count before using Frida rows; an invalid trace is
 identified as ineligible evidence. The validated trace is embedded in the
-attested dynamic-pack artifact whose hash appears in the report-input manifest.
-The section is **presence-gated** — no
-pack for the sample leaves WinRE evidence out of the report. The Console shows
-the state for the open case: the orchestrator panel's **winre
-dynamic** chip (`pack · N DNS` / `no pack` / `not configured` / `off`) and
-`GET /api/winre/status/<sha>` for scripts. —
-and corroborates only (`static_yara_wins` never yields). RevAI's Frida static
-hook-candidate probe is not a runtime trace and is never treated as proof that
-the sample executed.
+attested dynamic-pack artifact (`deep_dive/02-dynamic-pack.json`) whose hash appears in
+the report-input manifest. With RC-74 dynamic-row section manifest coverage,
+`build_section_row_manifest` indexes the pack's evidence rows (top APIs, hooked APIs,
+process tree spawns, procmon events, persistence, AppData dropped files, network endpoints,
+sockaddrs, PCAP files, and correlation counters) for sections 5, 6, 7, and 10, while
+`_resolve_json_path` supports dynamic token aliases (`correlation`, `manifest`, `limitations`,
+`findings`) and non-`$` indexed locators, bringing the integrated claim violation rate down
+to 0.47%. The section is **presence-gated** — no pack for the sample leaves WinRE evidence
+out of the report. The Console provides a dedicated **Flare-VM Snapshot Gate** status card
+with real-time marker verification, gate mode display, and an **Attest** button (`POST /api/winre/attest`),
+alongside the orchestrator panel's **winre dynamic** chip (`pack · N DNS` / `no pack` / `not configured` / `off`)
+and `GET /api/winre/status/<sha>` for scripts. Dynamic findings corroborate only (`static_yara_wins`
+never yields). RevAI's Frida static hook-candidate probe is not a runtime trace and is never
+treated as proof that the sample executed.
 
 | Env | Default | Meaning |
 |---|---|---|

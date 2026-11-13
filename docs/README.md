@@ -11,7 +11,7 @@
 - [`agent-loop-discipline.md`](agent-loop-discipline.md) — budget warnings, redundant-call detection, hallucination check, failure taxonomy.
 - [`tool-stack.md`](tool-stack.md) — the 28-tool manifest + agent-callable ToolRegistry (incl. revai-tools sec/sinks/audit and the offline Windows-API lookup index).
 - [`api-index.md`](api-index.md) — build the offline Windows-API index for `api_lookup` (bundled 369-API default vs full ~46k-API corpus, deploy, licences, troubleshooting).
-- [`WINRE-REMOTE.md`](WINRE-REMOTE.md) — optional Windows dynamic analysis: drive WinRE (static + detonation + debugger passes) from the RevAI host.
+- [`WINRE-REMOTE.md`](WINRE-REMOTE.md) — live-proven Windows dynamic companion: drive WinRE (static, detonation, debugger loops) from the RevAI host, 4-mode comparison matrix, and snapshot gate attestation.
 - [`malcat-capa-engine.md`](malcat-capa-engine.md) — why Malcat's native capa engine is primary (measured benchmark).
 - [`case-studies/`](case-studies/) — real analysis reports produced by the pipeline against live malware samples (published after each verified batch run).
 

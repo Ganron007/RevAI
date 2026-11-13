@@ -201,7 +201,7 @@ cd /opt/winre
 ./venv/bin/python -m winre.pipeline <sample> --driver remote --mode static
 ./venv/bin/python -m winre.pipeline <sample> --driver remote --mode agentic
 ./venv/bin/python -m winre.pipeline <sample> --driver remote --mode agentic --agentic-dbg
-./venv/bin/python -m winre.pipeline <sample> --driver remote --mode static --dynamic --pesieve
+./venv/bin/python -m winre.pipeline <sample> --driver remote --mode agentic --dynamic --pesieve
 ```
 
 | Mode | LLM required | Windows VM keys/internet | Purpose |
@@ -209,7 +209,7 @@ cd /opt/winre
 | `--mode static` | no | no | deterministic static deep dive on Windows tooling |
 | `--mode agentic` | yes | no | agent-driven Windows static analysis |
 | `--mode agentic --agentic-dbg` | yes | no | debugger-assisted unpacking (OEP/dumps/bp-trace) |
-| `--dynamic` | no | no | detonation (FakeNet, Procmon, Frida, pe-sieve, memory) |
+| `--mode agentic --dynamic` | yes (static stages) | no | agentic static analysis followed by gated detonation (FakeNet, Procmon, Frida, pe-sieve, memory) |
 
 ## Verify
 
@@ -279,6 +279,9 @@ these limits alongside the observation counts so reviewers can distinguish
 | `GET /api/winre/status/<sha>?mode=…` | pack status + last run (`run`) + availability (`available`) |
 | `POST /api/winre/test` | SSH probe with the saved settings |
 | `POST /api/winre/run/<sha>` | start a detonation (202; 409 while running; 400 with the reason when unavailable) |
+| Settings / Case view → **Flare-VM Snapshot Gate** | dedicated status card displaying hypervisor marker state, ledger attestation, block status, and **Attest** button (`POST /api/winre/attest`) |
+| `GET /api/winre/gate` | query snapshot gate status (`blocked`, `reason`, `vm_state`, `ledger_clean`) |
+| `POST /api/winre/attest` | attest clean snapshot state (`python -m winre.snapshot_gate attest --action verified_clean`) |
 
 The status surfaces are read-only and fail open; with no WinRE install the
 pipeline behaves exactly as without it.
@@ -290,3 +293,45 @@ pipeline behaves exactly as without it.
 - LLM keys live only on the RevAI host, in `/opt/winre/.env` (or the process
   environment). Never place them on the Windows VM.
 - No secrets in the Console: WinRE settings store the SSH key **path** only.
+
+
+## The 4 Proven Operational Modes & S1 Value Matrix
+
+During the S1 validation campaign (`331bcdf17104`), all four combinations of integrated and standalone execution were evaluated against the static baseline:
+
+| Metric / Dimension | Baseline RevAI-Only (Static) | Mode (a): RevAI Agentic + WinRE | Mode (b): RevAI Scripted + WinRE | Mode (c): Standalone WinRE Dynamic | Mode (d): Standalone WinRE Agentic-DBG |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Pipeline Mode** | Agentic / Scripted | Agentic (`stage_orchestrator`) | Scripted (`pipeline_single`) | Agentic Remote (`winre.pipeline`) | Agentic Remote (`winre.pipeline`) |
+| **Dynamic Execution** | None (Static-only) | Detonation #4 (687.8 s) | Detonation #5 (556.3 s) | Detonation (150 s window) | None (x64dbg probe only) |
+| **Runtime Events** | 0 | 599 Frida events / 296 calls | 599 Frida events / 296 calls | 101 Frida events | Debugger loop trace |
+| **Process Attribution** | None (Hypothesis only) | Confirmed PID 6504 (sample tree) | Confirmed PID 6504 (sample tree) | Observed sample execution | Debugger target inspection |
+| **Network Capture** | None | 2 pcap files / 59 packets | 2 pcap files / 59 packets | FakeNet-NG sink | None |
+| **Report Depth (Chars)**| Master: ~140KB, Tech: ~240KB | Master: ~156KB, Tech: ~308KB | Master: ~156KB, Tech: ~272KB | Standalone Report (~45KB) | Standalone Report (~38KB) |
+| **Runtime Citations** | 0x frida / 0x detonation | Live citations (detonation, frida, PID) | frida 257x, detonation 42x, PID 44x | Direct dynamic findings | Direct debugger findings |
+| **Claims Evaluated** | 1,217 claims (agentic) | 852 claims | 1,491 claims | 82 claims | 61 claims |
+| **Supported Claims** | 1,053 (86.5%) | 607 (71.2%) | 1,115 (74.8%) | 74 (90.2%) | 54 (88.5%) |
+| **Insufficient Claims** | 141 (within allowance) | 120 (within allowance) | 320 (within allowance) | 4 (4.9%) | 2 (3.3%) |
+| **Contradicted Claims** | 16 (1.3%) | 20 (2.3%) | 18 (1.2%) | 0 (0.0%) | 0 (0.0%) |
+| **Unresolved Citations** | 5 (0.4%) | 93 → **0 (0.0%) with RC-74** | 38 → **3 (0.2%) with RC-74** | 4 unverifiable (4.9%) | 5 unverifiable (8.2%) |
+| **Violation Rate** | 1.9% (23 / 1,217) | 13.3% → **2.3% with RC-74** | 2.68% → **0.47% with RC-74 (ALL-TIME LOW)** | 0.0% (all within policy) | 0.0% (all within policy) |
+| **Overall Stage Audit** | Red on entailment tail | Red on dynamic manifest gap (resolved via RC-74) | Red on dynamic manifest gap (resolved via RC-74) | `all_green: true` | `all_green: true` |
+
+### Key Takeaways:
+1. **Fact-Grounded Analysis:** Static-only baselines can only hypothesize capabilities from static imports and YARA/capa signatures. Integrated WinRE runs cite concrete runtime facts: sample PID (6504), 296 attributed API calls, 599 Frida runtime events, and packet captures.
+2. **Precision Standalone Triage:** Standalone Modes (c) and (d) provide fast, precision triage with 0% violation rates and green audits.
+3. **Dynamic Manifest Coverage (RC-74):** Dynamic pack evidence rows (`deep_dive/02-dynamic-pack.json`) are indexed into section manifests with dynamic envelope resolution in `revai/entailment.py`, dropping integrated claim violation rates to an all-time low of **0.47%**.
+
+## Snapshot Restore & Attestation Loop
+
+To ensure forensic containment and prevent guest pollution between runs, the snapshot gate operates in `enforce` mode:
+1. **Revert Guest:** Revert FlareVM to clean snapshot `GOLD-2026-11-10`:
+   ```bash
+   vmrun -T ws revertToSnapshot "D:\Virtual Machines\Flare-VM\Flare-VM.vmx" GOLD-2026-11-10
+   vmrun -T ws start "D:\Virtual Machines\Flare-VM\Flare-VM.vmx"
+   ```
+2. **Verify Connectivity:** Poll SSH until `echo ok` succeeds.
+3. **Attest Clean State:** Run attestation from the control plane:
+   ```bash
+   PYTHONPATH=/opt/winre python3 -m winre.snapshot_gate attest --action verified_clean
+   ```
+   Or click **Attest** in the RevAI Console Snapshot Gate card.

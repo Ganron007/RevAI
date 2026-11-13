@@ -85,7 +85,7 @@ Measured 10-sample benchmark on real malware (Malcat 0.9.15 native vs Mandiant c
 | **Reliability** | **Malcat** — 10/10 OK; Mandiant 7/10; capa-rs 2/10 (SMDA/parse failures) |
 | **Usable signal on hard samples (3–8 MB, installer/packer-packed)** | **Malcat only** — Mandiant times out |
 
-Full per-sample table is in the top-level [`README.md`](../README.md#why-malcats-capa-engine). If Malcat is absent, the pipeline falls back to Mandiant capa automatically — results are still honest, just potentially slower or incomplete on hard samples.
+Full per-sample table is in [`docs/malcat-capa-engine.md`](malcat-capa-engine.md). If Malcat is absent, the pipeline falls back to Mandiant capa automatically — results are still honest, just potentially slower or incomplete on hard samples.
 
 ## Extended tool stack (V7)
 
