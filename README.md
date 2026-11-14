@@ -17,74 +17,53 @@
 
 ## What is RevAI?
 
-**RevAI** is an LLM-assisted malware reverse-engineering pipeline for REMnux. It is **deterministic-first**: format-aware RE tools run deterministically and produce the evidence; the LLM interprets that evidence into verdicts and reports — never the other way around:
+**RevAI** is an LLM-assisted malware reverse-engineering pipeline for REMnux. It operates on a **deterministic-first** principle: format-aware RE tools gather structured ground-truth evidence, while an OpenAI-compatible LLM interprets that evidence into verdicts and technical reports — never the other way around.
 
-- **Deterministic-first analysis** — RE tools produce a stage-tagged evidence pack; an OpenAI-compatible LLM interprets the evidence into the verdict and report. Everything the LLM can claim must trace back to real tool output.
-- **Agentic deep dive** — a LangGraph ReAct agent searches SQL-first RE tools (Ghidra/IDA via ghidrasql/idasql, capa, Malcat, FLOSS, YARA, radare2, …) on top of a deterministic checklist and signal extractors (emulation oracle, anti-analysis, dynamic-resolve, unpack pass) that run first.
-- **SQL-first RE** — Ghidra (required) and optional IDA Pro populate SQLite via **ghidrasql**/**idasql**; the agent queries structured evidence instead of scraping disassembly text.
-- **Evidence-traceable reports** — report quality checks require source citations on each factual sentence and evidence row, resolve them to run-bound tool output, and review the claim against the cited evidence. When quick or deep analysis selects a verdict, every report must use that exact label; both upgrades and downgrades fail the gate. The configured model performs the claim review in a separate call, so it is evidence-constrained corroboration rather than independent-provider certification.
-- **Claim-level report schema** — report writers return structured observations and tables, not free-form Markdown. Each observation and table row must name its source artifact and exact row or rule; a deterministic renderer adds the citation and the Evidence column. Assessment, recommendation, and note blocks are explicitly non-factual, are skipped by citation coverage, and are still scanned for claimed indicators.
-- **Honest quality gate** — `report_quality.py` computes `truly_green = all_green (audit) + quality_green (report completeness and quality) + zero failed tools`. Every report carries a `source` (`llm_judge` vs `deterministic_fallback`), so missing sections, stubs, or uncited claims cannot look green.
+- **Deterministic-first evidence** — Binary tools produce structured evidence packs. The LLM interprets findings, but every claim must trace back to verifiable tool output.
+- **SQL-first RE architecture** — Ghidra and optional IDA Pro populate SQLite databases via `ghidrasql`/`idasql`. The agent queries structured tables instead of scraping disassembly text.
+- **Agentic deep dive** — A LangGraph ReAct agent investigates capabilities using structured SQL, capa, Malcat, FLOSS, YARA, and emulation oracles.
+- **Evidence-traceable reporting** — Factual observations require strict source citations linked to tool outputs. Unverified claims fail quality gates closed.
+- **Honest quality gate (`truly_green`)** — `report_quality.py` mandates full stage success, zero tool failures, and claim-level evidence entailment before marking an analysis green.
+- **Dynamic companion ([WinRE](https://github.com/Ganron007/WinRE))** — Orchestrates automated FlareVM guest detonation, ingesting verified PIDs, process trees, Frida API traces, and PCAPs directly into the deep dive and final reports.
 
-**Dynamic Companion — [WinRE](https://github.com/Ganron007/WinRE).** RevAI is static-first; when live runtime behavior is required, WinRE detonates the sample on an isolated FlareVM and returns a versioned artifact pack that RevAI ingests for deep dive investigation and report corroboration. Master and technical reports gain a presence-gated *Dynamic Corroboration* section citing verified sample PID, process tree, attributed API calls, Frida hooks, and network capture. Dynamic evidence corroborates static findings without overriding them (`static_yara_wins`). Setup and triggers: [`docs/WINRE-REMOTE.md`](docs/WINRE-REMOTE.md).
-
-> **Reality check.** RevAI is an analyst assistant, not a finished autonomous product. LLM-assisted analysis is inherently probabilistic: results can vary between runs, and a green stage means the tooling and quality gate passed — **not** that the analysis is malware-analyst-accurate or the verdict objectively correct. Models can misread evidence, and tool limits (packing, obfuscation, emulation) leave gaps the gates cannot fully close. Always review the evidence and the report — treat it as a starting point for analyst review, never as ground truth.
-
----
+> **Reality Check:** RevAI is an analyst assistant, not an autonomous oracle. LLMs can misinterpret edge cases; a green gate verifies tool execution and evidence entailment, not absolute analyst ground truth. Always inspect the raw evidence before operationalizing findings.
 
 ---
 
 ## The Console
 
-RevAI runs as a local service on REMnux. The Flask app (`app.py`) serves the
-React Console and drives the stage scripts under `/opt/scripts/`.
+RevAI runs as a local service on REMnux. The Flask app (`app.py`) serves the React Console and drives the stage scripts under `/opt/scripts/`.
 
 <p align="center">
   <img src="docs/img/ui-screenshot_v2.png" alt="RevAI Console — landing / lab overview" width="100%">
 </p>
 
-The Console is a control surface, not a separate pipeline: every stage runs the
-same script the CLI runs, with the same tools and the same gates. What it adds is
-being able to drive a run stage by stage, watch it live, and read the artifacts
-without leaving the browser — running the whole spine with the **Run orch**
-button, inspecting verdicts and reports per case, configuring the optional WinRE
-detonation, and recording analyst direction.
-
-**Everything the CLI can do is reachable from the Console and vice versa** — that
-parity is a design rule, not an accident. Environment gates an operator would
-think of as a feature (depth mode, TI enrichment, the depth ceiling, the IoC
-fact-check's mode) are settable from both, and a test fails if a new gate
-becomes reachable from only one. See
-[`docs/OPERATE.md`](docs/OPERATE.md) for the Console field by field.
+The Console is a visual control surface with complete CLI parity: every stage executes the same underlying scripts, tools, and quality gates. Analysts can step through stages manually, stream execution in real time, inspect artifacts and verdicts, manage FlareVM snapshot attestation, and trigger full autonomous runs (**Run orch**) directly from the browser. See [`docs/OPERATE.md`](docs/OPERATE.md) for field-by-field guidance.
 
 ---
 
 ## Pipeline Execution Modes
 
-RevAI provides versatile execution modes spanning deterministic static processing, autonomous LLM orchestration, live dynamic corroboration via WinRE, and interactive browser-based control:
+RevAI provides 5 execution modes tailored for different analysis workflows:
 
-| Execution Mode | Entry Point / Invocation | Description & Sequencing | Fault Handling & Policies |
-| :--- | :--- | :--- | :--- |
-| **Scripted Static** *(Default)* | `pipeline_single.py <sample>` | • Fixed, deterministic stage sequence (the pipeline spine)<br>• Pure static toolchain execution; zero orchestration variance | **Zero retries**<br>Deterministic fail-fast semantics; stage failure halts pipeline with clear error attribution. |
-| **Agentic Autonomous** | `stage_orchestrator.py --sha <sha>` | • LangGraph ReAct autonomous planner in policy-pinned sequence<br>• Dynamically inspects intermediate findings between stages<br>• Human-in-the-Loop (HITL) pause before publishing if triage and deep verdicts conflict | **1 bounded retry** *(default)*<br>Recovers from transient faults (socket timeouts, capacity stalls). A failed publisher freezes evidence; earlier analysis is never replayed. |
-| **Integrated Dynamic (RevAI + WinRE)** | `REVAI_WINRE_RUN=1 pipeline_single.py`<br>or `REVAI_WINRE_RUN=1 stage_orchestrator.py` | • Triggers remote FlareVM guest detonation (`winre_dynamic`) between triage and deep dive<br>• Ingests 599 Frida runtime events, 296 attributed API calls, process tree, and PCAPs into deep dive and reports<br>• Section manifests index dynamic pack rows (RC-74), achieving an all-time low **0.47% violation rate** | **Fail-closed & isolated**<br>Enforce-mode snapshot gate requires clean hypervisor marker and attested ledger. Dynamic evidence corroborates but never overrides static signatures (`static_yara_wins`). |
-| **Interactive Web Console** | `http://<host>:5000` (`app.py`) | • Full visual laboratory for manual step-through or one-click execution (**Run orch**)<br>• Real-time progress streaming, live artifact inspection, and analyst steering notes<br>• Dedicated **Flare-VM Snapshot Gate** management card with one-click clean attestation | **UI-configured profiles**<br>Pre-run configuration panel sets execution timeouts, retry budgets (*standard*, *generous*, *unlimited*), and dynamic analysis parameters. |
-| **Standalone Remote Driver** | `python -m winre.pipeline <sample> --driver remote --mode agentic --dynamic`<br>or `--mode agentic --agentic-dbg` | • Autonomous remote driver executing on the RevAI host over SSH into FlareVM<br>• Provides rapid standalone dynamic detonation (FakeNet, Procmon, Frida) or debugger-assisted unpacking (x64dbg / Malcat / WinDbg)<br>• Standalone audits achieve **0.0% claim violation rates** (`all_green: true`) | **Strict Mutual Exclusion**<br>Enforces mutual exclusion between `--dynamic` and `--agentic-dbg`. Snapshot gate requires clean restoration between runs. |
+| Mode | Entry Point | Key Characteristics |
+| :--- | :--- | :--- |
+| **Scripted Static** *(Default)* | `pipeline_single.py <sample>` | Deterministic, zero-variance pipeline spine; fails fast on errors. |
+| **Agentic Autonomous** | `stage_orchestrator.py --sha <sha>` | LangGraph ReAct planner with adaptive step inspection and HITL verdict review. |
+| **Integrated Dynamic** | `REVAI_WINRE_RUN=1 pipeline_single.py` | Full static RE plus remote FlareVM detonation, Frida API traces, and PCAP. |
+| **Interactive Console** | `http://<host>:5000` (`app.py`) | Browser-based visual laboratory for stage stepping, live progress, and artifact inspection. |
+| **Standalone Remote Driver** | `python -m winre.pipeline <sample>` | Rapid standalone dynamic detonation or debugger-assisted unpacking via WinRE. |
 
-### Shared Tool Stack Across All Modes
+### Shared Tool Stack
 
-- **Static Reverse Engineering** — Ghidra (SQL-first via ghidrasql, required), IDA Pro (SQL-first via idasql, optional), Malcat (native capa engine, optional), radare2, capa, YARA-X, FLOSS, revai-tools (mitigations, sink-site provenance audit, cryptocurrency wallet/IOC extraction).
-- **Dynamic Emulation** — Speakeasy API emulation oracle, scdbg shellcode analysis.
-- **Deobfuscation & SMT Solving** — z3 SMT solver, angr symbolic execution engine.
-- **Format-Specific Analyzers** — LIEF, diec, GoReSym (Go), RIFT (Rust), ilspycmd / dnfile (.NET), pycdc (Python bytecode), oletools (Office macros).
-- **Remote Dynamic Instrumentation** — WinRE remote driver controlling FlareVM: Procmon process tree attribution, Frida runtime hooking, FakeNet-NG network simulation, pe-sieve memory dump analysis.
-
-The deep dive always runs through the LangGraph ReAct agent.
+- **Static RE Engines** — Ghidra (SQL-first via ghidrasql, required), IDA Pro (SQL-first via idasql, optional), Malcat (native capa engine, optional), radare2, capa, YARA-X, FLOSS, revai-tools.
+- **Dynamic Emulation & SMT** — Speakeasy API emulation, scdbg shellcode analyzer, z3 SMT solver, angr symbolic execution engine.
+- **Format Analyzers** — LIEF, diec, GoReSym (Go), RIFT (Rust), ilspycmd / dnfile (.NET), pycdc (Python bytecode), oletools (Office macros).
+- **Remote Dynamic Telemetry** — WinRE remote driver on FlareVM: Procmon process trees, Frida runtime hooks, FakeNet-NG network simulation, pe-sieve memory dumps.
 
 > [!NOTE]
-> **Malware RE Reports**
->
-> Full analysis reports, audits, and verdicts from live malware runs live in [`docs/case-studies/`](docs/case-studies/). Every scan ships its raw tool output for reference in the sample's `evidence/` folder — refer to it when in doubt.
+> **Malware RE Reports & Case Studies**
+> Full analysis reports, audits, and verdicts from live malware runs live in [`docs/case-studies/`](docs/case-studies/). Every scan ships its raw tool output for reference in the sample's `evidence/` folder.
 
 ---
 
