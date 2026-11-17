@@ -77,9 +77,42 @@ def test_non_agnes_reasoning_contract_is_unchanged():
         "thinking": {"type": "enabled"},
         "reasoning_effort": "high",
     }
+    # RC-75 (2026-11-18): generic providers now receive their documented
+    # reasoning field on the LangChain path too, merged through extra_body
+    # exactly as the urllib path already sent it -- previously
+    # REVAI_LLM_REASONING was silently inert on this path.
     assert v2_lib.get_llm_chat_options(4096, endpoint, "high") == {
-        "max_tokens": 4096}
+        "max_tokens": 4096,
+        "extra_body": {"thinking": {"type": "enabled"},
+                       "reasoning_effort": "high"},
+    }
     assert v2_lib._build_reasoning_body("enabled", endpoint) == {}
+    # No configured reasoning -> no reasoning field at all (provider default).
+    assert v2_lib.get_llm_chat_options(4096, endpoint, None) == {
+        "max_tokens": 4096}
+
+
+def test_stepfun_reasoning_contract_maps_to_documented_effort_only():
+    endpoint = "https://api.stepfun.ai/step_plan/v1"
+
+    # StepFun documents reasoning_effort low/medium/high on Chat Completions;
+    # the undocumented generic `thinking` object must not be sent.
+    for effort in ("low", "medium", "high"):
+        assert v2_lib._build_reasoning_body(effort, endpoint) == {
+            "reasoning_effort": effort}
+    # `minimal` is not a documented StepFun value; the lowest documented
+    # effort is the safe alias.
+    assert v2_lib._build_reasoning_body("minimal", endpoint) == {
+        "reasoning_effort": "low"}
+    # No documented off switch (step-5-preview always thinks): the
+    # enabled/disabled aliases keep the provider default.
+    assert v2_lib._build_reasoning_body("enabled", endpoint) == {}
+    assert v2_lib._build_reasoning_body("disabled", endpoint) == {}
+    # The configured effort must reach the LangChain path -- step-5-preview
+    # defaults to HIGH when the field is absent, so a dropped field would
+    # silently burn the plan's TPM at maximum reasoning depth.
+    assert v2_lib.get_llm_chat_options(4096, endpoint, "low") == {
+        "max_tokens": 4096, "extra_body": {"reasoning_effort": "low"}}
 
 
 def test_agnes_llm_judge_sends_only_documented_reasoning_and_output_cap(

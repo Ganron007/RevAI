@@ -535,6 +535,14 @@ Tunables (all optional, defaults shown):
 > feel: the error log lines carry the model, the `Retry-After` value and the
 > provider's own body — those lines, not this document, are the authority.
 >
+> 2026-11-18 provider switch: the configured provider of record changed (named in the
+> local config of record, not in published docs). The configured guard values
+> (concurrency 20, RPM 400, TPM 2,000,000) come from the new plan's **published**
+> tier, not from a ramp measurement — the ramp re-run is pending the first live runs
+> on this provider. Until then these numbers are the plan's contract, and the same
+> rule applies: the error log lines are the authority if the provider behaves
+> differently from its published tier.
+>
 > Note also that provider limits are usually per **account**, not per key: another
 > product on the same account consumes the same budget, which a per-process guard rail
 > cannot see.

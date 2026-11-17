@@ -3354,6 +3354,15 @@ def _is_meta_api(api_url: str | None = None) -> bool:
         return False
 
 
+def _is_stepfun_api(api_url: str | None = None) -> bool:
+    """Match StepFun's documented API host (the step_plan endpoint included)."""
+    try:
+        candidate = api_url or os.environ.get("REVAI_LLM_API_URL", "")
+        return urlsplit(candidate).hostname == "api.stepfun.ai"
+    except ValueError:
+        return False
+
+
 def _build_reasoning_body(reasoning: str | None,
                           api_url: str | None = None) -> dict:
     """Build the reasoning/thinking control parameters for the LLM body.
@@ -3385,6 +3394,16 @@ def _build_reasoning_body(reasoning: str | None,
         if r in ("minimal", "low", "medium", "high", "xhigh"):
             return {"reasoning_effort": r}
         return {}
+    if _is_stepfun_api(api_url):
+        # StepFun documents `reasoning_effort` with low/medium/high on Chat
+        # Completions; step-5-preview defaults to HIGH when the field is
+        # absent, so the configured effort must always reach the request.
+        # There is no documented "off" -- the model always thinks -- so the
+        # enabled/disabled aliases keep the provider default rather than
+        # sending an undocumented field that could hard-fail the request.
+        if r in ("minimal", "low", "medium", "high"):
+            return {"reasoning_effort": "low" if r == "minimal" else r}
+        return {}
     if r in ("enabled", "on", "true"):
         return {}
     if r in ("disabled", "none", "off", "false"):
@@ -3409,7 +3428,17 @@ def get_llm_chat_options(max_tokens: int, api_url: str | None = None,
             options["extra_body"] = meta_fields
         return options
     if not _is_agnes_api(api_url):
-        return {"max_tokens": max_tokens}
+        # Generic OpenAI-compatible providers: the urllib path already sends
+        # the configured reasoning field (`body.update(_build_reasoning_body)`
+        # in llm_judge); dropping it here made REVAI_LLM_REASONING silently
+        # inert on the LangChain path -- the same declared-but-inert config
+        # key failure shape this library keeps documenting. Meta's effort
+        # field takes the same extra_body merge in its branch above.
+        options: dict = {"max_tokens": max_tokens}
+        reasoning_fields = _build_reasoning_body(configured, api_url)
+        if reasoning_fields:
+            options["extra_body"] = reasoning_fields
+        return options
     # ChatOpenAI rewrites its max_tokens option to max_completion_tokens.
     # Send the documented provider field through extra_body, which the SDK
     # merges after that rewrite, and leave the constructor option unset.
