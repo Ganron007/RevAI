@@ -4286,6 +4286,23 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
             if e == "low":
                 return "minimal"
             return effort
+        if _is_stepfun_api(api_url):
+            # StepFun documents reasoning_effort low/medium/high and NO off
+            # switch. The generic ladder's `disabled` rung maps to no field at
+            # all on this endpoint, which restores the provider default --
+            # measured on the step-* flash models as HIGHER effort than the
+            # configured low. Worse, the ladder then had no lower rung and
+            # gave up, losing whole report sections to the transient
+            # empty-content class (S2 mode (a) re-run, 2026-11-18: 12
+            # empty-content events in one publish stage, each costing a
+            # section). Step down within the documented ladder only; at `low`
+            # there is no lower rung, so the caller's same-effort retry below
+            # is the correct bound.
+            if e in ("max", "high"):
+                return "medium"
+            if e == "medium":
+                return "low"
+            return effort
         if e in order and order.index(e) < len(order) - 1:
             return order[order.index(e) + 1]
         return effort
@@ -4296,6 +4313,11 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
             # Agnes documents Thinking as a boolean toggle only. A final
             # thinking-off call would silently change the configured behavior.
             return None
+        if _is_stepfun_api(api_url):
+            # No documented off switch: the last resort is the lowest
+            # DOCUMENTED effort, not the phantom `disabled` rung (which sends
+            # no field and restores the provider default).
+            return "low"
         if not _is_meta_api(api_url):
             return "disabled"
         e = (effort or "").strip().lower()
@@ -4563,15 +4585,23 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                     nxt = _next_lower_effort(current_reasoning)
                     if nxt == current_reasoning:
                         last_empty = data
-                        if _is_agnes_api(api_url):
+                        # The provider documents no lower reasoning rung.
+                        # Agnes keeps its configured Thinking setting; StepFun
+                        # documents low/medium/high with no off switch, and its
+                        # empty-content responses are a transient class (12 in
+                        # one publish stage, 2026-11-18) -- a bounded
+                        # same-effort retry is the correct recovery, where the
+                        # phantom `disabled` rung used to give up and lose the
+                        # section.
+                        if _is_agnes_api(api_url) or _is_stepfun_api(api_url):
                             sleep_s = 2 ** attempt + random.uniform(0, 1.0)
                             if _can_retry_after(
                                     sleep_s,
-                                    why="Agnes returned no usable response"):
+                                    why="provider returned no usable response"):
                                 print(
                                     f"[llm_judge] attempt {attempt}/{max_retries} "
                                     "returned no usable response; retrying at the "
-                                    f"same configured Thinking setting="
+                                    f"same configured effort="
                                     f"{current_reasoning!r} after {sleep_s:.1f}s",
                                     flush=True,
                                 )
@@ -4586,7 +4616,8 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
                         break
                     print(
                         f"[llm_judge] attempt {attempt}/{max_retries} returned "
-                        f"no usable content (reasoning={current_reasoning}); "
+                        f"no usable content (reasoning={current_reasoning}, "
+                        f"finish={_finish_reason(data)}); "
                         f"retrying with reasoning={nxt}",
                         flush=True,
                     )

@@ -454,3 +454,78 @@ def test_langchain_serializes_documented_fields_without_renaming_token_cap():
         "model", "messages", "temperature", "top_p", "max_tokens", "stream",
         "tools", "tool_choice", "chat_template_kwargs",
     }
+
+
+# ---------------------------------------------------------------- RC-79
+# The S2 mode-(a) re-run lost report sections to the StepFun empty-content
+# class: 12 events in one publish stage, each giving up after the ladder
+# stepped to a phantom `disabled` rung. `disabled` maps to NO field on this
+# endpoint (restoring the provider default -- measured as HIGHER effort than
+# the configured low), and the ladder then had no lower rung and stopped.
+def test_stepfun_ladder_stays_inside_the_documented_efforts():
+    endpoint = "https://api.stepfun.ai/step_plan/v1"
+
+    # The documented ladder is low/medium/high; `disabled` is NOT a rung.
+    assert v2_lib._build_reasoning_body("disabled", endpoint) == {}
+    for effort in ("low", "medium", "high"):
+        assert v2_lib._build_reasoning_body(effort, endpoint) == {
+            "reasoning_effort": effort}
+
+
+def test_stepfun_empty_content_retries_at_the_same_effort(monkeypatch):
+    """No lower rung exists -> the same-effort retry must fire (not give up).
+
+    The first response is empty; the retry at the same effort succeeds. Under
+    the old ladder this stepped to `disabled` (no field -> provider default)
+    and then declared no lower effort remained, losing the section.
+    """
+    calls = []
+
+    class _Empty:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_a):
+            return False
+
+        def read(self):
+            return json.dumps({"choices": [{"message": {"role": "assistant",
+                                                        "content": ""},
+                                            "finish_reason": "stop"}],
+                               "usage": {}}).encode()
+
+    class _Good:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_a):
+            return False
+
+        def read(self):
+            return json.dumps({"choices": [{"message": {"role": "assistant",
+                                                        "content": '{"ok":true}'},
+                                            "finish_reason": "stop"}],
+                               "usage": {}}).encode()
+
+    def fake_urlopen(request, timeout=None):
+        calls.append(json.loads(request.data.decode("utf-8")))
+        return _Empty() if len(calls) == 1 else _Good()
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(v2_lib, "llm_budget_acquire", lambda *_a, **_kw: 0)
+    monkeypatch.setattr(v2_lib.time, "sleep", lambda *_a: None)
+    monkeypatch.setenv("REVAI_LLM_API_URL",
+                       "https://api.stepfun.ai/step_plan/v1")
+    monkeypatch.setenv("REVAI_LLM_API_KEY", "test-key")
+    monkeypatch.setenv("REVAI_LLM_MODEL", "step-3.7-flash")
+    monkeypatch.setenv("REVAI_LLM_REASONING", "low")
+    monkeypatch.setenv("REVAI_LLM_STREAM", "0")
+
+    result = v2_lib.llm_judge("Return only {\"ok\": true}", max_retries=3)
+
+    assert result["choices"][0]["message"]["content"] == '{"ok":true}'
+    assert len(calls) >= 2, "the same-effort retry must fire"
+    # Every attempt keeps the DOCUMENTED effort; the phantom `disabled` rung
+    # (which would send no field at all) must never be used as a step.
+    for body in calls:
+        assert body.get("reasoning_effort") == "low", body
