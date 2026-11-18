@@ -1332,3 +1332,213 @@ def test_yara_gen_ioc_pack_excludes_loopback_urls(tmp_path):
     assert not any("localhost" in u for u in iocs["urls"]), iocs["urls"]
     # yara_gen stores urls UNdefanged (pinned in the RC-47 test above).
     assert any("c2.evil" in u for u in iocs["urls"]), iocs["urls"]
+
+
+# --------------------------------------------------------------------------
+# RC-76 (2026-11-18): the S2 mode-(a) definitive run left 27 unresolved-rows
+# from writer path-shape confusion, not missing evidence. Every one of these
+# aliases maps a natural-but-wrong spelling onto the exact same field; the
+# path must still resolve afterwards, or the row stays unresolved.
+# --------------------------------------------------------------------------
+def _rc76_case(tmp_path):
+    case = tmp_path / "logs" / SHA / "agentic"
+    (case / "deep_dive").mkdir(parents=True)
+    return case
+
+
+def test_malcat_file_summary_imports_alias_resolves(tmp_path):
+    """`$.malcat.file_summary.imports[N]` -> `$.malcat.views.imports[N]`.
+
+    Measured live: the technical report's import table cited
+    `$.malcat.file_summary.imports[0]` for the kernel32.LoadLibraryA row
+    (ea 38072). The manifest already indexes `malcat.views.imports`; the
+    writer simply put the list under file_summary. 24 of the run's 27
+    unresolved-rows were this one shape.
+    """
+    case = _rc76_case(tmp_path)
+    (case / "deep_dive" / "01-tools-raw.json").write_text(json.dumps({
+        "malcat": {
+            "file_summary": {"type": "PE32+", "sha256": "ab" * 32},
+            "views": {"imports": [
+                {"ea": 38072, "name": "kernel32.LoadLibraryA"},
+                {"ea": 38076, "name": "kernel32.GetProcAddress"}],
+                "structures": [{"name": "first-struct"},
+                               {"name": "second-struct"}]},
+        },
+    }), encoding="utf-8")
+
+    for row, want in (
+        ("$.malcat.file_summary.imports[0]", "kernel32.LoadLibraryA"),
+        ("$.malcat.file_summary.imports[1]", "kernel32.GetProcAddress"),
+        ("$.malcat.file_summary.imports", "kernel32.LoadLibraryA"),
+        # The pre-existing shorter spelling still works.
+        ("$.malcat.imports[0]", "kernel32.LoadLibraryA"),
+        # And the true path.
+        ("$.malcat.views.imports[0]", "kernel32.LoadLibraryA"),
+        # The same confusion on a different view list (8 of the run's rows):
+        # `structures` lives under views too, so the file_summary segment is
+        # dropped and the view prefix added.
+        ("$.malcat.file_summary.structures[1]", "second-struct"),
+        # A bare shortened view spelling routes through `views` as well.
+        ("$.malcat.structures[0]", "first-struct"),
+    ):
+        located, check = E._ground_citation(
+            {"source": "malcat", "query": "deep_dive/01-tools-raw.json",
+             "row": row}, case)
+        assert located is not None, (row, check)
+        assert check["status"] == "traceable-row", (row, check)
+        assert want in located["excerpt"], (row, located["excerpt"])
+
+
+def test_a_real_file_summary_field_keeps_its_path(tmp_path):
+    """The alias drops `file_summary` ONLY before a known view key.
+
+    `$.malcat.file_summary.sha256` is a legitimate citation and must not be
+    rewritten (the rewritten path resolves nowhere, which would turn a good
+    citation red).
+    """
+    case = _rc76_case(tmp_path)
+    (case / "deep_dive" / "01-tools-raw.json").write_text(json.dumps({
+        "malcat": {"file_summary": {"sha256": "cd" * 32, "type": "PE32+"},
+                   "views": {"imports": [{"name": "kernel32.LoadLibraryA"}]}},
+    }), encoding="utf-8")
+
+    located, check = E._ground_citation(
+        {"source": "malcat", "query": "deep_dive/01-tools-raw.json",
+         "row": "$.malcat.file_summary.sha256"}, case)
+    assert located is not None, check
+    assert check["status"] == "traceable-row", check
+    assert "cd" * 32 in located["excerpt"], located["excerpt"]
+
+
+def test_dynamic_stage_findings_alias_covers_every_nested_key(tmp_path):
+    """`$.dynamic_stage.findings.<key>` -> `...findings.findings.<key>`.
+
+    The hardcoded key set predated `injection`; the live run lost a row to
+    exactly that gap. The alias is now data-driven (the key must really be
+    in the nested findings map), with the set as fallback.
+    """
+    case = _rc76_case(tmp_path)
+    (case / "deep_dive" / "02-dynamic-pack.json").write_text(json.dumps({
+        "present": True,
+        "dynamic_stage": {"findings": {"findings": {
+            "injection": [{"target": "explorer.exe"}],
+            "network": {"lead_note": "VM-wide capture; leads, not proof"},
+        }}},
+    }), encoding="utf-8")
+
+    for row, want in (
+        ("$.dynamic_stage.findings.injection", "explorer.exe"),
+        ("$.dynamic_stage.findings.network.lead_note", "VM-wide capture"),
+    ):
+        located, check = E._ground_citation(
+            {"source": "winre", "query": "deep_dive/02-dynamic-pack.json",
+             "row": row}, case)
+        assert located is not None, (row, check)
+        assert check["status"] == "traceable-row", (row, check)
+        assert want in located["excerpt"], (row, located["excerpt"])
+
+    # A key that is in NEITHER the nested map nor the fallback set stays
+    # unresolved -- the alias legitimizes a shape, never an invention.
+    located, check = E._ground_citation(
+        {"source": "winre", "query": "deep_dive/02-dynamic-pack.json",
+         "row": "$.dynamic_stage.findings.not_a_real_key"}, case)
+    assert located is None, located
+    assert check["status"] == "unresolved-row", check
+
+
+def test_doubled_findings_spelling_maps_once(tmp_path):
+    """`$.findings.findings.network...` must not gain a THIRD `findings`."""
+    case = _rc76_case(tmp_path)
+    (case / "deep_dive" / "02-dynamic-pack.json").write_text(json.dumps({
+        "present": True,
+        "dynamic_stage": {"findings": {"findings": {
+            "network": {"lead_note": "VM-wide capture; leads, not proof"}}}},
+    }), encoding="utf-8")
+
+    located, check = E._ground_citation(
+        {"source": "winre", "query": "deep_dive/02-dynamic-pack.json",
+         "row": "$.findings.findings.network.lead_note"}, case)
+    assert located is not None, check
+    assert check["status"] == "traceable-row", check
+    assert "VM-wide capture" in located["excerpt"], located["excerpt"]
+
+
+def test_post_analysis_alias_requires_the_target_to_exist(tmp_path):
+    """`$.post_analysis...` -> `$.dynamic_stage.post_analysis...` when real."""
+    case = _rc76_case(tmp_path)
+    (case / "deep_dive" / "02-dynamic-pack.json").write_text(json.dumps({
+        "present": True,
+        "dynamic_stage": {"post_analysis": {"steps": {
+            "pcap_beacon": {"ok": True, "beacon_count": 0}}}},
+    }), encoding="utf-8")
+
+    located, check = E._ground_citation(
+        {"source": "winre", "query": "deep_dive/02-dynamic-pack.json",
+         "row": "$.post_analysis.steps.pcap_beacon.beacon_count"}, case)
+    assert located is not None, check
+    assert check["status"] == "traceable-row", check
+    # The locator names the scalar field, so the excerpt IS its value.
+    assert located["excerpt"].strip() == "0", located["excerpt"]
+
+    # Without the real branch the citation stays unresolved -- no invention.
+    (case / "deep_dive" / "02-dynamic-pack.json").write_text(json.dumps({
+        "present": True, "dynamic_stage": {"findings": {}},
+    }), encoding="utf-8")
+    located, check = E._ground_citation(
+        {"source": "winre", "query": "deep_dive/02-dynamic-pack.json",
+         "row": "$.post_analysis.steps.pcap_beacon.beacon_count"}, case)
+    assert located is None, located
+    assert check["status"] == "unresolved-row", check
+
+
+def test_a_windows_path_used_as_a_dict_key_resolves(tmp_path):
+    """`$.frida_summary.file_effects.C:\Windows\...\wlogon.dll` — the dots
+    inside the key are not path separators.
+
+    Measured live: 12 of the S2 run's 27 unresolved-rows were this shape
+    (file_effects is keyed by the affected path). The rejoin is exact and
+    longest-first; a key that does not exist verbatim stays unresolved.
+    """
+    case = _rc76_case(tmp_path)
+    (case / "deep_dive" / "02-dynamic-pack.json").write_text(json.dumps({
+        "present": True,
+        "frida_summary": {"file_effects": {
+            "C:\Windows\system32\wlogon.dll": {
+                "path": "C:\Windows\system32\wlogon.dll",
+                "event_count": 6, "successful_writes": 1},
+            "C:\Windows\system32\lcss.exe": {
+                "path": "C:\Windows\system32\lcss.exe", "event_count": 4},
+            "SYSTEM\CurrentControlSet\Services\Lcss": {
+                "path": "SYSTEM\CurrentControlSet\Services\Lcss",
+                "event_count": 6},
+        }},
+    }), encoding="utf-8")
+
+    # The writer emitted these WITHOUT the `$.` prefix; the indexed-path
+    # normalization requires a bracket segment, so a second normalization
+    # (RC-76) covers the bare Windows-path shape. Both spellings resolve.
+    for row, want in (
+        ("frida_summary.file_effects.C:\Windows\system32\wlogon.dll",
+         "event_count"),
+        ("frida_summary.file_effects.C:\Windows\system32\lcss.exe",
+         "lcss.exe"),
+        ("$.frida_summary.file_effects.C:\Windows\system32\wlogon.dll",
+         "event_count"),
+        # A registry path used as a key (no drive letter, backslashes only).
+        ("frida_summary.file_effects.SYSTEM\CurrentControlSet\Services\Lcss",
+         "CurrentControlSet"),
+    ):
+        located, check = E._ground_citation(
+            {"source": "winre", "query": "deep_dive/02-dynamic-pack.json",
+             "row": row}, case)
+        assert located is not None, (row, check)
+        assert check["status"] == "traceable-row", (row, check)
+        assert want in located["excerpt"], (row, located["excerpt"])
+
+    # A path that is not a key stays unresolved -- no fuzzy matching.
+    located, check = E._ground_citation(
+        {"source": "winre", "query": "deep_dive/02-dynamic-pack.json",
+         "row": "$.frida_summary.file_effects.C:\Windows\nope.dll"}, case)
+    assert located is None, located
+    assert check["status"] == "unresolved-row", check

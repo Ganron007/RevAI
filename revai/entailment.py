@@ -1007,10 +1007,35 @@ def _resolve_json_path(value: Any, expression: str,
                 tokens = ["dynamic_stage", "findings", "limitations"] + tokens[2:]
             elif len(tokens) > 1 and tokens[1] == "frida_endpoint_count":
                 tokens = ["dynamic_stage", "findings", "findings", "network", "frida_endpoint_count"] + tokens[2:]
+            elif len(tokens) > 1 and tokens[1] == "findings":
+                # RC-76: the writer already doubled the segment itself
+                # (`$.findings.findings.network.lead_note`) -- adding the
+                # alias's own `findings` on top produced a triple that
+                # resolved nowhere. The doubled spelling means the nested
+                # findings map exactly, so map it once.
+                tokens = ["dynamic_stage", "findings", "findings"] + tokens[2:]
             else:
                 tokens = ["dynamic_stage", "findings", "findings"] + tokens[1:]
+        elif first == "post_analysis":
+            # RC-76: the post-analysis steps live under the dynamic stage,
+            # not at the pack root (`$.post_analysis.steps.pcap_beacon...`
+            # is the natural spelling; the real path is
+            # `$.dynamic_stage.post_analysis.steps...`). Only rewritten when
+            # the target exists, so a genuinely absent branch stays
+            # unresolved instead of being silently legitimized.
+            if isinstance(value.get("dynamic_stage"), dict) and isinstance(
+                    value["dynamic_stage"].get("post_analysis"), dict):
+                tokens = ["dynamic_stage", "post_analysis"] + tokens[1:]
         elif first == "dynamic_stage" and len(tokens) > 2 and tokens[1] == "findings":
-            if tokens[2] in {
+            # RC-76: data-driven first -- if the nested findings map really
+            # carries this key, the missing segment is the alias's to add.
+            # The hardcoded set below stays as the fallback for a pack whose
+            # findings map is absent or non-dict.
+            nested = (value.get("dynamic_stage") or {}).get("findings") or {}
+            nested_findings = nested.get("findings") if isinstance(nested, dict) else None
+            if isinstance(nested_findings, dict) and tokens[2] in nested_findings:
+                tokens = ["dynamic_stage", "findings", "findings"] + tokens[2:]
+            elif tokens[2] in {
                 "network", "frida_coverage", "file_provenance", "memory",
                 "window", "persistence", "process_spawns", "created_files",
                 "device_writes", "system_loads", "drops", "anti_emulation"
@@ -1022,6 +1047,14 @@ def _resolve_json_path(value: Any, expression: str,
     # location alias for the same field, not a fuzzy lookup: every later token
     # (exact index/filter) must still resolve.
     #
+    # RC-76: the same confusion carries an extra segment -- writers put the
+    # view lists under `file_summary` (`$.malcat.file_summary.imports[0]`),
+    # which reads naturally because file_summary carries the file's metadata.
+    # The exact rows live under `views`; `file_summary` itself has no list
+    # children, so the segment is dropped ONLY when followed by a known view
+    # key. A legitimate `$.malcat.file_summary.sha256` citation keeps its
+    # path (sha256 is not a view key).
+    #
     # Malcat's decompilation map is top-level, not under `views`, and its carved
     # files are `carved_files` (the `views.carved` list is a different view).
     # Writers put every Malcat field under the view prefix, or shorten
@@ -1030,11 +1063,20 @@ def _resolve_json_path(value: Any, expression: str,
     # The alias is applied at ANY depth: the UPX second pass nests a complete
     # Malcat branch under `$.upx_second_pass.tools.malcat`, and that is where
     # most of the mis-paths in a real run occurred (2026-10-24).
+    _MALCAT_VIEW_KEYS = frozenset({
+        "imports", "strings", "yara_hits", "anomalies", "anomaly_locations",
+        "sections", "functions", "constants", "structures", "carved",
+        "virtual_files", "entropy",
+    })
     for idx, token in enumerate(tokens):
         if token != "malcat":
             continue
         rest = tokens[idx + 1:]
-        if rest[:1] and rest[0] in {"imports", "strings", "yara_hits"}:
+        if (rest[:2] and rest[0] == "file_summary"
+                and rest[1] != "carved"
+                and (rest[1] == "views" or rest[1] in _MALCAT_VIEW_KEYS)):
+            rest = rest[1:]
+        if rest[:1] and rest[0] in _MALCAT_VIEW_KEYS and rest[0] != "carved":
             tokens = tokens[:idx + 1] + ["views"] + rest
         elif rest[:2] == ["views", "decompilations"]:
             tokens = tokens[:idx + 1] + rest[1:]
@@ -1051,7 +1093,14 @@ def _resolve_json_path(value: Any, expression: str,
         tokens = tokens[1:]
         if isinstance(current, dict) and source_branch in current:
             current = current[source_branch]
-    for token in tokens:
+    # RC-76: tokens the parser split at a dot that belongs to a single dict
+    # key (Windows paths used as keys, e.g.
+    # `$.frida_summary.file_effects.C:\Windows\system32\wlogon.dll`). The
+    # rejoin happens in the loop below, where the containing dict is known.
+    merged_away: set[int] = set()
+    for position, token in enumerate(tokens):
+        if position in merged_away:
+            continue
         if isinstance(token, int):
             if isinstance(current, dict):
                 key = str(token)
@@ -1182,6 +1231,30 @@ def _resolve_json_path(value: Any, expression: str,
                 current = mapped
                 continue
             if not isinstance(current, dict) or token not in current:
+                # RC-76: rejoin tokens the parser split inside one dict key.
+                # The writer cited a Windows path used as a key
+                # (`frida_summary.file_effects.C:\Windows\system32\wlogon.dll`);
+                # the dots inside the key are not path separators. Exact key
+                # match only, longest join first, contiguous string tokens
+                # only -- a key that does not exist verbatim stays unresolved.
+                if isinstance(current, dict):
+                    following: list[str] = []
+                    for nxt in tokens[position + 1:]:
+                        if not isinstance(nxt, str):
+                            break
+                        following.append(nxt)
+                        if len(following) >= 8:
+                            break
+                    for take in range(len(following), 0, -1):
+                        candidate = ".".join([token] + following[:take])
+                        if candidate in current:
+                            current = current[candidate]
+                            merged_away.update(
+                                range(position + 1, position + 1 + take))
+                            break
+                    else:
+                        return None
+                    continue
                 return None
             current = current[token]
     return expression.strip(), current
@@ -1427,6 +1500,21 @@ def _locate_cited_row(path: Path, row: str, query: str | None = None,
             r"^[a-zA-Z0-9_.]+(\[\d+\])+(\.[a-zA-Z0-9_.]+)*$", row_clean
         ):
             row_clean = "$." + row_clean if not row_clean.startswith(".") else "$" + row_clean
+            is_normalized_jsonpath = True
+        elif (not row_clean.startswith("$")
+              and "=" not in row_clean and ": " not in row_clean
+              and ("\\" in row_clean or re.search(r"[A-Za-z]:", row_clean))
+              and re.match(r"^[A-Za-z0-9_]+(\.[A-Za-z0-9_]+)+", row_clean)):
+            # RC-76: a bare locator whose last segment is a Windows path used
+            # as a dict key -- `frida_summary.file_effects.C:\Windows\...
+            # \wlogon.dll`. The indexed-path normalization above requires a
+            # bracket segment, so these never received the `$.` prefix and the
+            # strict JSONPath parser rejected them outright (12 of the S2
+            # run's 27 unresolved-rows). The `=`/`: ` exclusions keep the
+            # `field=value` and `table: key` locator shapes on their own
+            # paths, and a normalized row that fails to resolve still falls
+            # through to those checks below.
+            row_clean = "$." + row_clean
             is_normalized_jsonpath = True
         if row_clean.startswith("$"):
             resolved = _resolve_json_path(decoded, row_clean, source_branch)

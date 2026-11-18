@@ -125,3 +125,51 @@ def test_matching_published_and_upstream_has_no_advisory():
         published_verdict="malicious")
     assert lock["ok"] is True
     assert lock["calibration_disagreement"] is None
+
+
+# --------------------------------------------------------------------------
+# RC-78 (2026-11-18): a quoted tool-output bullet must not become the
+# report's verdict. Found live on S2 mode (a): the technical report's
+# evidence trail recorded `` - `"verdict-calibration skill v1: ... so
+# verdict is suspicious rather than malicious"` `` bullets; the
+# backtick+quote wrapper toggles the span walk twice and reads as balanced,
+# so the quoted phrase was inferred as the report's own verdict. The report's
+# panel said malicious, the lock failed, publish went rc=1 and the stop guard
+# blocked v3 -- a false gate over a correct report.
+# --------------------------------------------------------------------------
+@pytest.mark.parametrize("quoted_line,expected", [
+    # A markdown bullet whose content opens with a quotation.
+    ('- `"verdict-calibration skill v1: packing is neutral; no behavioural '
+     'evidence, so verdict is suspicious rather than malicious"`',
+     "malicious"),
+    # A blockquote of another artifact's text.
+    ('> "The quick-triage summary states: verdict is suspicious pending '
+     'unpacking."', "malicious"),
+    # A plain bullet without the quote wrapper still parses normally.
+    ("- The verdict is suspicious pending unpacking.", "suspicious"),
+])
+def test_a_quoted_tool_output_line_is_not_the_reports_verdict(
+        quoted_line, expected):
+    from v2_lib import infer_publish_verdict_from_markdown
+
+    md = (
+        "## Evidence Trail\n\n"
+        "Static analysis of the import table follows.\n\n"
+        f"{quoted_line}\n\n"
+        "| Final | Verdict |\n| --- | --- |\n| Verdict | malicious |\n"
+    )
+    assert infer_publish_verdict_from_markdown(md) == expected
+
+
+def test_a_reports_own_statement_still_wins_over_quoted_lines():
+    """The report's own explicit sentence must keep being parsed."""
+    from v2_lib import infer_publish_verdict_from_markdown
+
+    md = (
+        "## Evidence Trail\n\n"
+        '- `"skill v1: ... so verdict is suspicious rather than malicious"`\n\n'
+        "## Conclusion\n\n"
+        "The verdict for this sample is malicious; the quoted calibration "
+        "note above records the pre-reconciliation state.\n"
+    )
+    assert infer_publish_verdict_from_markdown(md) == "malicious"

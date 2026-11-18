@@ -1229,6 +1229,23 @@ def _verdict_match_is_metalinguistic(body: str, match_start: int) -> bool:
     # it is citing that specific tool's output, not stating the report's verdict.
     if _re2.search(r"\b(?:tool|engine|source|artifact|sub-?pipeline|stage|classifier)\s*$", prefix.rstrip()):
         return True
+    # RC-78: a LINE that opens with a quotation (after markdown bullet /
+    # blockquote markers) is quoted artifact content. The writer's evidence
+    # trail records tool outputs as `` - `"skill v1: ... so verdict is
+    # suspicious rather than malicious"` `` bullets; the backtick+quote
+    # wrapper toggles the span walk above TWICE and reads as balanced, so
+    # the quoted phrase was taken as the report's own verdict and failed the
+    # verdict lock against a report whose panel said malicious (S2 mode (a),
+    # 2026-11-18). The report's own statements never open a line with a
+    # quote character.
+    line_start = body.rfind("\n", 0, match_start) + 1
+    line_head = body[line_start:match_start].lstrip()
+    line_head = _re2.sub(r"^(?:[-*+]\s+|\d+\.\s+|>\s*)+", "", line_head)
+    # `line_head[0]`, not `line_head[:1] in ...`: an empty head (the match
+    # starts the line) is a substring of every string and would flag EVERY
+    # line-leading verdict statement as quoted speech.
+    if line_head and line_head[0] in "'\"`\u201c\u2018":
+        return True
     # Reporting verbs only — reads/states/says, per the RC-17 derivation,
     # plus returned/assigned/recorded/yielded (RC-64).
     # Deliberately not "shows"/"notes": "as the evidence shows, the verdict
