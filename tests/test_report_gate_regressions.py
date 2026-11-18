@@ -278,11 +278,14 @@ def test_a_hallucinated_claim_id_does_not_abort_the_review(tmp_path):
 
 
 def test_an_omitted_claim_verdict_still_fails_closed(tmp_path):
-    """Every expected claim needs its own decision; dropping one is still fatal.
+    """Every expected claim needs its own decision; an omitted one fails closed.
 
-    RC-09 changed the failure SHAPE: the batch's claims become `not-reviewed`
-    (per-claim reason, review continues) instead of the whole review dying with
-    `verification-error`. Failing closed is unchanged: ok stays false.
+    RC-09 changed the failure SHAPE: a FAILED batch's claims become
+    `not-reviewed` (per-claim reason, review continues) instead of the whole
+    review dying with `verification-error`. RC-81 refined the incomplete-
+    response shape further: the PRESENT decisions are accepted and only the
+    omitted claims fail closed, as `review-missing` (a violation with a
+    per-claim reason). Failing closed is unchanged: ok stays false either way.
     """
     case = _case(tmp_path, _review_reports(), _review_artifacts())
 
@@ -294,7 +297,8 @@ def test_an_omitted_claim_verdict_still_fails_closed(tmp_path):
 
     result = E.check_report_entailment(
         "a" * 64, case_root=case, semantic_reviewer=reviewer, use_cache=False)
-    assert "not-reviewed" in _statuses(result), result
+    statuses = _statuses(result)
+    assert "not-reviewed" in statuses or "review-missing" in statuses, result
     assert result["ok"] is False
 
 

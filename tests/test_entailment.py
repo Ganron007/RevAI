@@ -1366,3 +1366,76 @@ def test_a_non_restatement_still_goes_to_the_reviewer(tmp_path, monkeypatch):
         "a" * 64, case_root=case, semantic_reviewer=reviewer, use_cache=False)
     assert called, "a non-restatement must reach the reviewer"
     assert res["by_status"]["semantically-supported"] == 1
+
+
+# ---------------------------------------------------------------- RC-81
+# The S2 re-run lost 30 claims to 3 batches whose responses omitted or
+# duplicated claim IDs: the whole batch failed and every valid decision in
+# it was discarded with it. An omitted claim has NO verdict (fail closed),
+# but the PRESENT decisions are real judgments bound to evidence and are
+# accepted; only the omitted claims are recorded not-reviewed.
+def test_a_response_omitting_some_claim_ids_keeps_the_present_ones(tmp_path):
+    case = _case(tmp_path, {
+        "REPORT-MASTER-v2.md": "\n".join(
+            f"The sample has observed capability_{i} "
+            "(source: malcat, query_or_table: deep_dive/01-tools-raw.json, "
+            f"row_or_rule: $.malcat.file_summary.capability_{i})."
+            for i in range(3)),
+    }, {
+        "deep_dive/01-tools-raw.json": json.dumps({"malcat": {
+            "file_summary": {f"capability_{i}": f"present-{i}" for i in range(3)},
+        }}),
+    })
+
+    def reviewer(batch):
+        # Judge only the FIRST claim; omit the rest (the live defect shape).
+        item = batch[0]
+        return {"reviews": [{
+            "id": item["id"], "verdict": "supported",
+            "evidence_ids": [row["evidence_id"] for row in item["evidence"]],
+            "reason": "the cited field establishes the capability",
+        }]}
+
+    result = E.check_report_entailment(
+        "a" * 64, case_root=case, semantic_reviewer=reviewer, use_cache=False)
+
+    statuses = result["by_status"]
+    # The judged claim is accepted; the omitted ones fail closed individually.
+    assert statuses.get("semantically-supported") == 1, statuses
+    assert statuses.get("review-missing") == 2, statuses
+    # The omitted claims carry an explicit per-claim reason.
+    missing = [r for r in result["claims"]
+               if r["status"] == "review-missing"]
+    assert missing and all("omitted this claim ID" in r["reason"] for r in missing)
+    # The review itself did not error -- the batch succeeded.
+    assert result.get("review_error") is None
+
+
+def test_a_duplicate_decision_keeps_the_first_and_does_not_fail_the_batch(tmp_path):
+    case = _case(tmp_path, {
+        "REPORT-MASTER-v2.md": "\n".join(
+            f"The sample has observed capability_{i} "
+            "(source: malcat, query_or_table: deep_dive/01-tools-raw.json, "
+            f"row_or_rule: $.malcat.file_summary.capability_{i})."
+            for i in range(2)),
+    }, {
+        "deep_dive/01-tools-raw.json": json.dumps({"malcat": {
+            "file_summary": {f"capability_{i}": f"present-{i}" for i in range(2)},
+        }}),
+    })
+
+    def reviewer(batch):
+        rows = [{"id": item["id"], "verdict": "supported",
+                 "evidence_ids": [row["evidence_id"] for row in item["evidence"]],
+                 "reason": "first judgment"} for item in batch]
+        rows.append(dict(rows[0], reason="duplicate of the first row"))
+        return {"reviews": rows}
+
+    result = E.check_report_entailment(
+        "a" * 64, case_root=case, semantic_reviewer=reviewer, use_cache=False)
+
+    assert result["ok"] is True, result
+    assert result["by_status"].get("semantically-supported") == 2, result["by_status"]
+    dup_rows = [r for r in result.get("review_attempts", [])
+                if r.get("duplicate_claim_ids")]
+    assert dup_rows, "the duplicate must be recorded for observability"

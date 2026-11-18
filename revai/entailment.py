@@ -2661,6 +2661,7 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
                 raise ValueError("review response has no reviews list")
             review_by_id: dict[str, dict] = {}
             unknown_claim_ids: list[str] = []
+            duplicate_claim_ids: list[str] = []
             expected_ids = {item["id"] for item in batch}
             for raw_row in raw_reviews:
                 if semantic_reviewer is None:
@@ -2740,10 +2741,28 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
                     unknown_claim_ids.append(str(claim_id))
                     continue
                 if claim_id in review_by_id:
-                    raise ValueError("review response has duplicate claim IDs")
+                    # RC-81: a duplicate decision row is a complete judgment
+                    # either way -- keep the FIRST accepted decision and
+                    # record the duplicate. Discarding the whole batch over
+                    # it discarded 11 valid judgments with it (the S2 re-run
+                    # lost 30 claims to 3 such batches).
+                    duplicate_claim_ids.append(str(claim_id))
+                    continue
                 review_by_id[claim_id] = normalized
-            if set(review_by_id) != expected_ids:
-                raise ValueError("review response IDs are missing, duplicated, or unexpected")
+            # RC-81: an omitted claim has NO verdict -- it must never count
+            # as supported (fail closed), but the PRESENT decisions are real
+            # judgments bound to evidence and are accepted. The omitted
+            # claims flow through the success path as `review-missing` (a
+            # violation, with a per-claim reason), instead of the batch
+            # failing whole and discarding every valid decision with it.
+            missing_ids = expected_ids - set(review_by_id)
+            if missing_ids:
+                print(
+                    f"[report_entailment] batch={batch_index}/{batch_total} "
+                    f"response omitted {len(missing_ids)} claim ID(s): "
+                    f"{sorted(missing_ids)[:6]}; recording them not-reviewed",
+                    file=sys.stderr, flush=True,
+                )
             if unknown_claim_ids:
                 print(
                     f"[report_entailment] batch={batch_index}/{batch_total} "
@@ -2795,6 +2814,8 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
             "elapsed_seconds": elapsed,
             **(metadata if isinstance(metadata, dict) else {}),
             "error": None,
+            "omitted_claim_ids": sorted(missing_ids)[:12],
+            "duplicate_claim_ids": sorted(set(duplicate_claim_ids))[:12],
         })
         for item in batch:
             review = review_by_id.get(item["id"], {})
@@ -2846,6 +2867,10 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
                         "skeleton fix is the open item)")
                 else:
                     drift_reason = str(review.get("reason") or "")[:500]
+                if status == "review-missing" and not drift_reason:
+                    drift_reason = ("the reviewer response omitted this claim "
+                                    "ID; no verdict was recorded for it "
+                                    "(fail-closed)")
                 results.append({
                     "report": reference["report"], "claim": reference["claim"][:240],
                     "status": status,
