@@ -1733,7 +1733,13 @@ _BULLET_RE = re.compile(r"(?:[-*+]\s+|\d+[.)]\s+)")
 #: would be swallowed into one candidate whose tail then falsely grounds
 #: claims the evidence does not support.
 _EVIDENCE_REGKEY_RE = re.compile(
-    r"(?i)\b(?:HK(?:LM|CU|CR|U|CC|EY_[A-Z_]+)|HKEY_[A-Z_]+)"
+    r"(?i)\b(?:HK(?:LM|CU|CR|U|CC|EY_[A-Z_]+)|HKEY_[A-Z_]+"
+    # RC-82: the raw tool evidence (Frida's registry file_effects) writes
+    # HKLM-subtree paths WITHOUT the hive prefix, rooted at the branch
+    # itself (`SYSTEM\CurrentControlSet\Services\...`). The root is
+    # registry-shaped only when CurrentControlSet follows, so the lookahead
+    # keeps ordinary `SYSTEM32\...` strings out.
+    r"|SYSTEM(?=\\CurrentControlSet))"
     r"(?:\\[^\s\"'<>|)\n]{2,}(?:[ \t]+[A-Z][^\s\"'<>|)\n]*(?=\s*\\))*)+")
 
 #: Hive aliases, so `HKCU\...\Run` and `HKEY_CURRENT_USER\...\Run` are
@@ -1829,6 +1835,21 @@ def _ground_elided_regkey(plain: str, evidence: str) -> str | None:
     return best[1] if best else None
 
 
+def _canonical_regkey_identity(parsed: tuple[str, list[str]]) -> tuple[str, list[str]]:
+    r"""The hive identity a registry path is verified under.
+
+    The raw tool evidence writes HKLM-subtree paths WITHOUT the hive prefix
+    (`SYSTEM\CurrentControlSet\...`), while reports write the same key as
+    `HKLM\SYSTEM\CurrentControlSet\...`. Both spellings are the same key:
+    when the claim's hive is hklm and its first subkey names the SYSTEM
+    branch, the identity is the SYSTEM hive with that segment consumed.
+    """
+    hive, subkeys = parsed
+    if hive == "hklm" and subkeys[:1] == ["system"]:
+        return ("system", subkeys[1:])
+    return (hive, subkeys)
+
+
 def _evidence_has_regkey(plain: str, evidence: str) -> str | None:
     r"""The concrete evidence path with this hive AND subkey list, or None.
 
@@ -1838,15 +1859,34 @@ def _evidence_has_regkey(plain: str, evidence: str) -> str | None:
     OBSERVED key failed verification while the short spelling of the same key
     passed. Comparison is on the parsed hive + full subkey list, which is
     stricter than a substring in every other respect.
+
+    RC-82: a claim may cite a VALUE under an observed key -- the writer writes
+    `KEY\Type` where the evidence observed `KEY` (the S2 re-run cited
+    `...\Services\Lcss\Type` for a key the dynamic pack's file_effects carry
+    as `SYSTEM\...\Services\Lcss`). The trailing segment is tried as a value
+    name: ONE segment only, and the remaining path must match exactly -- an
+    invented deep path still fails (its parent is not evidence-present).
     """
     parsed = _regkey_parts(plain)
     if not parsed:
         return None
-    hive, subkeys = parsed
-    for m in _EVIDENCE_REGKEY_RE.finditer(evidence or ""):
-        candidate = m.group(0)
-        if _regkey_parts(candidate) == (hive, subkeys):
-            return candidate
+    identity = _canonical_regkey_identity(parsed)
+    candidates = list(_EVIDENCE_REGKEY_RE.finditer(evidence or ""))
+    for m in candidates:
+        cparsed = _regkey_parts(m.group(0))
+        if cparsed is None:
+            continue
+        if _canonical_regkey_identity(cparsed) == identity:
+            return m.group(0)
+    # The value-name fallback: one trailing segment, exact parent match.
+    if len(identity[1]) > 1:
+        parent = (identity[0], identity[1][:-1])
+        for m in candidates:
+            cparsed = _regkey_parts(m.group(0))
+            if cparsed is None:
+                continue
+            if _canonical_regkey_identity(cparsed) == parent:
+                return m.group(0)
     return None
 
 
@@ -2620,7 +2660,13 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
                     or raw.lower() in evidence):
                 verified.append({"type": kind, "value": raw})
                 continue
-            matched = _evidence_has_regkey(plain, evidence_text or "")
+            # RC-82: scan BOTH evidence forms -- the raw tool evidence carries
+            # JSON-escaped backslashes (`SYSTEM\\CurrentControlSet\\...`),
+            # which the candidate regex cannot read as single-separator paths.
+            # `evidence_json_plain` is the unescaped variant built by this
+            # function for exactly this class of mismatch.
+            matched = _evidence_has_regkey(
+                plain, (evidence_text or "") + "\n" + (evidence_json_plain or ""))
             if matched:
                 verified.append({"type": kind, "value": raw,
                                  "abbreviated_from": matched})
@@ -2640,6 +2686,19 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
         if (plain in evidence or plain in evidence_json_plain
                 or raw.lower() in evidence):
             verified.append({"type": kind, "value": raw})
+        elif kind == "registry_key":
+            # RC-82: a non-template registry claim gets the same
+            # hive-normalized verification the canonical-template branch
+            # has -- the raw tool evidence writes HKLM-subtree keys WITHOUT
+            # the hive prefix (`SYSTEM\CurrentControlSet\...`), and a value
+            # name under an observed key is not an invented indicator.
+            matched = _evidence_has_regkey(
+                plain, (evidence_text or "") + "\n" + (evidence_json_plain or ""))
+            if matched:
+                verified.append({"type": kind, "value": raw,
+                                 "abbreviated_from": matched})
+            else:
+                unverified.append({"type": kind, "value": raw})
         else:
             unverified.append({"type": kind, "value": raw})
 

@@ -163,3 +163,42 @@ def test_empty_and_verbatim_paths_behave_as_before():
     """Sanity: the classic paths still resolve through their own rules."""
     assert _unverified("Remove `HKCU\\...\\Run`.", EV) == []
     assert rq.verify_claimed_iocs("", EV)["claims"] == 0
+
+# ---------------------------------------------------------------- RC-82
+# The S2 re-run 3 tail: the technical cited `HKLM\System\CurrentControlSet\
+# Services\Lcss\Type` -- a VALUE name under a key the dynamic pack's Frida
+# file_effects carry as `SYSTEM\CurrentControlSet\Services\Lcss`. Two
+# mismatches broke the exact match: the value-name suffix, and the
+# HKLM\SYSTEM vs SYSTEM hive spelling. Both are the same observed key.
+def _regkey_evidence():
+    return (r'{"frida_summary": {"file_effects": '
+            r'{"SYSTEM\CurrentControlSet\Services\Lcss": '
+            r'{"path": "SYSTEM\CurrentControlSet\Services\Lcss", '
+            r'"event_count": 6}}}}')
+
+
+def test_a_value_under_an_observed_key_is_verified():
+    md = ("The sample created the service value "
+          r"`HKLM\System\CurrentControlSet\Services\Lcss\Type`.")
+    out = rq.verify_claimed_iocs(md, _regkey_evidence())
+    assert out["unverified"] == 0, out["unverified_items"]
+    assert out["verified"] == 1, out
+    resolved = out["resolved_abbreviations"] or []
+    assert resolved and "Services\Lcss" in resolved[0].get("abbreviated_from", "")
+
+
+def test_an_invented_deep_path_is_still_unverified():
+    """The one-segment relaxation must not launder an invented key."""
+    md = ("The sample created the service value "
+          r"`HKLM\System\CurrentControlSet\Services\FakeSvc\Type`.")
+    out = rq.verify_claimed_iocs(md, _regkey_evidence())
+    assert out["unverified"] == 1, out
+    assert out["verified"] == 0, out
+
+
+def test_an_observed_key_cited_without_a_value_still_matches():
+    md = ("The sample touched the service key "
+          r"`HKLM\SYSTEM\CurrentControlSet\Services\Lcss`.")
+    out = rq.verify_claimed_iocs(md, _regkey_evidence())
+    assert out["unverified"] == 0, out["unverified_items"]
+    assert out["verified"] == 1, out

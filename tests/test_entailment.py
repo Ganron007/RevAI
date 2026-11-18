@@ -1439,3 +1439,80 @@ def test_a_duplicate_decision_keeps_the_first_and_does_not_fail_the_batch(tmp_pa
     dup_rows = [r for r in result.get("review_attempts", [])
                 if r.get("duplicate_claim_ids")]
     assert dup_rows, "the duplicate must be recorded for observability"
+
+
+# ---------------------------------------------------------------- RC-82
+# The S2 re-run 3 tail: the writer swapped the citation fields (the FILE in
+# `source`, the ENGINE in `query`, a bare index or field in `row`), and the
+# premature audit hit a transient state the check already contains.
+def test_swapped_source_and_query_resolves_the_engine_branch(tmp_path):
+    """`source=<file>, query=yara, row=rule_count` -> the yara branch.
+
+    Measured live: 19 of re-run 3's 27 unresolved-source citations put the
+    artifact path in `source` and the engine in `query_or_table`. The
+    artifact is the source of truth; the engine branch is discovered from
+    the query when the source names no engine.
+    """
+    case = _case(tmp_path, {
+        "REPORT-MASTER-v2.md": (
+            "The sample matched 21 YARA rules "
+            "(source: deep_dive/01-tools-raw.json, query_or_table: yara, "
+            "row_or_rule: rule_count)."
+        ),
+    }, {
+        "deep_dive/01-tools-raw.json": json.dumps({
+            "yara": {"rule_count": 21, "matches": [{"rule": "UPX"}] * 21},
+            "malcat": {"file_summary": {"type": "PE32+"}},
+        }),
+    })
+    located, check = E._ground_citation(
+        {"source": "deep_dive/01-tools-raw.json", "query": "yara",
+         "row": "rule_count"}, case)
+    assert located is not None, check
+    assert check["status"] == "traceable-row", check
+    assert "21" in located["excerpt"], located["excerpt"]
+
+
+def test_a_bare_index_row_joins_the_query_path(tmp_path):
+    """`query=yara.matches, row=[3]` -> `$.yara.matches[3]`."""
+    case = _case(tmp_path, {
+        "REPORT-MASTER-v2.md": (
+            "The third YARA match is UPX "
+            "(source: deep_dive/01-tools-raw.json, query_or_table: yara.matches, "
+            "row_or_rule: [3])."
+        ),
+    }, {
+        "deep_dive/01-tools-raw.json": json.dumps({
+            "yara": {"matches": [
+                {"rule": "other"}, {"rule": "x"}, {"rule": "y"},
+                {"rule": "UPX"}]},
+        }),
+    })
+    located, check = E._ground_citation(
+        {"source": "deep_dive/01-tools-raw.json", "query": "yara.matches",
+         "row": "[3]"}, case)
+    assert located is not None, check
+    assert check["status"] == "traceable-row", check
+    assert "UPX" in located["excerpt"], located["excerpt"]
+
+
+def test_a_bare_index_join_does_not_launder_a_file_name_query(tmp_path):
+    """A query that names a FILE must not be joined into a key path."""
+    case = _case(tmp_path, {
+        "REPORT-MASTER-v2.md": (
+            "The domains list is observed "
+            "(source: iocs.json, query_or_table: iocs.json, "
+            "row_or_rule: domains)."
+        ),
+    }, {
+        "iocs.json": json.dumps({"domains": ["c2.example"]}),
+    })
+    located, check = E._ground_citation(
+        {"source": "iocs.json", "query": "iocs.json", "row": "domains"},
+        case)
+    # The JOIN must not fire (a file-name query is not a key path): the
+    # resolution that happens comes from the pre-existing exact-field
+    # mechanism and lands on the REAL artifact path `$.domains`, never on a
+    # fabricated `$.iocs.json.domains`.
+    assert located is not None and located["json_path"] == "$.domains", (
+        located, check)

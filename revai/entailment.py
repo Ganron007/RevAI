@@ -690,6 +690,17 @@ def _source_artifact_candidates(source: str, query: str | None,
             or exact_path in _EVIDENCE_ARTIFACTS):
         path = root / exact_path
         return [path] if path.is_file() else []
+    # RC-82: the writer may put the artifact PATH in `source` instead of the
+    # engine (`source: deep_dive/01-tools-raw.json, query_or_table: yara,
+    # row: rule_count`) -- the same source of truth the exact-path check
+    # above honors for the query. The normalized-alias fallback below cannot
+    # match it: it compares a raw path against a normalized string, which
+    # only ever matches for alias names without separators.
+    src_exact = (source or "").strip().strip("` ").replace("\\", "/")
+    if (src_exact in _PRIMARY_EVIDENCE_ARTIFACTS
+            or src_exact in _EVIDENCE_ARTIFACTS):
+        path = root / src_exact
+        return [path] if path.is_file() else []
     src = _norm(source)
     q = _norm(query or "")
     lookup = src
@@ -1401,6 +1412,25 @@ def _locate_cited_row(path: Path, row: str, query: str | None = None,
                                      lookup) for alias in aliases):
                         matched_key = key
                         break
+                if matched_key is None:
+                    # RC-82: the writer swapped the fields -- the FILE PATH in
+                    # `source` (`deep_dive/01-tools-raw.json`) and the ENGINE
+                    # in `query_or_table` (`yara`). The artifact is the source
+                    # of truth; try the query for the engine branch. The ROW
+                    # is deliberately NOT tried: a row that merely mentions an
+                    # engine name must not rescue a citation whose source is
+                    # garbage (the unknown-source rejection pin).
+                    for alt in (query_lookup,):
+                        if not alt:
+                            continue
+                        for key, aliases in raw_key_aliases:
+                            if any(re.search(
+                                    rf"(?<![a-z0-9]){re.escape(alias)}(?![a-z0-9])",
+                                    alt) for alias in aliases):
+                                matched_key = key
+                                break
+                        if matched_key:
+                            break
                 if matched_key:
                     if matched_key not in decoded:
                         return None
@@ -1412,6 +1442,9 @@ def _locate_cited_row(path: Path, row: str, query: str | None = None,
                     # the table is for spelling variants, the artifact is the
                     # source of truth.
                     discovered = _artifact_branch_for_source(lookup, decoded)
+                    if discovered is None:
+                        discovered = _artifact_branch_for_source(
+                            query_lookup, decoded)
                     if discovered is None:
                         return None
                     source_branch = discovered
@@ -1496,6 +1529,26 @@ def _locate_cited_row(path: Path, row: str, query: str | None = None,
         # field-name search or accept a similarly named value elsewhere.
         row_clean = (row or "").strip()
         is_normalized_jsonpath = False
+        # RC-82: a bare-index row (`row: "[3]"` with `query: "yara.matches"`)
+        # or a bare field row (`row: "rule_count"` with `query: "yara"`) names
+        # the target THROUGH the query path -- the writer split the locator
+        # across the two fields. Join them into one JSONPath; the strict
+        # parser and the branch filter still have to resolve it exactly.
+        if (not row_clean.startswith("$")
+                and re.fullmatch(r"(?:\[\d+\])+|[a-zA-Z_][a-zA-Z0-9_]*", row_clean)
+                and (query or "").strip()):
+            q = query.strip().strip("$").lstrip(".")
+            # A query that names a FILE (an extension or a path separator) is
+            # not a key path -- joining would fabricate one. Those citations
+            # keep their own resolution paths.
+            if not re.search(r"\.(json|txt|log|csv|yml|yaml|md|yar)$", q, re.IGNORECASE) \
+                    and "/" not in q and "\\" not in q:
+                if re.fullmatch(r"(?:\[\d+\])+", row_clean):
+                    row_clean = f"$.{q}{row_clean}"
+                    is_normalized_jsonpath = True
+                elif "." not in row_clean:
+                    row_clean = f"$.{q}.{row_clean}"
+                    is_normalized_jsonpath = True
         if not row_clean.startswith("$") and re.match(
             r"^[a-zA-Z0-9_.]+(\[\d+\])+(\.[a-zA-Z0-9_.]+)*$", row_clean
         ):
