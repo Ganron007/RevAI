@@ -1083,7 +1083,12 @@ def _resolve_json_path(value: Any, expression: str,
         if token != "malcat":
             continue
         rest = tokens[idx + 1:]
-        if (rest[:2] and rest[0] == "file_summary"
+        # len(rest) >= 2, NOT `rest[:2]` (truthy): a citation may END at
+        # `malcat.file_summary` itself, leaving one element -- `rest[1]`
+        # would raise IndexError and abort the whole review (re-run 4,
+        # 2026-11-19: one such citation made the entailment check record
+        # itself unavailable).
+        if (len(rest) >= 2 and rest[0] == "file_summary"
                 and rest[1] != "carved"
                 and (rest[1] == "views" or rest[1] in _MALCAT_VIEW_KEYS)):
             rest = rest[1:]
@@ -2545,7 +2550,24 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
                 if structural.get("status") == "circular":
                     citation_checks.append(structural)
                     break
-                located, check = _ground_citation(citation, root)
+                # RC-82: one citation whose resolver crashes must not abort
+                # the WHOLE review -- it is one unresolved row, recorded with
+                # the error, and the review continues (fail-closed: the
+                # citation does not ground, so its claim cannot pass).
+                try:
+                    located, check = _ground_citation(citation, root)
+                except Exception as _cit_exc:  # noqa: BLE001
+                    located, check = None, {
+                        "source": citation.get("source"),
+                        "query": citation.get("query"),
+                        "row": citation.get("row"),
+                        "checks": {"primary_artifact_resolves": False,
+                                   "literal_row_resolves": False},
+                        "status": "unresolved-row",
+                        "reason": f"citation resolver crashed: "
+                                  f"{type(_cit_exc).__name__}: "
+                                  f"{str(_cit_exc)[:160]}",
+                    }
                 citation_checks.append(check)
                 if located:
                     grounded.append(located)

@@ -1546,3 +1546,74 @@ def test_a_windows_path_used_as_a_dict_key_resolves(tmp_path):
          "row": "$.frida_summary.file_effects.C:\Windows\nope.dll"}, case)
     assert located is None, located
     assert check["status"] == "unresolved-row", check
+
+
+# ---------------------------------------------------------------- RC-82b
+# Re-run 4: one citation ENDING at `$.malcat.file_summary` crashed the whole
+# entailment review with IndexError (the RC-76 guard indexed rest[1] of a
+# one-element rest), and the audit recorded itself `unavailable`. The guard
+# is fixed, and a resolver crash is now contained to its own citation.
+def test_a_citation_ending_at_malcat_file_summary_does_not_crash(tmp_path):
+    case = _rc76_case(tmp_path)
+    (case / "deep_dive" / "01-tools-raw.json").write_text(json.dumps({
+        "malcat": {"file_summary": {"type": "PE32+", "entropy": 7.2},
+                   "views": {"imports": [
+                       {"ea": 38072, "name": "kernel32.LoadLibraryA"}],
+                       "entropy": 7.2}},
+    }), encoding="utf-8")
+
+    # The exact shape that crashed re-run 4: the path ENDS at file_summary.
+    located, check = E._ground_citation(
+        {"source": "malcat", "query": "deep_dive/01-tools-raw.json",
+         "row": "$.malcat.file_summary"}, case)
+    assert located is not None, check
+    assert check["status"] == "traceable-row", check
+    assert "PE32+" in located["excerpt"], located["excerpt"]
+
+    # A child of file_summary resolves (the real report cites fields under
+    # it), and the views spellings keep working.
+    for row in ("$.malcat.file_summary.type", "$.malcat.views.entropy"):
+        located, check = E._ground_citation(
+            {"source": "malcat", "query": "deep_dive/01-tools-raw.json",
+             "row": row}, case)
+        assert located is not None, (row, check)
+        assert check["status"] == "traceable-row", (row, check)
+
+
+def test_a_resolver_crash_is_contained_to_its_own_citation(
+        tmp_path, monkeypatch):
+    case = _case(tmp_path, {
+        "REPORT-MASTER-v2.md": "\n".join(
+            f"The sample has observed capability_{i} "
+            "(source: malcat, query_or_table: deep_dive/01-tools-raw.json, "
+            f"row_or_rule: $.malcat.views.imports[{i}])."
+            for i in range(2)),
+    }, {
+        "deep_dive/01-tools-raw.json": json.dumps({"malcat": {
+            "views": {"imports": [
+                {"ea": 38070 + i, "name": f"kernel32.Capability{i}"}
+                for i in range(2)]}},
+        }),
+    })
+    real = E._ground_citation
+
+    def flaky(citation, root):
+        # Crash on the SECOND claim's citation -- proving the containment
+        # wrapper, not any specific guard.
+        if "imports[1]" in str(citation.get("row", "")):
+            raise IndexError("synthetic resolver crash")
+        return real(citation, root)
+
+    monkeypatch.setattr(E, "_ground_citation", flaky)
+    result = E.check_report_entailment(
+        SHA, case_root=case, semantic_reviewer=None, use_cache=False)
+    # The review COMPLETED (not 'error'/'unavailable') and the crashed
+    # citation failed closed as unresolved, never as supported.
+    assert result["status"] != "error", result.get("status")
+    assert result["ok"] is False, result
+    statuses = result.get("by_status") or {}
+    assert statuses.get("unresolved-row", 0) >= 1, statuses
+    crashed = [r for r in result.get("violations", [])
+               if any("resolver crashed" in str(c.get("reason", ""))
+                      for c in (r.get("citations") or []))]
+    assert crashed, "the crash must be recorded on the citation that caused it"
