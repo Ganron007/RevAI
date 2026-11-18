@@ -4125,12 +4125,26 @@ def llm_judge(prompt: str, model: str | None = None, max_retries: int = 3,
     api_url = get_llm_api_url()
     # Agnes documents Thinking mode through chat_template_kwargs. Honor the
     # configured level as an on/off request there; its API does not document a
-    # per-request effort value. Other Flash providers keep the existing
-    # no-thinking default unless a planner-specific setting is supplied.
+    # per-request effort value. StepFun documents a per-model reasoning_effort
+    # ladder (its /models metadata lists low/medium/high for the step-* family,
+    # flash included), so the configured effort is honored there exactly as on
+    # any other effort-labeled provider. Other Flash providers keep the
+    # existing no-thinking default unless a planner-specific setting is
+    # supplied.
     if reasoning is None:
         if _is_agnes_api(api_url):
             reasoning = (os.environ.get("REVAI_LLM_PLANNER_REASONING")
                          or get_llm_reasoning() or "enabled")
+        elif _is_stepfun_api(api_url):
+            # Provider match BEFORE the name heuristic: `step-3.7-flash` and
+            # friends contain "flash", and the branch below was written for
+            # providers whose Flash models expose no thinking control. Letting
+            # the name win made REVAI_LLM_REASONING inert on this provider and
+            # left the provider default (high on some models) in force -- the
+            # declared-but-inert config key class this library keeps
+            # documenting, found live on the 2026-11-18 model switch.
+            reasoning = (os.environ.get("REVAI_LLM_PLANNER_REASONING")
+                         or get_llm_reasoning() or "high")
         elif "flash" in effective_model.lower():
             reasoning = os.environ.get("REVAI_LLM_PLANNER_REASONING") or "disabled"
         else:

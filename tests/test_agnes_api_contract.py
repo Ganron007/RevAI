@@ -115,6 +115,77 @@ def test_stepfun_reasoning_contract_maps_to_documented_effort_only():
         "max_tokens": 4096, "extra_body": {"reasoning_effort": "low"}}
 
 
+def test_stepfun_llm_judge_honors_configured_effort_despite_flash_name(
+        monkeypatch):
+    """The provider match must beat the model-NAME heuristic.
+
+    `step-3.7-flash` contains "flash", and the pre-fix branch sent
+    reasoning=disabled for every such model -- which on StepFun maps to "no
+    field at all" (provider default, high on some models). The operator's
+    configured effort was inert and every judge call silently ran deeper
+    than configured. Found live on the 2026-11-18 model switch.
+    """
+    bodies = []
+
+    def fake_urlopen(request, timeout=None):
+        bodies.append(json.loads(request.data.decode("utf-8")))
+        return _Response()
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(v2_lib, "llm_budget_acquire", lambda *_a, **_kw: 0)
+    monkeypatch.setenv("REVAI_LLM_API_URL",
+                       "https://api.stepfun.ai/step_plan/v1")
+    monkeypatch.setenv("REVAI_LLM_API_KEY", "test-key")
+    monkeypatch.setenv("REVAI_LLM_MODEL", "step-3.7-flash")
+    monkeypatch.setenv("REVAI_LLM_REASONING", "low")
+    monkeypatch.setenv("REVAI_LLM_STREAM", "0")
+    monkeypatch.delenv("REVAI_LLM_PLANNER_REASONING", raising=False)
+
+    v2_lib.llm_judge("Return only {\"ok\": true}", max_retries=1)
+
+    assert len(bodies) == 1
+    assert bodies[0]["model"] == "step-3.7-flash"
+    assert bodies[0]["reasoning_effort"] == "low", (
+        "the configured effort must reach the request body")
+    # The undocumented generic `thinking` object must not be sent.
+    assert "thinking" not in bodies[0]
+    assert "chat_template_kwargs" not in bodies[0]
+
+    # Second direction: nothing configured -> the documented default effort,
+    # never the disabled-by-name branch.
+    bodies.clear()
+    monkeypatch.delenv("REVAI_LLM_REASONING", raising=False)
+    v2_lib.llm_judge("Return only {\"ok\": true}", max_retries=1)
+    assert bodies[0]["reasoning_effort"] == "high", (
+        "an unset effort falls back to the documented default, not disabled")
+
+
+def test_non_stepfun_flash_provider_keeps_the_disabled_default(monkeypatch):
+    """The name heuristic still governs providers we know expose no control."""
+    bodies = []
+
+    def fake_urlopen(request, timeout=None):
+        bodies.append(json.loads(request.data.decode("utf-8")))
+        return _Response()
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    monkeypatch.setattr(v2_lib, "llm_budget_acquire", lambda *_a, **_kw: 0)
+    monkeypatch.setenv("REVAI_LLM_API_URL", "https://provider.example/v1")
+    monkeypatch.setenv("REVAI_LLM_API_KEY", "test-key")
+    monkeypatch.setenv("REVAI_LLM_MODEL", "some-flash-model")
+    monkeypatch.setenv("REVAI_LLM_STREAM", "0")
+    monkeypatch.delenv("REVAI_LLM_PLANNER_REASONING", raising=False)
+    monkeypatch.delenv("REVAI_LLM_REASONING", raising=False)
+
+    v2_lib.llm_judge("Return only {\"ok\": true}", max_retries=1)
+
+    # The disabled default keeps the pre-existing generic-provider shape
+    # (no effort field; the generic thinking:disabled object) -- unchanged
+    # by the StepFun branch, which only reorders WHICH rule fires.
+    assert "reasoning_effort" not in bodies[0]
+    assert bodies[0].get("thinking") == {"type": "disabled"}
+
+
 def test_agnes_llm_judge_sends_only_documented_reasoning_and_output_cap(
         monkeypatch):
     bodies = []
