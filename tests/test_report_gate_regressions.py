@@ -1617,3 +1617,21 @@ def test_a_resolver_crash_is_contained_to_its_own_citation(
                if any("resolver crashed" in str(c.get("reason", ""))
                       for c in (r.get("citations") or []))]
     assert crashed, "the crash must be recorded on the citation that caused it"
+
+
+# ---------------------------------------------------------------- RC-82c
+# Re-run 4: three raw disassembly lines shipped as uncited_claims because
+# the listing regex capped the byte dump at 8 hex chars (real lines carry
+# 10-12) and lacked `adc`/`sbb`/`not` -- listing lines are source material,
+# not narrative assertions (the RC-18 doctrine).
+def test_listing_lines_with_long_byte_dumps_and_missing_mnemonics():
+    from citation_syntax import is_disassembly_listing_line
+    for line in (
+        "0x0041dea1 be00604100 mov esi, section.UPX1 ; 0x416000",
+        "0x0041dea6 8dbe00b0feff lea edi, [esi - 0x15000]",
+        "0x0041dec7 11db adc ebx, ebx",
+    ):
+        assert is_disassembly_listing_line(line), line
+    # Prose stays a claim.
+    assert not is_disassembly_listing_line(
+        "The sample persists via the Run key.")

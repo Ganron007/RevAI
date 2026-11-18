@@ -235,8 +235,13 @@ def has_citation_locator(text: str) -> bool:
 #: keeps prose like "0x401000 is the entry point" from matching.
 _DISASSEMBLY_LISTING_RE = re.compile(
     r"^\s*(?:[\u2500-\u257f]"
-    r"|0x[0-9a-fA-F]{4,16}\s+(?:[0-9a-fA-F]{1,8}\s+){0,3}"
-    r"(?:push|pop|mov|lea|call|jmp|j[a-z]{1,2}|ret|add|sub|xor|and|or|test|cmp|"
+    # RC-82: the byte dump runs up to 16 hex chars on real listing lines
+    # (measured: `be00604100`, `8dbe00b0feff`), and the mnemonic list was
+    # missing `adc`/`sbb`/`not` -- all three shipped as uncited claims on
+    # re-run 4 because the listing line read as a narrative assertion.
+    r"|0x[0-9a-fA-F]{4,16}\s+(?:[0-9a-fA-F]{1,16}\s+){0,3}"
+    r"(?:push|pop|mov|lea|call|jmp|j[a-z]{1,2}|ret|add|adc|sbb|sub|xor|and|or|"
+    r"not|test|cmp|"
     r"inc|dec|neg|nop|int|shl|shr|sar|imul|mul|div|pushal|pushad|popal|popad|"
     r"leave|enter|loop|endbr(?:64|32)|cdq|cdqe|stos|lods|scas|repe?|repne|hlt|"
     r"out|in|syscall|sysenter|rol|ror|rcl|rcr|shld|shrd|setn?[a-z]|cmov[a-z]{1,3}|"
