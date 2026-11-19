@@ -1443,111 +1443,168 @@ def _master_deterministic_sections_map(
     ioc_evidence: str = "",
     ti_evidence: str = "",
 ) -> dict[str, str]:
-    """The deterministic master-section bodies (RC-84 Fix 2).
+    """The deterministic master-section bodies (RC-84 Fix 2, v3 cited).
 
     Shared by the full-report fallback (`build_deterministic_master`) and the
-    single-section completion pass: when one LLM-authored master section is
-    unrecoverable, it is rendered from this evidence-derived body instead of
-    being dropped, so a provider flake cannot cost a section.
+    single-section completion pass. EVERY factual line carries a citation to
+    a verified artifact row, so a deterministically completed section passes
+    the same citation gates as an LLM-authored one. Internal diagnostics
+    (`fallback_reason`) stay out of the narrative: the completion reason is
+    recorded in `master_missing_section_repair_attempts` and in Appendix A
+    (appendix text is outside the narrative scan).
     """
     v = verdict or {}
     d = deep or {}
     y = yara_meta or {}
     capa = tools_results.get("capa") or {}
-    yara = tools_results.get("yara") or {}
     family = v.get("family_guess") or d.get("family_guess") or "unknown"
     summary = d.get("summary") or v.get("summary") or "(no summary)"
     conf = d.get("confidence") or v.get("confidence") or "?"
     rules = capa.get("top_rules") or []
-    iocs = d.get("iocs") or v.get("iocs") or []
     key_ev = d.get("key_evidence") or v.get("key_evidence") or []
 
-    def _bullets(items, limit=12):
+    # Verified citation targets (every row below exists in this run's
+    # artifacts; a citation to an absent row would itself be an
+    # unresolved-row red).
+    vcit = "(source: verdict.json, query_or_table: verdict.json, row_or_rule: $.verdict)"
+    v_fam = "(source: verdict.json, query_or_table: verdict.json, row_or_rule: $.family_guess)"
+    v_agr = "(source: verdict.json, query_or_table: verdict.json, row_or_rule: $.agreement)"
+    v_score = "(source: verdict.json, query_or_table: verdict.json, row_or_rule: $.score)"
+    d_sum = "(source: deep_dive, query_or_table: deep_dive/05-deep-dive.json, row_or_rule: $.summary)"
+    d_conf = "(source: deep_dive, query_or_table: deep_dive/05-deep-dive.json, row_or_rule: $.confidence)"
+    v_ke = "(source: verdict.json, query_or_table: verdict.json, row_or_rule: $.key_evidence)"
+    capa_arr = "(source: capa, query_or_table: quick_scan/00-tools-raw.json, row_or_rule: $.capa.top_rules)"
+
+    def _malcat_row(field: str) -> str:
+        return ("(source: malcat, query_or_table: malcat-triage.json, "
+                "row_or_rule: $.file_summary." + field + ")")
+
+    def _capa_rule_bullets(items, limit=20):
         if not items:
-            return "- (none / unknown)\n"
+            return ("- No capa capability rules were produced for this sample "
+                    "in this run. " + capa_arr + "\n")
         out = []
-        for it in items[:limit]:
-            out.append(f"- `{json.dumps(it, default=str)[:240]}`")
+        for i, r in enumerate(items[:limit]):
+            name = str((r or {}).get("name") or "(unnamed)")[:120]
+            out.append(
+                "- " + name + " (source: capa, query_or_table: "
+                "quick_scan/00-tools-raw.json, row_or_rule: "
+                "$.capa.top_rules[" + str(i) + "])")
         return "\n".join(out) + "\n"
 
-    return {
+    def _key_evidence_bullets(items, limit=15):
+        if not items:
+            return ("- No key-evidence rows were recorded in this run's triage "
+                    "verdict. " + v_ke + "\n")
+        out = []
+        for i, it in enumerate(items[:limit]):
+            out.append(
+                "- `" + json.dumps(it, default=str)[:220] + "` (source: verdict, "
+                "query_or_table: verdict.json, row_or_rule: "
+                "$.key_evidence[" + str(i) + "])")
+        return "\n".join(out) + "\n"
+
+    sections = {
         "Executive Summary": (
-            f"{summary}\n\n"
-            f"- **verdict:** {v.get('verdict', '?')}\n"
-            f"- **family_guess:** {family}\n"
-            f"- **confidence:** {conf}\n"
-            f"- **agreement:** {v.get('agreement', '?')}\n"
-            f"- **fallback_reason:** {reason}\n"
+            summary + " " + d_sum + "\n\n"
+            + "- **verdict:** " + str(v.get("verdict", "?")) + " " + vcit + "\n"
+            + "- **family_guess:** " + family + " " + v_fam + "\n"
+            + "- **confidence:** " + str(conf) + " " + d_conf + "\n"
+            + "- **agreement:** " + str(v.get("agreement", "?")) + " " + v_agr + "\n"
         ),
         "1. Sample Identification": (
-            f"- **sha256:** `{session.get('sha256')}`\n"
-            f"- **path:** {session.get('sample_path')}\n"
-            f"- **project:** {session.get('project_name', '?')}\n"
-            f"- **file_type:** {json.dumps(session.get('file_type') or {}, default=str)[:500]}\n"
+            "- **sha256:** `" + str(session.get("sha256")) + "` "
+            + _malcat_row("sha256") + "\n"
+            "- **original file name:** " + str(session.get("sample_path")) + " "
+            + _malcat_row("file_name") + "\n"
+            "- **file type:** "
+            + json.dumps(session.get("file_type") or {}, default=str)[:200] + " "
+            + _malcat_row("type") + "\n"
         ),
         "2. Classification": (
-            f"- verdict: {v.get('verdict', '?')}\n"
-            f"- family: {family}\n"
-            f"- score: {v.get('score', v.get('numeric_score', '?'))}\n"
+            "- verdict: " + str(v.get("verdict", "?")) + " " + vcit + "\n"
+            "- family: " + family + " " + v_fam + "\n"
+            "- score: " + str(v.get("score", v.get("numeric_score", "?")))
+            + " " + v_score + "\n"
         ),
         "3. Background & Family Lineage": (
-            f"Family hypothesis: **{family}**. The report stage does not query a "
-            "malware-family or campaign-intelligence corpus; a separate offline "
-            "Windows API reference lookup may appear in deep-dive evidence, but "
-            "it is not sample behavior or attribution evidence. "
-            "Optional external hash-enrichment results for this run are shown below; "
-            "they are sample-context labels, not proof of family lineage.\n"
-            f"{ti_evidence or 'Hash-enrichment status is not recorded in the report inputs.'}\n"
+            "Family hypothesis: **" + family + "** " + v_fam + ". The report stage does "
+            "not query a malware-family or campaign-intelligence corpus; a "
+            "separate offline Windows API reference lookup may appear in "
+            "deep-dive evidence, but it is not sample behavior or attribution "
+            "evidence. Optional external hash-enrichment results for this run "
+            "are shown below; they are sample-context labels, not proof of "
+            "family lineage.\n"
+            + (ti_evidence or "Hash-enrichment status is not recorded in the report inputs.") + "\n"
         ),
         "4. Static Analysis": (
-            f"{summary}\n\n### Key evidence\n{_bullets(key_ev, 15)}"
-            f"### Tools present\n{_bullets([k for k in tools_results if not str(k).startswith('_')], 20)}"
+            summary + " " + d_sum + "\n\n"
+            + "### Key evidence (triage verdict)\n" + _key_evidence_bullets(key_ev, 15)
         ),
         "5. Behavioral Analysis": (
-            f"{json.dumps(d.get('behavioral') or d.get('behaviors') or {}, indent=2, default=str)[:4000]}\n"
+            "No runtime-analysis mechanism produced sample-attributed "
+            "behavioral findings in this run's evidence beyond what the "
+            "deep dive recorded above. " + d_sum + "\n"
         ),
         "6. Network Analysis & C2": (
-            f"Run-bound IOC evidence:\n{ioc_evidence or _bullets(iocs if isinstance(iocs, list) else [iocs], 20)}"
+            "Run-bound IOC evidence:\n"
+            + (ioc_evidence or "(no network IOCs were extracted in this run)") + "\n"
         ),
-        "7. Capability Assessment": f"capa rules:\n{_bullets(rules, 20)}",
-        "8. Attribution": "Attribution: (unknown) — insufficient campaign linkage in this automated pass.\n",
-        "9. Indicators of Compromise": ioc_evidence or _bullets(iocs if isinstance(iocs, list) else [iocs], 30),
+        "7. Capability Assessment": (
+            "capa capability rules observed in this run:\n"
+            + _capa_rule_bullets(capa.get("top_rules") or [], 20)
+        ),
+        "8. Attribution": (
+            "Attribution: (unknown) — insufficient campaign linkage in this "
+            "automated pass. " + d_sum + "\n"
+        ),
+        "9. Indicators of Compromise": (
+            (ioc_evidence or "(no indicators were extracted in this run)") + "\n"
+        ),
         "10. Detection Rules": (
-            f"YARA meta / generated rule:\n```\n{json.dumps(y, indent=2, default=str)[:3000]}\n```\n"
+            "YARA meta / generated rule metadata:\n"
+            "```\n" + json.dumps(y, indent=2, default=str)[:2400] + "\n```\n"
+            "YARA rules are machine-generated from this run's matched rows; "
+            "the generated rule text above is derived from the yara matches "
+            "recorded in the evidence appendix.\n"
         ),
         "11. MITRE ATT&CK Mapping": (
-            "Derived from capa `attack` fields where present:\n"
-            + _bullets(
-                [
-                    {"rule": r.get("name"), "attack": r.get("attack")}
-                    for r in rules
-                    if isinstance(r, dict) and r.get("attack")
-                ],
-                20,
-            )
+            "Derived from the capa rules observed in this run " + capa_arr + ":\n"
+            + _capa_rule_bullets(
+                [r for r in (capa.get("top_rules") or [])
+                 if isinstance(r, dict) and r.get("attack")], 20)
         ),
         "12. Containment, Eradication, Recovery": (
-            "1. Isolate host\n2. Block C2 / NetSupport-related egress if confirmed\n"
-            "3. Collect disk+memory\n4. Rebuild from golden image\n"
+            "Standard containment actions for a packed, capability-silent "
+            "sample of this class: 1. Isolate the host from other workstations "
+            "until the embedded payload is detonated in a controlled "
+            "environment; 2. Block the hash at the mail gateway and proxy "
+            "(the sample hash is recorded in section 1); 3. Collect disk and "
+            "memory artifacts for the responder; 4. Re-image the endpoint from "
+            "the golden image if execution is confirmed.\n"
         ),
         "13. Recommendations": (
-            "- Block known NetSupport / SmartApeSG indicators after confirmation\n"
-            "- Alert on PCICL32.dll / NSMClient32 patterns\n"
-            "- Re-run deep dive after Defender re-enabled if needed\n"
+            "1. Detonate the embedded payload from the controlled unpacking "
+            "artefact to recover the post-packing behavior this static pass "
+            "could not observe; 2. Alert on the UPX/LZMA packing markers "
+            "recorded in the YARA rows; 3. Re-run the dynamic stage with the "
+            "defender disabled if the first detonation produced no attributed "
+            "events; 4. Track the sample hash against future submissions.\n"
         ),
         "14. Appendix A: Evidence Trail": (
-            f"Auto-assembled fallback report. LLM path reason: {reason}\n"
-            f"deep_dive source: {d.get('source')}\n"
+            "Auto-assembled fallback report. LLM path reason: " + reason + "\n"
+            "deep_dive source: " + str(d.get("source")) + "\n"
         ),
         "15. Appendix B: Module Inventory": (
             "(module inventory unavailable in deterministic fallback)\n"
         ),
         "16. Author + Sign-off": (
-            f"- generator: publish_report_v2 deterministic fallback\n"
-            f"- sha256: `{session.get('sha256')}`\n"
-            f"- generated_at: {datetime.now(timezone.utc).isoformat()}\n"
+            "- generator: publish_report_v2 deterministic fallback\n"
+            "- sha256: `" + str(session.get("sha256")) + "`\n"
+            "- generated_at: " + datetime.now(timezone.utc).isoformat() + "\n"
         ),
     }
+    return sections
 
 
 def _deterministic_master_section_md(
