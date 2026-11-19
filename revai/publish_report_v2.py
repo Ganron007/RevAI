@@ -3221,6 +3221,16 @@ def main():
         # technical report is locked to the SAME verdict-of-record, not to the
         # raw triage label — the report set must agree. With no calibration
         # this is exactly the legacy comparison.
+        #
+        # RC-87 (2026-11-20, re-run 8): the deterministic verdict panel is
+        # rendered BEFORE the lock — the master path already does this
+        # (RC-42); the technical path rendered it AFTER, so the lock ran on a
+        # report whose panel did not yet exist and `infer_publish_verdict_
+        # from_markdown` returned None -> "unknown" -> a verdict_lock_
+        # conflict red even though `pub_claimed` was correct and the panel
+        # (rendered moments later, on the write path) stated the right
+        # verdict. Panel-before-lock, exactly like the master.
+        tech_md = ensure_verdict_panel(tech_md, pub_claimed)
         _expected_verdict = (verdict or {}).get("verdict") or quick_v
         tech_verdict_lock = cross_stage_verdict_lock(
             infer_publish_verdict_from_markdown(tech_md),

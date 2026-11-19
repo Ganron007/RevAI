@@ -1636,6 +1636,51 @@ def test_listing_lines_with_long_byte_dumps_and_missing_mnemonics():
     assert not is_disassembly_listing_line(
         "The sample persists via the Run key.")
 
+# ---------------------------------------------------------------- RC-87
+# Re-run 8 (2026-11-19): the TECHNICAL report's verdict panel is rendered by
+# ensure_verdict_panel on the WRITE path — AFTER the technical verdict lock.
+# The lock therefore ran on a report whose panel did not yet exist; the
+# extractor found no explicit verdict statement and returned None -> "unknown"
+# -> verdict_lock_conflict red, even though pub_claimed was correct and the
+# panel (rendered moments later) stated the right verdict. The master path
+# already rendered the panel BEFORE its lock (RC-42); the technical path now
+# does the same.
+def test_technical_verdict_panel_must_render_before_the_verdict_lock():
+    """Order pin: in the technical path, ensure_verdict_panel precedes the
+    cross_stage_verdict_lock call. The master path has had this since RC-42;
+    re-run 8 proved the technical path still locked before rendering."""
+    pub = open(_layout_path(), encoding="utf-8").read()
+    panel_calls = [i for i in range(len(pub))
+                   if pub.startswith("tech_md = ensure_verdict_panel(tech_md", i)]
+    lock_call = pub.find("tech_verdict_lock = cross_stage_verdict_lock(")
+    assert lock_call != -1
+    assert panel_calls, "the technical path never renders the verdict panel"
+    # The panel render immediately before the lock (the write-path render
+    # after it is idempotent and stays).
+    pre_lock = [i for i in panel_calls if i < lock_call]
+    assert pre_lock, (
+        "ensure_verdict_panel must run BEFORE the technical verdict lock — "
+        "the lock ran on a panel-less report and read 'unknown' (re-run 8)")
+
+
+def _layout_path() -> str:
+    import publish_report_v2 as _p  # noqa: F401
+    return _p.__file__
+
+
+def test_panel_before_lock_makes_the_extractor_see_the_verdict():
+    """The mechanism: without a panel the extractor returns None ("unknown");
+    after ensure_verdict_panel it returns the published label — so the lock
+    must run on the panel-bearing report."""
+    import publish_report_v2 as _p
+    from v2_lib import ensure_verdict_panel, infer_publish_verdict_from_markdown
+    md = "# Technical Report — sample\n\nSome cited analysis body.\n"
+    before = infer_publish_verdict_from_markdown(md)
+    after = infer_publish_verdict_from_markdown(
+        ensure_verdict_panel(md, "malicious"))
+    assert before in (None, "unknown"), before
+    assert after == "malicious", after
+
 # ---------------------------------------------------------------- RC-82-d
 # Re-run 5 (2026-11-19): 8 unresolved-rows, all `source: emulation_oracle,
 # query: deep_dive/02-signals.json, row: $.emulation_oracle.<field>`.
