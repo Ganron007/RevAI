@@ -81,6 +81,7 @@ RevAI never fills missing WinRE settings from its own configuration. An agentic 
 | `REVAI_WINRE_WINDOW` | `150` | Maximum detonation window in seconds (`--max-seconds`). |
 | `REVAI_WINRE_SNAPSHOT_GATE` | `enforce` | Snapshot gate policy: `enforce` (strictly requires clean hypervisor marker and attested ledger), `observe` (advisory), or `off`. |
 | `REVAI_WINRE_LOGS` | `/opt/winre/logs` | Evidence pack root directory scanned by `load_dynamic_pack()`. |
+| `REVAI_AGENTIC_PLANNER` | `off` | Agentic stage sequencing (RC-84, 2026-11-19): by default the agentic spine runs the stage tools in a fixed deterministic order. Set to `1` to restore the legacy LangGraph ReAct LLM planner (voluntary opt-in; the planner's stage-order instruction was the source of non-compliant orders, which is why the deterministic spine is now the default). |
 | `FLARE_HOST` / `FLARE_USER` | `192.168.77.42` / `FLARE-VM` | Windows FlareVM guest IP address and SSH user account. |
 | `FLARE_SSH_KEY` / `FLARE_SSH_PORT` | `~/.ssh/winre-flare` / `22` | Path to private SSH key on REMnux host (chmod 600) and SSH port. |
 

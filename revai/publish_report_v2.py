@@ -1432,7 +1432,7 @@ def verify_technical_sections(md: str) -> list[str]:
     return missing_sections(md, TECHNICAL_REPORT_SECTIONS)
 
 
-def build_deterministic_master(
+def _master_deterministic_sections_map(
     session: dict,
     verdict: dict | None,
     deep: dict | None,
@@ -1442,19 +1442,23 @@ def build_deterministic_master(
     reason: str,
     ioc_evidence: str = "",
     ti_evidence: str = "",
-) -> str:
-    """Full REPORT-MASTER skeleton from evidence when LLM fails — never empty."""
+) -> dict[str, str]:
+    """The deterministic master-section bodies (RC-84 Fix 2).
+
+    Shared by the full-report fallback (`build_deterministic_master`) and the
+    single-section completion pass: when one LLM-authored master section is
+    unrecoverable, it is rendered from this evidence-derived body instead of
+    being dropped, so a provider flake cannot cost a section.
+    """
     v = verdict or {}
     d = deep or {}
     y = yara_meta or {}
     capa = tools_results.get("capa") or {}
     yara = tools_results.get("yara") or {}
-    malcat = tools_results.get("malcat") or {}
     family = v.get("family_guess") or d.get("family_guess") or "unknown"
     summary = d.get("summary") or v.get("summary") or "(no summary)"
     conf = d.get("confidence") or v.get("confidence") or "?"
     rules = capa.get("top_rules") or []
-    yhits = yara.get("matches") or []
     iocs = d.get("iocs") or v.get("iocs") or []
     key_ev = d.get("key_evidence") or v.get("key_evidence") or []
 
@@ -1466,7 +1470,7 @@ def build_deterministic_master(
             out.append(f"- `{json.dumps(it, default=str)[:240]}`")
         return "\n".join(out) + "\n"
 
-    sections = {
+    return {
         "Executive Summary": (
             f"{summary}\n\n"
             f"- **verdict:** {v.get('verdict', '?')}\n"
@@ -1477,7 +1481,7 @@ def build_deterministic_master(
         ),
         "1. Sample Identification": (
             f"- **sha256:** `{session.get('sha256')}`\n"
-            f"- **path:** `{session.get('sample_path')}`\n"
+            f"- **path:** {session.get('sample_path')}\n"
             f"- **project:** {session.get('project_name', '?')}\n"
             f"- **file_type:** {json.dumps(session.get('file_type') or {}, default=str)[:500]}\n"
         ),
@@ -1536,7 +1540,7 @@ def build_deterministic_master(
             f"deep_dive source: {d.get('source')}\n"
         ),
         "15. Appendix B: Module Inventory": (
-            f"(module inventory unavailable in deterministic fallback)\n"
+            "(module inventory unavailable in deterministic fallback)\n"
         ),
         "16. Author + Sign-off": (
             f"- generator: publish_report_v2 deterministic fallback\n"
@@ -1544,6 +1548,52 @@ def build_deterministic_master(
             f"- generated_at: {datetime.now(timezone.utc).isoformat()}\n"
         ),
     }
+
+
+def _deterministic_master_section_md(
+    title: str,
+    session: dict,
+    verdict: dict | None,
+    deep: dict | None,
+    yara_meta: dict | None,
+    tools_results: dict,
+    *,
+    reason: str,
+    ioc_evidence: str = "",
+    ti_evidence: str = "",
+    heading_level: int = 1,
+) -> str:
+    """RC-84 Fix 2: the deterministic body of ONE master section.
+
+    Used by the single-section completion pass when an LLM-authored section is
+    unrecoverable (empty content or a schema reject after the bounded repair).
+    The section is rendered from the evidence, so a provider flake no longer
+    loses a whole section.
+    """
+    body = _master_deterministic_sections_map(
+        session, verdict, deep, yara_meta, tools_results,
+        reason=reason, ioc_evidence=ioc_evidence, ti_evidence=ti_evidence,
+    )
+    hashes = "#" * max(1, int(heading_level))
+    return f"{hashes} {title}\n\n{body.get(title, '(unknown)')}"
+
+
+def build_deterministic_master(
+    session: dict,
+    verdict: dict | None,
+    deep: dict | None,
+    yara_meta: dict | None,
+    tools_results: dict,
+    *,
+    reason: str,
+    ioc_evidence: str = "",
+    ti_evidence: str = "",
+) -> str:
+    """Full REPORT-MASTER skeleton from evidence when LLM fails — never empty."""
+    sections = _master_deterministic_sections_map(
+        session, verdict, deep, yara_meta, tools_results,
+        reason=reason, ioc_evidence=ioc_evidence, ti_evidence=ti_evidence,
+    )
     parts = [f"# RE Report — {session.get('sha256', '')[:16]}", ""]
     for title in REPORT_MASTER_SECTIONS:
         parts.append(f"# {title}")
@@ -1553,19 +1603,25 @@ def build_deterministic_master(
     return "\n".join(parts)
 
 
-def build_deterministic_technical(
+def _technical_deterministic_sections_map(
     session: dict,
     verdict: dict | None,
     deep: dict | None,
     technical_evidence: str,
     *,
     reason: str,
-) -> str:
-    """Evidence-first technical report (used as fallback and completeness backstop)."""
+) -> dict[str, str]:
+    """The deterministic technical-section bodies (RC-84 Fix 2).
+
+    Shared by the full-report fallback (`build_deterministic_technical`) and
+    the single-section completion pass: when one LLM-authored technical
+    section is unrecoverable, it is rendered from this evidence-derived body
+    instead of being dropped.
+    """
     v = verdict or {}
     d = deep or {}
     evidence = technical_evidence or ""
-    body = {
+    return {
         "1. Executive Summary": (
             f"{d.get('summary') or v.get('summary') or '(unknown)'}\n\n"
             f"verdict={v.get('verdict')} score={v.get('score')} family={v.get('family_guess')}\n"
@@ -1626,6 +1682,44 @@ def build_deterministic_technical(
             f"evidence-first deterministic path · reason={reason}"
         ),
     }
+
+
+def _deterministic_technical_section_md(
+    title: str,
+    session: dict,
+    verdict: dict | None,
+    deep: dict | None,
+    technical_evidence: str,
+    *,
+    reason: str,
+    heading_level: int = 2,
+) -> str:
+    """RC-84 Fix 2: the deterministic body of ONE technical section.
+
+    Used by the completeness completion pass when an LLM-authored technical
+    section is unrecoverable (empty content or a schema reject after the
+    bounded repair). The section is rendered from the evidence, so a provider
+    flake no longer loses a whole section.
+    """
+    body = _technical_deterministic_sections_map(
+        session, verdict, deep, technical_evidence, reason=reason,
+    )
+    hashes = "#" * max(1, int(heading_level))
+    return f"{hashes} {title}\n\n{body.get(title, '(unknown)')}"
+
+
+def build_deterministic_technical(
+    session: dict,
+    verdict: dict | None,
+    deep: dict | None,
+    technical_evidence: str,
+    *,
+    reason: str,
+) -> str:
+    """Evidence-first technical report (used as fallback and completeness backstop)."""
+    body = _technical_deterministic_sections_map(
+        session, verdict, deep, technical_evidence, reason=reason,
+    )
     parts = [
         f"# Technical Report — {session.get('sha256', '')[:16]}",
         "",
@@ -2146,6 +2240,44 @@ def main():
                 f" ({attempt.get('reason')})",
                 flush=True,
             )
+
+        # RC-84 Fix 2: complete any section the LLM could not author with a
+        # DETERMINISTIC render from the evidence, instead of dropping it.
+        # The report is complete regardless of a provider flake; the dropped
+        # section becomes `llm_incomplete` source only when NO LLM section
+        # is used, which is now the genuine total-failure case. A section the
+        # LLM authored is never replaced (keep-only-if-present).
+        deterministic_completed: list[str] = []
+        for title in list(master_failed):
+            det_piece = _deterministic_master_section_md(
+                title, session, verdict, deep, yara_meta, tools_results,
+                reason=master_failure_reason.get(title, "")
+                or "LLM section unrecoverable; rendered deterministically",
+                ioc_evidence=ioc_evidence, ti_evidence=ti_evidence,
+                heading_level=1,
+            )
+            master_by_title[title] = det_piece
+            master_failed.remove(title)
+            deterministic_completed.append(title)
+            master_targeted_attempts.append({
+                "section": title, "accepted": True,
+                "method": "deterministic",
+                "reason": "LLM section unrecoverable; rendered from evidence",
+                "response_chars": len(det_piece),
+            })
+            print(
+                f"[publish_report_v2] master section {title[:44]} completed "
+                f"DETERMINISTICALLY (LLM unrecoverable; RC-84 Fix 2)",
+                flush=True,
+            )
+        if deterministic_completed:
+            report["master_deterministic_sections"] = deterministic_completed
+            print(
+                f"[publish_report_v2] master: {len(deterministic_completed)} "
+                f"section(s) completed deterministically: {deterministic_completed}",
+                flush=True,
+            )
+
         master_md = "\n\n".join(
             master_by_title[title] for title in REPORT_MASTER_SECTIONS
             if title in master_by_title
@@ -2916,6 +3048,45 @@ def main():
                     completeness_attempts
                 )
                 technical_report["markdown"] = tech_md
+                tech_missing = verify_technical_sections(tech_md)
+                tech_stubs = stub_sections(tech_md, TECHNICAL_REPORT_SECTIONS)
+                # RC-84 Fix 2: complete any section the LLM could not author
+                # (empty content or a schema reject that survived the bounded
+                # repair) with a DETERMINISTIC render from the evidence,
+                # instead of dropping it. A provider flake no longer costs a
+                # whole section; the technical report is complete regardless.
+                tech_deterministic_completed: list[str] = []
+                for section in list(tech_missing):
+                    det_section = _deterministic_technical_section_md(
+                        section, session, verdict, deep,
+                        technical_evidence_base,
+                        reason=tech_err
+                        or "LLM section unrecoverable; rendered deterministically",
+                        heading_level=2,
+                    )
+                    tech_md, inserted = _upsert_report_section(
+                        tech_md, section, det_section,
+                        TECHNICAL_REPORT_SECTIONS,
+                    )
+                    if inserted:
+                        tech_deterministic_completed.append(section)
+                        completeness_attempts.append({
+                            "section": section, "accepted": True,
+                            "method": "deterministic",
+                            "reason": "LLM section unrecoverable; "
+                                       "rendered from evidence (RC-84 Fix 2)",
+                            "response_chars": len(det_section),
+                        })
+                        print(
+                            f"[publish_report_v2] technical section "
+                            f"{section[:40]} completed DETERMINISTICALLY "
+                            f"(LLM unrecoverable; RC-84 Fix 2)",
+                            flush=True,
+                        )
+                if tech_deterministic_completed:
+                    technical_report["markdown"] = tech_md
+                    technical_report["technical_deterministic_sections"] = (
+                        tech_deterministic_completed)
                 tech_missing = verify_technical_sections(tech_md)
                 tech_stubs = stub_sections(tech_md, TECHNICAL_REPORT_SECTIONS)
                 # The targeted repair restored the structured report. Record

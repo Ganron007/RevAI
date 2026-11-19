@@ -507,3 +507,165 @@ def test_yara_precondition_rescues_a_prior_failed_yara_attempt(monkeypatch, tmp_
     out = runner.run_publish()
     assert out["ok"] is True
     assert attempts == ["run_yara_gen", "run_yara_gen"], attempts
+
+
+# --------------------------------------------------------------------------
+# RC-84 Fix 1 (2026-11-19, final review): the agentic spine is DETERMINISTIC.
+# The LLM planner was the last non-deterministic layer and it emitted
+# non-compliant stage orders (re-run 3: audit before publish + 3 skipped
+# stages; re-run 5: publish before yara, yara never run → a ~1 s crash).
+# The spine now runs the StageRunner methods in a fixed Python order; the
+# LLM planner is opt-in behind REVAI_AGENTIC_PLANNER.
+# --------------------------------------------------------------------------
+def test_deterministic_spine_runs_every_stage_in_documented_order(monkeypatch, tmp_path):
+    """The spine executes every enabled stage exactly once, in the documented
+    order. Each stage is a StageRunner method, so `calls` records the exact
+    sequence and count the spine drove."""
+    monkeypatch.setattr(so, "case_dir", lambda _sha: tmp_path)
+    monkeypatch.delenv("REVAI_AGENTIC_PLANNER", raising=False)
+    calls = []
+
+    def rec(name):
+        def fn():
+            calls.append(name)
+            return {"ok": True, "rc": 0}
+        return fn
+
+    runner = so.StageRunner(SHA, None, [])
+    for name in ("run_intake", "run_quick_scan", "run_winre_dynamic",
+                 "run_deep_dive_agentic", "read_verdicts",
+                 "run_function_recovery", "run_artifact_gen",
+                 "run_behavioural_model", "run_yara_gen", "run_publish",
+                 "run_section_publish", "run_audit", "check_quality"):
+        monkeypatch.setattr(runner, name, rec(name))
+    # Optional stage gates stay self-skipping; record the calls, not the work.
+
+    order = so._planner_stage_order(
+        need_intake=True, winre=True, function_recovery=True,
+        artifact_gen=True, behavioural_model=True, depth=False)
+    # Production shares ONE list between the runner and the trace; the spine
+    # sees stage events (including any hitl_stop) there.
+    final = so._run_deterministic_spine(runner, order, runner.events)
+    expected = [s for s in order.split(" → ")]
+    assert calls == expected, calls
+    assert final["status"] == "ok"
+    assert final["stages_run"] == expected
+
+
+def test_spine_hitl_conflict_is_recorded_and_planners_not_invoked(monkeypatch, tmp_path):
+    """A HITL verdict conflict still stops the publish (preflight) and the
+    spine does NOT invoke the LLM planner. `runner.events` carries the
+    `hitl_stop` record the preflight appended."""
+    monkeypatch.setattr(so, "case_dir", lambda _sha: tmp_path)
+    (tmp_path / "verdict.json").write_text(json.dumps({"verdict": "suspicious"}))
+    (tmp_path / "deep_dive").mkdir()
+    (tmp_path / "deep_dive" / "05-deep-dive.json").write_text(
+        json.dumps({"verdict": "malicious"}))
+    monkeypatch.setenv("REVAI_HITL_VERDICT", "1")
+    monkeypatch.delenv("REVAI_AGENTIC_PLANNER", raising=False)
+
+    calls = []
+
+    def rec(name):
+        def fn():
+            calls.append(name)
+            return {"ok": True, "rc": 0}
+        return fn
+
+    runner = so.StageRunner(SHA, None, [])
+    # NOTE: run_publish is NOT monkeypatched — the real preflight is exactly
+    # what records the `hitl_stop` on runner.events (the behavior under test).
+    for name in ("run_quick_scan", "run_deep_dive_agentic", "read_verdicts",
+                 "run_yara_gen", "run_section_publish",
+                 "run_audit", "check_quality"):
+        monkeypatch.setattr(runner, name, rec(name))
+    # The real run_publish preflight records the HITL stop on runner.events.
+    order = so._planner_stage_order(
+        need_intake=False, winre=False, function_recovery=False,
+        artifact_gen=False, behavioural_model=False, depth=False)
+    final = so._run_deterministic_spine(runner, order, runner.events)
+    # run_publish was REACHED by the spine (it is the real method, so it is
+    # not in `calls`); its preflight recorded the HITL stop on runner.events
+    # and froze the run (report_terminal set).
+    assert runner.report_terminal is not None
+    assert runner.report_terminal["stage"] == "run_publish"
+    assert any(e.get("type") == "hitl_stop" for e in runner.events), runner.events
+    assert final["status"] == "hitl_stop"
+
+
+def test_planner_path_is_opt_in_behind_the_env_flag(monkeypatch):
+    """The env flag is the ONLY gate on the legacy planner branch: when unset
+    the deterministic spine is the default (the function under test here), and
+    the branch predicate reads the flag. This pins that the spine is the
+    default and the planner is deliberately opt-in, not deleted."""
+    src = open(so.__file__, encoding="utf-8").read()
+    # The branch gate is a single, exact comparison on REVAI_AGENTIC_PLANNER
+    # against the four truthy spellings.
+    assert 'os.environ.get("REVAI_AGENTIC_PLANNER", "")' in src
+    assert '"1", "true", "yes", "on"' in src
+    # The spine function is defined and is the else-branch target.
+    assert "def _run_deterministic_spine" in src
+    # The legacy planner invocation is preserved inside the gated branch.
+    assert "agent.invoke" in src
+
+
+# --------------------------------------------------------------------------
+# RC-84 Fix 2 (2026-11-19, final review): an LLM section that is unrecoverable
+# (empty content, or a schema reject that survives the bounded repair) is
+# completed DETERMINISTICALLY from the evidence instead of being dropped. A
+# provider flake therefore no longer costs a whole section -> the report is
+# complete regardless -> the stop-guard no longer fires on a flake.
+# --------------------------------------------------------------------------
+def _import_publish_module():
+    import publish_report_v2 as pub  # noqa: F401  (resolved via sys.path)
+    return pub
+
+
+def test_deterministic_master_section_renders_a_complete_cited_section():
+    pub = _import_publish_module()
+    session = {"sha256": "b" * 64, "sample_path": "/opt/samples/x.bin"}
+    verdict = {"verdict": "suspicious", "score": 70, "family_guess": "dropper"}
+    deep = {"summary": "packed loader", "iocs": ["evil.example"]}
+    md = pub._deterministic_master_section_md(
+        "7. Capability Assessment", session, verdict, deep, {}, {},
+        reason="LLM section unrecoverable; rendered deterministically",
+        heading_level=1,
+    )
+    # The section carries the exact required heading, so the completeness
+    # gate (missing_sections) sees it as PRESENT.
+    assert md.startswith("# 7. Capability Assessment")
+    # And a body, so the stub gate (stub_sections) sees it as non-stub.
+    assert len(md.strip()) > 40
+
+
+def test_deterministic_technical_section_renders_a_complete_section():
+    pub = _import_publish_module()
+    session = {"sha256": "b" * 64, "sample_path": "/opt/samples/x.bin"}
+    verdict = {"verdict": "suspicious"}
+    deep = {"summary": "packed", "iocs": ["1.2.3.4"]}
+    md = pub._deterministic_technical_section_md(
+        "1. Executive Summary", session, verdict, deep,
+        "", reason="LLM section unrecoverable; rendered deterministically",
+        heading_level=2,
+    )
+    assert md.startswith("## 1. Executive Summary")
+    assert "packed" in md or "suspicious" in md
+
+
+def test_upsert_inserts_a_deterministic_section_into_a_missing_report():
+    """The completion path inserts a rendered section into a report that lost
+    it, using the same `_upsert_report_section` the LLM repair uses."""
+    pub = _import_publish_module()
+    # A technical report missing section 1.
+    base = "\n\n".join(
+        f"## {t}\n\nbody" for t in pub.TECHNICAL_REPORT_SECTIONS[1:]
+    )
+    det = pub._deterministic_technical_section_md(
+        "1. Executive Summary", {"sha256": "b" * 64, "sample_path": "/x"},
+        {"verdict": "suspicious"}, {"summary": "packed"}, "",
+        reason="deterministic completion", heading_level=2,
+    )
+    merged, inserted = pub._upsert_report_section(
+        base, "1. Executive Summary", det, pub.TECHNICAL_REPORT_SECTIONS)
+    assert inserted is True
+    assert not pub.verify_technical_sections(merged)

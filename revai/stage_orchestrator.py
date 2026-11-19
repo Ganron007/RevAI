@@ -1142,6 +1142,67 @@ def _build_lc_tools(runner: StageRunner, need_intake: bool) -> list:
     return tools
 
 
+def _run_deterministic_spine(runner: "StageRunner", order: str,
+                            events: list[dict]) -> dict[str, Any]:
+    """RC-84 Fix 1: run the agentic spine in a fixed Python order.
+
+    The LLM planner was the only non-deterministic layer left in the agentic
+    mode, and it produced non-compliant stage orders (re-run 3: audit before
+    publish + 3 skipped stages; re-run 5: publish before yara, yara never
+    run → a ~1 s publish crash that froze the whole run). The spine is the
+    StageRunner methods themselves — deterministic subprocess + guards +
+    event recording — executed in the documented `_planner_stage_order`
+    sequence. The HITL verdict-conflict gate is already in
+    `run_publish`'s preflight (`_prepare_publish` + the HITL branch), so the
+    spine preserves it: a conflict is still recorded as `hitl_stop` and the
+    single-shot guard keeps the publishers from re-running.
+
+    Returns the `final_status` record for the trace.
+    """
+    print(
+        f"[orchestrator] deterministic spine (RC-84 Fix 1) — {order} "
+        f"(the LLM planner is retired; StageRunner methods sequence in fixed order)",
+        flush=True,
+    )
+    spine_tool_map = {
+        "run_intake": runner.run_intake,
+        "run_quick_scan": runner.run_quick_scan,
+        "run_winre_dynamic": runner.run_winre_dynamic,
+        "run_deep_dive_agentic": runner.run_deep_dive_agentic,
+        "read_verdicts": runner.read_verdicts,
+        "run_function_recovery": runner.run_function_recovery,
+        "run_artifact_gen": runner.run_artifact_gen,
+        "run_behavioural_model": runner.run_behavioural_model,
+        "run_yara_gen": runner.run_yara_gen,
+        "run_publish": runner.run_publish,
+        "run_section_publish": runner.run_section_publish,
+        "run_audit": runner.run_audit,
+        "check_quality": runner.check_quality,
+        "run_depth": runner.run_depth,
+    }
+    for stage_name in order.split(" → "):
+        fn = spine_tool_map.get(stage_name)
+        if fn is None:
+            events.append({
+                "type": "error", "tool": stage_name,
+                "error": "no deterministic spine method for this stage",
+                "ts": _utc(),
+            })
+            continue
+        print(f"[orchestrator] spine: {stage_name}", flush=True)
+        fn()
+    # A deterministic spine does not emit the planner's FINAL JSON; record the
+    # stage set so the trace reads as a completed run. The deterministic
+    # finalizer recomputes all_green/quality_green from the artifacts.
+    hitl = next((e for e in events if e.get("type") == "hitl_stop"), None)
+    return {
+        "status": "hitl_stop" if hitl else "ok",
+        "sha256": runner.sha,
+        "stages_run": [s for s in order.split(" → ") if s in spine_tool_map],
+        "note": "deterministic spine (RC-84 Fix 1)",
+    }
+
+
 def run_langgraph_orchestrator(sample: Path | None, sha: str | None) -> dict:
     from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
     from langchain_openai import ChatOpenAI
@@ -1280,56 +1341,71 @@ Use tools. Do not claim success without check_quality.ok=true.
     recursion_limit = int(run_profile().get("recursion_limit") or 40)
     started_at = _utc()
     t0 = time.monotonic()
-    print(
-        f"[orchestrator] LangGraph ReAct invoke planner={planner} tools={len(lc_tools)} "
-        f"recursion_limit={recursion_limit}",
-        flush=True,
-    )
 
-    final_status = None
-    try:
-        result = agent.invoke(
-            {
-                "messages": [
-                    HumanMessage(
-                        content=(
-                            f"Orchestrate the full analysis pipeline for {sha}. "
-                            f"need_intake={need_intake}. Call tools in order, then FINAL JSON."
-                        )
-                    )
-                ]
-            },
-            config={"recursion_limit": recursion_limit},
+    # RC-84 Fix 1 (root A, 2026-11-19): the agentic spine is DETERMINISTIC.
+    # The StageRunner methods already ARE the deterministic implementation of
+    # every stage (subprocess + guards + event recording); the LLM planner was
+    # only choosing the ORDER, and a volatile planner emitted non-compliant
+    # orders (re-run 3: audit before publish + 3 skipped stages; re-run 5:
+    # publish before yara and yara never ran → a ~1 s publish crash). That
+    # sequencing does no control work the code does not already do — the
+    # HITL gate, the stop-guard and the single-shot guards all live in the
+    # preflight/guards. So the spine runs in the documented order as a fixed
+    # Python sequence. `agent`/`lc_tools` are retained (constructed, not
+    # invoked) so the planner can be re-enabled deliberately, and the
+    # deterministic finalizer below still enforces every mandatory stage.
+    if os.environ.get("REVAI_AGENTIC_PLANNER", "").strip().lower() in ("1", "true", "yes", "on"):
+        print(
+            f"[orchestrator] LangGraph ReAct planner ENABLED (REVAI_AGENTIC_PLANNER) "
+            f"planner={planner} tools={len(lc_tools)} recursion_limit={recursion_limit}",
+            flush=True,
         )
-        messages = result.get("messages") or []
-        for msg in messages:
-            if isinstance(msg, AIMessage) and getattr(msg, "tool_calls", None):
-                events.append({
-                    "type": "planner_tool_calls",
-                    "tool_calls": [
-                        {"name": tc.get("name"), "args": tc.get("args")}
-                        for tc in (msg.tool_calls or [])
-                    ],
-                    "ts": _utc(),
-                })
-            if isinstance(msg, AIMessage) and isinstance(msg.content, str) and msg.content.strip():
-                text = msg.content.strip()
-                if "{" in text and "status" in text:
-                    try:
-                        start, end = text.find("{"), text.rfind("}")
-                        final_status = json.loads(text[start : end + 1])
-                    except Exception:
-                        pass
-            if isinstance(msg, ToolMessage):
-                events.append({
-                    "type": "tool_message",
-                    "name": getattr(msg, "name", None),
-                    "content": _truncate(str(msg.content), 500),
-                    "ts": _utc(),
-                })
-    except Exception as e:
-        print(f"[orchestrator] agent.invoke error: {e}", flush=True)
-        events.append({"type": "error", "error": str(e), "ts": _utc()})
+        final_status = None
+        try:
+            result = agent.invoke(
+                {
+                    "messages": [
+                        HumanMessage(
+                            content=(
+                                f"Orchestrate the full analysis pipeline for {sha}. "
+                                f"need_intake={need_intake}. Call tools in order, then FINAL JSON."
+                            )
+                        )
+                    ]
+                },
+                config={"recursion_limit": recursion_limit},
+            )
+            messages = result.get("messages") or []
+            for msg in messages:
+                if isinstance(msg, AIMessage) and getattr(msg, "tool_calls", None):
+                    events.append({
+                        "type": "planner_tool_calls",
+                        "tool_calls": [
+                            {"name": tc.get("name"), "args": tc.get("args")}
+                            for tc in (msg.tool_calls or [])
+                        ],
+                        "ts": _utc(),
+                    })
+                if isinstance(msg, AIMessage) and isinstance(msg.content, str) and msg.content.strip():
+                    text = msg.content.strip()
+                    if "{" in text and "status" in text:
+                        try:
+                            start, end = text.find("{"), text.rfind("}")
+                            final_status = json.loads(text[start : end + 1])
+                        except Exception:
+                            pass
+                if isinstance(msg, ToolMessage):
+                    events.append({
+                        "type": "tool_message",
+                        "name": getattr(msg, "name", None),
+                        "content": _truncate(str(msg.content), 500),
+                        "ts": _utc(),
+                    })
+        except Exception as e:
+            print(f"[orchestrator] agent.invoke error: {e}", flush=True)
+            events.append({"type": "error", "error": str(e), "ts": _utc()})
+    else:
+        final_status = _run_deterministic_spine(runner, order, events)
 
     # Deterministic finalize — never trust planner FINAL alone
     audit = {}
