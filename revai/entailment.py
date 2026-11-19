@@ -353,7 +353,11 @@ _SOURCE_ARTIFACTS: dict[str, tuple[str, ...]] = {
     "dotnet": ("deep_dive/01-tools-raw.json",),
     "dotnet_analyze": ("deep_dive/01-tools-raw.json",),
     "speakeasy": ("deep_dive/03-oracle.json",),
-    "emulation_oracle": ("deep_dive/03-oracle.json",),
+    # RC-82-d: the oracle lives at the top level of 03-oracle.json AND
+    # nested under `emulation_oracle` in 02-signals.json; both are
+    # candidates (the resolver's own data-driven alias handles each).
+    "emulation_oracle": ("deep_dive/03-oracle.json",
+                         "deep_dive/02-signals.json"),
     "revai_tools_sec": ("deep_dive/01-tools-raw.json",),
     "revai_tools_sinks": ("deep_dive/01-tools-raw.json",),
     "revai_tools_audit": ("deep_dive/01-tools-raw.json",),
@@ -990,9 +994,20 @@ def _resolve_json_path(value: Any, expression: str,
     tokens = _parse_json_path(expression)
     if tokens is None:
         return None
-    # 0. Emulation oracle alias: $.emulation_oracle.<field> -> $.<field>
+    # 0. Emulation oracle alias: `$.emulation_oracle.<field>` -> `$.<field>`
+    # (03-oracle.json carries the oracle at the top level; the writer's
+    # extra segment is dropped). RC-82-d: some artifacts NEST it —
+    # `02-signals.json` holds the same oracle under a top-level
+    # `emulation_oracle` key, so there the writer's spelling is already
+    # the exact path and must NOT be dropped. Data-driven: keep the
+    # segment when the artifact's own `emulation_oracle` key is a dict
+    # (the natural spelling resolves against it), drop it otherwise —
+    # a field that resolves neither way stays unresolved, no fuzzy
+    # fallthrough into the oracle's own field names.
     if tokens and tokens[0] == "emulation_oracle" and len(tokens) > 1:
-        tokens = tokens[1:]
+        if not (isinstance(value, dict)
+                and isinstance(value.get("emulation_oracle"), dict)):
+            tokens = tokens[1:]
 
     # 0b. Dynamic pack envelope aliases for deep_dive/02-dynamic-pack.json:
     # WinRE's findings report structure nests findings, correlation, manifest,

@@ -586,6 +586,50 @@ class StageRunner:
             1800,
         )
 
+    def _ensure_yara_artifacts(self) -> dict[str, Any] | None:
+        """RC-83: satisfy the publishers' required inputs before they run.
+
+        The planner's stage-order instruction is advisory, and a slip
+        (publish called before run_yara_gen, yara never run) turned a clean
+        3-hour run into a ~1-second crash: the full publish template
+        hard-requires rule.yara.json + iocs.json, the stop-guard then
+        correctly froze the deterministic "yara missing — run it" backstop
+        (gated on report_terminal being None), and the whole publish chain
+        died on an ordering slip (S2 mode-a re-run 5, 2026-11-19).
+
+        yara_gen_v2 is deterministic — no LLM, no evidence mutation; it
+        reads verdict.json, the quick/deep artifacts and the sample — so
+        running it as a precondition does not touch what the stop-guard
+        protects. It fills the publisher's inputs BEFORE any publisher
+        attempt. Bounded: each publisher call runs at most one
+        precondition; the publishers stay single-shot, so at most two yara
+        attempts across the pipeline, plus the finalizer's own
+        enforcement (which skips when run_yara_gen is already recorded).
+
+        Returns a failed tool result (the precondition itself failed — the
+        caller freezes the run with it) or None when the publisher may
+        proceed: after a terminal failure the stop-guard owns the run; when
+        both artifacts exist the inputs are satisfied; and when a prior
+        planner yara_gen attempt left no artifacts, the re-run is a
+        recovery, not a repeat.
+        """
+        if self.report_terminal is not None:
+            return None
+        case = case_dir(self.sha)
+        if (case / "rule.yara.json").is_file() \
+                and (case / "iocs.json").is_file():
+            return None
+        print(
+            "[orchestrator] publisher prerequisite: rule.yara.json/iocs.json "
+            "missing — running run_yara_gen before publication "
+            "(planner ordering slip or a failed yara attempt)",
+            flush=True,
+        )
+        out = self.run_yara_gen()
+        if not out.get("ok"):
+            return out
+        return None
+
     def run_winre_dynamic(self) -> dict:
         """Optional: detonate the sample on the WinRE FlareVM, pull the pack.
 
@@ -687,6 +731,10 @@ class StageRunner:
             }
             self._mark_report_terminal("run_publish", stopped)
             return stopped
+        prereq = self._ensure_yara_artifacts()
+        if prereq is not None:
+            self._mark_report_terminal("run_publish", prereq)
+            return prereq
         out = self._run(
             "run_publish",
             [
@@ -711,6 +759,10 @@ class StageRunner:
         if preflight is not None:
             self._mark_report_terminal("run_section_publish", preflight)
             return preflight
+        prereq = self._ensure_yara_artifacts()
+        if prereq is not None:
+            self._mark_report_terminal("run_section_publish", prereq)
+            return prereq
         out = self._run(
             "run_section_publish",
             [sys.executable, str(SCRIPTS / "section_publisher.py"), self.sha],

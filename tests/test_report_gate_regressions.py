@@ -1635,3 +1635,78 @@ def test_listing_lines_with_long_byte_dumps_and_missing_mnemonics():
     # Prose stays a claim.
     assert not is_disassembly_listing_line(
         "The sample persists via the Run key.")
+
+# ---------------------------------------------------------------- RC-82-d
+# Re-run 5 (2026-11-19): 8 unresolved-rows, all `source: emulation_oracle,
+# query: deep_dive/02-signals.json, row: $.emulation_oracle.<field>`.
+# 02-signals.json NESTS the oracle under an `emulation_oracle` key (so the
+# writer's spelling is the exact path), while 03-oracle.json carries the same
+# oracle at the top level (where the writer's spelling needs the segment
+# dropped). The alias is data-driven: keep the segment when the artifact's
+# own `emulation_oracle` key is a dict, drop it otherwise. A field that
+# exists in neither place stays unresolved.
+def test_emulation_oracle_alias_resolves_both_shapes(tmp_path):
+    case = _rc76_case(tmp_path)
+    nested = {
+        "anti_analysis": {},
+        "emulation_oracle": {
+            "engine": "emulation_oracle", "ok": True,
+            "instructions_executed": 1029669, "dyn_import_count": 111,
+        },
+        "dynamic_resolve": {},
+    }
+    top = {
+        "engine": "emulation_oracle", "ok": True,
+        "instructions_executed": 1029669, "dyn_import_count": 111,
+    }
+    (case / "deep_dive" / "02-signals.json").write_text(
+        json.dumps(nested), encoding="utf-8")
+    (case / "deep_dive" / "03-oracle.json").write_text(
+        json.dumps(top), encoding="utf-8")
+
+    # Measured live: the signals file NESTS the oracle, so the writer's
+    # `$.emulation_oracle.<field>` is the exact path and must stay.
+    for row, want in (
+        ("$.emulation_oracle.instructions_executed", "1029669"),
+        ("$.emulation_oracle.dyn_import_count", "111"),
+    ):
+        located, check = E._ground_citation(
+            {"source": "emulation_oracle",
+             "query": "deep_dive/02-signals.json", "row": row}, case)
+        assert located is not None, (row, check)
+        assert check["status"] == "traceable-row", (row, check)
+        assert want in located["excerpt"], (row, located["excerpt"])
+
+    # The oracle file is TOP-LEVEL: the same writer spelling needs the
+    # segment dropped (the pre-existing alias).
+    located, check = E._ground_citation(
+        {"source": "emulation_oracle", "query": "deep_dive/03-oracle.json",
+         "row": "$.emulation_oracle.dyn_import_count"}, case)
+    assert located is not None, check
+    assert check["status"] == "traceable-row", check
+    assert "111" in located["excerpt"]
+    # And the bare top-level spelling still resolves on the oracle file.
+    located, check = E._ground_citation(
+        {"source": "emulation_oracle", "query": "deep_dive/03-oracle.json",
+         "row": "$.instructions_executed"}, case)
+    assert located is not None, check
+    assert check["status"] == "traceable-row", check
+
+
+def test_emulation_oracle_field_absent_in_both_places_stays_unresolved(tmp_path):
+    """The alias never invents: a field the oracle does not carry is red in
+    BOTH shapes, not laundered through the other artifact."""
+    case = _rc76_case(tmp_path)
+    nested = {"emulation_oracle": {"ok": True, "instructions_executed": 5}}
+    top = {"ok": True, "instructions_executed": 5}
+    (case / "deep_dive" / "02-signals.json").write_text(
+        json.dumps(nested), encoding="utf-8")
+    (case / "deep_dive" / "03-oracle.json").write_text(
+        json.dumps(top), encoding="utf-8")
+
+    for query in ("deep_dive/02-signals.json", "deep_dive/03-oracle.json"):
+        located, check = E._ground_citation(
+            {"source": "emulation_oracle", "query": query,
+             "row": "$.emulation_oracle.dyn_import_count"}, case)
+        assert located is None, (query, check)
+        assert check["status"] == "unresolved-row", (query, check)

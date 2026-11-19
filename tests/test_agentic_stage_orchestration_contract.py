@@ -70,6 +70,7 @@ def test_agentic_publish_stages_use_the_shared_timeout_and_disable_timeout_retri
         return {"ok": True, "rc": 0}
 
     monkeypatch.setattr(so.StageRunner, "_run", record)
+    monkeypatch.setattr(so.StageRunner, "_ensure_yara_artifacts", lambda self: None)
     runner = so.StageRunner(SHA, None, [])
     runner.run_publish()
     runner.run_section_publish()
@@ -90,6 +91,8 @@ def test_agentic_report_stages_are_single_shot_even_if_planner_repeats_them(
 
     monkeypatch.setattr(so.StageRunner, "_prepare_publish", lambda self, stage: None)
     monkeypatch.setattr(so.StageRunner, "_run", record)
+    # This test is about the single-shot guard, not the RC-83 precondition.
+    monkeypatch.setattr(so.StageRunner, "_ensure_yara_artifacts", lambda self: None)
     events = []
     runner = so.StageRunner(SHA, None, events)
 
@@ -122,6 +125,10 @@ def test_publish_stages_reconcile_deep_verdict_before_reading_evidence(
     }))
     monkeypatch.setattr(so, "case_dir", lambda _sha: case)
     monkeypatch.delenv("REVAI_HITL_VERDICT", raising=False)
+    # RC-83: satisfy the publisher precondition so the test exercises only
+    # the verdict reconciliation it was written for.
+    (case / "rule.yara.json").write_text("{}")
+    (case / "iocs.json").write_text("{}")
     observed = []
 
     def publish_after_reconciliation(self, name, cmd, timeout, *, retry_timeouts=True):
@@ -263,6 +270,8 @@ def test_failed_publish_freezes_evidence_but_allows_audit(monkeypatch, tmp_path)
     """
     monkeypatch.setattr(so, "case_dir", lambda _sha: tmp_path)
     monkeypatch.setattr(so.StageRunner, "_prepare_publish", lambda self, stage: None)
+    # This test is about the stop guard, not the RC-83 precondition.
+    monkeypatch.setattr(so.StageRunner, "_ensure_yara_artifacts", lambda self: None)
     calls = []
 
     def fake_run(cmd, **kwargs):
@@ -348,6 +357,8 @@ def test_section_publish_failure_freezes_the_run(monkeypatch, tmp_path):
 def test_successful_publishers_do_not_freeze_the_run(monkeypatch, tmp_path):
     monkeypatch.setattr(so, "case_dir", lambda _sha: tmp_path)
     monkeypatch.setattr(so.StageRunner, "_prepare_publish", lambda self, stage: None)
+    # This test is about the stop guard, not the RC-83 precondition.
+    monkeypatch.setattr(so.StageRunner, "_ensure_yara_artifacts", lambda self: None)
     calls = []
 
     def fake_run(cmd, **kwargs):
@@ -367,3 +378,132 @@ def test_planner_tool_results_are_capped_at_six_thousand_chars():
     result = so._bounded_tool_payload(payload, 6000)
     assert len(result) > 6000
     assert result.endswith("chars)")
+
+
+# --------------------------------------------------------------------------
+# RC-83 (2026-11-19, S2 mode-a re-run 5): the planner called run_publish
+# BEFORE run_yara_gen (and never ran yara_gen at all), so the full publish
+# template hard-crashed on its missing required input `rule.yara.json` and
+# the stop-guard froze the deterministic backstop (it is gated on
+# report_terminal being None). The precondition below makes the publishers
+# satisfy their own required inputs — deterministic, bounded, single-shot.
+# --------------------------------------------------------------------------
+def test_publish_runs_yara_gen_when_its_required_input_is_missing(monkeypatch, tmp_path):
+    """A planner ordering slip no longer kills publish: run_publish runs the
+    deterministic yara_gen precondition first when the artifacts are absent."""
+    monkeypatch.setattr(so, "case_dir", lambda _sha: tmp_path)
+    monkeypatch.setattr(so.StageRunner, "_prepare_publish", lambda self, stage: None)
+    monkeypatch.delenv("REVAI_HITL_VERDICT", raising=False)
+    (tmp_path / "verdict.json").write_text(json.dumps({"verdict": "suspicious"}))
+    calls = []
+
+    def yara(self):
+        calls.append("run_yara_gen")
+        (tmp_path / "rule.yara.json").write_text("{}")
+        (tmp_path / "iocs.json").write_text("{}")
+        return {"ok": True, "rc": 0}
+
+    def publish(self, name, cmd, timeout, *, retry_timeouts=True):
+        calls.append(name)
+        return {"ok": True, "rc": 0}
+
+    monkeypatch.setattr(so.StageRunner, "run_yara_gen", yara)
+    monkeypatch.setattr(so.StageRunner, "_run", publish)
+    runner = so.StageRunner(SHA, None, [])
+
+    out = runner.run_publish()
+    assert out["ok"] is True
+    assert calls == ["run_yara_gen", "run_publish"], calls
+    assert runner.report_terminal is None
+    # The second publisher sees the artifacts and does NOT re-run yara.
+    out2 = runner.run_section_publish()
+    assert out2["ok"] is True
+    assert calls == ["run_yara_gen", "run_publish", "run_section_publish"], calls
+
+
+def test_yara_precondition_failure_freezes_the_run(monkeypatch, tmp_path):
+    """If the precondition itself fails, the publisher does not run and the
+    stop-guard owns the run (evidence-mutating stages stay blocked)."""
+    monkeypatch.setattr(so, "case_dir", lambda _sha: tmp_path)
+    monkeypatch.setattr(so.StageRunner, "_prepare_publish", lambda self, stage: None)
+    monkeypatch.delenv("REVAI_HITL_VERDICT", raising=False)
+    calls = []
+
+    def yara_failed(self):
+        calls.append("run_yara_gen")
+        return {"ok": False, "rc": 1, "failure_reason": "yara crashed"}
+
+    def publish(self, name, cmd, timeout, *, retry_timeouts=True):
+        calls.append(name)
+        return {"ok": True, "rc": 0}
+
+    monkeypatch.setattr(so.StageRunner, "run_yara_gen", yara_failed)
+    monkeypatch.setattr(so.StageRunner, "_run", publish)
+    runner = so.StageRunner(SHA, None, [])
+
+    out = runner.run_publish()
+    assert out["ok"] is False and out["rc"] == 1
+    assert calls == ["run_yara_gen"], calls
+    assert runner.report_terminal is not None
+    assert runner.report_terminal["stage"] == "run_publish"
+    # The publisher subprocess never ran; evidence-mutating stages are blocked.
+    assert "run_publish" not in calls
+
+
+def test_yara_precondition_does_not_run_when_artifacts_exist(monkeypatch, tmp_path):
+    """With both required inputs present the publishers proceed as before —
+    no extra yara attempt, byte-identical behavior to the pre-RC-83 path."""
+    monkeypatch.setattr(so, "case_dir", lambda _sha: tmp_path)
+    monkeypatch.setattr(so.StageRunner, "_prepare_publish", lambda self, stage: None)
+    monkeypatch.delenv("REVAI_HITL_VERDICT", raising=False)
+    (tmp_path / "rule.yara.json").write_text("{}")
+    (tmp_path / "iocs.json").write_text("{}")
+    calls = []
+
+    def yara(self):
+        calls.append("run_yara_gen")
+        return {"ok": True, "rc": 0}
+
+    def publish(self, name, cmd, timeout, *, retry_timeouts=True):
+        calls.append(name)
+        return {"ok": True, "rc": 0}
+
+    monkeypatch.setattr(so.StageRunner, "run_yara_gen", yara)
+    monkeypatch.setattr(so.StageRunner, "_run", publish)
+    runner = so.StageRunner(SHA, None, [])
+
+    assert runner.run_publish()["ok"] is True
+    assert runner.run_section_publish()["ok"] is True
+    assert calls == ["run_publish", "run_section_publish"], calls
+
+
+def test_yara_precondition_rescues_a_prior_failed_yara_attempt(monkeypatch, tmp_path):
+    """A failed planner yara_gen that left no artifacts is retried ONCE by the
+    precondition (bounded recovery, not an unbounded loop: the publishers stay
+    single-shot)."""
+    monkeypatch.setattr(so, "case_dir", lambda _sha: tmp_path)
+    monkeypatch.setattr(so.StageRunner, "_prepare_publish", lambda self, stage: None)
+    monkeypatch.delenv("REVAI_HITL_VERDICT", raising=False)
+    attempts = []
+
+    def yara_flaky(self):
+        attempts.append("run_yara_gen")
+        if len(attempts) == 1:
+            return {"ok": False, "rc": 1}
+        (tmp_path / "rule.yara.json").write_text("{}")
+        (tmp_path / "iocs.json").write_text("{}")
+        return {"ok": True, "rc": 0}
+
+    def publish(self, name, cmd, timeout, *, retry_timeouts=True):
+        return {"ok": True, "rc": 0}
+
+    monkeypatch.setattr(so.StageRunner, "run_yara_gen", yara_flaky)
+    monkeypatch.setattr(so.StageRunner, "_run", publish)
+    runner = so.StageRunner(SHA, None, [])
+
+    # Simulate the planner's own failed yara attempt (recorded, no artifacts).
+    runner.run_yara_gen()
+    assert attempts == ["run_yara_gen"]
+    out = runner.run_publish()
+    assert out["ok"] is True
+    assert attempts == ["run_yara_gen", "run_yara_gen"], attempts
