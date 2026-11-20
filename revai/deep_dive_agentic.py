@@ -70,7 +70,21 @@ import api_lookup  # noqa: E402
 import binary_diff  # noqa: E402
 import skills  # noqa: E402
 
-MAX_STEPS = int(os.environ.get("REVAI_DEEP_MAX_STEPS") or "16")
+#: Agentic deep-dive step budget.
+#:
+#: RC-90: this was 16, and a 16-step budget cannot do real reverse engineering
+#: on a packed sample -- the checklist alone (10 required tools) consumes most
+#: of it, leaving nothing to unpack the payload and decompile it. Measured on
+#: S2 `f18d3493ba43` (detonation #17): 29 tool calls, 14 non-bootstrap, and the
+#: unpacked payload never analysed at all. The operator's directive is that the
+#: RE must be done properly, so the budget is now generous by default.
+#:
+#: "Unlimited" is bounded by the stage wall clock rather than by an arbitrary
+#: step count: REVAI_STAGE_TIMEOUT_DEEP_DIVE (default 14,400 s) is the hard
+#: stop, and a step that hangs is stopped by its own tool timeout. 120 steps
+#: at the measured ~15-30 s/step is well inside that, so the practical bound is
+#: time, not steps -- which is the right bound for "as much as needed".
+MAX_STEPS = int(os.environ.get("REVAI_DEEP_MAX_STEPS") or "120")
 MAX_TOOL_RESULT_CHARS = 2000
 
 #: Bound the pre-dive WinRE evidence block while keeping room for the full
@@ -362,17 +376,17 @@ TOOL_DESCRIPTIONS = {
     "ghidra_query": "Run a SQL query on the Ghidra database. Args: session_id, sql, max_rows",
     "ida_query": "Run a SQL query on the IDA database. Args: ida_session_id, sql",
     "ghidra_decompile": "Decompile a Ghidra function. Args: session_id, function_addr",
-    "capa_analyze": "Run Mandiant/capa-rs capability detection. Large samples may incomplete (honest); not replaced by pe_imports.",
-    "pe_import_signals": "PE import high-signal API map via pefile. Separate from capa. Args: (none — uses session sample_path)",
-    "yara_scan": "Run YARA signature scan. Args: sample_path",
-    "floss_extract": "Run FLOSS string extraction. Args: sample_path",
+    "capa_analyze": "Run Mandiant/capa-rs capability detection. Large samples may incomplete (honest); not replaced by pe_imports. Args may include target=<path> to run on an UNPACKED PAYLOAD instead of the wrapper",
+    "pe_import_signals": "PE import high-signal API map via pefile. Separate from capa. Args may include target=<path> to run on an UNPACKED PAYLOAD instead of the wrapper",
+    "yara_scan": "Run YARA signature scan. Args: sample_path Args may include target=<path> to run on an UNPACKED PAYLOAD instead of the wrapper",
+    "floss_extract": "Run FLOSS string extraction. Args: sample_path Args may include target=<path> to run on an UNPACKED PAYLOAD instead of the wrapper",
     "dotnet_analyze": "Run .NET analysis. Args: sample_path",
     "speakeasy_emulate": "Run Speakeasy emulation. Args: sample_path",
     "shellcode_extract": "Extract shellcode sections from PE (high-entropy) and emulate with scdbg. Args: timeout (default 30). Use when docs/macros/decoded buffers or RWX sections suggest shellcode.",
     "frida_static_probe": "Run Frida STATIC probe: availability + PE import-derived hook candidates. No injection, no execution, no runtime events — it never runs the sample. Args: sample_path",
-    "r2_decompile": "Run radare2 disassembly. Args: sample_path, function_addrs",
+    "r2_decompile": "Run radare2 disassembly. Args: function_addrs, target (defaults to the analysed sample; set target to an UNPACKED PAYLOAD path to disassemble the payload instead of the wrapper)",
     "upx_unpack": "Run UPX packer detection. Args: sample_path",
-    "xor_string_search": "Run xorsearch XOR string search. Args: sample_path",
+    "xor_string_search": "Run xorsearch XOR string search. Args: sample_path Args may include target=<path> to run on an UNPACKED PAYLOAD instead of the wrapper",
     "olevba_analyze": "Run olevba Office VBA analysis. Args: sample_path",
     "peepdf_analyze": "Run peepdf PDF analysis. Args: sample_path",
     "api_lookup": "Offline Windows-API knowledge lookup (grounding). Args: api (symbol as a disassembler shows it, e.g. 'ZwOpenProcess' or '__imp_CreateFileW'), OR query (full-text search, e.g. 'process hollowing'). Returns reference text, curated malicious-use description, and malapi.io attack categories. Call this BEFORE describing any Windows API's behaviour or abuse potential.",
@@ -521,6 +535,33 @@ def build_messages(
             "part of the findings budget):\n"
             + _truncate("\n\n".join(evidence_blocks), DYNAMIC_EVIDENCE_CHARS)
         )
+    # RC-90: the unpacked payload is the real analysis target on a packed
+    # sample, so it gets the same treatment as the detonation pack -- rendered
+    # in full, outside the findings budget. A payload named only inside
+    # `findings` is truncated away at MAX_FINDINGS_CHARS, which is how a
+    # 131 KB image came to be analysed by nobody.
+    payload_text = ""
+    unpacked_payload = (findings.get("unpacked_payload")
+                        if isinstance(findings, dict) else None)
+    if isinstance(unpacked_payload, dict) and unpacked_payload.get("path"):
+        _pf = findings.get("payload_feedback") or {}
+        _tools_ok = _pf.get("tool_ok") or {}
+        _ok_names = [n for n, v in _tools_ok.items()
+                     if isinstance(v, dict) and v.get("ok")]
+        payload_text = (
+            "\n\nUNPACKED PAYLOAD (RC-90 - this is the real target; the "
+            "wrapper is a loader stub):\n"
+            f"  path: {unpacked_payload.get('path')}\n"
+            f"  size: {unpacked_payload.get('size')} bytes"
+            f" (unpacked by {unpacked_payload.get('engine')})\n"
+            f"  sha256: {unpacked_payload.get('sha256') or '(not recorded)'}\n"
+            f"  re-analysed with: {', '.join(_ok_names) or '(none succeeded)'}\n"
+            "  Point the file tools at it with target=<path above> (capa_analyze, "
+            "floss_extract, yara_scan, pe_import_signals, xor_string_search, "
+            "r2_decompile) and decompile its functions. The payload is what the "
+            "sample actually DOES."
+        )
+
 
     user = f"""Goal: Complete SQL deep RE on the sample, then produce a verdict with evidence.
 
@@ -540,7 +581,7 @@ Available tools:
 {tool_desc}
 
 Tool call history:
-{history_text}{evidence_text}
+{history_text}{evidence_text}{payload_text}
 
 Current findings:
 {findings_text}
@@ -739,16 +780,18 @@ class ToolRegistry:
                 timeout = int(timeout)
             except (TypeError, ValueError):
                 timeout = None
-        return capa_analyze(session["sample_path"], timeout=timeout)
+        # RC-90: `target` lets the agent run capa on the unpacked payload.
+        return capa_analyze(str(args.get("target") or session["sample_path"]),
+                            timeout=timeout)
 
     def _pe_import_signals(self, args, session):
-        return pe_import_signals(session["sample_path"])
+        return pe_import_signals(str(args.get("target") or session["sample_path"]))
 
     def _yara_scan(self, args, session):
-        return yara_scan(session["sample_path"])
+        return yara_scan(str(args.get("target") or session["sample_path"]))
 
     def _floss_extract(self, args, session):
-        return floss_extract(session["sample_path"])
+        return floss_extract(str(args.get("target") or session["sample_path"]))
 
     def _dotnet_analyze(self, args, session):
         return dotnet_analyze(session["sample_path"])
@@ -763,13 +806,17 @@ class ToolRegistry:
         return frida_static_probe(session["sample_path"])
 
     def _r2_decompile(self, args, session):
-        return r2_decompile(session["sample_path"], function_addrs=args.get("function_addrs"))
+        # RC-90: `target` lets the agent disassemble the UNPACKED payload, not
+        # just the wrapper. Defaults to the analysed sample so existing callers
+        # are unchanged.
+        target = str(args.get("target") or session["sample_path"])
+        return r2_decompile(target, function_addrs=args.get("function_addrs"))
 
     def _upx_unpack(self, args, session):
         return upx_unpack(session["sample_path"])
 
     def _xor_string_search(self, args, session):
-        return xor_string_search(session["sample_path"])
+        return xor_string_search(str(args.get("target") or session["sample_path"]))
 
     def _olevba_analyze(self, args, session):
         return olevba_analyze(session["sample_path"])
@@ -1028,6 +1075,111 @@ def _seed_signal_extractors(history: list, findings: dict, session: dict, sha: s
         print(f"[deep_dive_agentic] signal extractors skipped: {e}", file=sys.stderr)
 
 
+def _run_payload_feedback_pass(
+    *, upx_r: dict, findings: dict, tools_raw: dict, history: list) -> None:
+    r"""Feed EVERY successfully unpacked payload back through the tool chain.
+
+    RC-90. The post-UPX second pass (V5.16.5) existed but was gated on the
+    classic `upx -d` unpacker succeeding. When it refuses -- a modified UPX
+    header gives `upx_returncode=1` -- the emulation unpacker still recovers
+    the payload, and that payload was orphaned: no capa, no floss, no malcat,
+    no imports, no decompilation, no strings. Measured live on S2
+    `f18d3493ba43` (detonation #17, stopped for this fix): a 131,832-byte
+    payload sat in `unpack/` while the report described a 3-import wrapper.
+
+    Two engines can produce a payload and both are now first-class targets:
+
+      * `upx -d`         -> `tools_raw["upx"]["unpacked_path"]`
+      * `unpack_oracle`  -> `findings["unpack_pass"]["payload"]["path"]`
+
+    The pass is idempotent per payload path, so the two call sites (before and
+    after the signal extractors, because the emulation unpacker runs inside
+    them) cannot double-analyse the same file. Failure-safe: a payload that
+    cannot be re-analysed is recorded with its reason, never raised.
+    """
+    candidates: list[tuple[str, str]] = []
+    upx_path = str((upx_r or {}).get("unpacked_path") or "").strip()
+    if (upx_r or {}).get("upx_ok") and upx_path:
+        candidates.append(("upx -d", upx_path))
+    unpack_pass = findings.get("unpack_pass") if isinstance(findings, dict) else None
+    if isinstance(unpack_pass, dict) and unpack_pass.get("unpacked"):
+        payload = unpack_pass.get("payload") or {}
+        oracle_path = str(payload.get("path") or "").strip()
+        if oracle_path:
+            candidates.append(("unpack_oracle (emulation dump)", oracle_path))
+
+    if not candidates:
+        return
+    # Dedupe state lives in tools_raw so the two call sites (before and after
+    # the signal extractors) share it; created only when there is work to do,
+    # so a payload-less run leaves no bookkeeping key in its evidence.
+    seen = tools_raw.setdefault("_payload_feedback_done", [])
+    for engine, payload_path in candidates:
+        if payload_path in seen:
+            continue
+        seen.append(payload_path)
+        if not os.path.isfile(payload_path):
+            print(f"[deep_dive_agentic] payload feedback skipped "
+                  f"({engine}): {payload_path} missing", flush=True)
+            history.append({
+                "step": 0, "tool": "payload_feedback",
+                "args": {"payload_path": payload_path, "engine": engine},
+                "reason": "RC-90 payload feedback pass",
+                "result": {"ok": False},
+                "error": "payload file missing", "checklist": True,
+            })
+            continue
+        size = os.path.getsize(payload_path)
+        print(f"[deep_dive_agentic] RC-90 payload feedback ({engine}) -> "
+              f"{payload_path} ({size} bytes)", flush=True)
+        try:
+            second = run_post_upx_second_pass(payload_path, profile="deep")
+        except Exception as exc:                     # noqa: BLE001 - fail safe
+            print(f"[deep_dive_agentic] payload feedback failed ({engine}): "
+                  f"{type(exc).__name__}: {exc}", flush=True)
+            history.append({
+                "step": 0, "tool": "payload_feedback",
+                "args": {"payload_path": payload_path, "engine": engine},
+                "reason": "RC-90 payload feedback pass",
+                "result": {"ok": False},
+                "error": f"{type(exc).__name__}: {exc}", "checklist": True,
+            })
+            continue
+        tools_raw["payload_feedback"] = second
+        findings["payload_feedback"] = {
+            "engine": engine,
+            "payload_path": payload_path,
+            "payload_size": size,
+            "ok": second.get("ok"),
+            "tool_ok": second.get("tool_ok"),
+            "skipped_reason": second.get("skipped_reason"),
+        }
+        # The payload is a real analysis target for the agent: name it, with its
+        # size and hash, so the LLM can decompile and query it instead of
+        # guessing that the wrapper is the whole story.
+        findings["unpacked_payload"] = {
+            "path": payload_path,
+            "engine": engine,
+            "size": size,
+            "sha256": (second.get("tools", {}).get("malcat", {})
+                       .get("file_summary", {}) or {}).get("sha256"),
+        }
+        history.append({
+            "step": 0, "tool": "payload_feedback",
+            "args": {"payload_path": payload_path, "engine": engine},
+            "reason": ("RC-90 payload feedback pass — capa/yara/floss/malcat/"
+                       "pe_imports on the unpacked image"),
+            "result": {
+                "ok": second.get("ok"),
+                "tool_ok": second.get("tool_ok"),
+                "payload_size": size,
+                "engine": engine,
+            },
+            "error": None if second.get("ok") else second.get("skipped_reason"),
+            "checklist": True,
+        })
+
+
 def _run_standard_checklist(registry: "ToolRegistry", session: dict, sha: str) -> tuple[list, dict, dict, dict]:
     """Deterministic TOOL_MANIFEST parity — same required tools as standard deep_dive_v2.
 
@@ -1179,32 +1331,29 @@ def _run_standard_checklist(registry: "ToolRegistry", session: dict, sha: str) -
                     flush=True,
                 )
 
-    # V5.16.5 — post-UPX second-pass on unpacked payload
-    upx_r = tools_raw.get("upx") if isinstance(tools_raw.get("upx"), dict) else {}
-    unpacked = (upx_r or {}).get("unpacked_path") or ""
-    if (upx_r or {}).get("upx_ok") and unpacked:
-        print(f"[deep_dive_agentic] post-UPX second-pass -> {unpacked}", flush=True)
-        second = run_post_upx_second_pass(unpacked, profile="deep")
-        tools_raw["upx_second_pass"] = second
-        findings["checklist_upx_second_pass"] = second
-        history.append({
-            "step": 0,
-            "tool": "upx_second_pass",
-            "args": {"unpacked_path": unpacked},
-            "reason": "V5.16.5 post-UPX second-pass (capa/yara/floss/malcat/pe_imports)",
-            "result": {
-                "ok": second.get("ok"),
-                "tool_ok": second.get("tool_ok"),
-                "unpacked_path": unpacked,
-            },
-            "error": None if second.get("ok") else second.get("skipped_reason"),
-            "checklist": True,
-        })
+    # V5.16.5 — post-UPX second-pass on unpacked payload.
+    # RC-90: this used to be gated on `upx -d` succeeding. When the classic
+    # unpacker refuses (measured live on S2 f18d3493ba43: a modified UPX header
+    # gave `upx_returncode=1`, `upx_ok=False`, `unpacked_path=None`) the
+    # emulation unpacker STILL recovered a 131,832-byte payload -- and that
+    # payload fed nothing: no capa, no floss, no malcat, no imports, no
+    # decompilation. The report then described a wrapper with 3 imports while
+    # the actual malware sat unanalysed in `unpack/`. Every successful unpack,
+    # from ANY engine, is now a first-class analysis target.
+    _run_payload_feedback_pass(
+        upx_r=tools_raw.get("upx") if isinstance(tools_raw.get("upx"), dict) else {},
+        findings=findings, tools_raw=tools_raw, history=history)
 
     # Deterministic signal extractors (anti-analysis + dynamic-import-resolve).
     # Grounded evidence for the evasion/anti-analysis depth domain; never breaks
     # the run on failure. Full output persisted for audit.
     _seed_signal_extractors(history, findings, session, sha)
+
+    # RC-90: the emulation unpacker runs inside the signal extractors above, so
+    # its payload is only known AFTER they return. Feed it back here -- this is
+    # the path that was silently orphaned before.
+    _run_payload_feedback_pass(
+        upx_r={}, findings=findings, tools_raw=tools_raw, history=history)
 
     # Deterministic packer checklist — gives the gate packed-context so
     # capa/floss incomplete on packer-flagged samples soft-fails (recorded,
