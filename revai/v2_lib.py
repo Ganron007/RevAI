@@ -101,29 +101,60 @@ REPORT_SOURCE_EVIDENCE_MAX_CHARS = int(
     os.environ.get("REVAI_SOURCE_EVIDENCE_MAX_CHARS", "") or 600_000)
 
 
+#: The mode-keyed layouts a case directory can have.
+RUN_MODES = ("agentic", "scripted", "ui")
+
+
 def case_dir(sha: str, mode: str | None = None) -> Path:
     """Return the mode-keyed case directory for a sample.
 
-    If mode is None, reads REVAI_RUN_MODE env var (scripted / agentic / ui).
-    If mode is given explicitly, uses it. If neither, returns LOGS_DIR/sha
-    (legacy flat layout) and says so ONCE on stderr.
+    Resolution order, and this order is the fix (RC-91):
 
-    The warning is not decoration. Running a mode-keyed stage by hand without
-    REVAI_RUN_MODE writes its artifacts into the flat directory while the audit
-    reads the mode directory, so the audit sees stale files and reports failures
-    that do not exist. That happened three times on 2026-09-30/10-01 -- twice to
-    me, writing publish_report_v2.py output to the flat dir and reading an old
-    pipeline-audit.json back. Scripts that are mode-keyed by design should call
-    `require_run_mode()` instead, which raises rather than warns.
+      1. an explicit `mode=` argument;
+      2. `REVAI_RUN_MODE` (scripted / agentic / ui);
+      3. **the single mode directory that exists on disk**, inferred.
+
+    Step 3 is what makes this deterministic instead of hopeful. Before RC-91 a
+    caller with no mode got the LEGACY FLAT directory and ONE stderr line per
+    process -- so a read-only probe (`build_section_row_manifest`,
+    `build_section_frontier`, an audit, a Console request) silently read
+    `logs/<sha>/`, found nothing, and returned EMPTY. Measured live on S2
+    `f18d3493ba43` 2026-11-20: the payload rows were present and citable, but a
+    probe without `REVAI_RUN_MODE` reported an empty manifest, which reads
+    exactly like "the evidence is not there".
+
+    Inference fires only when it is unambiguous: exactly one of `agentic`,
+    `scripted`, `ui` exists under `logs/<sha>/`. When several exist the caller
+    has to say which run it means -- guessing would read the wrong run's
+    artifacts, which is worse than an error -- so that case warns on EVERY call
+    (the once-per-process suppression is precisely what let the empty result
+    look legitimate) and names the candidates.
     """
-    if mode is None:
-        mode = os.environ.get("REVAI_RUN_MODE", "").strip()
     base = LOGS_DIR / sha
-    if mode:
-        d = base / mode
+    resolved = (mode or os.environ.get("REVAI_RUN_MODE", "")).strip()
+    if not resolved:
+        present = [m for m in RUN_MODES if (base / m).is_dir()]
+        if len(present) == 1:
+            resolved = present[0]
+            print(
+                f"[case_dir] REVAI_RUN_MODE is not set; resolved to the only "
+                f"mode directory on disk: {resolved} "
+                f"(logs/{sha[:12]}/{resolved}/).",
+                file=sys.stderr, flush=True)
+        elif len(present) > 1:
+            print(
+                f"[case_dir] ERROR: REVAI_RUN_MODE is not set and {sha[:12]} "
+                f"has {len(present)} mode directories ({', '.join(present)}) "
+                f"-- the mode cannot be inferred. Set REVAI_RUN_MODE or pass "
+                f"mode= explicitly; the legacy flat directory is NOT what you "
+                f"want here.",
+                file=sys.stderr, flush=True)
+        else:
+            _warn_flat_case_dir_once(sha)
+    if resolved:
+        d = base / resolved
         d.mkdir(parents=True, exist_ok=True)
         return d
-    _warn_flat_case_dir_once(sha)
     return base
 
 
@@ -10356,13 +10387,24 @@ _SECTION_MANIFEST_ROW_CAP = 40
 
 
 def _read_artifact_rows(case_root: Path, rel: str, array_path: str) -> list:
-    """Read one artifact and return the array at ``array_path`` ([] if absent)."""
+    """Read one artifact and return the array at ``array_path`` ([] if absent).
+
+    RC-91: a missing file, an UNPARSEABLE file and a missing array segment
+    used to be the same `[]`. The first and third are legitimate "nothing
+    here"; the second is a corrupt artifact and must say so, or a truncated
+    write looks exactly like absent evidence.
+    """
     path = case_root / rel
     if not path.is_file():
         return []
     try:
         data = json.loads(path.read_text(errors="replace")) or {}
-    except Exception:                         # noqa: BLE001
+    except Exception as e:                         # noqa: BLE001
+        print(
+            f"[_read_artifact_rows] ERROR: {rel} under {case_root} is not "
+            f"valid JSON ({type(e).__name__}: {e}). Its rows are being "
+            f"treated as absent, which may be wrong.",
+            file=sys.stderr, flush=True)
         return []
     node = data
     for segment in array_path.split("."):
@@ -10387,24 +10429,36 @@ def _summarize_row(value, limit: int = 200) -> str:
     return text[:limit]
 
 
-def build_section_frontier(sha: str, section: str,
-                           section_markdown: str,
-                           logs_dir: Path | None = None) -> str:
-    """The investigation frontier for one section: cited vs un-cited manifest
-    rows with explicit dispositions.
+def _section_row_sources(sha: str, section: str,
+                         mode: str | None = None) -> tuple[Path, list] | None:
+    """Resolve a section's citable row sources against the case's artifacts.
 
-    RC-43 (2026-11-01, from the Verified IDA adoption): the writer cites
-    some manifest rows and silently ignores others. The un-cited rows become
-    `insufficient` claims because the writer asserts beyond what it cited.
-    The frontier makes every manifest row explicitly accounted for: cited,
-    not-material, or deferred.
+    RC-91: `build_section_row_manifest` and `build_section_frontier` each used
+    to do this resolution inline and then return an EMPTY result when the case
+    directory -- or the artifacts inside it -- were not where they looked. An
+    empty result from "no rows exist" and an empty result from "I read the
+    wrong directory" were indistinguishable, and that is exactly how a live
+    diagnostic went wrong on 2026-11-20: the payload rows were present and
+    citable, a probe without `REVAI_RUN_MODE` resolved to the legacy flat
+    directory, found nothing, and reported an empty manifest.
+
+    Both failure modes now name themselves on stderr. Returns None when the
+    section has no configured row sources at all (deterministic sections 5
+    and 8) -- the one legitimately-empty case.
     """
     canonical_section = SECTION_NAME_ALIASES.get(section, section)
     base_sources = SECTION_ROW_SOURCES.get(canonical_section)
     if not base_sources:
-        return ""
-    mode = os.environ.get("REVAI_RUN_MODE", "").strip() or None
+        return None
     root = case_dir(sha, mode)
+    if not root.is_dir():
+        print(
+            f"[_section_row_sources] ERROR: case directory does not exist: "
+            f"{root}. {canonical_section!r} will have NO rows because nothing "
+            f"was read -- not because the section has none. Check "
+            f"REVAI_RUN_MODE (resolved to "
+            f"{mode or 'unset -> inferred or flat'}) and the sha256.",
+            file=sys.stderr, flush=True)
     sources = list(base_sources)
     if (root / "deep_dive/01-tools-raw.json").is_file():
         try:
@@ -10425,6 +10479,41 @@ def build_section_frontier(sha: str, section: str,
                 sources.extend(DYNAMIC_SECTION_ROW_SOURCES.get(canonical_section, ()))
         except Exception:
             pass
+    return root, sources
+
+
+def _warn_absent_row_sources(root: Path, canonical_section: str,
+                             sources: list) -> None:
+    """Say so when a section's configured row sources are all absent (RC-91)."""
+    missing = sorted({rel for rel, _p, _l in sources
+                      if not (root / rel).is_file()})
+    if missing:
+        print(
+            f"[_section_row_sources] WARNING: {canonical_section!r} has "
+            f"configured row sources but none were found under {root}: "
+            f"{', '.join(missing)}. An empty result here means the artifacts "
+            f"are absent, not that the section has no rows.",
+            file=sys.stderr, flush=True)
+
+
+def build_section_frontier(sha: str, section: str,
+                           section_markdown: str,
+                           logs_dir: Path | None = None) -> str:
+    """The investigation frontier for one section: cited vs un-cited manifest
+    rows with explicit dispositions.
+
+    RC-43 (2026-11-01, from the Verified IDA adoption): the writer cites
+    some manifest rows and silently ignores others. The un-cited rows become
+    `insufficient` claims because the writer asserts beyond what it cited.
+    The frontier makes every manifest row explicitly accounted for: cited,
+    not-material, or deferred.
+    """
+    mode = os.environ.get("REVAI_RUN_MODE", "").strip() or None
+    _resolved = _section_row_sources(sha, section, mode)
+    if _resolved is None:
+        return ""
+    root, sources = _resolved
+    canonical_section = SECTION_NAME_ALIASES.get(section, section)
     cited = set()
     # Extract the cited locators from the section markdown
     import re as _re
@@ -10441,6 +10530,7 @@ def build_section_frontier(sha: str, section: str,
     un_cited = {loc: info for loc, info in rows_by_locator.items()
                 if loc not in cited}
     if not un_cited:
+        _warn_absent_row_sources(root, canonical_section, sources)
         return ""
     lines = ["## Section frontier (deterministic)", "",
              "These manifest rows were NOT cited in the section prose.",
@@ -10469,32 +10559,12 @@ def build_section_row_manifest(sha: str, section: str,
     cite only manifest rows, verbatim. Deterministic sections (5 and 8)
     have no manifest. Empty when the artifacts offer nothing.
     """
-    canonical_section = SECTION_NAME_ALIASES.get(section, section)
-    base_sources = SECTION_ROW_SOURCES.get(canonical_section)
-    if not base_sources:
-        return ""
     mode = os.environ.get("REVAI_RUN_MODE", "").strip() or None
-    root = case_dir(sha, mode)
-    sources = list(base_sources)
-    if (root / "deep_dive/01-tools-raw.json").is_file():
-        try:
-            _raw_peek = json.loads((root / "deep_dive/01-tools-raw.json").read_text(errors="replace")) or {}
-            if "upx_second_pass" in _raw_peek:
-                sources.extend(UPX_SECTION_ROW_SOURCES.get(canonical_section, ()))
-            # RC-90b: the payload rows are keyed on `payload_feedback`, which
-            # exists whether the payload came from `upx -d` or the emulation
-            # unpacker -- so a run with no `upx_second_pass` still gets them.
-            if "payload_feedback" in _raw_peek:
-                sources.extend(PAYLOAD_SECTION_ROW_SOURCES.get(canonical_section, ()))
-        except Exception:
-            pass
-    if (root / "deep_dive/02-dynamic-pack.json").is_file():
-        try:
-            _dyn_peek = json.loads((root / "deep_dive/02-dynamic-pack.json").read_text(errors="replace")) or {}
-            if _dyn_peek.get("present") or _dyn_peek.get("frida_summary") or _dyn_peek.get("dynamic_stage"):
-                sources.extend(DYNAMIC_SECTION_ROW_SOURCES.get(canonical_section, ()))
-        except Exception:
-            pass
+    _resolved = _section_row_sources(sha, section, mode)
+    if _resolved is None:
+        return ""
+    root, sources = _resolved
+    canonical_section = SECTION_NAME_ALIASES.get(section, section)
     blocks: list[str] = []
     total = 0
     for rel, array_path, label in sources:
@@ -10521,6 +10591,7 @@ def build_section_row_manifest(sha: str, section: str,
             blocks.extend(lines)
             blocks.append("")
     if not blocks:
+        _warn_absent_row_sources(root, canonical_section, sources)
         return ""
     head = ("## Section row manifest (deterministic)\n\n"
             "These rows were read directly from this run's artifacts and are "
