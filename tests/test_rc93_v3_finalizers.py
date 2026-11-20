@@ -219,6 +219,28 @@ def test_payload_locator_split_across_query_and_row_resolves(tmp_path):
     assert hit["value"]["rule"] == "payloadcapa"
 
 
+def test_exact_artifact_path_in_query_still_tries_the_sibling(tmp_path):
+    """The exact-path short-circuit must not make the named file the ONLY
+    candidate: quick_scan/pe-imports.json names the pe_imports tool, and
+    the deep_dive branch of the same tool carries the row."""
+    (root := tmp_path / "c").mkdir(parents=True)
+    (root / "quick_scan").mkdir()
+    (root / "quick_scan" / "pe-imports.json").write_text(json.dumps({
+        "engine": "pe_imports", "signals": [{"label": "quick-label"}]}))
+    (root / "deep_dive").mkdir()
+    (root / "deep_dive" / "01-tools-raw.json").write_text(json.dumps({
+        "pe_imports": {"signals": [{"label": "deep-label"}]}}))
+    paths = E._source_artifact_candidates(
+        "pe_imports", "quick_scan/pe-imports.json", root)
+    names = [p.name for p in paths]
+    assert names == ["pe-imports.json", "01-tools-raw.json"], (
+        "the exact file first, then the sibling -- not the exact file ONLY")
+    hit = E._locate_cited_row(
+        paths[1], "$.pe_imports.signals[0].label",
+        "quick_scan/pe-imports.json", "pe_imports")
+    assert hit is not None and hit["value"] == "deep-label"
+
+
 def test_payload_source_with_dropped_wrapper_still_fails_closed(tmp_path):
     """The laundering guard is untouched: a payload SOURCE whose row names
     a top-level engine branch is still rejected."""

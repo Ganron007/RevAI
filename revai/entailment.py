@@ -684,33 +684,48 @@ def _walk_json_strings(value: Any, path: str = "$", depth: int = 0):
 
 def _source_artifact_candidates(source: str, query: str | None,
                                 root: Path) -> list[Path]:
-    """Resolve a citation to source-specific machine evidence, never report prose."""
+    """Resolve a citation to source-specific machine evidence, never report prose.
+
+    RC-93 ordering: an exact artifact path in the query/source names the
+    writer's PRIMARY file and is tried FIRST, but it is no longer the ONLY
+    candidate -- the same engine writes sibling artifacts (the query naming
+    `quick_scan/pe-imports.json` does not stop the pe_imports branch in
+    `deep_dive/01-tools-raw.json` from carrying the same row; re-run 14:
+    12+ unresolved rows on evidence-present fields because the short-circuit
+    never let the sibling be tried). Every downstream resolution is exact
+    (strict JSONPath + engine-branch filter), so an extra candidate can
+    only rescue a row that verifiably exists in the sibling artifact.
+    """
+    out: list[Path] = []
+
+    def _add(rel: str) -> None:
+        if rel in _PRIMARY_EVIDENCE_ARTIFACTS:
+            path = root / rel
+            if path.is_file() and path not in out:
+                out.append(path)
+
     exact_path = (query or "").strip().strip("` ").replace("\\", "/")
-    # RC-52 (live proof, run 36 copy): an exact artifact path in the query
-    # maps directly when the file is part of the case evidence — the deep
-    # dive's own record (agentic_deep_dive.json) is evidence the SQL engines'
-    # observations resolve against, but it is not in the PRIMARY set.
     if (exact_path in _PRIMARY_EVIDENCE_ARTIFACTS
             or exact_path in _EVIDENCE_ARTIFACTS):
-        path = root / exact_path
-        return [path] if path.is_file() else []
+        _add(exact_path)
+    # RC-52 (live proof, run 36 copy): an exact artifact path in the query
+    # maps directly when the file is part of the case evidence -- the deep
+    # dive's own record (agentic_deep_dive.json) is evidence the SQL engines'
+    # observations resolve against, but it is not in the PRIMARY set.
     # RC-82: the writer may put the artifact PATH in `source` instead of the
     # engine (`source: deep_dive/01-tools-raw.json, query_or_table: yara,
     # row: rule_count`) -- the same source of truth the exact-path check
-    # above honors for the query. The normalized-alias fallback below cannot
-    # match it: it compares a raw path against a normalized string, which
-    # only ever matches for alias names without separators.
+    # above honors for the query.
     src_exact = (source or "").strip().strip("` ").replace("\\", "/")
     if (src_exact in _PRIMARY_EVIDENCE_ARTIFACTS
             or src_exact in _EVIDENCE_ARTIFACTS):
-        path = root / src_exact
-        return [path] if path.is_file() else []
+        _add(src_exact)
     src = _norm(source)
     q = _norm(query or "")
     lookup = src
     if src in {"llm_judge", "llm", "llm verdict", "section_publisher"}:
         if q in {"summary", "verdict", "the summary", "the verdict", "narrative"}:
-            return []
+            return out
         lookup = q
 
     # RC-93 (re-run 14, 2026-11-20): the old match took the FIRST alias whose
@@ -751,13 +766,11 @@ def _source_artifact_candidates(source: str, query: str | None,
         for rel in _PRIMARY_EVIDENCE_ARTIFACTS:
             if rel.lower() in src or Path(rel).name.lower() in src:
                 candidates.append(rel)
-    out: list[Path] = []
     for rel in candidates:
-        if rel not in _PRIMARY_EVIDENCE_ARTIFACTS:
-            continue
-        path = root / rel
-        if path.is_file() and path not in out:
-            out.append(path)
+        if rel in _PRIMARY_EVIDENCE_ARTIFACTS:
+            path = root / rel
+            if path.is_file() and path not in out:
+                out.append(path)
     return out
 
 
