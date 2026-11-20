@@ -123,17 +123,27 @@ def case_dir(sha: str, mode: str | None = None) -> Path:
     probe without `REVAI_RUN_MODE` reported an empty manifest, which reads
     exactly like "the evidence is not there".
 
-    Inference fires only when it is unambiguous: exactly one of `agentic`,
-    `scripted`, `ui` exists under `logs/<sha>/`. When several exist the caller
-    has to say which run it means -- guessing would read the wrong run's
-    artifacts, which is worse than an error -- so that case warns on EVERY call
-    (the once-per-process suppression is precisely what let the empty result
-    look legitimate) and names the candidates.
+    Inference is evidence-based, not existence-based, and fires only when it is
+    unambiguous:
+
+      * exactly one NON-EMPTY mode directory -> use it (an empty leftover does
+        not count: `case_dir` creates mode directories as a side effect, so
+        `ui/` with nothing in it is not a run);
+      * several, but exactly one carries the primary evidence artifact
+        (`deep_dive/01-tools-raw.json`) -> use that one, and say so;
+      * several carrying evidence -> the caller has to say which RUN it means.
+        Guessing would read the wrong run's artifacts, which is worse than an
+        error, so this warns on EVERY call (the once-per-process suppression
+        is precisely what let the empty result look legitimate) and names the
+        candidates.
     """
     base = LOGS_DIR / sha
     resolved = (mode or os.environ.get("REVAI_RUN_MODE", "")).strip()
     if not resolved:
-        present = [m for m in RUN_MODES if (base / m).is_dir()]
+        # An empty directory is not a run: `case_dir(sha, mode)` creates them
+        # as a side effect, so leftovers would otherwise look like candidates.
+        present = [m for m in RUN_MODES
+                   if (base / m).is_dir() and any((base / m).iterdir())]
         if len(present) == 1:
             resolved = present[0]
             print(
@@ -142,13 +152,33 @@ def case_dir(sha: str, mode: str | None = None) -> Path:
                 f"(logs/{sha[:12]}/{resolved}/).",
                 file=sys.stderr, flush=True)
         elif len(present) > 1:
-            print(
-                f"[case_dir] ERROR: REVAI_RUN_MODE is not set and {sha[:12]} "
-                f"has {len(present)} mode directories ({', '.join(present)}) "
-                f"-- the mode cannot be inferred. Set REVAI_RUN_MODE or pass "
-                f"mode= explicitly; the legacy flat directory is NOT what you "
-                f"want here.",
-                file=sys.stderr, flush=True)
+            # Several real runs: let the evidence pick, but only if it is
+            # unambiguous. `deep_dive/01-tools-raw.json` is the artifact every
+            # analysis stage writes, so exactly one mode carrying it identifies
+            # the run a static/manifest question is about.
+            with_evidence = [
+                m for m in present
+                if (base / m / "deep_dive" / "01-tools-raw.json").is_file()]
+            if len(with_evidence) == 1:
+                resolved = with_evidence[0]
+                print(
+                    f"[case_dir] REVAI_RUN_MODE is not set and {sha[:12]} has "
+                    f"{len(present)} mode directories; resolved to "
+                    f"{resolved} because it is the only one carrying "
+                    f"deep_dive/01-tools-raw.json. Pass mode= explicitly to "
+                    f"read another run.",
+                    file=sys.stderr, flush=True)
+            else:
+                print(
+                    f"[case_dir] ERROR: REVAI_RUN_MODE is not set and "
+                    f"{sha[:12]} has {len(present)} mode directories "
+                    f"({', '.join(present)})"
+                    + (f", {len(with_evidence)} of them carrying "
+                       f"deep_dive/01-tools-raw.json" if with_evidence else "")
+                    + " -- the mode cannot be inferred. Set REVAI_RUN_MODE or "
+                      "pass mode= explicitly; the legacy flat directory is NOT "
+                      "what you want here.",
+                    file=sys.stderr, flush=True)
         else:
             _warn_flat_case_dir_once(sha)
     if resolved:

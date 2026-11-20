@@ -89,9 +89,9 @@ def test_the_env_var_wins_over_inference(_logs_dir, monkeypatch):
 
 # -------------------------------------------------------------- 2. ambiguity
 def test_an_ambiguous_mode_never_guesses(_logs_dir, capsys):
-    """Several mode dirs -> the caller must say which run it means."""
+    """Several runs carrying evidence -> the caller must say which one."""
     for mode in ("agentic", "scripted"):
-        (_logs_dir / SHA / mode).mkdir(parents=True)
+        _tools_raw(_logs_dir, mode)
     resolved = v2_lib.case_dir(SHA)
     # Falls back to flat (the legacy answer) but SAYS so, every call.
     assert resolved == _logs_dir / SHA
@@ -145,3 +145,29 @@ def test_a_section_with_no_sources_is_silent_and_empty(_logs_dir, capsys):
     md = v2_lib.build_section_row_manifest(SHA, "8. Attribution")
     assert md == "", md
     assert capsys.readouterr().err == ""
+
+
+def test_the_evidence_picks_the_mode_when_only_one_carries_it(_logs_dir):
+    """Several mode dirs, one real run: the evidence identifies it.
+
+    An empty leftover (`ui/` with nothing in it) is not a run -- `case_dir`
+    creates mode directories as a side effect -- so it must not count as a
+    candidate.
+    """
+    _tools_raw(_logs_dir, "agentic")
+    (_logs_dir / SHA / "ui").mkdir(parents=True)          # empty leftover
+    resolved = v2_lib.case_dir(SHA)
+    assert resolved == _logs_dir / SHA / "agentic", resolved
+
+
+def test_the_evidence_cannot_pick_between_two_real_runs(_logs_dir, capsys):
+    """Two runs that BOTH carry evidence: refuse, never guess."""
+    _tools_raw(_logs_dir, "agentic")
+    _tools_raw(_logs_dir, "scripted")
+    (_logs_dir / SHA / "ui").mkdir(parents=True)
+    resolved = v2_lib.case_dir(SHA)
+    assert resolved == _logs_dir / SHA
+    err = capsys.readouterr().err
+    assert "cannot be inferred" in err, err
+    assert "2 mode directories" in err, err
+    assert "ui" not in err.split("mode directories")[1].split("--")[0], err
