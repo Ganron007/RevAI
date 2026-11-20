@@ -10244,6 +10244,41 @@ SECTION_ROW_SOURCES: dict[str, tuple[tuple[str, str, str], ...]] = {
     ),
 }
 
+#: RC-90b: artifact row sources from the unpacked payload.
+#:
+#: RC-90 feeds the payload through capa/yara/floss/malcat/pe_imports under
+#: `payload_feedback.tools.<engine>` and decompiles its functions under
+#: `payload_decompilation`. Those rows are citable here exactly the way the
+#: V5.16.5 `upx_second_pass` rows are: the writer can cite the payload's own
+#: evidence instead of restating the wrapper's. Fires whenever `payload_feedback`
+#: is present in the case's tools-raw, so a run whose classic `upx -d` refused
+#: (and which therefore has no `upx_second_pass`) still gets its payload rows.
+PAYLOAD_SECTION_ROW_SOURCES: dict[str, tuple[tuple[str, str, str], ...]] = {
+    "3. File Layout & Structural Analysis": (
+        ("deep_dive/01-tools-raw.json", "payload_feedback.tools.malcat.views.anomalies", "payload anomalies"),
+        ("deep_dive/01-tools-raw.json", "payload_feedback.tools.yara.matches", "payload yara"),
+    ),
+    "4. Static Code Analysis": (
+        ("deep_dive/01-tools-raw.json", "payload_feedback.tools.malcat.views.strings", "payload strings"),
+        ("deep_dive/01-tools-raw.json", "payload_feedback.tools.floss.strings", "payload floss"),
+        ("deep_dive/01-tools-raw.json", "payload_decompilation.decompilations", "payload decompilation"),
+        ("deep_dive/01-tools-raw.json", "payload_feedback.tools.malcat.functions", "payload functions"),
+    ),
+    "6. Network Indicators & C2": (
+        ("deep_dive/01-tools-raw.json", "payload_feedback.tools.malcat.views.imports", "payload imports"),
+    ),
+    "7. Capabilities Assessment": (
+        ("deep_dive/01-tools-raw.json", "payload_feedback.tools.capa.top_rules", "payload capa"),
+        ("deep_dive/01-tools-raw.json", "payload_feedback.tools.malcat.views.anomalies", "payload anomalies"),
+    ),
+    "9. Detection Engineering": (
+        ("deep_dive/01-tools-raw.json", "payload_feedback.tools.yara.matches", "payload yara"),
+    ),
+    "10. MITRE ATT&CK Mapping": (
+        ("deep_dive/01-tools-raw.json", "payload_feedback.tools.capa.top_rules", "payload capa"),
+    ),
+}
+
 #: RC-62: artifact row sources from the unpacked payload (UPX second pass).
 #: When a sample is packed, the second pass runs tools on the unpacked binary
 #: and stores results under `upx_second_pass.tools.<engine>`. Including these
@@ -10376,6 +10411,11 @@ def build_section_frontier(sha: str, section: str,
             _raw_peek = json.loads((root / "deep_dive/01-tools-raw.json").read_text(errors="replace")) or {}
             if "upx_second_pass" in _raw_peek:
                 sources.extend(UPX_SECTION_ROW_SOURCES.get(canonical_section, ()))
+            # RC-90b: the payload rows are keyed on `payload_feedback`, which
+            # exists whether the payload came from `upx -d` or the emulation
+            # unpacker -- so a run with no `upx_second_pass` still gets them.
+            if "payload_feedback" in _raw_peek:
+                sources.extend(PAYLOAD_SECTION_ROW_SOURCES.get(canonical_section, ()))
         except Exception:
             pass
     if (root / "deep_dive/02-dynamic-pack.json").is_file():
@@ -10441,6 +10481,11 @@ def build_section_row_manifest(sha: str, section: str,
             _raw_peek = json.loads((root / "deep_dive/01-tools-raw.json").read_text(errors="replace")) or {}
             if "upx_second_pass" in _raw_peek:
                 sources.extend(UPX_SECTION_ROW_SOURCES.get(canonical_section, ()))
+            # RC-90b: the payload rows are keyed on `payload_feedback`, which
+            # exists whether the payload came from `upx -d` or the emulation
+            # unpacker -- so a run with no `upx_second_pass` still gets them.
+            if "payload_feedback" in _raw_peek:
+                sources.extend(PAYLOAD_SECTION_ROW_SOURCES.get(canonical_section, ()))
         except Exception:
             pass
     if (root / "deep_dive/02-dynamic-pack.json").is_file():

@@ -85,6 +85,16 @@ import skills  # noqa: E402
 #: at the measured ~15-30 s/step is well inside that, so the practical bound is
 #: time, not steps -- which is the right bound for "as much as needed".
 MAX_STEPS = int(os.environ.get("REVAI_DEEP_MAX_STEPS") or "120")
+#: RC-90b: how many of the unpacked payload's functions to decompile.
+#:
+#: Malcat's deep profile caps this at 3, which recovered 3 of the payload's 30
+#: enumerated functions on the run that exposed the gap. Decompiling the
+#: payload is deterministic (it runs in `_decompile_payload`, not on model
+#: request), so the cap is about cost, not coverage: each `fn_decompile` is one
+#: MCP call and the payload's functions are already ranked by Malcat, so the
+#: top N are the substantial ones. 30 covers everything Malcat enumerates.
+PAYLOAD_DECOMPILE_TOP_N = int(
+    os.environ.get("REVAI_PAYLOAD_DECOMPILE_TOP_N") or "30")
 MAX_TOOL_RESULT_CHARS = 2000
 
 #: Bound the pre-dive WinRE evidence block while keeping room for the full
@@ -1096,6 +1106,14 @@ def _run_payload_feedback_pass(
     after the signal extractors, because the emulation unpacker runs inside
     them) cannot double-analyse the same file. Failure-safe: a payload that
     cannot be re-analysed is recorded with its reason, never raised.
+
+    RC-90b: it also DECOMPILES the payload deterministically. Malcat's deep
+    profile caps `decompile_top_n` at 3, so the second pass alone recovered
+    3 of the payload's 30 enumerated functions -- and on the run that exposed
+    this, the agent never asked for more (it re-ran capa/floss/malcat on the
+    wrapper instead). Decompilation is therefore not left to model discretion:
+    the payload's functions are decompiled here, in code, and recorded as
+    citable evidence.
     """
     candidates: list[tuple[str, str]] = []
     upx_path = str((upx_r or {}).get("unpacked_path") or "").strip()
@@ -1178,6 +1196,72 @@ def _run_payload_feedback_pass(
             "error": None if second.get("ok") else second.get("skipped_reason"),
             "checklist": True,
         })
+        _decompile_payload(payload_path, engine, tools_raw, findings, history)
+
+
+def _decompile_payload(payload_path: str, engine: str, tools_raw: dict,
+                       findings: dict, history: list) -> None:
+    r"""Deterministically decompile the unpacked payload's functions (RC-90b).
+
+    Malcat's deep profile caps `decompile_top_n` at 3, so the second pass
+    recovered 3 of the payload's 30 enumerated functions -- and on the run
+    that exposed the gap the agent never asked for more, because it re-ran
+    capa/floss/malcat on the WRAPPER. Leaving the payload's code unread is
+    exactly the "we are not doing the basic stuff" failure: the wrapper's 3
+    imports say nothing, the payload's decompiled body says everything.
+
+    Runs here, in code, so it happens on every packed sample regardless of
+    what the model decides to ask for. Records
+    `tools_raw["payload_decompilation"]` + `findings["payload_decompilation"]`
+    with one entry per function (name + decompilation), which the section row
+    manifests expose as citable rows.
+    """
+    try:
+        decomp = malcat_analyze(
+            payload_path,
+            views=["functions", "decompile"],
+            limits={"decompile_top_n": PAYLOAD_DECOMPILE_TOP_N,
+                    "functions_max": PAYLOAD_DECOMPILE_TOP_N},
+        )
+    except Exception as exc:                     # noqa: BLE001 - fail safe
+        print(f"[deep_dive_agentic] payload decompilation failed: "
+              f"{type(exc).__name__}: {exc}", flush=True)
+        history.append({
+            "step": 0, "tool": "payload_decompilation",
+            "args": {"payload_path": payload_path},
+            "reason": "RC-90b deterministic payload decompilation",
+            "result": {"ok": False},
+            "error": f"{type(exc).__name__}: {exc}", "checklist": True,
+        })
+        return
+    funcs = decomp.get("decompilations") or {}
+    ok = bool(funcs)
+    chars = sum(len(str((v or {}).get("decompilation") or ""))
+                for v in funcs.values() if isinstance(v, dict))
+    tools_raw["payload_decompilation"] = decomp
+    findings["payload_decompilation"] = {
+        "engine": "malcat fn_decompile",
+        "payload_path": payload_path,
+        "unpacked_by": engine,
+        "ok": ok,
+        "functions_decompiled": len(funcs),
+        "decompilation_chars": chars,
+        "functions": [str((v or {}).get("name") or "")
+                      for v in funcs.values() if isinstance(v, dict)],
+    }
+    print(f"[deep_dive_agentic] RC-90b payload decompilation: "
+          f"{len(funcs)} functions, {chars} chars", flush=True)
+    history.append({
+        "step": 0, "tool": "payload_decompilation",
+        "args": {"payload_path": payload_path,
+                 "decompile_top_n": PAYLOAD_DECOMPILE_TOP_N},
+        "reason": "RC-90b deterministic payload decompilation (malcat)",
+        "result": {"ok": ok, "functions_decompiled": len(funcs),
+                   "decompilation_chars": chars},
+        "error": None if ok else (decomp.get("error")
+                                  or "no functions decompiled"),
+        "checklist": True,
+    })
 
 
 def _run_standard_checklist(registry: "ToolRegistry", session: dict, sha: str) -> tuple[list, dict, dict, dict]:

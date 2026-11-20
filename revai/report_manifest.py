@@ -7,6 +7,7 @@ and master reports, covering static tools, UPX second-pass, and dynamic pack evi
 from v2_lib import (
     SECTION_ROW_SOURCES,
     UPX_SECTION_ROW_SOURCES,
+    PAYLOAD_SECTION_ROW_SOURCES,
     DYNAMIC_SECTION_ROW_SOURCES,
     SECTION_NAME_ALIASES,
     build_section_row_manifest,
@@ -16,6 +17,7 @@ from v2_lib import (
 __all__ = [
     "SECTION_ROW_SOURCES",
     "UPX_SECTION_ROW_SOURCES",
+    "PAYLOAD_SECTION_ROW_SOURCES",
     "DYNAMIC_SECTION_ROW_SOURCES",
     "SECTION_NAME_ALIASES",
     "build_section_row_manifest",

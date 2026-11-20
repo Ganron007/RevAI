@@ -60,6 +60,8 @@ def test_the_emulation_payload_feeds_back_when_upx_d_refused(tmp_path, monkeypat
         DDA, "run_post_upx_second_pass",
         lambda path, **kw: (calls.append(path),
                             {"ok": True, "tool_ok": {"capa": {"ok": True}}})[1])
+    monkeypatch.setattr(DDA, "malcat_analyze",
+                        lambda path, **kw: _malcat_result())
 
     # upx_r says the classic unpacker failed -- the shape that was dropped.
     DDA._run_payload_feedback_pass(
@@ -71,7 +73,8 @@ def test_the_emulation_payload_feeds_back_when_upx_d_refused(tmp_path, monkeypat
     assert findings["payload_feedback"]["engine"].startswith("unpack_oracle")
     assert findings["unpacked_payload"]["path"] == str(payload)
     assert findings["unpacked_payload"]["size"] == payload.stat().st_size
-    assert [h["tool"] for h in history] == ["payload_feedback"], history
+    assert [h["tool"] for h in history] == ["payload_feedback",
+                                        "payload_decompilation"], history
 
 
 def test_the_upx_d_payload_still_feeds_back(tmp_path, monkeypatch):
@@ -83,6 +86,8 @@ def test_the_upx_d_payload_still_feeds_back(tmp_path, monkeypatch):
         DDA, "run_post_upx_second_pass",
         lambda path, **kw: (calls.append(path),
                             {"ok": True, "tool_ok": {"yara": {"ok": True}}})[1])
+    monkeypatch.setattr(DDA, "malcat_analyze",
+                        lambda path, **kw: _malcat_result())
 
     DDA._run_payload_feedback_pass(
         upx_r={"upx_ok": True, "unpacked_path": str(payload)},
@@ -109,6 +114,8 @@ def test_both_engines_are_fed_and_each_payload_once(tmp_path, monkeypatch):
         DDA, "run_post_upx_second_pass",
         lambda path, **kw: (calls.append(path),
                             {"ok": True, "tool_ok": {}})[1])
+    monkeypatch.setattr(DDA, "malcat_analyze",
+                        lambda path, **kw: _malcat_result())
 
     for _ in range(3):
         DDA._run_payload_feedback_pass(
@@ -116,7 +123,7 @@ def test_both_engines_are_fed_and_each_payload_once(tmp_path, monkeypatch):
             findings=findings, tools_raw=tools_raw, history=history)
 
     assert sorted(calls) == sorted([str(a), str(b)]), calls
-    assert len(history) == 2, history
+    assert len(history) == 4, history  # 2 engines x (feedback + decompile)
 
 
 def test_a_missing_payload_is_recorded_not_raised(tmp_path):
@@ -239,3 +246,137 @@ def test_no_payload_means_no_block():
         session, 1, DDA.MAX_STEPS, [], {}, {}, ["- capa_analyze: x"], "pe")
     user = "\n".join(str(m.get("content")) for m in msgs)
     assert "UNPACKED PAYLOAD" not in user
+
+
+# ---------------------------------------------------------------------------
+# RC-90b: the payload's code is decompiled DETERMINISTICALLY, not on request.
+#
+# Malcat's deep profile caps `decompile_top_n` at 3, so the second pass
+# recovered 3 of the payload's 30 functions -- and on the run that exposed the
+# gap the agent never asked for more (it re-ran capa/floss/malcat on the
+# wrapper). Leaving the payload's body unread is the same class as not
+# analysing the payload at all: the wrapper's 3 imports say nothing.
+# ---------------------------------------------------------------------------
+def _malcat_result(funcs: int = 30, decompiled: int = 30) -> dict:
+    return {
+        "ok": True,
+        "functions": [{"ea": 1000 + i * 100, "name": f"sub_{1000 + i * 100:x}"}
+                      for i in range(funcs)],
+        "decompilations": {
+            str(1000 + i * 100): {"name": f"sub_{1000 + i * 100:x}",
+                                  "decompilation": "void f(void){}\n"}
+            for i in range(decompiled)
+        },
+    }
+
+
+def test_the_payload_is_decompiled_deterministically(tmp_path, monkeypatch):
+    """The feedback pass must decompile the payload itself, in code."""
+    payload = _payload(tmp_path)
+    findings, tools_raw, history = _state()
+    findings["unpack_pass"] = {"unpacked": True,
+                               "payload": {"path": str(payload)}}
+    monkeypatch.setattr(DDA, "run_post_upx_second_pass",
+                        lambda path, **kw: {"ok": True, "tool_ok": {}})
+    seen: list[tuple] = []
+
+    def _fake_malcat(path, **kw):
+        seen.append((path, kw.get("views"), kw.get("limits")))
+        return _malcat_result()
+
+    monkeypatch.setattr(DDA, "malcat_analyze", _fake_malcat)
+
+    DDA._run_payload_feedback_pass(
+        upx_r={}, findings=findings, tools_raw=tools_raw, history=history)
+
+    assert len(seen) == 1, seen
+    path, views, limits = seen[0]
+    assert path == str(payload), path
+    assert "decompile" in (views or []), views
+    assert limits["decompile_top_n"] >= 30, limits
+    # Recorded as first-class evidence, with a per-function name list.
+    assert tools_raw["payload_decompilation"]["ok"] is True
+    rec = findings["payload_decompilation"]
+    assert rec["functions_decompiled"] == 30, rec
+    assert len(rec["functions"]) == 30, rec
+    assert rec["decompilation_chars"] > 0, rec
+    assert [h["tool"] for h in history] == ["payload_feedback",
+                                            "payload_decompilation"], history
+
+
+def test_the_decompile_cap_beats_malcats_default_of_three():
+    """Malcat deep gives 3; the payload pass must ask for more than that."""
+    assert DDA.PAYLOAD_DECOMPILE_TOP_N > 3, DDA.PAYLOAD_DECOMPILE_TOP_N
+
+
+def test_a_failing_payload_decompilation_is_recorded_not_raised(tmp_path, monkeypatch):
+    payload = _payload(tmp_path)
+    findings, tools_raw, history = _state()
+    findings["unpack_pass"] = {"unpacked": True,
+                               "payload": {"path": str(payload)}}
+    monkeypatch.setattr(DDA, "run_post_upx_second_pass",
+                        lambda path, **kw: {"ok": True, "tool_ok": {}})
+
+    def _boom(path, **kw):
+        raise RuntimeError("malcat MCP closed")
+
+    monkeypatch.setattr(DDA, "malcat_analyze", _boom)
+    DDA._run_payload_feedback_pass(
+        upx_r={}, findings=findings, tools_raw=tools_raw, history=history)
+    assert "RuntimeError" in history[-1]["error"], history
+    assert "payload_decompilation" not in tools_raw
+
+
+def test_payload_rows_are_citable_in_the_section_manifests(tmp_path, monkeypatch):
+    """The payload's own rows must be citable, not just present.
+
+    Without manifest coverage the decompilations exist in the artifact but no
+    citation to them can resolve -- the same orphaned-evidence failure RC-90
+    fixed one layer up.
+    """
+    import v2_lib
+    sha = "e" * 64
+    case = tmp_path / "logs" / sha / "agentic"
+    (case / "deep_dive").mkdir(parents=True)
+    tools_raw = {
+        # No `upx_second_pass` on purpose: the classic unpacker refused, which
+        # is exactly the shape that used to orphan the payload.
+        "payload_feedback": {
+            "ok": True,
+            "tools": {
+                "capa": {"top_rules": [{"name": "acquire debug privileges"}]},
+                "floss": {"strings": [r"C:\unm0ve.txt", "RExe.exe"]},
+                "malcat": {
+                    "views": {"anomalies": [{"name": "CrossSectionJump"}],
+                              "strings": [{"ea": 56442, "summary": "Advapi32.dll"}],
+                              "imports": []},
+                    "functions": [{"ea": 6440, "name": "sub_401728"}],
+                },
+                "yara": {"matches": [{"rule": "UPX"}]},
+            },
+        },
+        "payload_decompilation": _malcat_result(funcs=2, decompiled=2),
+    }
+    (case / "deep_dive" / "01-tools-raw.json").write_text(
+        json.dumps(tools_raw), encoding="utf-8")
+
+    monkeypatch.setattr(v2_lib, "case_dir", lambda s, mode=None: case)
+    manifest = v2_lib.build_section_row_manifest(
+        sha, "4. Static Code Analysis")
+    text = json.dumps(manifest)
+    assert "payload_decompilation" in text, text[:600]
+    assert "payload floss" in text or "unm0ve" in text, text[:600]
+
+
+def test_payload_row_sources_exist_for_the_code_sections():
+    """Every section that carries payload evidence must declare its rows."""
+    import v2_lib
+    srcs = v2_lib.PAYLOAD_SECTION_ROW_SOURCES
+    for section in ("3. File Layout & Structural Analysis",
+                    "4. Static Code Analysis", "7. Capabilities Assessment",
+                    "10. MITRE ATT&CK Mapping"):
+        assert section in srcs, section
+    code = srcs["4. Static Code Analysis"]
+    paths = [p for _, p, _ in code]
+    assert "payload_decompilation.decompilations" in paths, paths
+    assert "payload_feedback.tools.floss.strings" in paths, paths
