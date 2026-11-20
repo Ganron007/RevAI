@@ -195,3 +195,47 @@ def test_file_tools_accept_a_target_override():
         src = inspect.getsource(method)
         assert "args.get(\"target\")" in src, (
             f"{name} has no target override; the agent cannot analyse the payload")
+
+
+def test_the_payload_block_actually_reaches_the_agent_prompt():
+    r"""`build_messages` must render the payload block.
+
+    The findings dict the agent loop reads is the one `_run_standard_checklist`
+    returns, so `findings["unpacked_payload"]` must survive into the prompt.
+    This is the assertion the live run could not make: the agent never used
+    `target=`, and without this test there is no way to tell "the block did not
+    render" from "the model ignored it".
+    """
+    session = {"sample_path": "/case/sample.vir", "file_type": {"format": "pe"}}
+    findings = {
+        "unpacked_payload": {"path": "/case/unpack/p.vir", "size": 131832,
+                             "engine": "unpack_oracle (emulation dump)",
+                             "sha256": "a" * 64},
+        "payload_feedback": {"ok": True,
+                             "tool_ok": {"capa": {"ok": True},
+                                         "floss": {"ok": True},
+                                         "malcat": {"ok": True},
+                                         "yara": {"ok": True},
+                                         "pe_imports": {"ok": False}}},
+    }
+    tool_list = ["- capa_analyze: run capa"]
+    msgs = DDA.build_messages(
+        session, 3, DDA.MAX_STEPS, [], findings, {}, tool_list, "pe",
+        checklist_ok=True, sql_ok=False)
+    user = "\n".join(str(m.get("content")) for m in msgs)
+    assert "UNPACKED PAYLOAD" in user, "payload block missing from the prompt"
+    assert "/case/unpack/p.vir" in user, user[:400]
+    assert "131832" in user, user[:400]
+    assert "target=" in user, "the target= override is not taught in the prompt"
+    # A tool that failed on the payload is reported as such, never as success.
+    assert "capa, floss, malcat, yara" in user, user[:1200]
+    assert "pe_imports" not in user.split("re-analysed with:")[1].split("\n")[0]
+
+
+def test_no_payload_means_no_block():
+    """An unpack-free run must not grow a phantom payload section."""
+    session = {"sample_path": "/case/sample.vir", "file_type": {"format": "pe"}}
+    msgs = DDA.build_messages(
+        session, 1, DDA.MAX_STEPS, [], {}, {}, ["- capa_analyze: x"], "pe")
+    user = "\n".join(str(m.get("content")) for m in msgs)
+    assert "UNPACKED PAYLOAD" not in user
