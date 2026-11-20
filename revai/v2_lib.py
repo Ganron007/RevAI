@@ -10578,7 +10578,8 @@ def build_section_frontier(sha: str, section: str,
 
 
 def build_section_row_manifest(sha: str, section: str,
-                               logs_dir: Path | None = None) -> str:
+                               logs_dir: Path | None = None,
+                               instructions: bool = True) -> str:
     """The deterministic SECTION ROW MANIFEST for one technical section.
 
     RC-39 (2026-10-31): the two remaining failure classes are the writer
@@ -10588,6 +10589,15 @@ def build_section_row_manifest(sha: str, section: str,
     its own citable rows with their exact locators; the writer is told to
     cite only manifest rows, verbatim. Deterministic sections (5 and 8)
     have no manifest. Empty when the artifacts offer nothing.
+
+    RC-94 (2026-11-20, re-run 15): `instructions=False` renders the
+    PUBLISHED form — the writer-instruction head ("EVIDENCE BOUNDARY",
+    "ANALYTICAL DISCIPLINE", "Copy rows verbatim") is prompt material, not
+    report content; when a deterministic completion embeds the manifest in
+    the published report those lines are counted as UNCITED CLAIMS (re-run
+    15: master uncited_claims:72). The published head is one non-factual
+    **[Note]** line the citation gate exempts (the RC-59 convention); the
+    caller cites the row lines themselves.
     """
     mode = os.environ.get("REVAI_RUN_MODE", "").strip() or None
     _resolved = _section_row_sources(sha, section, mode)
@@ -10623,6 +10633,11 @@ def build_section_row_manifest(sha: str, section: str,
     if not blocks:
         _warn_absent_row_sources(root, canonical_section, sources)
         return ""
+    if not instructions:
+        return ("**[Note]** Section row manifest — the rows below were read "
+                "directly from this run's artifacts; the bracketed locator "
+                "on each row is its exact citation target.\n\n"
+                + "\n".join(blocks))
     head = ("## Section row manifest (deterministic)\n\n"
             "These rows were read directly from this run's artifacts and are "
             "the ONLY rows you may cite in this section, with the locators "
@@ -11436,14 +11451,21 @@ def format_malcat_evidence(
 
     if strs:
         out(f"### Top Strings ({len(strs)} extracted; showing {min(max_strings, len(strs))})")
-        out("| EA | String |")
-        out("|---|---|")
-        for s in strs[:max_strings]:
+        # RC-94 (re-run 15): the technical completion publishes this table,
+        # and the citation gate counts an uncited row as a claim (two
+        # `| EA | String |` rows went out uncited). Each row cites its own
+        # exact artifact locator -- the same spelling the audit resolver
+        # accepts.
+        out("| EA | String | Citation |")
+        out("|---|---|---|")
+        for i, s in enumerate(strs[:max_strings]):
             if not isinstance(s, dict):
                 continue
             addr = s.get("address", s.get("ea", "?"))
             summary = (s.get("summary") or s.get("string") or "")[:160]
-            out(f"| {addr} | `{summary}` |")
+            out(f"| {addr} | `{summary}` | (source: malcat, "
+                f"query_or_table: deep_dive/01-tools-raw.json, "
+                f"row_or_rule: $.malcat.views.strings[{i}]) |")
         out("")
 
     # --- Constants ---

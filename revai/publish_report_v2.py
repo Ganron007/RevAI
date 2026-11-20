@@ -1746,9 +1746,12 @@ def _deterministic_master_section_md(
     )
     hashes = "#" * max(1, int(heading_level))
     v = verdict or {}
-    manifest = build_section_row_manifest(
+    # RC-94: the PUBLISHED embed carries the rows-only manifest (no writer
+    # instructions) with every row line cited by its own locator.
+    manifest = _cited_manifest_embed(build_section_row_manifest(
         str(session.get("sha256") or ""),
-        MASTER_ROW_MANIFEST_ALIAS.get(title, title))
+        MASTER_ROW_MANIFEST_ALIAS.get(title, title),
+        instructions=False))
     # RC-84 Fix 2 completion footer, in the proven RC-27/RC-33 citation style:
     # every line carries its exact artifact locator, so the completion content
     # passes the citation gates the same way the deterministic sections 5/8 do.
@@ -1781,6 +1784,51 @@ def _deterministic_master_section_md(
         parts += [manifest, ""]
     parts += footer_lines
     return "\n".join(parts)
+
+
+def _cited_manifest_embed(manifest_text: str) -> str:
+    """RC-94 (re-run 15): make every line of a PUBLISHED manifest embed
+    either cited or a non-factual **[Note]** marker.
+
+    The manifest was designed for the WRITER PROMPT: its block headers and
+    row lines carry locators in brackets but no citation parenthetical, and
+    its head is writer instruction. When RC-84 Fix 2's deterministic
+    completion embeds it into the PUBLISHED report, the citation gate counts
+    every such line as an UNCITED CLAIM (re-run 15: master
+    `uncited_claims:72` — the row lines themselves were the bulk). The
+    published form cites each row with its own exact locator
+    (`(source: <artifact>, query_or_table: <artifact>, row_or_rule:
+    <locator>)` — the same spelling the audit resolver accepts) and marks
+    the layout lines non-factual (the RC-59 **[Note]** convention). Nothing
+    is loosened: the cited locator is the very row the manifest shows.
+    """
+    if not manifest_text:
+        return ""
+    out: list[str] = []
+    rel = ""
+    for line in manifest_text.splitlines(keepends=True):
+        stripped = line.rstrip("\n")
+        m = re.match(r"^\*\*(.+?)\*\* — `([^`]+)` at `([^`]+)`:$", stripped)
+        if m:
+            rel = m.group(2)
+            out.append(f"**[Note]** {stripped}\n")
+            continue
+        m = re.match(r"^- \[`([^`]+)`\] (.*)$", stripped)
+        if m and rel:
+            out.append(f"- [{m.group(1)}] {m.group(2)} "
+                       f"(source: {rel}, query_or_table: {rel}, "
+                       f"row_or_rule: {m.group(1)})\n")
+            continue
+        m = re.match(r"^- \.\.\. and (\d+) more rows; the complete array "
+                     r"remains in `([^`]+)` at `([^`]+)`\.$", stripped)
+        if m:
+            artifact = m.group(2)
+            out.append(f"{stripped} (source: {artifact}, "
+                       f"query_or_table: {artifact}, "
+                       f"row_or_rule: {m.group(3)})\n")
+            continue
+        out.append(line)
+    return "".join(out)
 
 
 def build_deterministic_master(
@@ -1916,7 +1964,10 @@ def _deterministic_technical_section_md(
     )
     hashes = "#" * max(1, int(heading_level))
     v = verdict or {}
-    manifest = build_section_row_manifest(str(session.get("sha256") or ""), title)
+    # RC-94: the PUBLISHED embed carries the rows-only manifest (no writer
+    # instructions) with every row line cited by its own locator.
+    manifest = _cited_manifest_embed(build_section_row_manifest(
+        str(session.get("sha256") or ""), title, instructions=False))
     cit = ("(source: verdict.json, query_or_table: verdict.json, "
            "row_or_rule: $.verdict)")
     deep_cit = ("(source: deep_dive, query_or_table: deep_dive/05-deep-dive.json, "
