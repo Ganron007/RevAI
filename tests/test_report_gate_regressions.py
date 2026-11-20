@@ -561,7 +561,9 @@ def test_unresolved_citations_are_reported_for_a_section(tmp_path):
     }), encoding="utf-8")
     bad = PUB._unresolved_citations(_section_doc("rule=absent"), case)
     good = PUB._unresolved_citations(_section_doc("rule=domain"), case)
-    assert bad and "rule=absent" in bad[0], bad
+    assert len(bad) == 1, bad
+    assert bad[0]["locator"] == "rule=absent", bad
+    assert bad[0]["source"] == "yara", bad
     assert good == [], good
 
 
@@ -590,6 +592,98 @@ def test_a_citation_repair_is_kept_only_when_it_resolves_more(tmp_path, monkeypa
         "p", original, case, section_only=True, heading_level=2, label="t")
     assert parsed2 is original
     assert remaining2 == 1
+
+
+# --------------------------------------------------------------------------
+# 8b. RC-89: the correction note shows the paths that DO exist.
+#
+# S2 re-run 10 (detonation #16): the note named only the failing locator and
+# said "copy the path exactly from the evidence JSON". The writer cannot find
+# the right path in a 1.2 MB pack by eye, so it invented ANOTHER plausible one
+# -- three sections got WORSE under correction (1 -> 2, 2 -> 3, 3 -> 8), their
+# originals were kept, and all 11 residual unresolved rows shipped. Every one
+# was a path-shape invention (`$.malcat.file_summary.size` for the real
+# `file_size`, `$.floss.static_strings` for `strings`, a
+# `$.frida_trace.frida_coverage.*` node that does not exist whose fields sit
+# directly on `$.frida_trace`).
+# --------------------------------------------------------------------------
+def _rc89_case(tmp_path) -> Path:
+    case = tmp_path / "logs" / SHA / "scripted"
+    (case / "deep_dive").mkdir(parents=True)
+    (case / "quick_scan").mkdir(parents=True)
+    (case / "deep_dive" / "01-tools-raw.json").write_text(json.dumps({
+        "malcat": {"file_summary": {"file_size": 235136, "file_name": "s.vir",
+                                    "type": "PE32"}},
+    }), encoding="utf-8")
+    (case / "quick_scan" / "00-tools-raw.json").write_text(json.dumps({
+        "floss": {"strings": ["a", "b"], "string_count": 2},
+    }), encoding="utf-8")
+    (case / "deep_dive" / "02-dynamic-pack.json").write_text(json.dumps({
+        "frida_trace": {"endpoint_count": 3, "record_count": 599},
+        "procmon_sample_events": [{"api": "RegOpenKeyExW"}] * 70,
+    }), encoding="utf-8")
+    return case
+
+
+def test_the_correction_note_lists_the_paths_that_exist(tmp_path):
+    """A mis-cited field must be answered with the real sibling paths."""
+    import publish_report_v2 as PUB
+    case = _rc89_case(tmp_path)
+    note = PUB._citation_correction_note([
+        {"source": "malcat", "query": "deep_dive/01-tools-raw.json",
+         "locator": "$.malcat.file_summary.size", "status": "unresolved-row",
+         "reason": "absent"},
+        {"source": "floss", "query": "quick_scan/00-tools-raw.json",
+         "locator": "$.floss.static_strings", "status": "unresolved-row",
+         "reason": "absent"},
+    ], case)
+    assert "$.malcat.file_summary.file_size" in note, note
+    assert "$.floss.strings" in note, note
+    assert "$.floss.string_count" in note, note
+    # The invented spellings are named as absent, never offered as valid.
+    assert "`$.malcat.file_summary.size` does not exist" in note, note
+    assert "not on this list does not exist" in note, note
+
+
+def test_an_invented_intermediate_node_is_answered_by_its_real_parent(tmp_path):
+    r"""`$.frida_trace.frida_coverage.*` must resolve to `$.frida_trace.*`.
+
+    The writer invented a `frida_coverage` (and separately a `hook_coverage`)
+    node that does not exist; the fields sit directly on `frida_trace`.
+    """
+    import publish_report_v2 as PUB
+    case = _rc89_case(tmp_path)
+    paths = PUB._existing_locator_paths(
+        "frida", "deep_dive/02-dynamic-pack.json",
+        "$.frida_trace.frida_coverage.frida_endpoint_count", case)
+    assert "$.frida_trace.endpoint_count" in paths, paths
+    assert not any("frida_coverage" in p for p in paths), paths
+
+
+def test_an_out_of_range_index_is_answered_with_the_real_length(tmp_path):
+    """A CSV row number used as a JSON index gets the artifact's real size."""
+    import publish_report_v2 as PUB
+    case = _rc89_case(tmp_path)
+    paths = PUB._existing_locator_paths(
+        "procmon", "deep_dive/02-dynamic-pack.json",
+        "procmon_sample_events[82577]", case)
+    assert paths and "list of 70 items" in paths[0], paths
+    assert "0..69" in paths[0], paths
+
+
+def test_locator_hints_fail_open_when_the_artifact_is_unreadable(tmp_path):
+    """A missing artifact must not break the correction note."""
+    import publish_report_v2 as PUB
+    case = tmp_path / "logs" / SHA / "scripted"
+    case.mkdir(parents=True)
+    note = PUB._citation_correction_note([
+        {"source": "malcat", "query": "deep_dive/01-tools-raw.json",
+         "locator": "$.malcat.file_summary.size", "status": "unresolved-row",
+         "reason": "absent"},
+    ], case)
+    # The failure is still reported; only the hint block is absent.
+    assert "$.malcat.file_summary.size" in note, note
+    assert "does not exist. The paths that DO exist" not in note, note
 
 
 # --------------------------------------------------------------------------

@@ -126,15 +126,19 @@ def _finalize_schema_provenance(report: dict) -> dict:
     return report
 
 
-def _unresolved_citations(parsed: dict, root: Path) -> list[str]:
+def _unresolved_citations(parsed: dict, root: Path) -> list[dict]:
     """Citations in one generated section that do not resolve to evidence.
 
     A wrong locator is currently discovered only by the audit, hours after the
-    report was written: measured 2026-10-24, 613 of 1019 claims in one run were
+    report is written: measured 2026-10-24, 613 of 1019 claims in one run were
     unresolved, 496 of them a single mis-path shape. The writer can fix its own
     citation while the section is still in hand, so validate here and let the
     caller ask for one correction instead of publishing a report that cannot
     pass.
+
+    Returns one dict per failure (source / query / locator / status / reason)
+    so the correction note can show the writer the paths that DO exist in the
+    cited artifact -- see `_existing_locator_paths`.
     """
     document = parsed.get("document") if isinstance(parsed, dict) else None
     sections = (document or {}).get("sections") if isinstance(document, dict) else None
@@ -144,7 +148,7 @@ def _unresolved_citations(parsed: dict, root: Path) -> list[str]:
         import entailment
     except Exception:                       # noqa: BLE001 - fail open
         return []
-    failures: list[str] = []
+    failures: list[dict] = []
     for section in sections:
         if not isinstance(section, dict):
             continue
@@ -173,20 +177,123 @@ def _unresolved_citations(parsed: dict, root: Path) -> list[str]:
                 except Exception:           # noqa: BLE001 - fail open
                     continue
                 if located is None:
-                    failures.append(
-                        f"source={source} query={query} row_or_rule={locator} "
-                        f"({check.get('status')}: {check.get('reason')})")
+                    failures.append({
+                        "source": source, "query": query, "locator": locator,
+                        "status": str(check.get("status") or "unresolved"),
+                        "reason": str(check.get("reason") or "")})
     return failures
 
 
-def _citation_correction_note(failures: list[str]) -> str:
-    listed = "\n".join(f"- {item}" for item in failures[:40])
+def _failure_label(failure: dict) -> str:
+    return (f"source={failure.get('source')} query={failure.get('query')} "
+            f"row_or_rule={failure.get('locator')} "
+            f"({failure.get('status')}: {failure.get('reason')})")
+
+
+def _existing_locator_paths(source: str, query: str, locator: str,
+                            root: Path, limit: int = 24) -> list[str]:
+    """The paths that really exist under a mis-cited locator's deepest ancestor.
+
+    The correction note used to name only the failing locator and say "copy the
+    path exactly from the evidence JSON". The writer cannot find the right path
+    in a 1.2 MB pack by eye, so it invented ANOTHER plausible one -- measured on
+    S2 re-run 10 (detonation #16), three sections got WORSE under correction
+    (1 -> 2, 2 -> 3, 3 -> 8 unresolved) and their originals were kept, so the
+    invented locators shipped. Every one of that run's 11 residual unresolved
+    rows was a path-shape invention (`$.malcat.file_summary.size` for the real
+    `file_size`; `$.floss.static_strings` for `strings`; a
+    `$.frida_trace.frida_coverage.*` node that does not exist, whose fields sit
+    directly on `$.frida_trace`).
+
+    This walks the locator as far as it genuinely resolves and returns the
+    child paths at that node, so the note can say "the fields that exist here
+    are: file_size, file_name, ...". It never relaxes a gate: the artifact is
+    read, not interpreted, and an absent path stays absent.
+    """
+    try:
+        import entailment
+    except Exception:                       # noqa: BLE001 - fail open
+        return []
+    dotted = (locator or "").strip().strip("`").lstrip("$").lstrip(".")
+    if not dotted:
+        return []
+    # An explicit `[N]` index is the shape that matters most: a procmon CSV row
+    # number cited as a JSON array index (re-run 10: `procmon_sample_events
+    # [82577]` against a 70-item list). Reporting the real range turns that
+    # class into a self-correcting citation instead of a permanent red.
+    idx = None
+    m = re.search(r"\[(\d+)\]", dotted)
+    if m:
+        try:
+            idx = int(m.group(1))
+        except ValueError:
+            idx = None
+    parts = [p.split("[")[0].strip() for p in dotted.split(".")]
+    parts = [p for p in parts if p]
+    try:
+        candidates = entailment._source_artifact_candidates(source, query, Path(root))
+    except Exception:                       # noqa: BLE001 - fail open
+        return []
+    for path in candidates:
+        try:
+            data = json.loads(path.read_text(encoding="utf-8", errors="replace"))
+        except (OSError, json.JSONDecodeError, TypeError, ValueError):
+            continue
+        node = data
+        used: list[str] = []
+        for part in parts:
+            if isinstance(node, dict) and part in node:
+                node = node[part]
+                used.append(part)
+                continue
+            if isinstance(node, list):
+                # The locator indexes a list: report its real length so the
+                # writer can cite an in-range row instead of a CSV row number.
+                return [_list_hint(used, node, idx)]
+            break
+        if isinstance(node, dict):
+            return ["$." + ".".join(used + [k]) for k in list(node)[:limit]]
+        if isinstance(node, list):
+            return [_list_hint(used, node, idx)]
+        return ["$." + ".".join(used) + " = " + json.dumps(
+            node, ensure_ascii=False, default=str)[:120]]
+    return []
+
+
+def _list_hint(used: list[str], node: list, idx: int | None) -> str:
+    """The real size of a cited list, with the valid range when one is named."""
+    path = "$." + ".".join(used) + "[]"
+    if idx is not None and idx >= len(node):
+        return (f"{path} is a list of {len(node)} items -- index {idx} is out "
+                f"of range; cite an index in 0..{len(node) - 1}, or a named "
+                f"field of one item")
+    return f"{path} is a list of {len(node)} items"
+
+
+def _citation_correction_note(failures: list[dict], root: Path) -> str:
+    listed = "\n".join(f"- {_failure_label(f)}" for f in failures[:40])
     more = ("" if len(failures) <= 40
             else f"\n({len(failures) - 40} more of the same kind are not listed)")
+    hints = []
+    for f in failures[:12]:
+        paths = _existing_locator_paths(
+            f.get("source") or "", f.get("query") or "",
+            f.get("locator") or "", Path(root))
+        if paths:
+            hints.append(
+                f"- `{f.get('locator')}` does not exist. The paths that DO "
+                f"exist there are:\n    " + "\n    ".join(paths))
+    hint_block = ""
+    if hints:
+        hint_block = (
+            "\n\nThe paths that actually exist for each failed citation are "
+            "listed below. Use one of them verbatim; a path that is not on "
+            "this list does not exist in the evidence and will not resolve."
+            "\n" + "\n".join(hints) + "\n")
     return (
         "\n\n## CITATION CORRECTION\n"
         "These citations in your previous response do not resolve against the "
-        f"evidence:\n{listed}{more}\n\n"
+        f"evidence:\n{listed}{more}{hint_block}\n"
         "Return the same content again with every citation pointing at a row "
         "that exists. Copy the path exactly from the evidence JSON shown below; "
         "never construct a path from memory. A path under "
@@ -235,7 +342,7 @@ def repair_section_citations(
                        and found_verdict != expected_verdict)
     if not failures and not verdict_bad:
         return parsed, 0
-    note = _citation_correction_note(failures) if failures else ""
+    note = _citation_correction_note(failures, root) if failures else ""
     if verdict_bad:
         # The report must use the pipeline-locked label (2026-10-26, run
         # 7e51a300: the technical report asserted "Verdict: benign SDK
