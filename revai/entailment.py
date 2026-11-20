@@ -712,14 +712,41 @@ def _source_artifact_candidates(source: str, query: str | None,
         if q in {"summary", "verdict", "the summary", "the verdict", "narrative"}:
             return []
         lookup = q
+
+    # RC-93 (re-run 14, 2026-11-20): the old match took the FIRST alias whose
+    # normalized name substring-contains the lookup (or vice versa) with the
+    # aliases sorted longest-first -- so a short engine lookup collapsed into
+    # any longer alias that merely CONTAINS it as a substring: source "yara"
+    # matched "yara_generator" (candidates = rule.yara.json ONLY; the yara
+    # branch in deep_dive/01-tools-raw.json was never tried) and
+    # "pe_imports" collapsed the same way (re-run 14: 12+ unresolved rows on
+    # evidence-present fields). Match on WORD tokens instead -- the alias's
+    # tokens must be a word-sequence prefix or suffix of the lookup's tokens
+    # (or equal), e.g. "yara" ~ {yara, yara matches, yara_scan, yara_
+    # generator}, "capa" ~ {capa, payload capa} -- and take the UNION of
+    # every matching alias's artifacts. Resolution downstream stays exact
+    # (strict JSONPath + engine-branch filter), so more candidates never
+    # loosen the check; they only let the resolver TRY the file that
+    # actually carries the row.
+    def _alias_tokens(name: str) -> list[str]:
+        return [t for t in re.split(r"[^a-z0-9]+", _name_key(name)) if t]
+
+    lookup_tokens = _alias_tokens(lookup)
     candidates: list[str] = []
     for alias in sorted(_SOURCE_ARTIFACTS, key=len, reverse=True):
-        normalized_alias = _name_key(alias)
-        lookup_key = _name_key(lookup)
-        if normalized_alias and (normalized_alias in lookup_key
-                                 or lookup_key in normalized_alias):
-            candidates.extend(_SOURCE_ARTIFACTS[alias])
-            break
+        alias_tokens = _alias_tokens(alias)
+        if not alias_tokens or not lookup_tokens:
+            continue
+        n = len(alias_tokens)
+        word_match = (
+            alias_tokens == lookup_tokens[:n]
+            or lookup_tokens == alias_tokens[: len(lookup_tokens)]
+            or alias_tokens == lookup_tokens[-n:]
+            or lookup_tokens[-len(alias_tokens):] == alias_tokens)
+        if word_match:
+            for rel in _SOURCE_ARTIFACTS[alias]:
+                if rel not in candidates:
+                    candidates.append(rel)
     if not candidates:
         for rel in _PRIMARY_EVIDENCE_ARTIFACTS:
             if rel.lower() in src or Path(rel).name.lower() in src:
@@ -1406,10 +1433,23 @@ def _locate_cited_row(path: Path, row: str, query: str | None = None,
             # RC-92: these rows name their OWN engine in the path, so no
             # filter is needed.
             row_stripped = (row or "").strip().casefold()
+            # RC-93: the writer may split the locator across the RC-82 swap
+            # fields -- the full payload path in `query_or_table`
+            # (`$.payload_feedback.tools.capa.top_rules`) and the bare index
+            # in `row` (`[0]`). The wrapper is then named by the QUERY, so
+            # the skip must consider it too: filtering to a top-level engine
+            # branch would delete the wrapper the joined path starts with.
+            query_stripped = (query or "").strip().casefold()
             if row_stripped.startswith(
                 ("$.upx_second_pass",
                  "upx_second_pass.",
                  "unpacked.",
+                 "$.payload_feedback",
+                 "payload_feedback.",
+                 "$.payload_decompilation",
+                 "payload_decompilation.")) or query_stripped.startswith(
+                ("$.upx_second_pass",
+                 "upx_second_pass.",
                  "$.payload_feedback",
                  "payload_feedback.",
                  "$.payload_decompilation",
