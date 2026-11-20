@@ -19,8 +19,31 @@ _IPV4_RE = re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b")
 _EMAIL_RE = re.compile(r"\b[\w.+-]+@[\w-]+(?:\.[\w-]+)+\b")
 _BTC_RE = re.compile(r"\b[13][a-km-zA-HJ-NP-Z1-9]{25,34}\b")
 _ETH_RE = re.compile(r"\b0x[a-fA-F0-9]{40}\b")
+#: A registry path is an ATOMIC indicator: it ends where the next COMPLETE
+#: path begins, and a space continues it only for the path's own
+#: space-bearing segments (`...\Windows NT\CurrentVersion\...`).
+#:
+#: The class below admits a space for exactly that reason, so both halves of
+#: the rule have to be enforced explicitly -- the same two guards
+#: `_EVIDENCE_REGKEY_RE` (report_quality) has carried since 2026-10-03 and
+#: that `_CLAIM_REGKEY_RE` gained in RC-88:
+#:
+#:   * `(?!ROOT\\)` -- a space followed by a new hive is a SECOND path, not a
+#:     continuation. Without it, "...\Lcss\Type, HKLM\...\Lcss\Start" was one
+#:     "key": no evidence row contains it, so the report that rendered it
+#:     failed its own unverified-IoC gate on two indicators that were both
+#:     observed (S2 re-run 10, `master_v2:report:unverified_iocs:1`).
+#:   * `(?=\s*\\)` -- a space-bearing segment must be followed by another
+#:     separator, so trailing prose ("...\Run was created") is not part of
+#:     the key. A key whose FINAL segment contains a space is truncated at
+#:     that space; that is the same trade the evidence-side extractor makes,
+#:     and under-citing a key is recoverable while a prose-bearing key is
+#:     published as an indicator.
+_REGKEY_ROOT_START = r"(?:HKEY_[A-Z_]+|HKLM|HKCU|HKCR|HKU)"
 _REGKEY_RE = re.compile(
-    r"(?i)\b(?:HKEY_[A-Z_]+|HKLM|HKCU|HKCR|HKU)\\[A-Za-z0-9_\\ .-]+"
+    r"(?i)\b(?:" + _REGKEY_ROOT_START + r")"
+    r"(?:\\[A-Za-z0-9_.\\-]+"
+    r"(?:[ \t]+(?!" + _REGKEY_ROOT_START + r"\\)[A-Za-z0-9_.-]+(?=\s*\\))*)+"
 )
 _DOMAIN_RE = re.compile(r"\b(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}\b", re.I)
 
@@ -106,10 +129,11 @@ def extract_iocs(data: bytes) -> dict[str, list[str]]:
             seen["wallets_eth"].add(e)
             iocs["wallets_eth"].append(e)
     for r in _REGKEY_RE.findall(text):
-        r = _strip_control_chars(r)
-        if r not in seen["registry_keys"]:
-            seen["registry_keys"].add(r)
-            iocs["registry_keys"].append(r)
+        r = _strip_control_chars(r).strip(" \t,;")
+        if not r or r in seen["registry_keys"]:
+            continue
+        seen["registry_keys"].add(r)
+        iocs["registry_keys"].append(r)
     for d in _DOMAIN_RE.findall(text):
         low = d.lower()
         if low in ("example.com", "microsoft.com", "windows.com", "google.com"):

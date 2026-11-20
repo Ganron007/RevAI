@@ -519,6 +519,89 @@ def test_evidence_paths_do_not_swallow_prose_into_a_candidate():
     assert out["unverified"] == 1, out
 
 
+# RC-88 (S2 re-run 10, detonation #16): the CLAIM-side extractor never got the
+# guard the evidence side above has carried since 2026-10-03. The master
+# report's appendix enumerated three observed paths in one sentence --
+# "...Services\Lcss\Type, HKLM\...\Services\Lcss\Start, and
+# HKLM\...\Services\Lcss\ErrorControl" (procmon_summary.persistence[2]) -- and
+# the claim regex read the first two as ONE path. Two genuinely observed
+# indicators were therefore judged a single invented one and the whole
+# publish stage went red on `master_v2:report:unverified_iocs:1` with both
+# reports otherwise complete (17/17 + 13/13, llm_judge, lock ok).
+_LCSS_EVIDENCE = (
+    r'file_effects: "HKLM\System\CurrentControlSet\Services\Lcss\Type", '
+    r'"HKLM\System\CurrentControlSet\Services\Lcss\Start", '
+    r'"HKLM\System\CurrentControlSet\Services\Lcss\ErrorControl"'
+)
+# The raw tool evidence writes the same paths JSON-escaped.
+_LCSS_EVIDENCE_ESCAPED = _LCSS_EVIDENCE.replace("\\", "\\\\")
+
+
+def test_claim_paths_do_not_swallow_the_next_path():
+    r"""A space must not let one CLAIM eat the next path.
+
+    The mirror of the evidence-side test above. Two observed paths in one
+    cell are two indicators, not one invented compound.
+    """
+    compound = (r"HKLM\System\CurrentControlSet\Services\Lcss\Type, "
+                r"HKLM\System\CurrentControlSet\Services\Lcss\Start")
+    md = "## Indicators of Compromise\n\n| Type | Value |\n| --- | --- |\n" \
+         "| registry_key | " + compound + " |\n"
+    for label, ev in (("plain", _LCSS_EVIDENCE),
+                      ("json-escaped", _LCSS_EVIDENCE_ESCAPED)):
+        out = verify_claimed_iocs(md, ev)
+        assert out["unverified"] == 0, (label, out)
+        assert out["verified"] == 2, (label, out)
+
+
+def test_a_real_three_path_sentence_is_three_claims():
+    """The verbatim re-run 10 sentence must verify all three of its paths."""
+    sentence = (
+        "Procmon system-wide service events total 12, with samples including "
+        r"HKLM\System\CurrentControlSet\Services\Lcss\Type, "
+        r"HKLM\System\CurrentControlSet\Services\Lcss\Start, and "
+        r"HKLM\System\CurrentControlSet\Services\Lcss\ErrorControl. "
+        "(source: procmon, query_or_table: deep_dive/02-dynamic-pack.json, "
+        "row_or_rule: procmon_summary.persistence[2])")
+    md = "## Appendix\n\n" + sentence + "\n"
+    out = verify_claimed_iocs(md, _LCSS_EVIDENCE_ESCAPED)
+    assert out["unverified"] == 0, out
+    assert out["verified"] == 3, out
+
+
+def test_splitting_a_compound_is_not_a_laundering_device():
+    r"""Joining an invented path to an observed one must not verify either.
+
+    The split exists to judge each path on its own evidence. If one half is
+    fabricated, it must still land in `unverified` -- the fix must not become
+    a way to make a compound claim pass by containing a real path.
+    """
+    mixed = (r"HKLM\System\CurrentControlSet\Services\Lcss\Type, "
+             r"HKLM\Software\FabricatedVendor\Persistence\Run")
+    md = "## Indicators of Compromise\n\n- " + mixed + "\n"
+    out = verify_claimed_iocs(md, _LCSS_EVIDENCE)
+    assert out["unverified"] == 1, out
+    assert out["verified"] == 1, out
+    assert "FabricatedVendor" in out["unverified_items"][0]["value"], out
+
+
+def test_a_path_with_a_space_bearing_segment_is_still_one_claim():
+    r"""The guard must not break `Windows NT`-style segments.
+
+    The space continuation exists for real space-bearing subkeys; rejecting
+    every space would strand exactly the Winlogon path analysts abbreviate
+    most.
+    """
+    path = (r"HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows NT"
+            r"\CurrentVersion\Winlogon\Notify\wlogon")
+    ev = r'notify: "HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows NT' \
+         r'\CurrentVersion\Winlogon\Notify\wlogon"'
+    md = "## Persistence\n\n- The sample registered `" + path + "`.\n"
+    out = verify_claimed_iocs(md, ev)
+    assert out["unverified"] == 0, out
+    assert out["verified"] == 1, out
+
+
 def test_guidance_then_assertion_is_judged_as_a_claim():
     """A later bare assertion must not be excused by an earlier guidance mention.
 

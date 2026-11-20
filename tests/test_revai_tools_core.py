@@ -101,6 +101,39 @@ def test_iocs_no_control_chars_in_any_category():
                 assert ch >= " " or ch == "\t", f"control char {ch!r} in {cat}: {v!r}"
 
 
+# RC-88: a registry path is an ATOMIC indicator -- it ends where the next
+# COMPLETE path begins, and a space continues it only for the path's own
+# space-bearing segments. The extractor's class admits a space for that
+# reason, so both halves of the rule need the guard (see `_REGKEY_RE`).
+def test_iocs_registry_enumeration_splits_into_separate_keys():
+    data = (b"the sample touched HKLM\\System\\CurrentControlSet\\Services"
+            b"\\Lcss\\Type and HKLM\\System\\CurrentControlSet\\Services"
+            b"\\Lcss\\Start in one window")
+    keys = iocs_mod.extract_iocs(data)["registry_keys"]
+    assert keys == [r"HKLM\System\CurrentControlSet\Services\Lcss\Type",
+                    r"HKLM\System\CurrentControlSet\Services\Lcss\Start"], keys
+
+
+def test_iocs_registry_space_bearing_segment_stays_one_key():
+    data = (rb"notify: HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows NT"
+            rb"\CurrentVersion\Winlogon\Notify\wlogon")
+    keys = iocs_mod.extract_iocs(data)["registry_keys"]
+    assert keys == [r"HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows NT"
+                    r"\CurrentVersion\Winlogon\Notify\wlogon"], keys
+
+
+def test_iocs_registry_trailing_prose_is_not_part_of_the_key():
+    r"""`...\Run was created` yields the key, not the sentence.
+
+    The space-bearing-segment rule requires a separator to follow, so prose
+    after the final segment stops the match. Before RC-88 the class absorbed
+    it, publishing a "key" that ended in ordinary English.
+    """
+    data = rb"HKLM\Software\Microsoft\Windows\CurrentVersion\Run was created"
+    keys = iocs_mod.extract_iocs(data)["registry_keys"]
+    assert keys == [r"HKLM\Software\Microsoft\Windows\CurrentVersion\Run"], keys
+
+
 def test_pe_parse_minimal():
     data = _minimal_pe()
     import tempfile, os

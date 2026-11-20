@@ -1587,9 +1587,25 @@ _CLAIM_DOMAIN_RE = re.compile(
     r"(?<![\w.-])(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\[\.\]|\.))+[a-z]{2,}(?![\w.-])",
     re.IGNORECASE)
 _CLAIM_HASH_RE = re.compile(r"\b[a-fA-F0-9]{32,64}\b")
+#: The hive spellings a registry path may start with. Shared by the claim
+#: extractor below and by its "this space does not continue the path" guard,
+#: so the two can never drift apart about what a path root looks like.
+_CLAIM_REGKEY_ROOT = r"HK(?:LM|CU|CR|U|CC|EY_[A-Z_]+)"
 _CLAIM_REGKEY_RE = re.compile(
-    r"(?i)\bHK(?:LM|CU|CR|U|CC|EY_[A-Z_]+)\\(?:[^\s\"'<>|]+"
-    r"(?: (?=[A-Za-z0-9._-]+\\)[^\s\"'<>|]*)?)*")
+    r"(?i)\b(?:" + _CLAIM_REGKEY_ROOT + r")\\(?:[^\s\"'<>|]+"
+    # A space continues the path ONLY for the path's own space-bearing
+    # segments (`...\Windows NT\CurrentVersion\...`). The negative lookahead
+    # is the load-bearing half: a registry path is an ATOMIC indicator, so it
+    # ends where the next COMPLETE path begins. Without it, a sentence that
+    # enumerates observed paths -- "...Services\Lcss\Type,
+    # HKLM\...\Services\Lcss\Start" (S2 re-run 10, procmon_summary
+    # persistence[2]) -- was read as ONE path, and two genuinely observed
+    # indicators were then judged a single invented one
+    # (`master_v2:report:unverified_iocs:1`). The evidence-side extractor
+    # (_EVIDENCE_REGKEY_RE) has carried this guard since 2026-10-03; the
+    # claim side never did.
+    r"(?: (?=(?!" + _CLAIM_REGKEY_ROOT + r"\\)[A-Za-z0-9._-]+\\)"
+    r"[^\s\"'<>|]*)?)*")
 _CLAIM_EMAIL_RE = re.compile(r"\b[\w.+-]+(?:\[@\]|@)[\w-]+(?:(?:\[\.\]|\.)[\w-]+)+\b")
 
 #: Provenance banner line: "> **RevAI provenance** — commit `<hash>` · engine ..."
