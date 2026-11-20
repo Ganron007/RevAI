@@ -842,10 +842,20 @@ def _parse_json_path(
                 if not isinstance(key, str):
                     return None
                 tokens.append(key)
-            elif atom.startswith("?(") and atom.endswith(")"):
+            elif atom.startswith("?"):
+                # Exact list predicate: `[?(@.row==94805)]` and the
+                # unparenthesised spelling writers emit (`[?@.row==94805]`
+                # -- re-run 13, 2026-11-20: all 8 procmon filter rows came
+                # back unresolved because the parser only accepted the
+                # parenthesised form). The body must be one exact
+                # `@.field==value` pair; unknown predicate shapes stay
+                # rejected rather than treated as fuzzy.
+                body = atom[1:]
+                if body.startswith("(") and body.endswith(")"):
+                    body = body[1:-1]
                 match = re.fullmatch(
                     r"@\.([A-Za-z_][\w.-]*)\s*==\s*(?:\"([^\"]*)\"|'([^']*)'|([^\s]+))",
-                    atom[2:-1].strip(),
+                    body.strip(),
                 )
                 if not match:
                     return None
@@ -1393,14 +1403,20 @@ def _locate_cited_row(path: Path, row: str, query: str | None = None,
             # (2026-10-24: a dozen `$.upx_second_pass.tools.*` rows came back
             # unresolved on a complete technical report). The citation names
             # the engine explicitly in its path, so no filter is needed.
+            # RC-92: these rows name their OWN engine in the path, so no
+            # filter is needed.
             row_stripped = (row or "").strip().casefold()
-            if row_stripped.startswith("$.upx_second_pass"):
-                # Nested document: the path names its own engine.
-                pass
-            elif row_stripped.startswith("unpacked."):
-                # The writer's name for the second pass; there is no
-                # `unpacked` key, so the resolver aliases it to
-                # `upx_second_pass.tools`.
+            if row_stripped.startswith(
+                ("$.upx_second_pass",
+                 "upx_second_pass.",
+                 "unpacked.",
+                 "$.payload_feedback",
+                 "payload_feedback.",
+                 "$.payload_decompilation",
+                 "payload_decompilation.")):
+                # Nested documents: the path (or the writer's `unpacked.`
+                # name for the second pass) names its own engine, so no
+                # filter is needed.
                 pass
             else:
                 raw_key_aliases = (
@@ -1427,6 +1443,14 @@ def _locate_cited_row(path: Path, row: str, query: str | None = None,
                     ("packer", ("packer",)),
                 )
                 matched_key = None
+                # RC-92: a payload-source row that does NOT name the wrapper
+                # would be filtered to the TOP-LEVEL engine branch (a
+                # different document) and silently certify the wrong row.
+                # Failing it closed is the honest outcome; the writer must
+                # cite `payload_feedback.tools.<engine>...` or
+                # `payload_decompilation.decompilations[...]` in full.
+                if re.search(r"(?<![a-z0-9])payload(?![a-z0-9])", lookup):
+                    return None
                 for key, aliases in raw_key_aliases:
                     if any(re.search(rf"(?<![a-z0-9]){re.escape(alias)}(?![a-z0-9])",
                                      lookup) for alias in aliases):
@@ -1587,6 +1611,20 @@ def _locate_cited_row(path: Path, row: str, query: str | None = None,
             # `field=value` and `table: key` locator shapes on their own
             # paths, and a normalized row that fails to resolve still falls
             # through to those checks below.
+            row_clean = "$." + row_clean
+            is_normalized_jsonpath = True
+        elif (not row_clean.startswith("$")
+              and ": " not in row_clean
+              and re.match(r"^[A-Za-z_][A-Za-z0-9_]*\[[^\]]*\]", row_clean)):
+            # RC-92: a bare JSONPath carrying a bracket segment (index, filter,
+            # or key-or-name selector) -- `procmon_sample_events[?(@.row==94805)].path`
+            # (re-run 13, 2026-11-20: all 8 procmon filter rows cited exactly
+            # this way and never received a `$.` prefix, so the strict parser
+            # rejected them outright). The bracket-indexed normalization above
+            # only matches pure-numeric segments. `table: key` locators are
+            # excluded by the `": "` guard -- they keep their own path through
+            # `_resolve_table_key`. The strict parser and walker still have to
+            # resolve it exactly; a bare locator naming nothing fails closed.
             row_clean = "$." + row_clean
             is_normalized_jsonpath = True
         if row_clean.startswith("$"):
