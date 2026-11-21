@@ -46,6 +46,7 @@ from v2_lib import (  # noqa: E402
     compact_json_for_prompt,
     format_report_input_manifest,
     format_report_source_evidence,
+    section_source_rels,
     load_attested_case_json,
     require_run_mode,
     require_execution_context,
@@ -1189,6 +1190,7 @@ def generate_technical_chunked(
     ev_dir: Path | None = None,
     expected_verdict: str | None = None,
     dynamic_status: dict | None = None,
+    source_evidence_for=None,
 ) -> tuple[str, list[dict], list[str]]:
     """Generate the technical report as several bounded calls.
 
@@ -1248,7 +1250,8 @@ def generate_technical_chunked(
         """
         prompt = build_prompt_technical(
             session, verdict, deep, yara_meta, audit, technical_evidence,
-            recovery_evidence, final_verdict, source_evidence=source_evidence,
+            recovery_evidence, final_verdict,
+            source_evidence=(source_evidence_for(titles) if source_evidence_for else source_evidence),
             sections=titles,
             prior_sections_md=prior_sections_md)
         md = _call(prompt, tag, out_name, titles=titles)
@@ -1277,7 +1280,7 @@ def generate_technical_chunked(
                 build_prompt_technical(
                     session, verdict, deep, yara_meta, audit,
                     technical_evidence, recovery_evidence, final_verdict,
-                    source_evidence=source_evidence,
+                    source_evidence=(source_evidence_for([title]) if source_evidence_for else source_evidence),
                     sections=[title]),
                 f"{tag}-split-{ti}", f"{out_name[:-5]}-split-{ti}.json",
                 titles=[title])
@@ -1406,7 +1409,8 @@ def generate_technical_chunked(
             prompt = build_prompt_technical(
                 session, verdict, deep, yara_meta, audit, technical_evidence,
                 recovery_evidence, final_verdict,
-                source_evidence=source_evidence, sections=[section],
+                source_evidence=(source_evidence_for([section]) if source_evidence_for else source_evidence),
+                sections=[section],
                 retry_instruction=instruction,
             )
             return _call(prompt, f"stub-retry-{section[:24]}",
@@ -1466,7 +1470,8 @@ def generate_technical_chunked(
             prompt = build_prompt_technical(
                 session, verdict, deep, yara_meta, audit, technical_evidence,
                 recovery_evidence, final_verdict,
-                source_evidence=source_evidence, sections=[section],
+                source_evidence=(source_evidence_for([section]) if source_evidence_for else source_evidence),
+                sections=[section],
                 retry_instruction=instruction,
             )
             return _call(prompt, f"orphan-retry-{section[:24]}",
@@ -1529,7 +1534,8 @@ def generate_technical_chunked(
                 prompt = build_prompt_technical(
                     session, verdict, deep, yara_meta, audit, technical_evidence,
                     recovery_evidence, final_verdict,
-                    source_evidence=source_evidence, sections=[section],
+                    source_evidence=(source_evidence_for([section]) if source_evidence_for else source_evidence),
+                sections=[section],
                     retry_instruction=instruction,
                 )
                 return _call(prompt, f"ioc-retry-{section[:24]}",
@@ -2359,6 +2365,26 @@ def main():
         )
     source_evidence, source_evidence_meta = format_report_source_evidence(
         case, manifest)
+
+    # RC-97/B1: a section's writer prompt carries that section's slice of the
+    # corpus (the artifacts its row manifest draws from), not the full
+    # corpus. The full render stays for whole-report calls (the triage
+    # prompt); the slices cut the per-section prompt bytes by the corpus
+    # share and shrink the provider-flake surface proportionally. Resolution
+    # is unaffected: the audit resolves citations against the ATTESTED case
+    # files, never against the prompt text.
+    _slice_cache: dict[tuple, str] = {}
+
+    def _sliced_source_evidence(sections: list[str] | None) -> str:
+        if not sections:
+            return source_evidence
+        key = tuple(sections)
+        if key not in _slice_cache:
+            rels = section_source_rels(str(session.get("sha256") or ""),
+                                       list(sections))
+            _slice_cache[key] = format_report_source_evidence(
+                case, manifest, include=rels)[0]
+        return _slice_cache[key]
     if source_evidence_meta.get("elided_chars"):
         # RC-30: oversized corpus rendered bounded, not fatal. The elisions
         # are a coverage limit recorded on the report, not an error.
@@ -2458,7 +2484,7 @@ def main():
                 dynamic_evidence=dynamic_evidence,
                 ioc_evidence=ioc_evidence,
                 ti_evidence=ti_evidence,
-                source_evidence=source_evidence,
+                source_evidence=_sliced_source_evidence([title]),
                 sections=[title])
             try:
                 r, parsed = llm_report_structured(
@@ -2513,7 +2539,7 @@ def main():
                 dynamic_evidence=dynamic_evidence,
                 ioc_evidence=ioc_evidence,
                 ti_evidence=ti_evidence,
-                source_evidence=source_evidence,
+                source_evidence=_sliced_source_evidence([title]),
                 sections=[title],
             )
             targeted_prompt += (
@@ -2648,7 +2674,8 @@ def main():
                     dynamic_evidence=dynamic_evidence,
                     ioc_evidence=ioc_evidence,
                     ti_evidence=ti_evidence,
-                    source_evidence=source_evidence, sections=[section],
+                    source_evidence=(source_evidence_for([section]) if source_evidence_for else source_evidence),
+                sections=[section],
                     retry_instruction=instruction,
                 )
                 _r, parsed = llm_report_structured(
@@ -2708,7 +2735,8 @@ def main():
                     dynamic_evidence=dynamic_evidence,
                     ioc_evidence=ioc_evidence,
                     ti_evidence=ti_evidence,
-                    source_evidence=source_evidence, sections=[section],
+                    source_evidence=(source_evidence_for([section]) if source_evidence_for else source_evidence),
+                sections=[section],
                     retry_instruction=instruction,
                 )
                 _r, parsed = llm_report_structured(
@@ -2859,7 +2887,7 @@ def main():
                         dynamic_evidence=dynamic_evidence,
                         ioc_evidence=ioc_evidence,
                         ti_evidence=ti_evidence,
-                        source_evidence=source_evidence,
+                        source_evidence=_sliced_source_evidence([title]),
                         sections=[title],
                     )
                     repair_prompt += (
@@ -3171,6 +3199,7 @@ def main():
                     recovery_evidence=recovery_evidence,
                     final_verdict=report.get("final_verdict"),
                     source_evidence=source_evidence,
+                    source_evidence_for=_sliced_source_evidence,
                     ev_dir=ev_dir,
                     expected_verdict=(verdict or {}).get("verdict"),
                     dynamic_status=dynamic_status,
@@ -3254,7 +3283,8 @@ def main():
                         session, verdict, deep, yara_meta, audit,
                         tech_evidence_for_prompt, recovery_evidence,
                         report.get("final_verdict"),
-                        source_evidence=source_evidence, sections=[section],
+                        source_evidence=(source_evidence_for([section]) if source_evidence_for else source_evidence),
+                sections=[section],
                         retry_instruction=instruction,
                     )
                     response, parsed = llm_report_structured(
@@ -3323,7 +3353,8 @@ def main():
                         session, verdict, deep, yara_meta, audit,
                         tech_evidence_for_prompt, recovery_evidence,
                         report.get("final_verdict"),
-                        source_evidence=source_evidence, sections=[section],
+                        source_evidence=_sliced_source_evidence([section]),
+                        sections=[section],
                         retry_instruction=instruction,
                     )
                     attempt: dict[str, Any] = {
