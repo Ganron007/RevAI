@@ -20,6 +20,7 @@ from typing import Any
 from citation_syntax import (
     has_citation_locator,
     is_disassembly_listing_line,
+    is_tool_output_leak_line,
     parse_citation_annotations,
     strip_citation_annotations,
 )
@@ -2195,6 +2196,14 @@ def uncited_report_claims(markdown: str) -> list[str]:
         # blocks at generation time; this keeps any that still slip through
         # from inflating uncited_claims (run 65be0144: 12 listing lines).
         if is_disassembly_listing_line(line):
+            continue
+        # RC-102 (re-run 21): verbatim tool-output lines the writer leaked
+        # outside a code fence (the UPX banner/table, single-line JSON
+        # key/value fragments) are source material restated, not claims --
+        # the same class as the disassembly listing RC-18 exempts. Tight
+        # shapes: exact banner prefixes and a fullmatch JSON key/value
+        # fragment, so a claim cannot be laundered into the exemption.
+        if is_tool_output_leak_line(line):
             continue
         # Bold-only labels are markdown headings even when the author chose
         # not to use ``#`` syntax. Treating these as unsupported factual claims

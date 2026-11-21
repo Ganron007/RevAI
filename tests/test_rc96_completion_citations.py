@@ -122,3 +122,36 @@ def test_the_completion_bodies_run_the_declaration():
     import inspect
     src = inspect.getsource(PR)
     assert src.count("_declare_uncited_body_lines(") >= 2
+
+
+def test_tool_output_leak_lines_are_exempt():
+    """RC-102 (re-run 21): verbatim tool-output lines the writer leaked
+    outside a code fence (the UPX banner/table, malcat JSON fragments) are
+    source material, not claims."""
+    import report_quality as RQ2
+    from citation_syntax import is_tool_output_leak_line
+    lines = [
+        "Ultimate Packer for eXecutables",
+        "Copyright (C) 1996 - 2026",
+        "UPX 5.1.0 Markus Oberhumer, Laszlo Molnar & John Reiser Jan 7th 2026",
+        "File size Ratio Format Name",
+        "Unpacked 0 files.",
+        '     "ea": 33523,',
+        '     "context": ""',
+    ]
+    for ln in lines:
+        assert is_tool_output_leak_line(ln), f"tool-output leak must be exempt: {ln!r}"
+    md = "\n".join(lines)
+    assert RQ2.uncited_report_claims(md) == [], (
+        "leaked tool-output lines must not count as uncited claims")
+
+
+def test_prose_cannot_launder_into_the_leak_exemption():
+    """Tight shapes: prose with the banner words mid-sentence or a JSON
+    fragment followed by prose stays a claim."""
+    import citation_syntax as CS
+    assert not CS.is_tool_output_leak_line(
+        "The sample is packed with Ultimate Packer for eXecutables tools.")
+    assert not CS.is_tool_output_leak_line(
+        '"ea": 33523 and the payload continues at 0x1000')
+    assert not CS.is_tool_output_leak_line("Regular prose without any marker.")

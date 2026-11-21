@@ -255,3 +255,32 @@ _DISASSEMBLY_LISTING_RE = re.compile(
 def is_disassembly_listing_line(line: str) -> bool:
     """Whether a rendered line is a disassembly/hex listing, not prose."""
     return bool(_DISASSEMBLY_LISTING_RE.match(line or ""))
+
+
+#: RC-102 (re-run 21): verbatim TOOL-OUTPUT lines that the writer leaked
+#: outside a code fence. The UPX banner/table shapes and single-line JSON
+#: key/value fragments are source material restated, not writer claims --
+#: the same class as the disassembly listing RC-18 exempts. Tight shapes:
+#: exact banner prefixes and a fullmatch JSON key/value fragment (no
+#: trailing prose), so a writer cannot launder a claim into the exemption.
+_UPX_BANNER_PREFIXES = (
+    "ultimate packer for executables",
+    "copyright (c) 1996",
+    "upx ",
+    "file size ratio format",
+    "unpacked ",
+)
+_JSON_KV_FRAGMENT_RE = re.compile(
+    r'^\s*"[A-Za-z_][\w .-]*"\s*:\s*("[^"]*"|[\d.]+|true|false|null|""|\[\]|\{\})?,?\s*$'
+)
+
+
+def is_tool_output_leak_line(line: str) -> bool:
+    """Whether a rendered line is verbatim tool output (banner/table/JSON
+    fragment) leaked outside a code fence -- source material, not prose."""
+    low = (line or "").strip().lower()
+    if not low:
+        return False
+    if any(low.startswith(p) for p in _UPX_BANNER_PREFIXES):
+        return True
+    return bool(_JSON_KV_FRAGMENT_RE.match(line or ""))
