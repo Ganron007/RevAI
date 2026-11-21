@@ -1087,7 +1087,8 @@ def _seed_signal_extractors(history: list, findings: dict, session: dict, sha: s
 
 
 def _run_payload_feedback_pass(
-    *, upx_r: dict, findings: dict, tools_raw: dict, history: list) -> None:
+    *, upx_r: dict, findings: dict, tools_raw: dict, history: list,
+    sha: str = "") -> None:
     r"""Feed EVERY successfully unpacked payload back through the tool chain.
 
     RC-90. The post-UPX second pass (V5.16.5) existed but was gated on the
@@ -1198,6 +1199,76 @@ def _run_payload_feedback_pass(
             "checklist": True,
         })
         _decompile_payload(payload_path, engine, tools_raw, findings, history)
+        _run_payload_sql_pass(payload_path, sha=sha,
+                              tools_raw=tools_raw, findings=findings,
+                              history=history)
+
+
+def _run_payload_sql_pass(payload_path: str, *, sha: str, tools_raw: dict,
+                          findings: dict, history: list) -> None:
+    r"""RC-97/A2: the unpacked payload reaches the SQL engines.
+
+    The operator's completeness standard: "we got malcat/Ghidra/IDA Pro with
+    which we should be able to decipher every piece of code within the PE."
+    idasql analyzes RAW BINARIES directly (no .i64 bootstrap needed), so the
+    payload's code is reachable by IDA's SQL interface without a project
+    pass. This records IDA's own view of the payload's function table --
+    cross-engine corroboration of malcat's enumeration, as citable rows.
+
+    Failure-safe like every payload-feedback tool: an engine that cannot
+    open the payload is recorded with its reason, never raised. The server
+    is closed after the pass; the recovery stage starts its own.
+    """
+    record: dict = {"payload_path": payload_path, "engine": "idasql"}
+    findings["payload_sql"] = record
+    # Same enable gate as the recovery stage: the SQL engines are its
+    # substrate, so an operator that disabled recovery does not get surprise
+    # server startups from the deep dive.
+    enabled = (os.environ.get("REVAI_ENABLE_AGENTIC_RECOVERY")
+               or os.environ.get("ENABLE_AGENTIC_RECOVERY", "")).strip().lower()
+    if enabled not in ("1", "true", "yes", "on"):
+        record["ok"] = True
+        record["skipped_reason"] = "not_applicable:REVAI_ENABLE_AGENTIC_RECOVERY off"
+        tools_raw["payload_sql"] = record
+        return
+    try:
+        from ida_sql_client import get_ida_sql_client, reset_ida_sql_client
+        client = get_ida_sql_client()
+        try:
+            cnt = client.query_binary(
+                payload_path,
+                "SELECT COUNT(*) AS n FROM funcs", sha=sha or None)
+            record["function_count"] = int(
+                (cnt.get("rows") or [{}])[0].get("n") or 0)
+            enum = client.query_binary(
+                payload_path,
+                "SELECT addr, name FROM funcs ORDER BY addr",
+                max_rows=400, sha=sha or None)
+            funcs = enum.get("rows") or []
+            record["functions"] = funcs
+            record["ok"] = True
+            print(f"[deep_dive_agentic] RC-97/A2 payload SQL (idasql): "
+                  f"{record['function_count']} functions, "
+                  f"{len(funcs)} enumerated", flush=True)
+        finally:
+            try:
+                client.close(f"ida-payload-{sha}" if sha else "ida-payload")
+            except Exception:                 # noqa: BLE001 - teardown only
+                pass
+    except Exception as exc:                  # noqa: BLE001 - fail safe
+        record["ok"] = False
+        record["error"] = f"{type(exc).__name__}: {exc}"
+        print(f"[deep_dive_agentic] payload SQL failed (fail-safe): "
+              f"{record['error']}", flush=True)
+    tools_raw["payload_sql"] = record
+    history.append({
+        "step": 0, "tool": "payload_sql",
+        "args": {"payload_path": payload_path},
+        "reason": "RC-97/A2 payload cross-engine corroboration (idasql)",
+        "result": {"ok": record.get("ok"),
+                   "function_count": record.get("function_count")},
+        "error": record.get("error"), "checklist": True,
+    })
 
 
 def _decompile_payload(payload_path: str, engine: str, tools_raw: dict,
@@ -1428,7 +1499,7 @@ def _run_standard_checklist(registry: "ToolRegistry", session: dict, sha: str) -
     # from ANY engine, is now a first-class analysis target.
     _run_payload_feedback_pass(
         upx_r=tools_raw.get("upx") if isinstance(tools_raw.get("upx"), dict) else {},
-        findings=findings, tools_raw=tools_raw, history=history)
+        findings=findings, tools_raw=tools_raw, history=history, sha=sha)
 
     # Deterministic signal extractors (anti-analysis + dynamic-import-resolve).
     # Grounded evidence for the evasion/anti-analysis depth domain; never breaks
@@ -1439,7 +1510,8 @@ def _run_standard_checklist(registry: "ToolRegistry", session: dict, sha: str) -
     # its payload is only known AFTER they return. Feed it back here -- this is
     # the path that was silently orphaned before.
     _run_payload_feedback_pass(
-        upx_r={}, findings=findings, tools_raw=tools_raw, history=history)
+        upx_r={}, findings=findings, tools_raw=tools_raw, history=history,
+        sha=sha)
 
     # Deterministic packer checklist — gives the gate packed-context so
     # capa/floss incomplete on packer-flagged samples soft-fails (recorded,

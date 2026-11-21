@@ -232,6 +232,58 @@ class IdaSqlClient:
 
     # ---- public API -----------------------------------------------------
 
+    def query_binary(
+        self,
+        binary_path: str,
+        sql: str,
+        max_rows: int = 200,
+        sha: str | None = None,
+        session_tag: str = "payload",
+    ) -> dict:
+        """RC-97/A2: run a read-only SQL query against ANY binary -- the
+        unpacked payload, not only the session's sample.
+
+        idasql analyzes raw binaries directly (the server bootstrap falls
+        back to `sample_path` when no .i64 exists), so the payload's code is
+        reachable by the SQL engines without a bootstrap pass. The server is
+        keyed by the session tag (payload servers never collide with the
+        sample's server; the recovery stage kills them on demand). Read-only
+        like ida_query; the audit record lands in the case dir of the tag's
+        sha (the caller passes a session-shaped dict when it needs a
+        different case dir).
+        """
+        validate_readonly_sql(sql)
+        sid = f"ida-{session_tag}-{sha}" if sha else f"ida-{session_tag}"
+        synthetic = {"session_id": sid, "sample_path": binary_path}
+        base_url = self._ensure_server(synthetic, sha or session_tag)
+        req = urllib.request.Request(
+            f"{base_url}/query",
+            data=sql.encode("utf-8"),
+            headers={"Content-Type": "text/plain"},
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=QUERY_TIMEOUT) as resp:
+                payload = json.loads(resp.read().decode())
+        except urllib.error.HTTPError as e:
+            raise RuntimeError(
+                f"idasql HTTP error {e.code}: {e.read().decode(errors='replace')}"
+            )
+        except urllib.error.URLError as e:
+            raise RuntimeError(f"idasql HTTP unreachable: {e}")
+        if not payload.get("success"):
+            err = (payload.get("first_error") or payload.get("error")
+                   or "unknown error")
+            results = payload.get("results", [])
+            if results and results[0].get("error"):
+                err = results[0]["error"]
+            raise RuntimeError(f"idasql SQL error: {err}")
+        results = payload.get("results", [])
+        columns = results[0].get("columns", []) if results else []
+        rows_lists = results[0].get("rows", []) if results else []
+        return {"columns": columns,
+                "rows": [dict(zip(columns, r)) for r in rows_lists[:max_rows]]}
+
     def ida_query(
         self,
         session_id: str,
