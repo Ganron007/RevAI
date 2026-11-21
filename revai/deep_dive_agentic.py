@@ -2448,7 +2448,11 @@ def agentic_deep_dive(sha: str, max_steps: int = MAX_STEPS) -> dict:
         # Forcing the mode here means the production langgraph path gets the
         # named-domain structure without a second engine. setdefault: an
         # operator's explicit REVAI_DOMAIN_GRAPH value still wins.
-        if os.environ.get("REVAI_DEEP_DIVE_GRAPH", "").strip().lower() in (
+        # RC-97/A4: the domain phase is the DEFAULT on BOTH engine paths —
+        # the custom loop's gate AND this langgraph gate (RC-53's B6 lesson:
+        # two gates for one flag drift when only one is flipped). An explicit
+        # REVAI_DEEP_DIVE_GRAPH=0 restores the flat dive on either path.
+        if os.environ.get("REVAI_DEEP_DIVE_GRAPH", "1").strip().lower() in (
                 "1", "true", "yes", "on"):
             os.environ.setdefault("REVAI_DOMAIN_GRAPH", "1")
             print("[deep_dive_agentic] RC-53: REVAI_DOMAIN_GRAPH forced on "

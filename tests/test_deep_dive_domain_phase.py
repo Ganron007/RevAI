@@ -82,6 +82,24 @@ def test_explicit_off_keeps_the_flat_loop(monkeypatch, tmp_path):
     assert not (out.get("findings") or {}).get("domain_graph")
 
 
+def test_langgraph_path_domain_phase_default_on(monkeypatch, tmp_path):
+    """RC-97/A4: BOTH engine gates default the domain phase on. The
+    production engine is langgraph (`--engine langgraph`), and RC-53's B6
+    lesson is that two gates for one flag drift when only one is flipped."""
+    monkeypatch.delenv("REVAI_DEEP_DIVE_GRAPH", raising=False)
+    monkeypatch.delenv("REVAI_DOMAIN_GRAPH", raising=False)
+    monkeypatch.setenv("REVAI_RUN_MODE", "scripted")
+    # the gate lives in deep_dive_agentic; assert the DEFAULT of the read
+    # is "1" on both paths by reading the source (the gates are module-
+    # level conditions on os.environ.get with a "1" default).
+    import inspect
+    src = inspect.getsource(DDA)
+    assert src.count('os.environ.get("REVAI_DEEP_DIVE_GRAPH", "1")') == 2, (
+        "both engine gates must default the domain phase ON")
+    assert 'os.environ.get("REVAI_DEEP_DIVE_GRAPH", "")' not in src, (
+        "no gate may keep the old default-off spelling")
+
+
 def test_default_on_runs_the_domain_phase(monkeypatch, tmp_path):
     """RC-97/A4: with the env ABSENT the domain phase runs (the operator's
     RE-completeness default); the flat loop is only the fallback."""
