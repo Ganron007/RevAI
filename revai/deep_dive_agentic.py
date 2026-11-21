@@ -1796,15 +1796,18 @@ def _custom_loop_body(sha: str, max_steps: int = MAX_STEPS) -> dict:
     # RC-53 (plan #20, 2026-11-07): the flat ReAct planner loop can be
     # REPLACED by the domain-node graph (the #26 depth substrate,
     # agentic_langgraph.run_langgraph_deep_dive) — one bounded tool-calling
-    # node per capability domain instead of one flat loop. Opt-in with
-    # REVAI_DEEP_DIVE_GRAPH=1; the default stays byte-identical. When the
-    # graph pass runs, its per-domain determinations and history merge into
-    # this run's findings and the planner loop is skipped (the domain graph
-    # IS the investigation); the final-verdict step below still runs and
-    # reads the merged record. A failed graph pass falls back to the flat
-    # loop — a stated failure must not cost the whole deep dive.
+    # node per capability domain instead of one flat loop.
+    # RC-97/A4 (2026-11-21, operator-approved holistic plan): the domain
+    # phase is now the DEFAULT — region-level understanding is part of every
+    # deep dive, not an opt-in validation exercise. An explicit OFF
+    # (`REVAI_DEEP_DIVE_GRAPH=0`) restores the flat loop, and a failed graph
+    # pass still falls back to it — a stated failure must not cost the whole
+    # deep dive. When the graph pass runs, its per-domain determinations and
+    # history merge into this run's findings and the planner loop is skipped
+    # (the domain graph IS the investigation); the final-verdict step below
+    # still runs and reads the merged record.
     domain_phase_done = False
-    if os.environ.get("REVAI_DEEP_DIVE_GRAPH", "").strip().lower() in (
+    if os.environ.get("REVAI_DEEP_DIVE_GRAPH", "1").strip().lower() in (
             "1", "true", "yes", "on"):
         # 2026-11-07 review (B6): the langgraph branch forces the domain
         # mode on; the custom branch must too, or custom+flag ran a complete

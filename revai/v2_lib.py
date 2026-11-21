@@ -11637,6 +11637,37 @@ def format_malcat_evidence(
     return "\n".join(lines)
 
 
+def assemble_decompile_coverage(tools_results: dict) -> dict:
+    """RC-97/A3: the measurable answer to "did we decipher the code".
+
+    Merges the sample-wide and payload decompile-coverage records the deep
+    dive wrote (RC-97/A1) into one dict the report and the verdict report:
+    every enumerated function is accounted for as decompiled, failed, or
+    skipped with its reason. Reads only what the tools already recorded --
+    no new stage, no new artifact.
+    """
+    mal = tools_results.get("malcat") or {}
+    sample_cov = mal.get("decompile_coverage") or {}
+    payload = tools_results.get("payload_decompilation") or {}
+    payload_cov = payload.get("decompile_coverage") or {}
+    out: dict = {}
+    for name, cov in (("sample", sample_cov), ("payload", payload_cov)):
+        if not cov:
+            continue
+        out[name] = {
+            "enumerated": cov.get("enumerated"),
+            "decompiled": cov.get("decompiled"),
+            "failed": cov.get("failed"),
+            "skipped_budget": cov.get("skipped_budget"),
+            "skipped_cap": cov.get("skipped_cap"),
+            "artifact": ("deep_dive/01-tools-raw.json" if name == "sample"
+                         else "deep_dive/01-tools-raw.json"),
+            "locator": ("$.malcat.decompile_coverage" if name == "sample"
+                        else "$.payload_decompilation.decompile_coverage"),
+        }
+    return out
+
+
 def build_technical_evidence_block(
     session: dict,
     verdict: dict | None,
@@ -11759,6 +11790,24 @@ def build_technical_evidence_block(
     lines.append("## Malcat Structured Analysis")
     lines.append(format_malcat_evidence(malcat_result or tools_results.get("malcat")))
     lines.append("")
+
+    # RC-97/A3: the measurable answer to "did we decipher the code" --
+    # published in the report itself, every row citing its own artifact.
+    coverage = assemble_decompile_coverage(tools_results)
+    if coverage:
+        lines.append("## Function Decompilation Coverage")
+        lines.append("| Target | Enumerated | Decompiled | Failed | Skipped (budget) | Skipped (cap) | Citation |")
+        lines.append("|---|---|---|---|---|---|---|")
+        for name, cov in coverage.items():
+            artifact = cov.get("artifact") or ""
+            locator = cov.get("locator") or ""
+            lines.append(
+                f"| {name} | {cov.get('enumerated')} | {cov.get('decompiled')} "
+                f"| {cov.get('failed')} | {cov.get('skipped_budget')} "
+                f"| {cov.get('skipped_cap')} "
+                f"| (source: {artifact}, query_or_table: {artifact}, "
+                f"row_or_rule: {locator}) |")
+        lines.append("")
 
     def _capa_tag_cell(items, limit=120) -> str:
         """Format capa ATT&CK/MBC cells (str or Malcat-style dict entries)."""

@@ -55,8 +55,10 @@ def _graph_result():
             "history": hist}
 
 
-def test_default_off_keeps_the_flat_loop(monkeypatch, tmp_path):
-    monkeypatch.delenv("REVAI_DEEP_DIVE_GRAPH", raising=False)
+def test_explicit_off_keeps_the_flat_loop(monkeypatch, tmp_path):
+    """RC-97/A4: the domain phase is the default; an explicit `0` restores
+    the flat loop."""
+    monkeypatch.setenv("REVAI_DEEP_DIVE_GRAPH", "0")
     monkeypatch.setenv("REVAI_RUN_MODE", "scripted")
     monkeypatch.setattr(v2_lib, "LOGS_DIR", tmp_path / "case")
     _make_case(tmp_path)
@@ -78,6 +80,41 @@ def test_default_off_keeps_the_flat_loop(monkeypatch, tmp_path):
     out = DDA._custom_loop_body("a" * 64, max_steps=1)
     assert called, "the flat planner loop must still run when the flag is off"
     assert not (out.get("findings") or {}).get("domain_graph")
+
+
+def test_default_on_runs_the_domain_phase(monkeypatch, tmp_path):
+    """RC-97/A4: with the env ABSENT the domain phase runs (the operator's
+    RE-completeness default); the flat loop is only the fallback."""
+    monkeypatch.delenv("REVAI_DEEP_DIVE_GRAPH", raising=False)
+    monkeypatch.setenv("REVAI_RUN_MODE", "scripted")
+    monkeypatch.setattr(v2_lib, "LOGS_DIR", tmp_path / "case")
+    _make_case(tmp_path)
+    planner_called = []
+    graph_called = []
+    monkeypatch.setattr(DDA, "load_session", lambda sha: _session())
+    monkeypatch.setattr(DDA, "load_intake_validation", lambda sha: {})
+
+    class _Registry:
+        pass
+
+    monkeypatch.setattr(DDA, "ToolRegistry", _Registry)
+    monkeypatch.setattr(DDA, "_run_standard_checklist",
+                        lambda reg, sess, sha: ([], {}, {}, {"ok": True}))
+
+    def _graph(sha, max_steps=None):
+        graph_called.append(sha)
+        return {"findings": {"domain_graph": {"domains": {"x": "understood"}},
+                             "domain_findings": "regions mapped"},
+                "history": [{"tool": "domain:x", "ok": True}]}
+
+    import agentic_langgraph as AL
+    monkeypatch.setattr(AL, "run_langgraph_deep_dive", _graph)
+    monkeypatch.setattr(DDA, "get_verdict_model", lambda: "m")
+    monkeypatch.setattr(DDA, "llm_judge", lambda prompt, **kw: "")
+    out = DDA._custom_loop_body("a" * 64, max_steps=1)
+    assert graph_called, "the domain phase must run by default"
+    assert (out.get("findings") or {}).get("domain_graph"), (
+        "the merged domain record must reach the findings")
 
 
 def test_flag_on_merges_the_domain_graph_and_skips_the_planner(monkeypatch,
