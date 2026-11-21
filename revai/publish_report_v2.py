@@ -3129,6 +3129,10 @@ def main():
     report["final_verdict"] = final_v
     report["verdict"] = final_v  # backward-compat machine field = final locked
     report["verdict_lock"] = lock
+    # RC-101: the master's FINAL pre-passes (same rationale as the
+    # technical's; idempotent).
+    md = _fix_orphan_tables(md)
+    md = _strip_unverified_indicators(md, str(session.get("sha256") or ""))
     report["markdown"] = md
     if isinstance(verdict, dict) and final_v and final_v != quick_v:
         # RC-04b (option b): the calibrated label is the verdict-of-record for
