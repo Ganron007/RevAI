@@ -63,6 +63,7 @@ from v2_lib import (  # noqa: E402
     run_post_upx_second_pass,
     xor_string_search,
     yara_scan,
+    _decompile_budget,
 )
 from packer_intake import run_packer_scan  # noqa: E402
 from report_quality import VERDICT_CALIBRATION_CONTRACT  # noqa: E402
@@ -1221,7 +1222,8 @@ def _decompile_payload(payload_path: str, engine: str, tools_raw: dict,
             payload_path,
             views=["functions", "decompile"],
             limits={"decompile_top_n": PAYLOAD_DECOMPILE_TOP_N,
-                    "functions_max": PAYLOAD_DECOMPILE_TOP_N},
+                    "functions_max": max(PAYLOAD_DECOMPILE_TOP_N,
+                                         _decompile_budget()["max_funcs"])},
         )
     except Exception as exc:                     # noqa: BLE001 - fail safe
         print(f"[deep_dive_agentic] payload decompilation failed: "

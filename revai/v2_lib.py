@@ -16,6 +16,7 @@ import os
 import random
 import re
 import shutil
+import time
 import subprocess
 import threading
 import uuid
@@ -6661,6 +6662,23 @@ def _annotate_malcat_entropy(res: dict | None, sample_path: str) -> dict | None:
     return res
 
 
+def _decompile_budget() -> dict:
+    """RC-97/A1: the SAMPLE-WIDE decompilation budget.
+
+    The operator's directive: "we got malcat/Ghidra/IDA Pro with which we
+    should be able to decipher every piece of code within the PE." The old
+    loop decompiled the first 1/3 functions of malcat's ranked list; the
+    budget now walks the whole ranked list under an explicit count cap and
+    wall-clock share, recording every skip with its reason. Defaults are ON
+    (100 functions / 1200 s) because deciphering the code is the pipeline's
+    purpose, not an optional extra; the wall-clock bound keeps a
+    thousand-function sample from starving the rest of the deep dive.
+    """
+    max_funcs = int(os.environ.get("REVAI_DECOMPILE_MAX_FUNCS") or 100)
+    budget_s = float(os.environ.get("REVAI_DECOMPILE_BUDGET_S") or 1200)
+    return {"max_funcs": max(1, max_funcs), "budget_s": max(30.0, budget_s)}
+
+
 def malcat_analyze(sample_path: str, views: list[str] | None = None,
                    profile: str = "deep", limits: dict | None = None) -> dict:
     """Comprehensive MalCat analysis — uses the full MCP toolset.
@@ -6902,6 +6920,13 @@ def _malcat_analyze_once(sample_path: str, views: list[str] | None = None,
         # 8. Functions (top, capped per profile)
         if "functions" in views or "capa_summary" in views:
             fns_max = limits.get("functions_max", 10)
+            # RC-97/A1: when decompilation is requested, the ENUMERATION must
+            # cover the decompile budget -- the ranked list is malcat's own
+            # relevance order, and a `functions_max` smaller than the
+            # decompile budget would hide the rows the budget is meant to
+            # reach (re-run 12 lesson: the payload's list was capped at 30).
+            if "decompile" in views:
+                fns_max = max(fns_max, _decompile_budget()["max_funcs"])
             try:
                 fns = cli.call_tool("fns_top_list", {"analysis_id": analysis_id, "maximum_number_of_functions": fns_max})
                 if isinstance(fns, list):
@@ -6951,14 +6976,41 @@ def _malcat_analyze_once(sample_path: str, views: list[str] | None = None,
                 out["errors"].append(f"structs_list: {e}")
 
         # 13. Decompile top-N functions (N per profile)
+        # RC-97/A1 (2026-11-21, operator: "are we even deciphering every
+        # piece of code within the PE?"): the old loop decompiled the FIRST
+        # `decompile_top_n` functions of the ranked list (1 triage / 3 deep)
+        # -- the sample's code was never the analysis target, only a sample
+        # of it. The loop now walks malcat's OWN relevance-ranked list under
+        # an explicit budget (count + wall clock), records every skip with
+        # its reason, and emits a coverage summary the report layer publishes
+        # (A3). Default ON: REVAI_DECOMPILE_MAX_FUNCS=100 /
+        # REVAI_DECOMPILE_BUDGET_S=1200; the profile `decompile_top_n`
+        # remains the floor for callers that do not set the env.
         if "decompile" in views:
-            top_n = limits.get("decompile_top_n", 1)
-            for fn in (out["functions"] or [])[:top_n]:
+            budget = _decompile_budget()
+            fns = out["functions"] or []
+            cov = {
+                "enumerated": len(fns),
+                "budget_max_funcs": budget["max_funcs"],
+                "budget_s": budget["budget_s"],
+                "attempted": 0, "decompiled": 0, "failed": 0,
+                "skipped_budget": 0, "skipped_cap": 0,
+            }
+            decomp_rows: list[dict] = []
+            deadline = time.monotonic() + budget["budget_s"]
+            for idx, fn in enumerate(fns):
+                if idx >= budget["max_funcs"]:
+                    cov["skipped_cap"] = len(fns) - idx
+                    break
+                if time.monotonic() > deadline:
+                    cov["skipped_budget"] = len(fns) - idx
+                    break
                 if not isinstance(fn, dict):
                     continue
                 ea = fn.get("ea") or fn.get("address")
                 if ea is None:
                     continue
+                cov["attempted"] += 1
                 try:
                     decomp = cli.call_tool("fn_decompile", {"analysis_id": analysis_id, "ea": ea})
                     if decomp:
@@ -6966,8 +7018,19 @@ def _malcat_analyze_once(sample_path: str, views: list[str] | None = None,
                             "name": fn.get("name", ""),
                             "decompilation": str(decomp)[:4000],
                         }
+                        decomp_rows.append({
+                            "ea": ea, "name": fn.get("name", ""),
+                            "decompilation": str(decomp)[:4000],
+                        })
+                        cov["decompiled"] += 1
+                    else:
+                        cov["failed"] += 1
                 except Exception as e:
                     out["errors"].append(f"fn_decompile({ea}): {e}")
+                    cov["failed"] += 1
+            cov["decompiled"] = len(out["decompilations"])
+            out["decompile_coverage"] = cov
+            out["decompilation_rows"] = decomp_rows
 
         # 14. Script decompile (VBS, VBA, JS, PS1, Python, AutoIT — MalCat detects script engines)
         if "script_decompile" in views:
@@ -10277,10 +10340,14 @@ SECTION_ROW_SOURCES: dict[str, tuple[tuple[str, str, str], ...]] = {
     "3. File Layout & Structural Analysis": (
         ("deep_dive/01-tools-raw.json", "malcat.views.anomalies", "anomalies"),
         ("deep_dive/01-tools-raw.json", "yara.matches", "yara"),
+        # RC-97/A1: the sample's own decompilations are citable evidence --
+        # "decipher every piece of code" must be visible to the writer.
+        ("deep_dive/01-tools-raw.json", "malcat.decompilation_rows", "sample decompilations"),
     ),
     "4. Static Code Analysis": (
         ("deep_dive/01-tools-raw.json", "malcat.views.strings", "strings"),
         ("deep_dive/01-tools-raw.json", "malcat.views.anomalies", "anomalies"),
+        ("deep_dive/01-tools-raw.json", "malcat.decompilation_rows", "sample decompilations"),
     ),
     "6. Network Indicators & C2": (
         ("iocs.json", "domains", "domains"),
