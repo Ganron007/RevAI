@@ -79,47 +79,42 @@ def _fake_llm(monkeypatch, break_titles: set[str]):
 
 
 def test_the_repair_pass_fires_and_cleans_the_report(monkeypatch):
+    """RC-95 (re-run 16): the broken layout is fixed by the DETERMINISTIC
+    pre-pass with zero retry calls; the LLM retry fires only for shapes the
+    transform cannot fix."""
     import publish_report_v2 as pub
     calls = _fake_llm(monkeypatch, {BROKEN_TITLE})
     md, audits, errors = pub.generate_technical_chunked(
         {"sha256": SHA, "sample_path": "/x", "project_name": "p"},
         {}, {}, {}, [], "EVIDENCE", dynamic_status={})
     assert not errors, errors
-    assert RQ.count_table_orphans(md) <= 2, RQ.count_table_orphans(md)
-    assert any(a.get("part") == "orphan-retry-result" and a.get("accepted")
-               for a in audits), audits
-    assert any("table-orphan gate" in c for c in calls), \
-        "the repair pass did not fire"
+    assert RQ.count_table_orphans(md) == 0, RQ.count_table_orphans(md)
+    assert not any(a.get("part") == "orphan-retry-result" for a in audits), \
+        "the deterministic pre-pass must fix the shape before any retry"
+    assert not any("table-orphan gate" in c for c in calls), \
+        "no retry call may be spent on a shape the pre-pass fixes"
 
 
-def test_a_still_orphaned_repair_is_rejected(monkeypatch):
+def test_a_still_orphaned_repair_is_rejected():
+    """RC-95 moved the deterministic pre-pass ahead of the retry, so this pin
+    tests the retry MACHINERY directly: a replacement that returns the SAME
+    broken layout is recorded not-accepted and the original is kept (the
+    keep-only-if-clean rule)."""
     import publish_report_v2 as pub
+    broken = _broken_section(BROKEN_TITLE)
+    md = ("# Technical Report\n\n" + broken + "\n\n"
+          "## Closing\n\nProse after the section ends the report.\n")
+    assert RQ.count_table_orphans(md) > 0
 
-    def fake(prompt, **kwargs):
-        head = prompt.split("Rules", 1)[0]
-        titles = [t for t in pub.TECHNICAL_REPORT_SECTIONS if f"- {t}" in head]
-        bodies = []
-        for t in titles:
-            if t == BROKEN_TITLE:
-                # The retry returns the SAME broken layout.
-                bodies.append(_broken_section(t))
-            else:
-                bodies.append(
-                    f"## {t}\n\nGrounded analysis of {t.split('. ', 1)[-1]} "
-                    "explains the observed artifact, its source and the "
-                    "limits of the finding. The import table is small and "
-                    "the strings are listed in the evidence appendix.")
-        body = "\n\n".join(bodies)
-        return structured_tool_response(body), {"markdown": body}
+    def _retry(section, original):
+        # The retry returns the SAME broken layout.
+        assert section == BROKEN_TITLE
+        return original
 
-    monkeypatch.setattr(pub, "llm_report_structured", fake)
-    md, audits, errors = pub.generate_technical_chunked(
-        {"sha256": SHA, "sample_path": "/x", "project_name": "p"},
-        {}, {}, {}, [], "EVIDENCE", dynamic_status={})
-    assert RQ.count_table_orphans(md) > 2, "the gate would have passed"
-    assert any(a.get("part") == "orphan-retry-result"
-               and not a.get("accepted") for a in audits), audits
-    assert any("orphan-table retry" in e for e in errors), errors
+    md2, results = pub.retry_orphan_table_sections(md, [BROKEN_TITLE], _retry)
+    assert any(not r.get("accepted") for r in results), results
+    assert RQ.count_table_orphans(md2) == RQ.count_table_orphans(md), (
+        "the original layout is kept; the gate still fails honestly")
 
 
 def test_a_healthy_report_costs_no_repair_calls(monkeypatch):

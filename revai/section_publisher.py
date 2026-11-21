@@ -1526,15 +1526,34 @@ def _strip_unverified_indicators(md: str, sha: str) -> str:
 
             for pattern in ("HKEY_", "HKLM\\", "HKCU\\"):
                 if pattern.lower() in line_to_scrub.lower():
+                    # RC-95 (re-run 16): the old `[\w\\]+` stopped at every
+                    # character outside word/backslash -- an ABBREVIATED path
+                    # (`HKLM\...\wlogon\Asynchronous`, the writer's ellipsis
+                    # compression) was never matched, so six such paths went
+                    # out as unverified IoCs on the technical_v2. The token
+                    # now runs to the usual delimiter set (space, comma,
+                    # semicolon, quotes, parens, brackets, backtick,
+                    # asterisk); the corpus check still decides -- a value
+                    # the evidence carries is kept, one it does not carry is
+                    # redacted.
                     for m in _re.finditer(
-                            r'(?:HKEY_[\w\\]+|HKLM\\[\w\\]+|HKCU\\[\w\\]+)',
+                            r'(?:HKEY_[^\s,;)"\'`\*\[\]]+'
+                            r'|HKLM\\[^\s,;)"\'`\*\[\]]+'
+                            r'|HKCU\\[^\s,;)"\'`\*\[\]]+)',
                             line_to_scrub):
                         path = m.group(0)
-                        if (path.lower().replace("\\\\", "\\")
+                        # RC-95: the wider token can swallow the sentence's
+                        # trailing punctuation ("...wlogon.") -- probe and
+                        # redact the de-punctuated form so the sentence keeps
+                        # its period.
+                        probe = path.rstrip(".,;:")
+                        if not probe:
+                            continue
+                        if (probe.lower().replace("\\\\", "\\")
                                 not in corpus
-                                and path.lower() not in corpus):
+                                and probe.lower() not in corpus):
                             line_to_scrub = line_to_scrub.replace(
-                                path, "[redacted: not in evidence]")
+                                probe, "[redacted: not in evidence]")
                             break
             for m in _domain_shape.finditer(line_to_scrub):
                 token = m.group(0)

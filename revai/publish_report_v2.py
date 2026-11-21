@@ -80,6 +80,10 @@ from v2_lib import (  # noqa: E402
     sections_containing_values,
     retry_unverified_ioc_sections,
 )
+from section_publisher import (  # noqa: E402
+    _fix_orphan_tables,
+    _strip_unverified_indicators,
+)
 from behavioural_model import (  # noqa: E402
     attach_behavioural_model,
 )
@@ -1428,6 +1432,17 @@ def generate_technical_chunked(
     # carries no orphan pair itself, so the pass can never make the report
     # worse. A section the repair also fails stays as-is and the gate still
     # fails honestly.
+    # RC-95 (re-run 16): the deterministic pre-passes run BEFORE the bounded
+    # LLM retries. The re-run 16 technical carried 6 abbreviated registry
+    # paths (`HKLM\...\wlogon\Asynchronous` -- an ellipsis abbreviation the
+    # checker honestly refuses) that the LLM unverified-IoC retry failed to
+    # remove. Same transforms the v3 path uses, same doctrine: redact and
+    # separate deterministically, never loosen the checker; the retry then
+    # only fires for whatever the transforms cannot fix (usually nothing,
+    # which also saves the retry calls).
+    markdown = _fix_orphan_tables(markdown)
+    markdown = _strip_unverified_indicators(
+        markdown, str(session.get("sha256") or ""))
     total_orphans = count_table_orphans(markdown)
     if total_orphans > 2:
         orphan_secs = []
@@ -2572,6 +2587,13 @@ def main():
         # technical report (run d9836cde failed on master_v2:orphan_tables:3).
         # One bounded repair pass, same keep-only-if-clean rule as the
         # technical path.
+        # RC-95: the same deterministic pre-passes as the technical path --
+        # the re-run 16 master carried 5 adjacent-table pairs in the WinRE
+        # dynamic block (the LLM orphan retry was retained and the gate still
+        # failed). Deterministic first; the retry fires only on the remainder.
+        master_md = _fix_orphan_tables(master_md)
+        master_md = _strip_unverified_indicators(
+            master_md, str(session.get("sha256") or ""))
         total_master_orphans = count_table_orphans(master_md)
         if total_master_orphans > 2:
             master_orphan_secs = []
