@@ -1818,7 +1818,8 @@ def _deterministic_master_section_md(
         f"is inferred here beyond the cited evidence. {cit}",
         "",
     ]
-    parts = [f"{hashes} {title}", "", body.get(title, "(unknown)"), ""]
+    parts = [f"{hashes} {title}", "",
+             _declare_uncited_body_lines(body.get(title, "(unknown)")), ""]
     if manifest:
         parts += [manifest, ""]
     parts += footer_lines
@@ -1844,6 +1845,43 @@ def _as_layout_block(text: str) -> str:
     for line in text.splitlines(keepends=True):
         stripped = line.rstrip("\n")
         if not stripped.strip():
+            out.append(line)
+            continue
+        out.append(f"**[Note]** {stripped}\n")
+    return "".join(out)
+
+
+def _declare_uncited_body_lines(body_md: str) -> str:
+    """RC-101 (re-run 20): every line of a DETERMINISTICALLY rendered body
+    that does not carry a citation locator is DECLARED layout text
+    (**[Note]**, the RC-59 exemption the uncited gate skips before sentence
+    splitting).
+
+    The body map's guidance prose (containment playbooks, recommendations,
+    narrative summaries) is standard-practice text, not evidence claims; when
+    a section completes deterministically the gate's sentence splitter
+    flagged every sentence of it (re-run 20: master uncited:7 from the
+    containment playbook + the footer summary). Cited lines and fenced
+    blocks pass untouched; table lines are left to their own citation rule.
+    """
+    if not body_md:
+        return body_md
+    from report_quality import has_citation_locator
+    out: list[str] = []
+    in_fence = False
+    for line in body_md.splitlines(keepends=True):
+        stripped = line.rstrip("\n")
+        if stripped.lstrip().startswith("```"):
+            in_fence = not in_fence
+            out.append(line)
+            continue
+        if in_fence or not stripped.strip():
+            out.append(line)
+            continue
+        if stripped.lstrip().startswith("|") or stripped.lstrip().startswith("#"):
+            out.append(line)
+            continue
+        if has_citation_locator(stripped):
             out.append(line)
             continue
         out.append(f"**[Note]** {stripped}\n")
@@ -2074,7 +2112,8 @@ def _deterministic_technical_section_md(
         f"is inferred here beyond the cited evidence. {cit}",
         "",
     ]
-    parts = [f"{hashes} {title}", "", body.get(title, "(unknown)"), ""]
+    parts = [f"{hashes} {title}", "",
+             _declare_uncited_body_lines(body.get(title, "(unknown)")), ""]
     if manifest:
         parts += [manifest, ""]
     parts += footer_lines

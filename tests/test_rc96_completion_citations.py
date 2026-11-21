@@ -91,3 +91,34 @@ def test_layout_block_passes_the_uncited_gate_shape():
         if not s:
             continue
         assert s.startswith("**[Note]**"), f"bare claim line: {s[:60]}"
+
+
+def test_declare_uncited_body_lines_cites_or_declares():
+    """RC-101: every line of a deterministic body that lacks a citation
+    locator is declared layout; cited lines and fences pass untouched."""
+    body = (
+        "Standard containment actions: 1. Isolate the host.\n"
+        "- cited row (source: capa, query_or_table: deep_dive/01-tools-raw.json, "
+        "row_or_rule: $.capa.top_rules[0])\n"
+        "```json\n{\"k\": 1}\n```\n"
+    )
+    out = PR._declare_uncited_body_lines(body)
+    in_fence = False
+    for ln in out.splitlines():
+        s = ln.strip()
+        if s.startswith("```"):
+            in_fence = not in_fence
+            continue
+        if in_fence or not s or s.startswith("- cited row"):
+            continue
+        assert s.startswith("**[Note]**"), f"uncited line not declared: {s[:60]}"
+    assert "- cited row" in out, "the cited line passes untouched"
+    assert "{\"k\": 1}" in out, "the fence passes untouched"
+
+
+def test_the_completion_bodies_run_the_declaration():
+    """Both completion builders declare their uncited body lines (the
+    re-run 20 class: the containment playbook + the footer summary)."""
+    import inspect
+    src = inspect.getsource(PR)
+    assert src.count("_declare_uncited_body_lines(") >= 2
