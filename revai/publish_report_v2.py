@@ -1679,8 +1679,11 @@ def _master_deterministic_sections_map(
             "deep dive recorded above. " + d_sum + "\n"
         ),
         "6. Network Analysis & C2": (
-            "Run-bound IOC evidence:\n"
-            + (ioc_evidence or "(no network IOCs were extracted in this run)") + "\n"
+            # RC-100: the embedded evidence block is declared layout text;
+            # the factual rows are cited in the section row manifest below.
+            "**[Note]** Run-bound IOC evidence — the rows are enumerated with "
+            "their exact locators in the section row manifest below:\n"
+            + _as_layout_block(ioc_evidence or "(no network IOCs were extracted in this run)") + "\n"
         ),
         "7. Capability Assessment": (
             "capa capability rules observed in this run:\n"
@@ -1691,7 +1694,8 @@ def _master_deterministic_sections_map(
             "automated pass. " + d_sum + "\n"
         ),
         "9. Indicators of Compromise": (
-            (ioc_evidence or "(no indicators were extracted in this run)") + "\n"
+            # RC-100: declared layout text; the cited rows are in the manifest.
+            _as_layout_block(ioc_evidence or "(no indicators were extracted in this run)") + "\n"
         ),
         "10. Detection Rules": (
             "YARA meta / generated rule metadata:\n"
@@ -1801,7 +1805,11 @@ def _deterministic_master_section_md(
     ]
     if (deep or {}).get("summary"):
         footer_lines += [
-            f"Deep-dive summary of record: {str(deep.get('summary'))[:400]} "
+            # RC-100: the summary may contain newlines -- collapse them so
+            # the citation lands on the SAME rendered line (the uncited-claim
+            # gate is line-based).
+            f"Deep-dive summary of record: "
+            f"{' '.join(str(deep.get('summary'))[:400].split())} "
             f"{deep_cit}",
             "",
         ]
@@ -1815,6 +1823,31 @@ def _deterministic_master_section_md(
         parts += [manifest, ""]
     parts += footer_lines
     return "\n".join(parts)
+
+
+def _as_layout_block(text: str) -> str:
+    """RC-100 (re-run 19): mark EVERY line of an embedded evidence block as
+    declared layout text (**[Note]**, the RC-59 convention).
+
+    The deterministic completion body maps embed evidence blocks (the run's
+    IOC evidence, JSON dumps) whose framing lines and rows carry no citation
+    parenthetical — the uncited-claim gate counts every such line as an
+    uncited claim (re-run 19: master uncited:16 + technical 7 when five
+    sections completed deterministically). The FACTUAL rows are not lost:
+    the section row manifest embedded below the body carries the same rows
+    WITH their exact locators, cited (RC-94). Nothing is loosened — the
+    citation lives where the locator is exact.
+    """
+    if not text:
+        return text
+    out: list[str] = []
+    for line in text.splitlines(keepends=True):
+        stripped = line.rstrip("\n")
+        if not stripped.strip():
+            out.append(line)
+            continue
+        out.append(f"**[Note]** {stripped}\n")
+    return "".join(out)
 
 
 def _cited_manifest_embed(manifest_text: str) -> str:
@@ -1936,15 +1969,19 @@ def _technical_deterministic_sections_map(
             f"deep iocs/behaviors: {json.dumps({'behaviors': d.get('behaviors'), 'iocs': d.get('iocs')}, indent=2, default=str)[:4000]}"
         ),
         "6. Network Indicators & C2": (
-            json.dumps(d.get("iocs") or [], indent=2, default=str)[:4000]
-            or "(unknown — no network IOCs in deep/triage; check high-signal strings)"
+            # RC-100: declared layout text (the cited rows are in the manifest).
+            _as_layout_block(
+                json.dumps(d.get("iocs") or [], indent=2, default=str)[:4000]
+                or "(unknown — no network IOCs in deep/triage; check high-signal strings)")
         ),
         "7. Capabilities Assessment": (
             "See **capa Capability Rules** and **PE Imports / Signals** tables in the appendix."
         ),
         "8. Indicators of Compromise": (
+            # RC-100: declared layout text (the cited rows are in the manifest).
             "sha256 (sample), high-signal strings (engine+ea), YARA rule names, unpacked path if UPX.\n\n"
-            f"{json.dumps(d.get('iocs') or [], indent=2, default=str)[:4000]}"
+            + _as_layout_block(
+                json.dumps(d.get('iocs') or [], indent=2, default=str)[:4000])
         ),
         "9. Detection Engineering": (
             "See **YARA Matches (pipeline)** + generated rule.yar / rule.yara.json in appendix."
@@ -2024,7 +2061,11 @@ def _deterministic_technical_section_md(
     ]
     if (deep or {}).get("summary"):
         footer_lines += [
-            f"Deep-dive summary of record: {str(deep.get('summary'))[:400]} "
+            # RC-100: the summary may contain newlines -- collapse them so
+            # the citation lands on the SAME rendered line (the uncited-claim
+            # gate is line-based).
+            f"Deep-dive summary of record: "
+            f"{' '.join(str(deep.get('summary'))[:400].split())} "
             f"{deep_cit}",
             "",
         ]

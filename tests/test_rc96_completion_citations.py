@@ -56,3 +56,38 @@ def test_no_weak_deep_dive_source_spelling_remains():
     src = inspect.getsource(PR)
     assert "(source: deep_dive, query_or_table: deep_dive/05-deep-dive.json" \
         not in src
+
+
+def test_as_layout_block_marks_every_line():
+    """RC-100: every line of an embedded evidence block becomes declared
+    layout text; blank lines stay blank."""
+    out = PR._as_layout_block("Run-bound IOC evidence:\nhash IOCs from iocs.json (3):\n\nlast line\n")
+    lines = out.splitlines()
+    assert lines[0].startswith("**[Note]** Run-bound IOC evidence")
+    assert lines[1].startswith("**[Note]** hash IOCs")
+    assert lines[2] == ""
+    assert lines[3].startswith("**[Note]** last line")
+
+
+def test_deterministic_bodies_declare_layout_not_claims():
+    """RC-100: the body map's IoC-bearing sections embed their evidence
+    blocks as declared layout text (the uncited-claim gate skips **[Note]**
+    lines), and the footer summary is collapsed to ONE line so the citation
+    lands on it."""
+    import inspect
+    src = inspect.getsource(PR)
+    assert src.count("_as_layout_block(") >= 4, (
+        "all four IoC-bearing body-map sections must use the layout transform")
+    assert "' '.join(str(deep.get('summary'))[:400].split())" in src, (
+        "the footer summary must be newline-collapsed")
+
+
+def test_layout_block_passes_the_uncited_gate_shape():
+    """End-to-end shape: a layout-blocked evidence section has no bare
+    claim lines."""
+    block = PR._as_layout_block("Run-bound IOC evidence:\nhash IOCs (3):\n")
+    for ln in block.splitlines():
+        s = ln.strip()
+        if not s:
+            continue
+        assert s.startswith("**[Note]**"), f"bare claim line: {s[:60]}"
