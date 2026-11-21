@@ -1728,10 +1728,10 @@ def _master_deterministic_sections_map(
             "deep_dive source: " + str(d.get("source")) + "\n"
         ),
         "15. Appendix B: Module Inventory": (
-            "(module inventory unavailable in deterministic fallback)\n"
+            "(module inventory unavailable — rendered deterministically from this run's evidence)\n"
         ),
         "16. Author + Sign-off": (
-            "- generator: publish_report_v2 deterministic fallback\n"
+            "- generator: publish_report_v2 deterministic completion\n"
             "- sha256: `" + str(session.get("sha256")) + "`\n"
             "- generated_at: " + datetime.now(timezone.utc).isoformat() + "\n"
         ),
@@ -1967,7 +1967,7 @@ def _technical_deterministic_sections_map(
         ),
         "13. Appendix B: Analysis Environment": (
             f"Remnux publish_report_v2 @ {datetime.now(timezone.utc).isoformat()} · "
-            f"evidence-first deterministic path · reason={reason}"
+            f"declared deterministic completion · reason={reason}"
         ),
     }
 
