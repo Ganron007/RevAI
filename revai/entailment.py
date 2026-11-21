@@ -699,7 +699,11 @@ def _source_artifact_candidates(source: str, query: str | None,
     out: list[Path] = []
 
     def _add(rel: str) -> None:
-        if rel in _PRIMARY_EVIDENCE_ARTIFACTS:
+        # The exact-path form accepts BOTH the primary set and the wider
+        # evidence set (the RC-52 semantics this union refactor inherited) --
+        # `deep_dive/05-deep-dive.json` is evidence-only and the completion
+        # footer cites it (RC-96 regression pin).
+        if rel in _PRIMARY_EVIDENCE_ARTIFACTS or rel in _EVIDENCE_ARTIFACTS:
             path = root / rel
             if path.is_file() and path not in out:
                 out.append(path)

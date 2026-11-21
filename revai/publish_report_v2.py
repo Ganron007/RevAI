@@ -1592,8 +1592,12 @@ def _master_deterministic_sections_map(
     v_fam = "(source: verdict.json, query_or_table: verdict.json, row_or_rule: $.family_guess)"
     v_agr = "(source: verdict.json, query_or_table: verdict.json, row_or_rule: $.agreement)"
     v_score = "(source: verdict.json, query_or_table: verdict.json, row_or_rule: $.score)"
-    d_sum = "(source: deep_dive, query_or_table: deep_dive/05-deep-dive.json, row_or_rule: $.summary)"
-    d_conf = "(source: deep_dive, query_or_table: deep_dive/05-deep-dive.json, row_or_rule: $.confidence)"
+    # RC-96: the exact artifact path as the source -- `deep_dive` alone is
+    # not routable and the citation fails (uncited claims).
+    d_sum = ("(source: deep_dive/05-deep-dive.json, "
+             "query_or_table: deep_dive/05-deep-dive.json, row_or_rule: $.summary)")
+    d_conf = ("(source: deep_dive/05-deep-dive.json, "
+              "query_or_table: deep_dive/05-deep-dive.json, row_or_rule: $.confidence)")
     v_ke = "(source: verdict.json, query_or_table: verdict.json, row_or_rule: $.key_evidence)"
     capa_arr = "(source: capa, query_or_table: quick_scan/00-tools-raw.json, row_or_rule: $.capa.top_rules)"
 
@@ -1772,7 +1776,13 @@ def _deterministic_master_section_md(
     # passes the citation gates the same way the deterministic sections 5/8 do.
     cit = ("(source: verdict.json, query_or_table: verdict.json, "
            "row_or_rule: $.verdict)")
-    deep_cit = ("(source: deep_dive, query_or_table: deep_dive/05-deep-dive.json, "
+    # RC-96 (re-run 17): the footer's citation must use the EXACT artifact
+    # path as the source -- `source: deep_dive` is not an alias the resolver
+    # can route, so the footer line came back uncited (the technical's
+    # uncited_claims:2). The exact-path form resolves against the evidence
+    # set.
+    deep_cit = ("(source: deep_dive/05-deep-dive.json, "
+                "query_or_table: deep_dive/05-deep-dive.json, "
                 "row_or_rule: $.summary)")
     footer_lines = [
         "**Deterministic completion.** The LLM authoring path for this "
@@ -1934,7 +1944,11 @@ def _technical_deterministic_sections_map(
             "See **YARA Matches (pipeline)** + generated rule.yar / rule.yara.json in appendix."
         ),
         "10. MITRE ATT&CK Mapping": (
-            "Derived from capa `attack` fields where present — see appendix tables."
+            # RC-96: a derivation statement without a citation is an uncited
+            # claim; cite the capa rows the mapping derives from.
+            "Derived from capa `attack` fields where present "
+            "(source: capa, query_or_table: deep_dive/01-tools-raw.json, "
+            "row_or_rule: $.capa.top_rules) — see appendix tables."
         ),
         "11. What We Don't Know": (
             f"{reason}\n\n"
@@ -1985,7 +1999,13 @@ def _deterministic_technical_section_md(
         str(session.get("sha256") or ""), title, instructions=False))
     cit = ("(source: verdict.json, query_or_table: verdict.json, "
            "row_or_rule: $.verdict)")
-    deep_cit = ("(source: deep_dive, query_or_table: deep_dive/05-deep-dive.json, "
+    # RC-96 (re-run 17): the footer's citation must use the EXACT artifact
+    # path as the source -- `source: deep_dive` is not an alias the resolver
+    # can route, so the footer line came back uncited (the technical's
+    # uncited_claims:2). The exact-path form resolves against the evidence
+    # set.
+    deep_cit = ("(source: deep_dive/05-deep-dive.json, "
+                "query_or_table: deep_dive/05-deep-dive.json, "
                 "row_or_rule: $.summary)")
     footer_lines = [
         "**Deterministic completion.** The LLM authoring path for this "
