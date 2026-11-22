@@ -86,6 +86,12 @@ def _locals_of(fn: ast.FunctionDef) -> set[str]:
     first version of this scan produced a page of false positives.
     """
     out: set[str] = {a.arg for a in fn.args.args}
+    # Keyword-only params (`*, x=...`) and the varargs pair are bound names
+    # too -- omitting them is a false positive once nested scopes are walked.
+    out.update(a.arg for a in fn.args.kwonlyargs)
+    for a in (fn.args.vararg, fn.args.kwarg):
+        if a is not None:
+            out.add(a.arg)
     stack = list(getattr(fn, "body", None) or [])
     while stack:
         n = stack.pop()
@@ -152,22 +158,38 @@ def test_no_entry_point_reads_an_undefined_name(relpath):
     mod = _module_names(path)
     builtins_ = _builtin_names()
     problems: list[str] = []
+
+    def _scan(body: list, bound: set[str], where: str) -> None:
+        """Walk one scope. RC-106 (re-run 26): a NESTED function closes over
+        the enclosing scope, so it must be walked with the enclosing names
+        PLUS its own params/locals -- not skipped. Skipping it is how the
+        re-run 26 NameError slipped through: `main._retry_master_ioc` read
+        `source_evidence_for`, a name bound nowhere, and the guard's
+        `continue` on nested defs never looked inside."""
+        stack = list(body)
+        while stack:
+            sub = stack.pop()
+            if isinstance(sub, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                _scan(sub.body, bound | _locals_of(sub),
+                      f"{where}.{sub.name}")
+                continue
+            if isinstance(sub, ast.ClassDef):
+                _scan(sub.body, bound | _locals_of(sub),
+                      f"{where}.{sub.name}")
+                continue
+            if (isinstance(sub, ast.Name) and isinstance(sub.ctx, ast.Load)
+                    and sub.id not in bound
+                    and sub.id not in ("self", "cls")):
+                problems.append(f"{relpath}:{sub.lineno} `{where}` reads "
+                                f"undefined name `{sub.id}`")
+            stack.extend(ast.iter_child_nodes(sub))
+
     for node in ast.walk(tree):
         if not isinstance(node, ast.FunctionDef):
             continue
         if node.name not in ("main", "_cli", "run"):
             continue
-        bound = _locals_of(node) | mod | builtins_
-        stack = list(getattr(node, "body", None) or [])
-        while stack:
-            sub = stack.pop()
-            if isinstance(sub, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
-                continue  # a nested scope's names are not ours
-            if (isinstance(sub, ast.Name) and isinstance(sub.ctx, ast.Load)
-                    and sub.id not in bound and sub.id not in ("self", "cls")):
-                problems.append(f"{relpath}:{sub.lineno} `{node.name}` reads "
-                                f"undefined name `{sub.id}`")
-            stack.extend(ast.iter_child_nodes(sub))
+        _scan(node.body, _locals_of(node) | mod | builtins_, node.name)
     assert not problems, "undefined names in an entry point:\n  " + "\n  ".join(problems)
 
 

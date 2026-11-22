@@ -1534,7 +1534,7 @@ def generate_technical_chunked(
                 prompt = build_prompt_technical(
                     session, verdict, deep, yara_meta, audit, technical_evidence,
                     recovery_evidence, final_verdict,
-                    source_evidence=(source_evidence_for([section]) if source_evidence_for else source_evidence),
+                    source_evidence=_sliced_source_evidence([section]),
                 sections=[section],
                     retry_instruction=instruction,
                 )
@@ -2766,7 +2766,7 @@ def main():
                     dynamic_evidence=dynamic_evidence,
                     ioc_evidence=ioc_evidence,
                     ti_evidence=ti_evidence,
-                    source_evidence=(source_evidence_for([section]) if source_evidence_for else source_evidence),
+                    source_evidence=_sliced_source_evidence([section]),
                 sections=[section],
                     retry_instruction=instruction,
                 )
@@ -2827,7 +2827,7 @@ def main():
                     dynamic_evidence=dynamic_evidence,
                     ioc_evidence=ioc_evidence,
                     ti_evidence=ti_evidence,
-                    source_evidence=(source_evidence_for([section]) if source_evidence_for else source_evidence),
+                    source_evidence=_sliced_source_evidence([section]),
                 sections=[section],
                     retry_instruction=instruction,
                 )
@@ -3379,7 +3379,7 @@ def main():
                         session, verdict, deep, yara_meta, audit,
                         tech_evidence_for_prompt, recovery_evidence,
                         report.get("final_verdict"),
-                        source_evidence=(source_evidence_for([section]) if source_evidence_for else source_evidence),
+                        source_evidence=_sliced_source_evidence([section]),
                 sections=[section],
                         retry_instruction=instruction,
                     )
@@ -3641,6 +3641,20 @@ def main():
             technical_report, tech_md, TECHNICAL_REPORT_SECTIONS
         )
         technical_report["markdown"] = tech_md
+        # RC-101 (re-run 20) gave the MASTER its FINAL deterministic
+        # pre-passes after ALL repair passes; the technical never got them.
+        # RC-95's pass runs per-chunk INSIDE generate_technical_chunked,
+        # before the assembly-level transforms that follow it --
+        # attach_what_we_dont_know, ensure_verdict_panel, the model-name and
+        # credential redactions -- any of which can place two tables back to
+        # back or leave an uncorroborated indicator in place. Re-run 26:
+        # technical_v2 orphan_tables:6 while the master (which HAS the final
+        # pass) finished clean at 0. Same rationale, same idempotent passes,
+        # run at the same point in the flow: right before the gate reads the
+        # report.
+        tech_md = _fix_orphan_tables(tech_md)
+        tech_md = _strip_unverified_indicators(
+            tech_md, str(session.get("sha256") or ""))
         q_tech = evaluate_report_markdown(
             tech_md,
             required_sections=TECHNICAL_REPORT_SECTIONS,

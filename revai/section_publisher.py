@@ -1569,7 +1569,14 @@ def _strip_unverified_indicators(md: str, sha: str) -> str:
 
             line_to_scrub = _re.sub(r'\(source:\s*[^)]+\)', _save_cit, line)
 
-            for pattern in ("HKEY_", "HKLM\\", "HKCU\\"):
+            # RC-103 (re-run 22) added HKCR to the TOKEN regex below but not
+            # to this trigger tuple, so a line carrying ONLY HKCR paths never
+            # entered the registry branch at all -- re-run 26's master_v2
+            # shipped `HKCR\WOW6432Node\CLSID\{...}\CurVer` (a subkey no
+            # evidence artifact carries) as unverified_iocs:1 because the
+            # scrub never probed it. The trigger must name every hive the
+            # token regex can match.
+            for pattern in ("HKEY_", "HKLM\\", "HKCU\\", "HKCR\\"):
                 if pattern.lower() in line_to_scrub.lower():
                     # RC-95 (re-run 16): the old `[\w\\]+` stopped at every
                     # character outside word/backslash -- an ABBREVIATED path
@@ -1595,9 +1602,26 @@ def _strip_unverified_indicators(md: str, sha: str) -> str:
                         probe = path.rstrip(".,;:")
                         if not probe:
                             continue
-                        if (probe.lower().replace("\\\\", "\\")
-                                not in corpus
-                                and probe.lower() not in corpus):
+                        # RC-106 (re-run 26): the corpus carries the raw tool
+                        # artifacts VERBATIM, and JSON-escaped registry paths
+                        # store each separator as TWO characters
+                        # (`HKCR\\WOW6432Node\\CLSID\\{...}` in
+                        # deep_dive/02-dynamic-pack.json). A report quoting the
+                        # same observed path with single separators -- the only
+                        # correct prose spelling -- then failed the probe and
+                        # was redacted as "not in evidence" (re-run 26's
+                        # technical: a genuinely procmon-observed Winlogon
+                        # path replaced by the redaction marker). Probe the
+                        # escaped spelling too: the checker's
+                        # `evidence_json_plain` unescapes for exactly this
+                        # class, and the scrub must agree with it. A path in
+                        # NEITHER spelling is still redacted -- the #42
+                        # fabrication class is untouched.
+                        probe_l = probe.lower()
+                        escaped_l = probe_l.replace("\\", "\\\\")
+                        if (probe_l.replace("\\\\", "\\") not in corpus
+                                and probe_l not in corpus
+                                and escaped_l not in corpus):
                             line_to_scrub = line_to_scrub.replace(
                                 probe, "[redacted: not in evidence]")
                             break

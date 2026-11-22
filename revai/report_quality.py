@@ -2539,6 +2539,21 @@ def verify_claimed_iocs(markdown: str, evidence_text: str, *,
             # whole class: a real indicator must not be able to fail
             # verification on typography alone.
             raw = m.group(0).strip().strip(".,;:()[]{}'\"`*_\\")
+            # RC-106 (re-run 26): a registry path that names a COM CLSID ends
+            # with the GUID's closing brace, and the strip set above removes
+            # it -- `HKCR\CLSID\{310DE29C-0AD3-4A43-A2DB-221F1160CACB}` was
+            # probed as `...221F1160CACB`, which matches neither the corpus's
+            # escaped spelling nor its segment form, so a real observation
+            # shipped as unverified_iocs:1 on the technical_v2. Restore the
+            # brace when the match's own tail (prose punctuation removed)
+            # ends with one and the token is left unbalanced: the strip
+            # exists for trailing PROSE, and a brace that closes a GUID is
+            # part of the path (RC-88: a registry path is atomic). A writer
+            # who truncated mid-GUID has no `}` anywhere, so the
+            # abbreviated-path class is untouched.
+            _tail = m.group(0).rstrip().rstrip(".,;:()[]'\"`*_\\")
+            if (_tail.endswith("}") and raw.count("{") > raw.count("}")):
+                raw += "}"
             if len(raw) < 4:
                 continue
             if kind == "domain" and not _looks_like_domain(raw):
