@@ -1625,7 +1625,12 @@ def _strip_unverified_indicators(md: str, sha: str) -> str:
                             line_to_scrub = line_to_scrub.replace(
                                 probe, "[redacted: not in evidence]")
                             break
-            for m in _domain_shape.finditer(line_to_scrub):
+            # RC-107 (re-run 27): materialise the matches on the pre-scrub
+            # snapshot. Replacing during a lazy finditer leaves later match
+            # positions stale, and the JSONPath check below reads the
+            # character AFTER each match.
+            _domain_snapshot = line_to_scrub
+            for m in list(_domain_shape.finditer(_domain_snapshot)):
                 token = m.group(0)
                 if "." not in token:
                     continue
@@ -1633,6 +1638,19 @@ def _strip_unverified_indicators(md: str, sha: str) -> str:
                 if any(tok_lower.endswith(ext) for ext in _NON_DOMAIN_EXTS):
                     continue
                 if token.startswith("$") or "/" in token or "\\" in token:
+                    continue
+                # RC-107 (re-run 27): a domain-shaped token immediately
+                # followed by a JSONPath bracket segment is an artifact
+                # PATH, not a domain -- the writer's own row labels render
+                # `[malcat.views.strings[8]]` / `[payload_feedback.…[8]]`
+                # (and the regex can even match the substring after an
+                # underscore, `feedback.views.strings`). The dotted spelling
+                # is never a literal in the raw-JSON corpus, so the probe
+                # failed and the scrub mangled three evidence rows into
+                # `[[redacted: not in evidence][8]]`. Same doctrine as the
+                # RC-62 `$`-prefix and separator exemptions: a locator is
+                # not an indicator.
+                if _domain_snapshot[m.end():m.end() + 1] == "[":
                     continue
                 if not _in_corpus(token):
                     line_to_scrub = line_to_scrub.replace(

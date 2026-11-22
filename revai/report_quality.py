@@ -2075,6 +2075,20 @@ def _split_report_sentences(text: str) -> list[str]:
                 continue
             while punctuation_end < len(value) and value[punctuation_end] == ".":
                 punctuation_end += 1
+            # RC-107 (re-run 27): a run of TWO or more periods is an
+            # ellipsis -- malcat truncates its string summaries with ".."
+            # ("This program mus.."), and treating that as a sentence end
+            # orphaned the row-label fragment (`- [malcat.views.strings[8]]
+            # ea=80, summary=This program mus..`) from the citation that
+            # follows it on the same line: three uncited claims on the
+            # technical_v2. The docstring's own rule -- evidence locators
+            # quote tool output containing periods OR ELLIPSES -- applied to
+            # citation-internal punctuation only. An ellipsis is not a
+            # sentence terminator; the citation requirement is unchanged
+            # (the whole sentence is still checked).
+            if punctuation_end - index >= 2:
+                index = punctuation_end
+                continue
 
         next_start = punctuation_end
         while next_start < len(value) and value[next_start].isspace():
