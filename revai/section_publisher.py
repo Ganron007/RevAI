@@ -1539,7 +1539,8 @@ def _strip_unverified_indicators(md: str, sha: str) -> str:
                     for m in _re.finditer(
                             r'(?:HKEY_[^\s,;)"\'`\*\[\]]+'
                             r'|HKLM\\[^\s,;)"\'`\*\[\]]+'
-                            r'|HKCU\\[^\s,;)"\'`\*\[\]]+)',
+                            r'|HKCU\\[^\s,;)"\'`\*\[\]]+'
+                            r'|HKCR\\[^\s,;)"\'`\*\[\]]+)',
                             line_to_scrub):
                         path = m.group(0)
                         # RC-95: the wider token can swallow the sentence's

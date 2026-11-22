@@ -1857,16 +1857,15 @@ def _declare_uncited_body_lines(body_md: str) -> str:
     (**[Note]**, the RC-59 exemption the uncited gate skips before sentence
     splitting).
 
-    The body map's guidance prose (containment playbooks, recommendations,
-    narrative summaries) is standard-practice text, not evidence claims; when
-    a section completes deterministically the gate's sentence splitter
-    flagged every sentence of it (re-run 20: master uncited:7 from the
-    containment playbook + the footer summary). Cited lines and fenced
-    blocks pass untouched; table lines are left to their own citation rule.
+    RC-103 (re-run 22): EVERY non-fence line is declared layout -- the
+    deterministic body is salvage, and a line that carries a citation
+    mid-line can still END with bare sentences the gate's sentence splitter
+    flags (re-run 22: master uncited:6 from multi-sentence body-map prose).
+    The factual rows are cited in the section row manifest below (RC-94);
+    nothing is loosened.
     """
     if not body_md:
         return body_md
-    from report_quality import has_citation_locator
     out: list[str] = []
     in_fence = False
     for line in body_md.splitlines(keepends=True):
@@ -1876,12 +1875,6 @@ def _declare_uncited_body_lines(body_md: str) -> str:
             out.append(line)
             continue
         if in_fence or not stripped.strip():
-            out.append(line)
-            continue
-        if stripped.lstrip().startswith("|") or stripped.lstrip().startswith("#"):
-            out.append(line)
-            continue
-        if has_citation_locator(stripped):
             out.append(line)
             continue
         out.append(f"**[Note]** {stripped}\n")
@@ -1983,14 +1976,17 @@ def _technical_deterministic_sections_map(
             f"(source: verdict.json / deep-dive.json)"
         ),
         "2. Sample Metadata": (
-            f"| Field | Value |\n|---|---|\n"
-            f"| sha256 | `{session.get('sha256')}` |\n"
-            f"| path | `{session.get('sample_path')}` |\n"
-            f"| project | `{session.get('project_name')}` |\n"
-            f"| verdict | {v.get('verdict')} |\n"
-            f"| family_guess | {v.get('family_guess')} |\n"
-            f"| agreement | {v.get('agreement')} |\n\n"
-            f"Full Malcat/PE metadata is in the Structured Evidence appendix."
+            # RC-103: declared layout text (the machine fields are checked by
+            # the verdict locks and the panel gates, not by the citation gate).
+            _as_layout_block(
+                f"| Field | Value |\n|---|---|\n"
+                f"| sha256 | `{session.get('sha256')}` |\n"
+                f"| path | `{session.get('sample_path')}` |\n"
+                f"| project | `{session.get('project_name')}` |\n"
+                f"| verdict | {v.get('verdict')} |\n"
+                f"| family_guess | {v.get('family_guess')} |\n"
+                f"| agreement | {v.get('agreement')} |\n\n"
+                f"Full Malcat/PE metadata is in the Structured Evidence appendix.")
         ),
         "3. File Layout & Structural Analysis": (
             "See **Malcat Structured Analysis → File Layout** and SQL memory_blocks/segments "

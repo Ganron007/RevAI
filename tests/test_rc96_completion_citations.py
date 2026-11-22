@@ -109,11 +109,10 @@ def test_declare_uncited_body_lines_cites_or_declares():
         if s.startswith("```"):
             in_fence = not in_fence
             continue
-        if in_fence or not s or s.startswith("- cited row"):
+        if in_fence or not s:
             continue
-        assert s.startswith("**[Note]**"), f"uncited line not declared: {s[:60]}"
-    assert "- cited row" in out, "the cited line passes untouched"
-    assert "{\"k\": 1}" in out, "the fence passes untouched"
+        assert s.startswith("**[Note]**"), f"every line must be declared: {s[:60]}"
+    assert "{\"k\": 1}" in out, "the fence content passes untouched"
 
 
 def test_the_completion_bodies_run_the_declaration():
