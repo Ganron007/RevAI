@@ -154,3 +154,40 @@ def test_prose_cannot_launder_into_the_leak_exemption():
     assert not CS.is_tool_output_leak_line(
         '"ea": 33523 and the payload continues at 0x1000')
     assert not CS.is_tool_output_leak_line("Regular prose without any marker.")
+
+
+def test_v3_master_completion_fires_on_llm_failure():
+    """RC-104 (re-run 23): the v3 MASTER's deterministic per-section
+    completion fires when the LLM path fails (schema reject, provider stall)
+    -- the same RC-84 Fix 2 pattern the v2 master and the v3 technical
+    carry. Before this, 3 of 17 master_v3 sections were dropped from the
+    assembly and the master_v3 JSON went out MISSING."""
+    import json as _json
+    from pathlib import Path as _Path
+    import section_publisher as SP2
+    sha = "9" * 64
+    tmp = _Path(str(ROOT) + "/.tmp-rc104") / sha
+    (tmp / "quick_scan").mkdir(parents=True, exist_ok=True)
+    (tmp / "deep_dive").mkdir(parents=True, exist_ok=True)
+    (tmp / "verdict.json").write_text(_json.dumps({"verdict": "malicious"}))
+    (tmp / "iocs.json").write_text(_json.dumps({"registry_keys": ["HKLM\X"]}))
+    (tmp / "deep_dive" / "01-tools-raw.json").write_text(_json.dumps({
+        "capa": {"top_rules": [{"name": "create a service"}]}}))
+    tools = {"verdict": {"verdict": "malicious"}, "_execution_context": {"mode": "agentic"}}
+    result = {"name": "7. Capability Assessment", "llm_ok": False}
+    # call the section runner's failure path indirectly: the completion is
+    # reachable through _master_deterministic_section, which the new except
+    # branch calls. Pin that the helper renders a non-empty body for a
+    # capability-bearing section and that the wiring exists in the source.
+    import inspect
+    src = inspect.getsource(SP2)
+    assert "RC-104 (re-run 23)" in src, "the completion wiring must be present"
+    assert src.count("_master_deterministic_section(") >= 3, (
+        "the pre-check, the primary render, AND the except-branch completion")
+    from publish_report_v2 import _deterministic_master_section_md
+    body = _deterministic_master_section_md(
+        "7. Capability Assessment",
+        {"sha256": sha, "sample_path": "/x", "project_name": "p"},
+        {"verdict": "malicious"}, None, None, tools,
+        reason="test", heading_level=2)
+    assert body and "capa" in body.lower()

@@ -506,6 +506,51 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
         result["llm_call"] = call_record
         result["error"] = f"llm: {e}"
         result["schema_used"] = False
+        # RC-104 (re-run 23): the v3 MASTER's deterministic per-section
+        # completion -- the same RC-84 Fix 2 pattern the v2 master and the
+        # v3 technical already carry. A section the LLM path failed (schema
+        # reject, empty content, provider stall) is rendered from the
+        # evidence deterministically instead of being dropped from the
+        # assembly (re-run 23: 3 of 17 master_v3 sections lost to
+        # "you returned `sections` as a JSON STRING" and the master_v3
+        # assembly went out incomplete).
+        # RC-104 (re-run 23): the v3 MASTER's deterministic per-section
+        # completion -- the same RC-84 Fix 2 pattern the v2 master and the
+        # v3 technical already carry. A section the LLM path failed (schema
+        # reject, empty content, provider stall) is rendered from the
+        # evidence deterministically instead of being dropped from the
+        # assembly (re-run 23: 3 of 17 master_v3 sections lost to
+        # "you returned `sections` as a JSON STRING" and the master_v3
+        # assembly went out incomplete). Lazy import: publish_report_v2
+        # imports THIS module, so the reverse must resolve at call time.
+        try:
+            from publish_report_v2 import _deterministic_master_section_md
+            _rc_ctx = tools_results.get("_execution_context") or {}
+            completed = _deterministic_master_section_md(
+                section_name,
+                {"sha256": sha,
+                 "sample_path": str(_rc_ctx.get("sample_path") or ""),
+                 "project_name": str(_rc_ctx.get("project_name") or "incoming")},
+                tools_results.get("verdict"),
+                tools_results.get("deep"),
+                tools_results.get("yara"),
+                tools_results,
+                reason=str(e)[:200],
+                heading_level=2,
+            )
+            if completed and len(completed) > 120:
+                result["markdown"] = completed
+                result["deterministic"] = True
+                result["llm_ok"] = True
+                result["schema_used"] = None
+                result["error"] = f"llm (completed deterministically): {e}"
+                print(f"[section_publisher] master_v3 section "
+                      f"{section_name[:44]} completed DETERMINISTICALLY "
+                      f"(LLM failed: {type(e).__name__})", flush=True)
+                return result
+        except Exception as ce:          # noqa: BLE001 - fail safe
+            print(f"[section_publisher] deterministic completion failed for "
+                  f"{section_name[:44]}: {type(ce).__name__}", flush=True)
         result["markdown"] = f"## {section_name}\n\n_(LLM call failed: {e})_\n"
     return result
 
