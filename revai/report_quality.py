@@ -1585,7 +1585,16 @@ _CLAIM_URL_RE = re.compile(r"(?i)\b(?:hxxps?|https?|ftp)(?:\[:\]|:)?//[^\s\"'<>(
 # not manufacture the partial value the scrubber would then mangle.
 _CLAIM_IP_RE = re.compile(r"\b(?:\d{1,3}(?:\[\.\]|\.)){3}\d{1,3}(?!(?:\[\.\]|\.)\d)\b")
 _CLAIM_DOMAIN_RE = re.compile(
-    r"(?<![\w.-])(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\[\.\]|\.))+[a-z]{2,}(?![\w.-])",
+    # RC-109 (re-run 29): a domain-shaped token INSIDE a file path is a
+    # path segment, not a domain claim -- the writer restated the procmon
+    # dll_sideload row `C:\Windows\Microsoft.NET\Framework64\v4.0.30319\
+    # mscoreei.dll` and the old lookbehind (`(?<![\w.-])`) did not reject a
+    # separator, so `Microsoft.NET` was extracted and flagged as an
+    # unverified domain while the evidence carries the full path verbatim.
+    # The lookbehind now rejects a path separator before the token, and the
+    # lookahead a backslash after it (a forward slash stays permitted so
+    # `evil.com/gate.php` still extracts as a domain with a URL path).
+    r"(?<![\w.\-/\\)])(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\[\.\]|\.))+[a-z]{2,}(?![\w.\-\\])",
     re.IGNORECASE)
 _CLAIM_HASH_RE = re.compile(r"\b[a-fA-F0-9]{32,64}\b")
 #: The hive spellings a registry path may start with. Shared by the claim

@@ -1537,8 +1537,15 @@ def _strip_unverified_indicators(md: str, sha: str) -> str:
     # unresolved citations. Citations are masked out before scrubbing and
     # restored after; non-domain file extensions and JSONPaths are spared.
     import re as _re
+    # RC-109 (re-run 29): case-insensitive, like the checker's
+    # `_CLAIM_DOMAIN_RE`. The lowercase-only pattern let an UPPERCASE
+    # fabricated domain (`Evil.Example.COM` in prose) escape the scrub
+    # entirely while the case-insensitive checker flagged it -- the two
+    # sides must agree on what a domain-shaped token is. The corpus probe
+    # (`_in_corpus`) already lowercases both sides, so nothing else moves.
     _domain_shape = _re.compile(
-        r"\b(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}\b")
+        r"\b(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}\b",
+        _re.IGNORECASE)
     _url_shape = _re.compile(
         r"\bhttps?://[^\s\"'<>()\[\]{}\\]+", _re.IGNORECASE)
     _NON_DOMAIN_EXTS = frozenset({
@@ -1638,6 +1645,22 @@ def _strip_unverified_indicators(md: str, sha: str) -> str:
                 if any(tok_lower.endswith(ext) for ext in _NON_DOMAIN_EXTS):
                     continue
                 if token.startswith("$") or "/" in token or "\\" in token:
+                    continue
+                # RC-109 (re-run 29): a domain-shaped token INSIDE a file
+                # path is a path segment, not a domain -- the same rule the
+                # checker's `_CLAIM_DOMAIN_RE` lookbehind now applies. The
+                # writer restated the procmon dll_sideload row
+                # `C:\Windows\Microsoft.NET\Framework64\v4.0.30319\
+                # mscoreei.dll` and the scrub (case-insensitive as of
+                # RC-109) would otherwise probe `Microsoft.NET` on its own.
+                # A separator BEFORE the token or a backslash AFTER it means
+                # the token is a path segment; a forward slash after the
+                # token stays permitted (`evil.com/gate.php` is a domain
+                # with a URL path, not a path segment).
+                _before = _domain_snapshot[max(0, m.start() - 1):
+                                          m.start()]
+                _after = _domain_snapshot[m.end():m.end() + 1]
+                if _before in ("\\", "/") or _after == "\\":
                     continue
                 # RC-107 (re-run 27): a domain-shaped token immediately
                 # followed by a JSONPath bracket segment is an artifact
