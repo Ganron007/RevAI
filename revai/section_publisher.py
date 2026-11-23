@@ -1955,6 +1955,18 @@ def run_section_based_publish(sha: str, tools_results: dict,
         report_markdown, master_ioc_results = retry_unverified_ioc_sections(
             report_markdown, m_secs, m_unverified, _retry_master_ioc
         )
+        # RC-108 (re-run 28): the v3 MASTER's FINAL deterministic pre-passes
+        # after ALL repair passes -- the same RC-101 (v2 master) / RC-106d
+        # (v2 technical) pattern. The assembly ran them once (RC-40, line
+        # ~1439), but the unverified-IoC repair above REGENERATES sections,
+        # and a regenerated section can place two tables back to back or
+        # carry an uncorroborated indicator -- the re-evaluation below then
+        # reads the un-pre-passed markdown. Re-run 28: master_v3
+        # orphan_tables:3 with the master v2 clean at 0, the identical
+        # finalize-order gap on the third path. Idempotent; a repair that
+        # changed nothing leaves the markdown byte-identical.
+        report_markdown = _fix_orphan_tables(report_markdown)
+        report_markdown = _strip_unverified_indicators(report_markdown, sha)
         for attempt in master_ioc_results:
             print(f"[section_publisher] master unverified-IoC repair "
                   f"{attempt['section'][:44]}: "
