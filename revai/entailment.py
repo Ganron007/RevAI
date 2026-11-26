@@ -1127,10 +1127,9 @@ def _resolve_json_path(value: Any, expression: str,
                 "device_writes", "system_loads", "drops", "anti_emulation"
             }:
                 tokens = ["dynamic_stage", "findings", "findings"] + tokens[2:]
-        elif (first == "procmon_sample_event_rows_selected"
+        elif (first in ("procmon_sample_event_rows_selected", "procmon_sample_event_rows")
               and len(tokens) > 1
               and isinstance(tokens[1], (int, tuple))
-              and isinstance(value.get("procmon_sample_event_rows_selected"), int)
               and isinstance(value.get("procmon_sample_events"), list)):
             tokens = ["procmon_sample_events"] + tokens[1:]
         elif (first == "procmon_summary"
@@ -1211,6 +1210,15 @@ def _resolve_json_path(value: Any, expression: str,
     if (len(tokens) >= 2 and tokens[0] == "anti_analysis"
             and tokens[1] == "signals_summary"):
         tokens[1] = "summary"
+    if (len(tokens) >= 3
+            and tokens[:3] == ["status", "frida_runtime", "process_coverage_complete"]
+            and isinstance(value, dict)):
+        _fr = (value.get("status") or {}).get("frida_runtime")
+        if (isinstance(_fr, dict)
+                and "process_coverage_complete" not in _fr
+                and isinstance(_fr.get("hook_coverage"), dict)
+                and "process_coverage_complete" in _fr["hook_coverage"]):
+            tokens = ["status", "frida_runtime", "hook_coverage", "process_coverage_complete"] + tokens[3:]
     current = value
     if source_branch and tokens and tokens[0] == source_branch:
         tokens = tokens[1:]

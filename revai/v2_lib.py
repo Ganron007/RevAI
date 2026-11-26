@@ -1302,6 +1302,7 @@ def _verdict_match_is_metalinguistic(body: str, match_start: int) -> bool:
     # it is citing that specific tool's output, not stating the report's verdict.
     if _re2.search(
         r"\b(?:tool|engine|source|artifact|sub-?pipeline|stage|classifier"
+        r"|dynamic|static|emulation|winre|frida"
         r"|raw(?:\s+(?:automated|publish[- ]?model|pipeline(?:[- ]selected)?|upstream))?"
         r"|uncalibrated)\s*$",
         prefix.rstrip(),

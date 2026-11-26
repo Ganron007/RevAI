@@ -177,7 +177,8 @@ def test_raw_automated_verdict_metalinguistic_and_calibration_note():
         "<!-- execution: sha256=" + SHA + " -->\n"
         "# REPORT-TECHNICAL-v3\n\n"
         "The raw automated verdict is 'malicious', but the pipeline verdict control "
-        "locks the report label to 'suspicious'.\n\n"
+        "locks the report label to 'suspicious'. The dynamic verdict is unknown with "
+        "low confidence.\n\n"
         "| Field | Value |\n| --- | --- |\n| Verdict | suspicious |\n"
     )
     assert v2_lib.infer_publish_verdict_from_markdown(md) == "suspicious"
