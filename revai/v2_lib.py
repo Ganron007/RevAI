@@ -10600,12 +10600,44 @@ def _read_artifact_rows(case_root: Path, rel: str, array_path: str) -> list:
 
 
 def _summarize_row(value, limit: int = 200) -> str:
-    """A compact one-line summary of an artifact row for the manifest."""
+    """A compact one-line summary of an artifact row for the manifest.
+
+    Preserves complete field boundaries when truncating and avoids cutting
+    inside Windows registry paths / CLSIDs when an expanded limit is passed
+    for published fallback manifests. Also surfaces Frida invocation return
+    fields (`bytes_written`, `effect`) ahead of verbose call-index metadata so
+    writers can cite exact byte counts without guessing.
+    """
     if isinstance(value, dict):
-        parts = [f"{k}={_ioc_value(v)}" for k, v in value.items()
-                 if _ioc_value(v)]
-        text = ", ".join(parts)
-    elif isinstance(value, (list, tuple)):
+        if "api" in value and isinstance(value.get("return"), dict):
+            compact = []
+            for k in ("index", "api", "invocation_id", "pid"):
+                if value.get(k) is not None:
+                    compact.append(f"{k}={_ioc_value(value[k])}")
+            dec = value.get("decoded")
+            if isinstance(dec, dict) and dec.get("path"):
+                compact.append(f"path={_ioc_value(dec['path'])}")
+            ret = value["return"]
+            for rk in ("bytes_written", "effect", "retval", "write_succeeded"):
+                if ret.get(rk) is not None:
+                    compact.append(f"{rk}={_ioc_value(ret[rk])}")
+            parts = compact
+        else:
+            parts = [f"{k}={_ioc_value(v)}" for k, v in value.items()
+                     if _ioc_value(v)]
+        if not parts:
+            return ""
+        selected: list[str] = []
+        length = 0
+        for part in parts:
+            add_len = len(part) + (2 if selected else 0)
+            if selected and length + add_len > limit:
+                break
+            selected.append(part)
+            length += add_len
+        text = ", ".join(selected)
+        return text if len(text) <= limit else text[:limit]
+    if isinstance(value, (list, tuple)):
         text = ", ".join(_ioc_value(v) for v in value if _ioc_value(v))
     else:
         text = _ioc_value(value)
@@ -10766,8 +10798,9 @@ def build_section_row_manifest(sha: str, section: str,
             continue
         shown = 0
         lines: list[str] = []
+        row_limit = 500 if not instructions else 200
         for i, value in enumerate(rows):
-            summary = _summarize_row(value)
+            summary = _summarize_row(value, limit=row_limit)
             if not summary:
                 continue
             if shown >= _SECTION_MANIFEST_ROW_CAP:
@@ -13413,8 +13446,9 @@ def dotnet_analyze(sample_path: str, il_max_lines: int = 275) -> dict:
 
 
 
-def upx_unpack(sample_path: str, timeout: int = 30) -> dict:
-    """Detect and unpack UPX-packed binaries. Writes unpacked to .unpacked suffix."""
+def upx_unpack(sample_path: str, timeout: int = 30,
+               output_dir: str | Path | None = None) -> dict:
+    """Detect and unpack UPX-packed binaries into an isolated output directory."""
     import os, subprocess
     out: dict = {"upx_ok": False, "is_packed": False, "sample": sample_path}
     if not os.path.isfile(sample_path):
@@ -13427,7 +13461,17 @@ def upx_unpack(sample_path: str, timeout: int = 30) -> dict:
         out["upx_probe_stdout"] = probe.stdout[:200]
         if not is_packed:
             return out
-        unpacked = sample_path + ".unpacked"
+        if output_dir is not None:
+            dest_dir = Path(output_dir)
+            dest_dir.mkdir(parents=True, exist_ok=True)
+            unpacked = str(dest_dir / (Path(sample_path).name + ".unpacked"))
+        else:
+            unpacked = sample_path + ".unpacked"
+        if os.path.exists(unpacked):
+            try:
+                os.unlink(unpacked)
+            except OSError:
+                pass
         r = subprocess.run(
             ["upx", "-d", sample_path, "-o", unpacked], capture_output=True, text=True, timeout=timeout
         )

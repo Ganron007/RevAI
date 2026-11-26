@@ -1417,12 +1417,14 @@ def _locator_value_matches(value: Any, expected: str) -> bool:
     """Exact scalar comparison for a list predicate (numeric or text)."""
     if value is None:
         return False
-    if str(value) == expected:
+    expected_unesc = expected.replace("\\\\", "\\")
+    if str(value) in (expected, expected_unesc):
         return True
     try:
         return int(str(value), 0) == int(expected, 0)
     except (TypeError, ValueError):
-        return str(value).casefold() == expected.casefold()
+        v_cf = str(value).casefold()
+        return v_cf == expected.casefold() or v_cf == expected_unesc.casefold()
 
 
 def _locate_cited_row(path: Path, row: str, query: str | None = None,
@@ -3012,6 +3014,30 @@ def check_report_entailment(sha: str, logs_dir: Path | None = None,
             # violation, with a per-claim reason), instead of the batch
             # failing whole and discarding every valid decision with it.
             missing_ids = expected_ids - set(review_by_id)
+            if missing_ids and semantic_reviewer is None and 0 < len(missing_ids) <= 4:
+                retry_batch = [item for item in batch if item["id"] in missing_ids]
+                try:
+                    retry_resp = reviewer(retry_batch)
+                    for raw_row in (retry_resp.get("reviews") or []) if isinstance(retry_resp, dict) else []:
+                        if (isinstance(raw_row, dict)
+                                and set(raw_row) == {"id", "verdict", "evidence_ids"}
+                                and isinstance(raw_row.get("id"), str)
+                                and raw_row["id"] in missing_ids
+                                and raw_row.get("verdict") in {"supported", "contradicted", "insufficient"}
+                                and isinstance(raw_row.get("evidence_ids"), list)
+                                and all(isinstance(v, str) for v in raw_row["evidence_ids"])
+                                and len(raw_row["evidence_ids"]) == len(set(raw_row["evidence_ids"]))):
+                            claim_item = next((r for r in retry_batch if r["id"] == raw_row["id"]), None)
+                            supplied_ids = {str(r.get("evidence_id")) for r in (claim_item or {}).get("evidence", [])}
+                            if claim_item is not None and all(ev in supplied_ids for ev in raw_row["evidence_ids"]):
+                                review_by_id[raw_row["id"]] = {
+                                    "id": raw_row["id"],
+                                    "verdict": raw_row["verdict"],
+                                    "evidence_ids": raw_row["evidence_ids"],
+                                }
+                except Exception:
+                    pass
+                missing_ids = expected_ids - set(review_by_id)
             if missing_ids:
                 print(
                     f"[report_entailment] batch={batch_index}/{batch_total} "

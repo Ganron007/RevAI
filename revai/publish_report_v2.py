@@ -1637,10 +1637,11 @@ def _master_deterministic_sections_map(
                 "$.key_evidence[" + str(i) + "])")
         return "\n".join(out) + "\n"
 
+    _raw_v = str(v.get("locked_from") or v.get("verdict", "?"))
     sections = {
         "Executive Summary": (
             summary + " " + d_sum + "\n\n"
-            + "- **verdict:** " + str(v.get("verdict", "?")) + " " + vcit + "\n"
+            + "- **verdict:** " + _raw_v + " " + vcit + "\n"
             + "- **family_guess:** " + family + " " + v_fam + "\n"
             + "- **confidence:** " + str(conf) + " " + d_conf + "\n"
             + "- **agreement:** " + str(v.get("agreement", "?")) + " " + v_agr + "\n"
@@ -1655,7 +1656,7 @@ def _master_deterministic_sections_map(
             + _malcat_row("type") + "\n"
         ),
         "2. Classification": (
-            "- verdict: " + str(v.get("verdict", "?")) + " " + vcit + "\n"
+            "- verdict: " + _raw_v + " " + vcit + "\n"
             "- family: " + family + " " + v_fam + "\n"
             "- score: " + str(v.get("score", v.get("numeric_score", "?")))
             + " " + v_score + "\n"

@@ -214,3 +214,147 @@ def test_frida_static_probe_absence_exempt_while_runtime_denial_flagged():
 
     blanket_frida_denial = "Frida recorded no runtime events during execution."
     assert RQ._dynamic_absence_claim(blanket_frida_denial, dyn_status) is not None
+
+
+def test_escaped_backslash_jsonpath_filter_predicate(tmp_path):
+    case = tmp_path / "logs" / SHA / "agentic"
+    (case / "deep_dive").mkdir(parents=True)
+    (case / "deep_dive" / "02-dynamic-pack.json").write_text(json.dumps({
+        "present": True,
+        "dynamic_stage": {"detonation_ran": True},
+        "procmon_sample_events": [
+            {
+                "row": 658928,
+                "path": "HKLM\\System\\CurrentControlSet\\Services\\Lcss\\Description",
+                "detail": "ok",
+            },
+        ],
+    }), encoding="utf-8")
+    located, check = E._ground_citation({
+        "source": "procmon",
+        "query": "deep_dive/02-dynamic-pack.json",
+        "row": "$.procmon_sample_events[?(@.path=='HKLM\\\\System\\\\CurrentControlSet\\\\Services\\\\Lcss\\\\Description')].detail",
+    }, case)
+    assert located is not None, check
+    assert check["status"] == "traceable-row", check
+
+
+def test_summarize_row_preserves_full_paths_and_frida_bytes_written(tmp_path, monkeypatch):
+    inv = {
+        "api": "WriteFile",
+        "args": ["0x308", "0xd9c278", "0x12000", "0x456fe80"],
+        "call_record_index": 445,
+        "call_source_line": 446,
+        "caller": None,
+        "decoded": {"path": "C:\\Windows\\system32\\wlogon.dll", "writes": True},
+        "index": 221,
+        "invocation_id": "432:2012:222",
+        "pid": "432",
+        "return": {"bytes_written": 73728, "effect": "written", "retval": "0x1"},
+    }
+    s_inv = v2_lib._summarize_row(inv, limit=200)
+    assert "bytes_written=73728" in s_inv, s_inv
+    assert "wlogon.dll" in s_inv, s_inv
+
+    case = tmp_path / "logs" / SHA / "agentic"
+    (case / "deep_dive").mkdir(parents=True)
+    long_guid = "HKCR\\WOW6432Node\\CLSID\\{310DE29C-0AD3-4A43-A2DB-221F1160CACB}\\InprocServer32"
+    (case / "deep_dive" / "02-dynamic-pack.json").write_text(json.dumps({
+        "present": True,
+        "dynamic_stage": {"detonation_ran": True},
+        "procmon_sample_events": [
+            {
+                "row": 649378,
+                "time": "18:04:00.3632242",
+                "process": "sample.vir",
+                "pid": 432,
+                "actor": "sample process",
+                "operation": "RegCreateKey",
+                "path": long_guid,
+                "result": "SUCCESS",
+            },
+        ],
+    }), encoding="utf-8")
+    monkeypatch.setenv("REVAI_RUN_MODE", "agentic")
+    monkeypatch.setattr(v2_lib, "LOGS_DIR", tmp_path / "logs")
+    pub_manifest = v2_lib.build_section_row_manifest(
+        SHA, "5. Behavioral Analysis", instructions=False
+    )
+    assert long_guid in pub_manifest, pub_manifest
+
+
+def test_deterministic_sections_cite_raw_locked_from_verdict():
+    import publish_report_v2 as pub
+
+    sections = pub._master_deterministic_sections_map(
+        {"sha256": SHA, "sample_path": "s.vir"},
+        {"verdict": "malicious", "locked_from": "Suspicious", "score": 30},
+        {"verdict": "malicious", "confidence": 90, "summary": "ok"},
+        None,
+        {},
+        reason="test",
+    )
+    assert "- verdict: Suspicious " in sections["2. Classification"]
+    assert "- **verdict:** Suspicious " in sections["Executive Summary"]
+
+
+def test_upx_unpack_isolates_output_dir(tmp_path, monkeypatch):
+    corpus = tmp_path / "corpus"
+    corpus.mkdir()
+    sample = corpus / "sample.vir"
+    sample.write_bytes(b"MZ")
+    out_dir = tmp_path / "case" / "unpack"
+
+    class _Proc:
+        def __init__(self, rc, stdout=""):
+            self.returncode = rc
+            self.stdout = stdout
+            self.stderr = ""
+
+    def fake_run(cmd, **_kwargs):
+        if cmd[:2] == ["upx", "-t"]:
+            return _Proc(0, "ok")
+        if cmd[:2] == ["upx", "-d"]:
+            dest = Path(cmd[cmd.index("-o") + 1])
+            dest.write_bytes(b"unpacked")
+            return _Proc(0, "Unpacked 1 file")
+        return _Proc(1)
+
+    import subprocess
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    # Pre-existing stale output inside isolated dir should cleanly be replaced.
+    out_dir.mkdir(parents=True)
+    (out_dir / "sample.vir.unpacked").write_bytes(b"stale")
+    res = v2_lib.upx_unpack(str(sample), output_dir=out_dir)
+    assert res["upx_ok"] is True, res
+    assert Path(res["unpacked_path"]).parent == out_dir
+    assert not (corpus / "sample.vir.unpacked").exists()
+
+
+def test_section_publisher_unpacks_tuple_and_slices_per_section(tmp_path, monkeypatch):
+    import section_publisher as sp
+
+    # Even if a caller accidentally puts the (text, meta) tuple in tools_results,
+    # _section_source_evidence unwraps str and never emits tuple repr.
+    txt = sp._section_source_evidence(
+        {"_report_source_evidence": ("## Section source artifacts\nok", {"schema": "x"})},
+        SHA,
+        "4. Static Code Analysis",
+    )
+    assert txt == "## Section source artifacts\nok"
+    assert not txt.startswith("('")
+
+    # Slicing callback overrides full fallback per section cleanly.
+    seen_sections = []
+
+    def fake_slicer(name):
+        seen_sections.append(name)
+        return f"SLICE:{name}"
+
+    assert sp._section_source_evidence(
+        {"_report_source_evidence_for": fake_slicer, "_report_source_evidence": "FULL"},
+        SHA,
+        "5. Behavioral Analysis",
+    ) == "SLICE:5. Behavioral Analysis"
+    assert seen_sections == ["5. Behavioral Analysis"]
+

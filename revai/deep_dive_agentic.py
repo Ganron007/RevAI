@@ -824,7 +824,10 @@ class ToolRegistry:
         return r2_decompile(target, function_addrs=args.get("function_addrs"))
 
     def _upx_unpack(self, args, session):
-        return upx_unpack(session["sample_path"])
+        out_dir = None
+        if session.get("sha256"):
+            out_dir = case_dir(session["sha256"]) / "unpack"
+        return upx_unpack(session["sample_path"], output_dir=out_dir)
 
     def _xor_string_search(self, args, session):
         return xor_string_search(str(args.get("target") or session["sample_path"]))

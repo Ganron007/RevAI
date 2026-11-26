@@ -16,6 +16,7 @@ import json
 import os
 import re
 import sys
+import threading
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from pathlib import Path
@@ -56,6 +57,7 @@ from v2_lib import (
     _sec_attribution_evidence,
     format_ti_hash_enrichment_evidence,
     format_report_source_evidence,
+    section_source_rels,
     _sec_iocs_evidence,
     _sec_detection_evidence,
     _sec_containment_evidence,
@@ -355,6 +357,25 @@ def _master_deterministic_section(section_name: str, sha: str,
     return None
 
 
+def _section_source_evidence(
+    tools_results: dict, sha: str, section_name: str
+) -> str:
+    """Return per-section sliced source evidence, never a stringified tuple."""
+    slicer = tools_results.get("_report_source_evidence_for")
+    if callable(slicer):
+        try:
+            sliced = slicer(section_name)
+            if isinstance(sliced, tuple):
+                sliced = sliced[0]
+            return str(sliced or "")
+        except Exception:  # noqa: BLE001
+            pass
+    raw = tools_results.get("_report_source_evidence")
+    if isinstance(raw, tuple):
+        raw = raw[0]
+    return str(raw or "")
+
+
 def _run_one_section(section_name: str, sha: str, tools_results: dict,
                     prior_summaries: dict,
                     pass1_results: list = None,
@@ -443,8 +464,8 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
                             prior_sections_summary, cross_context=cross_context,
                             provenance_block_text=str(
                                 tools_results.get("_report_provenance_block") or ""),
-                            source_evidence=str(
-                                tools_results.get("_report_source_evidence") or ""),
+                            source_evidence=_section_source_evidence(
+                                tools_results, sha, section_name),
                             retry_instruction=retry_instruction)
     result["prompt_chars"] = len(prompt)
     result["cross_refs_included"] = bool(cross_context)
@@ -1247,6 +1268,7 @@ def generate_technical_sectionwise(
     max_workers: int = 6,
     provenance_block_text: str = "", mode: str | None = None,
     source_evidence: str = "",
+    source_evidence_for: Callable[[str], str] | None = None,
     locked_verdict: str | None = None
     ) -> tuple[list[dict[str, Any]], str]:
     """Generate all 13 technical sections independently, then assemble.
@@ -1260,6 +1282,17 @@ def generate_technical_sectionwise(
         f"- sha256: {sha}"
         f"\n- verdict: {(blocks[0][1][:200] if blocks else '')}")
 
+    def _sec_src(sec_name: str) -> str:
+        if callable(source_evidence_for):
+            try:
+                val = source_evidence_for(sec_name)
+                if isinstance(val, tuple):
+                    val = val[0]
+                return str(val or "")
+            except Exception:  # noqa: BLE001
+                pass
+        return source_evidence[0] if isinstance(source_evidence, tuple) else str(source_evidence or "")
+
     print(f"  [technical] section-wise: generating "
           f"{len(TECHNICAL_REPORT_SECTIONS)} sections "
           f"({len(blocks)} evidence blocks routed)", flush=True)
@@ -1270,7 +1303,7 @@ def generate_technical_sectionwise(
             futures = {
                 pool.submit(_generate_technical_section, name, blocks, header,
                             sha, provenance_block_text=provenance_block_text,
-                            source_evidence=source_evidence,
+                            source_evidence=_sec_src(name),
                             mode=mode, locked_verdict=locked_verdict): name
                 for name in TECHNICAL_REPORT_SECTIONS
             }
@@ -1282,7 +1315,7 @@ def generate_technical_sectionwise(
                 _generate_technical_section(
                     name, blocks, header, sha,
                         provenance_block_text=provenance_block_text,
-                        source_evidence=source_evidence,
+                        source_evidence=_sec_src(name),
                         mode=mode, locked_verdict=locked_verdict))
 
     order = {n: i for i, n in enumerate(TECHNICAL_REPORT_SECTIONS)}
@@ -1305,7 +1338,7 @@ def generate_technical_sectionwise(
             retry = _generate_technical_section(
                 result["name"], blocks, header, sha,
                 provenance_block_text=provenance_block_text,
-                source_evidence=source_evidence, mode=mode,
+                source_evidence=_sec_src(result["name"]), mode=mode,
                 locked_verdict=locked_verdict,
                 failure_reason=str(result.get("error") or "previous attempt failed"))
             retry["pass"] = 2
@@ -1344,7 +1377,7 @@ def generate_technical_sectionwise(
             retry = _generate_technical_section(
                 result["name"], blocks, header, sha,
                 provenance_block_text=provenance_block_text,
-                source_evidence=source_evidence, mode=mode,
+                source_evidence=_sec_src(result["name"]), mode=mode,
                 locked_verdict=locked_verdict,
                 failure_reason="RC-40b sweep: previous attempts failed")
             retry["pass"] = 3
@@ -1390,7 +1423,7 @@ def generate_technical_sectionwise(
             retry = _generate_technical_section(
                 result["name"], blocks, header, sha,
                 provenance_block_text=provenance_block_text,
-                source_evidence=source_evidence, mode=mode,
+                source_evidence=_sec_src(result["name"]), mode=mode,
                 locked_verdict=locked_verdict,
                 failure_reason=(
                     f"RC-40c quality retry: the previous draft for "
@@ -1878,7 +1911,7 @@ def run_section_based_publish(sha: str, tools_results: dict,
     out_dir.mkdir(parents=True, exist_ok=True)
     persisted_tool_results = {
         key: value for key, value in tools_results.items()
-        if key != "_report_source_evidence"
+        if not key.startswith("_report_source_evidence")
     }
     (out_dir / "00-tools-raw.json").write_text(
         json.dumps(persisted_tool_results, indent=2, default=str))
@@ -2169,8 +2202,10 @@ def run_technical_publish(sha: str, tools_results: dict) -> dict:
                 sha, technical_evidence,
                 provenance_block_text=str(
                     tools_results.get("_report_provenance_block") or ""),
-                source_evidence=str(
-                    tools_results.get("_report_source_evidence") or ""),
+                source_evidence=_section_source_evidence(
+                    tools_results, sha, "technical"),
+                source_evidence_for=tools_results.get(
+                    "_report_source_evidence_for"),
                 mode=(tools_results.get("_execution_context") or {}).get("mode"),
                 locked_verdict=verdict_control.get("upstream"))
             failed = [r["name"] for r in tech_results if not r.get("llm_ok")]
@@ -2574,7 +2609,26 @@ if __name__ == "__main__":
     assert_report_input_manifest(manifest, required_inputs)
     validate_report_input_manifest(manifest, sha, context, mode_dir)
     manifest_digest = report_input_manifest_digest(manifest)
-    source_evidence = format_report_source_evidence(mode_dir, manifest)
+    source_evidence, _source_evidence_meta = format_report_source_evidence(
+        mode_dir, manifest)
+    _slice_cache: dict[tuple[str, ...], str] = {}
+    _slice_lock = threading.Lock()
+
+    def _sliced_source_evidence(section_name: str) -> str:
+        rels = section_source_rels(sha, [section_name])
+        if not rels:
+            return source_evidence
+        key = tuple(sorted(rels))
+        with _slice_lock:
+            cached = _slice_cache.get(key)
+        if cached is not None:
+            return cached
+        rendered, _meta = format_report_source_evidence(
+            mode_dir, manifest, include=rels)
+        with _slice_lock:
+            _slice_cache[key] = rendered
+        return rendered
+
     provenance_text = format_report_input_manifest(manifest)
 
     tools_results: dict = {
@@ -2584,6 +2638,7 @@ if __name__ == "__main__":
         "_report_input_manifest_sha256": manifest_digest,
         "_report_provenance_block": provenance_text,
         "_report_source_evidence": source_evidence,
+        "_report_source_evidence_for": _sliced_source_evidence,
         "_report_source_artifacts": {
             "verdict": "verdict.json",
             "quick_scan": "quick_scan/00-tools-raw.json",
