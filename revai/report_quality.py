@@ -1054,21 +1054,30 @@ def _dynamic_absence_claim(md: str, dyn_status: dict) -> str | None:
         static_probe_scoped_frida_absence = (
             "frida" in lower
             and "probe" in lower
+            and not re.search(
+                r"\b(?:winre|detonation|frida\s+(?:runtime|trace)|runtime\s+frida)\b",
+                lower,
+            )
             and (
-                re.search(r"\bstatic[- ]only\b", lower) is not None
+                re.search(r"\bfrida\s+static(?:[- ]only)?\s+probes?\b", lower) is not None
                 or (
-                    "frida" in previous_lower
-                    and "probe" in previous_lower
-                    and re.search(r"\bstatic[- ]only\b", previous_lower) is not None
+                    (
+                        re.search(r"\bstatic[- ]only\b", lower) is not None
+                        or (
+                            "frida" in previous_lower
+                            and "probe" in previous_lower
+                            and re.search(r"\bstatic[- ]only\b", previous_lower) is not None
+                        )
+                    )
+                    and re.search(
+                        r"\b(?:by|from|through)\s+(?:this|that)\s+"
+                        r"(?:frida\s+)?(?:static[- ]only\s+)?(?:probe|component|path)\b"
+                        r"|\bfor\s+(?:this|that)\s+(?:frida\s+)?"
+                        r"(?:static[- ]only\s+)?(?:probe|component|path)\b",
+                        lower,
+                    ) is not None
                 )
             )
-            and re.search(
-                r"\b(?:by|from|through)\s+(?:this|that)\s+"
-                r"(?:frida\s+)?(?:static[- ]only\s+)?(?:probe|component|path)\b"
-                r"|\bfor\s+(?:this|that)\s+(?:frida\s+)?"
-                r"(?:static[- ]only\s+)?(?:probe|component|path)\b",
-                lower,
-            ) is not None
         )
         # A statement limited to the absent RevAI emulator is compatible with
         # a separate WinRE detonation. Broad statements that mention multiple

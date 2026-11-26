@@ -1300,7 +1300,12 @@ def _verdict_match_is_metalinguistic(body: str, match_start: int) -> bool:
     # RC-64: If the subject is an upstream tool, engine, stage, or artifact
     # (e.g. "The iocs.json tool verdict for this sample is 'malicious'"),
     # it is citing that specific tool's output, not stating the report's verdict.
-    if _re2.search(r"\b(?:tool|engine|source|artifact|sub-?pipeline|stage|classifier)\s*$", prefix.rstrip()):
+    if _re2.search(
+        r"\b(?:tool|engine|source|artifact|sub-?pipeline|stage|classifier"
+        r"|raw(?:\s+(?:automated|publish[- ]?model|pipeline(?:[- ]selected)?|upstream))?"
+        r"|uncalibrated)\s*$",
+        prefix.rstrip(),
+    ):
         return True
     # RC-78: a LINE that opens with a quotation (after markdown bullet /
     # blockquote markers) is quoted artifact content. The writer's evidence
@@ -1360,6 +1365,48 @@ def sanitize_report_markdown(markdown: str) -> str:
     if not markdown:
         return markdown
     return _REPORT_CONTROL_RE.sub("", markdown)
+
+
+def prepend_verdict_calibration_note(
+    markdown: str, calibration: dict | None
+) -> str:
+    """Insert the calibrated verdict banner once before report prose/panels (RC-04b).
+
+    Shared across v2 and v3 master/technical paths so every calibrated report
+    states the calibrated verdict-of-record before any narrative prose that
+    mentions the raw upstream label, while preserving any leading provenance
+    banner / execution HTML comment within the opening lines.
+    """
+    text = markdown or ""
+    cal = calibration if isinstance(calibration, dict) else {}
+    target = normalize_verdict_label(str(cal.get("to") or ""))
+    if not target or target == "unknown" or not text:
+        return text
+    if any(_VERDICT_PANEL_NOTE_RE.match(line) for line in text.splitlines()[:40]):
+        return text
+    raw_label = str(cal.get("from") or "unknown").strip() or "unknown"
+    reason = str(cal.get("reason") or "").strip()
+    cal_note = (
+        "> **[Verdict calibration]** The published verdict for this sample "
+        f"is **{target}**. The raw publish-model claim ({raw_label}) was "
+        f"calibrated to {target}: {reason} The raw pipeline-selected label "
+        "remains recorded in verdict.json and the publish record.\n"
+    )
+    lines = text.splitlines(keepends=True)
+    insert_at = 1
+    for i, line in enumerate(lines[:20]):
+        if line.lstrip().startswith("#"):
+            insert_at = i + 1
+            break
+    if insert_at > len(lines):
+        insert_at = len(lines)
+    if insert_at > 0 and not lines[insert_at - 1].endswith("\n"):
+        lines[insert_at - 1] += "\n"
+    head = "".join(lines[:insert_at])
+    tail = "".join(lines[insert_at:])
+    prefix_sep = "" if head.endswith("\n\n") else "\n"
+    suffix_sep = "\n" if tail and not tail.startswith("\n") else ""
+    return head + prefix_sep + cal_note + suffix_sep + tail
 
 
 def ensure_verdict_panel(markdown: str, label: str) -> str:

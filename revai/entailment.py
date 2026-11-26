@@ -282,11 +282,15 @@ def _claim_narrative(markdown: str) -> str:
 #: Aliases are needed because models shorten and re-spell: `agentic_recover_v4`,
 #: `recovered function names` and `function_recovery` all name the same stage.
 _SOURCE_ARTIFACTS: dict[str, tuple[str, ...]] = {
+    "manifest": ("publish/report-input-manifest.json",),
+    "revai-report-input-manifest/v1": ("publish/report-input-manifest.json",),
     "dynamic_analysis_status": ("dynamic-analysis-status.json",),
     "verdict": ("verdict.json",),
     "pipeline verdict": ("verdict.json",),
     "intake": ("intake-validation.json",),
     "winre": ("deep_dive/02-dynamic-pack.json",),
+    "winre:dynamic": ("deep_dive/02-dynamic-pack.json",),
+    "winre_frida": ("deep_dive/02-dynamic-pack.json",),
     "frida": ("deep_dive/02-dynamic-pack.json",),
     "procmon": ("deep_dive/02-dynamic-pack.json",),
     "network_intel": ("deep_dive/02-dynamic-pack.json",),
@@ -616,6 +620,7 @@ _EVIDENCE_ARTIFACTS = (
     "rule.yara.json",
     "malcat-triage.json",
     "intake-validation.json",
+    "publish/report-input-manifest.json",
     "understanding.json",
     "EVIDENCE-BUNDLE.md",
 )
@@ -659,6 +664,7 @@ _PRIMARY_EVIDENCE_ARTIFACTS = frozenset({
     "function_recovery.json",
     "malcat-triage.json",
     "intake-validation.json",
+    "publish/report-input-manifest.json",
     # The locked pipeline verdict is machine evidence, not report prose: the
     # master report cites it for the verdict and the score, and a citation
     # that names it must resolve (2026-10-21: `unresolved-source`).
@@ -1121,6 +1127,38 @@ def _resolve_json_path(value: Any, expression: str,
                 "device_writes", "system_loads", "drops", "anti_emulation"
             }:
                 tokens = ["dynamic_stage", "findings", "findings"] + tokens[2:]
+        elif (first == "procmon_sample_event_rows_selected"
+              and len(tokens) > 1
+              and isinstance(tokens[1], (int, tuple))
+              and isinstance(value.get("procmon_sample_event_rows_selected"), int)
+              and isinstance(value.get("procmon_sample_events"), list)):
+            tokens = ["procmon_sample_events"] + tokens[1:]
+        elif (first == "procmon_summary"
+              and len(tokens) > 1
+              and isinstance(tokens[1], str)
+              and not (isinstance(value.get("procmon_summary"), dict)
+                       and tokens[1] in value["procmon_summary"])
+              and tokens[1] in value):
+            tokens = tokens[1:]
+        elif (first == "network"
+              and len(tokens) > 1
+              and isinstance(tokens[1], str)
+              and not (isinstance(value.get("network"), dict)
+                       and tokens[1] in value["network"])):
+            if tokens[1] in value:
+                tokens = tokens[1:]
+            elif tokens[1] == "findings":
+                _nested_f = ((value.get("dynamic_stage") or {}).get("findings") or {}).get("findings")
+                if isinstance(_nested_f, dict) and isinstance(_nested_f.get("network"), dict):
+                    tokens = ["dynamic_stage", "findings", "findings", "network"] + tokens[2:]
+        elif (first == "job_meta"
+              and len(tokens) > 1
+              and isinstance(tokens[1], str)
+              and not (isinstance(value.get("job_meta"), dict)
+                       and tokens[1] in value["job_meta"])
+              and isinstance(value.get("dynamic_stage"), dict)
+              and tokens[1] in value["dynamic_stage"]):
+            tokens = ["dynamic_stage"] + tokens[1:]
 
     # Malcat exposes imports and strings under `views`; writers commonly use
     # the shorter `$.malcat.imports` / `$.malcat.strings` spelling. This is a
@@ -1163,7 +1201,7 @@ def _resolve_json_path(value: Any, expression: str,
             rest = rest[1:]
         if rest[:1] and rest[0] in _MALCAT_VIEW_KEYS and rest[0] != "carved":
             tokens = tokens[:idx + 1] + ["views"] + rest
-        elif rest[:2] == ["views", "decompilations"]:
+        elif rest[:2] in (["views", "decompilations"], ["views", "carved_files"]):
             tokens = tokens[:idx + 1] + rest[1:]
         elif rest[:1] == ["carved"]:
             tokens = tokens[:idx] + ["malcat", "carved_files"] + rest[1:]
@@ -1547,6 +1585,24 @@ def _locate_cited_row(path: Path, row: str, query: str | None = None,
                         discovered = _artifact_branch_for_source(
                             query_lookup, decoded)
                     if discovered is None:
+                        # RC-110: when `source` names the multi-engine tools-raw
+                        # container itself (`deep_dive/01-tools-raw.json`) and
+                        # the locator starts with a known engine branch
+                        # (`malcat.views.strings[0]`), or `deep_dive_agentic`
+                        # cites `$.payload_sql...`, route to that exact top-level
+                        # branch instead of failing before JSONPath runs. Unknown
+                        # / garbage sources (`not_an_engine`) still fail closed.
+                        _src_path = (source or "").strip().strip("` ").replace("\\", "/").casefold()
+                        _m_root = re.match(r"^(?:\$\.)?([a-z0-9_]+)(?:[.\[]|$)", row_stripped)
+                        _cand_root = _m_root.group(1) if _m_root else ""
+                        if _cand_root and _cand_root in decoded and (
+                            (_src_path in ("deep_dive/01-tools-raw.json", "01-tools-raw.json")
+                             and _cand_root in (_LOCATOR_SOURCE_ROOTS | {"payload_sql"}))
+                            or (source_lookup == "deep_dive_agentic"
+                                and _cand_root == "payload_sql")
+                        ):
+                            discovered = _cand_root
+                    if discovered is None:
                         return None
                     source_branch = discovered
                     decoded = {discovered: decoded[discovered]}
@@ -1682,6 +1738,13 @@ def _locate_cited_row(path: Path, row: str, query: str | None = None,
             # excluded by the `": "` guard -- they keep their own path through
             # `_resolve_table_key`. The strict parser and walker still have to
             # resolve it exactly; a bare locator naming nothing fails closed.
+            row_clean = "$." + row_clean
+            is_normalized_jsonpath = True
+        elif (not row_clean.startswith("$")
+              and re.fullmatch(
+                  r"[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)+",
+                  row_clean)):
+            # Bare dotted locator without brackets (`malcat.views.strings`).
             row_clean = "$." + row_clean
             is_normalized_jsonpath = True
         if row_clean.startswith("$"):

@@ -85,6 +85,7 @@ from v2_lib import (
     cross_stage_verdict_lock,
     infer_publish_verdict_from_markdown,
     ensure_verdict_panel,
+    prepend_verdict_calibration_note,
     require_execution_context,
     validate_report_input_manifest,
     _categorize_string,
@@ -1911,6 +1912,9 @@ def run_section_based_publish(sha: str, tools_results: dict,
             pass
     _cal_verdict = _cal_data.get("to")
     expected_master_verdict = _control_label or _cal_verdict or quick_verdict
+    if _cal_verdict:
+        report_markdown = prepend_verdict_calibration_note(
+            report_markdown, _cal_data)
     if expected_master_verdict:
         report_markdown = ensure_verdict_panel(report_markdown, expected_master_verdict)
     (out_dir / "02-REPORT-MASTER-v3.md").write_text(report_markdown)
@@ -2491,6 +2495,8 @@ def _finalize_technical(sha: str, technical_report: dict,
         or _cal_verdict
         or (tools_results.get("verdict") or {}).get("verdict")
     )
+    if _cal_verdict:
+        tech_md = prepend_verdict_calibration_note(tech_md, _cal_data)
     if _expected_verdict:
         tech_md = ensure_verdict_panel(tech_md, _expected_verdict)
     technical_verdict_lock = cross_stage_verdict_lock(

@@ -48,6 +48,7 @@ from v2_lib import (  # noqa: E402
     format_report_source_evidence,
     section_source_rels,
     load_attested_case_json,
+    prepend_verdict_calibration_note,
     require_run_mode,
     require_execution_context,
     report_input_manifest,
@@ -3069,31 +3070,15 @@ def main():
         )
         report["publish_llm_verdict_raw"] = _pcal.get("raw")
         pub_claimed = _pcal.get("verdict")
-        # RC-04b (option b, operator decision 2026-10-25): the calibrated label
-        # is the verdict-of-record. Print it into the report so the published
-        # markdown says what the lock compares against, persist it for the v3
-        # stage, and keep the raw triage label on record upstream. The
-        # annotation is the FIRST explicit verdict sentence, so re-derivation
-        # reads the published label.
-        cal_note = (
-            "> **[Verdict calibration]** The published verdict for this sample "
-            f"is **{pub_claimed}**. The raw publish-model claim "
-            f"({_pcal.get('raw')}) was calibrated to {pub_claimed}: "
-            f"{_pcal.get('reason')} The raw pipeline-selected label remains "
-            "recorded in verdict.json and the publish record.\n"
-        )
-        _md_lines = md.splitlines(keepends=True)
-        if _md_lines:
-            _head = _md_lines[0]
-            if not _head.endswith("\n"):
-                _head += "\n"
-            md = _head + "\n" + cal_note + "".join(_md_lines[1:])
-        else:
-            md = cal_note
         report["verdict_calibration"] = {
             "from": _pcal.get("raw"), "to": pub_claimed,
             "reason": _pcal.get("reason"),
         }
+        # RC-04b (option b, operator decision 2026-10-25): the calibrated label
+        # is the verdict-of-record. Print it into the report so the published
+        # markdown says what the lock compares against, persist it for the v3
+        # stage, and keep the raw triage label on record upstream.
+        md = prepend_verdict_calibration_note(md, report["verdict_calibration"])
         try:
             _cal_path = case / "verdict-calibration.json"
             _cal_path.write_text(json.dumps(
@@ -3614,6 +3599,9 @@ def main():
         # conflict red even though `pub_claimed` was correct and the panel
         # (rendered moments later, on the write path) stated the right
         # verdict. Panel-before-lock, exactly like the master.
+        if report.get("verdict_calibration"):
+            tech_md = prepend_verdict_calibration_note(
+                tech_md, report.get("verdict_calibration"))
         tech_md = ensure_verdict_panel(tech_md, pub_claimed)
         _expected_verdict = (verdict or {}).get("verdict") or quick_v
         tech_verdict_lock = cross_stage_verdict_lock(
@@ -3682,6 +3670,9 @@ def main():
 
         tech_md = (report_execution_comment(args.sha256, context, manifest_digest)
                    + "\n\n" + tech_md)
+        if report.get("verdict_calibration"):
+            tech_md = prepend_verdict_calibration_note(
+                tech_md, report.get("verdict_calibration"))
         tech_md = ensure_verdict_panel(tech_md, pub_claimed)
         tech_md = sanitize_report_markdown(tech_md)
         technical_report["markdown"] = tech_md
