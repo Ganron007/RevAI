@@ -522,7 +522,11 @@ def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, ya
             "not run is not a stage that ran and found nothing, and the audit "
             "fails an affirmative execution claim against a run that performed "
             "none.",
-            compact_json_for_prompt(dynamic_status, max_chars=3500),
+            compact_json_for_prompt(
+                dynamic_status if "status" in dynamic_status
+                else {"status": dynamic_status},
+                max_chars=3500,
+            ),
             "",
         ]
     dynamic_sections = {
@@ -592,7 +596,7 @@ def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, ya
             ],
         ),
         "",
-        "## Evidence — deep-dive.json",
+        "## Evidence — deep_dive/05-deep-dive.json",
         compact_json_for_prompt(
             deep or {},
             max_chars=12000,
@@ -610,11 +614,17 @@ def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, ya
         "do not cite them for behavior, capability, or verdict claims.",
     ]
     if upx is not None:
-        lines.append("## Evidence — UPX unpack")
+        lines.append(
+            "## Evidence — UPX unpack (source: upx / deep_dive/01-tools-raw.json, "
+            "cite exact fields under $.upx.*)"
+        )
         lines.append(json.dumps(upx, indent=2, default=str)[:1500])
         lines.append("")
     if xor_hits is not None:
-        lines.append("## Evidence — xorsearch (XOR'd string recovery)")
+        lines.append(
+            "## Evidence — xorsearch (source: deep_dive/01-tools-raw.json, "
+            "cite exact fields under $.xor.*)"
+        )
         lines.append(json.dumps(xor_hits, indent=2, default=str)[:1500])
         lines.append("")
     if olevba is not None:
@@ -626,7 +636,10 @@ def build_prompt_full(session: dict, verdict: dict | None, deep: dict | None, ya
         lines.append(json.dumps(peepdf, indent=2, default=str)[:2000])
         lines.append("")
     if dotnet_result is not None:
-        lines.append("## Evidence — .NET analysis (dnfile + monodis)")
+        lines.append(
+            "## Evidence — .NET analysis (dnfile + monodis; source: "
+            "deep_dive/01-tools-raw.json, cite fields under $.dotnet.*)"
+        )
         if dotnet_result.get("is_dotnet"):
             lines.append(f"  runtime: {dotnet_result.get('runtime_version', '?')}")
             lines.append(f"  assembly: {dotnet_result.get('assembly_name') or dotnet_result.get('module_name', '?')}")
@@ -934,7 +947,7 @@ def build_prompt_technical(session: dict, verdict: dict | None, deep: dict | Non
     lines += [
         f"verdict.json: {json.dumps(verdict or {}, indent=2)[:4000]}",
         "",
-        f"deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}",
+        f"deep_dive/05-deep-dive.json: {json.dumps(deep or {}, indent=2)[:5000]}",
         "",
         f"rule.yara.json: {json.dumps(yara_meta or {}, indent=2)[:3000]}",
         "",
@@ -1590,7 +1603,14 @@ def _master_deterministic_sections_map(
     summary = d.get("summary") or v.get("summary") or "(no summary)"
     conf = d.get("confidence") or v.get("confidence") or "?"
     rules = capa.get("top_rules") or []
-    key_ev = d.get("key_evidence") or v.get("key_evidence") or []
+    if d.get("key_evidence"):
+        key_ev = d.get("key_evidence") or []
+        ke_src = "deep_dive/05-deep-dive.json"
+        ke_art = "deep_dive/05-deep-dive.json"
+    else:
+        key_ev = v.get("key_evidence") or []
+        ke_src = "verdict"
+        ke_art = "verdict.json"
 
     # Verified citation targets (every row below exists in this run's
     # artifacts; a citation to an absent row would itself be an
@@ -1605,7 +1625,7 @@ def _master_deterministic_sections_map(
              "query_or_table: deep_dive/05-deep-dive.json, row_or_rule: $.summary)")
     d_conf = ("(source: deep_dive/05-deep-dive.json, "
               "query_or_table: deep_dive/05-deep-dive.json, row_or_rule: $.confidence)")
-    v_ke = "(source: verdict.json, query_or_table: verdict.json, row_or_rule: $.key_evidence)"
+    v_ke = f"(source: {ke_src}, query_or_table: {ke_art}, row_or_rule: $.key_evidence)"
     capa_arr = "(source: capa, query_or_table: quick_scan/00-tools-raw.json, row_or_rule: $.capa.top_rules)"
 
     def _malcat_row(field: str) -> str:
@@ -1632,8 +1652,8 @@ def _master_deterministic_sections_map(
         out = []
         for i, it in enumerate(items[:limit]):
             out.append(
-                "- `" + json.dumps(it, default=str)[:220] + "` (source: verdict, "
-                "query_or_table: verdict.json, row_or_rule: "
+                "- `" + json.dumps(it, default=str)[:220] + f"` (source: {ke_src}, "
+                f"query_or_table: {ke_art}, row_or_rule: "
                 "$.key_evidence[" + str(i) + "])")
         return "\n".join(out) + "\n"
 
@@ -1989,7 +2009,7 @@ def _technical_deterministic_sections_map(
         "1. Executive Summary": (
             f"{d.get('summary') or v.get('summary') or '(unknown)'}\n\n"
             f"verdict={v.get('verdict')} score={v.get('score')} family={v.get('family_guess')}\n"
-            f"(source: verdict.json / deep-dive.json)"
+            f"(source: verdict.json / deep_dive/05-deep-dive.json)"
         ),
         "2. Sample Metadata": (
             # RC-103: declared layout text (the machine fields are checked by
@@ -2161,7 +2181,7 @@ def build_deterministic_technical(
     # Preserve the report-safe structured evidence supplied to this fallback.
     parts.append("## Structured Evidence (inline)")
     parts.append("")
-    parts.append(evidence)
+    parts.append(technical_evidence or "")
     parts.append("")
     return "\n".join(parts)
 
@@ -2373,7 +2393,7 @@ def main():
                 for r in (fr.get("function_results") or [])
                 if r.get("function_name") and not str(r.get("function_name")).startswith("unknown_")
             ]
-            recovery_evidence = json.dumps({"recovered": names[:200], "triage": fr.get("triage")}, indent=2)[:12000]
+            recovery_evidence = json.dumps({"function_results": names[:200], "triage": fr.get("triage")}, indent=2)[:12000]
         except Exception as e:
             print(f"[publish_report_v2] function_recovery read warn: {e}", flush=True)
 
@@ -3239,7 +3259,7 @@ def main():
             technical_evidence, args.sha256,
             expected_run_id=context["run_id"], pack=dynamic_pack)
         technical_evidence = append_dynamic_status_to_technical_evidence(
-            technical_evidence, dynamic_status)
+            technical_evidence, dynamic_status_record)
         safe_technical_evidence, _evidence_redactions = (
             redact_credential_like_values(technical_evidence))
         (ev_dir / "03-technical-evidence.md").write_text(

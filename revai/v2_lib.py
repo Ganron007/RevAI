@@ -9040,9 +9040,9 @@ def _format_dynamic_observability(pack: dict | None) -> list[str]:
             + " " + _dynamic_citation(
                 "dynamic-analysis-status.json",
                 "status.frida_runtime.hook_coverage.state, "
-                "status.frida_runtime.hook_coverage.requested_count, "
-                "status.frida_runtime.hook_coverage.installed_count, "
-                "status.frida_runtime.hook_coverage.unavailable_count",
+                "status.frida_runtime.hook_coverage.requested, "
+                "status.frida_runtime.hook_coverage.installed, "
+                "status.frida_runtime.hook_coverage.unavailable",
                 source="dynamic_analysis_status")
         )
         process_parts = [
@@ -10636,11 +10636,16 @@ def _summarize_row(value, limit: int = 200) -> str:
             selected.append(part)
             length += add_len
         text = ", ".join(selected)
+        # Keep single-line manifest bullets from breaking mid-sentence on
+        # upstream prose descriptions (e.g. malcat anomaly `desc`) before
+        # their trailing citation. Preserves extensions, versions, IPs, floats.
+        text = re.sub(r"([a-zA-Z0-9\)])[.!?]+\s+(?=[A-Z])", r"\1; ", text)
         return text if len(text) <= limit else text[:limit]
     if isinstance(value, (list, tuple)):
         text = ", ".join(_ioc_value(v) for v in value if _ioc_value(v))
     else:
         text = _ioc_value(value)
+    text = re.sub(r"([a-zA-Z0-9\)])[.!?]+\s+(?=[A-Z])", r"\1; ", text)
     return text[:limit]
 
 
