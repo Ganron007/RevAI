@@ -133,3 +133,67 @@ def test_winre_status_endpoint(tmp_path, monkeypatch):
     resp = client.get(f"/api/winre/status/{SHA}?mode=agentic")
     assert resp.status_code == 200
     assert resp.get_json()["pack_present"] is True
+
+
+def test_winre_status_falls_back_to_frozen_case_pack_on_live_mismatch(tmp_path, monkeypatch):
+    """When standalone WinRE overwrites /opt/winre/logs/<sha>/dynamic with a
+    different run_id, the case's frozen deep_dive/02-dynamic-pack.json keeps
+    the Console chip accurate."""
+    import json
+    winre_root = tmp_path / "winre"
+    dyn = _make_pack(winre_root)
+    (dyn / "META.json").write_text(json.dumps({
+        "ok": True, "run_id": "b" * 32, "schema_version": "v6.2.4",
+        "max_seconds": 150, "verdict_policy": {"static_yara_wins": True},
+    }))
+    logs_root = tmp_path / "logs"
+    case = logs_root / SHA / "agentic"
+    (case / "deep_dive").mkdir(parents=True)
+    expected_rid = "a" * 32
+    (case / v2_lib.RUN_CONTEXT_FILENAME).write_text(json.dumps({"sha256": SHA, "run_id": expected_rid}))
+    (case / "deep_dive" / "02-dynamic-pack.json").write_text(json.dumps({
+        "present": True,
+        "source": "winre:agentic",
+        "network_intel": {"captures": [{"dns_queries": ["c2.example"], "http_requests": [{"host": "1.2.3.4"}], "tls_sni": []}]},
+        "_cadre_provenance": {"run_id": expected_rid},
+    }))
+    monkeypatch.setenv("REVAI_WINRE_LOGS", str(winre_root))
+    monkeypatch.setattr(v2_lib, "LOGS_DIR", logs_root)
+    status = winre_dynamic_status(SHA, "agentic")
+    assert status["pack_present"] is True
+    assert status["frozen_fallback"] is True
+    assert status["dns"] == 1
+    assert status["http"] == 1
+    assert status["section_renders"] is True
+    assert status["correlation"]["ok"] is False
+
+
+def test_orch_live_and_hitl_fallbacks(tmp_path, monkeypatch):
+    import json
+    app_mod = _app()
+    logs_root = tmp_path / "logs"
+    case = logs_root / SHA / "agentic"
+    (case / "deep_dive").mkdir(parents=True)
+    (case / "deep_dive" / "05-deep-dive.json").write_text(json.dumps({
+        "confidence": 85,
+        "function_annotations": [{"address": 4096, "new_name": "decrypt", "confidence": 10}],
+    }))
+    (case / "orchestrator_trace.json").write_text(json.dumps({
+        "truly_green": False,
+        "events": [
+            {"type": "tool_result", "tool": "run_intake", "ok": True, "rc": 0, "elapsed_s": 12.0},
+            {"type": "tool_result", "tool": "run_winre_dynamic", "ok": False, "rc": 1},
+        ],
+        "quality": {"quality_green": False, "issues": ["test"], "checks": {"master_v2": {"source": "llm_judge"}}},
+    }))
+    monkeypatch.setattr(app_mod, "LOGS_DIR", logs_root)
+    monkeypatch.setattr(app_mod, "case_dir", lambda sha, mode=None: logs_root / sha / mode if mode else logs_root / sha)
+    client = app_mod.app.test_client()
+
+    live = client.get(f"/api/orch/{SHA}/live?mode=agentic").get_json()
+    assert [t["stage"] for t in live["tools"]] == ["intake", "winre_dynamic"]
+    assert "master_v2" in live["quality_checks"]
+
+    hitl = client.get(f"/api/hitl/{SHA}/pending")
+    assert hitl.status_code == 200
+    assert hitl.get_json()["pending_count"] == 1

@@ -2215,10 +2215,17 @@ def api_hitl_pending(sha):
     if not sha:
         return jsonify({"error": "invalid sha"}), 400
     mode = _mode_from_request()
-    dd_path = case_dir(sha, mode) / "deep-dive.json"
-    if not dd_path.exists():
-        dd_path = case_dir(sha, mode) / "deep_dive" / "05-deep-dive.json"
-    if not dd_path.exists():
+    dd_path = None
+    _candidates = [mode] if mode else ["ui", "agentic", "scripted", None]
+    for _m in _candidates:
+        _base = case_dir(sha, _m)
+        for _rel in (_base / "deep-dive.json", _base / "deep_dive" / "05-deep-dive.json"):
+            if _rel.exists():
+                dd_path = _rel
+                break
+        if dd_path is not None:
+            break
+    if dd_path is None:
         return jsonify({"error": "deep-dive.json not found", "pending": []}), 404
     try:
         dd = json.loads(dd_path.read_text())
@@ -2349,7 +2356,10 @@ def api_hitl_reject(sha):
 ORCH_TOOL_TO_STAGE = {
     "run_intake": "intake",
     "run_quick_scan": "quick_scan",
+    "run_winre_dynamic": "winre_dynamic",
     "run_deep_dive_agentic": "deep_dive",
+    "run_function_recovery": "function_recovery",
+    "run_artifact_gen": "artifact_gen",
     "run_yara_gen": "yara_gen",
     "run_publish": "publish",
     "run_section_publish": "correlate",
@@ -2530,7 +2540,7 @@ def _winre_live(sha: str, mode: str | None) -> dict:
     try:
         from winre_runner import availability, read_run_status
 
-        base["run"] = read_run_status(sha)
+        base["run"] = read_run_status(sha, mode=mode)
         ok, reason = availability()
         base["available"] = {"ok": ok, "reason": reason}
     except Exception as e:
@@ -2556,6 +2566,31 @@ def orch_live_payload(sha: str, mode: str | None = None) -> dict:
     trace = _load_json_safe(root / "orchestrator_trace.json")
     quality = _load_json_safe(root / "quality-gate.json")
     audit = _load_json_safe(root / "pipeline-audit.json")
+    if not quality:
+        quality = (
+            ((audit.get("stages") or {}).get("publish") or {}).get("quality_pack")
+            or (trace.get("quality") if isinstance(trace.get("quality"), dict) else {})
+            or {}
+        )
+    if not progress.get("tools") and isinstance(trace.get("events"), list):
+        rebuilt: list[dict] = []
+        for ev in trace["events"]:
+            if not isinstance(ev, dict):
+                continue
+            name = ev.get("tool")
+            if not name:
+                continue
+            ok_ev = ev.get("ok")
+            rc_ev = ev.get("rc")
+            rebuilt.append({
+                "tool": name,
+                "stage": ORCH_TOOL_TO_STAGE.get(name),
+                "status": "done" if (ok_ev is True or rc_ev == 0) else "error",
+                "rc": rc_ev,
+                "duration_s": ev.get("elapsed_s"),
+            })
+        if rebuilt:
+            progress["tools"] = rebuilt
     deep = _load_json_safe(root / "deep_dive" / "agentic_deep_dive.json")
     with _orch_procs_lock:
         proc = _orch_procs.get(sha)
@@ -2855,7 +2890,7 @@ def api_winre_status(sha):
     try:
         from winre_runner import availability, read_run_status, snapshot_state
 
-        out["run"] = read_run_status(sha)
+        out["run"] = read_run_status(sha, mode=mode)
         ok, reason = availability()
         out["available"] = {"ok": ok, "reason": reason}
         # RC-69 (2026-11-11): the Console renders the snapshot-gate card from
@@ -2909,7 +2944,8 @@ def api_winre_run(sha):
         from winre_runner import availability, read_run_status, run_dynamic
     except Exception as e:
         return jsonify({"ok": False, "error": f"winre_runner unavailable: {e}"}), 500
-    status = read_run_status(sha) or {}
+    case_mode = _mode_from_request() or run_mode_for(None)
+    status = read_run_status(sha, mode=case_mode) or {}
     if status.get("state") == "running":
         return jsonify({"ok": False, "error": "winre_run_already_running", "status": status}), 409
     ok, reason = availability()
@@ -2918,12 +2954,12 @@ def api_winre_run(sha):
 
     def _run() -> None:
         try:
-            run_dynamic(sha)
+            run_dynamic(sha, case_mode=case_mode)
         except Exception as e:  # recorded in winre-run.json by the runner
             print(f"[winre] run failed: {type(e).__name__}: {e}", flush=True)
 
     threading.Thread(target=_run, daemon=True).start()
-    return jsonify({"ok": True, "started": True, "sha": sha}), 202
+    return jsonify({"ok": True, "started": True, "sha": sha, "mode": case_mode}), 202
 
 
 @app.route("/api/graph")

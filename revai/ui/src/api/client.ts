@@ -225,10 +225,12 @@ export async function testWinre() {
   }>
 }
 
-export async function runWinre(sha: string) {
-  return raw(`/api/winre/run/${sha}`, { method: 'POST' }) as Promise<{
+export async function runWinre(sha: string, mode?: string | null) {
+  const q = mode ? `?mode=${encodeURIComponent(mode)}` : ''
+  return raw(`/api/winre/run/${sha}${q}`, { method: 'POST' }) as Promise<{
     ok: boolean
     started?: boolean
+    mode?: string
     error?: string
   }>
 }

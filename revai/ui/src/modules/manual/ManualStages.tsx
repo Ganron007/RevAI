@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
-import { getStatus, getTask, runStage } from '../../api/client'
+import { getStatus, getTask, runStage, runWinre } from '../../api/client'
 import { STAGE_LABELS, STAGE_ORDER } from '../../api/schema'
 import { Badge, Button, ErrorBanner, Icon, LogBox, Muted, Panel } from '../../ds'
 import { useCase } from '../../pages/caseContext'
 
 export default function ManualStages() {
-  const { sha, mode: runMode } = useCase()
+  const { sha, refreshLive, mode: runMode } = useCase()
   const [stages, setStages] = useState<Record<string, { status?: string }>>({})
   const [busy, setBusy] = useState<string | null>(null)
   const [log, setLog] = useState('')
@@ -25,6 +25,17 @@ export default function ManualStages() {
     setErr(null)
     setLog(`Starting ${stage}…`)
     try {
+      if (stage === 'winre_dynamic') {
+        const res = await runWinre(sha, runMode)
+        if (!res.ok) {
+          setErr(res.error || 'WinRE failed to start')
+          setLog(`WinRE start failed: ${res.error || 'unknown error'}`)
+        } else {
+          setLog(`WinRE detonation started (mode=${res.mode || runMode || 'ui'}). Monitor Orchestrator → winre dynamic chip.`)
+          void refreshLive()
+        }
+        return
+      }
       const { task_id } = await runStage(sha, stage)
       for (let i = 0; i < 7200; i++) {
         await new Promise((r) => setTimeout(r, 1500))

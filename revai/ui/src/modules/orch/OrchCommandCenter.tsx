@@ -231,7 +231,7 @@ export default function OrchCommandCenter() {
     setWinreBusy(true)
     setWinreMsg(null)
     try {
-      const r = await runWinre(sha)
+      const r = await runWinre(sha, runMode)
       setWinreMsg(r.ok ? 'detonation started — watch the winre dynamic chip' : `failed: ${r.error}`)
       void refreshLive()
     } catch (e) {

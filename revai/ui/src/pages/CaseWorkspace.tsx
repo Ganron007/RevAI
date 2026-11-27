@@ -62,18 +62,24 @@ export default function CaseWorkspace() {
     let cancelled = false
     ;(async () => {
       try {
-        const [samples, hitl, m] = await Promise.all([getSamples(), getHitlPending(sha), getModes(sha).catch(() => [] as string[])])
+        const [samples, m] = await Promise.all([getSamples(), getModes(sha).catch(() => [] as string[])])
         if (cancelled) return
         setSample(samples.find((s) => s.sha256 === sha) || null)
-        setHitlCount(hitl.pending_count || 0)
         setModes(m)
         // prefer agentic > scripted > ui > legacy (null)
+        let pick: string | null = null
         if (m.length) {
           const pref = ['agentic', 'scripted', 'ui']
-          const pick = pref.find((p) => m.includes(p)) ?? m[0]
+          pick = pref.find((p) => m.includes(p)) ?? m[0]
           setMode(pick)
         } else {
           setMode(null)
+        }
+        try {
+          const hitl = await getHitlPending(sha, pick)
+          if (!cancelled) setHitlCount(hitl.pending_count || 0)
+        } catch {
+          if (!cancelled) setHitlCount(0)
         }
       } catch (e) {
         if (!cancelled) setErr(e instanceof Error ? e.message : String(e))
@@ -122,6 +128,8 @@ export default function CaseWorkspace() {
       const r = await orchStart(sha)
       if (!r.ok) throw new Error(r.error || 'start failed')
       runningRef.current = true
+      setMode('ui')
+      setModes((prev) => (prev.includes('ui') ? prev : [...prev, 'ui']))
       await refreshLive()
     } catch (e) {
       setErr(e instanceof Error ? e.message : String(e))

@@ -9302,6 +9302,25 @@ def winre_dynamic_status(sha: str, mode: str | None = None) -> dict:
             "expected_run_id": pack.get("expected_run_id"),
             "reason": pack.get("reason"),
         }
+    if not (pack and pack.get("present")):
+        _mode_eff = mode or os.environ.get("REVAI_RUN_MODE", "").strip() or None
+        if _mode_eff:
+            _frozen_p = case_dir(sha, _mode_eff) / "deep_dive" / "02-dynamic-pack.json"
+            if _frozen_p.is_file():
+                try:
+                    _frozen = json.loads(_frozen_p.read_text(encoding="utf-8", errors="replace"))
+                    if isinstance(_frozen, dict) and _frozen.get("present"):
+                        _prov = _frozen.get("_cadre_provenance") or {}
+                        _f_rid = (
+                            _prov.get("run_id")
+                            or ((_frozen.get("job_meta") or {}).get("run_id"))
+                            or ((_frozen.get("meta") or {}).get("run_id"))
+                        )
+                        if not expected_run_id or not _f_rid or _f_rid == expected_run_id:
+                            pack = _frozen
+                            out["frozen_fallback"] = True
+                except Exception:
+                    pass
     if pack and pack.get("present"):
         try:
             counts = dynamic_pack_counts(pack)

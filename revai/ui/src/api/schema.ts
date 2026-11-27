@@ -338,6 +338,7 @@ export type PipelineStage = z.infer<typeof PipelineStageSchema>
 export const STAGE_ORDER = [
   'intake',
   'quick_scan',
+  'winre_dynamic',
   'deep_dive',
   'function_recovery',
   'yara_gen',
@@ -350,8 +351,10 @@ export const STAGE_ORDER = [
 export const STAGE_LABELS: Record<string, string> = {
   intake: 'Intake',
   quick_scan: 'Quick Scan',
+  winre_dynamic: 'WinRE',
   deep_dive: 'Deep Dive',
   function_recovery: 'Function Recovery',
+  artifact_gen: 'Artifact Gen',
   yara_gen: 'YARA',
   behavioural_model: 'Behavioural Model',
   publish: 'Publish',

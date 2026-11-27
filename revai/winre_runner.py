@@ -415,18 +415,29 @@ def _case_dir(sha: str) -> Path:
         return Path("/opt/samples/logs") / sha
 
 
-def run_status_path(sha: str) -> Path:
-    return _case_dir(sha) / "winre-run.json"
+def _case_dir_for(sha: str, mode: str | None = None) -> Path:
+    if mode:
+        try:
+            from v2_lib import case_dir
+
+            return case_dir(sha, mode)
+        except Exception:
+            return Path("/opt/samples/logs") / sha / mode
+    return _case_dir(sha)
 
 
-def _status_candidates(sha: str) -> list[Path]:
+def run_status_path(sha: str, mode: str | None = None) -> Path:
+    return _case_dir_for(sha, mode) / "winre-run.json"
+
+
+def _status_candidates(sha: str, mode: str | None = None) -> list[Path]:
     """Where a run status may live: this run's case dir, then the other mode
     dirs, then the flat case dir.
 
     Pipeline/CLI runs write into their mode-keyed dir (REVAI_RUN_MODE), while the
     Console service has no run mode set - so both locations are legitimate.
     """
-    primary = _case_dir(sha)
+    primary = _case_dir_for(sha, mode)
     out = [primary / "winre-run.json"]
     try:
         from v2_lib import LOGS_DIR
@@ -443,7 +454,7 @@ def _status_candidates(sha: str) -> list[Path]:
     return out
 
 
-def read_run_status(sha: str) -> dict | None:
+def read_run_status(sha: str, mode: str | None = None) -> dict | None:
     """The most recent recorded detonation for a case, whichever mode wrote it.
 
     Status timestamps are all UTC isoformat strings (same shape), so the newest
@@ -452,7 +463,7 @@ def read_run_status(sha: str) -> dict | None:
     """
     best: dict | None = None
     best_ts = ""
-    for p in _status_candidates(sha):
+    for p in _status_candidates(sha, mode=mode):
         if not p.is_file():
             continue
         try:
@@ -467,8 +478,8 @@ def read_run_status(sha: str) -> dict | None:
     return best
 
 
-def _write_status(sha: str, payload: dict) -> None:
-    p = run_status_path(sha)
+def _write_status(sha: str, payload: dict, *, mode: str | None = None) -> None:
+    p = run_status_path(sha, mode=mode)
     try:
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
@@ -599,7 +610,8 @@ _GATE_REFUSAL_SIGNATURES = (
 
 
 def _restore_required_payload(sha: str, cfg: dict, run_id: str,
-                              gate: dict) -> dict:
+                              gate: dict, *,
+                              case_mode: str | None = None) -> dict:
     payload = {
         "state": "restore_required",
         "error": "snapshot gate dirty: detonation refused before guest execution",
@@ -612,7 +624,7 @@ def _restore_required_payload(sha: str, cfg: dict, run_id: str,
         "host": cfg["flare_host"],
         "ts": datetime.now(timezone.utc).isoformat(),
     }
-    _write_status(sha, payload)
+    _write_status(sha, payload, mode=case_mode)
     print(f"[winre_runner] restore_required: revert the FlareVM, then attest "
           f"(gate={payload['gate']})", flush=True)
     return {"ok": False, "restore_required": True, **payload}
@@ -626,6 +638,7 @@ def run_dynamic(
     timeout: int | None = None,
     force: bool = False,
     run_id: str | None = None,
+    case_mode: str | None = None,
 ) -> dict:
     """Run the WinRE remote detonation under the parent execution identity."""
     if run_id is None:
@@ -653,7 +666,7 @@ def run_dynamic(
             "run_id": run_id,
             "ts": datetime.now(timezone.utc).isoformat(),
         }
-        _write_status(sha, payload)
+        _write_status(sha, payload, mode=case_mode)
         print(f"[winre_runner] failed: {payload['error']}", flush=True)
         return {"ok": False, **payload}
     ok, reason = availability(cfg)
@@ -666,7 +679,7 @@ def run_dynamic(
             "run_id": run_id,
             "ts": datetime.now(timezone.utc).isoformat(),
         }
-        _write_status(sha, payload)
+        _write_status(sha, payload, mode=case_mode)
         print(f"[winre_runner] skipped: {reason}", flush=True)
         return {"ok": True, "skipped": True, "reason": reason, **payload}
 
@@ -679,7 +692,7 @@ def run_dynamic(
         ledger_clean = gate.get("ledger_clean") is True
         marker = gate.get("marker") is True
         if not (marker and ledger_clean):
-            return _restore_required_payload(sha, cfg, run_id, gate)
+            return _restore_required_payload(sha, cfg, run_id, gate, case_mode=case_mode)
 
     sp = sample_path or sample_path_for(sha)
     if not sp or not Path(sp).is_file():
@@ -689,12 +702,12 @@ def run_dynamic(
             "run_id": run_id,
             "ts": datetime.now(timezone.utc).isoformat(),
         }
-        _write_status(sha, payload)
+        _write_status(sha, payload, mode=case_mode)
         print(f"[winre_runner] failed: {payload['error']}", flush=True)
         return {"ok": False, "error": payload["error"], **payload}
 
     cmd = build_command(sp, cfg, run_id=run_id)
-    case = _case_dir(sha)
+    case = _case_dir_for(sha, case_mode)
     log_path = case / "winre-run.log"
     limit = int(timeout or cfg["timeout"])
     started = datetime.now(timezone.utc)
@@ -715,7 +728,7 @@ def run_dynamic(
         "sample": sp,
         "clock": clock,
         "llm": llm_meta,
-    })
+    }, mode=case_mode)
     if clock.get("warn"):
         print(f"[winre_runner] WARNING clock skew vs {cfg['flare_host']}: "
               f"{clock.get('skew_s')}s (WinRE freshness may reject the pack)",
@@ -785,7 +798,7 @@ def run_dynamic(
         **({"restore_hint": _RESTORE_HINT} if restore_required else {}),
         "finished_at": datetime.now(timezone.utc).isoformat(),
     }
-    _write_status(sha, payload)
+    _write_status(sha, payload, mode=case_mode)
     print(
         f"[winre_runner] state={payload['state']} rc={rc} {duration}s "
         f"pack={pack_present} {error}",
