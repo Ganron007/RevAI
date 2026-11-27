@@ -1263,13 +1263,46 @@ def _run_payload_sql_pass(payload_path: str, *, sha: str, tools_raw: dict,
         record["error"] = f"{type(exc).__name__}: {exc}"
         print(f"[deep_dive_agentic] payload SQL failed (fail-safe): "
               f"{record['error']}", flush=True)
+
+    # A2 Phase 2: Ghidra headless/SQL corroboration on the unpacked payload
+    # (recovers full static function tables where raw idasql only sees 1 entry).
+    ghidra_rec: dict = {"payload_path": payload_path, "engine": "ghidrasql"}
+    try:
+        from ghidra_sql_client import get_ghidra_sql_client
+        gclient = get_ghidra_sql_client()
+        gres = gclient.query_binary(
+            payload_path,
+            "SELECT COUNT(*) OVER() AS n, addr, name FROM funcs ORDER BY addr",
+            max_rows=400, sha=sha or None,
+        )
+        grows = gres.get("rows") or []
+        gcount = int(grows[0].get("n") or len(grows)) if grows else 0
+        ghidra_rec["function_count"] = gcount
+        ghidra_rec["functions"] = [
+            {"addr": r.get("addr"), "name": r.get("name")} for r in grows
+        ]
+        ghidra_rec["ok"] = True
+        print(f"[deep_dive_agentic] RC-97/A2 payload SQL (ghidrasql): "
+              f"{gcount} functions, {len(grows)} enumerated", flush=True)
+    except FileNotFoundError as exc:
+        ghidra_rec["ok"] = False
+        ghidra_rec["skipped_reason"] = f"ghidrasql_unavailable: {exc}"
+    except Exception as exc:                  # noqa: BLE001 - fail safe
+        ghidra_rec["ok"] = False
+        ghidra_rec["error"] = f"{type(exc).__name__}: {exc}"
+        print(f"[deep_dive_agentic] payload SQL (ghidrasql) failed (fail-safe): "
+              f"{ghidra_rec['error']}", flush=True)
+    record["ghidra"] = ghidra_rec
+
     tools_raw["payload_sql"] = record
     history.append({
         "step": 0, "tool": "payload_sql",
         "args": {"payload_path": payload_path},
-        "reason": "RC-97/A2 payload cross-engine corroboration (idasql)",
+        "reason": "RC-97/A2 payload cross-engine corroboration (idasql + ghidrasql)",
         "result": {"ok": record.get("ok"),
-                   "function_count": record.get("function_count")},
+                   "function_count": record.get("function_count"),
+                   "ghidra_ok": ghidra_rec.get("ok"),
+                   "ghidra_function_count": ghidra_rec.get("function_count")},
         "error": record.get("error"), "checklist": True,
     })
 

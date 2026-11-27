@@ -116,3 +116,93 @@ def test_no_payload_means_no_sql_bookkeeping(monkeypatch):
         sha="a" * 64)
     assert "payload_sql" not in tools_raw, (
         "a payload-less run leaves no bookkeeping key in its evidence")
+
+
+class _FakeGhidraSqlClient:
+    def __init__(self, rows=None, fail=False):
+        self.rows = rows or []
+        self.fail = fail
+        self.queries = []
+
+    def query_binary(self, binary_path, sql, max_rows=200, *, sha=None, timeout=180):
+        self.queries.append((binary_path, sql, sha))
+        if self.fail:
+            raise RuntimeError("ghidrasql headless crashed")
+        return {"rows": self.rows[:max_rows]}
+
+
+def test_payload_sql_pass_records_ghidra_corroboration(sql_env, monkeypatch, tmp_path):
+    _, install = sql_env
+    install(_FakeSqlClient(rows=[{"addr": 4096, "name": "start"}]))
+    import ghidra_sql_client as GSC
+    fake_g = _FakeGhidraSqlClient(rows=[
+        {"n": "428", "addr": "4198652", "name": "thunk_FUN_0040110e"},
+        {"n": "428", "addr": "4198670", "name": "FUN_0040110e"},
+    ])
+    monkeypatch.setattr(GSC, "get_ghidra_sql_client", lambda: fake_g)
+    monkeypatch.setattr(DDA, "run_post_upx_second_pass",
+                        lambda path, profile="deep": {
+                            "ok": True, "tool_ok": True,
+                            "tools": {"malcat": {"file_summary": {}}}})
+    tools_raw, findings, history = {}, {}, []
+    _run_pass(tools_raw, findings, history, tmp_path=tmp_path)
+    rec = tools_raw.get("payload_sql") or {}
+    gh = rec.get("ghidra") or {}
+    assert gh.get("ok") is True
+    assert gh.get("engine") == "ghidrasql"
+    assert gh.get("function_count") == 428
+    assert len(gh.get("functions") or []) == 2
+    assert gh["functions"][0] == {"addr": "4198652", "name": "thunk_FUN_0040110e"}
+    assert len(fake_g.queries) == 1
+    assert history[-1]["result"]["ghidra_function_count"] == 428
+
+
+def test_ghidra_payload_sql_failure_is_recorded_never_raised(sql_env, monkeypatch, tmp_path):
+    _, install = sql_env
+    install(_FakeSqlClient(rows=[{"addr": 4096, "name": "start"}]))
+    import ghidra_sql_client as GSC
+    monkeypatch.setattr(GSC, "get_ghidra_sql_client", lambda: _FakeGhidraSqlClient(fail=True))
+    monkeypatch.setattr(DDA, "run_post_upx_second_pass",
+                        lambda path, profile="deep": {
+                            "ok": True, "tool_ok": True,
+                            "tools": {"malcat": {"file_summary": {}}}})
+    tools_raw, findings, history = {}, {}, []
+    _run_pass(tools_raw, findings, history, tmp_path=tmp_path)
+    rec = tools_raw.get("payload_sql") or {}
+    assert rec.get("ok") is True
+    gh = rec.get("ghidra") or {}
+    assert gh.get("ok") is False
+    assert "ghidrasql headless crashed" in (gh.get("error") or "")
+
+
+def test_ghidra_query_binary_parses_cli_json(monkeypatch, tmp_path):
+    import ghidra_sql_client as GSC
+    sample = tmp_path / "payload.exe"
+    sample.write_bytes(b"MZ" + b"\x00" * 64)
+    fake_bin = tmp_path / "ghidrasql"
+    fake_bin.write_text("#!/bin/sh\n")
+    fake_home = tmp_path / "ghidra"
+    fake_home.mkdir()
+    monkeypatch.setattr(GSC, "GHIDRASQL_BIN", str(fake_bin))
+    monkeypatch.setattr(GSC, "GHIDRA_HOME", str(fake_home))
+
+    class _Proc:
+        returncode = 0
+        stdout = (
+            "INFO  HEADLESS: execution starts\n"
+            '{"columns":["n","addr","name"],"elapsed_ms":98,"partial":false,'
+            '"row_count":2,"rows":[["428","4198652","entry"],["428","4198670","fn_1"]],"success":true}\n'
+            "INFO  LibGhidraHeadlessServer.java> LIBGHIDRA_HEADLESS_EXIT\n"
+        )
+
+    captured = {}
+    def _fake_run(cmd, **kwargs):
+        captured["cmd"] = cmd
+        return _Proc()
+
+    monkeypatch.setattr(GSC.subprocess, "run", _fake_run)
+    client = GSC.GhidraSqlClient()
+    res = client.query_binary(str(sample), "SELECT COUNT(*) OVER() AS n, addr, name FROM funcs", sha="a" * 64)
+    assert "--shutdown" in captured["cmd"] and "discard" in captured["cmd"]
+    assert res["row_count"] == 2
+    assert res["rows"][0] == {"n": "428", "addr": "4198652", "name": "entry"}

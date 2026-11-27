@@ -47,6 +47,7 @@ import os
 import re
 import signal
 import subprocess
+import tempfile
 import threading
 import time
 import urllib.error
@@ -292,6 +293,98 @@ class GhidraSqlClient:
             "source": "ghidra_query",
             "session_id": session_id,
             "audit_path": str(audit_path),
+        }
+
+    def query_binary(
+        self,
+        binary_path: str,
+        sql: str,
+        max_rows: int = 200,
+        *,
+        sha: str | None = None,
+        timeout: int = 180,
+    ) -> dict:
+        """RC-97/A2 Phase 2: run one read-only SQL query against a raw binary
+        (e.g. an unpacked payload) using `ghidrasql --binary` in an isolated
+        temporary project with an ephemeral RPC port. Never kills or collides
+        with any active sample `ghidrasql` HTTP server."""
+        validate_readonly_sql(sql)
+        bin_p = Path(binary_path)
+        if not bin_p.is_file():
+            raise FileNotFoundError(f"binary not found: {binary_path}")
+        if not Path(GHIDRASQL_BIN).exists():
+            raise FileNotFoundError(f"ghidrasql binary not found: {GHIDRASQL_BIN}")
+        if not Path(GHIDRA_HOME).exists():
+            raise FileNotFoundError(f"GHIDRA_HOME not found: {GHIDRA_HOME}")
+
+        with tempfile.TemporaryDirectory(prefix="ghidrasql_payload_") as tmpdir:
+            cmd = [
+                GHIDRASQL_BIN,
+                "--ghidra", GHIDRA_HOME,
+                "--binary", str(bin_p),
+                "--project", tmpdir,
+                "--project-name", "payload",
+                "--fresh",
+                "--shutdown", "discard",
+                "--max-runtime", str(timeout),
+                "--format", "json",
+                "-q", sql,
+            ]
+            proc = subprocess.run(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                stdin=subprocess.DEVNULL,
+                text=True,
+                errors="replace",
+                timeout=timeout,
+            )
+
+        out = proc.stdout or ""
+        payload = None
+        for line in reversed(out.splitlines()):
+            s = line.strip()
+            if s.startswith("{") and s.endswith("}"):
+                try:
+                    cand = json.loads(s)
+                    if isinstance(cand, dict) and ("success" in cand or "columns" in cand):
+                        payload = cand
+                        break
+                except json.JSONDecodeError:
+                    continue
+        if payload is None:
+            tail = out[-800:].strip()
+            raise RuntimeError(
+                f"ghidrasql binary query returned no JSON (rc={proc.returncode}): {tail}"
+            )
+        if not payload.get("success"):
+            err = (
+                payload.get("first_error")
+                or payload.get("error")
+                or "unknown error"
+            )
+            results = payload.get("results") or []
+            if results and isinstance(results[0], dict) and results[0].get("error"):
+                err = results[0]["error"]
+            raise RuntimeError(f"ghidrasql binary SQL error: {err}")
+
+        if "results" in payload and payload["results"]:
+            r0 = payload["results"][0]
+            columns = r0.get("columns", [])
+            rows_lists = r0.get("rows", [])
+        else:
+            columns = payload.get("columns", [])
+            rows_lists = payload.get("rows", [])
+        row_dicts = [dict(zip(columns, r)) for r in rows_lists]
+        out_rows = row_dicts[:max_rows]
+        return {
+            "columns": columns,
+            "rows": out_rows,
+            "row_count": len(out_rows),
+            "total_row_count": len(row_dicts),
+            "truncated": len(row_dicts) > max_rows,
+            "source": "ghidra_query_binary",
+            "sha256": sha,
         }
 
     def close(self, session_id: str) -> None:

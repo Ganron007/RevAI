@@ -10690,6 +10690,12 @@ def _section_row_sources(sha: str, section: str,
             # unpacker -- so a run with no `upx_second_pass` still gets them.
             if "payload_feedback" in _raw_peek:
                 sources.extend(PAYLOAD_SECTION_ROW_SOURCES.get(canonical_section, ()))
+            if canonical_section == "4. Static Code Analysis" and (
+                (_raw_peek.get("payload_sql") or {}).get("ghidra") or {}
+            ).get("functions"):
+                sources.append(
+                    ("deep_dive/01-tools-raw.json", "payload_sql.ghidra.functions", "payload ghidra functions")
+                )
         except Exception:
             pass
     if (root / "deep_dive/02-dynamic-pack.json").is_file():
