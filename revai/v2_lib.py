@@ -12635,8 +12635,8 @@ def format_ti_hash_enrichment_evidence(
     enabled = ti_result.get("enabled") is True
     lines = [
         f"sample_sha256: {sample_sha}",
-        f"hash_lookup_enabled: {str(enabled).lower()} "
-        f"[source: {source_path}, query_or_table: enabled, row_or_rule: {enabled}]",
+        f"enabled: {str(enabled).lower()} "
+        f"[source: {source_path}, query_or_table: {source_path}, row_or_rule: $.enabled]",
         "Scope: optional VirusTotal/Hybrid Analysis lookup by SHA-256 only; no "
         "sample download or corpus retrieval.",
     ]
@@ -12689,7 +12689,8 @@ def _sec_attribution_evidence(tools_results: dict) -> str:
     """Section 10: bound actor/campaign attribution to evidence in this run."""
     verdict = tools_results.get("verdict") or {}
     lines = [
-        f"  candidate family label: {verdict.get('family_guess') or 'unknown'}\n"
+        f"  candidate family label: {verdict.get('family_guess') or 'unknown'} "
+        "(source: verdict.json, query_or_table: verdict.json, row_or_rule: $.family_guess)\n"
         "  Hash-enrichment results, if present, are sample-hash lookups and do not "
         "provide actor/campaign linkage. Do not infer an actor, campaign, origin, "
         "or vendor-confirmed family from a string, mutex, or candidate family label "

@@ -199,7 +199,12 @@ def _section_prompt(section_name: str, description: str, evidence: str,
         "query_or_table: deep_dive/01-tools-raw.json, row_or_rule: "
         "$.malcat.file_summary.entropy). Do not invent table names. Use one "
         "JSONPath per observation; when a claim needs multiple fields, write one "
-        "observation per field.\n"
+        "observation per field. In `deep_dive/01-tools-raw.json`, top-level "
+        "sibling keys are `$.malcat`, `$.upx`, `$.xor`, `$.capa`, `$.yara`, "
+        "`$.floss`, `$.r2_decomp`, `$.revai_tools_sec`, and `$.payload_feedback` "
+        "— never nest sibling tools under `$.malcat.*` (e.g. write `$.upx.*`, "
+        "`$.capa.*`, `$.payload_feedback.*`, not `$.malcat.payload_feedback.*`), "
+        "and use `$.malcat.file_summary.file_size` (never `.size`).\n"
         "EXPLAIN, DON'T DUMP: every evidence row / code block you include must be "
         "introduced and interpreted (what + why + confidence); never paste evidence "
         "bare. Hedge inferences ('likely', 'possibly', 'we assess'). A reader with "
@@ -444,8 +449,8 @@ def _run_one_section(section_name: str, sha: str, tools_results: dict,
             "classification statement, and executive-summary conclusion. Do not "
             "upgrade or downgrade it. If evidence appears to disagree, identify "
             "the disagreement as a limitation while preserving this report label. "
-            "Do not cite this control line as evidence for behavior, capability, "
-            "family, or ATT&CK claims.\n\n"
+            "Never cite `pipeline_verdict_control` or this control directive "
+            "as a source or evidence; cite raw tools or `verdict.json`.\n\n"
             + evidence
         )
     # 3. Build prior-summaries for continuity
@@ -1093,7 +1098,12 @@ def _technical_section_prompt(name: str, description: str, evidence: str,
         "query_or_table: deep_dive/01-tools-raw.json, "
         "row_or_rule: $.malcat.file_summary.entropy). Do not invent table names. "
         "Use one JSONPath per observation; when a claim needs multiple fields, "
-        "write one observation per field.\n"
+        "write one observation per field. In `deep_dive/01-tools-raw.json`, "
+        "top-level sibling keys are `$.malcat`, `$.upx`, `$.xor`, `$.capa`, "
+        "`$.yara`, `$.floss`, `$.r2_decomp`, `$.revai_tools_sec`, and "
+        "`$.payload_feedback` — never nest sibling tools under `$.malcat.*` "
+        "(write `$.upx.*`, `$.payload_feedback.*`, not `$.malcat.payload_feedback.*`), "
+        "and use `$.malcat.file_summary.file_size` (never `.size`).\n"
         "- Put interpretation, limitations, and family/ATT&CK assessment in "
         "`assessment` blocks; put actions in `recommendation` blocks; use `note` "
         "for methodology. Never put an observed fact, indicator, address, hash, "
@@ -1932,6 +1942,12 @@ def run_section_based_publish(sha: str, tools_results: dict,
     report_markdown, master_credential_categories = (
         redact_credential_like_values(report_markdown))
     report_markdown = sanitize_report_markdown(report_markdown)
+    # Run the deterministic final pre-passes unconditionally before
+    # master_quality evaluates the assembled v3 master (previously these only
+    # ran inside `if m_unverified:`, leaving clean-IoC runs with unseparated
+    # adjacent tables from deterministic sections).
+    report_markdown = _fix_orphan_tables(report_markdown)
+    report_markdown = _strip_unverified_indicators(report_markdown, sha)
     (out_dir / "02-REPORT-MASTER-v3.md").write_text(report_markdown)
     quick_verdict = (tools_results.get("verdict") or {}).get("verdict")
     deep_verdict = (tools_results.get("deep") or {}).get("verdict")

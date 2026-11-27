@@ -1195,7 +1195,7 @@ def _resolve_json_path(value: Any, expression: str,
         # 2026-11-19: one such citation made the entailment check record
         # itself unavailable).
         if (len(rest) >= 2 and rest[0] == "file_summary"
-                and rest[1] != "carved"
+                and rest[1] not in ("carved", "entropy")
                 and (rest[1] == "views" or rest[1] in _MALCAT_VIEW_KEYS)):
             rest = rest[1:]
         if rest[:1] and rest[0] in _MALCAT_VIEW_KEYS and rest[0] != "carved":
@@ -1759,6 +1759,22 @@ def _locate_cited_row(path: Path, row: str, query: str | None = None,
             is_normalized_jsonpath = True
         if row_clean.startswith("$"):
             resolved = _resolve_json_path(decoded, row_clean, source_branch)
+            if resolved is None and isinstance(decoded, dict):
+                q_low = (query or "").casefold()
+                sub_key = (
+                    "job_meta" if "meta.job" in q_low
+                    else "meta" if ("meta.json" in q_low and "meta.job" not in q_low)
+                    else "network_intel" if "network_intel" in q_low
+                    else "network" if "network.json" in q_low
+                    else "frida_summary" if "frida_summary" in q_low
+                    else "external_capture" if "external_capture" in q_low
+                    else None
+                )
+                sub_target = decoded.get(sub_key) if sub_key else None
+                if isinstance(sub_target, (dict, list)):
+                    sub_hit = _resolve_json_path(sub_target, row_clean)
+                    if sub_hit is not None:
+                        resolved = (f"$.{sub_key}" + sub_hit[0][1:], sub_hit[1])
             if resolved is not None:
                 json_path, value = resolved
                 try:
